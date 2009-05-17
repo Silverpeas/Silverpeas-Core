@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.silverpeas</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  
+  <groupId>com.silverpeas</groupId>
+  <artifactId>core</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Core</name>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>assemblies/assembly.xml</descriptor>
+          </descriptors>
+          <appendAssemblyId>true</appendAssemblyId>
+          <attach>true</attach>
+          <skipAssembly>true</skipAssembly>
+          <finalName>${artifactId}-${version}-configuration</finalName>
+        </configuration>
+        <executions>
+          <execution>
+            <id>manage-configuration</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.silverpeas</groupId>
+            <artifactId>configuration-assembly</artifactId>
+            <version>1.0-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+  <modules>
+    <module>lib-core</module>
+    <module>ejb-core</module>
+    <module>web-core</module>
+    <module>war-core</module>
+    <module>config-core</module>
+  </modules>
+</project>
