@@ -1,0 +1,1 @@
+Sans ce fichier cvs ignore ce répertoire vide.
