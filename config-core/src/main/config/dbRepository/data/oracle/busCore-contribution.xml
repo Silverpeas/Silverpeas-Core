@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<contribution product="busCore">
+
+    <requirement>
+    </requirement>
+
+    <current version="019">
+        <create_table>
+            <file name="oracle\busCore\019\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\019\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_table>
+        <create_constraint>
+            <file name="oracle\busCore\019\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\019\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_constraint>
+        <init>
+            <file name="oracle\busCore\019\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\019\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
+            <file name="java\dbBuilder_ep.jar" type="javalib" classname="com.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
+        </init>
+        <create_index>
+            <file name="oracle\busCore\019\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_index>
+        <drop_index>
+            <file name="oracle\busCore\019\drop_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </drop_index>       
+        <drop_table>
+            <file name="oracle\busCore\019\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\019\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </drop_table>
+        <drop_constraint>
+            <file name="oracle\busCore\019\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\019\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </drop_constraint>
+        <clean>
+            <file name="oracle\busCore\019\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\019\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </clean>
+    </current>
+
+    <upgrade version="002">
+       <create_table>
+            <file name="oracle\busCore\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_table>
+    </upgrade>
+
+    <upgrade version="003">
+        <init>
+            <file name="oracle\busCore\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+    <upgrade version="004">
+        <init>
+            <file name="oracle\busCore\up004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+    <upgrade version="005">
+        <init>
+            <file name="oracle\busCore\up005\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+    <upgrade version="006">
+        <init>
+            <file name="oracle\busCore\up006\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+    <upgrade version="007">
+        <init>
+            <file name="oracle\busCore\up007\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+    <upgrade version="008">
+        <init>
+            <file name="oracle\busCore\up008\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+    <upgrade version="009">
+        <init>
+            <file name="oracle\busCore\up009\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </init>
+    </upgrade>
+
+	<upgrade version="010">
+         <create_table>
+            <file name="oracle\busCore\up010\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+         </create_table>
+		<create_constraint>
+            <file name="oracle\busCore\up010\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_constraint>
+    </upgrade>
+
+	<upgrade version="011">
+         <create_table>
+			<file name="oracle\busCore\up011\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\up011\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+         </create_table>
+		<create_constraint>
+            <file name="oracle\busCore\up011\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_constraint>
+    </upgrade>
+	
+	<upgrade version="012">
+         <create_table>
+            <file name="oracle\busCore\up012\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+         </create_table>
+    </upgrade>
+
+	<upgrade version="013">
+         <create_table>
+            <file name="oracle\busCore\up013\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+         </create_table>
+    </upgrade>
+
+	 <upgrade version="014">
+       <create_table>
+            <file name="oracle\busCore\up014\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_table>
+    </upgrade>
+
+	 <upgrade version="015">
+       <create_table>
+            <file name="oracle\busCore\up015\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_table>
+       <create_index>
+            <file name="oracle\busCore\up015\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_index>
+    </upgrade>
+
+	<upgrade version="016">
+       <create_table>
+            <file name="oracle\busCore\up016\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_table>
+    </upgrade>
+
+	<upgrade version="017">
+       <create_table>
+            <file name="oracle\busCore\up017\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_table>
+	</upgrade>
+
+	<upgrade version="018">
+       <create_table>
+            <file name="oracle\busCore\up018\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+       </create_table>
+	</upgrade>
+
+</contribution>
