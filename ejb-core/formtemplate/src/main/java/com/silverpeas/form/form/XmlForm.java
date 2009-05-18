@@ -1,0 +1,525 @@
+package com.silverpeas.form.form;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.jsp.JspWriter;
+
+import com.silverpeas.form.AbstractForm;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.Util;
+import com.silverpeas.form.fieldType.JdbcRefField;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+/**
+ * A Form is an object which can display in HTML
+ * the content of a DataRecord to a end user
+ * and can retrieve via HTTP any updated values.
+ * 
+ * @see DataRecord
+ * @see RecordTemplate
+ * @see FieldDisplayer
+ */
+public class XmlForm extends AbstractForm
+{
+  public XmlForm (RecordTemplate template) throws FormException
+  {
+		super(template);
+  }
+ 
+  /**
+   * Prints the HTML layout of the dataRecord using the RecordTemplate
+   * to extract labels and extra informations.
+   *
+   * The value formats may be adapted to a local language.
+   *
+   * Never throws an Exception
+   * but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI> a field is unknown by the template.
+   * <LI> a field has not the required type.
+   * </UL>
+   */
+  public String toString(PagesContext pagesContext, DataRecord record)
+  {
+		SilverTrace.info("form", "XmlForm.toString", "root.MSG_GEN_ENTER_METHOD");
+		StringWriter sw = new StringWriter();
+		/*try
+		{*/
+			String language = pagesContext.getLanguage();
+			//StringWriter sw = new StringWriter();
+			PrintWriter out = new PrintWriter(sw, true);
+
+			if (pagesContext.getPrintTitle() && getTitle()!=null && getTitle().length()>0)
+			{
+				out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+				out.println("<tr>");
+				out.println("<td CLASS=intfdcolor4 NOWRAP>");
+				out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
+				out.println("<tr>");
+				out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
+				out.println("<img border=\"0\" src=\"" + Util.getIcon("px") + "\" width=5><span class=txtNav>" + getTitle() + "</span>");
+				out.println("</td>");
+				out.println("</tr>");
+				out.println("</table>");
+				out.println("</td>");
+				out.println("</tr>");
+				out.println("</table>");
+			}
+
+			Iterator itFields = null;
+			List listField = getFieldTemplates();
+			if (listField != null) {
+				itFields = listField.iterator();
+			}
+			boolean mandatory = false;
+			if (itFields != null && itFields.hasNext())
+			{
+				if (pagesContext.isBorderPrinted())
+				{
+					out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
+					out.println("<tr>");
+					out.println("<td nowrap>");
+					out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
+				}
+				else
+				{
+					out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
+				}
+				out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId() + "\">");
+				
+				//out.flush();
+				//jw.write(sw.toString());
+				PagesContext pc = new PagesContext(pagesContext);
+				pc.setNbFields(listField.size());
+				pc.incCurrentFieldIndex(1);
+				
+				//calcul lastFieldIndex
+				int lastFieldIndex = -1;
+				lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+				FieldTemplate fieldTemplate;
+				String fieldName;
+				Field field = null;
+				String fieldType;
+				String fieldDisplayerName;
+				FieldDisplayer fieldDisplayer = null;
+				
+				while (itFields.hasNext())
+				{
+					fieldTemplate = (FieldTemplate) itFields.next();
+					if (fieldTemplate != null)
+					{
+						fieldName = fieldTemplate.getFieldName();
+						fieldType = fieldTemplate.getTypeName();
+						fieldDisplayerName = fieldTemplate.getDisplayerName();
+						
+						field = null;
+						if (record != null)
+						{
+							try
+							{
+								field = record.getField(fieldName);
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_FIELD", null, fe);
+							}
+						}
+						
+						if (record == null || (record != null && field != null))
+						{
+							try
+							{
+								if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
+									fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+								}
+	
+								fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+								if (fieldDisplayer != null)
+								{
+									lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
+								}
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+							}
+						}
+					}
+				}
+				pc.setLastFieldIndex(lastFieldIndex);
+				
+				String fieldLabel;
+				boolean isMandatory;
+				boolean isDisabled;
+				boolean isReadOnly;
+				boolean isHidden;
+				itFields = listField.iterator();
+				while (itFields.hasNext())
+				{
+					fieldTemplate = (FieldTemplate) itFields.next();
+					if (fieldTemplate != null)
+					{
+						fieldName = fieldTemplate.getFieldName();
+						fieldLabel = fieldTemplate.getLabel(language);
+						fieldType = fieldTemplate.getTypeName();
+						fieldDisplayerName = fieldTemplate.getDisplayerName();
+						isMandatory = fieldTemplate.isMandatory();
+						isDisabled = fieldTemplate.isDisabled();
+						isReadOnly = fieldTemplate.isReadOnly();
+						isHidden = fieldTemplate.isHidden();
+						
+						field = null;
+						try
+						{
+							field = record.getField(fieldName);
+						}
+						catch (FormException fe)
+						{
+							SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_FIELD", null, fe);
+						}
+						
+						if (field != null)
+						{
+							try
+							{
+								if (fieldDisplayerName == null || fieldDisplayerName.equals("")) 
+									fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+	
+								fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+							}
+							
+							if (fieldDisplayer != null)
+							{
+								//sw = new StringWriter();
+								//out = new PrintWriter(sw, true);
+								out.println("<tr align=center>");
+								if (fieldLabel != null && !fieldLabel.equals("")) {
+									out.println("<td class=\"intfdcolor4\" valign=\"top\" align=left nowrap>");
+									out.println("<span class=\"txtlibform\">"+ fieldLabel +" :</span>");
+									out.println("</TD>");
+								}
+								
+								out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
+								if (field == null)
+								{
+									try
+									{
+										field = fieldTemplate.getEmptyField();
+									}
+									catch (FormException fe)
+									{
+										SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_FIELD", null, fe);
+									}
+								}
+								
+								try
+								{
+									fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
+								}
+								catch (FormException fe)
+								{
+									SilverTrace.error("form", "XmlForm.toString", "form.EX_CANT_GET_FORM", null, fe);
+								}
+								
+								if (isMandatory && !isDisabled && !isReadOnly && !isHidden && fieldDisplayer.isDisplayedMandatory())
+									mandatory = true;
+								out.println("</TD>");
+								out.println("</TR>");
+								//out.flush(); 
+								//jw.write(sw.toString());
+								pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+							}
+						}
+					}
+				}
+				//sw = new StringWriter();
+				//out = new PrintWriter(sw, true);
+				if (mandatory)
+				{
+					out.println("<tr align=left>"); 
+					out.println("<td colspan=\"2\">");
+					out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField") + "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;" + Util.getString("GML.requiredField", language) + ")");
+					out.println("</TD>");
+					out.println("</TR>");
+				}
+				if (pagesContext.isBorderPrinted())
+				{
+					out.println("</TABLE>");
+					out.println("</TD>");
+					out.println("</TR>");
+				}
+				out.println("</TABLE>");
+			    //out.flush(); 
+			    //jw.write(sw.toString());
+			}
+		/*}
+		catch (java.io.IOException fe)
+		{
+			SilverTrace.error("form", "XmlForm.toString", "form.EXP_CANT_WRITE", null, fe);
+		}*/
+		return sw.getBuffer().toString();
+	}
+
+  /**
+   * Prints the HTML layout of the dataRecord using the RecordTemplate
+   * to extract labels and extra informations.
+   *
+   * The value formats may be adapted to a local language.
+   *
+   * Never throws an Exception
+   * but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI> a field is unknown by the template.
+   * <LI> a field has not the required type.
+   * </UL>
+   */
+  public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) 
+  {
+		SilverTrace.info("form", "XmlForm.display", "root.MSG_GEN_ENTER_METHOD");
+		try
+		{
+			String language = pagesContext.getLanguage();
+			StringWriter sw = new StringWriter();
+			PrintWriter out = new PrintWriter(sw, true);
+
+			if (pagesContext.getPrintTitle() && getTitle()!=null && getTitle().length()>0)
+			{
+				out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+				out.println("<tr>");
+				out.println("<td CLASS=intfdcolor4 NOWRAP>");
+				out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
+				out.println("<tr>");
+				out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
+				out.println("<img border=\"0\" src=\"" + Util.getIcon("px") + "\" width=5><span class=txtNav>" + getTitle() + "</span>");
+				out.println("</td>");
+				out.println("</tr>");
+				out.println("</table>");
+				out.println("</td>");
+				out.println("</tr>");
+				out.println("</table>");
+			}
+
+			Iterator itFields = null;
+			List listField = getFieldTemplates();
+			if (listField != null) {
+				itFields = listField.iterator();
+			}
+			boolean mandatory = false;
+			if ((itFields != null) && (itFields.hasNext()))
+			{
+				if (pagesContext.isBorderPrinted())
+				{
+					out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
+					out.println("<tr>");
+					out.println("<td nowrap>");
+					out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
+				}
+				else
+				{
+					out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
+				}
+				
+				if (record != null) {
+					out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId() + "\">");
+				}
+				
+				out.flush();
+				jw.write(sw.toString());
+				
+				PagesContext pc = new PagesContext(pagesContext);
+				pc.setNbFields(listField.size());
+				if (record != null) {
+					pc.incCurrentFieldIndex(1);
+				}
+				
+				//calcul lastFieldIndex
+				int lastFieldIndex = -1;
+				lastFieldIndex += new Integer(pc.getCurrentFieldIndex()).intValue();
+				FieldTemplate fieldTemplate;
+				String fieldName;
+				Field field = null;
+				String fieldType;
+				String fieldDisplayerName;
+				FieldDisplayer fieldDisplayer = null;
+				
+				while (itFields.hasNext())
+				{
+					fieldTemplate = (FieldTemplate) itFields.next();
+					if (fieldTemplate != null)
+					{
+						fieldName = fieldTemplate.getFieldName();
+						fieldType = fieldTemplate.getTypeName();
+						fieldDisplayerName = fieldTemplate.getDisplayerName();
+						
+						field = null;
+						if (record != null)
+						{
+							try
+							{
+								field = record.getField(fieldName);
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+							}
+						}
+						
+						if (record == null || (record != null && field != null))
+						{
+							try
+							{
+								if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
+									fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+								}
+	
+								fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+								if (fieldDisplayer != null)
+								{
+									lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
+								}
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+							}
+						}
+					}
+				}
+				pc.setLastFieldIndex(lastFieldIndex);
+				
+				String fieldLabel;
+				boolean isMandatory;
+				boolean isDisabled;
+				boolean isReadOnly;
+				boolean isHidden;
+				itFields = listField.iterator();
+				while (itFields.hasNext())
+				{
+					fieldTemplate = (FieldTemplate) itFields.next();
+					if (fieldTemplate != null)
+					{
+						fieldName = fieldTemplate.getFieldName();
+						fieldLabel = fieldTemplate.getLabel(language);
+						fieldType = fieldTemplate.getTypeName();
+						fieldDisplayerName = fieldTemplate.getDisplayerName();
+						isMandatory = fieldTemplate.isMandatory();
+						isDisabled = fieldTemplate.isDisabled();
+						isReadOnly = fieldTemplate.isReadOnly();
+						isHidden = fieldTemplate.isHidden();
+						
+						field = null;
+						if (record != null)
+						{
+							try
+							{
+								field = record.getField(fieldName);
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+							}
+						}
+						
+						if (record == null || (record != null && field != null))
+						{
+							try
+							{
+								if (fieldDisplayerName == null || fieldDisplayerName.equals("")) 
+									fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+	
+								fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+							}
+							catch (FormException fe)
+							{
+								SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+							}
+							
+							
+							if (fieldDisplayer != null)
+							{
+								sw = new StringWriter();
+								out = new PrintWriter(sw, true);
+								out.println("<tr align=center>"); 
+								out.println("<td class=\"intfdcolor4\" valign=\"top\" align=left>");
+								if (fieldLabel != null && !fieldLabel.equals(""))
+									out.println("<span class=\"txtlibform\">"+ fieldLabel +" :</span>");
+								else
+									out.println("<span class=\"txtlibform\">&nbsp;</span>");
+								out.println("</TD>");
+								out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
+								
+								if (field == null)
+								{
+									try
+									{
+										field = fieldTemplate.getEmptyField();
+									}
+									catch (FormException fe)
+									{
+										SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+									}
+								}
+								
+								try
+								{
+									fieldDisplayer.display(out, field, fieldTemplate, pc);
+								}
+								catch (FormException fe)
+								{
+									SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
+								}
+								if (isMandatory && !isDisabled && !isHidden && fieldDisplayer.isDisplayedMandatory()
+									&& (!isReadOnly || fieldType.equals(JdbcRefField.TYPE)))
+								{
+									mandatory = true;
+								}
+								out.println("</TD>");
+								out.println("</TR>");
+								out.flush(); 
+								jw.write(sw.toString());
+								pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+							}
+						}
+					}
+				}
+				sw = new StringWriter();
+				out = new PrintWriter(sw, true);
+				if (mandatory)
+				{
+					out.println("<tr align=left>"); 
+					out.println("<td colspan=\"2\">");
+					out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField") + "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;" + Util.getString("GML.requiredField", language) + ")");
+					out.println("</TD>");
+					out.println("</TR>");
+				}
+				if (pagesContext.isBorderPrinted())
+				{
+					out.println("</TABLE>");
+					out.println("</TD>");
+					out.println("</TR>");
+				}
+				out.println("</TABLE>");
+			    out.flush(); 
+			    jw.write(sw.toString());
+			}
+		}
+		catch (java.io.IOException fe)
+		{
+			SilverTrace.error("form", "XmlForm.display", "form.EXP_CANT_WRITE", null, fe);
+		}
+	}
+}

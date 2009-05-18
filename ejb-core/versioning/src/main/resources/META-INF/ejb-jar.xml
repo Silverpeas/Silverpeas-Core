@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+<ejb-jar>
+
+  <description>no description</description>
+  <display-name>VersioningJar</display-name>
+
+
+  <enterprise-beans>
+    <session>
+      <description>no description</description>
+      <display-name>ejb/Versioning</display-name>
+      <ejb-name>ejb/Versioning</ejb-name>
+      <home>com.stratelia.silverpeas.versioning.ejb.VersioningBmHome</home>
+      <remote>com.stratelia.silverpeas.versioning.ejb.VersioningBm</remote>
+      <ejb-class>com.stratelia.silverpeas.versioning.ejb.VersioningBmEJB</ejb-class>
+      <session-type>Stateless</session-type>    
+      <transaction-type>Container</transaction-type>      
+      <resource-ref>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+      </resource-ref>
+    </session>
+  </enterprise-beans>
+
+
+  
+  <assembly-descriptor>
+
+
+    <container-transaction>
+        <method>
+                <ejb-name>ejb/Versioning</ejb-name>
+                <method-intf>Remote</method-intf>
+                <method-name>getLastPublicDocumentVersion</method-name>
+        </method>
+        <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+
+    <container-transaction>
+        <method>
+                <ejb-name>ejb/Versioning</ejb-name>
+                <method-intf>Remote</method-intf>
+                <method-name>getDocumentVersions</method-name>
+        </method>
+        <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+
+    <container-transaction>
+        <method>
+                <ejb-name>ejb/Versioning</ejb-name>
+                <method-intf>Remote</method-intf>
+                <method-name>getDocuments</method-name>
+        </method>
+        <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+
+    <container-transaction>
+        <method>
+                <ejb-name>ejb/Versioning</ejb-name>
+                <method-intf>Remote</method-intf>
+                <method-name>getDocument</method-name>
+        </method>
+        <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+
+
+
+    <container-transaction>
+      <method>
+        <ejb-name>ejb/Versioning</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+
+
+  </assembly-descriptor>
+
+</ejb-jar>
+

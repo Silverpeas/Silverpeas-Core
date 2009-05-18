@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.silverpeas</groupId>
+    <artifactId>core</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+	
+  <groupId>com.silverpeas.core</groupId>
+  <artifactId>ejb-core</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name> EJB Core</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+    </dependency>
+  </dependencies>
+  
+  <modules>
+    <module>clipboard</module>
+    <module>channels</module>
+    <module>personalization</module>
+    <module>searchengine</module>
+    <module>silverstatistics</module>
+    <module>tagcloud</module>
+    <module>node</module>
+    <module>notation</module>
+    <module>versioning</module>
+    <module>formtemplate</module>
+    <module>publication</module>
+    <module>statistic</module>
+    <module>comment</module>
+    <module>pdc</module>
+  </modules>
+  
+</project>

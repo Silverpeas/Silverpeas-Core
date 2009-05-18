@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+<ejb-jar>
+
+  <description>no description</description>
+  <display-name>ejbNotificationServer</display-name>
+
+  <enterprise-beans>
+
+    <message-driven>
+      <ejb-name>ejb/com.stratelia.silverpeas.notificationserver.channel.popup.POPUPListener</ejb-name>
+      <ejb-class>com.stratelia.silverpeas.notificationserver.channel.popup.POPUPListener</ejb-class>
+      <transaction-type>Bean</transaction-type>
+      <message-selector>CHANNEL='POPUP'</message-selector>
+      <message-driven-destination>
+        <destination-type>javax.jms.Queue</destination-type>
+      </message-driven-destination>
+    </message-driven>
+    <message-driven>
+      <ejb-name>ejb/com.stratelia.silverpeas.notificationserver.channel.remove.REMOVEListener</ejb-name>
+      <ejb-class>com.stratelia.silverpeas.notificationserver.channel.remove.REMOVEListener</ejb-class>
+      <transaction-type>Bean</transaction-type>
+      <message-selector>CHANNEL='REMOVE'</message-selector>
+      <message-driven-destination>
+        <destination-type>javax.jms.Queue</destination-type>
+      </message-driven-destination>
+    </message-driven>
+    <message-driven>
+      <ejb-name>ejb/com.stratelia.silverpeas.notificationserver.channel.server.SERVERListener</ejb-name>
+      <ejb-class>com.stratelia.silverpeas.notificationserver.channel.server.SERVERListener</ejb-class>
+      <transaction-type>Bean</transaction-type>
+      <message-selector>CHANNEL='SERVER'</message-selector>
+      <message-driven-destination>
+        <destination-type>javax.jms.Queue</destination-type>
+      </message-driven-destination>
+    </message-driven>
+    <message-driven>
+      <ejb-name>ejb/com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILListener</ejb-name>
+      <ejb-class>com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILListener</ejb-class>
+      <transaction-type>Bean</transaction-type>
+      <message-selector>CHANNEL='SILVERMAIL'</message-selector>
+      <message-driven-destination>
+        <destination-type>javax.jms.Queue</destination-type>
+      </message-driven-destination>
+    </message-driven>
+    <message-driven>
+      <ejb-name>ejb/com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPListener</ejb-name>
+      <ejb-class>com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPListener</ejb-class>
+      <transaction-type>Bean</transaction-type>
+      <message-selector>CHANNEL='SMTP'</message-selector>
+      <message-driven-destination>
+        <destination-type>javax.jms.Queue</destination-type>
+      </message-driven-destination>
+    </message-driven>
+
+  </enterprise-beans>
+
+</ejb-jar>
+

@@ -1,0 +1,31 @@
+<!DOCTYPE jboss PUBLIC
+          "-//JBoss//DTD JBOSS 4.0//EN"
+          "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd">
+<jboss>
+    <enterprise-beans>
+        <session>
+            <ejb-name>ejb/PdcBm</ejb-name>
+            <jndi-name>ejb/PdcBm</jndi-name>
+		    <resource-ref>
+				<res-ref-name>jdbc/Silverpeas</res-ref-name>
+				<jndi-name>java:/Silverpeas</jndi-name>
+		    </resource-ref>
+        </session>
+        <session>
+            <ejb-name>ejb/pdcSubscription</ejb-name>
+            <jndi-name>ejb/pdcSubscription</jndi-name>
+		    <resource-ref>
+				<res-ref-name>jdbc/Silverpeas</res-ref-name>
+				<jndi-name>java:/Silverpeas</jndi-name>
+		    </resource-ref>
+        </session>
+        <session>
+            <ejb-name>ejb/InterestCenter</ejb-name>
+            <jndi-name>ejb/InterestCenter</jndi-name>
+		    <resource-ref>
+				<res-ref-name>jdbc/Silverpeas</res-ref-name>
+				<jndi-name>java:/Silverpeas</jndi-name>
+		    </resource-ref>
+        </session>
+    </enterprise-beans>
+</jboss>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+<ejb-jar>
+	<description>no description</description>
+	<display-name>clipboardJar</display-name>
+	<enterprise-beans>
+		<session>
+			<description>no description</description>
+			<display-name>ejb/ClipboardBm</display-name>
+			<ejb-name>ejb/ClipboardBm</ejb-name>
+			<home>com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome</home>
+			<remote>com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm</remote>
+			<ejb-class>com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmEJB</ejb-class>
+			<session-type>Stateful</session-type>
+			<transaction-type>Container</transaction-type>
+		</session>
+	</enterprise-beans>
+	<assembly-descriptor>
+	    <container-transaction>
+	      <method>
+		<ejb-name>ejb/ClipboardBm</ejb-name>
+		<method-name>*</method-name>
+	      </method>
+	      <trans-attribute>Supports</trans-attribute>
+	    </container-transaction>
+      </assembly-descriptor>
+</ejb-jar>
+
