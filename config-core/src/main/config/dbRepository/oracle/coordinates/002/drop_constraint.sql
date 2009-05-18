@@ -1,0 +1,1 @@
+ALTER TABLE SB_Coordinates_Coordinates	DROP CONSTRAINT PK_Coordinates_Coordinates;
