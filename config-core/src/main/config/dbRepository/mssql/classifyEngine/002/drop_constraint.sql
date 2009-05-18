@@ -1,0 +1,1 @@
+ALTER TABLE SB_ClassifyEngine_Classify DROP CONSTRAINT PK_ClassifyEngine_Classify;

@@ -1,0 +1,6 @@
+ALTER TABLE SB_Publication_PubliI18N WITH NOCHECK ADD 
+	 CONSTRAINT PK_Publication_PubliI18N PRIMARY KEY CLUSTERED
+	(
+		id
+	)   
+;

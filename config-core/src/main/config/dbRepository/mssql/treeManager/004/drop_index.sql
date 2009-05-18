@@ -1,0 +1,1 @@
+DROP INDEX SB_Tree_Tree.IN_SB_Tree_Tree_1;

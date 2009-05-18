@@ -1,0 +1,1 @@
+DROP INDEX SB_Coordinates_Coordinates.IN_Coordinates_LeafId;

@@ -1,0 +1,14 @@
+ALTER TABLE SB_Node_Node WITH NOCHECK ADD 
+	 CONSTRAINT PK_Node_Node PRIMARY KEY  CLUSTERED 
+	(
+		nodeId,
+		instanceId
+	)   
+;
+
+ALTER TABLE SB_Node_NodeI18N WITH NOCHECK ADD 
+	 CONSTRAINT PK_Node_NodeI18N PRIMARY KEY  CLUSTERED 
+	(
+		id
+	)   
+;

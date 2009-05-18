@@ -1,0 +1,1 @@
+ALTER TABLE SB_Attachment_Attachment DROP CONSTRAINT PK_Attachment_Attachment;
