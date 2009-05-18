@@ -1,0 +1,33 @@
+/************************************************************************************************************
+*	DHTML modal dialog box	(CSS for the DHTMLSuite_modalMessage class)
+*
+*	Created:						August, 26th, 2006
+*	@class Purpose of class:		Display a modal dialog box on the screen.
+*			
+*	Css files used by this script:	modal-message.css
+*
+* 	Update log:
+*
+************************************************************************************************************/
+
+.modalDialog_transparentDivs{	
+	filter:alpha(opacity=40);	/* Transparency */
+	opacity:0.4;	/* Transparency */
+	background-color:#AAA;
+	z-index:1;
+	position:absolute; /* Always needed	*/
+}
+.modalDialog_contentDiv{
+	border:3px solid #000;	
+	padding:2px;
+	z-index:100;/* Always needed	*/
+	position:absolute;	/* Always needed	*/
+	background-color:#FFF;	/* White background color for the message */
+}
+.modalDialog_contentDiv_shadow{
+	z-index:90;/* Always needed	- to make it appear below the message */
+	position:absolute;	/* Always needed	*/
+	background-color:#555;
+	filter:alpha(opacity=30);	/* Transparency */
+	opacity:0.3;	/* Transparency */	
+}

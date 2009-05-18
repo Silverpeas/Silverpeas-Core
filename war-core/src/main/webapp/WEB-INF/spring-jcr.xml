@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean">
+    <!-- normal factory beans params -->
+    <property name="configuration" value="classpath:repository.xml" />
+    <property name="homeDir" value="${jcr.home.dir.url}" />
+    <property name="configurationProperties">
+      <list>
+        <value>classpath:/com/stratelia/webactiv/beans/admin/admin.properties</value>
+        <value>classpath:/com/stratelia/webactiv/util/jcr.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="rmi-configuration" class="com.silverpeas.jcrutil.servlets.RmiConfiguration">
+    <property name="host" value="${jcr.rmi.host}" />
+    <property name="port" value="${jcr.rmi.port}" />
+    <property name="name" value="${jcr.rmi.name}" />
+  </bean>
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:/com/stratelia/webactiv/beans/admin/admin.properties</value>
+        <value>classpath:/com/stratelia/webactiv/util/jcr.properties</value>
+      </list>
+    </property>
+    <property name="searchSystemEnvironment" value="true" />
+  </bean>
+
+  <bean id="jcrAccessManager" scope="prototype" class="com.stratelia.webactiv.jaas.SilverpeasAccessManager">
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
+
+  <bean id="jcrLoginModule" scope="prototype" class="com.stratelia.webactiv.jaas.SilverpeasLoginModule">
+    <property name="anonymousUserId" value="anonymous" />
+    <property name="controller" ref="organizationController" />
+    <property name="administrator" ref="adminController" />
+    <property name="authenticator" ref="authenticator" />
+  </bean>
+
+  <bean id="authenticator" class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
+
+  <bean id="organizationController" name="organizationController" class="com.stratelia.webactiv.beans.admin.OrganizationController" />
+
+  <bean id="adminController" name="adminController" class="com.stratelia.webactiv.beans.admin.Admin" />
+
+  <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
+
+
+  <!--  Attachment -->
+  <bean id="jcrAttachmentDao" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDaoImpl" />
+
+  <bean id="jcrAttachmentManager" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentServiceImpl">
+    <property name="jcrAttachmentDao" ref="jcrAttachmentDao" />
+  </bean>
+  <!--
+    <bean id="attachmentDao" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.AttachmentDaoImpl" /> <bean
+    id="attachmentBm" class="com.stratelia.webactiv.util.attachment.control.AttachmentService"> <property
+    name="attachmentDao" ref="attachmentDao" /> </bean>
+  -->
+
+  <!--  Versionning -->
+  <bean id="jcrDocumentDao" class="com.stratelia.silverpeas.versioning.jcr.impl.JcrDocumentDaoImpl" />
+
+  <bean id="jcrDocumentManager" class="com.stratelia.silverpeas.versioning.jcr.impl.JcrDocumentServiceImpl">
+    <property name="jcrDocumentDao" ref="jcrDocumentDao" />
+  </bean>
+  <!--
+    <bean id="versioningConverter" class="com.stratelia.silverpeas.versioning.jcr.util.VersioningConverter" /> <bean
+    id="versioningDao" class="com.stratelia.silverpeas.versioning.jcr.impl.VersioningDaoImpl"> <property
+    name="versioningConverter" ref="versioningConverter" /> </bean> <bean id="workListDao"
+    class="com.stratelia.silverpeas.versioning.model.WorkListDAO" /> <bean id="silverpeasVersioningDao"
+    class="com.stratelia.silverpeas.versioning.model.SilverpeasVersioningDao" /> <bean id="versioningBusiness"
+    class="com.stratelia.silverpeas.versioning.ejb.VersioningService"> <property name="versioningDao"
+    ref="versioningDao" /> <property name="silverpeasVersioningDao" ref="silverpeasVersioningDao" /> <property
+    name="workListDao" ref="workListDao" /> <property name="datasource" ref="myDataSource" /> </bean>
+  -->
+  <!-- Node -->
+  <!--
+    <bean id="jcrNodeDao" class="com.stratelia.webactiv.util.node.ejb.jcr.impl.JcrNodeDao" /> <bean
+    id="jcrNodeTranslationDao" class="com.stratelia.webactiv.util.node.ejb.jcr.impl.JcrNodeTranslationDao" />
+  -->
+  <!-- Publications -->
+  <!--
+    <bean name="jcrPublicationDao" id="jcrPublicationDao"
+    class="com.stratelia.webactiv.util.publication.jcr.impl.JcrPublicationDao" /> <bean name="jcrNodePublicationDao"
+    id="jcrNodePublicationDao" class="com.stratelia.webactiv.util.publication.jcr.impl.JcrNodePublicationDao" /> <bean
+    name="jcrPublicationI18nDao" id="jcrPublicationI18nDao"
+    class="com.stratelia.webactiv.util.publication.jcr.impl.JcrPublicationI18nDao" />
+  -->
+  <!--FormTemplate -->
+  <!--
+    <bean id="jcrRecordConverter" name="jcrRecordConverter"
+    class="com.silverpeas.form.record.jcr.impl.JcrRecordConverterImpl" /> <bean id="recordDao" name="recordDao"
+    class="com.silverpeas.form.record.jcr.impl.JcrRecordDaoImpl"> <property name="converter" ref="jcrRecordConverter" />
+    </bean> <bean id="recordManager" name="recordManager"
+    class="com.silverpeas.form.record.jcr.impl.JcrRecordManagerImpl"> <property name="recordDao" ref="recordDao" />
+    </bean> <bean id="oldRecordManager" name="oldRecordManager" class="com.silverpeas.form.record.GenericRecordManager"
+    />
+  -->
+</beans>

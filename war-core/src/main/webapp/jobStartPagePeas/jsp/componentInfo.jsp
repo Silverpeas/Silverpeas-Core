@@ -1,0 +1,308 @@
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Iterator"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
+
+<%@ include file="check.jsp" %>
+
+<%!
+
+final String PARAM_TYPE_CHECKBOX 	= "checkbox";
+final String PARAM_TYPE_SELECT		= "select";
+final String PARAM_TYPE_RADIO		= "radio";
+
+void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
+{
+	String help = parameter.getHelp(resource.getLanguage());
+	if (help != null) {
+		help = Encode.javaStringToJsString(help);
+		out.println("<td align=left>");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" border=0 onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" align=\"absmiddle\">");
+		out.println("</td>");
+	} else {
+		out.println("<td align=left width=15>&nbsp;</td>");
+	}
+
+	out.println("<td class=\"textePetitBold\" nowrap valign=\"center\">");
+	out.println(parameter.getLabel()+" : ");
+	out.println("</td>");
+	out.println("<td align=left valign=\"top\">");
+	
+	// Value
+	boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
+	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType());
+	boolean isRadio = PARAM_TYPE_RADIO.equals(parameter.getType());
+	if (isCheckbox) {
+		String checked = "";
+		if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals("yes"))
+			checked = "checked";
+		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" disabled>");
+	}
+	else if (isSelect)
+	{
+		ArrayList options = parameter.getOptions();
+		if (options != null)
+		{
+			out.println("<select name=\""+parameter.getName()+"\" disabled>");
+			for (int i=0; i<options.size(); i++)
+			{
+				ArrayList option = (ArrayList) options.get(i);
+				String name = (String) option.get(0);
+				String value = (String) option.get(1);
+				String selected = "";
+				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value))
+					selected = "selected";
+				out.println("<option value=\""+value+"\" "+selected+" disabled>"+name);
+			}		
+			out.println("</select>");
+		}
+	}
+	else if (isRadio)
+	{
+		ArrayList radios = parameter.getOptions();
+		if (radios != null)
+		{
+	      for (int i=0; i<radios.size(); i++)
+	      {
+	      		ArrayList radio = (ArrayList) radios.get(i);
+				String name = (String) radio.get(0);
+				String value = (String) radio.get(1);
+				String checked = "";
+				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0)
+					checked = "checked";
+				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+" disabled>");
+				out.println(name+"&nbsp;");
+			}		
+		}
+	}
+	else
+		out.println(parameter.getValue());
+	out.println("</td>");
+}
+%>
+
+<%
+ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
+String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
+List 			parameters 			= (List) request.getAttribute("Parameters");
+String 			m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
+String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
+ArrayList 		m_Profiles 			= (ArrayList) request.getAttribute("Profiles");
+boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+
+String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
+
+TabbedPane tabbedPane = gef.getTabbedPane();
+
+browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
+if (m_SubSpace == null) //je suis sur un espace
+	browseBar.setComponentName(m_SpaceName);
+else {
+	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
+}
+browseBar.setExtraInformation(compoInst.getLabel(resource.getLanguage()) +" > "+resource.getString("GML.description"));	
+browseBar.setI18N(compoInst, resource.getLanguage());
+
+// Space edition
+//operationPane.addOperation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"javascript:onClick=openPopup('ListComponent', 750, 700)");
+operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance(800, 350)");
+operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
+operationPane.addOperation(resource.getIcon("JSPP.instanceDel"),resource.getString("JSPP.ComponentPanelDeleteTitle"),"javascript:onClick=deleteInstance()");
+
+tabbedPane.addTab(resource.getString("GML.description"),"#",true);
+Iterator i = m_Profiles.iterator();
+ProfileInst theProfile = null;
+String profile = null;
+String prof = null;
+
+while (i.hasNext()) {
+	theProfile = (ProfileInst) i.next();
+	profile = theProfile.getLabel();
+	prof = resource.getString(profile.replace(' ', '_'));
+	if (prof.equals(""))
+		prof = profile;
+	
+	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
+}	
+%>
+<HTML>
+<HEAD>
+<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<%
+out.println(gef.getLookStyleSheet());
+%>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
+<script language="JavaScript">
+<!--
+var currentLanguage = "<%=compoInst.getLanguage()%>";
+<%
+	String lang = "";
+	Iterator codes = compoInst.getTranslations().keySet().iterator();
+	while (codes.hasNext())
+	{
+		lang = (String) codes.next();
+		out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+Encode.javaStringToHtmlParagraphe(compoInst.getDescription(lang))+"\";\n");
+	}
+%>
+
+function showTranslation(lang)
+{
+	<%=I18NHelper.updateHTMLLinks(compoInst)%>
+	
+	document.getElementById("compoName").innerHTML = eval("name_"+lang);
+	document.getElementById("compoDesc").innerHTML = eval("desc_"+lang);
+	
+	currentLanguage = lang;
+}
+
+function openPopup(action, larg, haut) 
+{
+	url = action;
+	windowName = "actionWindow";
+	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
+
+function deleteInstance() {	
+    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+Encode.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
+    	location.href = "DeleteInstance?ComponentNum=<%=compoInst.getId()%>";
+	}
+}
+
+function updateInstance(larg, haut) 
+{
+	url = "UpdateInstance?ComponentNum=<%=compoInst.getId()%>&Translation="+currentLanguage;
+	windowName = "actionWindow";
+	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
+
+-->
+</script>
+</HEAD>
+
+<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<FORM NAME="infoInstance" action="" METHOD="POST">
+<%
+out.println(window.printBefore());
+out.println(tabbedPane.print());
+out.println(frame.printBefore());
+out.println(board.printBefore());
+%>
+<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+	<tr>
+		<td class="textePetitBold" nowrap><%=resource.getString("GML.type") %> :</td>
+		<td align="left" width="100%"><IMG SRC="<%=m_ComponentIcon%>" border="0" align="middle">&nbsp;<%=m_JobPeas%></td>
+	</tr>
+	<tr>
+		<td class="textePetitBold" nowrap><%=resource.getString("GML.name") %> :</td>
+		<td align="left" valign="baseline" width="100%" id="compoName"><%=compoInst.getLabel(resource.getLanguage())%></td>
+	</tr>
+	<tr>
+		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("GML.description") %> :</td>
+		<td align="left" valign="top" width="100%" id="compoDesc"><%=compoInst.getDescription(resource.getLanguage())%></td>
+	</tr>
+	<% if (compoInst.getCreateDate() != null) { %>
+	<tr>
+		<td class="textePetitBold" nowrap><%=resource.getString("GML.creationDate") %> :</td>
+		<td align="left" valign="baseline" width="100%">
+			<%=resource.getOutputDateAndHour(compoInst.getCreateDate())%>
+			<% if (compoInst.getCreator() != null) { %> 
+				<%=resource.getString("GML.by") %> <%=compoInst.getCreator().getDisplayedName() %>
+			<% } %>
+		</td>
+	</tr>
+	<% } %>
+	<% if (compoInst.getUpdateDate() != null) { %>
+	<tr>
+		<td class="textePetitBold" nowrap><%=resource.getString("GML.updateDate") %> :</td>
+		<td align="left" valign="baseline" width="100%">
+			<%=resource.getOutputDateAndHour(compoInst.getUpdateDate())%>
+			<% if (compoInst.getUpdater() != null) { %>  
+				<%=resource.getString("GML.by") %> <%=compoInst.getUpdater().getDisplayedName() %>
+			<% } %>
+		</td>
+	</tr>
+	<% } %>
+	<% if (isInHeritanceEnable) { %>
+	<tr>
+		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+		<td align="left" valign="baseline" width="100%">
+		<% if (compoInst.isInheritanceBlocked()) { %>
+			<input type="radio" disabled checked /> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
+			<input type="radio" disabled/> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+		<% } else { %>
+			<input type="radio" disabled/> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
+			<input type="radio" disabled checked /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+		<% } %>
+		</td>
+	</tr>
+	<% } %>
+</table>
+<% 
+if (parameters.size() > 0)
+{
+%>
+	<br>
+	<table width=100%>
+	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle">Paramètres de l'instance</span></td></tr>
+	</table>
+<%
+}
+%>
+<table border=0>
+	<tr>
+	<%
+	boolean on2Columns = false;
+	if (parameters.size() >= 5)
+		on2Columns = true;
+	
+	SPParameter parameter = null;
+	if (on2Columns)
+	{
+		out.println("<td>");
+		out.println("<table border=\"0\" width=\"100%\">");
+		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
+		{
+			parameter = (SPParameter) parameters.get(nI);
+			if (nI%2 == 0)
+				out.println("<tr>");
+
+			displayParameter(parameter, resource, out);
+
+			if (nI%2 != 0)
+				out.println("</tr>");
+			else
+				out.println("<td width=\"40px\">&nbsp;</td>");
+		}
+		if (parameters.size()%2 != 0)
+		{
+			out.println("<td>&nbsp;</td><td>&nbsp;</td>");
+			out.println("</tr>");
+		}
+		out.println("</table>");
+		out.println("</td>");
+	} else {
+		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
+		{
+			parameter = (SPParameter) parameters.get(nI);
+
+			out.println("<tr>");
+			displayParameter(parameter, resource, out);
+			out.println("</tr>");
+		}
+	}
+%>	
+	</tr>
+	</table>
+<%
+out.println(board.printAfter());
+out.println(frame.printAfter());
+out.println(window.printAfter());
+%>
+</FORM>
+</BODY>
+</HTML>

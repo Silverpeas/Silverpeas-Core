@@ -1,0 +1,124 @@
+<%@ include file="check.jsp" %>
+
+<%
+SpaceInst		space				= (SpaceInst) request.getAttribute("Space");
+SpaceLookHelper slh 				= (SpaceLookHelper) request.getAttribute("SpaceLookHelper");
+boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+String 			m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
+String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
+DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
+
+Vector 			availableLooks		= gef.getAvailableLooks();
+String			spaceLook			= space.getLook();
+SpaceLookItem 	item 				= (SpaceLookItem) slh.getItem("wallPaper");
+	
+browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
+if (m_SubSpace == null || m_SubSpace.length() <= 0) //je suis sur un espace
+	browseBar.setComponentName(m_SpaceName);
+else
+	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
+browseBar.setExtraInformation(resource.getString("JSPP.SpaceAppearance"));
+%>
+
+<HTML>
+<HEAD>
+<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<%
+out.println(gef.getLookStyleSheet());
+%>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script language="JavaScript">
+function B_VALIDER_ONCLICK() {
+	document.lookSpace.submit();
+}
+</script>
+</HEAD>
+<BODY>
+<form name="lookSpace" action="UpdateSpaceLook" method="POST" enctype="multipart/form-data">
+<%
+out.println(window.printBefore());
+
+TabbedPane tabbedPane = gef.getTabbedPane();
+tabbedPane.addTab(resource.getString("GML.description"),"StartPageInfo", false);
+tabbedPane.addTab(resource.getString("JSPP.SpaceAppearance"), "SpaceLook", true);
+
+tabbedPane.addTab(resource.getString("JSPP.Manager"), "SpaceManager", false);
+
+if (isInHeritanceEnable)
+{
+    tabbedPane.addTab(resource.getString("JSPP.admin"), "SpaceManager?Role=admin", false);
+    tabbedPane.addTab(resource.getString("JSPP.publisher"), "SpaceManager?Role=publisher", false);
+    tabbedPane.addTab(resource.getString("JSPP.writer"), "SpaceManager?Role=writer", false);
+    tabbedPane.addTab(resource.getString("JSPP.reader"), "SpaceManager?Role=reader", false);
+}
+
+out.println(tabbedPane.print());
+out.println(frame.printBefore());
+out.println(board.printBefore());
+%>
+	<table border="0" cellspacing="0" cellpadding="5" width="100%">
+		<% if (availableLooks.size() >= 2) { %>
+		<tr> 
+			<td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
+			<% if (m_SpaceExtraInfos.isAdmin) { %>
+					<td>
+						<select name="SelectedLook" size="1">
+						<%
+						if (StringUtil.isDefined(spaceLook))
+							out.println("<option value=\"\"></option>");
+						else
+							out.println("<option value=\"\" selected></option>");
+				        for (int i = 0; i < availableLooks.size(); i++) {
+				            String lookName = (String) availableLooks.get(i);
+				            if (lookName.equals(spaceLook))
+				              out.println("<option value=\""+lookName+"\" selected>"+lookName+"</option>");
+				            else
+				              out.println("<option value=\""+lookName+"\">"+lookName+"</option>");
+				        } %>
+				        </select>
+					</td>
+			<% } else { %>
+					<td>
+						<%
+							if (StringUtil.isDefined(spaceLook))
+								out.println(spaceLook);
+						%>
+					</td>
+			<% } %>
+		</tr>
+		<% } %>
+		<tr> 
+			<td class="txtlibform"><%=resource.getString("JSPP.WallPaper")%> :</td>
+			<% if (m_SpaceExtraInfos.isAdmin) { %>
+				<td>
+					<% if (item != null) { %>
+						<a href="<%=item.getURL()%>" target="_blank"><%=item.getName()%></a> <%=item.getSize()%> <a href="RemoveFileToLook?FileName=<%=item.getName()%>"><img src="<%=resource.getIcon("JSPP.delete")%>" border="0"></a> <BR/>
+					<% } %>
+					<input type="file" name="wallPaper" size="60">
+				</td>
+			<% } else { %>
+				<td>
+					<% if (item != null) { %>
+						<a href="<%=item.getURL()%>" target="_blank"><%=item.getName()%></a> <%=item.getSize()%>
+					<% } %>
+				</td>
+			<% } %>
+		</tr>
+	</table>
+<%
+	out.println(board.printAfter());
+
+	if (m_SpaceExtraInfos.isAdmin) 
+	{
+		ButtonPane buttonPane = gef.getButtonPane();
+		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+		out.println("<br/><center>"+buttonPane.print()+"</center>");
+	}
+		
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
+%>
+</FORM>
+</BODY>
+</HTML>

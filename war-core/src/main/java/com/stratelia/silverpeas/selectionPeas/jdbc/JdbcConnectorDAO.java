@@ -1,0 +1,214 @@
+package com.stratelia.silverpeas.selectionPeas.jdbc;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.Driver;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Properties;
+
+import com.stratelia.silverpeas.selection.SelectionJdbcParams;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+/**
+ * JDBC database access.
+ * 
+ * @author Antoine HEDIN
+ */
+public class JdbcConnectorDAO
+{
+	
+	private Driver driver = null;
+	String driverClassName;
+	String url;
+	String login;
+	String password;
+	String tableName;
+	
+	ArrayList data;
+	String[] columnsNames;
+	String[] ids;
+	
+	public JdbcConnectorDAO(SelectionJdbcParams jdbcParams)
+	{
+		driverClassName = jdbcParams.getDriverClassName();
+		url = jdbcParams.getUrl();
+		login = jdbcParams.getLogin();
+		password = jdbcParams.getPassword();
+		tableName = jdbcParams.getTableName();
+	}
+	
+	/**
+	 * @return The list of columns which compose the table.
+	 */
+	public String[] getColumnsNames()
+	{
+		if (columnsNames == null)
+		{
+			ArrayList columns = new ArrayList();
+			
+			Connection con = null;
+			ResultSet columnsRs = null;
+			try
+			{
+				Properties info = new Properties();
+				info.setProperty("user", login);
+				info.setProperty("password", password);
+				con = getDriver().connect(url, info);
+				DatabaseMetaData dbMetaData = con.getMetaData();
+				
+				columnsRs = dbMetaData.getColumns(null, "%", tableName, "%");
+				while (columnsRs.next())
+				{
+					String columnName = columnsRs.getString("COLUMN_NAME");
+					columns.add(columnName);
+				}
+			}
+			catch (SQLException e)
+			{
+				SilverTrace.warn("selectionPeas", "JdbcConnectorDAO.getColumnsNames()",
+					"selectionPeas.MSG_CONNECTION_NOT_STARTED", e);
+			}
+			finally
+			{
+				closeConnection(con, null, columnsRs);
+			}
+			columnsNames = (String[])columns.toArray(new String[columns.size()]);
+		}
+		return columnsNames;
+	}
+	
+	/**
+	 * @return the table's data, after having loading them if needed.
+	 */
+	public ArrayList getData()
+	{
+		if (data == null)
+		{
+			loadData();
+		}
+		return data;
+	}
+	
+	/**
+	 * Loads the table's data.
+	 */
+	public void loadData()
+	{
+		StringBuffer columnNameSb = new StringBuffer(100);
+		int columnsNamesCount = columnsNames.length;
+		for (int i = 0; i < columnsNamesCount; i++)
+		{
+			columnNameSb.append(columnsNames[i]).append(",");
+		}
+		final String query = new StringBuffer(100)
+			.append("select ").append(columnNameSb.substring(0, columnNameSb.length() - 1))
+			.append(" from ").append(tableName)
+			.toString();
+		Connection con = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try
+		{
+			Properties info = new Properties();
+			info.setProperty("user", login);
+			info.setProperty("password", password);
+			con = getDriver().connect(url, info);
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			data = new ArrayList();
+			int i;
+			while (rs.next())
+			{
+				i = 0;
+				String[] line = new String[columnsNamesCount];
+				while (i < columnsNamesCount)
+				{
+					line[i] = rs.getString(i + 1);
+					i++;
+				}
+				data.add(line);
+			}
+		}
+		catch (SQLException e)
+		{
+			SilverTrace.warn(
+				"selectionPeas", "JdbcConnectorDAO.loadData()", "selectionPeas.MSG_DATA_CANNOT_BE_LOADED", e);
+		}
+		finally
+		{
+			closeConnection(con, stmt, rs);
+		}
+	}
+
+	/**
+	 * @param index The index of the searched line.
+	 * @return The data of the table's line corresponding to the index.
+	 */
+	public String[] getLine(String index)
+	{
+		return (String[])getData().get(Integer.parseInt(index));
+	}
+	
+	/**
+	 * @return The number of lines in the table.
+	 */
+	public int getLineCount()
+	{
+		return getData().size();
+	}
+	
+	/**
+	 * @return The database connection driver.
+	 */
+	private Driver getDriver()
+	{
+		if (driver == null)
+		{
+			try
+			{
+				driver = (Driver) Class.forName(driverClassName).newInstance();
+			}
+			catch (Exception e)
+			{
+				SilverTrace.warn(
+					"selectionPeas", "JdbcConnectorDAO.getDriver()", "selectionPeas.MSG_DRIVER_INIT_FAILED", e);
+			}
+		}
+		return driver;
+	}
+	
+	/**
+	 * Closes the connection and its associated elements (statement and result set) if they are defined.
+	 * 
+	 * @param con The connection.
+	 * @param stmt The statement.
+	 * @param rs The result set.
+	 */
+	private void closeConnection(Connection con, Statement stmt, ResultSet rs)
+	{
+		try
+		{
+			if (rs != null)
+			{
+				rs.close();
+			}
+			if (stmt != null)
+			{
+				stmt.close();
+			}
+			if (con != null)
+			{
+				con.close();
+			}
+		}
+		catch (SQLException e)
+		{
+			SilverTrace.warn(
+				"selectionPeas", "JdbcConnectorDAO.closeConnection()", "selectionPeas.MSG_CONNECTION_NOT_CLOSED", e);
+		}
+	}
+
+}

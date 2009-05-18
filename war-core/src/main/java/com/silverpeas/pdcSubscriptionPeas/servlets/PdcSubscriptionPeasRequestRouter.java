@@ -1,0 +1,143 @@
+package com.silverpeas.pdcSubscriptionPeas.servlets;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+
+public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
+
+    private PdcSubscriptionSessionController pdcSC = null;
+
+    public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+        return new PdcSubscriptionSessionController(mainSessionCtrl, componentContext);
+    }
+
+    /**
+     * This method has to be implemented in the component request rooter class.
+     * returns the session control bean name to be put in the request object
+     * ex : for notificationUser, returns "notificationUser"
+     */
+    public String getSessionControlBeanName() {
+        return "pdcSubscriptionPeas";
+    }
+
+    /**
+     * This method has to be implemented by the component request rooter
+     * it has to compute a destination page
+     * @param function The entering request function (ex : "Main.jsp")
+     * @param componentSC The component Session Control, build and initialised.
+     * @param request The entering request. The request rooter need it to get parameters
+     * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
+     */
+    public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request) {
+        String destination = "";
+        pdcSC = (PdcSubscriptionSessionController) componentSC;
+        request.setAttribute("language", componentSC.getLanguage());
+        String rootDest = "/pdcSubscriptionPeas/jsp/";
+
+        try {
+            if (function.startsWith("subscriptionList")) {
+                destination = rootDest + processSubscriptionList(request);
+            } 
+            else if (function.startsWith("showUserSubscriptions")) {
+                String reqUserId = request.getParameter("userId");
+                if (reqUserId != null && !reqUserId.equals("")) {
+                    int userId = Integer.parseInt(reqUserId);
+                    destination = rootDest + processUserSubscriptions(request, userId);
+                }
+            }
+            else if (function.equals("ViewSubscriptionTheme"))
+            {
+            	String userId = request.getParameter("userId");
+            	String action = request.getParameter("action");
+            	// passage des paramètres ...
+            	Collection subscribeThemeList = pdcSC.getUserSubscribe(userId);
+            	request.setAttribute("SubscribeThemeList", subscribeThemeList);
+            	request.setAttribute("action",action);
+            	request.setAttribute("userId",userId);
+            	destination = rootDest + "viewSubscriptionTheme.jsp";
+            }
+            else if (function.equals("DeleteTheme")) 
+			{
+                Object o = request.getParameterValues("themeCheck");
+                if (o != null)
+                {
+                   	String[] themes = (String[]) o;
+                   	pdcSC.deleteThemes(themes);
+                }
+                destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
+			}
+        } catch (Exception e) {
+            SilverTrace.error("pdcSubscriptionPeas", "PdcSubscriptionPeasRequestRouter.getDestination",
+                    "root.EX_GET_DESTINATION_ERROR", "", e);
+            request.setAttribute("javax.servlet.jsp.jspException", e);
+            return "/admin/jsp/errorpageMain.jsp";
+        }
+
+        return destination;
+    }
+
+    /**
+     * Process required operations for showing <b>current</b> user subscription
+     */
+    private String processSubscriptionList(HttpServletRequest request) throws Exception {
+        request.setAttribute("action", "subscriptionList");
+
+        String mode = request.getParameter("mode");
+        if ("delete".equals(mode)) {
+            Object o = request.getParameterValues("pdcCheck");
+            if (o != null) {
+                String[] iDs = (String[]) o;
+                int[] ids_i = new int[iDs.length];
+                for (int i = 0; i < iDs.length; i++) {
+                    String id = iDs[i];
+                    ids_i[i] = Integer.parseInt(id);
+                }
+                pdcSC.removeICByPK(ids_i);
+            }
+        }
+        ArrayList list = pdcSC.getUserPDCSubscription();
+
+        return doInitSubscrListRequest(request, list);
+    }
+
+    /**
+     * Process required operations for showing user subscription
+     */
+    private String  processUserSubscriptions(HttpServletRequest request, int userId) throws Exception {
+        request.setAttribute("action", "showUserSubscriptions");
+        request.setAttribute("userId", String.valueOf(userId));
+        ArrayList list = pdcSC.getUserPDCSubscription(userId);
+        return doInitSubscrListRequest(request, list);
+    }
+
+
+    /**
+     * Performs <code>Request</code> initialization for furure use in subscriptionList.jsp
+     * @param request a <code>HttpServletRequest</code> to be forwarded
+     * @param subscriptions a list of loaded PDCSubscription to be shown
+     * @return jsp name
+     */
+    private String doInitSubscrListRequest(HttpServletRequest request, List subscriptions) throws Exception {
+        request.setAttribute("subscriptionList", subscriptions);
+        List pathContext = new ArrayList();
+        for (int i = 0; i < subscriptions.size(); i++) {
+            PDCSubscription subscription = (PDCSubscription) subscriptions.get(i);
+            pathContext.add(pdcSC.getPathCriterias(subscription.getPdcContext()));
+        }
+        request.setAttribute("PathContext", pathContext);
+        return "subscriptionList.jsp";
+    }
+
+}

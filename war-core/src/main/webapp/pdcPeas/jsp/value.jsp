@@ -1,0 +1,158 @@
+<%@ include file="checkPdc.jsp"%>
+
+<%
+// recuperation des parametres
+Value 	value 			= (Value) request.getAttribute("Value"); // l'objet Value pour afficher ses informations
+String 	isRoot 			= (String) request.getAttribute("Root"); // si c'est une valeur racine ou pas.
+List 	list 			= (List) request.getAttribute("Path"); // le chemin complet ou l'on peut retrouver la valeur selectionnee
+String 	daughterName 	= (String) request.getAttribute("DaughterNameWhichAlreadyExist"); //Dans le cas de la suppression, une des valeurs fille peut avoir 
+																					  //le même nom qu'une des soeurs de la valeur que l'on veut supprimer
+																					  //! C'est interdit !
+String 	displayLanguage = (String) request.getAttribute("DisplayLanguage");
+
+boolean	isAdmin			= ((Boolean) request.getAttribute("IsAdmin")).booleanValue();
+
+// initialisation des différentes variables pour l'affichage
+String valueName 		= value.getName(displayLanguage);
+String valueDescription = value.getDescription(displayLanguage);
+int valueNbDoc 			= value.getNbObjects();
+
+String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage);
+
+%>
+<html>
+<HEAD>
+<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<%
+   out.println(gef.getLookStyleSheet());
+%>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script language="JavaScript">
+	var currentLanguage = "<%=value.getLanguage()%>";
+	
+	// this method opens a pop-up which warns the user
+	function areYouSure(choice){
+		if (choice == 'all')
+		    ConfirmDelete = confirm('<%=resource.getString("pdcPeas.confirmDeleteArbo")%>');
+		else
+			ConfirmDelete = confirm('<%=resource.getString("pdcPeas.confirmDeleteValue")%>');
+		return ConfirmDelete
+	}
+	
+	// efface une valeur ou/et son arborescence
+	function removeSelection(choice){
+		// demande confirmation
+		if (areYouSure(choice)){
+			if (choice == 'all')
+				document.deleteForm.action = "DeleteArbo";
+			document.deleteForm.submit();
+		}
+	}
+	
+	function editValue()
+	{
+		location.href = "EditValue?Translation="+currentLanguage;
+	}
+	
+	function moveValue()
+	{
+		location.href = "ToMoveValueChooseMother?Translation="+currentLanguage;
+	}
+	
+	<%
+	if (value != null)
+	{
+		String lang = "";
+		Iterator codes = value.getTranslations().keySet().iterator();
+
+		while (codes.hasNext())
+		{
+			lang = (String) codes.next();
+			out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(value.getName(lang))+"\";\n");
+			out.println("var desc_"+lang+" = \""+Encode.javaStringToHtmlParagraphe(value.getDescription(lang))+"\";\n");
+		}
+	}
+	%>
+
+	function showTranslation(lang)
+	{
+		<%=I18NHelper.updateHTMLLinks(value)%>
+		currentLanguage = lang;
+		
+		document.getElementById('ValueName').innerHTML = eval('name_'+lang);
+		document.getElementById('ValueDescription').innerHTML = eval('desc_'+lang);
+	}
+</script>
+</HEAD>
+<BODY>
+<%
+	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
+    browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
+	browseBar.setPath(resource.getString("pdcPeas.editValue"));
+	browseBar.setI18N(value, displayLanguage);
+
+	if (isRoot.equals("0")) {
+		operationPane.addOperation(resource.getIcon("pdcPeas.icoUpdateValue"),resource.getString("pdcPeas.updateValue"), "javascript:editValue()");
+		if (isAdmin)
+		{
+			operationPane.addOperation(resource.getIcon("pdcPeas.icoMoveValue"),resource.getString("pdcPeas.moveValue"), "javascript:moveValue()");
+			operationPane.addOperation(resource.getIcon("pdcPeas.icoDeleteValue"),resource.getString("pdcPeas.deleteValue"), "javascript:removeSelection('one')");
+			operationPane.addOperation(resource.getIcon("pdcPeas.icoDeleteArbo"),resource.getString("pdcPeas.deleteArbo"), "javascript:removeSelection('all')");
+		}
+	}
+	if (isAdmin)
+	{
+    	operationPane.addOperation(resource.getIcon("pdcPeas.icoAddMotherValue"),resource.getString("pdcPeas.insertMotherValue"), "NewMotherValue");
+	}
+	operationPane.addOperation(resource.getIcon("pdcPeas.icoAddDaughterValue"),resource.getString("pdcPeas.createDaughterValue"), "NewDaughterValue");
+	
+	TabbedPane tabbedPane = gef.getTabbedPane();
+	tabbedPane.addTab("Valeur", "ViewValue", true);
+	tabbedPane.addTab("Gestionnaires", "ViewManager", false);
+	
+    out.println(window.printBefore());
+    out.println(tabbedPane.print());
+    out.println(frame.printBefore());
+    out.println(board.printBefore());
+%>
+<CENTER>
+  <table width="100%" border="0" cellspacing="0" cellpadding="4">
+  <% if (daughterName != null) { %>
+	<tr> 
+      <td colspan="2" align="center"><font size="2" color="#FF6600"><b><%=resource.getString("pdcPeas.deleteValueImpossibleBegin")%> <i><%=daughterName%></i> <%=resource.getString("pdcPeas.deleteValueImpossibleEnd")%></b></font></span></td>
+    </tr>
+  <% } %>
+  <% if (completPath != null){ %>
+    <tr> 
+      <td class="txtlibform"><%=resource.getString("pdcPeas.path")%>&nbsp;:</td>
+      <td><%=completPath%></td>
+    </tr>
+  <% }%>
+    <tr> 
+      <td class="txtlibform"><%=resource.getString("pdcPeas.value")%>&nbsp;:</td>
+      <td class="textePetitBold" id="ValueName"><%=Encode.javaStringToHtmlString(valueName)%></td>
+    </tr>
+	<tr>
+		<td valign="top" class="txtlibform"><%=resource.getString("pdcPeas.definition")%>&nbsp;:</td>
+		<td id="ValueDescription"><%=Encode.javaStringToHtmlParagraphe(valueDescription)%></td>
+	</tr>
+	<tr> 
+    	<td class="txtlibform" nowrap="nowrap"><%=resource.getString("pdcPeas.docsNumber")%>&nbsp;:</td>
+    	<td width="100%"><%=valueNbDoc%></td>
+    </tr>
+  </table>
+<%
+	out.println(board.printAfter());
+    ButtonPane buttonPane = gef.getButtonPane();
+	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+    out.println("<br/><center>"+buttonPane.print()+"</center>");
+  %>
+</CENTER>
+<%
+out.println(frame.printAfter());
+out.println(window.printAfter());
+%>
+<form name="deleteForm" action="DeleteValue" method="post"></form>
+</BODY>
+</HTML>

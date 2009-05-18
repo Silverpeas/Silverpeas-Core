@@ -1,0 +1,107 @@
+<%
+response.setHeader("Cache-Control","no-store"); //HTTP 1.1
+response.setHeader("Pragma","no-cache"); //HTTP 1.0
+response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+%>
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
+<%@ page import="javax.servlet.jsp.*"%>
+<%@ page import="java.io.PrintWriter"%>
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.io.FileInputStream"%>
+<%@ page import="java.io.ObjectInputStream"%>
+<%@ page import="java.util.Vector"%>
+<%@ page import="java.beans.*"%>
+
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
+
+<%@ include file="checkScc.jsp" %>
+<%!
+String EncodeURL(String javastring) {
+    String res="";
+        if (javastring == null)
+                return res;
+    for (int i=0;i<javastring.length();i++) {
+          switch (javastring.charAt(i)) {
+                case '&' :
+                        res += "&amp;";
+                        break;
+                case '?' :
+                        res += "%3f";
+                        break;
+                default:
+                        res += javastring.charAt(i);
+          }
+    }
+    return res;
+  }
+%>
+<%
+  String spaceId = (String) session.getAttribute("WYSIWYG_SpaceId");
+  String spaceName = (String) session.getAttribute("WYSIWYG_SpaceName");
+  String componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
+  String componentName = (String) session.getAttribute("WYSIWYG_ComponentName");
+  String browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
+  String objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
+  String language = (String) session.getAttribute("WYSIWYG_Language");
+  String path = (String) session.getAttribute("WYSIWYG_Path");
+  String url = EncodeURL("/wysiwyg/jsp/uploadFile.jsp");
+  ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+%>
+
+<!-- AFFICHAGE BROWSER -->
+<HTML>
+<HEAD>
+<TITLE>_________________/ Silverpeas - Corporate portal organizer \_________________/</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<% out.println(gef.getLookStyleSheet()); %>
+<style type="text/css">
+<!--
+.eventCells {  padding-right: 3px; padding-left: 3px; vertical-align: top; background-color: #FFFFFF}
+-->
+</style>
+<Script language="JavaScript">
+function returnHtmlEditor() {
+  window.close();
+}
+</script>
+
+</HEAD>
+<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+<!-- Déclaration des variables  --->
+<%
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(spaceName);
+  browseBar.setComponentName(componentName);
+  browseBar.setPath(browseInformation);
+
+  out.println(window.printBefore());
+
+	Frame frame=gef.getFrame();
+	ButtonPane buttonPane = gef.getButtonPane();
+	Button button = gef.getFormButton(message.getString("Close"), "javascript:onClick=returnHtmlEditor()", false);
+	buttonPane.addButton(button);
+	out.println(frame.printBefore());
+	out.flush();
+	String imagesContext = WysiwygController.getImagesFileName(objectId);
+	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
+		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/uploadWebsiteFile.jsp?Path="+path+"&Language="+language).include(request, response);
+	else
+		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+objectId+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true").include(request, response);
+  out.println(frame.printMiddle());
+  out.println(frame.printAfter());
+  out.println("<center><BR>"+buttonPane.print()+"</center>");
+  out.println(window.printAfter());
+%>
+</BODY>
+</HTML>
