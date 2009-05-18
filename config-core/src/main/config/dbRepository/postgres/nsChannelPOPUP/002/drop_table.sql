@@ -1,0 +1,1 @@
+DROP TABLE ST_PopupMessage;

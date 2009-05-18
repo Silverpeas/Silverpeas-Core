@@ -1,0 +1,1 @@
+DROP INDEX IN_Coordinates_LeafId;

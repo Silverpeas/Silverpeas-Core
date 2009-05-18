@@ -1,0 +1,1 @@
+ALTER TABLE SB_TagCloud_TagCloud DROP CONSTRAINT PK_SB_TagCloud_TagCloud;

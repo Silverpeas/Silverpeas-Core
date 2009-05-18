@@ -1,0 +1,2 @@
+drop table SB_ContainerManager_Instance;
+drop table SB_ContainerManager_Links;
