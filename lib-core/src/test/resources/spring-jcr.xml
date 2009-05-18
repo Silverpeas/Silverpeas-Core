@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
+    <!-- normal factory beans params -->
+    <property name="configuration" value="classpath:repository.xml" />
+    <property name="homeDir" value="file:///c:/tmp/jackrabbit" />
+  </bean>
+
+  <bean id="repositoryHelper" class="com.stratelia.webactiv.util.attachment.control.RepositoryHelper"
+    factory-method="getInstance" />
+
+  <bean id="jcrAttachmentDao" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDaoImpl" />
+
+  <bean id="jcrAttachmentManager"
+    class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentServiceImpl">
+    <property name="jcrAttachmentDao" ref="jcrAttachmentDao" />
+  </bean>
+</beans>

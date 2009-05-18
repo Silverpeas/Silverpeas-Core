@@ -1,0 +1,264 @@
+/*
+ * AuthenticationServer.java
+ *
+ * Created on 6 aout 2001
+ */
+ 
+package com.stratelia.silverpeas.authentication;
+
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+/** 
+ * This class manage the authentication for a given domain
+ * @author  tleroi
+ * @version 
+ */
+public class AuthenticationServer extends Object
+{
+    protected String   m_FallbackType;
+    protected int      m_nbServers;
+    protected Vector   m_AutServers;
+    protected boolean  m_allowPasswordChange;
+
+    public AuthenticationServer(String authServerName)
+    {
+        int             nbServers;
+        int             i;
+        Authentication  autObj;
+        String          serverName;
+        ResourceLocator propFile;
+
+        m_nbServers = 0;
+        try
+        {
+            propFile = new ResourceLocator("com.stratelia.silverpeas.authentication." + authServerName, "");
+            m_FallbackType = propFile.getString("fallbackType");
+            m_allowPasswordChange = getBooleanProperty(propFile, "allowPasswordChange", false);
+            nbServers = Integer.parseInt(propFile.getString("autServersCount"));
+            m_AutServers = new Vector();
+            for (i = 0;i < nbServers;i++)
+            {
+                serverName = "autServer" + Integer.toString(i);
+                if (getBooleanProperty(propFile, serverName + ".enabled", true))
+                {
+                    try
+                    {
+                        autObj = (Authentication) Class.forName(propFile.getString(serverName + ".type")).newInstance();
+                        autObj.init(serverName,propFile);
+                        autObj.setEnabled(true);
+                        m_AutServers.add(autObj);
+                        m_nbServers++;
+                    }
+                    catch (Exception ex)
+                    {
+                        SilverTrace.error("authentication","AuthenticationServer.AuthenticationServer","authentication.EX_CANT_INSTANCIATE_SERVER_CLASS",authServerName + " / " + serverName,ex);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            SilverTrace.error("authentication","AuthenticationServer.AuthenticationServer","authentication.EX_DOMAIN_INFO_ERROR","Server=" + authServerName,e);
+        }
+    }
+    
+    public void authenticate(String login,String passwd, HttpServletRequest request) throws AuthenticationException
+    {
+        int             i;
+        Authentication  autObj;
+        boolean         bNotFound = true;
+        AuthenticationException lastException = null;
+
+        if ((login == null) || (login.length() <= 0))
+        {
+            throw new AuthenticationException("AuthenticationServer.authenticate",SilverpeasException.ERROR,"authentication.EX_LOGIN_EMPTY");
+        }
+        i = 0;
+        while ((i < m_nbServers) && bNotFound)
+        {
+            autObj = (Authentication) m_AutServers.elementAt(i);
+            if (autObj.getEnabled())
+            {
+                try
+                {
+                    autObj.authenticate(login,passwd,request);
+                    bNotFound = false;
+                }
+                catch (AuthenticationPasswordAboutToExpireException ex)
+                {
+                	// authentication succeeded but throw exception to alert that password is about to expire
+                	// Store information in request and return
+                	bNotFound = false;
+                	if (request != null)
+                		request.getSession().setAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, new Boolean(true));
+                }
+                catch (AuthenticationPwdNotAvailException ex)
+                {
+                    SilverTrace.info("authentication","AuthenticationServer.authenticate","authentication.EX_PWD_NOT_AVAILABLE","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                    lastException = ex;
+                }
+                catch (AuthenticationHostException ex)
+                {
+                    if (m_FallbackType.equals("none"))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        SilverTrace.info("authentication","AuthenticationServer.authenticate","authentication.EX_AUTHENTICATION_HOST_ERROR","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                        lastException = ex;
+                    }
+                }
+                catch (AuthenticationBadCredentialException ex)
+                {
+                    if (m_FallbackType.equals("none") || m_FallbackType.equals("ifNotRejected"))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        SilverTrace.info("authentication","AuthenticationServer.authenticate","authentication.EX_AUTHENTICATION_BAD_CREDENTIAL","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                        lastException = ex;
+                    }
+                }
+                catch (AuthenticationException ex)
+                {
+                    if (m_FallbackType.equals("none"))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        SilverTrace.info("authentication","AuthenticationServer.authenticate","authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                        lastException = ex;
+                    }
+                }
+            }
+            i++;
+        }
+        if (bNotFound)
+        {
+            if (lastException == null)
+            {
+                throw new AuthenticationException("AuthenticationServer.authenticate", SilverpeasException.ERROR,"authentication.EX_NO_SERVER_AVAILABLE");
+            }
+            else
+            {
+                throw new AuthenticationException("AuthenticationServer.authenticate", SilverpeasException.ERROR,"authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR",lastException);
+            }
+        }
+    }
+
+    public void changePassword(String login, String oldPassword, String newPassword) throws AuthenticationException
+    {
+        int             i;
+        Authentication  autObj;
+        boolean         bNotFound = true;
+        AuthenticationException lastException = null;
+        
+        if (!m_allowPasswordChange)
+        	throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.changePassword", SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+        
+        if ((login == null) || (login.length() <= 0))
+        {
+            throw new AuthenticationException("AuthenticationServer.changePassword",SilverpeasException.ERROR,"authentication.EX_LOGIN_EMPTY");
+        }
+        i = 0;
+        while ((i < m_nbServers) && bNotFound)
+        {
+            autObj = (Authentication) m_AutServers.elementAt(i);
+            if (autObj.getEnabled())
+            {
+                try
+                {
+                    autObj.changePassword(login,oldPassword,newPassword);
+                    bNotFound = false;
+                }
+                catch (AuthenticationPwdChangeNotAvailException ex)
+                {
+                    SilverTrace.info("authentication","AuthenticationServer.changePassword","authentication.EX_PASSWD_CHANGE_NOTAVAILABLE","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                    lastException = ex;
+                }
+                catch (AuthenticationHostException ex)
+                {
+                    if (m_FallbackType.equals("none"))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        SilverTrace.info("authentication","AuthenticationServer.changePassword","authentication.EX_AUTHENTICATION_HOST_ERROR","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                        lastException = ex;
+                    }
+                }
+                catch (AuthenticationBadCredentialException ex)
+                {
+                    if (m_FallbackType.equals("none") || m_FallbackType.equals("ifNotRejected"))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        SilverTrace.info("authentication","AuthenticationServer.changePassword","authentication.EX_AUTHENTICATION_BAD_CREDENTIAL","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                        lastException = ex;
+                    }
+                }
+                catch (AuthenticationException ex)
+                {
+                    if (m_FallbackType.equals("none"))
+                    {
+                        throw ex;
+                    }
+                    else
+                    {
+                        SilverTrace.info("authentication","AuthenticationServer.changePassword","authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER","ServerNbr=" + Integer.toString(i) + ";User=" + login,ex);
+                        lastException = ex;
+                    }
+                }
+            }
+            i++;
+        }
+        if (bNotFound)
+        {
+            if (lastException == null)
+            {
+                throw new AuthenticationException("AuthenticationServer.changePassword", SilverpeasException.ERROR,"authentication.EX_NO_SERVER_AVAILABLE");
+            }
+            else
+            {
+                throw new AuthenticationException("AuthenticationServer.changePassword", SilverpeasException.ERROR,"authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR",lastException);
+            }
+        }
+    }
+    
+    protected boolean getBooleanProperty(ResourceLocator resources, String propertyName, boolean defaultValue)
+    {
+        String  value;
+        boolean valret = defaultValue;
+
+        value = resources.getString(propertyName);
+        if (value != null)
+        {
+            if (value.equalsIgnoreCase("true"))
+            {
+                valret = true;
+            }
+            else
+            {
+                valret = false;
+            }
+        }
+        return valret;
+    }
+    
+    public boolean isPasswordChangeAllowed()
+    {
+    	return m_allowPasswordChange;
+    }
+}

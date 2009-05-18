@@ -1,0 +1,195 @@
+/** 
+ *
+ * @author  nchaix
+ * @version 
+ */
+
+package com.stratelia.webactiv.beans.admin;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProfileInst extends Object implements Serializable, Cloneable {
+  private String m_sId;
+  private String m_sName;
+  private String m_sLabel;
+  private String m_sDescription;
+  private String m_sComponentFatherId;
+  private ArrayList<String> m_alGroups;
+  private ArrayList<String> m_alUsers;
+
+  private boolean isInherited = false;
+  private int objectId = -1;
+  private int objectFatherId = -1;
+  private String objectType = null;
+
+  /** Creates new ProfileInst */
+  public ProfileInst() {
+    m_sId = "";
+    m_sName = "";
+    m_sLabel = "";
+    m_sDescription = "";
+    m_sComponentFatherId = "";
+    m_alGroups = new ArrayList<String>();
+    m_alUsers = new ArrayList<String>();
+  }
+
+  @SuppressWarnings("unchecked")
+  public Object clone() {
+    ProfileInst pi = new ProfileInst();
+    pi.m_sId = m_sId;
+    pi.m_sName = m_sName;
+    pi.m_sLabel = m_sLabel;
+    pi.m_sDescription = m_sDescription;
+    pi.m_sComponentFatherId = m_sComponentFatherId;
+    pi.objectId = objectId;
+    pi.m_alGroups = (ArrayList<String>) m_alGroups.clone();
+    pi.m_alUsers = (ArrayList<String>) m_alUsers.clone();
+    return pi;
+  }
+
+  public void setId(String sId) {
+    m_sId = sId;
+  }
+
+  public String getId() {
+    return m_sId;
+  }
+
+  public void setName(String sName) {
+    m_sName = sName;
+  }
+
+  public String getName() {
+    return m_sName;
+  }
+
+  public void setLabel(String sLabel) {
+    m_sLabel = sLabel;
+  }
+
+  public String getLabel() {
+    return m_sLabel;
+  }
+
+  public void setDescription(String sDescription) {
+    m_sDescription = sDescription;
+  }
+
+  public String getDescription() {
+    return m_sDescription;
+  }
+
+  public void setComponentFatherId(String sComponentFatherId) {
+    m_sComponentFatherId = sComponentFatherId;
+  }
+
+  public String getComponentFatherId() {
+    return m_sComponentFatherId;
+  }
+
+  public int getNumGroup() {
+    return m_alGroups.size();
+  }
+
+  public String getGroup(int nIndex) {
+    return (String) m_alGroups.get(nIndex);
+  }
+
+  public void addGroup(String sGroupId) {
+    m_alGroups.add(sGroupId);
+  }
+
+  public void removeGroup(String sGroupId) {
+    m_alGroups.remove(sGroupId);
+  }
+
+  public ArrayList<String> getAllGroups() {
+    return m_alGroups;
+  }
+
+  public void removeAllGroups() {
+    m_alGroups = new ArrayList<String>();
+  }
+
+  public int getNumUser() {
+    return m_alUsers.size();
+  }
+
+  public String getUser(int nIndex) {
+    return m_alUsers.get(nIndex);
+  }
+
+  public void addUser(String sUserId) {
+    m_alUsers.add(sUserId);
+  }
+
+  public void removeUser(String sUserId) {
+    m_alUsers.remove(sUserId);
+  }
+
+  public ArrayList<String> getAllUsers() {
+    return m_alUsers;
+  }
+
+  public void removeAllUsers() {
+    m_alUsers = new ArrayList<String>();
+  }
+
+  public void addUsers(List<String> users) {
+    m_alUsers.addAll(users);
+  }
+
+  public void addGroups(List<String> groups) {
+    m_alGroups.addAll(groups);
+  }
+
+  public boolean isInherited() {
+    return isInherited;
+  }
+
+  public void setInherited(boolean isInherited) {
+    this.isInherited = isInherited;
+  }
+
+  public int getObjectId() {
+    return objectId;
+  }
+
+  public void setObjectId(int objectId) {
+    this.objectId = objectId;
+  }
+
+  public int getObjectFatherId() {
+    return objectFatherId;
+  }
+
+  public void setObjectFatherId(int objectFatherId) {
+    this.objectFatherId = objectFatherId;
+  }
+
+  public void setGroupsAndUsers(String[] groupIds, String[] userIds) {
+    // groups
+    for (int i = 0; groupIds != null && i < groupIds.length; i++) {
+      if (groupIds[i] != null && groupIds[i].length() > 0) {
+        addGroup(groupIds[i]);
+      }
+    }
+
+    // users
+    for (int i = 0; userIds != null && i < userIds.length; i++) {
+      if (userIds[i] != null && userIds[i].length() > 0) {
+        addUser(userIds[i]);
+      }
+    }
+  }
+
+  public String getObjectType() {
+    return objectType;
+  }
+
+  public void setObjectType(String objectType) {
+    this.objectType = objectType;
+  }
+}
