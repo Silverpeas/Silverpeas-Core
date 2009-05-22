@@ -36,6 +36,7 @@
     <module>node</module>
     <module>contact</module>
     <module>calendar</module>
+    <module>favorit</module>
     <module>notation</module>
     <module>versioning</module>
     <module>formtemplate</module>
