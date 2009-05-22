@@ -1,0 +1,102 @@
+package com.stratelia.webactiv.calendar.model;
+
+import java.util.Vector;
+
+public class SchedulableGroup extends SchedulableList {
+  
+  //Vector content = new Vector();
+  private static final java.text.SimpleDateFormat completeFormat = 
+      new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm");
+  
+  public SchedulableGroup() {
+  }
+
+  public boolean isOver(Schedulable schedule) {
+    for (int i = 0; i < content.size(); i++) {
+      Schedulable sched = (Schedulable) content.elementAt(i);
+      if (sched.isOver(schedule)) return true;
+    }
+    return false;
+  }
+  
+  public boolean isOver(SchedulableGroup group) {
+    for (int i = 0; i < content.size(); i++) {
+      Schedulable sched = (Schedulable) content.elementAt(i);
+      if (group.isOver(sched)) return true;
+    }
+    return false;
+  }
+  
+  public void add(Schedulable schedule) {
+    content.add(schedule);
+  }
+  
+  public void add(SchedulableGroup group) {
+    Vector toAdd = group.getContent();
+    for (int i = 0; i< toAdd.size(); i++) {
+      content.add((Schedulable) toAdd.elementAt(i));
+    }
+  }
+  
+  public String getStartHour() {
+    String result = null;
+    for (int i = 0; i < content.size(); i++) {
+      Schedulable schedule = (Schedulable) content.elementAt(i);
+      if (result == null) 
+        result = schedule.getStartHour();
+      else 
+        if (schedule.getStartHour() != null)
+          if (schedule.getStartHour().compareTo(result) < 0)
+            result = schedule.getStartHour();
+    }
+    //Debug.println("Group.startHour = " + result);
+    return result;
+  }
+  
+  public String getEndHour() {
+    String result = null;
+    for (int i = 0; i < content.size(); i++) {
+      Schedulable schedule = (Schedulable) content.elementAt(i);
+      if (result == null) 
+        result = schedule.getEndHour();
+      else 
+        if (schedule.getEndHour() != null)
+          if (schedule.getEndHour().compareTo(result) > 0)
+            result = schedule.getEndHour();
+    }
+    //Debug.println("Group.endHour = " + result);
+    return result;
+  }
+  
+  public Vector getContent() {
+    return content;
+  }
+  
+  
+  public Vector getStartingSchedules(String hour) {
+    Vector result = new Vector();
+    
+    for (int i=0; i < content.size(); i++) {
+      Object obj = content.elementAt(i);
+      if (obj instanceof Schedulable) {
+        Schedulable schedule = (Schedulable) obj;
+        //if (day.equals(schedule.getStartDay()))
+        if (hour.equals(schedule.getStartHour()))
+          result.add(schedule);
+      }
+    }
+    return result;
+  }
+  
+  public int getMinuteDuration() {
+    try {
+      java.util.Date startDate = completeFormat.parse("2000/01/01 " + getStartHour());
+      java.util.Date endDate = completeFormat.parse("2000/01/01 " + getEndHour());
+      long ms = endDate.getTime() - startDate.getTime();
+      return (int)(ms / (60000));
+    }
+    catch (Exception e) {
+      return 0;
+    }
+  }
+}

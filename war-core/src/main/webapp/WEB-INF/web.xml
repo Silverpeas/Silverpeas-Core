@@ -241,6 +241,31 @@
     <description>no description</description>
     <servlet-class>com.stratelia.silverpeas.selectionPeas.servlets.SelectionPeasWrapper</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>AgendaRequestRouter</servlet-name>
+    <display-name>AgendaRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.agenda.servlets.AgendaRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToAgenda</servlet-name>
+    <display-name>GoToAgenda</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.agenda.servlets.GoToAgenda</servlet-class>
+  </servlet>
+   <servlet>
+    <servlet-name>AgendaRssServlet</servlet-name>
+    <display-name>AgendaRssServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.agenda.servlets.AgendaRssServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SubscribeAgenda</servlet-name>
+    <display-name>SubscribeAgenda</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.agenda.servlets.SubscribeAgenda</servlet-class>
+  </servlet>
+  
   
   
   
@@ -363,8 +388,8 @@
     <url-pattern>/RcommunicationUser/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-	<servlet-name>AjaxCommunicationUserServlet</servlet-name>
-	  <url-pattern>/RAjaxCommunicationUserServlet/*</url-pattern>
+  <servlet-name>AjaxCommunicationUserServlet</servlet-name>
+    <url-pattern>/RAjaxCommunicationUserServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>PdcSubscriptionPeasRequestRouter</servlet-name>
@@ -397,6 +422,22 @@
   <servlet-mapping>
     <servlet-name>SelectionPeasWrapper</servlet-name>
     <url-pattern>/RselectionPeasWrapper/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AgendaRequestRouter</servlet-name>
+    <url-pattern>/Ragenda/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToAgenda</servlet-name>
+    <url-pattern>/Agenda/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AgendaRssServlet</servlet-name>
+    <url-pattern>/rssAgenda/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SubscribeAgenda</servlet-name>
+    <url-pattern>/SubscribeAgenda/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

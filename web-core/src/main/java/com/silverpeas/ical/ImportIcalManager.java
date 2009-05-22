@@ -1,0 +1,416 @@
+/**
+ * 
+ */
+package com.silverpeas.ical;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.Priority;
+import net.fortuna.ical4j.model.property.RRule;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.agenda.control.AgendaException;
+import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
+import com.stratelia.webactiv.agenda.control.AgendaSessionController;
+import com.stratelia.webactiv.calendar.control.CalendarBm;
+import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.model.Category;
+import com.stratelia.webactiv.calendar.model.Schedulable;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.viewGenerator.html.Encode;
+import com.sun.syndication.io.XmlReader;
+
+/**
+ * @author dle
+ *
+ */
+public class ImportIcalManager {
+
+	public final static String IMPORT_SUCCEEDED = "0";
+	public final static String IMPORT_EMPTY = "1";
+	private static final long YEAR = 1000L * 60 * 60 * 24 * 365;
+	public static String charset = null;
+	
+	private AgendaSessionController                 agendaSessionController;
+    private CalendarBm calendarBm;
+    
+	public ImportIcalManager(AgendaSessionController agendaSessionController)
+    {
+		this.agendaSessionController = agendaSessionController;
+		setCalendarBm();
+    }
+
+	/**
+	 * IMPORT Calendar in Ical format
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @return ReturnCode
+	 * @throws Exception
+	 * @throws AgendaException
+	 * @throws FileNotFoundException
+	 * @throws ValidationException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public String importIcalAgenda(File file) throws Exception
+	{
+		SilverTrace.debug("agenda","ImportIcalManager.importIcalAgenda()","root.MSG_GEN_ENTER_METHOD");
+		String returnCode = AgendaSessionController.IMPORT_FAILED;
+		try {
+			//Read local calendar file
+			FileInputStream fileInput = new FileInputStream(file);
+			String charsetUsed = agendaSessionController.getSettings().getString("defaultCharset");
+			if (StringUtil.isDefined(charset))
+				charsetUsed = charset;
+
+			//File Encoding detection
+			XmlReader xr =new XmlReader(file);
+			SilverTrace.debug("agenda","ImportIcalManager.importIcalAgenda()","Encoding = "+xr.getEncoding());
+			if (StringUtil.isDefined(xr.getEncoding()))
+				charsetUsed = xr.getEncoding();
+
+			InputStreamReader inputStream = null;
+			inputStream = new InputStreamReader(fileInput, charsetUsed);
+				
+	    	CalendarBuilder builder = new CalendarBuilder();
+	
+			Calendar calendar = builder.build(inputStream);
+			//Get all EVENTS
+			for (Iterator i = calendar.getComponents(Component.VEVENT).iterator(); i.hasNext();) {
+				VEvent eventIcal = (VEvent) i.next();
+
+			    String name 		= 	getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
+
+			    String description = null;
+			    if (StringUtil.isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION))))
+			    	description 	= 	getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION));
+
+			    //Name is mandatory in the Silverpeas Agenda
+			    if (!StringUtil.isDefined(name))
+			    {
+			    	if (StringUtil.isDefined(description))
+			    		name = description;
+			    	else
+			    		name = " ";
+			    }
+			    
+			    String priority 	= 	getFieldEvent(eventIcal.getProperty(Property.PRIORITY));
+			    if (!StringUtil.isDefined(priority))
+			    	priority = Priority.UNDEFINED.getValue();
+			    String classification 	= getFieldEvent(eventIcal.getProperty(Property.CLASS));
+			    String startDate =  getFieldEvent(eventIcal.getProperty(Property.DTSTART));
+			    String endDate 	 =  getFieldEvent(eventIcal.getProperty(Property.DTEND)); 
+			    Date startDay = getDay(startDate);
+			    String startHour = getHour(startDate);
+			    Date endDay = getDay(endDate);
+			    String endHour = getHour(endDate);
+			    //Duration of the event
+			    long duration = endDay.getTime() - startDay.getTime(); 
+		    	boolean allDay = false;
+			    
+			    //All day case 
+			    //I don't know why ??
+			    if (("00:00".equals(startHour) && "00:00".equals(endHour)) || (!StringUtil.isDefined(startHour) && !StringUtil.isDefined(endHour)))
+			    {
+			    	//For complete Day
+			    	startHour = "";
+			    	endHour = "";
+			    	//In iCal, an allday is coded with DTSTART=...YYYYMMDD and DTEND=...YYYYMM(DD+1)
+			    	//So we have to convert this date to agenda format date
+			    	GregorianCalendar gregCalendar = new java.util.GregorianCalendar(); 
+			    	gregCalendar.setTime(endDay);
+			    	gregCalendar.add(GregorianCalendar.DATE, -1);
+			    	endDay = new Date(gregCalendar.getTime());
+			    	allDay = true;
+			    }
+			    
+			    //Get reccurrent dates
+			    Collection reccurenceDates = getRecurrenceDates(eventIcal);
+			    
+			    //No reccurent dates
+			    if (reccurenceDates == null)
+			    {
+				    String idEvent = isExist(eventIcal);
+				    //update if event already exists, create if does not exist
+				    if (StringUtil.isDefined(idEvent))
+		    		{
+				    	agendaSessionController.updateJournal(idEvent, name, description, priority, classification, startDay, startHour, endDay, endHour);
+					}
+					else
+						idEvent = agendaSessionController.addJournal(name, description, priority, classification, startDay, startHour, endDay, endHour);
+				    
+				    //Get Categories
+				    processCategories(eventIcal, idEvent);
+			    }
+			    else
+			    {
+			    	Iterator itReccurentDates = reccurenceDates.iterator();
+				    while (itReccurentDates.hasNext())
+				    {
+				    	//Reccurent event startDate
+				    	startDay = (DateTime) itReccurentDates.next();
+
+						//Reccurent event endDate
+				    	long newEndDay = startDay.getTime() + duration;
+					    endDay = new DateTime(newEndDay);
+				    	if (allDay)
+				    	{
+					    	//So we have to convert this date to agenda format date
+					    	GregorianCalendar gregCalendar = new java.util.GregorianCalendar(); 
+					    	gregCalendar.setTime(endDay);
+					    	gregCalendar.add(GregorianCalendar.DATE, -1);
+					    	endDay = new Date(gregCalendar.getTime());
+				    	}
+					    
+					    String idEvent = isExist(eventIcal, startDay, endDay, startHour);
+					    //update if event already exists, create if does not exist
+					    if (StringUtil.isDefined(idEvent))
+			    		{
+							SilverTrace.debug("agenda","ImportIcalManager.importIcalAgenda()","root.MSG_GEN_PARAM_VALUE"+"Update event: "+DateUtil.date2SQLDate(startDay)+" "+startHour+" to "+DateUtil.date2SQLDate(endDay)+" "+endHour);
+					    	agendaSessionController.updateJournal(idEvent, name, description, priority, classification, startDay, startHour, endDay, endHour);
+						}
+						else
+						{
+							SilverTrace.debug("agenda","ImportIcalManager.importIcalAgenda()","root.MSG_GEN_PARAM_VALUE"+"Create event: "+DateUtil.date2SQLDate(startDay)+" "+startHour+" to "+DateUtil.date2SQLDate(endDay)+" "+endHour);
+							idEvent = agendaSessionController.addJournal(name, description, priority, classification, startDay, startHour, endDay, endHour);
+						}
+					    
+					    //Get Categories
+					    processCategories(eventIcal, idEvent);
+				    }
+			    }
+			}
+			fileInput.close();
+			returnCode = AgendaSessionController.IMPORT_SUCCEEDED;
+		}
+		catch (Exception e)
+		{
+			SilverTrace.error("agenda","ImportIcalManager.importIcalAgenda()",e.getCause().toString());
+			returnCode = AgendaSessionController.IMPORT_FAILED;
+		}
+		SilverTrace.debug("agenda","ImportIcalManager.importIcalAgenda()","root.MSG_GEN_EXIT_METHOD");
+		return returnCode;
+	}
+	
+	/**
+	 * Verify if the event already exists
+	 * @param eventIcal
+	 * @return id or null
+	 * @throws Exception
+	 */
+	private String isExist(Component eventIcal) throws Exception
+	{
+		return isExist(eventIcal, null, null, null);
+	}
+
+	/**
+	 * Verify if the event already exists
+	 * @param eventIcal
+	 * @return id or null
+	 * @throws Exception
+	 */
+	private String isExist(Component eventIcal, Date startDateReccurent, Date endDateReccurent, String startHourReccurent) throws Exception
+	{
+		SilverTrace.debug("agenda","ImportIcalManager.isExist()","root.MSG_GEN_ENTER_METHOD");
+	    String name 			= getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
+	    String description = null;
+	    if (StringUtil.isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION))))
+	    	description 	= 	getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION));
+	    if (!StringUtil.isDefined(name))
+	    {
+	    	if (StringUtil.isDefined(description))
+	    		name = description;
+	    	else
+	    		name = " ";
+	    }
+	    String startDate =  DateUtil.date2SQLDate(getDay(getFieldEvent(eventIcal.getProperty(Property.DTSTART))));
+	    String endDate 	 =  DateUtil.date2SQLDate(getDay(getFieldEvent(eventIcal.getProperty(Property.DTEND)))); 
+	    String startHour 		= getHour(getFieldEvent(eventIcal.getProperty(Property.DTSTART)));
+	    
+	    //Reccurrent case
+	    if (startDateReccurent != null)
+	    {
+		    startDate =  DateUtil.date2SQLDate(startDateReccurent);
+		    endDate 	 =  DateUtil.date2SQLDate(endDateReccurent); 
+		    startHour 		= startHourReccurent;
+	    }
+	    
+	    //Get Events within this period to know if event already exists
+		Collection events = calendarBm.getPeriodSchedulablesForUser(startDate, endDate, agendaSessionController.getAgendaUserId(), null, agendaSessionController.getParticipationStatus().getString());
+		if (!events.isEmpty())
+		{
+			Iterator itSchedules = events.iterator();
+			while (itSchedules.hasNext())
+			{
+				Object obj = itSchedules.next();
+				if (obj instanceof Schedulable)
+				{
+					Schedulable eventAgenda = (Schedulable) obj;
+					if (eventAgenda.getName().equals(name) && DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(startDate))
+					{
+						if (StringUtil.isDefined(eventAgenda.getStartHour()) && StringUtil.isDefined(startHour))
+						{
+							if (eventAgenda.getStartHour().equals(startHour))
+								return eventAgenda.getId();
+						}
+						else
+							return eventAgenda.getId();
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/** 
+	 * Add or update categories of the event
+	 * @param eventIcal
+	 * @param idEvent
+	 * @throws Exception
+	 */
+	private void processCategories(Component eventIcal, String idEvent) throws Exception
+	{
+	    if (eventIcal.getProperty(Property.CATEGORIES) != null)
+	    {
+	    	String categories	= eventIcal.getProperty(Property.CATEGORIES).getValue();  
+		    StringTokenizer st = new StringTokenizer(categories,",");
+		    String [] categoryIds = new String[st.countTokens()];
+		    int j=0;
+		    boolean addCategoryToEvent = false;
+		    while (st.hasMoreTokens()) {
+				String categIcal = st.nextToken();
+			    //Agenda Categories
+				Iterator itAllCategs = agendaSessionController.getAllCategories().iterator();
+				while (itAllCategs.hasNext())
+		    	{
+		    		Category category = (Category) itAllCategs.next();
+					if (categIcal.equals(Encode.htmlStringToJavaString(category.getName())))
+					{
+						addCategoryToEvent = true;
+						categoryIds[j++] = category.getId();
+					}
+		    	}
+		    }
+		    if (addCategoryToEvent)
+		    	agendaSessionController.setJournalCategories(idEvent, categoryIds);
+	    }
+	}
+	
+	/**
+	 * Method declaration
+	 * @see
+	 */
+	private void setCalendarBm()
+	{
+		if (calendarBm == null)
+		{
+			try
+			{
+				calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+			}
+			catch (Exception e)
+			{
+				throw new AgendaRuntimeException(
+					"ImportIcalManager.setCalendarBm()",
+					SilverpeasException.ERROR,
+					"root.EX_CANT_GET_REMOTE_OBJECT",
+					e);
+			}
+		}
+	}
+
+	/**
+	 * Return Date  from a datetime string
+	 * @param dateTime
+	 * @return
+	 * @throws ParseException
+	 */
+	private Date getDay(String dateTime) throws ParseException
+	{
+		Date day; 
+	    if (dateTime.length()>8)
+	    {
+	    	day = 	new DateTime(dateTime); 
+	    }
+	    else
+	    	day = new Date(dateTime);
+	    return day;
+	}
+
+	/**
+	 * Extract hour from a date
+	 * @param dateTime
+	 * @return
+	 * @throws ParseException
+	 */
+	private String getHour(String dateTime) throws ParseException
+	{
+		String hour = null; 
+	    if (dateTime.length()>8)
+	    	hour 			= DateUtil.getFormattedTime(new DateTime(dateTime));
+	    return hour;
+	}
+
+	/** 
+	 * Get value of the Ical property
+	 * @param property
+	 * @return String
+	 */
+	private String getFieldEvent(Property property)
+	{
+		String fieldValue = null;
+		if (property != null)
+		{
+			fieldValue  = (String) Encode.transformStringForBD(property.getValue());
+		}
+	 
+		return fieldValue;
+	} 
+
+	/**
+	 * Get start dates of a reccurrent Event
+	 * @param event
+	 * @return Collection of DateTime
+	 */
+	private static final Collection getRecurrenceDates(VEvent event)
+	{
+		RRule rule = (RRule) event.getProperty(Property.RRULE);
+		if (rule != null) {
+			Recur recur = rule.getRecur();
+			DateTime startDate = new DateTime(event.getStartDate().getDate());
+			long interval = YEAR * 2;
+			if (Recur.YEARLY.equals(recur.getFrequency())) {
+				interval *= 5;
+			}
+			DateTime endDate = new DateTime(startDate.getTime() + (interval));
+			DateList dates = recur.getDates(startDate, endDate, Value.DATE_TIME);
+			return dates;
+		}
+		return null;
+	}
+}

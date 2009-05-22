@@ -1,0 +1,398 @@
+package com.stratelia.webactiv.calendar.model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.calendar.control.CalendarException;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+
+public class ToDoDAO
+{
+
+	public static final String COLUMNNAMES =
+		"id, name, delegatorId, description, priority, classification, startDay, "
+			+ "startHour, endDay, endHour, percentCompleted, completedDay, duration, spaceId, componentId, externalId";
+	private static final String TODOCOLUMNNAMES =
+		"CalendarToDo.id, CalendarToDo.name, CalendarToDo.delegatorId, CalendarToDo.description, "
+			+ "CalendarToDo.priority, CalendarToDo.classification, CalendarToDo.startDay, "
+			+ "CalendarToDo.startHour, CalendarToDo.endDay, CalendarToDo.endHour, CalendarToDo.percentCompleted, "
+			+ "CalendarToDo.completedDay, CalendarToDo.duration, CalendarToDo.spaceId, CalendarToDo.componentId, "
+			+ "CalendarToDo.externalId";
+
+	public static String addToDo(Connection con, ToDoHeader toDo) throws SQLException, UtilException
+	{
+		String insertStatement =
+			"insert into CalendarToDo ("
+				+ COLUMNNAMES
+				+ ") "
+				+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		PreparedStatement prepStmt = null;
+		
+		int id;
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			id = DBUtil.getNextId("CalendarToDo", "id");
+			
+			prepStmt.setInt(1, id);
+			prepStmt.setString(2, toDo.getName());
+			prepStmt.setString(3, toDo.getDelegatorId());
+			prepStmt.setString(4, toDo.getDescription());
+			prepStmt.setInt(5, toDo.getPriority().getValue());
+			prepStmt.setString(6, toDo.getClassification().getString());
+			prepStmt.setString(7, toDo.getStartDay());
+			prepStmt.setString(8, toDo.getStartHour());
+			prepStmt.setString(9, toDo.getEndDay());
+			prepStmt.setString(10, toDo.getEndHour());
+			prepStmt.setInt(11, toDo.getPercentCompleted());
+			prepStmt.setString(12, toDo.getCompletedDay());
+			prepStmt.setInt(13, toDo.getDuration());
+			prepStmt.setString(14, toDo.getSpaceId());
+			prepStmt.setString(15, toDo.getComponentId());
+			prepStmt.setString(16, toDo.getExternalId());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+		return String.valueOf(id);
+	}
+
+	public static void updateToDo(Connection con, ToDoHeader toDo) throws SQLException
+	{
+		String insertStatement =
+			"update CalendarToDo "
+				+ " set name = ?, delegatorId = ?, description = ?, "
+				+ "priority = ?, classification = ?, "
+				+ "startDay = ?, startHour = ?, endDay = ?, endHour = ?, "
+				+ "percentCompleted = ?, completedDay = ?, "
+				+ "duration = ?, "
+				+ "spaceId = ?, componentId = ? , externalId = ? "
+				+ "where id = ?";
+
+		PreparedStatement prepStmt = null;
+		
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			prepStmt.setString(1, toDo.getName());
+			prepStmt.setString(2, toDo.getDelegatorId());
+			prepStmt.setString(3, toDo.getDescription());
+			prepStmt.setInt(4, toDo.getPriority().getValue());
+			prepStmt.setString(5, toDo.getClassification().getString());
+			prepStmt.setString(6, toDo.getStartDay());
+			prepStmt.setString(7, toDo.getStartHour());
+			prepStmt.setString(8, toDo.getEndDay());
+			prepStmt.setString(9, toDo.getEndHour());
+			prepStmt.setInt(10, toDo.getPercentCompleted());
+			prepStmt.setString(11, toDo.getCompletedDay());
+			prepStmt.setInt(12, toDo.getDuration());
+			prepStmt.setString(13, toDo.getSpaceId());
+			prepStmt.setString(14, toDo.getComponentId());
+			prepStmt.setString(15, toDo.getExternalId());
+			prepStmt.setInt(16, new Integer(toDo.getId()).intValue());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+
+	}
+
+	public static void removeToDo(Connection con, String id) throws SQLException
+	{
+		String statement = "delete from CalendarToDo " + "where id = ?";
+
+		PreparedStatement prepStmt = null;
+		
+		try
+		{
+			prepStmt = con.prepareStatement(statement);
+			prepStmt.setInt(1, new Integer(id).intValue());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	public static void removeToDoByInstanceId(Connection con, String instanceId) throws SQLException
+	{
+		String statement = "delete from CalendarToDo where componentId = ?";
+
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(statement);
+			prepStmt.setString(1, instanceId);
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	public static Collection getNotCompletedToDoHeadersForUser(Connection con, String userId)
+		throws SQLException, CalendarException
+	{
+		String selectStatement =
+			"select distinct "
+				+ ToDoDAO.TODOCOLUMNNAMES
+				+ ", lower(name) "
+				+ " from CalendarToDo, CalendarToDoAttendee "
+				+ " WHERE (userId = ?) "
+				+ " and (completedDay IS NULL)"
+				+ " and (CalendarToDo.id = CalendarToDoAttendee.todoId) "
+				+ " order by lower(name)";
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		
+		ArrayList list = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, userId);
+			rs = prepStmt.executeQuery();
+			list = new ArrayList();
+			while (rs.next())
+			{
+				ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
+				list.add(toDo);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}		
+	}
+
+	public static Collection getOrganizerToDoHeaders(Connection con, String organizerId)
+		throws SQLException, CalendarException
+	{
+		String selectStatement =
+			"select "
+				+ ToDoDAO.TODOCOLUMNNAMES
+				+ ", lower(name) "
+				+ " from CalendarToDo "
+				+ " WHERE (delegatorId = ?) "
+				+ " and (completedDay IS NULL)"
+				+ 
+			//" and (percentCompleted <> 100) "+
+		//" and (CalendarToDo.id = CalendarToDoAttendee.todoId) " +
+		//" order by priority, endDay, endHour";
+	" order by lower(name)";
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		
+		ArrayList list = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, organizerId);
+			rs = prepStmt.executeQuery();
+			list = new ArrayList();
+			while (rs.next())
+			{
+				ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
+				list.add(toDo);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}		
+	}
+
+	public static Collection getClosedToDoHeaders(Connection con, String organizerId)
+		throws SQLException, CalendarException
+	{
+		String selectStatement =
+			"select distinct "
+				+ ToDoDAO.TODOCOLUMNNAMES
+				+ ", lower(name) "
+				+ " from CalendarToDo, CalendarToDoAttendee "
+				+ " WHERE CalendarToDo.id = CalendarToDoAttendee.todoId "
+				+ " AND (userId = ? ) "
+				+ " AND (completedDay IS NOT NULL) "
+				+ "UNION "
+				+ "select distinct "
+				+ ToDoDAO.TODOCOLUMNNAMES
+				+ ", lower(name) "
+				+ " from CalendarToDo "
+				+ " WHERE (delegatorId = ? ) "
+				+ " AND (completedDay IS NOT NULL) "
+				+ " order by 17";
+		/* -> Oracle, column 17 is column NAME */
+		//								" order by lower(name)";
+
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		
+		ArrayList list = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, organizerId);
+			prepStmt.setString(2, organizerId);
+			rs = prepStmt.executeQuery();
+			list = new ArrayList();
+			while (rs.next())
+			{
+				ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
+				list.add(toDo);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}		
+	}
+
+	public static Collection getToDoHeadersByExternalId(
+		Connection con,
+		String spaceId,
+		String componentId,
+		String externalId)
+		throws SQLException, CalendarException
+	{
+		String selectStatement =
+			"select distinct "
+				+ ToDoDAO.TODOCOLUMNNAMES
+				+ ", lower(name) "
+				+ " from CalendarToDo "
+				+ " WHERE (externalId like ?) "
+				+ " and (componentId = ?)"
+				+ " order by startDay, lower(name)";
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		
+		ArrayList list = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, externalId);
+			prepStmt.setString(2, componentId);
+			
+			rs = prepStmt.executeQuery();
+			list = new ArrayList();
+			while (rs.next())
+			{
+				ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
+				list.add(toDo);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}	
+	}
+
+	public static Collection getToDoHeadersByInstanceId(Connection con, String componentId)
+		throws SQLException, CalendarException
+	{
+		String selectStatement =
+			"select " + ToDoDAO.TODOCOLUMNNAMES + ", lower(name) " + " from CalendarToDo " + " WHERE componentId = ?";
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+				
+		ArrayList list = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, componentId);
+			rs = prepStmt.executeQuery();
+			list = new ArrayList();
+			while (rs.next())
+			{
+				ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
+				list.add(toDo);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static ToDoHeader getToDoHeaderFromResultSet(ResultSet rs) throws SQLException, CalendarException
+	{
+		try
+		{
+			String id = "" + rs.getInt(1);
+			String name = rs.getString(2);
+			String delegatorId = rs.getString(3);
+			ToDoHeader toDo = new ToDoHeader(id, name, delegatorId);
+			toDo.setDescription(rs.getString(4));
+
+			toDo.getPriority().setValue(rs.getInt(5));
+
+			toDo.getClassification().setString(rs.getString(6));
+			toDo.setStartDay(rs.getString(7));
+			toDo.setStartHour(rs.getString(8));
+			toDo.setEndDay(rs.getString(9));
+			toDo.setEndHour(rs.getString(10));
+			toDo.setPercentCompleted(rs.getInt(11));
+			toDo.setCompletedDay(rs.getString(12));
+			toDo.setDuration(rs.getInt(13));
+			toDo.setSpaceId(rs.getString(14));
+			toDo.setComponentId(rs.getString(15));
+			toDo.setExternalId(rs.getString(16));
+			return toDo;
+		}
+		catch (java.text.ParseException e)
+		{
+			SilverTrace.warn(
+				"calendar",
+				"ToDoDAO.getToDoHeaderFromResultSet(ResultSet rs)",
+				"calendar_MSG_calendar_MSG_CANT_GET_TODO",
+				"return => ToDO=null");
+			return null;
+		}
+	}
+
+	public static ToDoHeader getToDoHeader(Connection con, String toDoId) throws SQLException, CalendarException
+	{
+		String selectStatement = "select " + ToDoDAO.COLUMNNAMES + " from CalendarToDo " + "where id = ?";
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		
+		ToDoHeader toDo;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setInt(1, new Integer(toDoId).intValue());
+			rs = prepStmt.executeQuery();
+			if (rs.next())
+				toDo = getToDoHeaderFromResultSet(rs);
+			else
+			{
+				throw new CalendarException(
+					"ToDoDAO.getToDoHeader.Connection con, String journalId",
+					SilverpeasException.ERROR,
+					" toDoId=" + toDoId);
+			}
+			return toDo;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}		
+	}
+}

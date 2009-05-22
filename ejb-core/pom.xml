@@ -34,6 +34,8 @@
     <module>silverstatistics</module>
     <module>tagcloud</module>
     <module>node</module>
+    <module>contact</module>
+    <module>calendar</module>
     <module>notation</module>
     <module>versioning</module>
     <module>formtemplate</module>

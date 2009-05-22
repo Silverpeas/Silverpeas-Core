@@ -1,0 +1,779 @@
+package com.stratelia.webactiv.util.contact.ejb;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.contact.model.ContactDetail;
+import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
+import com.stratelia.webactiv.util.contact.model.ContactPK;
+import com.stratelia.webactiv.util.contact.model.ContactRuntimeException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
+/** 
+ * This is the Contact Data Access Object.
+ * @author Nicolas Eysseric
+ */
+public class ContactDAO
+{
+	/**
+		* This class must not be instanciated
+		* @since 1.0
+		*/
+	public ContactDAO()
+	{
+	}
+
+	/**
+		* Add a new father to this contact
+		* @param con Connection to database
+		* @param pubPK the contact ContactPK
+		* @param fatherPK the father NodePK to add
+		* @see com.stratelia.webactiv.util.node.model.NodePK
+		* @see com.stratelia.webactiv.util.contact.model.ContactPK
+		* @exception java.sql.SQLException
+		* @since 1.0
+		*/
+	public static void addFather(Connection con, ContactPK pubPK, NodePK fatherPK) throws SQLException
+	{
+		String insertStatement = "insert into " + pubPK.getTableName() + "Father " + " values (?, ?)";
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
+			prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	/**
+		* Remove a father to this contact
+		* @param con Connection to database
+		* @param pubPK the contact ContactPK
+		* @param fatherPK the father NodePK to delete
+		* @see com.stratelia.webactiv.util.node.model.NodePK
+		* @see com.stratelia.webactiv.util.contact.model.ContactPK
+		* @exception java.sql.SQLException
+		* @since 1.0
+		*/
+	public static void removeFather(Connection con, ContactPK pubPK, NodePK fatherPK) throws SQLException
+	{
+		String insertStatement =
+			"delete from " + pubPK.getTableName() + "Father " + "where contactId = ? and nodeId = ?";
+		PreparedStatement prepStmt = null;
+		
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
+			prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	/**
+		* Delete all fathers to this contact
+		* @param con Connection to database
+		* @param pubPK the contact ContactPK
+		* @see com.stratelia.webactiv.util.contact.model.ContactPK
+		* @exception java.sql.SQLException
+		* @since 1.0
+		*/
+	public static void removeAllFather(Connection con, ContactPK pubPK) throws SQLException
+	{
+		String insertStatement = "delete from " + pubPK.getTableName() + "Father " + "where contactId = ? ";
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	/**
+		* Delete links between contact and father when contacts are linked to a father which is a descendant of a node
+		* @param con Connection to database
+		* @param pubPK the contact ContactPK
+		* @param originPK the node which is deleted
+		* @see com.stratelia.webactiv.util.node.model.NodePK
+		* @see com.stratelia.webactiv.util.contact.model.ContactPK
+		* @exception java.sql.SQLException
+		* @since 1.0
+		*/
+	public static void removeAllIssue(Connection con, NodePK originPK, ContactPK pubPK) throws SQLException
+	{
+		ResultSet rs = null;
+		String path = null;
+
+		String selectStatement =
+			"select nodePath from " + originPK.getTableName() + " where nodeId = ? and instanceId = ?";
+
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setInt(1, new Integer(originPK.getId()).intValue());
+			prepStmt.setString(2, originPK.getComponentName());
+			rs = prepStmt.executeQuery();
+			if (rs.next())
+				path = rs.getString(1);
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+
+		path = path + "%";
+
+		String removeStatement =
+			"DELETE FROM "
+				+ pubPK.getTableName()
+				+ "Father WHERE nodeId IN "
+				+ "(SELECT nodeId FROM "
+				+ originPK.getTableName()
+				+ " WHERE nodePath like '"
+				+ path
+				+ "' and instanceId = ?" 
+				+ " and nodeId= ?)";
+
+		try
+		{
+			prepStmt = con.prepareStatement(removeStatement);
+			prepStmt.setString(1, originPK.getComponentName());
+			prepStmt.setInt(2, new Integer(originPK.getId()).intValue());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	/**
+	* Delete links between contact and father when contacts are linked to a father which is a descendant of a node
+	* @param con Connection to database
+	* @param pubPK the contact ContactPK
+	* @param originPK the node which is deleted
+	* @see com.stratelia.webactiv.util.node.model.NodePK
+	* @see com.stratelia.webactiv.util.contact.model.ContactPK
+	* @exception java.sql.SQLException
+	* @since 1.0
+	*/
+	public static Collection getAllFatherPK(Connection con, ContactPK pubPK) throws SQLException
+	{
+		ResultSet rs = null;
+
+		String insertStatement = "select nodeId from " + pubPK.getTableName() + "Father " + "where contactId = ?";
+		PreparedStatement prepStmt = null;
+		ArrayList list;
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
+			rs = prepStmt.executeQuery();
+			list = new ArrayList();
+			while (rs.next())
+			{
+				String id = new Integer(rs.getInt(1)).toString();
+				NodePK nodePK = new NodePK(id, pubPK);
+				list.add(nodePK);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static int getNbPubInFatherPKs(Connection con, Collection fatherPKs) throws SQLException
+	{
+		ResultSet rs = null;
+		int result = 0;
+		NodePK nodePK = null;
+		ContactPK pubPK = null;
+		String nodeId = null;
+
+		if (fatherPKs.isEmpty())
+		{
+			//Debug.println("ContactDAO : getNbPubInFatherPKs : collection fatherPKs is empty");
+			return 0;
+		}
+		else
+		{
+			Iterator iterator = fatherPKs.iterator();
+			if (iterator.hasNext())
+			{
+				nodePK = (NodePK) iterator.next();
+				pubPK = new ContactPK("unknown", nodePK);
+				nodeId = nodePK.getId();
+			}
+
+			String selectStatement =
+				"select count(contactId) " + " from " + pubPK.getTableName() + "Father" + " where nodeId = " + nodeId;
+
+			while (iterator.hasNext())
+			{
+				nodePK = (NodePK) iterator.next();
+				nodeId = nodePK.getId();
+				selectStatement += " or nodeId = " + nodeId;
+			}
+			selectStatement += " )";
+
+			PreparedStatement prepStmt = null;
+						
+			try
+			{
+				prepStmt = con.prepareStatement(selectStatement);
+				rs = prepStmt.executeQuery();
+				if (rs.next())
+					result = rs.getInt(1);
+			}
+			finally
+			{
+				DBUtil.close(rs, prepStmt);
+			}
+
+			return result;
+		}
+	}
+
+	public static int getNbPubByFatherPath(Connection con, NodePK fatherPK, String fatherPath) throws SQLException
+	{
+		ResultSet rs = null;
+		int result = 0;
+		ContactPK pubPK = new ContactPK("unknown", fatherPK);
+
+		if (fatherPath.length() <= 0)
+		{
+			//Debug.println("ContactDAO : getNbPubInFatherPKs : collection fatherPKs is empty");
+			return 0;
+		}
+		else
+		{
+			String selectStatement =
+				"select count(F.contactId) "
+					+ " from "
+					+ pubPK.getTableName()
+					+ "Father F, "
+					+ fatherPK.getTableName()
+					+ " N "
+					+ " where F.nodeId = N.nodeId "
+					+ " and N.instanceId = ?"
+					+ " and N.nodeId = ?"
+					+ " and N.nodePath like '"
+					+ fatherPath
+					+ "%'";
+
+			PreparedStatement prepStmt = null;
+			try
+			{
+				prepStmt = con.prepareStatement(selectStatement);
+				prepStmt.setString(1, fatherPK.getComponentName());
+				prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+				rs = prepStmt.executeQuery();
+				if (rs.next())
+					result = rs.getInt(1);
+			}
+			finally
+			{
+				DBUtil.close(rs, prepStmt);
+			}
+			return result;
+		}
+	}
+
+	public static void insertRow(Connection con, ContactDetail detail) throws SQLException
+	{
+		String insertStatement =
+			"insert into " + detail.getPK().getTableName() + " values ( ? , ? , ? , ? , ? , ? , ? , ?, ? , ?)";
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			int id = new Integer(detail.getPK().getId()).intValue();
+			prepStmt.setInt(1, id);
+			prepStmt.setString(2, detail.getFirstName());
+			prepStmt.setString(3, detail.getLastName());
+			prepStmt.setString(4, detail.getEmail());
+			prepStmt.setString(5, detail.getPhone());
+			prepStmt.setString(6, detail.getFax());
+			prepStmt.setString(7, detail.getUserId());
+			prepStmt.setString(8, DateUtil.date2SQLDate(detail.getCreationDate()));
+			prepStmt.setString(9, detail.getCreatorId());
+			prepStmt.setString(10, detail.getPK().getComponentName());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	public static void deleteRow(Connection con, ContactPK pk) throws SQLException
+	{
+		removeAllFather(con, pk); //Delete associations between pub and nodes
+		String deleteStatement = "delete from " + pk.getTableName() + " where contactId = ? and instanceId = ?";
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(deleteStatement);
+			prepStmt.setInt(1, new Integer(pk.getId()).intValue());
+			prepStmt.setString(2, pk.getComponentName());
+			prepStmt.executeUpdate();
+
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	public static ContactPK selectByPrimaryKey(Connection con, ContactPK primaryKey)
+		throws SQLException, ParseException
+	{
+		ContactDetail detail = loadRow(con, primaryKey);
+		ContactPK primary = new ContactPK(primaryKey.getId(), primaryKey);
+		primary.pubDetail = detail;
+		return primary;
+	}
+
+	private static ContactDetail resultSet2ContactDetail(ResultSet rs, ContactPK pubPK)
+		throws SQLException, ParseException
+	{
+		int id = rs.getInt(1);
+		ContactPK pk = new ContactPK(String.valueOf(id), pubPK);
+		String firstName = rs.getString(2);
+		String lastName = rs.getString(3);
+		String email = rs.getString(4);
+		String phone = rs.getString(5);
+		String fax = rs.getString(6);
+		String userId = rs.getString(7);
+		java.util.Date creationDate;
+		creationDate = DateUtil.parse(rs.getString(8));
+		String creatorId = rs.getString(9);
+		return new ContactDetail(pk, firstName, lastName, email, phone, fax, userId, creationDate, creatorId);
+	}
+	
+	public static Collection selectByLastName(Connection con, ContactPK pk, String query) throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactDetail pub = null;
+
+		String selectStatement = "select P.* "
+				+ "from " + pk.getTableName() + " P, "+ pk.getTableName()+ "father F "
+				+ "where F.contactId = P.contactId "
+				+ " and LOWER(P.contactLastName) LIKE LOWER(?)"
+				+ " and P.instanceId = ? ";
+
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, query);
+			prepStmt.setString(2, pk.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pk);
+				list.add(pub);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+	
+	public static Collection selectByLastNameOrFirstName(Connection con, ContactPK pk, String query) throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactDetail pub = null;
+
+		String selectStatement = "select P.* "
+				+ "from " + pk.getTableName() + " P, "+ pk.getTableName()+ "father F "
+				+ "where F.contactId = P.contactId "
+				+ " and (LOWER(P.contactLastName) LIKE LOWER(?)"
+				+ " or LOWER(P.contactFirstName) LIKE LOWER(?))"
+				+ " and P.instanceId = ? ";
+
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, query);
+			prepStmt.setString(2, query);
+			prepStmt.setString(3, pk.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pk);
+				list.add(pub);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static Collection selectByFatherPK(Connection con, NodePK fatherPK) throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactPK pubPK = new ContactPK("unknown", fatherPK);
+		ContactDetail pub = null;
+
+		String selectStatement =
+			"select  P.* "
+				+ "from "
+				+ pubPK.getTableName()
+				+ " P, "
+				+ pubPK.getTableName()
+				+ "father F "
+				+ "where F.nodeId = ? and "
+				+ " F.contactId = P.contactId "
+				+ " and P.instanceId = ? ";
+
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setInt(1, new Integer(fatherPK.getId()).intValue());
+			prepStmt.setString(2, fatherPK.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pubPK);
+				list.add(pub);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static Collection selectByFatherPKs(Connection con, Collection fatherPKs, ContactPK pubPK, NodePK nodePK)
+		throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactDetail pub = null;
+
+		String fatherId = "";
+		String whereClause = "";
+		if (fatherPKs != null)
+		{
+			Iterator it = fatherPKs.iterator();
+			whereClause += "(";
+
+			while (it.hasNext())
+			{
+				fatherId = ((NodePK) it.next()).getId();
+				whereClause += " F.nodeId = " + fatherId;
+				if (it.hasNext())
+					whereClause += " Or ";
+				else
+					whereClause += " ) ";
+			}
+		}
+
+		String selectStatement =
+			"select  P.*, N.nodeId, N.nodeName "
+				+ "from "
+				+ pubPK.getTableName()
+				+ " P, "
+				+ pubPK.getTableName()
+				+ "father F, "
+				+ nodePK.getTableName()
+				+ " N "
+				+ "where "
+				+ whereClause
+				+ " AND F.contactId = P.contactId AND F.nodeId = N.nodeId AND N.instanceId = ?"
+				+ " AND N.instanceId = P.instanceId ";
+
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, nodePK.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pubPK);
+				ContactFatherDetail contactFather = new ContactFatherDetail(pub, rs.getString(11), rs.getString(12));
+				list.add(contactFather);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static Collection selectByContactPKs(Connection con, Collection contactPKs)
+		throws SQLException, ParseException
+	{
+		ArrayList contacts = new ArrayList();
+		Iterator iterator = contactPKs.iterator();
+		while (iterator.hasNext())
+		{
+			ContactPK pubPK = (ContactPK) iterator.next();
+			ContactDetail pub = loadRow(con, pubPK);
+			contacts.add(pub);
+			/* commented by Seb
+			ContactDetail pub = selectByContactPK(con, pubPK);
+			if (pub != null)
+			    contacts.add(pub);
+			*/
+		}
+		return contacts;
+	}
+
+	public static Collection getOrphanContacts(Connection con, ContactPK pubPK) throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactDetail pub = null;
+		String selectStatement =
+			"select * from "
+				+ pubPK.getTableName()
+				+ " where contactId NOT IN (Select contactId from "
+				+ pubPK.getTableName()
+				+ "father) "
+				+ " and instanceId = ? ";
+
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, pubPK.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pubPK);
+				list.add(pub);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static void deleteOrphanContactsByCreatorId(Connection con, ContactPK pubPK, String creatorId)
+		throws SQLException
+	{
+		String deleteStatement =
+			"delete from "
+				+ pubPK.getTableName()
+				+ " where contactCreatorId = ? "
+				+ " and instanceId = ? "
+				+ " and contactId NOT IN (Select contactId from "
+				+ pubPK.getTableName()
+				+ "father) ";
+
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(deleteStatement);
+			prepStmt.setString(1, creatorId);
+			prepStmt.setString(2, pubPK.getComponentName());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+
+	public static ContactDetail loadRow(Connection con, ContactPK pk) throws SQLException, ParseException
+	{
+		//Debug.println("ContactDAO : loadRow()");
+		ResultSet rs = null;
+		ContactDetail pub = null;
+		String selectStatement = "select  * from " + pk.getTableName() + " where contactId = ? and instanceId = ?";
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setInt(1, new Integer(pk.getId()).intValue());
+			prepStmt.setString(2, pk.getComponentName());
+			rs = prepStmt.executeQuery();
+			if (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pk);
+				return pub;
+			}
+			else
+			{
+				throw new ContactRuntimeException(
+					"ContactDAO.loadRow()",
+					SilverpeasRuntimeException.ERROR,
+					"root.EX_RECORD_NOT_FOUND",
+					"id = " + pk.getId().toString());
+			}
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+
+	public static void storeRow(Connection con, ContactDetail detail) throws SQLException
+	{
+		int rowCount = 0;
+		String insertStatement =
+			"update "
+				+ detail.getPK().getTableName()
+				+ " set "
+				+ "contactFirstName = ? , contactLastName = ? , "
+				+ "contactEmail = ? , contactPhone = ? , contactFax = ? , userId = ? ,"
+				+ "contactCreationDate = ? , contactCreatorId = ? "
+				+ "where contactId = ? and instanceId = ?";
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(insertStatement);
+			prepStmt.setString(1, detail.getFirstName());
+			prepStmt.setString(2, detail.getLastName());
+			prepStmt.setString(3, detail.getEmail());
+			prepStmt.setString(4, detail.getPhone());
+			prepStmt.setString(5, detail.getFax());
+			prepStmt.setString(6, detail.getUserId());
+			prepStmt.setString(7, DateUtil.date2SQLDate(detail.getCreationDate()));
+			prepStmt.setString(8, detail.getCreatorId());
+			prepStmt.setInt(9, new Integer(detail.getPK().getId()).intValue());
+			prepStmt.setString(10, detail.getPK().getComponentName());
+
+			rowCount = prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+		if (rowCount == 0)
+		{
+			throw new ContactRuntimeException(
+				"ContactDAO.storeRow()",
+				SilverpeasRuntimeException.ERROR,
+				"root.EX_RECORD_UPDATE_FAILED",
+				"id = " + detail.getPK().getId().toString());
+		}
+	}
+	public static Collection getUnavailableContactsByPublisherId(
+		Connection con,
+		ContactPK pubPK,
+		String publisherId,
+		String nodeId)
+		throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactDetail pub = null;
+		String selectStatement =
+			"select  P.* "
+				+ "from "
+				+ pubPK.getTableName()
+				+ " P, "
+				+ pubPK.getTableName()
+				+ "father F "
+				+ "where F.nodeId = "
+				+ nodeId
+				+ " and "
+				+ "contactCreatorId = ? and "
+				+ "F.contactId = P.contactId"
+				+ " and P.instanceId = ? ";
+
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, publisherId);
+			prepStmt.setString(2, pubPK.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pubPK);
+				list.add(pub);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+	
+	public static Collection selectByLastNameAndFirstName(Connection con, ContactPK pk, String lastName, String firstName) throws SQLException, ParseException
+	{
+		ResultSet rs = null;
+		ContactDetail pub = null;
+
+		String selectStatement = "select P.* "
+				+ "from " + pk.getTableName() + " P, "+ pk.getTableName()+ "father F "
+				+ "where F.contactId = P.contactId "
+				+ " and LOWER(P.contactLastName) LIKE LOWER(?)"
+				+ " and LOWER(P.contactFirstName) LIKE LOWER(?)"
+				+ " and P.instanceId = ? ";
+
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setString(1, lastName);
+			prepStmt.setString(2, firstName);
+			prepStmt.setString(3, pk.getComponentName());
+			rs = prepStmt.executeQuery();
+			ArrayList list = new ArrayList();
+			while (rs.next())
+			{
+				pub = resultSet2ContactDetail(rs, pk);
+				list.add(pub);
+			}
+			return list;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}
+	}
+}
