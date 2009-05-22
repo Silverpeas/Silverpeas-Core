@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<PortletWindowRegistry version="1.0">
+     <PortletWindow lang="JAVA" name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Dernières publications"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="silverpeas|LastPublicationsPortlet"/>
+               <String name="row" value="0"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Mes requêtes favorites"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="silverpeas|FavoriteQueriesPortlet"/>
+               <String name="row" value="1"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Mes prochains évènements"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="silverpeas|NextEventsPortlet"/>
+               <String name="row" value="2"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Mes tâches"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="silverpeas|MyTodosPortlet"/>
+               <String name="row" value="3"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.MyNotificationsPortlet" portletName="silverpeas.MyNotificationsPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Mes notifications"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="silverpeas|MyNotificationsPortlet"/>
+               <String name="row" value="4"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.HelloSilverpeasPortlet" portletName="silverpeas.HelloSilverpeasPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Bienvenue"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|HelloSilverpeasPortlet"/>
+               <String name="row" value="0"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Mes liens préférés"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|MyBookmarksPortlet"/>
+               <String name="row" value="1"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" remote="false">
+          <Properties>
+               <String name="title" value="Mes fichiers réservés"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|MyCheckOutFiles"/>
+               <String name="row" value="2"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Actualités"/>
+               <String name="visible" value="true"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|QuickInfosPortlet"/>
+               <String name="row" value="3"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="" name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet" remote="false">
+          <Properties>
+               <String name="title" value="Un composant"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|ComponentInstancePortlet"/>
+               <String name="row" value="4"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="" name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet" remote="false">
+          <Properties>
+               <String name="title" value="IFrame"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thin"/>
+               <String name="entityIDPrefix" value="silverpeas|IFramePortlet"/>
+               <String name="row" value="5"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="notepadportlet.NotepadPortlet" portletName="notepadportlet.NotepadPortlet" remote="false">
+          <Properties>
+               <String name="title" value="Notepad Portlet"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="entityIDPrefix" value="notepadportlet|NotepadPortlet"/>
+               <String name="row" value="6"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.DateTimeGoogleGadget" portletName="googlegadgets.DateTimeGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Date &amp; Time"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="7"/>
+               <String name="entityIDPrefix" value="googlegadgets|DateTimeGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.PacManGoogleGadget" portletName="googlegadgets.PacManGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="PacMan v2.0"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="8"/>
+               <String name="entityIDPrefix" value="googlegadgets|PacManGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.MooomJpVideosGoogleGadget" portletName="googlegadgets.MooomJpVideosGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="mooom.jp Videos"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="9"/>
+               <String name="entityIDPrefix" value="googlegadgets|MooomJpVideosGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.GoogleVideosGoogleGadget" portletName="googlegadgets.GoogleVideosGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Google Videos"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="10"/>
+               <String name="entityIDPrefix" value="googlegadgets|GoogleVideosGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.RateInJapaneseGoogleGadget" portletName="googlegadgets.RateInJapaneseGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Rate"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="11"/>
+               <String name="entityIDPrefix" value="googlegadgets|RateInJapaneseGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.ColorJunctionGoogleGadget" portletName="googlegadgets.ColorJunctionGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Color Junction"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="12"/>
+               <String name="entityIDPrefix" value="googlegadgets|ColorJunctionGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.SudokuGoogleGadget" portletName="googlegadgets.SudokuGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Sudoku"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="13"/>
+               <String name="entityIDPrefix" value="googlegadgets|SudokuGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.JokesGoogleGadget" portletName="googlegadgets.JokesGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Jokes"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="14"/>
+               <String name="entityIDPrefix" value="googlegadgets|JokesGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.GoogleCalculatorGoogleGadget" portletName="googlegadgets.GoogleCalculatorGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Google Calculator"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="15"/>
+               <String name="entityIDPrefix" value="googlegadgets|GoogleCalculatorGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+     <PortletWindow lang="JAVA" name="googlegadgets.NasaImageoftheDayGoogleGadget" portletName="googlegadgets.NasaImageoftheDayGoogleGadget" remote="false">
+          <Properties>
+               <String name="title" value="Nasa Image of the Day"/>
+               <String name="visible" value="false"/>
+               <String name="width" value="thick"/>
+               <String name="row" value="16"/>
+               <String name="entityIDPrefix" value="googlegadgets|NasaImageoftheDayGoogleGadget"/>
+          </Properties>
+     </PortletWindow>
+</PortletWindowRegistry>

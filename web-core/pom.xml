@@ -57,6 +57,26 @@
       <artifactId>rome</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.ccpp</groupId>
+      <artifactId>ccpp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.portal.portletcontainer</groupId>
+      <artifactId>container</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.portal.portletcontainer</groupId>
+      <artifactId>java-portlet-container</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${project.version}</version>
@@ -113,6 +133,20 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>calendar</artifactId>
+      <classifier>client</classifier>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>versioning</artifactId>
+      <classifier>client</classifier>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>formtemplate</artifactId>
       <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>

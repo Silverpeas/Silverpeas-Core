@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+<ejb-jar>
+  <description>no description</description>
+  <display-name>MyLinksJAR</display-name>
+
+  <enterprise-beans>
+    <session>
+      <description>no description</description>
+      <display-name>ejb/MyLinks</display-name>
+      <ejb-name>ejb/MyLinks</ejb-name>
+      <home>com.silverpeas.myLinks.ejb.MyLinksBmHome</home>
+      <remote>com.silverpeas.myLinks.ejb.MyLinksBm</remote>
+      <ejb-class>com.silverpeas.myLinks.ejb.MyLinksBmEJB</ejb-class>
+      <session-type>Stateless</session-type>    
+      <transaction-type>Container</transaction-type>      
+      <resource-ref>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+      </resource-ref>
+    </session>
+  </enterprise-beans>
+
+  <assembly-descriptor>
+    <container-transaction>
+        <method>
+                <ejb-name>ejb/MyLinks</ejb-name>
+                <method-intf>Remote</method-intf>
+                <method-name> * </method-name>
+        </method>
+        <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>
+

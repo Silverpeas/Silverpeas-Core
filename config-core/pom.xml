@@ -21,6 +21,9 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <skipAssembly>false</skipAssembly>
+           <filters>
+            <filter>${basedir}/src/main/filters/filter.properties</filter>
+          </filters>
         </configuration>
       </plugin>
     </plugins>

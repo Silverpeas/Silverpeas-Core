@@ -1,0 +1,49 @@
+
+<!--
+	TR.header {background-color:#000000; }
+	input        { font-size: 8pt; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; color: #000000}
+	textarea     { font-size: 8pt; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; color: #000000}
+	td { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+	a {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000; text-decoration: none}
+    select {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+
+  .txtnav { font-size: 8pt; color: #000000} 
+  .txtnavTitle { font-size: 10pt; font-weight: normal; color: #000000}
+  .txtnavHot    { font-size: 8pt; font-weight: bold; color: #FF0000}
+  
+  .domainName            {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+  .componentName         {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+  .componentNav          {font-family : "Verdana", serif; font-size : 12px }
+
+  /*
+    Style pour ButtonWA & ButtonWA2
+    */
+    .buttonStyle        { background-color : #FAE57F; text-decoration: none; font-weight : bold; color : #000000}
+    
+    /*
+    Style pour ButtonWA2
+    */
+    .buttonColorLight   { background-color : #FCEEAC}
+    .buttonColorDark    { background-color : #F0CF3E}
+    
+    /*
+    Style pour TabbedPaneWA & TabbedPaneWA2
+    */
+    .ongletOn           { background-color: #FAE57F; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none} 
+    .ongletOff          { background-color: #F0CF3E; font-size: 8pt; font-weight: bold; color: #FFFFFF; text-decoration: none}
+    .ongletColorLight   { background-color: #FCEEAC}
+    .ongletColorDark    { background-color: #DBB418}
+
+  .ArrayCell { font-size: 8pt; color: #000000} 
+  .ArrayCellHot { font-size: 8pt; font-weight: bold; color: #FF0000} 
+  .ArrayColumn { font-size: 10px; font-weight: bold; color: #000000; background-color: FAE57F }
+  .ArrayNavigation { font-size: 10px; font-weight: bold; color: #000000; background-color: #DEDEDE ;text-decoration: none }
+
+
+.txtlibform {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #EACA15}
+.selectNS {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #000000}
+.txttitrecol { font-size: 10px; font-weight: bold; color: #000000; background-color: #EACA15 }
+
+
+-->
+

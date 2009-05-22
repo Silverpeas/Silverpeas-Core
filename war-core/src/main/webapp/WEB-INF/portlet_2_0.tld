@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+
+    <description>Portlet 2.0 Tag Library</description>
+    <display-name>Portlet 2.0 Tags</display-name>
+    <tlib-version>2.0</tlib-version>
+    <short-name>portlet</short-name>
+    <uri>http://java.sun.com/portlet_2_0</uri>
+
+    <tag>
+        <description>define portlet objects</description>        
+        <name>defineObjects</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.DefineObjectsTag</tagclass>
+        <teiclass>com.sun.portal.portletcontainer.taglib.DefineObjectsTagExtraInfo</teiclass>
+        <bodycontent>empty</bodycontent>
+    </tag>
+    
+    
+    <tag>
+        <description>produce a unique value for current portlet</description>
+        <name>namespace</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.NamespaceTag</tagclass>
+        <bodycontent>empty</bodycontent>
+    </tag>
+    
+    <tag>
+        <description>create action url</description>
+        <name>actionURL</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.ActionURLTag</tagclass>
+        <teiclass>com.sun.portal.portletcontainer.taglib.PortletURLTagExtraInfo</teiclass>
+        <bodycontent>JSP</bodycontent>
+        <attribute>
+            <name>portletMode</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+	<attribute>
+            <name>windowState</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+        <attribute>
+	    <name>var</name>
+	    <required>false</required>
+	</attribute>
+        <attribute>
+            <name>secure</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>copyCurrentRenderParameters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>escapeXml</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+ 
+    <tag>
+        <description>create render url</description>
+        <name>renderURL</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.RenderURLTag</tagclass>
+	<teiclass>com.sun.portal.portletcontainer.taglib.PortletURLTagExtraInfo</teiclass>        
+        <bodycontent>JSP</bodycontent>
+        <attribute>
+            <name>portletMode</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+	<attribute>
+            <name>windowState</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+        <attribute>
+	    <name>var</name>
+	    <required>false</required>
+	</attribute>
+        <attribute>
+            <name>secure</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+         <attribute>
+            <name>copyCurrentRenderParameters</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+        <attribute>
+            <name>escapeXml</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+ 
+    <tag>
+        <description>create resource url</description>
+        <name>resourceURL</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.ResourceURLTag</tagclass>
+	<teiclass>com.sun.portal.portletcontainer.taglib.PortletURLTagExtraInfo</teiclass>        
+        <bodycontent>JSP</bodycontent>
+        <attribute>
+	    <name>var</name>
+	    <required>false</required>
+	</attribute>
+        <attribute>
+            <name>secure</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+	    <name>cacheability</name>
+	    <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+        </attribute>       
+        <attribute>
+            <name>escapeXml</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+   
+    <tag>
+        <description>setup portlet url parameters</description>
+        <name>param</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.ParamTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+	<attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>                
+    </tag>
+    
+    <tag>
+        <description>setup portlet url properties</description>
+        <name>param</name>
+        <tagclass>com.sun.portal.portletcontainer.taglib.PropertyTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+	<attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>                
+    </tag>
+</taglib>

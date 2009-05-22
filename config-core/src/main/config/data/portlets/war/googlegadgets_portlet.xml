@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<portlet-app id="googlegadgets" version="1.0">
+
+  <portlet id="DateTimeGoogleGadget">
+    <portlet-name>DateTimeGoogleGadget</portlet-name>
+    <display-name>Date &amp; Time</display-name>
+    <description>Google Gadgets: Data and Time Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Date &amp; Time</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/datetime.xml&amp;up_color=blue&amp;synd=open&amp;w=320&amp;h=136&amp;title=Date+%26+Time&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://www.google.com/ig/modules/datetime.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Date &amp; Time</title>
+      <short-title>Date &amp; Time</short-title>
+      <keywords>Date,Time,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="PacManGoogleGadget">
+    <portlet-name>PacManGoogleGadget</portlet-name>
+    <display-name>PacMan v2.0</display-name>
+    <description>Google Gadgets: PacMan v2.0 Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>PackMan v2.0</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://www.schulz.dk/pacman.xml&amp;synd=open&amp;w=320&amp;h=350&amp;title=PacMan+v2.0&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://www.schulz.dk/pacman.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>PacMan v2.0</title>
+      <short-title>PacMan v2.0</short-title>
+      <keywords>PacMan,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="MooomJpVideosGoogleGadget">
+    <portlet-name>MooomJpVideosGoogleGadget</portlet-name>
+    <display-name>mooom.jp Videos</display-name>
+    <description>Google Gadgets: mooom.jp Videos Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>mooom.jp Videos</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://mooom.jp/api/googleGadget.xml&amp;up_list=EveryonesMovieList&amp;synd=open&amp;w=320&amp;h=310&amp;title=mooom.jp+Videos&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://mooom.jp/api/googleGadget.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>mooom.jp Videos</title>
+      <short-title>mooom.jp Videos</short-title>
+      <keywords>mooom.jp,Video,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="GoogleVideosGoogleGadget">
+    <portlet-name>GoogleVideosGoogleGadget</portlet-name>
+    <display-name>Google Videos</display-name>
+    <description>Google Gadgets: Google Videos Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Google Videos</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/googlevideo.xml&amp;synd=open&amp;w=320&amp;h=280&amp;title=__MSG_title__&amp;.lang=all&amp;.country=ALL&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://www.google.com/ig/modules/googlevideo.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Google Videos</title>
+      <short-title>Google Videos</short-title>
+      <keywords>Video,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="RateInJapaneseGoogleGadget">
+    <portlet-name>RateInJapaneseGoogleGadget</portlet-name>
+    <display-name>Rate In Japanese</display-name>
+    <description>Google Gadgets: Rate In Japanese Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Rate</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://worris.sakura.ne.jp/worris/rate/rate.xml&amp;up_USD=1&amp;up_EUR=1&amp;up_GBP=1&amp;up_AUD=1&amp;up_CHF=1&amp;up_CAD=1&amp;up_NZD=1&amp;synd=open&amp;w=320&amp;h=150&amp;title=%E5%A4%96%E5%9B%BD%E7%82%BA%E6%9B%BF&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://worris.sakura.ne.jp/worris/rate/rate.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Rate</title>
+      <short-title>Rate</short-title>
+      <keywords>Rate,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="ColorJunctionGoogleGadget">
+    <portlet-name>ColorJunctionGoogleGadget</portlet-name>
+    <display-name>Color Junction</display-name>
+    <description>Google Gadgets: Color Junction Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Color Junction</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/colorjunction.xml&amp;up_difficulty=4&amp;up_size=10&amp;synd=open&amp;w=320&amp;h=210&amp;title=__MSG_title__&amp;.lang=all&amp;.country=ALL&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://www.google.com/ig/modules/colorjunction.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Color Junction</title>
+      <short-title>Color Junction</short-title>
+      <keywords>Color Junction,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="SudokuGoogleGadget">
+    <portlet-name>SudokuGoogleGadget</portlet-name>
+    <display-name>Sudoku</display-name>
+    <description>Google Gadgets: Sudoku Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Sudoku</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://www.counttonine.com/google-sudoku.xml&amp;up_difficulty=easiest&amp;up_size=small&amp;up_ads=true&amp;synd=open&amp;w=320&amp;h=370&amp;title=Sudoku&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://www.counttonine.com/google-sudoku.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Sudoku</title>
+      <short-title>Sudoku</short-title>
+      <keywords>Sudoku,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="JokesGoogleGadget">
+    <portlet-name>JokesGoogleGadget</portlet-name>
+    <display-name>Jokes</display-name>
+    <description>Google Gadgets: Jokes - jokes4all.net Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Jokes - jokes4all.net</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://jokes4all.net/jokes.xml&amp;up_joke_color=000000&amp;up_joke_background=FFFFFF&amp;up_joke_align=justify&amp;up_joke_font=arial&amp;up_joke_fontsize=10&amp;up_joke_fontstyle=plain&amp;up_image=left&amp;up_menu=on&amp;up_menu_color=0000FF&amp;up_menu_background=FFFFFF&amp;up_menu_align=center&amp;up_menu_font=arial&amp;up_menu_fontsize=10&amp;up_menu_fontstyle=bold&amp;synd=open&amp;w=320&amp;h=150&amp;title=Jokes+-+jokes4all.net&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://jokes4all.net/jokes.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Jokes</title>
+      <short-title>Jokes</short-title>
+      <keywords>Jokes,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="GoogleCalculatorGoogleGadget">
+    <portlet-name>GoogleCalculatorGoogleGadget</portlet-name>
+    <display-name>Google Calculator</display-name>
+    <description>Google Gadgets: Google Calculator Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Google Calculator</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://base.google.com/base/a/CalebEgg/1016230/5090988858257266641&amp;synd=open&amp;w=320&amp;h=150&amp;title=Google+Calculator&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://base.google.com/base/a/CalebEgg/1016230/5090988858257266641</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Google Calculator</title>
+      <short-title>Google Calculator</short-title>
+      <keywords>Calculator,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="NasaImageoftheDayGoogleGadget">
+    <portlet-name>NasaImageoftheDayGoogleGadget</portlet-name>
+    <display-name>Nasa Image of the Day</display-name>
+    <description>Google Gadgets: Nasa Image of the Day Gadget</description>
+    <portlet-class>jp.sf.pal.googlegadgets.GoogleGadgetsPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.title</name>
+      <value>Nasa Image of the Day</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.code</name>
+      <value>&lt;script src="http://gmodules.com/ig/ifr?url=http://olivier.camard.free.fr/google/modules/nasapics.xml&amp;up_description=1&amp;up_source=nasa&amp;synd=open&amp;w=320&amp;h=200&amp;title=__MSG_title__&amp;.lang=all&amp;.country=ALL&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"&gt;&lt;/script&gt;</value>
+    </init-param>
+    <init-param>
+      <name>jp.sf.pal.googlegadgets.gadgetUrl</name>
+      <value>http://gmodules.com/ig/creator?synd=open&amp;url=http://olivier.camard.free.fr/google/modules/nasapics.xml</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>EDIT</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <resource-bundle>jp.sf.pal.googlegadgets.resources.GoogleGadgetsResources</resource-bundle>
+    <portlet-info>
+      <title>Nasa Image of the Day</title>
+      <short-title>Nasa Image</short-title>
+      <keywords>Nasa,Google,Gadgets</keywords>
+    </portlet-info>
+  </portlet>
+
+</portlet-app>
+

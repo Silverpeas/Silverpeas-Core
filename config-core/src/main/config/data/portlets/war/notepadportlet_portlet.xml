@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd /opt/SUNWportal/dtd/portlet.xsd"
+    version="1.0">
+
+    <portlet>
+        <portlet-name>NotepadPortlet</portlet-name>
+        <portlet-class>com.sun.portal.notepadportlet.NotepadPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <supports>
+            <mime-type>text/wml</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>de</supported-locale>
+        <supported-locale>es</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>ja</supported-locale>
+        <supported-locale>ko</supported-locale>
+        <supported-locale>zh</supported-locale>
+        <supported-locale>zh_CN</supported-locale>
+        <supported-locale>zh_TW</supported-locale>
+        <resource-bundle>NotepadPortlet</resource-bundle>
+        <portlet-info>
+            <title>Notepad Portlet</title>
+            <keywords>note, notepad, sample, test</keywords>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>categories</name>
+            </preference>
+            <preference>
+                <name>displayMax</name>
+                <value>5</value>
+            </preference>
+        </portlet-preferences>
+    </portlet>
+
+    <user-attribute>
+        <description>Preferred TimeZone</description>
+        <name>timezone</name>
+    </user-attribute>
+    <user-attribute>
+        <description>Preferred TimeZone</description>
+        <name>preferredtimezone</name>
+    </user-attribute>
+    <user-attribute>
+        <description>Preferred Locale</description>
+        <name>locale</name>
+    </user-attribute>
+    <user-attribute>
+        <description>Preferred Locale</description>
+        <name>preferredlocale</name>
+    </user-attribute>
+    <user-attribute>
+        <description>Common Name</description>
+        <name>cn</name>
+    </user-attribute>
+    <user-attribute>
+        <description>Given Name</description>
+        <name>givenname</name>
+    </user-attribute>
+    <user-attribute>
+        <description>Surname</description>
+        <name>sn</name>
+    </user-attribute>
+    <user-attribute>
+        <description>User Id</description>
+        <name>uid</name>
+    </user-attribute>
+
+</portlet-app>

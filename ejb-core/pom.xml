@@ -44,6 +44,7 @@
     <module>statistic</module>
     <module>comment</module>
     <module>pdc</module>
+    <module>mylinks</module>
   </modules>
   
 </project>
