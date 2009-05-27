@@ -45,6 +45,7 @@
     <module>comment</module>
     <module>pdc</module>
     <module>mylinks</module>
+    <module>questioncontainer</module>
   </modules>
   
 </project>
