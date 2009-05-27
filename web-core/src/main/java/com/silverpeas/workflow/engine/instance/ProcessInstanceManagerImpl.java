@@ -1,0 +1,697 @@
+// TODO : reporter dans CVS (done)
+package com.silverpeas.workflow.engine.instance;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.QueryResults;
+
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
+import com.silverpeas.workflow.api.WorkflowException;
+import com.silverpeas.workflow.api.instance.Actor;
+import com.silverpeas.workflow.api.instance.HistoryStep;
+import com.silverpeas.workflow.api.instance.ProcessInstance;
+import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
+import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.user.User;
+import com.silverpeas.workflow.engine.WorkflowHub;
+import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
+import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
+import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+
+/**
+ * A ProcessInstanceManager implementation
+ */
+public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager
+{
+	private String dbName = JNDINames.WORKFLOW_DATASOURCE;
+	private static String COLUMNS = " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
+
+	/**
+	 * @return the DB connection
+	 */
+	private Connection getConnection() throws WorkflowException
+	{
+		try
+		{
+			Connection con = DBUtil.makeConnection(dbName);
+			return con;
+		}
+		catch (Exception e)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.getConnection()",
+				"root.EX_CONNECTION_OPEN_FAILED",
+				e);
+		}
+	}
+
+	/**
+	 * Get the list of process instances for a given peas Id, user and role.
+	 * @param	peasId	id of processManager instance
+	 * @param	user	user for who the process instance list is
+	 * @param	role	role name of the user for who the process instance list is (useful when user has different roles)
+	 * @return	an array of ProcessInstance objects
+	 */
+	/*public ProcessInstance[] getProcessInstances(String peasId, User user, String role) throws WorkflowException
+	{
+		Database db = null;
+		Connection con = null;
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		String selectQuery = "";
+		OQLQuery query = null;
+		QueryResults results;
+		Vector instances = new Vector();
+
+		try
+		{
+			// Constructs the query
+			db = WorkflowJDOManager.getDatabase(true);
+			//			db = JDOManager.getDatabase(false);
+			db.begin();
+
+			// Need first to make a SQL query to find all concerned instances ids
+			// Due to the operator EXISTS that is not yet supported by Castor OQL->SQL translator
+			con = this.getConnection();
+
+			if (role.equals("supervisor"))
+			{
+				selectQuery = "select DISTINCT instanceId from SB_Workflow_ProcessInstance instance where modelId = ?";
+				prepStmt = con.prepareStatement(selectQuery);
+				prepStmt.setString(1, peasId);
+			}
+			else
+			{
+				selectQuery =
+					"select DISTINCT instanceId from SB_Workflow_ProcessInstance instance where modelId = ? and exists ";
+				selectQuery
+					+= "( select instanceId from SB_Workflow_InterestedUser intUser where userId = ? and role = ? and instance.instanceId = intUser.instanceId ";
+				selectQuery += "UNION ";
+				selectQuery
+					+= "select instanceId from SB_Workflow_WorkingUser wkUser where userId = ? and role = ?  and instance.instanceId = wkUser.instanceId)";
+				prepStmt = con.prepareStatement(selectQuery);
+				prepStmt.setString(1, peasId);
+				prepStmt.setString(2, user.getUserId());
+				prepStmt.setString(3, role);
+				prepStmt.setString(4, user.getUserId());
+				prepStmt.setString(5, role);
+			}
+			rs = prepStmt.executeQuery();
+
+			StringBuffer queryBuf = new StringBuffer();
+			queryBuf.append(
+				"SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
+			queryBuf.append(" WHERE instanceId IN LIST(");
+
+			while (rs.next())
+			{
+				String instanceId = rs.getString(1);
+				queryBuf.append("\"");
+				queryBuf.append(instanceId);
+				queryBuf.append("\"");
+				queryBuf.append(" ,");
+			}
+			queryBuf.append(" \"-1\")");
+
+			query = db.getOQLQuery(queryBuf.toString());
+
+			// Execute the query
+			try
+			{
+				//results = query.execute(org.exolab.castor.jdo.Database.ReadOnly);
+				results = query.execute(Database.ReadOnly);
+
+				// get the instance if any
+				while (results.hasMore())
+				{
+					ProcessInstance instance = (ProcessInstance) results.next();
+					if (!instances.contains(instance))
+						instances.add(instance);
+				}
+			}
+			catch (Exception ex)
+			{
+				SilverTrace.warn(
+					"workflowEngine",
+					"ProcessInstanceManagerImpl",
+					"workflowEngine.EX_PROBLEM_GETTING_INSTANCES",
+					ex);
+			}
+
+			db.commit();
+
+			SilverTrace.info(
+				"workflowEngine",
+				"ProcessInstanceManagerImpl",
+				"root.MSG_GEN_PARAM_VALUE",
+				" query : " + queryBuf.toString());
+			SilverTrace.info(
+				"workflowEngine",
+				"ProcessInstanceManagerImpl",
+				"root.MSG_GEN_PARAM_VALUE",
+				" nb instances : " + instances.size());
+			return (ProcessInstance[]) instances.toArray(new ProcessInstance[0]);
+		}
+		catch (SQLException se)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.getProcessInstances",
+				"EX_ERR_CASTOR_GET_INSTANCES",
+				"sql query : " + selectQuery,
+				se);
+		}
+		catch (PersistenceException pe)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.getProcessInstances",
+				"EX_ERR_CASTOR_GET_INSTANCES",
+				pe);
+		}
+		finally
+		{
+			WorkflowJDOManager.closeDatabase(db);
+			
+			try
+			{
+				DBUtil.close(rs, prepStmt);
+				if (con != null)
+					con.close();
+			}
+			catch (SQLException se)
+			{
+				SilverTrace.error(
+					"workflowEngine",
+					"ProcessInstanceManagerImpl.getProcessInstances",
+					"root.EX_RESOURCE_CLOSE_FAILED",
+					se);
+			}
+		}
+	}*/
+	
+	public ProcessInstance[] getProcessInstances(String peasId, User user, String role) throws WorkflowException
+	{
+		Connection con = null;
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		String selectQuery = "";
+		Vector instances = new Vector();
+
+		try
+		{
+			// Need first to make a SQL query to find all concerned instances ids
+			// Due to the operator EXISTS that is not yet supported by Castor OQL->SQL translator
+			con = this.getConnection();
+
+			if (role.equals("supervisor"))
+			{
+				selectQuery = "select * from SB_Workflow_ProcessInstance instance where modelId = ?";
+				prepStmt = con.prepareStatement(selectQuery);
+				prepStmt.setString(1, peasId);
+			}
+			else
+			{
+				selectQuery = "select "+COLUMNS+" from SB_Workflow_ProcessInstance I "; 
+				selectQuery += "where I.modelId = ? "; 
+				selectQuery += "and exists (";
+				selectQuery += "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and intUser.userId = ? and intUser.role = ? ";
+				selectQuery += "union ";
+				selectQuery += "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and wkUser.userId = ? and wkUser.role = ? ";
+				selectQuery += ")";
+				selectQuery += "order by I.instanceId desc";
+				
+				prepStmt = con.prepareStatement(selectQuery);
+				prepStmt.setString(1, peasId);
+				prepStmt.setString(2, user.getUserId());
+				prepStmt.setString(3, role);
+				prepStmt.setString(4, user.getUserId());
+				prepStmt.setString(5, role);
+			}
+			rs = prepStmt.executeQuery();
+
+			ProcessInstanceImpl instance = null;
+			while (rs.next())
+			{
+				instance = new ProcessInstanceImpl();
+				instance.setInstanceId(rs.getString(1));
+				instance.setModelId(rs.getString(2));
+				instance.setLockedByAdmin(rs.getBoolean(3));
+				instance.setErrorStatus(rs.getBoolean(4));
+				instance.setTimeoutStatus(rs.getBoolean(5));
+				
+				instances.add(instance);
+			}
+			
+			//getHistory
+			selectQuery = "select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc";
+			
+			prepStmt = con.prepareStatement(selectQuery);
+			
+			for (int i=0; i<instances.size(); i++)
+			{
+				instance = (ProcessInstanceImpl) instances.get(i);
+				
+				prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
+				
+				rs = prepStmt.executeQuery();
+				HistoryStepImpl historyStep = null;
+				while (rs.next())
+				{
+					historyStep = new HistoryStepImpl();
+					historyStep.setId(String.valueOf(rs.getInt(2)));
+					historyStep.setUserId(rs.getString(3));
+					historyStep.setUserRoleName(rs.getString(4));
+					historyStep.setAction(rs.getString(5));
+					historyStep.setActionDate(rs.getDate(6));
+					historyStep.setResolvedState(rs.getString(7));
+					historyStep.setResultingState(rs.getString(8));
+					historyStep.setActionStatus(rs.getInt(9));
+					historyStep.setProcessInstance(instance);
+					
+					instance.addHistoryStep(historyStep);
+				}
+			}
+			
+			//getActiveStates
+			Vector states = null;
+			selectQuery = "select * from SB_Workflow_ActiveState where instanceId = ? order by id asc";
+			
+			prepStmt = con.prepareStatement(selectQuery);
+			
+			for (int i=0; i<instances.size(); i++)
+			{
+				instance = (ProcessInstanceImpl) instances.get(i);
+				
+				prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
+				
+				rs = prepStmt.executeQuery();
+				ActiveState state = null;
+				states = new Vector();
+				while (rs.next())
+				{
+					state = new ActiveState();
+					state.setId(String.valueOf(rs.getInt(1)));
+					state.setState(rs.getString(3));
+					state.setBackStatus(rs.getBoolean(4));
+					state.setTimeoutStatus(rs.getBoolean(5));
+					state.setProcessInstance(instance);
+					
+					states.add(state);
+				}
+				instance.castor_setActiveStates(states);
+			}
+
+			SilverTrace.info("workflowEngine", "ProcessInstanceManagerImpl", "root.MSG_GEN_PARAM_VALUE", " nb instances : " + instances.size());
+			return (ProcessInstance[]) instances.toArray(new ProcessInstance[0]);
+		}
+		catch (SQLException se)
+		{
+			throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances", "EX_ERR_CASTOR_GET_INSTANCES", "sql query : " + selectQuery, se);
+		}
+		finally
+		{
+			try
+			{
+				DBUtil.close(rs, prepStmt);
+				if (con != null)
+					con.close();
+			}
+			catch (SQLException se)
+			{
+				SilverTrace.error("workflowEngine",	"ProcessInstanceManagerImpl.getProcessInstances", "root.EX_RESOURCE_CLOSE_FAILED", se);
+			}
+		}
+	}
+
+	/**
+	 * Get the list of process instances for a given peas Id, that have the given state activated
+	 * and 
+	 * @param	peasId	id of processManager instance
+	 * @param	state	activated state
+	 * @return	an array of ProcessInstance objects
+	 */
+	public ProcessInstance[] getProcessInstancesInState(String peasId, State state) throws WorkflowException
+	{
+		Database db = null;
+		Connection con = null;
+		PreparedStatement prepStmt = null;
+		ResultSet rs = null;
+		String selectQuery = "";
+		OQLQuery query = null;
+		QueryResults results;
+		Vector instances = new Vector();
+
+		try
+		{
+			// Constructs the query
+			db = WorkflowJDOManager.getDatabase(false);
+			db.begin();
+
+			// Need first to make a SQL query to find all concerned instances ids
+			// Due to the operator EXISTS that is not yet supported by Castor OQL->SQL translator
+			con = this.getConnection();
+
+			selectQuery = "SELECT DISTINCT instance.instanceId ";
+			selectQuery += "FROM SB_Workflow_ActiveState activeState, SB_Workflow_ProcessInstance instance ";
+			selectQuery += "WHERE activeState.state = ? ";
+			selectQuery += "AND activeState.timeoutStatus = 0 ";
+			selectQuery += "AND instance.instanceId = activeState.instanceId ";
+			selectQuery += "AND activeState.backStatus = 0 ";
+			selectQuery += "AND instance.modelId = ?";
+
+			prepStmt = con.prepareStatement(selectQuery);
+			prepStmt.setString(1, state.getName());
+			prepStmt.setString(2, peasId);
+			rs = prepStmt.executeQuery();
+
+			StringBuffer queryBuf = new StringBuffer();
+			queryBuf.append(
+				"SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
+			queryBuf.append(" WHERE instanceId IN LIST(");
+
+			while (rs.next())
+			{
+				String instanceId = rs.getString(1);
+				queryBuf.append("\"");
+				queryBuf.append(instanceId);
+				queryBuf.append("\"");
+				queryBuf.append(" ,");
+			}
+			queryBuf.append(" \"-1\")");
+
+			query = db.getOQLQuery(queryBuf.toString());
+
+			// Execute the query
+			try
+			{
+				results = query.execute(org.exolab.castor.jdo.Database.ReadOnly);
+
+				// get the instance if any
+				while (results.hasMore())
+				{
+					ProcessInstance instance = (ProcessInstance) results.next();
+					instances.add(instance);
+				}
+			}
+			catch (Exception ex)
+			{
+				SilverTrace.warn(
+					"workflowEngine",
+					"ProcessInstanceManagerImpl",
+					"workflowEngine.EX_PROBLEM_GETTING_INSTANCES",
+					ex);
+			}
+
+			db.commit();
+
+			return (ProcessInstance[]) instances.toArray(new ProcessInstance[0]);
+		}
+		catch (SQLException se)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.getProcessInstancesInState",
+				"EX_ERR_CASTOR_GET_INSTANCES_IN_STATE",
+				"sql query : " + selectQuery,
+				se);
+		}
+		catch (PersistenceException pe)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.getProcessInstancesInState",
+				"EX_ERR_CASTOR_GET_INSTANCES_IN_STATE",
+				pe);
+		}
+		finally
+		{
+			WorkflowJDOManager.closeDatabase(db);
+			
+			try
+			{
+				DBUtil.close(rs, prepStmt);
+				if (con != null)
+					con.close();
+			}
+			catch (SQLException se)
+			{
+				SilverTrace.error(
+					"workflowEngine",
+					"ProcessInstanceManagerImpl.getProcessInstancesInState",
+					"root.EX_RESOURCE_CLOSE_FAILED",
+					se);
+			}
+		}
+	}
+
+	/**
+	 * Get the process instances for a given instance id
+	 * @param	instanceId	id of searched instance
+	 * @return	the searched process instance
+	 */
+	public ProcessInstance getProcessInstance(String instanceId) throws WorkflowException
+	{
+		ProcessInstanceImpl instance;
+
+		Database db = null;
+		try
+		{
+			// Constructs the query
+			db = WorkflowJDOManager.getDatabase();
+			db.begin();
+			instance = (ProcessInstanceImpl) db.load(ProcessInstanceImpl.class, instanceId);
+			db.commit();
+
+			return instance;
+		}
+		catch (PersistenceException pe)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.getProcessInstance",
+				"EX_ERR_CASTOR_GET_INSTANCE",
+				pe);
+		}
+		finally
+		{
+			WorkflowJDOManager.closeDatabase(db);
+		}
+	}
+
+	/**
+	 * Creates a new process instance
+	 * @param	modelId		model id
+	 * @return	the new ProcessInstance object
+	 */
+	public ProcessInstance createProcessInstance(String modelId) throws WorkflowException
+	{
+		ProcessInstanceImpl instance = new ProcessInstanceImpl();
+		instance.setModelId(modelId);
+		instance.create();
+
+		return (ProcessInstance) instance;
+	}
+
+	/**
+	 * Removes a new process instance
+	 * @param	instanceId		instance id
+	 */
+	public void removeProcessInstance(String instanceId) throws WorkflowException
+	{
+		ProcessInstanceImpl instance;
+		String 				componentId = null;
+		Database 			db 			= null;
+		try
+		{
+			// Delete forms data associated with this instance
+			removeProcessInstanceData(instanceId);
+
+			// Constructs the query
+			db = WorkflowJDOManager.getDatabase();
+			db.begin();
+			instance = (ProcessInstanceImpl) db.load(ProcessInstanceImpl.class, instanceId);
+			componentId = instance.getModelId();
+			db.remove(instance);
+			db.commit();
+			
+			//delete associated todos
+			TodoBackboneAccess tbba = new TodoBackboneAccess();
+			tbba.removeEntriesFromExternal("useless", componentId, instanceId+"##%");
+		}
+		catch (PersistenceException pe)
+		{
+			throw new WorkflowException(
+				"ProcessInstanceManagerImpl.removeProcessInstance",
+				"EX_ERR_CASTOR_REMOVE_INSTANCE",
+				pe);
+		}
+		finally
+		{
+			WorkflowJDOManager.closeDatabase(db);
+		}
+
+		WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
+	}
+
+	/**
+	 * Delete forms data associated with this instance
+	 * @param	instanceId		instance id
+	 */
+	private void removeProcessInstanceData(String instanceId) throws WorkflowException
+	{
+		ProcessInstance instance = getProcessInstance(instanceId);
+		
+		ForeignPK foreignPK = new ForeignPK(instanceId, instance.getModelId());
+		
+		//delete attachments
+		AttachmentController.deleteAttachmentByCustomerPK(foreignPK);
+		
+		//delete versioning
+		try {
+			getVersioningBm().deleteDocumentsByForeignPK(foreignPK);
+		} catch (Exception e) {
+			throw new WorkflowException(
+					"ProcessInstanceManagerImpl.removeProcessInstanceData",
+					"EX_ERR_CASTOR_REMOVE_INSTANCE",
+					e);
+		}
+		
+		
+		HistoryStep[] steps = instance.getHistorySteps();
+		for (int i = 0; steps != null && i < steps.length; i++)
+		{
+			if (!steps[i].getAction().equals("#question#") && !steps[i].getAction().equals("#response#"))
+				steps[i].deleteActionRecord();
+		}
+	}
+
+	/**
+	 * Locks this instance for the given instance and state
+	 * @param	state	state that have to be locked
+	 * @param	user	the locking user
+	 */
+	public void lock(ProcessInstance instance, State state, User user) throws WorkflowException
+	{
+		Database db = null;
+
+		try
+		{
+			// Get database connection
+			db = WorkflowJDOManager.getDatabase();
+
+			// begin transaction
+			db.begin();
+
+			// Re-load process instance 
+			UpdatableProcessInstance copyInstance =
+				(UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
+
+			// Do workflow stuff
+			try
+			{
+				// lock instance for user
+				copyInstance.lock(state, user);
+			}
+			catch (WorkflowException we)
+			{
+				db.rollback();
+				throw new WorkflowException("ProcessInstanceManagerImpl.lock", "workflowEngine.EX_ERR_LOCK", we);
+			}
+
+			// commit
+			db.commit();
+		}
+		catch (PersistenceException pe)
+		{
+			throw new WorkflowException("ProcessInstanceManagerImpl.lock", "workflowEngine.EX_ERR_CASTOR_LOCK", pe);
+		}
+		finally
+		{
+			WorkflowJDOManager.closeDatabase(db);
+		}
+	}
+
+	/**
+	 * unlocks this instance for the given instance and state
+	 * @param	state	state that have to be locked
+	 * @param	user	the locking user
+	 */
+	public void unlock(ProcessInstance instance, State state, User user) throws WorkflowException
+	{
+		Database db = null;
+
+		try
+		{
+			// Get database connection
+			db = WorkflowJDOManager.getDatabase();
+
+			// begin transaction
+			db.begin();
+
+			// Re-load process instance 
+			UpdatableProcessInstance copyInstance =
+				(UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
+
+			// Do workflow stuff
+			try
+			{
+				// unlock instance for user
+				copyInstance.unLock(state, user);
+			}
+			catch (WorkflowException we)
+			{
+				db.rollback();
+				throw new WorkflowException("ProcessInstanceManagerImpl.unlock", "workflowEngine.EX_ERR_UNLOCK", we);
+			}
+
+			// commit
+			db.commit();
+		}
+		catch (PersistenceException pe)
+		{
+			throw new WorkflowException("ProcessInstanceManagerImpl.unlock", "workflowEngine.EX_ERR_CASTOR_UNLOCK", pe);
+		}
+		finally
+		{
+			WorkflowJDOManager.closeDatabase(db);
+		}
+	}
+
+	/**
+	 * Build a new HistoryStep
+	 * Return an object implementing HistoryStep interface
+	 */
+	public HistoryStep createHistoryStep()
+	{
+		return (HistoryStep) new HistoryStepImpl();
+	}
+
+	/**
+	 * Builds an actor from a user and a role.
+	 */
+	public Actor createActor(User user, String roleName, State state)
+	{
+		return new ActorImpl(user, roleName, state);
+	}
+	
+	public VersioningBm getVersioningBm() throws WorkflowException {
+		VersioningBm versioningBm = null;
+		try {
+			VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+			versioningBm = versioningBmHome.create();
+		} catch (Exception e) {
+			throw new WorkflowException("ProcessInstanceManagerImpl.getVersioningBm()", "root.EX_CANT_GET_REMOTE_OBJECT", e);
+		}
+		return versioningBm;
+	}
+}

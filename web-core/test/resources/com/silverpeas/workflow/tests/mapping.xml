@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+	<class name="com.silverpeas.workflow.engine.model.ProcessModelImpl">
+		<map-to xml="processModel"/>
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="descriptionList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="description" node="element"/>
+		</field>
+		<field name="roles" type="com.silverpeas.workflow.engine.model.Roles" get-method="getRolesForCastor" set-method="setRoles">
+			<bind-xml name="roles" node="element"/>
+		</field>
+		<field name="presentation" type="com.silverpeas.workflow.engine.model.PresentationImpl">
+			<bind-xml name="presentation" node="element"/>
+		</field>
+		<field name="participants" type="com.silverpeas.workflow.engine.model.Participants" get-method="getParticipantsForCastor" set-method="setParticipants">
+			<bind-xml name="participants" node="element"/>
+		</field>
+		<field name="states" type="com.silverpeas.workflow.engine.model.States" get-method="getStatesForCastor" set-method="setStates">
+			<bind-xml name="states" node="element"/>
+		</field>
+		<field name="actions" type="com.silverpeas.workflow.engine.model.Actions" get-method="getActionsForCastor" set-method="setActions">
+			<bind-xml name="actions" node="element"/>
+		</field>
+		<field name="dataFolder" type="com.silverpeas.workflow.engine.model.DataFolderImpl">
+			<bind-xml name="dataFolder" node="element"/>
+		</field>
+		<field name="userInfos" type="com.silverpeas.workflow.engine.model.DataFolderImpl">
+			<bind-xml name="userInfos" node="element"/>
+		</field>
+		<field name="forms" type="com.silverpeas.workflow.engine.model.Forms" get-method="getFormsForCastor"  set-method="setForms">
+			<bind-xml name="forms" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ActionImpl" identity="name">
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="kind" type="string">
+			<bind-xml name="kind" node="attribute"/>
+		</field>
+		<field name="form" type="com.silverpeas.workflow.engine.model.FormImpl">
+			<bind-xml name="form" node="attribute" reference="true"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="descriptionList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="description" node="element"/>
+		</field>
+		<field name="allowedUsers" type="com.silverpeas.workflow.engine.model.QualifiedUsersImpl">
+			<bind-xml name="allowedUsers" node="element"/>
+		</field>
+		<field name="consequences" type="com.silverpeas.workflow.engine.model.ConsequencesImpl">
+			<bind-xml name="consequences" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ActionRef">
+		<field name="action" type="com.silverpeas.workflow.engine.model.ActionImpl">
+			<bind-xml name="action" node="attribute" reference="true"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ActionRefs">
+		<field name="actionRefList" type="com.silverpeas.workflow.engine.model.ActionRef" collection="vector">
+			<bind-xml name="allow" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.Actions">
+		<field name="actionList" type="com.silverpeas.workflow.engine.model.ActionImpl" collection="arraylist">
+			<bind-xml name="action" node="element"/>
+		</field>
+	</class>
+	
+	<class name="com.silverpeas.workflow.engine.model.ConsequenceImpl">
+		<field name="id" type="int">
+			<bind-xml name="id" node="attribute"/>
+		</field>
+		<field name="item" type="string">
+			<bind-xml name="item" node="attribute"/>
+		</field>
+		<field name="operator" type="string">
+			<bind-xml name="operator" node="attribute"/>
+		</field>
+		<field name="value" type="string">
+			<bind-xml name="value" node="attribute"/>
+		</field>
+		<field name="kill" type="boolean">
+			<bind-xml name="kill" node="element"/>
+		</field>
+		<field name="targetStateList" type="com.silverpeas.workflow.engine.model.StateRef" collection="vector">
+			<bind-xml name="set" node="element"/>
+		</field>
+		<field name="unsetStateList" type="com.silverpeas.workflow.engine.model.StateRef" collection="vector">
+			<bind-xml name="unset" node="element"/>
+		</field>
+		<field name="notifiedUsers" type="com.silverpeas.workflow.engine.model.QualifiedUsersImpl">
+			<bind-xml name="notify" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ConsequencesImpl">
+		<field name="consequenceList" type="com.silverpeas.workflow.engine.model.ConsequenceImpl" collection="vector">
+			<bind-xml name="consequence" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.DataFolderImpl">
+		<field name="itemList" type="com.silverpeas.workflow.engine.model.ItemImpl" collection="vector">
+			<bind-xml name="item" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.FormImpl" identity="name">
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="role" type="string">
+			<bind-xml name="role" node="attribute"/>
+		</field>
+		<field name="HTMLFileName" type="string">
+			<bind-xml name="HTMLFileName" node="attribute"/>
+		</field>
+		<field name="titleList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="title" node="element"/>
+		</field>
+		<field name="inputList" type="com.silverpeas.workflow.engine.model.ItemRef" collection="vector">
+			<bind-xml name="input" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.Forms">
+		<field name="formList" type="com.silverpeas.workflow.engine.model.FormImpl" collection="arraylist">
+			<bind-xml name="form" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ItemImpl" identity="name">
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="computed" type="boolean" get-method="isComputed">
+			<bind-xml name="computed" node="attribute"/>
+		</field>
+		<field name="mapTo" type="string">
+			<bind-xml name="mapTo" node="attribute"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="descriptionList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="description" node="element"/>
+		</field>
+		<field name="parameters" type="com.silverpeas.workflow.engine.model.ParameterImpl" collection="vector">
+			<bind-xml name="param" node="element"/>
+		</field>
+		<field name="type" type="string">
+			<bind-xml name="type" node="element"/>
+		</field>
+		<field name="readonly" type="boolean" get-method="isReadonly" set-method="setReadonly">
+			<bind-xml name="readonly" node="element"/>
+		</field>
+		<field name="formula" type="string">
+			<bind-xml name="formula" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ItemRef">
+		<field name="item" type="com.silverpeas.workflow.engine.model.ItemImpl">
+			<bind-xml name="item" node="attribute" reference="true"/>
+		</field>
+		<field name="value" type="string">
+			<bind-xml name="value" node="attribute"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="readonly" type="boolean" get-method="isReadonly" set-method="setReadonly">
+			<bind-xml name="readonly" node="attribute"/>
+		</field>
+		<field name="mandatory" type="boolean" get-method="isMandatory" set-method="setMandatory">
+			<bind-xml name="mandatory" node="attribute"/>
+		</field>
+		<field name="displayerName" type="string">
+			<bind-xml name="displayerName" node="attribute"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ItemRefs">
+		<field name="ItemRefList" type="com.silverpeas.workflow.engine.model.ItemRef" collection="vector">
+			<bind-xml name="column" node="element"/>
+		</field>
+		<field name="roleName" type="string">
+			<bind-xml name="role" node="attribute"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.ParameterImpl" identity="name" >
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="value" type="string">
+			<bind-xml name="value" node="attribute"/>
+		</field>
+	</class>
+	
+	<class name="com.silverpeas.workflow.engine.model.ParticipantImpl" identity="name" >
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="resolvedState" type="string">
+			<bind-xml name="resolvedState" node="attribute"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="descriptionList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="description" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.RelatedUserImpl">
+		<field name="participant" type="com.silverpeas.workflow.engine.model.ParticipantImpl">
+			<bind-xml name="participant" node="attribute" reference="true"/>
+		</field>
+		<field name="folderItem" type="com.silverpeas.workflow.engine.model.ItemImpl">
+			<bind-xml name="folderItem" node="attribute" reference="true"/>
+		</field>
+		<field name="relation" type="string">
+			<bind-xml name="relation" node="attribute"/>
+		</field>
+		<field name="role" type="string">
+			<bind-xml name="role" node="attribute"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.Participants">
+		<field name="participantList" type="com.silverpeas.workflow.engine.model.ParticipantImpl" collection="arraylist">
+			<bind-xml name="participant" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.PresentationImpl">
+		<field name="titleList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="title" node="element"/>
+		</field>
+		<field name="itemRefsList" type="com.silverpeas.workflow.engine.model.ItemRefs" collection="vector">
+			<bind-xml name="columns" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.QualifiedUsersImpl">
+		<field name="message" type="string">
+			<bind-xml name="message" node="attribute"/>
+		</field>
+		<field name="role" type="string">
+			<bind-xml name="role" node="attribute"/>
+		</field>
+		<field name="userInRoleList" type="com.silverpeas.workflow.engine.model.UserInRoleImpl" collection="vector">
+			<bind-xml name="userInRole" node="element"/>
+		</field>
+		<field name="relatedUserList" type="com.silverpeas.workflow.engine.model.RelatedUserImpl" collection="vector">
+			<bind-xml name="relatedUser" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.RoleImpl">
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="descriptionList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="description" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.Roles">
+		<field name="roleList" type="com.silverpeas.workflow.engine.model.RoleImpl" collection="arraylist">
+			<bind-xml name="role" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.SpecificLabel">
+		<field name="content" type="string">
+			<bind-xml node="text"/>
+		</field>
+		<field name="role" type="string">
+			<bind-xml name="role" node="attribute"/>
+		</field>
+		<field name="language" type="string">
+			<bind-xml name="lang" node="attribute"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.StateImpl" identity="name">
+		<field name="name" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+		<field name="id" type="int">
+			<bind-xml name="id" node="attribute"/>
+		</field>
+		<field name="timeoutAction" type="com.silverpeas.workflow.engine.model.ActionImpl">
+			<bind-xml name="timeoutAction" node="attribute" reference="true"/>
+		</field>
+		<field name="timeoutInterval" type="string" set-method="castor_setTimeoutInterval">
+			<bind-xml name="timeoutInterval" node="attribute"/>
+		</field>
+		<field name="timeoutNotifyAdmin" type="boolean">
+			<bind-xml name="timeoutNotifyAdmin" node="attribute"/>
+		</field>
+		<field name="labelList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="label" node="element"/>
+		</field>
+		<field name="activityList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="activity" node="element"/>
+		</field>
+		<field name="descriptionList" type="com.silverpeas.workflow.engine.model.SpecificLabel" collection="arraylist">
+			<bind-xml name="description" node="element"/>
+		</field>
+		<field name="workingUsers" type="com.silverpeas.workflow.engine.model.QualifiedUsersImpl">
+			<bind-xml name="workingUsers" node="element"/>
+		</field>
+		<field name="interestedUsers" type="com.silverpeas.workflow.engine.model.QualifiedUsersImpl">
+			<bind-xml name="interestedUsers" node="element"/>
+		</field>
+		<field name="allowedActions" type="com.silverpeas.workflow.engine.model.ActionRefs" get-method="getAllowedActionsForCastor" set-method="setAllowedActions">
+			<bind-xml name="allowedActions" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.StateRef">
+		<field name="state" type="com.silverpeas.workflow.engine.model.StateImpl">
+			<bind-xml name="state" node="attribute" reference="true"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.States">
+		<field name="stateList" type="com.silverpeas.workflow.engine.model.StateImpl" collection="arraylist">
+			<bind-xml name="state" node="element"/>
+		</field>
+	</class>
+
+	<class name="com.silverpeas.workflow.engine.model.UserInRoleImpl">
+		<field name="roleName" type="string">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+	</class>
+
+</mapping>

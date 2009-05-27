@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- PROCÉDURE : DEMANDE DE CONGES -->
+
+<processModel name="DemandeConges"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:noNamespaceSchemaLocation="processModel.xsd">
+
+	<label>Demande de congés</label>
+
+	<!-- DESCRIPTION DES ROLES -->
+	<roles>
+		<role name="Employe">
+			<label>Demandeur</label>
+		</role>
+		<role name="Responsable">
+			<label>Responsable</label>
+		</role>
+		<role name="Secretaire">
+			<label>Secrétaire</label>
+		</role>
+		<role name="supervisor">
+			<label>Superviseur</label>
+		</role>
+	</roles>
+
+	<!-- DEFINITION DES DONNEES UTILISATEUR -->
+	<userInfos>
+		<item name="departement" mapTo="position">
+			<label>departement</label>
+			<type>text</type>
+		</item>
+		<item name="secretaire">
+			<label>Secrétaire</label>
+			<type>user</type>
+		</item>
+		<item name="old_responsable">
+			<label>Responsable</label>
+			<type>user</type>
+		</item>
+	</userInfos>
+
+	<!-- DEFINITION DU DOSSIER -->
+	<dataFolder>
+		<item name="nature">
+			<label>Nature des congés</label>
+			<type>text</type>
+		</item>
+		<item name="duree">
+			<label>durée (nombre de jours ouvrés)</label>
+			<type>text</type>
+		</item>
+		<item name="dateDebut">
+			<label>Départ</label>
+			<type>date</type>
+		</item>
+		<item name="dateFin">
+			<label>Retour</label>
+			<type>date</type>
+		</item>
+		<item name="commentaires">
+			<label>Commentaires</label>
+			<type>text</type>
+		</item>
+		<item name="responsable">
+			<label>Responsable</label>
+			<type>user</type>
+		</item>
+		<!--<item name="fichier">
+			<label>Fichier</label>
+			<type>file</type>
+		</item>-->
+	</dataFolder>
+
+	<!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<presentation>
+		<title role="Employe">
+		    Congés du ${instance.dateDebut} au ${instance.dateFin}
+		</title>
+		<title role="Responsable">Demande de ${action.Creation.actor}</title>
+		<title role="supervisor">Demande de ${action.Creation.actor}</title>
+		<title role="Secretaire">Demande de ${action.Creation.actor}</title>
+		<columns role="Employe">
+			<column item="dateDebut"/>
+			<column item="dateFin"/>
+		</columns>
+		<columns role="Responsable">
+			<column item="dateDebut"/>
+			<column item="dateFin"/>
+		</columns>
+		<columns role="Secretaire">
+			<column item="dateDebut"/>
+			<column item="dateFin"/>
+		</columns>
+	</presentation>
+
+	<!-- DESCRIPTION DES PARTICIPANTS -->
+	<participants>
+		<participant name="Demandeur" state="" role="Employe">
+			<label>Demandeur</label>
+		</participant>
+	</participants>
+
+	<!-- DESCRIPTION DES ÉTATS -->
+	<states>
+		<state name="AttenteValidation">
+			<label>En attente de validation</label>
+			<workingUsers role="Responsable">
+				<relatedUser folderItem="responsable"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Employe"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Accepter"/>
+				<allow action="Refuser"/>
+			</allowedActions>
+		</state>
+
+		<state name="Acceptee" timeoutAction="Supprimer" timeoutInterval="1">
+			<label>Acceptée</label>
+			<workingUsers role="Secretaire">
+				<relatedUser participant="Demandeur" relation="secretaire"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Employe"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Valider"/>
+			</allowedActions>
+		</state>
+
+		<state name="Traitee">
+			<label>Acceptée et validée</label>
+			<workingUsers role="Employe">
+				<relatedUser participant="Demandeur"/>
+			</workingUsers>
+			<allowedActions>
+				<allow action="Supprimer"/>
+			</allowedActions>
+		</state>
+
+		<state name="Refusee">
+			<label>Refusée</label>
+			<workingUsers role="Employe">
+				<relatedUser participant="Demandeur"/>
+			</workingUsers>
+			<allowedActions>
+				<allow action="Supprimer"/>
+			</allowedActions>
+		</state>
+
+	</states>
+
+	<!-- DESCRIPTION DES ACTIONS -->
+	<actions>
+		<action name="Creation" form="creation" kind="create">
+			<label>Création</label>
+			<description>Création d'une nouvelle demande.</description>
+			<allowedUsers>
+				<userInRole name="Employe"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="AttenteValidation"/>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Accepter" form="acceptation">
+			<label>Accepter</label>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Acceptee"/>
+					<notify message="Votre demande de congés a été accepté. Cependant, elle doit encore être validée !">
+						<relatedUser participant="Demandeur"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Refuser" form="refus">
+			<label>Refuser</label>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Refusee"/>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Valider" form="validation">
+			<label>Valider</label>
+			<allowedUsers>
+				<userInRole name="Secretaire"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Traitee"/>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Supprimer" kind="delete">
+			<label>Supprimer</label>
+			<allowedUsers>
+				<relatedUser participant="Demandeur"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<kill>true</kill>
+				</consequence>
+			</consequences>
+		</action>
+
+	</actions>
+
+	<!-- DEFINITION DES FORMULAIRES -->
+	<forms>
+		<form name="presentationForm">
+			<title>Demande de congés</title>
+		   <input value="${action.Creation.actor}">
+			   <label>Demandeur</label>
+			</input>
+		   <input item="nature"/>
+			<input item="dateDebut" />
+			<input item="dateFin" />
+			<input item="commentaires" displayerName="textarea"/>
+		   <input value="${action.Creation.date}">
+			   <label>Demande faite le</label>
+			</input>
+		   <input value="${instance.state}"/>
+		   <input value="${action.Accepter.date}">
+			   <label>Congés validés le</label>
+			</input>
+		   <input value="${action.Accepter.actor}">
+			   <label>Responsable</label>
+			</input>
+		</form>
+
+		<form name="printForm" HTMLFileName="/weblib/processManager/DemandeConges/DemandeConges.html">
+		</form>
+
+		<!-- Formulaire de création -->
+		<form name="creation">
+			<title>Demande de congés</title>
+			<input item="nature" mandatory="true"/>
+			<input item="duree" />
+			<input item="dateDebut" mandatory="true"/>
+			<input item="dateFin" mandatory="true"/>
+			<input item="commentaires" displayerName="textarea"/>
+			<input item="responsable" mandatory="true"/>
+			<!--<input item="fichier" mandatory="true"/>-->
+		</form>
+
+		<!-- Formulaire de validation du responsable -->
+		<form name="acceptation">
+			<title>Validation de la demande</title>
+		   <input displayerName="textarea"
+			       value="des congés du ${folder.dateDebut} au ${folder.dateFin} demandés par ${action.Creation.actor} (service : ${action.Creation.actor.departement})">
+			   <label>Acceptation</label>
+			</input>
+			<input item="commentaires" displayerName="textarea"/>
+		</form>
+
+		<!-- Formulaire de refus du responsable -->
+		<form name="refus">
+			<title>Refus de la demande</title>
+		   <input displayerName="textarea"
+			       value="des congés du ${folder.dateDebut} au ${folder.dateFin} demandés par ${action.Creation.actor}">
+			   <label>Refus</label>
+			</input>
+			<input item="commentaires" displayerName="textarea"/>
+		</form>
+
+		<!-- Formulaire permettant a la secretaire de completer la demande -->
+		<form name="validation">
+			<title>Validation de la demande</title>
+		   <input displayerName="textarea"
+			       value="du ${folder.dateDebut} au ${folder.dateFin} demandés par ${action.Creation.actor}">
+			   <label>Congés</label>
+			</input>
+			<input item="nature" mandatory="true"/>
+			<input item="duree" />
+			<input item="commentaires" displayerName="textarea"/>
+		</form>
+
+
+	</forms>
+</processModel>
