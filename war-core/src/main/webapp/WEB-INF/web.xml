@@ -330,6 +330,45 @@
     <display-name>MyLinksPeasRequestRouter</display-name>
     <servlet-class>com.silverpeas.myLinksPeas.servlets.MyLinksPeasRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>InterestCenterPeasRequestRouter</servlet-name>
+    <display-name>InterestCenterPeasRequestRouter</display-name>
+    <servlet-class>com.silverpeas.interestCenterPeas.servlets.InterestCenterPeasRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>NotificationUserRequestRouter</servlet-name>
+    <display-name>NotificationUserRequestRouter</display-name>
+    <servlet-class>com.stratelia.silverpeas.notificationUser.servlets.NotificationUserRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>TemplateDesignerRequestRouter</servlet-name>
+    <display-name>TemplateDesignerRequestRouter</display-name>
+    <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>ThesaurusRequestRouter</servlet-name>
+    <display-name>ThesaurusRequestRouter</display-name>
+    <servlet-class>com.silverpeas.thesaurusPeas.servlets.ThesaurusRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>VersioningRequestRouter</servlet-name>
+    <display-name>VersioningRequestRouter</display-name>
+    <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.VersioningRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
+    <display-name>SilverStatisticsPeasRequestRouter</display-name>
+    <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.SilverStatisticsPeasRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>ChartServlet</servlet-name>
+    <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.ChartServlet</servlet-class>
+  </servlet>
+  
+  
+  
+  
+  
   
   
   
@@ -544,7 +583,37 @@
     <servlet-name>MyLinksPeasRequestRouter</servlet-name>
     <url-pattern>/RmyLinksPeas/*</url-pattern>
   </servlet-mapping>
-     
+  <servlet-mapping>
+    <servlet-name>InterestCenterPeasRequestRouter</servlet-name>
+    <url-pattern>/RinterestCenterPeas/*</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>NotificationUserRequestRouter</servlet-name>
+    <url-pattern>/RnotificationUser/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TemplateDesignerRequestRouter</servlet-name>
+    <url-pattern>/RtemplateDesigner/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ThesaurusRequestRouter</servlet-name>
+    <url-pattern>/Rthesaurus/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>VersioningRequestRouter</servlet-name>
+    <url-pattern>/RVersioningPeas/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
+    <url-pattern>/RsilverStatisticsPeas/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ChartServlet</servlet-name>
+    <url-pattern>/ChartServlet/*</url-pattern>
+  </servlet-mapping>
+  
+  
+  
   <jsp-config>
     <taglib>
       <!-- taglib for portlet v1.0 -->
