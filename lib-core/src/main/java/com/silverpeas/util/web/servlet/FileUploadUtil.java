@@ -54,60 +54,64 @@ public class FileUploadUtil {
           "Error uploading files", fuex);
     }
   }
-  
-  public static String getParameter(List<FileItem> items, String parameterName)
-	{
-		Iterator<FileItem> iter = items.iterator();
-		while (iter.hasNext()) {
-			FileItem item = iter.next();
-			if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-				return item.getString();
-			}
-		}
-		return null;
-	}
-	
-  public static FileItem getFile(List<FileItem> items, String parameterName)
-	{
-		Iterator<FileItem> iter = items.iterator();
-		while (iter.hasNext()) {
-			FileItem item = iter.next();
-			if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-				return item;
-			}
-		}
-		return null;
-	}
-  
-  public static FileItem getFile(List<FileItem> items)
-	{
-		Iterator<FileItem> iter = items.iterator();
-		while (iter.hasNext()) {
-			FileItem item = iter.next();
-			if (!item.isFormField()) {
-				return item;
-			}
-		}
-		return null;
-	}
-  
-  public static FileItem getFile(HttpServletRequest request) throws UtilException
-	{
-	  	List<FileItem> items = FileUploadUtil.parseRequest(request);
-		
-		return  FileUploadUtil.getFile(items);
-	}
-  
-  public static String getFileName(FileItem file)
-  {
-	  if (file == null)
-		  return "";
-	  
-	  String fullFileName = file.getName();
-	  if (fullFileName == null)
-		  return "";
-	  
-	  return fullFileName.substring(fullFileName.lastIndexOf(File.separator)+1, fullFileName.length());
+
+  public static String getParameter(List<FileItem> items, String parameterName) {
+    Iterator<FileItem> iter = items.iterator();
+    while (iter.hasNext()) {
+      FileItem item = iter.next();
+      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
+        return item.getString();
+      }
+    }
+    return null;
   }
 
+  public static String getOldParameter(List items, String parameterName) {
+    return getParameter((List<FileItem>) items, parameterName);
+  }
+
+  public static FileItem getOldFile(List items, String parameterName) {
+    return getFile((List<FileItem>) items, parameterName);
+  }
+
+  public static FileItem getFile(List<FileItem> items, String parameterName) {
+    Iterator<FileItem> iter = items.iterator();
+    while (iter.hasNext()) {
+      FileItem item = iter.next();
+      if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  public static FileItem getFile(List<FileItem> items) {
+    Iterator<FileItem> iter = items.iterator();
+    while (iter.hasNext()) {
+      FileItem item = iter.next();
+      if (!item.isFormField()) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  public static FileItem getFile(HttpServletRequest request) throws UtilException {
+    List<FileItem> items = FileUploadUtil.parseRequest(request);
+
+    return FileUploadUtil.getFile(items);
+  }
+
+  public static String getFileName(FileItem file) {
+    if (file == null) {
+      return "";
+    }
+
+    String fullFileName = file.getName();
+    if (fullFileName == null) {
+      return "";
+    }
+
+    return fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName.length());
+  }
 }
