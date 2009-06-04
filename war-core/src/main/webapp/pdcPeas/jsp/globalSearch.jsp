@@ -1,8 +1,8 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager,
 				 java.net.URLEncoder,
 				 java.util.ArrayList,
-                 com.stratelia.silverpeas.util.SilverStringTokenizer,
-                 com.silverpeas.pdcSubscription.model.PDCSubscription"%>
+         java.util.StringTokenizer,
+         com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%!

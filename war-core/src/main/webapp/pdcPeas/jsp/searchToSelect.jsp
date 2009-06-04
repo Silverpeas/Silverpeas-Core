@@ -178,7 +178,6 @@ if (allSpaces != null){
 	// recupere le separateur
 	separatorData = (String) allSpaces.remove(0);
 }
-SilverStringTokenizer st = null;
 String spaceName = "";
 String spaceLab = "";
 String selected = "";
