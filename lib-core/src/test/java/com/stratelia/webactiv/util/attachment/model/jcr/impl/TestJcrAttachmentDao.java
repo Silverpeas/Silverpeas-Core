@@ -17,15 +17,15 @@ import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
+import static com.silverpeas.util.PathTestUtil.*;
 
 public class TestJcrAttachmentDao extends AbstractJcrTestCase {
+
   private static final String instanceId = "kmelia57";
-
-  private static final String UPLOAD_DIR = "c:\\tmp\\uploads\\" + instanceId
-      + "\\Attachment\\tests\\simpson\\bart\\";
-
+  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" +
+      SEPARATOR + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" +
+      SEPARATOR + "simpson" + SEPARATOR + "bart" + SEPARATOR;
   private Calendar calend;
-
   private JcrAttachmentDao jcrAttachmentDao;
 
   public void setJcrAttachmentDao(JcrAttachmentDao jcrAttachmentDao) {
@@ -110,48 +110,47 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       Node pathNode = session.getRootNode().getNode("attachments");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode("attachments");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode("attachments/" + instanceId);
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/Attachment");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/Attachment/tests");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/Attachment/tests/simpson");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/Attachment/tests/simpson/bart");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          pathNode.getPrimaryNodeType().getName());
       Node fileNode = session.getRootNode().getNode(
-          "attachments/" + instanceId
-              + "/Attachment/tests/simpson/bart/100/frenchScrum.odp");
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/frenchScrum.odp");
       assertNotNull(fileNode);
-      assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType().getName());
       Node content = fileNode.getNode(JcrConstants.JCR_CONTENT);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertNotNull(content.getProperty(JcrConstants.JCR_MIMETYPE));
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
           JcrConstants.JCR_MIMETYPE).getString());
@@ -183,16 +182,16 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       // update of the content
       Node content = session.getRootNode().getNode(
-          "attachments/" + instanceId
-              + "/Attachment/tests/simpson/bart/100/test.txt/"
-              + JcrConstants.JCR_CONTENT);
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/test.txt/" +
+          JcrConstants.JCR_CONTENT);
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
           JcrConstants.JCR_MIMETYPE).getString());
-      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne."
-          .getBytes());
+      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".
+          getBytes());
       content.setProperty(JcrConstants.JCR_DATA, in);
       session.save();
       jcrAttachmentDao.updateAttachment(session, attachment, null);
@@ -226,13 +225,13 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       attachment.setTitle("Test OpenOffice");
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       Node fileNode = session.getRootNode().getNode(
-          "attachments/" + instanceId
-              + "/Attachment/tests/simpson/bart/100/test_update.txt");
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/test_update.txt");
       fileNode.addMixin(JcrConstants.MIX_LOCKABLE);
       session.save();
       fileNode = session.getRootNode().getNode(
-          "attachments/" + instanceId
-              + "/Attachment/tests/simpson/bart/100/test_update.txt");
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/test_update.txt");
       assertNotNull(fileNode);
       assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType().getName());
       assertFalse(fileNode.isLocked());
@@ -240,10 +239,11 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertTrue(fileNode.isLocked());
       session2 = BasicDaoFactory.getSystemSession();
       Node fileNode2 = session2.getRootNode().getNode(
-          "attachments/" + instanceId
-              + "/Attachment/tests/simpson/bart/100/test_update.txt");  
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/test_update.txt");
       assertNotNull(fileNode2);
-      assertEquals(JcrConstants.NT_FILE, fileNode2.getPrimaryNodeType().getName());
+      assertEquals(JcrConstants.NT_FILE,
+          fileNode2.getPrimaryNodeType().getName());
       assertTrue(fileNode2.isLocked());
       BasicDaoFactory.logout(session);
       session = null;
@@ -277,28 +277,27 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       // update of the content
       Node content = session.getRootNode().getNode(
-          "attachments/" + instanceId
-              + "/Attachment/tests/simpson/bart/100/test_update.txt/"
-              + JcrConstants.JCR_CONTENT);
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/test_update.txt/" +
+          JcrConstants.JCR_CONTENT);
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
           JcrConstants.JCR_MIMETYPE).getString());
       assertEquals(
           "Ceci est un test.",
-          readFileFromNode(session
-              .getRootNode()
-              .getNode(
-                  "attachments/kmelia57/Attachment/tests/simpson/bart/100/test_update.txt")));
+          readFileFromNode(
+          session.getRootNode().getNode(
+          "attachments/kmelia57/Attachment/tests/simpson/bart/100/test_update.txt")));
       createTempFile(UPLOAD_DIR + "test.txt", "Le test fonctionne.");
       jcrAttachmentDao.updateNodeAttachment(session, attachment, null);
       String result = readFile(UPLOAD_DIR + "test.txt");
       assertEquals("Le test fonctionne.", result);
-      assertEquals("Le test fonctionne.", readFileFromNode(session
-          .getRootNode().getNode(
-              "attachments/" + instanceId
-                  + "/Attachment/tests/simpson/bart/100/test_update.txt")));
+      assertEquals("Le test fonctionne.", readFileFromNode(session.getRootNode().
+          getNode(
+          "attachments/" + instanceId +
+          "/Attachment/tests/simpson/bart/100/test_update.txt")));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -327,14 +326,14 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       // delete the content
       Node content = session.getRootNode().getNode(
-          "attachments/kmelia57/"
-              + "Attachment/tests/simpson/bart/100/testBis.txt/"
-              + JcrConstants.JCR_CONTENT);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+          "attachments/kmelia57/" +
+          "Attachment/tests/simpson/bart/100/testBis.txt/" +
+          JcrConstants.JCR_CONTENT);
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
           JcrConstants.JCR_MIMETYPE).getString());
       jcrAttachmentDao.deleteAttachmentNode(session, attachment, null);
@@ -343,17 +342,15 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertNotNull(folder);
       try {
         session.getRootNode().getNode(
-            "attachments/kmelia57/Attachment/tests/"
-                + "simpson/bart/100/testBis.txt");
+            "attachments/kmelia57/Attachment/tests/" +
+            "simpson/bart/100/testBis.txt");
         fail("Node still in repository");
       } catch (PathNotFoundException pnfex) {
-
       }
       try {
         folder.getNode("testBis.txt");
         fail("Node still in repository");
       } catch (PathNotFoundException pnfex) {
-
       }
     } finally {
       BasicDaoFactory.logout(session);
@@ -368,12 +365,11 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       JcrAttachmentDaoImpl myDao = (JcrAttachmentDaoImpl) jcrAttachmentDao;
       Node folder = myDao.addFolder(rootNode, "essai");
       assertNotNull(folder);
-      assertEquals(JcrConstants.NT_FOLDER, folder.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER, folder.getPrimaryNodeType().getName());
       Node folder2 = myDao.addFolder(rootNode, "essai");
       assertNotNull(folder2);
-      assertEquals(JcrConstants.NT_FOLDER, folder2.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER,
+          folder2.getPrimaryNodeType().getName());
       assertEquals(folder, folder2);
     } finally {
       BasicDaoFactory.logout(session);
@@ -408,8 +404,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertEquals("testBis.txt", file.getName());
       Node content = file.getNode(JcrConstants.JCR_CONTENT);
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
+          getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
           JcrConstants.JCR_MIMETYPE).getString());
     } finally {
@@ -425,10 +421,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       session.getRootNode().getNode("attachments").remove();
       session.save();
     } catch (PathNotFoundException pex) {
-
     } finally {
       BasicDaoFactory.logout(session);
     }
   }
-
 }

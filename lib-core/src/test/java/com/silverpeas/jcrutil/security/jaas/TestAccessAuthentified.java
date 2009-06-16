@@ -19,6 +19,10 @@ import com.silverpeas.util.MimeTypes;
 
 public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
 
+  static{
+    registred = false;
+  }
+
   private static final String FOLDER_NAME = "SimpleTest";
 
   private static final String FILE_NAME = "MyTest";

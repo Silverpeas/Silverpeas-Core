@@ -1,5 +1,6 @@
 package com.silverpeas.jcrutil.model.impl;
 
+import com.silverpeas.util.PathTestUtil;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,9 +36,9 @@ import org.dbunit.operation.DatabaseOperation;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import com.stratelia.webactiv.util.JNDINames;
+import java.util.Properties;
 
-public abstract class AbstractJcrTestCase extends
-    AbstractDependencyInjectionSpringContextTests {
+public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpringContextTests {
 
   public AbstractJcrTestCase() {
     super();
@@ -46,9 +47,7 @@ public abstract class AbstractJcrTestCase extends
   public AbstractJcrTestCase(String name) {
     super(name);
   }
-
   protected Calendar calend;
-
   protected DataSource datasource;
 
   public DataSource getDataSource() {
@@ -62,14 +61,21 @@ public abstract class AbstractJcrTestCase extends
       env.put(Context.INITIAL_CONTEXT_FACTORY,
           "com.sun.jndi.fscontext.RefFSContextFactory");
       InitialContext ic = new InitialContext(env);
+      Properties properties = new Properties();
+      properties.load(PathTestUtil.class.getClassLoader().
+          getResourceAsStream("jdbc.properties"));
       // Construct BasicDataSource reference
       Reference ref = new Reference("javax.sql.DataSource",
           "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-      ref.add(new StringRefAddr("driverClassName", "org.postgresql.Driver"));
+      ref.add(new StringRefAddr("driverClassName", properties.getProperty(
+          "driverClassName", "org.postgresql.Driver")));
       ref.add(new StringRefAddr("url",
-          "jdbc:postgresql://localhost:5432/postgres"));
-      ref.add(new StringRefAddr("username", "postgres"));
-      ref.add(new StringRefAddr("password", "postgres"));
+          properties.getProperty(
+          "url", "jdbc:postgresql://localhost:5432/postgres")));
+      ref.add(new StringRefAddr("username", properties.getProperty(
+          "username", "postgres")));
+      ref.add(new StringRefAddr("password", properties.getProperty(
+          "password", "postgres")));
       ref.add(new StringRefAddr("maxActive", "4"));
       ref.add(new StringRefAddr("maxWait", "5000"));
       ref.add(new StringRefAddr("removeAbandoned", "true"));
@@ -78,12 +84,14 @@ public abstract class AbstractJcrTestCase extends
       ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
     } catch (NamingException nex) {
       nex.printStackTrace();
+    } catch (IOException nex) {
+      nex.printStackTrace();
     }
   }
 
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this
-        .getClass().getResourceAsStream("test-attachment-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.
+        getClass().getResourceAsStream("test-attachment-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -167,10 +175,12 @@ public abstract class AbstractJcrTestCase extends
     }
   }
 
+  @Override
   protected String[] getConfigLocations() {
-    return new String[] { "spring-in-memory-jcr.xml" };
+    return new String[]{"spring-in-memory-jcr.xml"};
   }
 
+  @Override
   protected void onSetUp() {
     System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,
         "com.sun.jndi.fscontext.RefFSContextFactory");
@@ -199,6 +209,7 @@ public abstract class AbstractJcrTestCase extends
     }
   }
 
+  @Override
   protected void onTearDown() throws Exception {
     clearRepository();
     IDatabaseConnection connection = null;

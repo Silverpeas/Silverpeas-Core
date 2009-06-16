@@ -23,7 +23,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
   }
 
   protected String[] getConfigLocations() {
-    return new String[] { "spring-in-memory.xml" };
+    return new String[] { "spring-in-memory-jcr.xml" };
   }
 
   protected IDataSet getDataSet() throws Exception {

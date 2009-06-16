@@ -971,6 +971,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 							+ MS_OFFICE_MIME_TYPES.contains(type));
 			isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(type);
 		}
+
 		return isOfficeDocument;
 	}
 
@@ -988,6 +989,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 		if (!directory.endsWith(File.separator)) {
 			directory = directory + File.separator;
 		}
+        directory = directory.replace('/', File.separatorChar);
 		return directory + getPhysicalName(language);
 	}
 
