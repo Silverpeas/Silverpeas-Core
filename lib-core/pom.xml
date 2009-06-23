@@ -199,7 +199,7 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
-     <filters>
+    <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
     <plugins>

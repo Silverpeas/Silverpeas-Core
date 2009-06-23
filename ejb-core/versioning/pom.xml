@@ -60,5 +60,4 @@
       <artifactId>dbunit</artifactId>
     </dependency>
   </dependencies>
-
 </project>

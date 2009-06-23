@@ -49,7 +49,7 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>statistic</artifactId>
       <classifier>client</classifier>
