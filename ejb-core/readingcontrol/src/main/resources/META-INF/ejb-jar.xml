@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+<ejb-jar>
+  <description>no description</description>
+  <display-name>readingControlJar</display-name>
+  <enterprise-beans>
+    <session>
+      <description>no description</description>
+      <display-name>ejb/ReadingControlBm</display-name>
+      <ejb-name>ejb/ReadingControlBm</ejb-name>
+      <home>com.stratelia.webactiv.util.readingControl.control.ReadingControlBmHome</home>
+      <remote>com.stratelia.webactiv.util.readingControl.control.ReadingControlBm</remote>
+      <ejb-class>com.stratelia.webactiv.util.readingControl.control.ReadingControlBmEJB</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Container</transaction-type>
+      <ejb-ref>
+	<ejb-ref-name>ejb/StatisticBm</ejb-ref-name>
+	<ejb-ref-type>Session</ejb-ref-type>
+	<home>com.stratelia.webactiv.util.statistic.control.StatisticBmHome</home>
+	<remote>com.stratelia.webactiv.util.statistic.control.StatisticBm</remote>
+	<ejb-link>ejb/StatisticBm</ejb-link>
+      </ejb-ref>
+      <resource-ref>
+	<res-ref-name>jdbc/Silverpeas</res-ref-name>
+	<res-type>javax.sql.DataSource</res-type>
+	<res-auth>Container</res-auth>
+      </resource-ref>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+	<ejb-name>ejb/ReadingControlBm</ejb-name>
+	<method-intf>Remote</method-intf>
+	<method-name>*</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+	<ejb-name>ejb/ReadingControlBm</ejb-name>
+	<method-intf>Remote</method-intf>
+	<method-name>removeReadingControl</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+	<ejb-name>ejb/ReadingControlBm</ejb-name>
+	<method-intf>Remote</method-intf>
+	<method-name>removeReadingControlByPublication</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+	<ejb-name>ejb/ReadingControlBm</ejb-name>
+	<method-intf>Remote</method-intf>
+	<method-name>addReadingControls</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>   
+    <container-transaction>
+      <method>
+	<ejb-name>ejb/ReadingControlBm</ejb-name>
+	<method-intf>Remote</method-intf>
+	<method-name>removeReadingControlByUser</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>
