@@ -1,4 +1,6 @@
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion,com.stratelia.silverpeas.versioning.model.DocumentPK"%>
+<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion,
+         com.stratelia.silverpeas.versioning.model.DocumentPK,
+         com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkVersion.jsp"%>
 
@@ -39,8 +41,7 @@
   List documents = versioningSC.getDocuments(foreignKey);
   Iterator documents_iterator = documents.iterator();
 %>
-
-<%@page import="com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException"%><script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language='Javascript'>
 function open_pu_window(url,docid)
 {
