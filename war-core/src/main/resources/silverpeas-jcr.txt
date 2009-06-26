@@ -3,6 +3,12 @@
 <nt='http://www.jcp.org/jcr/nt/1.0'>
 <slv='http://www.silverpeas.com/jcr/1.0'>
 
+
+/* Mixin ownable */
+[slv:ownable]
+  mixin
+  - slv:owner (STRING)
+
 /* XML Forms data */
 [slv:xmlFormData] >  nt:unstructured
 

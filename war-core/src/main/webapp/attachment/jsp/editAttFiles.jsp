@@ -115,7 +115,7 @@ function handleError() {
 	function checkoutOfficeFile(attachmentId)
 	{
 		document.attachmentForm.action = "<%=m_Context%>/attachment/jsp/checkOut.jsp";
-    	document.attachmentForm.IdAttachment.value = attachmentId;
+    document.attachmentForm.IdAttachment.value = attachmentId;
 		document.attachmentForm.submit();
 	}
 
@@ -145,7 +145,7 @@ function handleError() {
 			document.attachmentForm.submit();
 		}
 	}
-
+  
   function checkinOpenOfficeFile(attachmentId, fileName) {
     attachmentId_bis = attachmentId;
     filename_bis = fileName;
@@ -219,6 +219,12 @@ function handleError() {
 	{
 		messageObj.close();	
 	}
+
+	function closeMessage(force)
+	{
+    document.attachmentForm.force_release.value=force;
+		messageObj.close(); 
+	}
 	
 	var attachmentId 	= "-1";
 	var attachmentName	= "";
@@ -248,7 +254,7 @@ function handleError() {
 	{
 		messageObj.setSize(300,80);
 		messageObj.setCssClassMessageBox(false);   
-		messageObj.setSource('<%=m_Context%>/attachment/jsp/warning_locked.jsp');
+		messageObj.setSource('<%=m_Context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>' );
 		messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
 		messageObj.display();
 	}
@@ -282,11 +288,19 @@ function handleError() {
   <tr>
     <td><!--formulaire de gestion des fichiers joints -->
     <table border="0" cellspacing="3" cellpadding="0" width="100%">
-      <form name="attachmentForm" action="<%=m_Context%>/attachment/jsp/removeFile.jsp" method="POST"><input type="hidden" name="Id" value="<%=id%>"> <input type="hidden"
-        name="ComponentId" value="<%=componentId%>"> <input type="hidden" name="Context" value="<%=context%>"> <input type="hidden" name="Url" value="<%=url%>"> <input
-        type="hidden" name="IndexIt" value="<%=indexIt%>"> <input type="hidden" name="IdAttachment" value=""> <input type="hidden" name="DocumentId"> <input type="hidden"
-        name="PubId" value="<%=id%>"> <input type="hidden" name="UserId" value="<%=userId%>"> <input type="hidden" name="FileLanguage" value="<%=contentLanguage%>"> <input
-        type="hidden" name="update_attachment" value="false">
+      <form name="attachmentForm" action="<%=m_Context%>/attachment/jsp/removeFile.jsp" method="POST">
+        <input type="hidden" name="Id" value="<%=id%>" />
+        <input type="hidden" name="ComponentId" value="<%=componentId%>" />
+        <input type="hidden" name="Context" value="<%=context%>" />
+        <input type="hidden" name="Url" value="<%=url%>" />
+        <input type="hidden" name="IndexIt" value="<%=indexIt%>" /> 
+        <input type="hidden" name="IdAttachment" value="" /> 
+        <input type="hidden" name="DocumentId"/> 
+        <input type="hidden" name="PubId" value="<%=id%>" />
+        <input type="hidden" name="UserId" value="<%=userId%>" /> 
+        <input type="hidden" name="FileLanguage" value="<%=contentLanguage%>" />
+        <input type="hidden" name="update_attachment" value="false" />
+        <input type="hidden" name="force_release" value="false" />
       <tr>
         <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>"></td>
       </tr>
@@ -452,8 +466,8 @@ function handleError() {
                 && attachmentDetail.isOfficeDocument()
                 && ClientBrowserUtil.isInternetExplorer(request)
                 && ClientBrowserUtil.isWindows(request)
-                && (userId.equals(attachmentDetail.getWorkerId()) || profile
-                    .equals("admin"))
+                && (userId.equals(attachmentDetail.getWorkerId()) ||
+                    "admin".equals(profile))
                 && (onlineEditingEnable || !webdavEditingEnable)) {
               //Checkin allowed
               Icon checkinIcon = iconPane.addIcon();
@@ -477,8 +491,7 @@ function handleError() {
               Icon checkinIcon = iconPane.addIcon();
               checkinIcon.setProperties(m_Context + "/util/icons/checkinFile.gif",
                   messages.getString("checkIn"),
-                  "javascript:onClick=checkinOfficeFile('" + attachmentId + "','"
-                      + Encode.javaStringToJsString(logicalName) + "');");
+                  "javascript:onClick=checkinOfficeFile('" + attachmentId + "');");
             }
 
             Icon updateIcon = iconPane.addIcon();

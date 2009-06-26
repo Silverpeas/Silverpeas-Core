@@ -47,7 +47,8 @@ public class MSdocumentPropertiesManager {
 	    	inputStream		=	new	FileInputStream(new File(fileName));
 	    	POIFSFileSystem fs			=	new POIFSFileSystem(inputStream);
 	    	
-			DirectoryEntry 	directory	=	fs.getRoot();
+//			DirectoryEntry 	directory	=	fs.getRoot();
+			DirectoryNode 	directory	=	fs.getRoot();
 			DocumentEntry document		=	(DocumentEntry)directory.getEntry("\005SummaryInformation");
 			stream	=	new	DocumentInputStream(document);
 			ps	=	PropertySetFactory.create(stream);

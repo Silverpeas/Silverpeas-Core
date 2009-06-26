@@ -52,15 +52,15 @@ public class TestAttachmentDetail extends TestCase {
         ".oasis.opendocument.presentation&Directory=Attachment\\tests\\simpson\\" +
         "bart\\", attachment.getOnlineURL());
     assertEquals(
-        "frenchScrum.odp?ComponentId=kmelia57&SourceFile=abf562dee7d07e1" +
-        "b5af50a2d1b3d724ef5a88869&MimeType=application/vnd.oasis.opendocument." +
-        "presentation&Directory=Attachment\\tests\\simpson\\bart\\",
+        "/silverpeas/attached/file/componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/name/frenchScrum.odp",
         attachment.getWebURL());
     assertEquals(
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
         attachment.getJcrPath(null));
     assertEquals(
-        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
+        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
+        "/simpson/bart/100/frenchScrum.odp",
         attachment.getWebdavUrl(null));
     assertEquals(
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
@@ -69,7 +69,8 @@ public class TestAttachmentDetail extends TestCase {
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/en/frenchScrum.odp",
         attachment.getJcrPath("en"));
     assertEquals(
-        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests/simpson/bart/100/en/frenchScrum.odp",
+        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
+        "/simpson/bart/100/en/frenchScrum.odp",
         attachment.getWebdavUrl("en"));
     assertEquals(
         UPLOAD_DIR + "abf562dee7d07e1b5af50a2d1b3d724ef5a88869",
@@ -106,15 +107,15 @@ public class TestAttachmentDetail extends TestCase {
         ".oasis.opendocument.presentation&Directory=Attachment\\tests\\simpson\\" +
         "bart\\", attachment.getOnlineURL());
     assertEquals(
-        "frenchScrum.odp?ComponentId=kmelia57&SourceFile=abf562dee7d07e1" +
-        "b5af50a2d1b3d724ef5a88869&MimeType=application/vnd.oasis.opendocument." +
-        "presentation&Directory=Attachment\\tests\\simpson\\bart\\",
+        "/silverpeas/attached/file/componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/name/frenchScrum.odp",
         attachment.getWebURL());
     assertEquals(
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
         attachment.getJcrPath(null));
     assertEquals(
-        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
+        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
+        "/simpson/bart/100/frenchScrum.odp",
         attachment.getWebdavUrl(null));
     assertEquals(
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
@@ -123,13 +124,14 @@ public class TestAttachmentDetail extends TestCase {
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
         attachment.getJcrPath("  "));
     assertEquals(
-        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
+        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
+        "/simpson/bart/100/frenchScrum.odp",
         attachment.getWebdavUrl("  "));
     assertEquals(
         UPLOAD_DIR + "abf562dee7d07e1b5af50a2d1b3d724ef5a88869",
         attachment.getAttachmentPath(null));
     assertEquals(
-         UPLOAD_DIR + "abf562dee7d07e1b5af50a2d1b3d724ef5a88869",
+        UPLOAD_DIR + "abf562dee7d07e1b5af50a2d1b3d724ef5a88869",
         attachment.getAttachmentPath("de"));
   }
 
@@ -160,14 +162,15 @@ public class TestAttachmentDetail extends TestCase {
         "application/msword&Directory=Attachment\\tests\\simpson\\" + "bart\\",
         attachment.getOnlineURL());
     assertEquals(
-        "Spec-Silverpeas-p3-1_2.doc?ComponentId=kmelia57&SourceFile=" +
-        "abf562dee7d07e1b5af50a2d1b3d724ef5a88378&MimeType=application/msword" +
-        "&Directory=Attachment\\tests\\simpson\\bart\\", attachment.getWebURL());
+        "/silverpeas/attached/file/componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/name/Spec-Silverpeas-p3-1_2.doc",
+        attachment.getWebURL());
     assertEquals(
         "attachments/kmelia57/Attachment/tests/simpson/bart/100/Spec-Silverpeas-p3-1_2.doc",
         attachment.getJcrPath(null));
     assertEquals(
-        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests/simpson/bart/100/Spec-Silverpeas-p3-1_2.doc",
+        "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
+        "/simpson/bart/100/Spec-Silverpeas-p3-1_2.doc",
         attachment.getWebdavUrl(null));
   }
 }

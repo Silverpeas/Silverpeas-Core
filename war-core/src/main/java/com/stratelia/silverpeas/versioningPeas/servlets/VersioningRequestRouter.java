@@ -15,7 +15,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -32,6 +31,7 @@ import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionControll
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public class VersioningRequestRouter extends ComponentRequestRouter {
   public ComponentSessionController createComponentSessionController(
@@ -317,10 +317,16 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String userId = componentSC.getUserId();
         String radio = request.getParameter("radio");
         String comments = request.getParameter("comments");
+        boolean force = "true".equalsIgnoreCase(request.getParameter("force_release"));
         destination = "/versioningPeas/jsp/documentSaved.jsp";
         if(!saveOnline(document, versioningSC, comments, radio, Integer
-            .parseInt(userId))) {
-          destination = "/versioningPeas/jsp/documentLocked.jsp";
+            .parseInt(userId), force)) {
+          if("admin".equals(componentSC.getUserRoleLevel())) {
+            //TODO MANU ecrire la page pour ressoumettre en forcant
+            destination = "/versioningPeas/jsp/forceDocumentLocked.jsp";
+          }else {
+            destination = "/versioningPeas/jsp/documentLocked.jsp";
+          }
         }
       } else if (function.equals("Checkout")) {
         String documentId = request.getParameter("DocId");
@@ -373,21 +379,12 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         "Destination=" + destination);
     return destination;
   }
-
-  /**
-   * 
-   * @param document
-   * @param versioningSC
-   * @param comments
-   * @param radio
-   * @param userId
-   * @throws RemoteException
-   */
+  
   protected boolean saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
-      int userId) throws RemoteException {
+      int userId, boolean force) throws RemoteException {
     DocumentVersion lastVersion = versioningSC.getLastVersion(document.getPk());
-    if(RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+    if(!force && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
       return false;
     }
     String physicalName = new Long(new Date().getTime()).toString()
@@ -404,6 +401,21 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     versioningSC.addNewDocumentVersion(newVersion);
     versioningSC.checkDocumentIn(document.getPk(), userId);
     return true;
+  }
+
+  /**
+   * 
+   * @param document
+   * @param versioningSC
+   * @param comments
+   * @param radio
+   * @param userId
+   * @throws RemoteException
+   */
+  protected boolean saveOnline(Document document,
+      VersioningSessionController versioningSC, String comments, String radio,
+      int userId) throws RemoteException {
+    return saveOnline(document, versioningSC, comments, radio, userId, false);
   }
 
   /**
@@ -480,7 +492,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     String publicationId = getParameterValue(items, "publicationId");
     String description = getParameterValue(items, "description");
 
-    ForeignPK pubPK = new ForeignPK(publicationId, versioningSC.getComponentId());
+    PublicationPK pubPK = new PublicationPK(publicationId, versioningSC
+        .getComponentId());
     Document document = new Document(docPK, pubPK, name, description, 0,
         new Integer(versioningSC.getUserId()).intValue(), new Date(), comments,
         versioningSC.getComponentId(), null, null, 0, new Integer(

@@ -18,13 +18,13 @@ public class RestRequest {
   public static final String DELETE_ACTION = "delete";
 
   private String id;
-  private Map elements;
+  private Map<String, String[]> elements;
   private int action;
   private HttpServletRequest request;
 
   public RestRequest(HttpServletRequest request, String componentId) {
     this.request = request;
-    elements = new HashMap(10);
+    elements = new HashMap<String, String[]>(10);
     if ("POST".equalsIgnoreCase(request.getMethod())) {
       action = CREATE;
     } else if ("GET".equalsIgnoreCase(request.getMethod())) {
@@ -70,7 +70,7 @@ public class RestRequest {
         key = value;
         isKey = false;
       } else {
-        this.elements.put(key, value);
+        this.elements.put(key, new String[] { value });
         SilverTrace.debug("mailingList", "RestRequest()",
             "root.MSG_GEN_ENTER_METHOD", key + '=' + value);
         isKey = true;
@@ -79,18 +79,18 @@ public class RestRequest {
     this.elements.putAll(request.getParameterMap());
   }
 
-  public Map getElements() {
+  public Map<String, String[]> getElements() {
     return this.elements;
   }
 
   public String getElementValue(String name) {
-    return (String) this.getElements(name)[0];
+    if (this.elements.containsKey(name)) {
+      return this.getElements(name)[0];
+    }
+    return null;
   }
 
   public String[] getElements(String name) {
-    if (this.elements.get(name) instanceof String) {
-      return new String[] { (String) this.elements.get(name) };
-    }
     return (String[]) this.elements.get(name);
   }
 

@@ -187,6 +187,9 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
   protected Node addFile(Node folder, DocumentVersion document)
       throws RepositoryException, IOException {
     String escapedName = StringUtil.escapeQuote(document.getLogicalName());
+    if(folder.hasNode(escapedName)) {
+      folder.getNode(escapedName).remove();
+    }
     Node fileNode = folder.addNode(escapedName, JcrConstants.NT_FILE);
     if (document.getAuthorId() > 0) {
       fileNode.addMixin(JcrConstants.SLV_OWNABLE_MIXIN);

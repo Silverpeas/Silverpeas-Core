@@ -1,8 +1,8 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
+<%@ page import="com.stratelia.silverpeas.util.SilverStringTokenizer"%>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="java.util.StringTokenizer"%>
 
 <%
   String id				= null;
@@ -104,7 +104,7 @@
 		if (actifyPublisherEnable)
 		{
 			String extensions = settings.getString("Actify3dFiles");
-			StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
+			SilverStringTokenizer tokenizer = new SilverStringTokenizer(extensions, ",");
 			//3d native file ?
 			boolean fileForActify = false;
 			while (tokenizer.hasMoreTokens() && !fileForActify)

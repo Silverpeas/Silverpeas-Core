@@ -28,7 +28,8 @@
         String idAttachment = request.getParameter("IdAttachment");
         String fileLanguage = request.getParameter("FileLanguage");
         boolean update = Boolean.valueOf(request.getParameter("update_attachment")).booleanValue();
-        if(!AttachmentController.checkinFile(idAttachment, false, update, fileLanguage)) {
+        boolean force = Boolean.valueOf(request.getParameter("force_release")).booleanValue();
+        if(!AttachmentController.checkinFile(idAttachment, false, update, force, fileLanguage)) {
           if(url.indexOf('?') > 0) {
             url = url + '&';
           }else {

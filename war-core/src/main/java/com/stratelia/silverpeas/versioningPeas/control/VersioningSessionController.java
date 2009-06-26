@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.ejb.RemoveException;
@@ -23,6 +22,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.silverpeas.util.SilverStringTokenizer;
 import com.stratelia.silverpeas.versioning.ejb.RepositoryHelper;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
@@ -1705,7 +1705,7 @@ public class VersioningSessionController extends
   public void saveFileForActify(String docId, DocumentVersion docVersion,
       ResourceLocator attachmentSettings) throws IOException, Exception {
     String extensions = attachmentSettings.getString("Actify3dFiles");
-    StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
+    SilverStringTokenizer tokenizer = new SilverStringTokenizer(extensions, ",");
     // 3d native file ?
     boolean fileForActify = false;
     SilverTrace.info("versioningPeas",
@@ -1841,6 +1841,7 @@ public class VersioningSessionController extends
       ArrayList workers) {
     ArrayList mergedWorkers = new ArrayList();
     Worker worker = null;
+    Group group = null;
     TreeMap mapWork = new TreeMap();
 
     int lastIndexWorkers = workers.size();

@@ -78,6 +78,16 @@
     <servlet-class>com.stratelia.webactiv.servlets.TempFileServer</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>FileUploader</servlet-name>
+    <display-name>FileUploader</display-name>
+    <servlet-class>com.stratelia.webactiv.servlets.FileUploader</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>RestOnlineFileServer</servlet-name>
+    <display-name>RestOnlineFileServer</display-name>
+    <servlet-class>com.stratelia.webactiv.servlets.RestOnlineFileServer</servlet-class>
+  </servlet>
+  <servlet>
     <display-name>GoToPublication</display-name>
     <servlet-name>GoToPublication</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.GoToPublication</servlet-class>
@@ -397,6 +407,14 @@
   <servlet-mapping>
     <servlet-name>TempFileServer</servlet-name>
     <url-pattern>/TempFileServer/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>FileUploader</servlet-name>
+    <url-pattern>/FileUploader/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RestOnlineFileServer</servlet-name>
+    <url-pattern>/attached/file/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>GoToPublication</servlet-name>

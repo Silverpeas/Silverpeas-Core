@@ -353,7 +353,7 @@ ArrayLine arrayLine = null; // declare line object of the array
                 <input type="text" name="name" size="50" maxlength="100" value="<%=documentName%>"/>
                 <input type="hidden" name="DocId" size="50" maxlength="100" value="<%=docId%>"/>
                 <input type="hidden" name="VersionType" value="<%=versionType%>"/>
-				<input type="hidden" name="action" value=""/>
+				        <input type="hidden" name="action" value=""/>
             </td>
         </tr>
         <tr>

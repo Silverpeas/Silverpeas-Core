@@ -99,8 +99,7 @@ public class FileRepositoryManager extends Object {
               "util",
               "FileRepositoryManager.getAbsolutePath",
               ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
-      path = path.concat(sDirectoryName[k]);
-      path = path.concat(File.separator);
+      path = path + sDirectoryName[k] + File.separatorChar;
     }
     return path;
   }

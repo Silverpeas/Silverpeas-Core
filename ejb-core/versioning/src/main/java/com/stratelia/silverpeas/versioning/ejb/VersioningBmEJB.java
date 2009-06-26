@@ -126,7 +126,7 @@ public class VersioningBmEJB implements SessionBean {
     	{
     		SilverTrace.debug("versioning", "addDays", "root.MSG_GEN_PARAM_VALUE", "time = " + calendar.getTime());
     		SilverTrace.debug("versioning", "addDays", "root.MSG_GEN_PARAM_VALUE", "nbDay = " + nbDay + " nb = " + nb);
-    		calendar.add(Calendar.DATE, 1);
+    		calendar.add(calendar.DATE, 1);
     		if(calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY)
     		{
     			nb = nb + 1;

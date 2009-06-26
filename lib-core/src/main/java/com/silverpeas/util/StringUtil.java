@@ -14,7 +14,8 @@ public class StringUtil {
   private static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
 
   public static boolean isDefined(String parameter) {
-    return (parameter != null && parameter.length() > 0 && !parameter.equalsIgnoreCase("null"));
+    return (parameter != null && parameter.length() > 0 && !parameter
+        .equalsIgnoreCase("null"));
   }
 
   public static boolean isInteger(String id) {
@@ -23,20 +24,6 @@ public class StringUtil {
       return true;
     } catch (NumberFormatException e) {
       return false;
-    }
-  }
-
-  /**
-   * Parse a String into an int. Returns the default value if the String is incorrect
-   * @param value: the String to be parsed.
-   * @param defaultValue: the value to be returned in case the String is not a valid int.
-   * @return the int correspondind to this String or the default value if the String is not parseable.
-   */
-  public static int parseInteger(String value, int defaultValue) {
-    try {
-      return Integer.parseInt(value);
-    } catch (NumberFormatException e) {
-      return defaultValue;
     }
   }
 
@@ -143,4 +130,5 @@ public class StringUtil {
     }
     return result;
   }
+
 }

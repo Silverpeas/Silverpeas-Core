@@ -85,11 +85,6 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
     Node rootNode = session.getRootNode();
     try {
       Node fileNode = rootNode.getNode(attachment.getJcrPath(language));
-      Node contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
-      if(contentNode.isLocked()) {
-        contentNode.unlock();// Regarder avec LockManager pour forcer la release
-      }
-      contentNode.remove();
       fileNode.remove();
     } catch (PathNotFoundException pex) {
       // Le noeud n'existe pas
@@ -179,7 +174,7 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
     try {
       return parent.getNode(name);
     } catch (PathNotFoundException pnfex) {
-      return parent.addNode(name, "nt:folder");
+      return parent.addNode(name, JcrConstants.NT_FOLDER);
     }
   }
 
@@ -199,6 +194,9 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
   protected Node addFile(Node folder, AttachmentDetail attachment,
       String language) throws RepositoryException, IOException {
 	  String escapedName = StringUtil.escapeQuote(attachment.getLogicalName(getLanguage(language)));
+	  if(folder.hasNode(escapedName)) {
+	    folder.getNode(escapedName).remove();
+	  }
     Node fileNode = folder.addNode(escapedName, JcrConstants.NT_FILE);
     if(attachment.getWorkerId() != null) {
       fileNode.addMixin(JcrConstants.SLV_OWNABLE_MIXIN);

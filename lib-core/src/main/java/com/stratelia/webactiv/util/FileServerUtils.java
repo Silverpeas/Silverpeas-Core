@@ -3,6 +3,8 @@ package com.stratelia.webactiv.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import com.silverpeas.util.i18n.I18NHelper;
+
 /**
  * 
  * @author NEY
@@ -119,6 +121,37 @@ public class FileServerUtils extends Object {
         .append("?ComponentId=").append(componentId).append("&SourceFile=")
         .append(physicalName).append("&MimeType=").append(mimeType).append(
             "&Directory=").append(subDirectory);
+    return url.toString();
+  }
+
+  public static String getAttachmentURL(String componentId, String logicalName,
+      String attachmentId, String lang) {
+    StringBuffer url = new StringBuffer();
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
+        .getString("ApplicationURL");
+    String language = lang;
+    if (language == null) {
+      lang = I18NHelper.defaultLanguage;
+    }
+    String newLogicalName = replaceSpecialChars(logicalName);
+    url.append(m_context).append("attached/file").append("/componentId/")
+        .append(componentId).append("/attachmentId/").append(attachmentId)
+        .append("/lang/").append(language).append("/name/").append(
+            newLogicalName);
+    return url.toString();
+  }
+
+  public static String getVersionedDocumentURL(String componentId,
+      String logicalName, String documentId, String versionId) {
+    StringBuffer url = new StringBuffer();
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
+        .getString("ApplicationURL");
+
+    String newLogicalName = replaceSpecialChars(logicalName);
+    url.append(m_context).append("attached/file").append("/componentId/")
+    .append(componentId).append("/documentId/").append(documentId)
+    .append("/versionId/").append(versionId).append("/name/").append(
+        newLogicalName);
     return url.toString();
   }
 

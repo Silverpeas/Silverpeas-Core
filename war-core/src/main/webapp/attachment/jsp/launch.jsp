@@ -3,6 +3,7 @@
   response.setHeader("Content-Disposition","inline; filename=launch.jnlp");
 %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="java.security.Key"%>
@@ -74,12 +75,15 @@
 %>
 
 <c:set var="login"><%=java.net.URLEncoder.encode(login)%></c:set>
-<c:set var="encPassword"><%=java.net.URLEncoder.encode(encPassword)%></c:set> 
+<c:set var="encPassword"><%=java.net.URLEncoder.encode(encPassword)%></c:set>
+<fmt:setLocale value="${userLanguage}" />
+<fmt:setBundle basename="com.stratelia.webactiv.util.attachment.Attachment" var="attachmentConfig" />
+<fmt:message key="ms.office.installation.path" bundle="${attachmentConfig}" var="msoffice_path" scope="request"/>
+
 
 <c:set var="baseUrl"><c:out value="${pageScope.httpServerBase}"/></c:set>
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="<c:out value="${baseUrl}${pageContext.request.contextPath}/attachment/webdav" />"
-    href="<c:out value="${baseUrl}${pageContext.request.contextPath}/attachment/jsp/launch.jsp?${pageContext.request.queryString}&terminal=TERM&login=${login}&encPassword=${encPassword}"/>" >
+<jnlp spec="1.0+" codebase="<c:out value="${baseUrl}${pageContext.request.contextPath}/attachment/webdav" />" >
     <information>
         <title>Edition WebDAV</title>
         <vendor>Silverpeas</vendor>
@@ -96,18 +100,20 @@
 	<update check="timeout" policy="always"/>
     <resources>
         <j2se href="http://java.sun.com/products/autodl/j2se" version="1.6+" />
-        <jar href="OpenOfficeLauncher.jar" main="true" download="eager"/>
-		<jar href="commons-codec-1.3.jar" main="false" download="eager"/>
-        <jar href="commons-httpclient.jar" main="false" download="eager"/>
-        <jar href="commons-logging-1.0.4.jar" main="false" download="eager"/>
-        <jar href="jackrabbit-webdav-1.4.jar" main="false" download="eager"/>
-        <jar href="slf4j-log4j12-1.5.0.jar" main="false" download="eager"/>
-        <jar href="slf4j-api-1.5.0.jar" main="false" download="eager"/>
-        <jar href="log4j-1.2.15.jar" main="false" download="eager"/>
+        <jar href="OpenOfficeLauncher.jar" download="eager"/>
+        <jar href="xerces-2.6.2.jar" download="eager"/>
+        <jar href="commons-codec-1.3.jar" download="eager"/>
+        <jar href="commons-httpclient.jar" download="eager"/>
+        <jar href="commons-logging-1.0.4.jar" download="eager"/>
+        <jar href="jackrabbit-webdav-1.4.jar" download="eager"/>
+        <jar href="slf4j-log4j12-1.5.0.jar" download="eager"/>
+        <jar href="slf4j-api-1.5.0.jar" download="eager"/>
+        <jar href="log4j-1.2.15.jar" download="eager"/>
     </resources>
     <application-desc main-class="com.silverpeas.openoffice.Launcher">
       <argument><%=java.net.URLEncoder.encode(request.getParameter("documentUrl"), "UTF-8") %></argument>
-	  <argument><%=java.net.URLEncoder.encode(login, "UTF-8") %></argument>
+      <argument><%=java.net.URLEncoder.encode((String)request.getAttribute("msoffice_path"), "UTF-8") %></argument>
+      <argument><%=java.net.URLEncoder.encode(login, "UTF-8") %></argument>
       <argument><%=java.net.URLEncoder.encode(encPassword, "UTF-8") %></argument>
     </application-desc>
 </jnlp>

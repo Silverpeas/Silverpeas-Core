@@ -433,8 +433,8 @@ public class VersioningDAO
 					"root.EX_RECORD_INSERTION_FAILED");
 			}
 
-			/*ArrayList readers = document.getReadList();
-			if (readers != null && readers.size() != 0)
+			ArrayList readers = document.getReadList();
+/*			if (readers != null && readers.size() != 0)
 			{
 				for (int i = 0; i < readers.size(); i++)
 				{

@@ -72,6 +72,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
       session.save();
     } catch (Exception ex) {
+      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);

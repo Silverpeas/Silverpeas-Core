@@ -49,6 +49,8 @@ public class VersioningUtil {
   private String componentId = null;
   private Document document = null;
   private String userId = null;
+  private boolean topicRightsEnabled = false;
+  private String topicId = null;
   private Selection selection;
 
   // For Office files direct update
@@ -68,7 +70,12 @@ public class VersioningUtil {
       String topicId) {
     this.componentId = componentId;
     this.document = doc;
-    this.userId = userId;   
+    this.userId = userId;
+    ComponentInst compInst = getAdmin().getComponentInst(componentId);
+    if ("yes".equalsIgnoreCase(compInst.getParameterValue("rightsOnTopics"))) {
+      this.topicRightsEnabled = true;
+      this.topicId = topicId;
+    }
     this.selection = new Selection();
   }
 
@@ -82,6 +89,14 @@ public class VersioningUtil {
 
   private String getUserId() {
     return userId;
+  }
+
+  private boolean isTopicRightsEnabled() {
+    return topicRightsEnabled;
+  }
+
+  private String getTopicId() {
+    return topicId;
   }
 
   private Selection getSelection() {

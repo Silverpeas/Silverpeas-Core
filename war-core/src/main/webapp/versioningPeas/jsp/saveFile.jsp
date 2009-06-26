@@ -1,4 +1,4 @@
-<%@ page language="java"%>
+ %@ page language="java"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkVersion.jsp" %>
 
@@ -100,7 +100,7 @@
   				if (actifyPublisherEnable)
   				{
   					String extensions = attachmentSettings.getString("Actify3dFiles");
-  					StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
+  					SilverStringTokenizer tokenizer = new SilverStringTokenizer(extensions, ",");
   					//3d native file ?
   					boolean fileForActify = false;
   					SilverTrace.info("versioningPeas", "saveFile.jsp", "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="+tokenizer.countTokens());
