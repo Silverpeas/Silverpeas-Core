@@ -52,7 +52,7 @@ public class TestAttachmentDetail extends TestCase {
         ".oasis.opendocument.presentation&Directory=Attachment\\tests\\simpson\\" +
         "bart\\", attachment.getOnlineURL());
     assertEquals(
-        "/silverpeas/attached/file/componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/silverpeas/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/frenchScrum.odp",
         attachment.getWebURL());
     assertEquals(
@@ -107,7 +107,7 @@ public class TestAttachmentDetail extends TestCase {
         ".oasis.opendocument.presentation&Directory=Attachment\\tests\\simpson\\" +
         "bart\\", attachment.getOnlineURL());
     assertEquals(
-        "/silverpeas/attached/file/componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/silverpeas/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/frenchScrum.odp",
         attachment.getWebURL());
     assertEquals(
@@ -162,7 +162,7 @@ public class TestAttachmentDetail extends TestCase {
         "application/msword&Directory=Attachment\\tests\\simpson\\" + "bart\\",
         attachment.getOnlineURL());
     assertEquals(
-        "/silverpeas/attached/file/componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/silverpeas/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/Spec-Silverpeas-p3-1_2.doc",
         attachment.getWebURL());
     assertEquals(

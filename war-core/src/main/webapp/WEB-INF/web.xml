@@ -414,7 +414,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>RestOnlineFileServer</servlet-name>
-    <url-pattern>/attached/file/*</url-pattern>
+    <url-pattern>/attached_file/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>GoToPublication</servlet-name>

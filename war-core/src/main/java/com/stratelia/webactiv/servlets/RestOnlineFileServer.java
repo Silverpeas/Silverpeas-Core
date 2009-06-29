@@ -141,7 +141,7 @@ public class RestOnlineFileServer extends HttpServlet {
       res.setContentType(file.getMimeType());
       input = new BufferedInputStream(new FileInputStream(realFile));
       byte[] buffer = new byte[8];
-      int read = input.read();
+      int read = 0;
       SilverTrace.info("peasUtil", "OnlineFileServer.display()",
           "root.MSG_GEN_ENTER_METHOD", " BufferedInputStream read " + read);
       while ((read = input.read(buffer)) != -1) {

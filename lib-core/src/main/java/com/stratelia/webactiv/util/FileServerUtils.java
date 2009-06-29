@@ -131,10 +131,10 @@ public class FileServerUtils extends Object {
         .getString("ApplicationURL");
     String language = lang;
     if (language == null) {
-      lang = I18NHelper.defaultLanguage;
+      language = I18NHelper.defaultLanguage;
     }
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("attached/file").append("/componentId/")
+    url.append(m_context).append("attached_file").append("/componentId/")
         .append(componentId).append("/attachmentId/").append(attachmentId)
         .append("/lang/").append(language).append("/name/").append(
             newLogicalName);
@@ -148,7 +148,7 @@ public class FileServerUtils extends Object {
         .getString("ApplicationURL");
 
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("attached/file").append("/componentId/")
+    url.append(m_context).append("attached_file").append("/componentId/")
     .append(componentId).append("/documentId/").append(documentId)
     .append("/versionId/").append(versionId).append("/name/").append(
         newLogicalName);
