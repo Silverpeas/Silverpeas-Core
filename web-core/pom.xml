@@ -45,10 +45,6 @@
       <artifactId>jcharts</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.fortuna.ical4j</groupId>
-      <artifactId>ical4j</artifactId>
-    </dependency>
-    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>

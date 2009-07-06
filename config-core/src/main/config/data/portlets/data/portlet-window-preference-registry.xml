@@ -14,6 +14,9 @@
                </Collection>
           </Properties>
      </PortletWindowPreference>
+      <PortletWindowPreference name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" userName="default">
+          <Properties />
+     </PortletWindowPreference>
      <PortletWindowPreference name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" userName="default">
           <Properties/>
      </PortletWindowPreference>

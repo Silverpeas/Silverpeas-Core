@@ -1,21 +1,13 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
-
 package com.stratelia.webactiv.servlets;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
-import java.util.MissingResourceException;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -43,10 +35,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.indexEngine.parser.excelParser.ExcelParser;
-import com.stratelia.webactiv.util.indexEngine.parser.pptParser.PptParser;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 
@@ -125,15 +113,11 @@ public class FileServer extends HttpServlet
         String archiveIt = req.getParameter("ArchiveIt");
         String dirType = req.getParameter("DirType");
         String userId = req.getParameter("UserId");
-        String spaceId = req.getParameter("SpaceId");
         String componentId = req.getParameter("ComponentId");
         String typeUpload = req.getParameter("TypeUpload");
-        // Add By Mohammed Hguig
-        String htmlisation = req.getParameter("htmlisation");
         String zip = req.getParameter("zip");
         String fileName = req.getParameter("fileName");
-        String tempDirectory = FileRepositoryManager.getTemporaryPath(spaceId, componentId);
-        String command = null;
+        String tempDirectory = FileRepositoryManager.getTemporaryPath("useless", componentId);
         File   tempFile = null;
         // End Add By Mohammed Hguig
         
@@ -175,7 +159,7 @@ public class FileServer extends HttpServlet
 
         HttpSession session = req.getSession(true);
         MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
-        if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl,spaceId,componentId)))
+        if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl,componentId)))
         {
             SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId() + GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")+GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
             res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")+GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
@@ -190,7 +174,7 @@ public class FileServer extends HttpServlet
             {
                 if (dirType.equals(GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp")))
                 {
-                    filePath = FileRepositoryManager.getTemporaryPath(spaceId, componentId) + sourceFile;
+                    filePath = FileRepositoryManager.getTemporaryPath("useless", componentId) + sourceFile;
                 }
             }
             else
@@ -201,191 +185,7 @@ public class FileServer extends HttpServlet
 
         }
 
-        res.setContentType(mimeType);
-        //res.setHeader("Cache-Control", "no-store");
-
-        // Add By Mohammed Hguig
-        if (htmlisation != null)
-        {
-            res.setContentType("text/html");
-
-			// 2 ways to call the parser, the first one: CMD with a single file as source and redirect result to the stdout
-			//                            second one: CMD with inpout output in 2 separate files.
-			if (mimeType.equals("application/msword") )
-			{
-					// OLD cmd: (please keep this commented line, maybe usefull.
-					//command = getParser(mimeType) + " -o " + tempFile.getCanonicalPath() + " " + filePath;
-				Process process;
-				command = getParser(mimeType) + " " + filePath;
-				try
-				{
-				  SilverTrace.info("peasUtil", "FileServer", "root.MSG_GEN_PARAM_VALUE",
-								  "Will start to htmlize file, cmd= " + command);
-				  process = Runtime.getRuntime().exec(command);
-				  if (process == null)
-				  {
-					SilverTrace.fatal("peasUtil", "FileServer",
-									  "indexEngine.MSG_PARSER_EXEC_FAILED", command);
-					return;
-				  }
-				}
-				catch (IOException e)
-				{
-					SilverTrace.fatal("peasUtil", "FileServer",
-									  "indexEngine.MSG_PARSER_EXEC_FAILED", command, e);
-				  return;
-				}
-
-				try
-				{
-				  FileWriter out = new FileWriter(tempDirectory+"resultParse.html");	// create the TEMP file
-				  Reader outProcess = new BufferedReader(
-										new InputStreamReader(
-										  process.getInputStream()));
-				  char[] buffer = new char[1024];
-				  int countRead, totalRead=0;
-				  int limitSize = 50000;		// limit to 50 KO
-				  while ((countRead = outProcess.read(buffer)) != -1)
-				  {
-					totalRead+=countRead;
-					if ( totalRead <= limitSize)
-					{
-					out.write(buffer, 0, countRead);
-					}
-				  }
-				  out.close();
-				  tempFile = new File(tempDirectory+"resultParse.html");
-				}
-				catch (IOException e)
-				{
-					process.destroy();
-					SilverTrace.error("peasUtil", "FileServer",
-									  "indexEngine.MSG_IO_ERROR_WHILE_PARSING", command, e);
-				}
-
-			// new way to wait for the parser end by itself (not killed after timeout).
-			// PHiL 03/02/2004
-				while (true)
-				{
-				  try
-				  {
-					Integer returnCode = new Integer(process.waitFor());
-
-					if (returnCode.intValue() != 0)
-					{
-							SilverTrace.warn("indexEngine", "ExecViaTempParser", "root.EX_IGNORED", "error_level= "+returnCode.toString()+" cmd= "+command);
-					}
-					break ;
-				  }
-				  catch (InterruptedException e) 
-				  {
-					  //wait
-				  }
-				}
-
-				SilverTrace.info("indexEngine", "ExecViaTempParser", "root.MSG_GEN_PARAM_VALUE",
-								  "Finish to parse file, cmd= " + command);
-			}
-			else
-			{
-				if (mimeType.equals("application/x-msexcel") || mimeType.equals("application/vnd.ms-excel"))
-				{
-					// command = getParser(mimeType)+" "+filePath+" > "+tempFile.getCanonicalPath();
-					Writer outpars = res.getWriter();
-
-					new ExcelParser().outPutContent(outpars, filePath, "");
-					return;
-				}
-
-				if (mimeType.equals("application/x-mspowerpoint") || mimeType.equals("application/vnd.ms-powerpoint"))
-				{
-					// command = getParser(mimeType)+" -o "+tempFile.getCanonicalPath()+" "+filePath;
-					Writer outpars = res.getWriter();
-
-					new PptParser(getParser(mimeType), "").outPutContent(outpars, filePath, null);
-					return;
-				}
-
-
-				if (mimeType.equals("application/pdf"))
-				{
-
-					/*
-					 * Writer outpars = res.getWriter();
-					 * new PdfParser().outPutContent(outpars, filePath, "");
-					 * return;
-					 */
-					// command = getParser(mimeType)+" -i -noframes -l 5 "+filePath+" "+tempFile.getCanonicalPath();
-
-					// with -i option, we don't want an image
-					// with -l 1 we want only one html page
-					command = getParser(mimeType) + " -i -c -l 1 " + filePath + " " + tempDirectory+"resultParse.html";
-
-					// here, we rebuild the new tempFile File.
-					// with the -c option, this tool (pdf2html) transforms the pdf into 3 html files
-					// resultPage1234.html (a frameset html page)
-					// resultPage1234-1.html (the file we must show)
-					// resultPage1234_ind.html (
-					//String filename = tempFile.getCanonicalPath();
-					//int    extension_idx = filename.indexOf(".html");
-					//String filename_withoutExtension = filename.substring(0, extension_idx);
-					//tempFile = new File(filename_withoutExtension + "-1.html");
-					tempFile = new File(tempDirectory+"resultParse-1.html");
-					// expurge
-					//filename = null;
-					//filename_withoutExtension = null;
-				}
-
-				if (mimeType.equals("text/richtext"))
-				{
-					command = getParser(mimeType) + " -o " + tempFile.getCanonicalPath() + " " + filePath;
-				}
-				SilverTrace.info("PeasUtil", "FilServer.doPost()", "root.MSG_GEN_ENTER_METHOD", " SEA htmlisation command : " + command);
-
-				if (command != null)
-				{
-					Process process;
-					try
-					{
-						process = Runtime.getRuntime().exec(command);
-						if (process == null)
-						{
-							SilverTrace.fatal("peasUtil", "FileServer.doPost()", "peasUtil.MSG_PARSER_EXEC_FAILED", command);
-							return;
-						}
-					}
-					catch (IOException e)
-					{
-						SilverTrace.fatal("peasUtil", "FileServer.doPost()", "peasUtil.MSG_PARSER_EXEC_FAILED", command);
-						return;
-					}
-
-					try
-					{
-						// Ou putain!!! Virez moi ça!!!
-						// TODO :)
-						synchronized (process)
-						{
-							process.wait(3000);
-						}
-						process.destroy();
-					}
-					catch (InterruptedException e)
-					{
-						SilverTrace.warn("peasUtil", "FileServer.doPost()", "peasUtil.MSG_PROCESS_INTERRUPTED_BEFORE_PARSING_FILE", filePath, e);
-					}
-					catch (IllegalMonitorStateException e)
-					{
-						SilverTrace.warn("peasUtil", "FileServer.doPost()", "peasUtil.MSG_CURRENT_THREAD_IS_NOT_THE_OWNER_OBJECT_MONITOR", filePath, e);
-					}
-					catch (IllegalArgumentException e)
-					{
-						SilverTrace.warn("peasUtil", "FileServer.doPost()", "peasUtil.MSG_ILLEGAL_ARGUMENT", "argument = 3000", e);
-					}
-					filePath = tempFile.getCanonicalPath();
-				}
-			}
-        }
+        res.setContentType(mimeType);       
 
         SilverTrace.debug("peasUtil", "FileServer.doPost()", "root.MSG_GEN_PARAM_VALUE", " zip="+zip);
         if (zip != null)
@@ -442,22 +242,19 @@ public class FileServer extends HttpServlet
         {
             String        nodeId = req.getParameter("NodeId");
             String        pubId = req.getParameter("PubId");
-            NodePK        nodePK = null;
-            PublicationPK pubPK = null;
+            ForeignPK pubPK = null;
 
             try
             {
                 StatisticBmHome statisticBmHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
                 StatisticBm     statisticBm = statisticBmHome.create();
 
-                nodePK = new NodePK(nodeId, spaceId, componentId);
-                pubPK = new PublicationPK(pubId, spaceId, componentId);
-                //statisticBm.addReading(userId, nodePK, pubPK);
-                statisticBm.addStat(userId, new ForeignPK(pubPK), 1, "Publication");
+                pubPK = new ForeignPK(pubId, componentId);
+                statisticBm.addStat(userId, pubPK, 1, "Publication");
             }
             catch (Exception e)
             {
-                SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS", "pubPK = " + pubPK.toString() + " and nodePK = " + nodePK.toString(), e);
+                SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS", "pubPK = " + pubPK + " and nodeId = " + nodeId, e);
             }
         }
     }
@@ -465,10 +262,10 @@ public class FileServer extends HttpServlet
     // Add By Mohammed Hguig
 
     // check if the user is allowed to access the required component
-    private boolean isUserAllowed(MainSessionController controller, String spaceId, String componentId) {
+    private boolean isUserAllowed(MainSessionController controller, String componentId) {
         boolean isAllowed = false;
 
-        if(spaceId  == null && componentId == null)
+        if(componentId == null)
         {   // Personal space
             isAllowed = true;
         }
@@ -478,36 +275,6 @@ public class FileServer extends HttpServlet
         }
 
         return isAllowed;
-    }
-
-    /**
-     * Methode declaration
-     * 
-     * @param mimeType
-     * 
-     * @Get the corrasponding parser
-     * @for given mime Type
-     */
-    private String getParser(String mimeType)
-    {
-        ResourceLocator resourceLocator = null;
-        String          parser = null;
-
-        try
-        {
-            resourceLocator = new ResourceLocator("com.stratelia.webactiv.util.peasUtil.htmlisation", "");
-
-
-            if (resourceLocator != null)
-            {
-                parser = resourceLocator.getString(mimeType);
-            }
-        }
-        catch (MissingResourceException e)
-        {
-            SilverTrace.warn("peasUtil", "FileServer", "peasUtil.MSG_MISSING_PEASUTIL_PROPERTIES", null, e);
-        }
-        return parser;
     }
 
     /**
