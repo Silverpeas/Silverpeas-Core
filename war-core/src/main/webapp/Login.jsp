@@ -26,7 +26,7 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 
 ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
 String loginPage = general.getString("loginPage");
-if (! com.silverpeas.util.StringUtil.isDefined(loginPage)){
+if (! com.silverpeas.util.StringUtil.isDefined(loginPage)) {
   loginPage = m_context+"/defaultLogin.jsp";
 }
 loginPage += "?DomainId="+domainId+"&ErrorCode="+errorCode+"&logout="+request.getParameter("logout");
