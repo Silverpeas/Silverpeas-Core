@@ -1,3 +1,4 @@
+<%@page pageEncoding="UTF-8" %>
 <%@ include file="headLog.jsp" %>
 
 <%
@@ -7,8 +8,11 @@ if (errorCode == null || errorCode.equals("null"))
 String errorText = "";
 boolean affiche = false;
 
-String domainId = request.getParameter("DomainId");
-request.setAttribute("Silverpeas_DomainId", domainId);
+String domainId = null;
+if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
+  domainId = request.getParameter("DomainId");
+  request.setAttribute("Silverpeas_DomainId", domainId);
+}
 %>
 
 <html>
