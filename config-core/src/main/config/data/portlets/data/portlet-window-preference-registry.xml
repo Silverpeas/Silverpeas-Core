@@ -1,87 +1,90 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <PortletWindowPreferenceRegistry version="1.0">
-     <PortletWindowPreference name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" userName="default">
-          <Properties>
-               <Collection name="prefProperties">
-                    <String name="nbPublis" value="5"/>
-               </Collection>
-          </Properties>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" userName="default">
-          <Properties>
-               <Collection name="prefProperties">
-                    <String name="nbEvents" value="5"/>
-               </Collection>
-          </Properties>
-     </PortletWindowPreference>
-      <PortletWindowPreference name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" userName="default">
-          <Properties />
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.HelloSilverpeasPortlet" portletName="silverpeas.HelloSilverpeasPortlet" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet" userName="default">
-          <Properties>
-               <Collection name="prefProperties">
-                    <String name="url" value="http://www.silverpeas.com"/>
-               </Collection>
-          </Properties>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="notepadportlet.NotepadPortlet" portletName="notepadportlet.NotepadPortlet" userName="default">
-          <Properties>
-               <Collection name="prefReadOnly">
-                    <String name="categories" value="false"/>
-                    <String name="displayMax" value="false"/>
-               </Collection>
-               <Collection name="prefProperties">
-                    <String name="categories" value=""/>
-                    <String name="displayMax" value="|5"/>
-               </Collection>
-          </Properties>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.DateTimeGoogleGadget" portletName="googlegadgets.DateTimeGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.PacManGoogleGadget" portletName="googlegadgets.PacManGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.MooomJpVideosGoogleGadget" portletName="googlegadgets.MooomJpVideosGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.GoogleVideosGoogleGadget" portletName="googlegadgets.GoogleVideosGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.RateInJapaneseGoogleGadget" portletName="googlegadgets.RateInJapaneseGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.ColorJunctionGoogleGadget" portletName="googlegadgets.ColorJunctionGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.SudokuGoogleGadget" portletName="googlegadgets.SudokuGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.JokesGoogleGadget" portletName="googlegadgets.JokesGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.GoogleCalculatorGoogleGadget" portletName="googlegadgets.GoogleCalculatorGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
-     <PortletWindowPreference name="googlegadgets.NasaImageoftheDayGoogleGadget" portletName="googlegadgets.NasaImageoftheDayGoogleGadget" userName="default">
-          <Properties/>
-     </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbPublis" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="nbEvents" value="5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyNotificationsPortlet" portletName="silverpeas.MyNotificationsPortlet" userName="default">
+    <Properties />
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" userName="default">
+    <Properties />
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.HelloSilverpeasPortlet" portletName="silverpeas.HelloSilverpeasPortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.ComponentInstancePortlet" portletName="silverpeas.ComponentInstancePortlet" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.IFramePortlet" portletName="silverpeas.IFramePortlet" userName="default">
+    <Properties>
+      <Collection name="prefProperties">
+        <String name="url" value="http://www.silverpeas.com"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="notepadportlet.NotepadPortlet" portletName="notepadportlet.NotepadPortlet" userName="default">
+    <Properties>
+      <Collection name="prefReadOnly">
+        <String name="categories" value="false"/>
+        <String name="displayMax" value="false"/>
+      </Collection>
+      <Collection name="prefProperties">
+        <String name="categories" value=""/>
+        <String name="displayMax" value="|5"/>
+      </Collection>
+    </Properties>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.DateTimeGoogleGadget" portletName="googlegadgets.DateTimeGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.PacManGoogleGadget" portletName="googlegadgets.PacManGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.MooomJpVideosGoogleGadget" portletName="googlegadgets.MooomJpVideosGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.GoogleVideosGoogleGadget" portletName="googlegadgets.GoogleVideosGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.RateInJapaneseGoogleGadget" portletName="googlegadgets.RateInJapaneseGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.ColorJunctionGoogleGadget" portletName="googlegadgets.ColorJunctionGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.SudokuGoogleGadget" portletName="googlegadgets.SudokuGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.JokesGoogleGadget" portletName="googlegadgets.JokesGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.GoogleCalculatorGoogleGadget" portletName="googlegadgets.GoogleCalculatorGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
+  <PortletWindowPreference name="googlegadgets.NasaImageoftheDayGoogleGadget" portletName="googlegadgets.NasaImageoftheDayGoogleGadget" userName="default">
+    <Properties/>
+  </PortletWindowPreference>
 </PortletWindowPreferenceRegistry>
