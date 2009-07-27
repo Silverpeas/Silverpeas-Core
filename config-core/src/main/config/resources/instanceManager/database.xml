@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<jdo-conf engine="postgresql">
+    <database name="Silverpeas" engine="postgresql">
+        <jndi name="java:/Silverpeas" />
+        <mapping href="file:///C:/Silverpeas/KMEdition/Production/silverpeas/resources/instanceManager/mapping.xml" />
+    </database>
+    <transaction-demarcation mode="local" />
+    <jndi name="java:/Silverpeas" />
+</jdo-conf>
+

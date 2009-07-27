@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<database name="fast_Silverpeas" engine="postgresql">
+    <jndi name="java:/Silverpeas" />
+    <mapping href="file:///C:/Silverpeas/KMEdition/Production/silverpeas/resources/instanceManager/fast_mapping.xml" />
+</database>
+

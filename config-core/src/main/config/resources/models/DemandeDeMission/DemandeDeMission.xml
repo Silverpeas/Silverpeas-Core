@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- .......................................... DÉFINITION DE MODÈLE DE PROCÉDURE : DEMANDE DE MISSION -->
+<processModel name="DemandeDeMission" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="D:\Silverpeas\KMEdition\Bus\workflowEngine\Others\processModel.xsd">
+	<label>Demande de mission</label>
+	<description>Procédure de demande de mission au sein de france telecom R et D.</description>
+	<!-- ....................................................................... DESCRIPTION DES ROLES -->
+	<roles>
+		<!-- ...............................................................Collaborateur -->
+		<role name="Collaborateur">
+			<label>Demandeur</label>
+			<description>Personne pouvant emettre une demande de mission.</description>
+		</role>
+		<!-- .......................................................................Cadre -->
+		<role name="Responsable">
+			<label>Responsable</label>
+			<description>Personne pouvant valider une demande de mission.</description>
+		</role>
+		<!-- ...................................................................Comptable -->
+		<role name="Secretaire">
+			<label>Secrétaire</label>
+			<description>Personne pouvant préparer le voyage, faire suivre et imprimer l'ordre de mission.</description>
+		</role>
+	</roles>
+	<!-- ............................................................ DESCRIPTION DES PRESENTATIONS -->
+	<presentation>
+		<title role="Collaborateur">Mission à ${instance.lieu} du ${instance.dateDebut}</title>
+		<title role="Responsable">Demande de ${action.Creation.actor}</title>
+		<title role="Secretaire">Demande de ${action.Creation.actor}</title>
+		<title>Demande de ${action.Creation.actor}</title>
+		<columns role="Collaborateur">
+			<column item="lieu"/>
+			<column item="motif"/>
+			<column item="dateDebut"/>
+			<column item="dateFin"/>
+		</columns>
+		<columns role="Responsable">
+			<column item="lieu"/>
+			<column item="motif"/>
+			<column item="dateDebut"/>
+			<column item="dateFin"/>
+		</columns>
+		<columns role="Secretaire">
+			<column item="lieu"/>
+			<column item="motif"/>
+			<column item="dateDebut"/>
+			<column item="dateFin"/>
+		</columns>
+	</presentation>
+	<!-- ................................................................ DESCRIPTION DES PARTICIPANTS -->
+	<participants>
+		<!-- ...................................................................Demandeur -->
+		<participant name="Demandeur" state="" role="Collaborateur">
+			<label>Demandeur de la mission.</label>
+			<description>Personne à l'origine de la demande de mission.</description>
+		</participant>
+		<!-- ..................................................................Validateur -->
+		<participant name="Valideur" resolvedState="A_valider">
+			<description>Personne validant la demande de mission.</description>
+		</participant>
+		<!-- .........................................................PreparateurVoyage -->
+		<participant name="PreparateurVoyage" resolvedState="A_preparer_seulement">
+			<description>La secretaire qui a commencé à préparer le voyage</description>
+		</participant>
+		<!-- .........................................................PreparateurVoyage -->
+		<participant name="Routeur" resolvedState="A_preparer_et_faire_suivre">
+			<description>La secretaire qui a fini de préparer le voyage et a fait suivre l'ordre de mission</description>
+		</participant>
+	</participants>
+	<!-- ...................................................................... DESCRIPTION DES ÉTATS -->
+	<states>
+		<!-- ...................................................................Brouillon -->
+		<state name="Brouillon">
+			<label>Brouillon</label>
+			<description>en cours de saisie</description>
+			<workingUsers role="Collaborateur">
+				<relatedUser participant="Demandeur"/>
+			</workingUsers>
+			<interestedUsers>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Modification"/>
+				<allow action="Abandon"/>
+				<allow action="Emettre"/>
+			</allowedActions>
+		</state>
+		<!-- ..................................................................A_valider -->
+		<state name="A_valider">
+			<label>Attente validation</label>
+			<description>en attente de validation</description>
+			<workingUsers role="Responsable">
+				<relatedUser participant="Demandeur" relation="responsable"/>
+			</workingUsers>
+			<interestedUsers>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Refus"/>
+				<allow action="Valider"/>
+			</allowedActions>
+		</state>
+		<!-- .........................................................A_preparer_seulement -->
+		<state name="A_preparer_seulement">
+			<label>Preparation du voyage</label>
+			<description>La demande est en attente de validation, mais la secretaire peut déjà commencer à préparer le voyage</description>
+			<workingUsers role="Secretaire">
+				<relatedUser participant="Demandeur" relation="secretaire"/>
+			</workingUsers>
+			<allowedActions>
+				<allow action="ComplementInformation"/>
+			</allowedActions>
+		</state>
+		<!-- ...................................................A_preparer_et_faire_suivre -->
+		<state name="A_preparer_et_faire_suivre">
+			<label>A finir et faire suivre</label>
+			<description>La secretaire peut finir de préparer le voyage, imprimer et faire suivre l'ordre de mission</description>
+			<workingUsers  role="Secretaire">
+				<relatedUser participant="Demandeur" relation="secretaire" />
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Collaborateur"/>
+				<relatedUser participant="Valideur" role="Responsable"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="ComplementInformationBis"/>
+				<allow action="Clore"/>
+			</allowedActions>
+		</state>
+		<!-- ....................................................................Refusee -->
+		<state name="Refusee">
+			<label>Refusée</label>
+			<description>refusée</description>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Collaborateur"/>
+			</interestedUsers>
+		</state>
+		<!-- ...................................................................Close -->
+		<state name="Close">
+			<label>Close</label>
+			<description>accepté et envoyée au bureau des voyages</description>
+			<interestedUsers>
+				<relatedUser participant="Demandeur" role="Collaborateur"/>
+			</interestedUsers>
+		</state>
+	</states>
+	<!-- .................................................................... DESCRIPTION DES ACTIONS -->
+	<actions>
+		<!-- ...................................................................Creation -->
+		<action name="Creation" form="creation" kind="create">
+			<label>Création</label>
+			<description>Création d'une nouvelle demande.</description>
+			<allowedUsers>
+				<userInRole name="Collaborateur"/>
+			</allowedUsers>
+			<consequences>
+				<set state="Brouillon"/>
+			</consequences>
+		</action>
+		<!-- ...............................................................Modification -->
+		<action name="Modification" form="creation">
+			<label>Modification entête</label>
+			<description>Modification de l'entête de la demande.</description>
+			<allowedUsers>
+				<relatedUser participant="Demandeur"/>
+			</allowedUsers>
+			<consequences>
+				<set state="Brouillon"/>
+			</consequences>
+		</action>
+		<!-- ....................................................................Abandon -->
+		<action name="Abandon" form="abandon" kind="delete">
+			<label>Abandon de la note</label>
+			<description>La note passe aux oubliettes.</description>
+			<allowedUsers>
+				<relatedUser participant="Demandeur"/>
+			</allowedUsers>
+			<consequences>
+				<kill>true</kill>
+			</consequences>
+		</action>
+		<!-- .................................................................Emettre -->
+		<action name="Emettre" form="creation">
+			<label>Emettre</label>
+			<description>Emission de la demande de mission.</description>
+			<allowedUsers>
+				<relatedUser participant="Demandeur"/>
+			</allowedUsers>
+			<consequences>
+				<set state="A_preparer_seulement"/>
+				<set state="A_valider"/>
+			</consequences>
+		</action>
+		<!-- .................................................................Refus -->
+		<action name="Refus" form="refus">
+			<label>Refuser</label>
+			<description>Refuser le demande de mission.</description>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<set state="Refusee"/>
+				<unset state="A_preparer_seulement" />
+			</consequences>
+		</action>
+		<!-- ...........................................................Validation -->
+		<action name="Valider" form="validation">
+			<label>Valider</label>
+			<description>Validation par le responsable.</description>
+			<allowedUsers>
+				<userInRole name="Responsable"/>
+			</allowedUsers>
+			<consequences>
+				<set state="A_preparer_et_faire_suivre"/>
+				<unset state="A_preparer_seulement" />
+				<notify message="${action.Valider.actor} a validé votre demande de mission">
+					<relatedUser participant="Demandeur"/>
+				</notify>
+			</consequences>
+		</action>
+		<!-- ......................................................ComplementInformation -->
+		<action name="ComplementInformation" form="complementInformation">
+			<label>Completer</label>
+			<description>Modification des champs -moyen de transport- et -commentaires-.</description>
+			<allowedUsers>
+				<userInRole name="Secretaire"/>
+			</allowedUsers>
+			<consequences>
+				<set state="A_preparer_seulement"/>
+			</consequences>
+		</action>
+		<!-- ....................................................ComplementInformationBis -->
+		<action name="ComplementInformationBis" form="complementInformation">
+			<label>Completer</label>
+			<description>Modification des champs -moyen de transport- et -commentaires-.</description>
+			<allowedUsers>
+				<userInRole name="Secretaire"/>
+			</allowedUsers>
+			<consequences>
+				<set state="A_preparer_et_faire_suivre"/>
+			</consequences>
+		</action>
+		<!-- .............................................................Clore -->
+		<action name="Clore" form="cloture">
+			<label>Clore</label>
+			<description>Cloture de la demande de mission.</description>
+			<allowedUsers>
+				<userInRole name="Secretaire"/>
+			</allowedUsers>
+			<consequences>
+				<set state="Close"/>
+			</consequences>
+		</action>
+	</actions>
+	<!-- ................................................................DEFINITION DES DONNEES UTILISATEUR -->
+	<userInfos>
+		<item name="grade">
+			<label>Grade</label>
+			<description>Votre grade</description>
+			<type>text</type>
+		</item>
+		<item name="residence">
+			<label>Résidence administrative</label>
+			<description>Votre résidence administrative</description>
+			<type>text</type>
+		</item>
+		<item name="direction">
+			<label>Direction</label>
+			<description>Votre direction</description>
+			<type>text</type>
+		</item>
+		<item name="departement">
+			<label>Département ou laboratoire</label>
+			<description>Votre département ou votre laboratoire</description>
+			<type>text</type>
+		</item>
+		<item name="secretaire">
+			<label>Secrétaire</label>
+			<description>Votre secrétaire</description>
+			<type>user</type>
+		</item>
+		<item name="responsable">
+			<label>Responsable</label>
+			<description>Votre responsable</description>
+			<type>user</type>
+		</item>
+	</userInfos>
+	<!-- .......................................................................DEFINITION DU DOSSIER -->
+	<dataFolder>
+		<item name="lieu">
+			<label>lieu de la mission</label>
+			<description>La ville où se déroulera la mission</description>
+			<type>text</type>
+		</item>
+		<item name="motif">
+			<label>Motif du déplacement</label>
+			<description>Le but de la mission et la raison du déplacement</description>
+			<type>text</type>
+		</item>
+		<item name="duree">
+			<label>Durée prévue</label>
+			<description>La durée en jour du déplacement</description>
+			<type>text</type>
+		</item>
+		<item name="dateDebut">
+			<label>Du</label>
+			<description>La date de début de la mission</description>
+			<type>date</type>
+		</item>
+		<item name="dateFin">
+			<label>au</label>
+			<description>Le date de fin de la mission</description>
+			<type>date</type>
+		</item>
+		<item name="moyenTransport">
+			<label>Moyen de transport</label>
+			<description>Le moyen de transport qui sera utilisé pour la mission</description>
+			<type>text</type>
+		</item>
+		<item name="commentaireMission">
+			<label>Commentaires</label>
+			<description>Remarques éventuelles concernant le mission</description>
+			<type>text</type>
+		</item>
+		<item name="commentaireRefus">
+			<label>Commentaires</label>
+			<description>Remarques éventuelles concernant les causes du refus</description>
+			<type>text</type>
+		</item>
+	</dataFolder>
+	<!-- ..................................................................DEFINITION DES FORMULAIRES -->
+	<forms>
+		<!-- .....................................................Formulaire d'impression -->
+		<form name="printForm" HTMLFileName="/weblib/processManager/DemandeDeMission/printForm/DemandeDeMission_print.html">
+		</form>
+		<!-- .....................................................Formulaire de création -->
+		<form name="creation">
+			<title>Création d'une demande de mission</title>
+			<input value="testSansItem">
+				<label>Test sans item</label>
+			</input>
+			<input item="lieu" mandatory="true" value="quelque-part">
+				<label>lieu redéfini</label>
+			</input>
+			<input item="motif" mandatory="true"/>
+			<input item="duree" mandatory="true"/>
+			<input item="dateDebut" mandatory="true"/>
+			<input item="dateFin" mandatory="true"/>
+			<input item="moyenTransport"/>
+			<input item="commentaireMission" displayerName="textarea"/>
+		</form>
+		<!-- .......................................................Formulaire d'abandon -->
+		<form name="abandon">
+			<title>Abandon de la demande</title>
+		</form>
+		<!-- ....................................Formulaire de validation du responsable -->
+		<form name="validation">
+			<title>Validation de la demande</title>
+			<input item="commentaireMission" displayerName="textarea"/>
+		</form>
+		<!-- .........................................Formulaire de refus du responsable -->
+		<form name="refus">
+			<title>Refus de la demande</title>
+			<input item="commentaireRefus" displayerName="textarea" mandatory="true"/>
+		</form>
+		<!-- ..............Formulaire permettant a la secretaire de completer la demande -->
+		<form name="complementInformation">
+			<title>Enrichissement des informations</title>
+			<input value="Complément de la demande de ${action.Creation.actor}" displayerName="simpletext"/>
+			<input item="moyenTransport" value="voiture de société"/>
+			<input item="commentaireMission" displayerName="textarea"/>
+		</form>
+		<!-- ......................................................Formulaire de cloture -->
+		<form name="cloture">
+			<title>Cloture de la demande</title>
+		</form>
+	</forms>
+</processModel>
