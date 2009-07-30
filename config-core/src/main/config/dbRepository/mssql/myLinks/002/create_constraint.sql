@@ -1,6 +1,0 @@
-ALTER TABLE SB_MyLinks_Link WITH NOCHECK ADD 
-	 CONSTRAINT PK_SB_MyLink_Link PRIMARY KEY  CLUSTERED 
-	(
-		linkId
-	)
-;

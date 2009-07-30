@@ -1,1 +1,0 @@
-ALTER TABLE SB_Node_Node DROP CONSTRAINT PK_Node_Node;

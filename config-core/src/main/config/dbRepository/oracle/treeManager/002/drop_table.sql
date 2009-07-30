@@ -1,1 +1,0 @@
-DROP TABLE SB_Tree_Tree

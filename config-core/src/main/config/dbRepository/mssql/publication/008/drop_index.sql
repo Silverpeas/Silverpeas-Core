@@ -1,1 +1,0 @@
-DROP INDEX SB_Publication_PubliFather.IN_Publi_Father;

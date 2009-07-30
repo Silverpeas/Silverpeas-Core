@@ -1,2 +1,0 @@
-ALTER TABLE SB_Pdc_Axis		DROP CONSTRAINT PK_Pdc_Axis;
-ALTER TABLE SB_Pdc_Utilization	DROP CONSTRAINT PK_Pdc_Utilization;
