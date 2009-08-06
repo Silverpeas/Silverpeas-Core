@@ -192,6 +192,7 @@ public class VersioningBmEJB implements SessionBean {
             ArrayList versions = VersioningDAO.getDocumentVersions(con, documentPK);
             DocumentVersion lastVersion = (DocumentVersion) versions.get(versions.size() - 1);
            if(lastVersion.isOpenOfficeCompatibleDocument()){
+             lastVersion.setAuthorId(ownerId);
              RepositoryHelper.getJcrDocumentService().createDocument(lastVersion);
            }
         } catch (Exception re) {

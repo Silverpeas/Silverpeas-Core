@@ -9,12 +9,12 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class ResourceBundleWrapper extends ResourceBundle {
   private ResourceBundle bundle;
-  private ResourceBundle parent;
+  private ResourceBundle parentBundle;
 
   public ResourceBundleWrapper(String file, Locale locale, boolean hasParent) {
     this.bundle = java.util.ResourceBundle.getBundle(file, locale);
     if (hasParent) {
-      this.parent = GeneralPropertiesManager.getGeneralMultilang(
+      this.parentBundle = GeneralPropertiesManager.getGeneralMultilang(
           locale.getLanguage()).getResourceBundle();
     }
   }
@@ -35,9 +35,9 @@ public class ResourceBundleWrapper extends ResourceBundle {
     }catch (MissingResourceException mrex){
 
     }
-    if (result == null && this.parent != null) {
+    if (result == null && this.parentBundle != null) {
       try{
-      result = this.parent.getObject(key);
+      result = this.parentBundle.getObject(key);
       }catch (MissingResourceException mrex){
       }
 

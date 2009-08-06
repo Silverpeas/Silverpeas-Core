@@ -36,7 +36,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   private DocumentPK documentPK;
   private int majorNumber;
   private int minorNumber;
-  private int authorId;
+  private int authorId = -1;
   private Date creationDate;
   private String comments;
   private int type = TYPE_DEFAULT_VERSION;
