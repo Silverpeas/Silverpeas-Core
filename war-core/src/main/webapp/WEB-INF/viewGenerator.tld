@@ -24,6 +24,11 @@
     </tag-class>
     <body-content>JSP</body-content>
     <description>Simple tag to display a frame.</description>
+    <attribute>
+      <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <name>looknfeel</name>
@@ -31,7 +36,7 @@
       com.stratelia.webactiv.util.viewGenerator.html.LookAndStyleTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to access the look and feel.</description>
+    <description>Simple tag to create HTML to access the look and feel.</description>
   </tag>
   <tag>
     <name>icons</name>
@@ -123,7 +128,7 @@
     <attribute>
       <name>selected</name>
       <required>true</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
       <description>
         true ou false selon que le tab est sélectionné ou non.
@@ -245,6 +250,66 @@
       <description>
         Texte alternatif à l'icone.
       </description>
+    </attribute>
+  </tag>
+  <tag>
+    <name>arrayPane</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Tag to create an ArrayPane</description>
+    <attribute>
+      <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <rtexprvalue>true</rtexprvalue>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>Name of the ArrayPane in the SessionScope</description>
+    </attribute>
+    <attribute>
+      <name>routingAddress</name>
+      <rtexprvalue>true</rtexprvalue>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>Name of the ArrayPane in the SessionScope</description>
+    </attribute>
+  </tag>
+  <tag>
+    <name>arrayColumn</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumnTag</tag-class>
+    <body-content>empty</body-content>
+    <description>Tag to create a column header for an ArrayPane</description>
+    <attribute>
+      <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+      <description>The String to be displayed as a title in the Column Header</description>
+    </attribute>
+    <attribute>
+      <name>sortable</name>
+      <type>boolean</type>
+       <description>If the column is sortable</description>
+    </attribute>
+  </tag>
+  <tag>
+    <name>arrayLine</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLineTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Tag to create a new line in the ArrayPane</description>
+  </tag>
+  <tag>
+    <name>arrayCellText</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellTextTag</tag-class>
+    <body-content>JSP</body-content>
+    <description>Tag to create a new cell in the current line of the ArrayPane.</description>
+    <attribute>
+      <name>text</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+      <description>The text to be displayed if the body is empty</description>
     </attribute>
   </tag>
   <tag>
