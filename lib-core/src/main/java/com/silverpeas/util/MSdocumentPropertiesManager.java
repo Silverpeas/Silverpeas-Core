@@ -18,12 +18,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MSdocumentPropertiesManager {
-
-	public static void main(final String[] args)
-	{
-//		MSdocumentPropertiesManager msdpm = new MSdocumentPropertiesManager();
-	}
-
 	//Constructeurs
     /**
      * Unique constructeur de la classe
@@ -48,7 +42,7 @@ public class MSdocumentPropertiesManager {
 	    	POIFSFileSystem fs			=	new POIFSFileSystem(inputStream);
 	    	
 //			DirectoryEntry 	directory	=	fs.getRoot();
-			DirectoryNode 	directory	=	fs.getRoot();
+			DirectoryEntry 	directory	=	fs.getRoot();
 			DocumentEntry document		=	(DocumentEntry)directory.getEntry("\005SummaryInformation");
 			stream	=	new	DocumentInputStream(document);
 			ps	=	PropertySetFactory.create(stream);
