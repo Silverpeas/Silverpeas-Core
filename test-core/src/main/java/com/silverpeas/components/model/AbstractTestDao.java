@@ -4,7 +4,6 @@
  */
 package com.silverpeas.components.model;
 
-
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -49,11 +48,12 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
     ic.rebind(props.getProperty("jndi.name"), ref);
     jndiName = props.getProperty("jndi.name");
+    super.setUp();
   }
 
   @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  protected DatabaseOperation getTearDownOperation() throws Exception {
+    return DatabaseOperation.DELETE_ALL;
   }
 
   @Override
@@ -79,22 +79,4 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
   protected abstract String getDatasetFileName();
 
-  public void testFillDb() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getDatabaseTester().getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
 }
