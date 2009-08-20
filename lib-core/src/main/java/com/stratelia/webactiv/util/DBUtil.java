@@ -5,7 +5,6 @@
  *
  * Created on 26 juin 2000, 10:07
  */
-
 package com.stratelia.webactiv.util;
 
 import java.sql.Connection;
@@ -31,12 +30,10 @@ public class DBUtil {
    * db.
    */
   public static int TextFieldLength = 1000;
-
   /**
    * TextAreaLength is the maximum length to store an html textarea input in db.
    */
   public static int TextAreaLength = 2000;
-
   /**
    * TextMaxiLength is the maximum length to store in db. This length is to use
    * with fields that can contain a lot of information. This is the case of
@@ -44,12 +41,10 @@ public class DBUtil {
    * will have to be put in BLOB (Binary Large OBject).
    */
   public static int TextMaxiLength = 4000;
-
   /**
    * DateFieldLength is the length to use for date storage.
    */
   public static int DateFieldLength = 10;
-
   // Static for the makeConnection
   private static InitialContext ic = null;
   private static Hashtable<String, DataSource> dsStock = new Hashtable<String, DataSource>(5);
@@ -66,8 +61,9 @@ public class DBUtil {
     DataSource ds = null;
 
     try {
-      if (ic == null)
+      if (ic == null) {
         ic = new InitialContext();
+      }
     } catch (Exception e) {
       UtilException ue = new UtilException("DBUtil.makeConnection",
           "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
@@ -93,25 +89,24 @@ public class DBUtil {
       return ds.getConnection();
     } catch (Exception e) {
       UtilException ue = new UtilException("DBUtil.makeConnection",
-          new MultilangMessage("util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName)
-              .toString(), e);
+          new MultilangMessage("util.MSG_BDD_REF_CANT_GET_CONNECTION", dbName).toString(), e);
       throw ue;
     }
 
   }
 
+  /**
+   * Return a new unique Id for a table.
+   * @param tableName the name of the table.
+   * @param idName the name of the column.
+   * @return a unique id.
+   * @throws UtilException
+   */
   public static int getNextId(String tableName, String idName)
       throws UtilException {
-    // troisieme implementation, utilise les locks de la bdd (qui elle est
-    // unique)
-    // cette implementation convient pour plusieurs instances du serveur
-
-    // Warning : on ne doit pas utiliser la connection passée en paramètre
     Connection privateConnection = null;
     try {
       // On ne peux pas utiliser une simple connection du pool
-      // privateConnection = makeConnection("jdbc/Silverpeas");
-
       // on utilise une connection extérieure au contexte transactionnel des ejb
       privateConnection = ConnectionPool.getConnection();
 
@@ -167,8 +162,9 @@ public class DBUtil {
           exe);
     } finally {
       try {
-        if (privateConnection != null)
+        if (privateConnection != null) {
           privateConnection.close();
+        }
       } catch (SQLException e) {
         SilverTrace.error("util", "DBUtil.getNextId",
             "root.EX_CONNECTION_CLOSE_FAILED", e);
@@ -187,7 +183,7 @@ public class DBUtil {
    */
   public static int getNextId(Connection con, String tableName, String idName)
       throws UtilException {
-    return getNextId(tableName,idName);
+    return getNextId(tableName, idName);
   }
 
   private static int updateMaxFromTable(Connection con, String tableName)
@@ -308,5 +304,29 @@ public class DBUtil {
   // Close JDBC ResultSet
   public static void close(ResultSet rs) {
     close(rs, null);
+  }
+
+  public static void close(Connection connection) {
+    if (connection != null) {
+      try {
+        connection.close();
+      } catch (SQLException e) {
+        SilverTrace.error("util", "DBUtil.close", "util.CAN_T_CLOSE_CONNECTION",
+            e);
+      }
+    }
+  }
+
+  public static void rollback(Connection connection) {
+    if (connection != null) {
+      try {
+        if (!connection.getAutoCommit() && !connection.isClosed()) {
+          connection.rollback();
+        }
+      } catch (SQLException e) {
+        SilverTrace.error("util", "DBUtil.close", "util.CAN_T_ROLLBACK_CONNECTION",
+            e);
+      }
+    }
   }
 }
