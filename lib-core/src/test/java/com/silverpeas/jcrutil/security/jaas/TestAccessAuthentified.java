@@ -18,29 +18,32 @@ import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.util.MimeTypes;
 
 public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
-
-  static{
+  private static boolean jaas_registred = false;
+  static {
     registred = false;
   }
-
+  
   private static final String FOLDER_NAME = "SimpleTest";
-
   private static final String FILE_NAME = "MyTest";
-
   private static final String BART_ID = "7";
-
   private static final String BART_LOGIN = "bsimpson";
-
   private static final String BART_PASSWORD = "bart";
 
+  @Override
   protected String[] getConfigLocations() {
-    return new String[] { "spring-jaas.xml" };
+    return new String[]{"spring-jaas.xml"};
   }
 
-  protected void onSetUp() {
+  @Override
+  protected void onSetUp() throws Exception {    
     super.onSetUp();
     Session session = null;
     try {
+      registred = jaas_registred;
+      if(!jaas_registred) {
+        BasicDaoFactory.getInstance().setApplicationContext(this.getContext(getConfigLocations()));
+        jaas_registred = true;
+      }
       registerSilverpeasNodeTypes();
       session = BasicDaoFactory.getSystemSession();
       Node rootNode = session.getRootNode();
@@ -165,13 +168,11 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       Node fileNode = session.getRootNode().getNode(FOLDER_NAME).getNode(
           FILE_NAME);
       assertNotNull("File not found", fileNode);
-      assertEquals("File not of correct type", JcrConstants.NT_FILE, fileNode
-          .getPrimaryNodeType().getName());
+      assertEquals("File not of correct type", JcrConstants.NT_FILE, fileNode.getPrimaryNodeType().getName());
       assertEquals("File has not the correct mixin", hasMixin, hasMixin(
           JcrConstants.SLV_OWNABLE_MIXIN, fileNode));
     } else {
-      assertFalse("File should not be accessible", folderNode
-          .hasNode(FILE_NAME));
+      assertFalse("File should not be accessible", folderNode.hasNode(FILE_NAME));
     }
   }
 
@@ -185,8 +186,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     assertNotNull("Folder not found", folderNode);
     assertEquals("Folder not of correct type", JcrConstants.NT_FOLDER,
         folderNode.getPrimaryNodeType().getName());
-    assertEquals(JcrConstants.NT_FOLDER, folderNode.getPrimaryNodeType()
-        .getName());
+    assertEquals(JcrConstants.NT_FOLDER, folderNode.getPrimaryNodeType().getName());
     assertEquals("Folder has not the correct mixin", hasMixin, hasMixin(
         JcrConstants.SLV_OWNABLE_MIXIN, folderNode));
   }
@@ -275,9 +275,10 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this
-        .getClass().getResourceAsStream("test-jcrutil-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.getClass().getResourceAsStream(
+        "test-jcrutil-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }

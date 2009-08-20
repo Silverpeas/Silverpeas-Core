@@ -30,6 +30,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     super(name);
   }
 
+  @Override
   protected String readFile(String path) throws IOException {
     CharArrayWriter writer = null;
     InputStream in = null;
@@ -59,6 +60,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     }
   }
 
+  @Override
   protected void createTempFile(String path, String content) throws IOException {
     File attachmentFile = new File(path);
     attachmentFile.deleteOnExit();
@@ -109,6 +111,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     }
   }
 
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-in-memory-jcr.xml" };
   }

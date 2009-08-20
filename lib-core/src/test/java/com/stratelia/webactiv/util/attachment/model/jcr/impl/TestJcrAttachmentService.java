@@ -32,6 +32,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     this.service = service;
   }
 
+  @Override
   protected void onTearDown() throws Exception {
     super.onTearDown();
     clearRepository();
@@ -66,7 +67,8 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     }
   }
 
-  protected void onSetUp() {
+  @Override
+  protected void onSetUp() throws Exception {
     super.onSetUp();
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);

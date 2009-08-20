@@ -181,7 +181,8 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   }
 
   @Override
-  protected void onSetUp() {
+  protected void onSetUp() throws Exception {
+    super.onSetUp();
     System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,
         "com.sun.jndi.fscontext.RefFSContextFactory");
     calend = Calendar.getInstance();
@@ -211,6 +212,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
 
   @Override
   protected void onTearDown() throws Exception {
+    super.onTearDown();
     clearRepository();
     IDatabaseConnection connection = null;
     try {

@@ -47,9 +47,9 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
-  protected void onSetUp() {
-    super.onSetUp();
+  protected void onSetUp() {    
     try {
+      super.onSetUp();
       registerSilverpeasNodeTypes();
     } catch (Exception pex) {
       pex.printStackTrace();
