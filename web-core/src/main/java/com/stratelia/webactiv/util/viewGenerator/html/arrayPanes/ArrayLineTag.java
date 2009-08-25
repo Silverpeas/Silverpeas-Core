@@ -10,22 +10,22 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class ArrayLineTag extends TagSupport {
 
   private static final long serialVersionUID = -5323133574049569236L;
-  private ArrayPane arrayPane;
-  private ArrayLine arrayLine;
+  public static final String ARRAY_LINE_PAGE_ATT = "pageContextArrayLine";
 
   @Override
   public int doStartTag() throws JspException {
-    if (arrayPane == null) {
-      ArrayPaneTag arrayPaneTag = (ArrayPaneTag) findAncestorWithClass(this, ArrayPaneTag.class);
-      if (arrayPaneTag != null) {
-        arrayPane = arrayPaneTag.getArrayPane();
-      }
-    }
-    arrayLine = arrayPane.addArrayLine();
+    ArrayLine arrayLine = getArrayPane().addArrayLine();
+    pageContext.setAttribute(ARRAY_LINE_PAGE_ATT, arrayLine);
     return EVAL_BODY_INCLUDE;
   }
 
-  public ArrayLine getArrayLine() {
-    return arrayLine;
+  @Override
+  public int doEndTag() throws JspException {
+    pageContext.removeAttribute(ARRAY_LINE_PAGE_ATT);
+    return EVAL_PAGE;
+  }
+
+   public ArrayPane getArrayPane() {
+    return (ArrayPane) pageContext.getAttribute(ArrayPaneTag.ARRAY_PANE_PAGE_ATT);
   }
 }

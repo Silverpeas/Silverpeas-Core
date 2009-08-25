@@ -19,6 +19,7 @@ public class ArrayPaneTag extends TagSupport {
   private String var;
   private String title;
   private String routingAddress = null;
+  public static final String ARRAY_PANE_PAGE_ATT = "pageContextArrayPane";
 
   public String getRoutingAddress() {
     return routingAddress;
@@ -27,16 +28,16 @@ public class ArrayPaneTag extends TagSupport {
   public void setRoutingAddress(String routingAddress) {
     this.routingAddress = routingAddress;
   }
-  private ArrayPane arrayPane;
 
   @Override
   public int doStartTag() throws JspException {
     final GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
         "SessionGraphicElementFactory");
-    arrayPane = gef.getArrayPane(var, routingAddress, pageContext.getRequest(), pageContext.getSession());
+    ArrayPane arrayPane = gef.getArrayPane(var, routingAddress, pageContext.getRequest(), pageContext.getSession());
     if (title != null) {
       arrayPane.setTitle(title);
     }
+    pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
   }
 
@@ -44,6 +45,8 @@ public class ArrayPaneTag extends TagSupport {
   public int doEndTag() throws JspException {
     final JspWriter out = pageContext.getOut();
     try {
+      ArrayPane arrayPane = getArrayPane();
+      pageContext.removeAttribute(ARRAY_PANE_PAGE_ATT);
       out.println(arrayPane.print());
     } catch (final IOException e) {
       throw new JspException("ArrayPane Tag", e);
@@ -52,7 +55,7 @@ public class ArrayPaneTag extends TagSupport {
   }
 
   public ArrayPane getArrayPane() {
-    return arrayPane;
+    return (ArrayPane) pageContext.getAttribute(ARRAY_PANE_PAGE_ATT);
   }
 
   /**
