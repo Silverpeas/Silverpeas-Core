@@ -4,6 +4,7 @@ import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
+import junit.framework.TestCase;
 
 
 /**
@@ -11,16 +12,20 @@ import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
  * @author Ludovic Bertin
  * @version $Revision: 1.2 $ $Date: 2008/05/28 08:40:22 $
  **/
-public class ProcessInstanceTest
+public class ProcessInstanceTest extends TestCase
 {
-    public static void main(String[] args)
+  public ProcessInstanceTest(String name) {
+		super(name);
+	}
+
+    public void testProcessIntance() throws Exception
 	{
-		try
+		/*try
 		{
 			UpdatableProcessInstanceManager instanceManager = (UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager();
 			ProcessInstanceImpl instance = (ProcessInstanceImpl) instanceManager.createProcessInstance("1");
 
-/*			ProcessInstanceImpl instance = (ProcessInstanceImpl) instanceManager.getProcessInstance("5");
+			ProcessInstanceImpl instance = (ProcessInstanceImpl) instanceManager.getProcessInstance("5");
 			Hashtable wkUsers = instance.castor_getWorkingUsers();
 
 			System.out.println("begin");
@@ -53,10 +58,10 @@ public class ProcessInstanceTest
 			instance.addHistoryStep( (HistoryStep) step);
 			step.setActionStatus(1);
 			instance.updateHistoryStep( (HistoryStep) step);
-*/		}
+		}
 		catch (WorkflowException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
     }
 }

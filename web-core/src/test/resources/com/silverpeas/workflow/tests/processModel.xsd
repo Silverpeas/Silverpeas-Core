@@ -9,13 +9,13 @@
 				<xs:element ref="label" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="description" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="roles"/>
-				<xs:element ref="presentation"/>
-				<xs:element ref="participants"/>
+				<xs:element ref="presentation" minOccurs="0"/>
+				<xs:element ref="participants" minOccurs="0"/>
 				<xs:element ref="states"/>
-				<xs:element ref="actions"/>
-				<xs:element ref="userInfos"/>
+				<xs:element ref="actions" minOccurs="0"/>
+				<xs:element ref="userInfos" minOccurs="0" />
 				<xs:element ref="dataFolder"/>
-				<xs:element ref="forms"/>
+				<xs:element ref="forms" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
@@ -37,8 +37,8 @@
 				<xs:element ref="label" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="description" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:ID"/>
-			<xs:attribute name="resolvedState" type="xs:string"/>
+			<xs:attribute name="name" type="xs:ID" use="required"/>
+			<xs:attribute name="resolvedState" type="xs:IDREF"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ................................................................. DEFINITION D'UNE ACTION -->
@@ -51,7 +51,7 @@
 				<xs:element ref="consequences" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:ID" use="required"/>
-			<xs:attribute name="form" type="xs:IDREF" use="required"/>
+			<xs:attribute name="form" type="xs:string" use="required"/> <!-- can't use IDREF, no ID in form -->
 			<xs:attribute name="kind" type="xs:string" default="update"/>
 		</xs:complexType>
 	</xs:element>
@@ -94,7 +94,7 @@
 			<xs:simpleContent>
 				<xs:extension base="xs:string">
 					<xs:attribute name="lang" type="xs:string" default="default"/>
-					<xs:attribute name="role" type="xs:IDREFS"/>
+					<xs:attribute name="role" type="xs:string" default="default"/>
 				</xs:extension>
 			</xs:simpleContent>
 		</xs:complexType>
@@ -113,7 +113,7 @@
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:ID" use="required"/>
 			<xs:attribute name="timeoutAction" type="xs:IDREF"/>
-			<xs:attribute name="timeoutInterval" type="xs:string"/>
+			<xs:attribute name="timeoutInterval" type="xs:integer"/>
 			<xs:attribute name="timeoutNotifyAdmin" type="xs:boolean" default="false"/>
 		</xs:complexType>
 	</xs:element>
@@ -130,10 +130,13 @@
 						<xs:attribute name="item" type="xs:IDREF"/>
 						<xs:attribute name="value" type="xs:string"/>
 						<xs:attribute name="readonly" type="xs:boolean" default="false"/>
+						<xs:attribute name="displayerName" type="xs:string"/>
+						<xs:attribute name="mandatory" type="xs:boolean" default="false"/>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:ID" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/> <!-- name is not an id (not solenly) -->
+            <xs:attribute name="role" type="xs:IDREFS"/>
 			<xs:attribute name="HTMLFileName" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
@@ -162,21 +165,38 @@
 			<xs:sequence>
 				<xs:element ref="label" minOccurs="0"/>
 				<xs:element ref="description" minOccurs="0"/>
-				<xs:element ref="type" minOccurs="0"/>
-				<xs:element ref="readonly" minOccurs="0"/>
-				<xs:element ref="formula" minOccurs="0"/>
+				<xs:element ref="type" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="readonly" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="formula" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
-			<xs:attribute name="name" type="xs:ID"/>
+			<xs:attribute name="name" type="xs:ID" use="required"/>
 			<xs:attribute name="computed" type="xs:boolean" default="false"/>
-			<xs:attribute name="mapTo" type="xs:string"/>
+			<xs:attribute name="mapTo" type="xs:IDREF"/>
 		</xs:complexType>
 	</xs:element>
+    <!-- ...................................................................... DEFINITION D'UN PARAMETRE -->
+    <xs:element name="param">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
 	<!-- ...................................................................... DEFINITION DES IMPACTS -->
-	<xs:element name="kill" type="xs:boolean"/>
 	<xs:element name="consequences">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="kill" maxOccurs="1"/>
+				<xs:element ref="consequence" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="kill" type="xs:boolean"/>
+
+	<xs:element name="consequence">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="kill" minOccurs="0" maxOccurs="1"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element name="set">
 						<xs:complexType>
@@ -191,6 +211,9 @@
 					<xs:element ref="notifiedUsers" minOccurs="0"/>
 				</xs:choice>
 			</xs:sequence>
+            <xs:attribute name="item" type="xs:IDREF" />
+            <xs:attribute name="operator" type="xs:string"/>
+            <xs:attribute name="value" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION DES UTILISATEURS CALCULES -->
@@ -198,37 +221,37 @@
 		<xs:complexType>
 			<xs:attribute name="participant" type="xs:IDREF" />
 			<xs:attribute name="folderItem" type="xs:IDREF" />
-			<xs:attribute name="relation" type="xs:string"/>
-			<xs:attribute name="role" type="xs:string"/>
+			<xs:attribute name="relation" type="xs:IDREF"/>
+			<xs:attribute name="role" type="xs:IDREF"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION DES UTILISATEURS NOTIFIES -->
 	<xs:element name="notifiedUsers">
 		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="relatedUser" maxOccurs="unbounded"/>
-			</xs:choice>
+            <xs:sequence>
+			    <xs:element ref="relatedUser" maxOccurs="unbounded"/>
+            </xs:sequence>
 			<xs:attribute name="message" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION DES UTILISATEURS AFFECTES -->
 	<xs:element name="workingUsers">
 		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="relatedUser" maxOccurs="unbounded"/>
-				<xs:element ref="userInRole"/>
-			</xs:choice>
-			<xs:attribute name="role" type="xs:string"/>
+			<xs:sequence>
+				<xs:element ref="relatedUser" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="userInRole" minOccurs="0" maxOccurs="unbounded"/> <!-- plusieurs possible -->
+			</xs:sequence>
+			<xs:attribute name="role" type="xs:IDREF"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION DES UTILISATEURS IMPACTES -->
 	<xs:element name="interestedUsers">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="relatedUser" maxOccurs="unbounded"/>
-				<xs:element ref="userInRole" minOccurs="0"/>
+				<xs:element ref="relatedUser" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="userInRole" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="role" type="xs:string"/>
+			<xs:attribute name="role" type="xs:IDREF"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION D'UNE PRESENTATION -->
@@ -236,7 +259,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="title" maxOccurs="unbounded"/>
-				<xs:element ref="columns" maxOccurs="unbounded"/>
+				<xs:element ref="columns" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -247,7 +270,7 @@
 	<!-- ...................................... DEFINITION D'UNE LISTE DE PERSONNES AYANT UN ROLE DONNE  -->
 	<xs:element name="userInRole">
 		<xs:complexType>
-			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="name" type="xs:IDREF" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- .................................................... DEFINITION D'UNE LISTE D'ETATS -->
@@ -276,7 +299,7 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
-			<xs:attribute name="role" type="xs:string" use="required"/>
+			<xs:attribute name="role" type="xs:IDREF" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- .................................................... DEFINITION D'UNE LISTE DE FORMULAIRES -->
@@ -319,10 +342,8 @@
 	<xs:element name="allowedUsers">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:choice>
-					<xs:element ref="userInRole"/>
-					<xs:element ref="relatedUser" maxOccurs="unbounded"/>
-				</xs:choice>
+                <xs:element ref="relatedUser" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="userInRole" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

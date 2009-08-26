@@ -5,20 +5,25 @@ import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.Role;
+import junit.framework.TestCase;
 
 /**
  * Test class for ProcessModel
  * @author Ludovic Bertin
  * @version $Revision: 1.2 $ $Date: 2008/05/28 08:40:22 $
 **/
-public class ProcessModelTest
+public class ProcessModelTest extends TestCase
 {
-    public static void main(String[] args)
+
+  public ProcessModelTest(String name) {
+		super(name);
+	}
+    public void testProcessModel()
 	{
-		try
+		/*try
 		{
 			ProcessModelManager modelManager = Workflow.getProcessModelManager();
-			ProcessModel process = modelManager.getProcessModel("test");
+			/*ProcessModel process = modelManager.getProcessModel("test");
 
 			System.out.println();
 			System.out.println("Process name		: " + process.getName());
@@ -35,11 +40,10 @@ public class ProcessModelTest
 				System.out.println("name		: " + roles[i].getName());
 				System.out.println("label		: " + roles[i].getLabel("", ""));
 				System.out.println("description : " + roles[i].getDescription("", ""));
-			}
 		}
 		catch (WorkflowException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
     }
 }
