@@ -1,5 +1,8 @@
 package com.stratelia.silverpeas.domains.ldapdriver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import com.novell.ldap.LDAPConnection;
@@ -85,7 +88,8 @@ public class LDAPUser extends Object
         SilverTrace.info("admin","LDAPUser.getAllUsers()","root.MSG_GEN_PARAM_VALUE", "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " + Integer.toString(driverSettings.getScope()) + " filter : " + theFilter);
 		SynchroReport.info("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...", null);
         usersVector = new Vector();
-        theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),theFilter,driverSettings.getUsersLoginField());
+        //theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),theFilter,driverSettings.getUsersLoginField());
+        theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),theFilter,driverSettings.getUsersLoginField(), driverSettings.getUserAttributes());
         for (i = 0; i < theEntries.length; i++)
         {
             SilverTrace.info("admin","LDAPUser.getAllUsers()","root.MSG_GEN_PARAM_VALUE", "User Found !!!");
@@ -111,9 +115,18 @@ public class LDAPUser extends Object
     public UserFull getUserFull(String lds, String id) throws AdminException
     {
         LDAPEntry   theEntry = null;
-
+        
+        List<String> lAttrs = new ArrayList<String>();
+        String[] userAttributes = driverSettings.getUserAttributes();
+        if (userAttributes != null)
+        {
+        	lAttrs.addAll(Arrays.asList(userAttributes));
+        	if (driverParent.getMapParameters() != null)
+        		lAttrs.addAll(Arrays.asList(driverParent.getMapParameters()));
+        }
+        
         SilverTrace.info("admin","LDAPUser.getUser()","root.MSG_GEN_PARAM_VALUE", "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " + Integer.toString(driverSettings.getScope()) + " filter : " + driverSettings.getUsersIdFilter(id));
-        theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersIdFilter(id));
+        theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[0]));
         return translateUserFull(lds,theEntry);
     }
 
@@ -131,7 +144,7 @@ public class LDAPUser extends Object
         LDAPEntry   theEntry = null;
 
         SilverTrace.info("admin","LDAPUser.getUser()","root.MSG_GEN_PARAM_VALUE", "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " + Integer.toString(driverSettings.getScope()) + " filter : " + driverSettings.getUsersIdFilter(id));
-        theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersIdFilter(id));
+        theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersIdFilter(id), driverSettings.getUserAttributes());
         return translateUser(lds,theEntry);
     }
 
@@ -140,7 +153,7 @@ public class LDAPUser extends Object
         LDAPEntry   theEntry = null;
 
         SilverTrace.info("admin","LDAPUser.getUser()","root.MSG_GEN_PARAM_VALUE", "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " + Integer.toString(driverSettings.getScope()) + " filter : " + driverSettings.getUsersLoginFilter(loginUser));
-        theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersLoginFilter(loginUser));
+        theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersLoginFilter(loginUser), driverSettings.getUserAttributes());
         return translateUser(lds,theEntry);
     }
 
@@ -152,7 +165,7 @@ public class LDAPUser extends Object
     * @return the user object
     * @throws AdminException if an error occur during LDAP operations or if there is no userEntry object
     */
-    public UserFull translateUserFull(String lds, LDAPEntry userEntry) throws AdminException
+    private UserFull translateUserFull(String lds, LDAPEntry userEntry) throws AdminException
     {
         UserFull    userInfos = new UserFull(driverParent);
         String      subUserDN = null;
@@ -178,7 +191,7 @@ public class LDAPUser extends Object
                 {
                     try
                     {
-                        subUserEntry = LDAPUtility.getFirstEntryFromSearch(lds,subUserDN,LDAPConnection.SCOPE_BASE,driverSettings.getUsersFullFilter());
+                        subUserEntry = LDAPUtility.getFirstEntryFromSearch(lds,subUserDN,LDAPConnection.SCOPE_BASE,driverSettings.getUsersFullFilter(), driverSettings.getUserAttributes());
                     }
                     catch (AdminException e)
                     {
@@ -203,7 +216,7 @@ public class LDAPUser extends Object
             		//String dn = "cn="+cn+","+curProp.getRedirectOU();
             		String baseDN = curProp.getRedirectOU();
             		String filter = "(cn="+cn+")";
-            		subUserEntry = LDAPUtility.getFirstEntryFromSearch(lds, baseDN, LDAPConnection.SCOPE_SUB, filter);
+            		subUserEntry = LDAPUtility.getFirstEntryFromSearch(lds, baseDN, LDAPConnection.SCOPE_SUB, filter, driverSettings.getUserAttributes());
             	
             		if (subUserEntry != null)
             		{
@@ -254,5 +267,6 @@ public class LDAPUser extends Object
     	AbstractLDAPTimeStamp theTimeStamp = driverSettings.newLDAPTimeStamp(minTimeStamp);
     	theTimeStamp.initFromServer(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getUsersFullFilter(), driverSettings.getUsersLoginField());
     	return theTimeStamp;
-    } 
+    }
+    
 }

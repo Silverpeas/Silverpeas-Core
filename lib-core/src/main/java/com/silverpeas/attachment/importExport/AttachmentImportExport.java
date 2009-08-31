@@ -284,6 +284,8 @@ public class AttachmentImportExport {
 				} else if (attDetail.getExtension().equalsIgnoreCase(extensionFilter)) {
 					try {
 						copyAttachment(attDetail, pk, exportPath);
+						// Le nom physique correspond maintenant au fichier copié
+						attDetail.setLogicalName(ZipManager.transformStringToAsciiString(attDetail.getLogicalName()));
 
 					} catch (Exception ex) {
 						// TODO: gerer ou ne pas gerer telle est la question

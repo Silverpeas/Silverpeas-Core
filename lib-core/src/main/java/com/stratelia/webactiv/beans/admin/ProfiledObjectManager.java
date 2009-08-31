@@ -90,4 +90,34 @@ public class ProfiledObjectManager
 			ddManager.releaseOrganizationSchema();
 		}
     }
+	
+	public List getProfiles(DomainDriverManager ddManager, int componentId) throws AdminException
+	{
+		List profiles = new ArrayList();
+		
+		String[] asProfileIds = null;
+		try
+		{
+			ddManager.getOrganizationSchema();
+			//Get the profiles
+			asProfileIds = ddManager.organization.userRole.getAllObjectUserRoleIdsOfInstance(componentId);
+		}
+		catch (Exception e)
+		{
+			throw new AdminException("ProfiledObjectManager.getProfiles", SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE", "componentId = " + componentId, e);
+		}
+		finally
+		{
+			ddManager.releaseOrganizationSchema();
+		}		
+
+        for (int nI=0; asProfileIds != null && nI<asProfileIds.length; nI++)
+        {
+            ProfileInst profileInst = m_ProfileInstManager.getProfileInst(ddManager, asProfileIds[nI], Integer.toString(componentId));
+            //profileInst.setObjectType(objectType);
+            profiles.add(profileInst);
+        }
+        
+        return profiles;
+	}
 }

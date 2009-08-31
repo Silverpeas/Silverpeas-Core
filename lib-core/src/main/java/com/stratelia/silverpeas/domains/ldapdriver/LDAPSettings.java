@@ -25,6 +25,7 @@ public class LDAPSettings extends Object
     protected String LDAPImpl = null;
     protected int    LDAPPort = 389;
     protected int    LDAPProtocolVer = LDAPConnection.LDAP_V3;
+    protected boolean LDAPOpAttributesUsed = false;
     protected String LDAPAccessLoginDN = null;
     protected String LDAPAccessPasswd = null;
     protected String LDAPUserBaseDN = null;
@@ -87,6 +88,7 @@ public class LDAPSettings extends Object
         LDAPHost = rs.getString("database.LDAPHost",null);
         LDAPPort = getIntValue(rs, "database.LDAPPort", LDAPPort);
         LDAPProtocolVer = getIntValue(rs, "database.LDAPProtocolVer", LDAPProtocolVer);
+        LDAPOpAttributesUsed = getBooleanValue(rs, "database.LDAPOpAttributesUsed", LDAPOpAttributesUsed);
         LDAPProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
         LDAPAccessLoginDN = rs.getString("database.LDAPAccessLoginDN",null);
         LDAPAccessPasswd = rs.getString("database.LDAPAccessPasswd",null);
@@ -164,6 +166,7 @@ public class LDAPSettings extends Object
     public String getLDAPHost()                 {   return LDAPHost; }
     public int    getLDAPPort()                 {   return ((LDAPSecured) ? LDAPPortSecured : LDAPPort); }
     public int    getLDAPProtocolVer()          {   return LDAPProtocolVer; }
+    public boolean isLDAPOpAttributesUsed()		{	return LDAPOpAttributesUsed; }
     public String getLDAPAccessLoginDN()        {   return LDAPAccessLoginDN; }
     public String getLDAPAccessPasswd()         {   return LDAPAccessPasswd; }
     public String getLDAPUserBaseDN()           {   return LDAPUserBaseDN; }
@@ -357,6 +360,41 @@ public class LDAPSettings extends Object
     }
 
     public String getGroupsNameFilter(String value) { return "(&" + getGroupsFullFilter() + "(" + getGroupsNameField() + "=" + value + "))"; }
+    
+    protected String[] getUserAttributes()
+    {
+    	if (isLDAPOpAttributesUsed())
+    	{
+	    	String[] attrs = new String[5];
+	        attrs[0] = getUsersIdField();
+	        attrs[1] = getUsersEmailField();
+	        attrs[2] = getUsersFirstNameField();
+	        attrs[3] = getUsersLastNameField();
+	        attrs[4] = getUsersLoginField();
+	        return attrs;
+    	}
+    	else
+    	{
+    		return null;
+    	}
+    }
+    
+    protected String[] getGroupAttributes()
+    {
+    	if (isLDAPOpAttributesUsed())
+    	{
+	    	String[] attrs = new String[4];
+	        attrs[0] = getGroupsDescriptionField();
+	        attrs[1] = getGroupsIdField();
+	        attrs[2] = getGroupsMemberField();
+	        attrs[3] = getGroupsNameField();
+	        return attrs;
+    	}
+    	else
+    	{
+    		return null;
+    	}
+    }
     
     public boolean displayImportUsers() {   return ihmImportUsers; }
     public boolean displayImportGroups() {   return ihmImportGroups; }

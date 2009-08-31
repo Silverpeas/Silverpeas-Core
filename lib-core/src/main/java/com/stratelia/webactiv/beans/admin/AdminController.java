@@ -653,6 +653,21 @@ public class AdminController extends AdminReference implements java.io.Serializa
         }
     }
 
+    public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space)
+    {
+    	SilverTrace.info("admin", "AdminController.setSpaceProfilesToComponent", "root.MSG_GEN_ENTER_METHOD");
+        try
+        {
+            m_Admin.setSpaceProfilesToComponent(component, space);
+        }
+        catch(Exception e)
+        {
+			SilverTrace.error("admin", "AdminController.setSpaceProfilesToComponent", "admin.MSG_ERR_GET_PROFILE", e);
+        }
+    }
+    
+    
+    
 	/** Add the given Profile Instance */
     public String addProfileInst(ProfileInst profileInst)
     {

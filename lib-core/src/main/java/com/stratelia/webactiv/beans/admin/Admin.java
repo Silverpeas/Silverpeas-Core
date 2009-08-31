@@ -448,7 +448,7 @@ public class Admin extends Object
             SpaceInst spaceInst = getSpaceInstById(sDriverSpaceId, true);
             
             //set superspace profiles to space
-            if (useProfileInheritance && !spaceInst.isInheritanceBlocked())
+            if (useProfileInheritance && !spaceInst.isInheritanceBlocked() && !spaceInst.isRoot())
             	updateSpaceInheritance(spaceInst, false);
             
             m_DDManager.commit();
@@ -456,7 +456,6 @@ public class Admin extends Object
             // indexation de l'espace
             SilverTrace.info("admin", "admin.restoreSpaceFromBasket", "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = " + spaceInst.getName());
             createSpaceIndex(spaceInst);
-
             //reset space and eventually subspace
 			m_Cache.opAddSpace(spaceInst);
         }
@@ -665,15 +664,18 @@ public class Admin extends Object
             			deleteSpaceProfileInst(profile.getId(), false);
             	}
             	
-            	//2 - affectation des droits de l'espace au sous espace
-            	setSpaceProfilesToSubSpace(space, null);
-            	
-            	//profiles = space.getAllSpaceProfilesInst();
-            	profiles = space.getInheritedProfiles();
-            	for (int i=0; i<profiles.size(); i++)
+            	if (!space.isRoot())
             	{
-            		profile = (SpaceProfileInst) profiles.get(i);
-   	    			addSpaceProfileInst(profile, null, false);
+	            	//2 - affectation des droits de l'espace au sous espace
+	            	setSpaceProfilesToSubSpace(space, null);
+	            	
+	            	//profiles = space.getAllSpaceProfilesInst();
+	            	profiles = space.getInheritedProfiles();
+	            	for (int i=0; i<profiles.size(); i++)
+	            	{
+	            		profile = (SpaceProfileInst) profiles.get(i);
+	   	    			addSpaceProfileInst(profile, null, false);
+	            	}
             	}
             }
         }
@@ -1022,13 +1024,14 @@ public class Admin extends Object
             
             // Get the component and put it in the cache
             ComponentInst componentInst = getComponentInst(sComponentId);
-            
+
+
             if (useProfileInheritance && !componentInst.isInheritanceBlocked())
 			{
 				//inherits profiles from space
 				setSpaceProfilesToComponent(componentInst, null);
 			}
-            
+			
             createComponentIndex(componentInst);
             
             m_DDManager.commit();
@@ -1423,7 +1426,7 @@ public class Admin extends Object
      */
     private void setSpaceProfilesToSubSpace(SpaceInst subSpace, SpaceInst space) throws AdminException
     {
-    	if (space == null)
+		if (space == null)
     		space = getSpaceInstById(subSpace.getDomainFatherId(), true);
     	
     	setSpaceProfileToSubSpace(subSpace, space, "admin");
@@ -1480,7 +1483,7 @@ public class Admin extends Object
      * @param space the object to get profiles
      * @throws AdminException
      */
-    private void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws AdminException
+    public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws AdminException
     {
     	WAComponent waComponent = Instanciateur.getWAComponent(component.getName());
     	String[] componentRoles = waComponent.getProfilList();
@@ -6017,10 +6020,46 @@ public class Admin extends Object
 								}
 							}
 						}
+						
+						//get object profiles
+						List objectProfiles = m_ProfiledObjectManager.getProfiles(m_DDManager, Integer.parseInt(sCompoId));
+						List objectIds = new ArrayList();
+						for (int o=0; o<objectProfiles.size(); o++)
+						{
+							ProfileInst objectProfile = (ProfileInst) objectProfiles.get(o);
+							if (objectProfile != null)
+							{
+								String objectId = Integer.toString(objectProfile.getObjectId());
+								if (!objectIds.contains(objectId))
+								{
+									m_UserSetManager.addUserSet(m_DDManager, "O", Integer.toString(objectProfile.getObjectId()));
+									objectIds.add(objectId);
+									userSetCount++;
+								}
+								m_UserSetManager.addUserSet(m_DDManager, "R", objectProfile.getId());
+								m_UserSetManager.addUserSetRelation(m_DDManager, "O", objectId, "R", objectProfile.getId());
+								linkCount++;
+								userSetCount++;
+								
+								for (int nL=0; nL<objectProfile.getNumGroup(); nL++)
+								{
+									String sGroupId = objectProfile.getGroup(nL);
+									m_UserSetManager.addUserSetRelation(m_DDManager, "R", objectProfile.getId(), "G", sGroupId);
+									linkCount++;
+								}
+
+								for (int nM=0; nM<objectProfile.getNumUser(); nM++)
+								{
+									String sUserId = objectProfile.getUser(nM);
+									m_UserSetManager.addUserRelation(m_DDManager, "R", objectProfile.getId(), sUserId);
+									linkCount++;
+								}
+							}
+						}
 					}
 				}
 			}
-
+			
 		    // Commit the transaction
 			m_DDManager.commit();
 

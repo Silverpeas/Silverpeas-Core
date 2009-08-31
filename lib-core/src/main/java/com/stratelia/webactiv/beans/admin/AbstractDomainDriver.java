@@ -18,6 +18,7 @@ abstract public class AbstractDomainDriver extends Object
     protected String    m_PropertiesMultilang = "";
     protected Hashtable m_PropertiesLabels = new Hashtable();
     protected Hashtable m_PropertiesDescriptions = new Hashtable();
+    protected String[]  m_mapParameters = null;
 
     protected boolean   synchroInProcess = false;
     protected boolean	x509Enabled = false;
@@ -149,6 +150,7 @@ abstract public class AbstractDomainDriver extends Object
             nbProps = Integer.parseInt(s);
         }
         m_aKeys = new String[nbProps];
+        m_mapParameters = new String[nbProps];
         for (i = 1 ; i <= nbProps ; i++ )
         {
             s = rs.getString("property_" + Integer.toString(i) + ".Name");
@@ -157,6 +159,7 @@ abstract public class AbstractDomainDriver extends Object
                 newElmt = new DomainProperty(rs,Integer.toString(i)); // Retreives all property's infos
                 m_Properties.add(newElmt);
                 m_aKeys[i-1] = newElmt.getName();
+                m_mapParameters[i-1] = newElmt.getMapParameter();
             }
         }
 
@@ -182,6 +185,11 @@ abstract public class AbstractDomainDriver extends Object
     			return domainProp;
     	}
         return null;
+    }
+    
+    public String[] getMapParameters()
+    {
+        return m_mapParameters;
     }
     
     public List getPropertiesToImport(String language)

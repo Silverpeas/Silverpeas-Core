@@ -100,7 +100,7 @@ public class InstanceDataTable extends Table
 		for (int r=0; r<rows.size(); r++)
 		{
 			row		= (InstanceDataRow) rows.get(r);
-			param	= new SPParameter(row.name, row.value);
+			param	= new SPParameter(row.name, row.value, row.label);
 			params.addParameter(param);
 		}
 

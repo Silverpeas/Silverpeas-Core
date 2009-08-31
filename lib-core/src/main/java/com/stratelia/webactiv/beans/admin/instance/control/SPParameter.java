@@ -28,6 +28,13 @@ public class SPParameter implements Serializable, Comparable
 		this.value			= value;
     }
 
+	public SPParameter(String name, String value, String label)
+	{
+		this.name			= name;
+		this.value			= value;
+		this.label			= label;
+    }
+
 	public SPParameter(String name, String label, String value, String mandatory, String updatable, String type, Hashtable helps, String size, String defaultValue, String displayOrder, ArrayList options)
 	{
 		SilverTrace.info("admin", "SPParameter.SPParameter", "root.MSG_GEN_PARAM_VALUE", "name: " + name + ", value: " + value + " (mandatory ? " + mandatory + ")+(updatable ? " + updatable + ") options="+options);
@@ -117,6 +124,9 @@ public class SPParameter implements Serializable, Comparable
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public ArrayList getOptions() {

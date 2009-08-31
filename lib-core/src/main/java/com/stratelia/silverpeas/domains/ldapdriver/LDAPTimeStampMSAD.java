@@ -33,7 +33,7 @@ public class LDAPTimeStampMSAD extends AbstractLDAPTimeStamp
     public void initFromServer(String lds, String baseDN, String filter, String fallbackSortBy) throws AdminException
     { 
 		SilverTrace.info("admin", "LDAPTimeStampMSAD.initFromServer()", "root.MSG_GEN_ENTER_METHOD");
-        LDAPEntry[]    theEntries = LDAPUtility.search1000Plus(lds, baseDN, driverSettings.getScope(), "(&(" + driverSettings.getTimeStampVar() + ">=" + timeStamp + ")" + filter + ")", driverSettings.getTimeStampVar());
+        LDAPEntry[]    theEntries = LDAPUtility.search1000Plus(lds, baseDN, driverSettings.getScope(), "(&(" + driverSettings.getTimeStampVar() + ">=" + timeStamp + ")" + filter + ")", driverSettings.getTimeStampVar(), driverSettings.getGroupAttributes());
         if (theEntries.length > 0)
         {
             // Problem is : the search1000Plus function sorts normaly by descending order. BUT most LDAP server can't performs this type of order (like Active Directory)

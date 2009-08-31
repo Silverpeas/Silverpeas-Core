@@ -419,12 +419,12 @@ abstract public class AbstractLDAPGroup extends Object
     protected LDAPEntry getGroupEntry(String lds, String groupId) throws AdminException
     {
         SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntry()", "root.MSG_GEN_ENTER_METHOD", "groupId=" + groupId);
-        return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(), driverSettings.getGroupsIdFilter(groupId));
+        return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(), driverSettings.getGroupsIdFilter(groupId), driverSettings.getGroupAttributes());
     }
 
     protected LDAPEntry getGroupEntryByName(String lds, String groupName) throws AdminException
     {
         SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntryByName()", "root.MSG_GEN_ENTER_METHOD", "groupName="+groupName);
-        return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(), driverSettings.getGroupsNameFilter(groupName));
+        return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(), driverSettings.getGroupsNameFilter(groupName), driverSettings.getGroupAttributes());
     }
 }

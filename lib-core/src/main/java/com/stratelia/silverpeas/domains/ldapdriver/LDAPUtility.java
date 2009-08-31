@@ -286,7 +286,7 @@ public class LDAPUtility extends Object
      * @throws        LDAPException
      * @throws        LDAPReferralException if a referral problem occur
      */
-    static public LDAPEntry getFirstEntryFromSearch(String lds, String baseDN, int scope, String filter) throws AdminException
+    static public LDAPEntry getFirstEntryFromSearch(String lds, String baseDN, int scope, String filter, String[] attrs) throws AdminException
     {
         LDAPConnection        ld = getConnection(lds);
         LDAPSearchResults     res = null;
@@ -313,7 +313,7 @@ public class LDAPUtility extends Object
 			String[] baseDNs = extractBaseDNs(baseDN);
 			for (int i=0; i<baseDNs.length; i++)
 			{
-	            res = ld.search(baseDNs[i], scope, sureFilter, null, false, sc);
+	            res = ld.search(baseDNs[i], scope, sureFilter, attrs, false, sc);
 	            if (res.hasMore())
 	            {
 	            	theEntry = res.next();
@@ -330,7 +330,7 @@ public class LDAPUtility extends Object
         {
             if (LDAPUtility.recoverConnection(lds, e))
             {
-                return getFirstEntryFromSearch(lds, baseDN, scope, filter);
+                return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
             }
             else
             {
@@ -355,9 +355,10 @@ public class LDAPUtility extends Object
      */
     static public String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName)
     {
+    	SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()", "root.MSG_GEN_ENTER_METHOD", "theAttributeName = "+theAttributeName);
         LDAPAttribute theAttr;
 
-        if ((theEntry == null) || (theAttributeName == null) || (theAttributeName.length() <= 0))
+        if (theEntry == null || !StringUtil.isDefined(theAttributeName))
         {
             return new String[0];
         }
@@ -366,12 +367,12 @@ public class LDAPUtility extends Object
             theAttr = theEntry.getAttribute(theAttributeName);
             if (theAttr == null)
             {
-//                SilverTrace.info("admin", "LDAPUtility.getAttributeValues()", "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName + " is null !!!");
+            	SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()", "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName + " is null !!!");
                 return new String[0];
             }
             else
             {
-//                SilverTrace.info("admin", "LDAPUtility.getAttributeValues()", "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName + " size = " + Integer.toString(theAttr.size()));
+                SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()", "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName + " size = " + Integer.toString(theAttr.size()));
                 if (isAGuid(theAttributeName))
                 {
                     byte[][]        allBytes = theAttr.getByteValueArray();
@@ -501,6 +502,8 @@ public class LDAPUtility extends Object
         {
         	LDAPSettings driverSettings = ((LDAPConnectInfos)connectInfos.get(lds)).driverSettings;
         	SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE", "LDAPImpl = "+driverSettings.getLDAPImpl());
+        	if (args != null)
+        		SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE", "args = "+args.toString());
         	if (driverSettings.getLDAPImpl() != null && "openldap".equalsIgnoreCase(driverSettings.getLDAPImpl()))
         	{   
         		//OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
@@ -613,7 +616,7 @@ public class LDAPUtility extends Object
         	SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "Une exception générale est survenue : #"+e.getResultCode()+" "+e.getLDAPErrorMessage());
             if (LDAPUtility.recoverConnection(lds, e))
             {
-                return search1000Plus(lds, baseDN, scope, filter, varToSort);
+                return search1000Plus(lds, baseDN, scope, filter, varToSort, args);
             }
             else
             {
@@ -623,21 +626,16 @@ public class LDAPUtility extends Object
         return (LDAPEntry[]) entriesVector.toArray(new LDAPEntry[0]);
     }
 
-    static public LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter, String varToSort) throws AdminException
-	{
-    	return search1000Plus(lds, baseDN, scope, filter, varToSort, null);
-	}
-
     static public AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN, int scope, String filter, String timeStampVar, String minTimeStamp) throws AdminException
     {
 		SilverTrace.info("admin", "LDAPUtility.getTimeStamp()", "root.MSG_GEN_ENTER_METHOD");
         LDAPSettings   driverSettings = ((LDAPConnectInfos)connectInfos.get(lds)).driverSettings;
-        LDAPEntry[]    theEntries = search1000Plus(lds, baseDN, scope, "(&(" + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")", timeStampVar);
+        LDAPEntry[]    theEntries = search1000Plus(lds, baseDN, scope, "(&(" + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")", timeStampVar, null);
 
         if (theEntries.length > 0)
         {
             // Problem is : the search1000Plus function sorts normaly by descending order. BUT most LDAP server can't performs this type of order (like Active Directory)
-            // So, it may be ordered in the oposite way....
+            // So, it may be ordered in the opposite way....
             AbstractLDAPTimeStamp firstVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(theEntries[0],timeStampVar));
             AbstractLDAPTimeStamp lastVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(theEntries[theEntries.length-1],timeStampVar));
             if (firstVal.compareTo(lastVal) >= 0)

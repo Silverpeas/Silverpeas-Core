@@ -119,6 +119,15 @@ public class UserRoleTable extends Table
    static final private String SELECT_ALL_INSTANCE_USERROLE_IDS
       = "select id from ST_UserRole where instanceId = ? and objectId is null";
    
+   public String[] getAllObjectUserRoleIdsOfInstance(int instanceId)
+   		throws AdminPersistenceException
+   {
+	   return (String[]) getIds(SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS, instanceId).toArray(new String[0]);
+   }
+
+   static final private String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS
+   = "select id from ST_UserRole where instanceId = ? and objectId is not null";
+   
    /**
     * Returns all the UserRole ids of an object in a given instance.
     */
