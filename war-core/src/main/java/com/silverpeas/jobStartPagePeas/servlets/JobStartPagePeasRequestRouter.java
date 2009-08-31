@@ -103,7 +103,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter
         	{
         		request.setAttribute("fullURL", GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") + "/Rportlet/jsp/admin?spaceId="+jobStartPageSC.getManagedSpaceId());
         	}
-
             destination = "/jobStartPagePeas/jsp/goBack.jsp";
         }
 

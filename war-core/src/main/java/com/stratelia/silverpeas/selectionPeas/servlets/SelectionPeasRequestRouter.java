@@ -371,6 +371,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter
         else if ("GENERICPANELZOOMTOSET".equals(op))
         {
             selectionPeasSC.setParentSet(request.getParameter("setId"));
+            selectionPeasSC.setMiniFilter("", "_0_0");	//reset filter
             destination = "selectionPeas.jsp";
         }
         else if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER")))

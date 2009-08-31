@@ -16,6 +16,9 @@ import com.stratelia.silverpeas.peasCore.servlets.*;
  * $Id: ClipboardRequestRouter.java,v 1.3 2009/03/16 10:28:14 neysseri Exp $
  *
  * $Log: ClipboardRequestRouter.java,v $
+ * Revision 1.3.2.1  2009/04/30 10:35:21  dlesimple
+ * no message
+ *
  * Revision 1.3  2009/03/16 10:28:14  neysseri
  * SilverpeasV5 compliance
  *
@@ -108,7 +111,10 @@ public class ClipboardRequestRouter extends ComponentRequestRouter
             if (componentName != null)
             {
                 SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "compR = " + componentName);
-                destination = URLManager.getURL(null,request.getParameter("SpaceFrom"),request.getParameter("ComponentFrom")) + "paste.jsp";
+            	if (clipboardSC.getComponentId() != null)
+            		destination = URLManager.getURL(null,request.getParameter("SpaceFrom"),request.getParameter("ComponentFrom")) + "paste.jsp";
+            	else
+            		destination = URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS) + "paste.jsp";
             }
             else
             {

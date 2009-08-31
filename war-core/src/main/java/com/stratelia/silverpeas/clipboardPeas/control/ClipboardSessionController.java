@@ -11,6 +11,7 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessage;
 import com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -21,7 +22,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
-import com.stratelia.webactiv.clipboard.model.ClipboardSelection;
+
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 

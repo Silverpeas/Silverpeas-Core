@@ -124,6 +124,7 @@ public class FileServer extends HttpServlet
         String attachmentId = req.getParameter("attachmentId");
         String language		= req.getParameter("lang");
         AttachmentDetail attachment = null;
+        long fileSize = 0;
         if (StringUtil.isDefined(attachmentId))
         {
         	//Check first if attachment exists
@@ -133,6 +134,7 @@ public class FileServer extends HttpServlet
         		mimeType = attachment.getType(language);
         		sourceFile = attachment.getPhysicalName(language);
         		directory = FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(attachment.getContext()));
+        		fileSize = attachment.getSize(language);
         	}
         }
         
@@ -148,6 +150,7 @@ public class FileServer extends HttpServlet
         	{
         		mimeType = version.getMimeType();
         		sourceFile = version.getPhysicalName();
+        		fileSize = version.getSize();
 
         		String[] path = new String[1];
         		path[0] = "Versioning";
@@ -207,8 +210,8 @@ public class FileServer extends HttpServlet
 			}
 			else
 			{
-				if (attachment != null)
-					res.setContentLength(new Long(attachment.getSize()).intValue());
+				if (fileSize > 0)
+					res.setContentLength(new Long(fileSize).intValue());
 				displayHtmlCode(res, filePath);
 			}
         }

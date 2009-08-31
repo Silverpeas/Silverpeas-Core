@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.contentManager.GlobalSilverContentExtension;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
@@ -59,6 +58,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter {
@@ -1155,7 +1155,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     private List<GlobalSilverContent> transformSilverContentsToGlobalSilverContents(List silverContentTempo, String instanceId, PdcSearchSessionController pdcSC) throws Exception {
         List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
         SilverContentInterface sci = null;
-        UserDetail creatorDetail = null;
+        UserDetail creatorDetail = null;        
         GlobalSilverContent gsc = null;
         for (int i = 0; i < silverContentTempo.size(); i++) {
             sci = (SilverContentInterface) silverContentTempo.get(i);
@@ -1168,10 +1168,30 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             //Special "Gallery" case 
             if (instanceId.startsWith("gallery"))
             {
-            	GlobalSilverContentExtension gscExtension = (GlobalSilverContentExtension) Class.forName("com.silverpeas.gallery.GSCExtensionImpl").newInstance();
-            	gscExtension.extendGlobalSilverContent(sci, gsc);
-            }
+              String galleryDirectory = null;
+            	if (galleryDirectory == null)
+            	{
+            		ResourceLocator gallerySettings = new ResourceLocator("com.silverpeas.gallery.settings.gallerySettings", "");
+            		galleryDirectory = gallerySettings.getString("imagesSubDirectory");
+            	}
+            	/*TODO à reprendre pour être indépendant de Gallery
+            	String directory = galleryDirectory+sci.getId();
+            	
+            	PhotoDetail photo = (PhotoDetail) sci;
+            	gsc.setThumbnailURL(FileServerUtils.getUrl(null, instanceId, photo.getImageName(), photo.getImageMimeType(), directory));
+            	
+            	String[] widthAndHeight = {"60", "45"};
+            	try {
+					widthAndHeight = ImageHelper.getWidthAndHeight(instanceId, directory, photo.getImageName(), 60);
+				} catch (IOException e) {
+					SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.transformSilverContentsToGlobalSilverContents", "root.MSG_GEN_PARAM_VALUE", "Error during processing size !");
+				}
+            	
+            	gsc.setThumbnailWidth(widthAndHeight[0]);
+            	gsc.setThumbnailHeight(widthAndHeight[1]);
+            }*/
             alSilverContents.add(gsc);
+            }
         }
         return alSilverContents;
     }
@@ -1382,6 +1402,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 			GlobalSilverResult 	gsr						= null;
 			String				objectId				= null;
 			List				selectedSilverContents	= pdcSC.getSelectedSilverContents();
+			if (selectedSilverContents == null)
+				selectedSilverContents = new ArrayList();
 			for (int i=0;i<silverContents.size() ;i++){
 				gsr			= (GlobalSilverResult) silverContents.get(i);
 				objectId	= gsr.getId()+"-"+gsr.getInstanceId();

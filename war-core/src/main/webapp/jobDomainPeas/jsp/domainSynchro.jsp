@@ -12,6 +12,7 @@
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
 <body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 
@@ -25,7 +26,7 @@ out.println(board.printBefore());
 %>
 <script language='JavaScript'>
 function ValidForm(){
-	top.scriptFrame.SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=' + document.domainForm.IdTraceLevel.value, 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
+	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=' + document.domainForm.IdTraceLevel.value, 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
 	document.domainForm.submit()
 }
 </script>

@@ -16,5 +16,6 @@
 	    return;
 	}
 	
+	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 %>

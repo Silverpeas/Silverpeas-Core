@@ -39,8 +39,8 @@ DHTML_modalMessage = function()
 	this.url = '';							// Default url is blank
 	this.htmlOfModalMessage = '';			// Default message is blank
 	this.layoutCss = 'modal-message.css';	// Default CSS file
-	this.height = 200;						// Default height of modal message
-	this.width = 400;						// Default width of modal message
+	this.height = "auto";						// Default height of modal message
+	this.width = "auto";						// Default width of modal message
 	this.cssClassOfMessageBox = false;		// Default alternative css class for the message box
 	this.shadowDivVisible = true;			// Shadow div is visible by default
 	this.shadowOffset = 5;					// Default shadow offset.
@@ -91,8 +91,8 @@ DHTML_modalMessage.prototype = {
      */		
 	setSize : function(width,height)
 	{
-		if(width)this.width = width;
-		if(height)this.height = height;		
+		if(width)this.width = width+"px";
+		if(height)this.height = height+"px";		
 	}
 	// }}}		
 	,		
@@ -322,8 +322,10 @@ DHTML_modalMessage.prototype = {
 		var bodyHeight = brSize[1];
     	
     	// Setting width and height of content div
-      	this.divs_content.style.width = this.width + 'px';
-    	this.divs_content.style.height= this.height + 'px';  	
+      	//this.divs_content.style.width = this.width + 'px';
+    	//this.divs_content.style.height= this.height + 'px';  	
+		this.divs_content.style.width = this.width;
+    	this.divs_content.style.height= this.height;
     	
     	// Creating temporary width variables since the actual width of the content div could be larger than this.width and this.height(i.e. padding and border)
     	var tmpWidth = this.divs_content.offsetWidth;	
@@ -337,8 +339,11 @@ DHTML_modalMessage.prototype = {
     	
     	
 		
-    	this.divs_content.style.left = Math.ceil((bodyWidth - tmpWidth) / 2) + 'px';;
-    	this.divs_content.style.top = (Math.ceil((bodyHeight - tmpHeight) / 2) +  topOffset) + 'px';
+    	this.divs_content.style.left = Math.ceil((bodyWidth - tmpWidth) / 2) + 'px';
+    	var styleTop = (Math.ceil((bodyHeight - tmpHeight) / 2) +  topOffset);
+    	if (styleTop <= 0)
+    		styleTop = 5;
+    	this.divs_content.style.top = styleTop + 'px';
     	
  		if(this.MSIE){
  			this.iframe.style.left = this.divs_content.style.left;

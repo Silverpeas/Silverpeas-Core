@@ -235,7 +235,7 @@ function checkForm()
 	{
 		document.EDform.cryptedPassword.value = "Yes";
 		<%
-			if (request.getParameter("logout") == null && authenticationSettings.getString("autoSubmit").toLowerCase().equals("true"))
+			if ((request.getParameter("logout") == null || "null".equals(request.getParameter("logout"))) && authenticationSettings.getString("autoSubmit").toLowerCase().equals("true"))
 			{
 		%>
 				document.EDform.submit();

@@ -412,25 +412,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 	
 	public List getResultsToDisplay() throws Exception
 	{
-		List resultsToDisplay = null;
-		if (getSearchScope() == SEARCH_PDC)
-			resultsToDisplay = globalSilverContents2GlobalSilverResults(getResults().subList(getIndexOfFirstResultToDisplay(), getLastIndexToDisplay()));
-		else
-			resultsToDisplay = matchingIndexEntries2GlobalSilverResults(getIndexEntries().subList(getIndexOfFirstResultToDisplay(), getLastIndexToDisplay()));
-		
-		if (resultsToDisplay != null && getSelectedSilverContents() != null)
-		{
-			GlobalSilverResult result = null; 
-			for (int i=0; i<resultsToDisplay.size(); i++)
-			{
-				result = (GlobalSilverResult) resultsToDisplay.get(i);
-				if (getSelectedSilverContents().contains(result))
-					result.setSelected(true);
-				else
-					result.setSelected(false);
-			}
-		}
-		return resultsToDisplay;
+		return getSortedResultsToDisplay(getSortValue(), getSortOrder());
 	}
 	
 	//CBO : ADD
@@ -1221,16 +1203,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 	/** searchAndSelect methods
 	/******************************************************************************************************************/
 	private boolean activeSelection = false;
-	private Pdc m_pdc = null;
-	
+  private Pdc m_pdc = null;
+
 	public Pdc getPdc()
 	{
 		if (m_pdc == null)
 			m_pdc = new Pdc();
-	
+
 		return m_pdc;
 	}
-
 	public void setSelectionActivated(boolean isSelectionActivated) {
 		this.activeSelection = isSelectionActivated;
 	}
@@ -1687,7 +1668,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 	
 	private boolean isSearchable(String componentId)
 	{
-		if (componentId.startsWith("silverCrawler") || componentId.startsWith("gallery"))
+		if (componentId.startsWith("silverCrawler") || componentId.startsWith("gallery") || componentId.startsWith("kmelia"))
 		{
 			boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganizationController().getComponentParameterValue(componentId, "privateSearch"));
 			if (isPrivateSearch)
@@ -1795,7 +1776,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 	/**	AskOnce methods																			**/
 	/*********************************************************************************************/
 	private Vector searchDomains = null; //All the domains available for search
-	
 	/**
 	 * Get the search domains available for search
 	 * The search domains are contained in a Vector of array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
@@ -1860,6 +1840,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
 		searchDomains = domains;
 	}
+
 
 	/*********************************************************************************************/
 	/**	Date primitives																			**/

@@ -64,6 +64,9 @@
     	
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace?SousEspace=SousEspace', 750, 300)");
+        operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('UpdateJobStartPage', 750, 600)");
+        operationPane.addLine();
+
         operationPane.addOperation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"javascript:onClick=openPopup('ListComponent', 750, 700)");
     }
     
@@ -86,8 +89,10 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script language="JavaScript">
 <!--
 var currentLanguage = "<%=space.getLanguage()%>";
@@ -98,7 +103,7 @@ var currentLanguage = "<%=space.getLanguage()%>";
 	{
 		lang = (String) codes.next();
 		out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(space.getName(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+Encode.javaStringToHtmlParagraphe(space.getDescription(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(space.getDescription(lang))+"\";\n");
 	}
 %>
 
@@ -122,8 +127,9 @@ function openPopup(action, larg, haut)
 <% if (m_SpaceExtraInfos.isAdmin) {
     if (isUserAdmin || (m_SubSpace != null)) { %>
 		function deleteSpace() {
-		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+Encode.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) { 
-		    	location.href = "DeleteSpace";
+		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+Encode.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
+		    	displayStaticMessage();
+		    	setTimeout("location.href = \"DeleteSpace\";", 500);
 			}
 		}
 		
@@ -233,5 +239,6 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<%@ include file="modalMessage.jsp.inc" %>
 </BODY>
 </HTML>

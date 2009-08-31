@@ -15,7 +15,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
+<%@ page import="com.silverpeas.util.clipboard.*"%>
 <%@ page import="com.stratelia.webactiv.util.indexEngine.model.*"%>
 
 <%@ include file="checkClipboard.jsp.inc" %>
@@ -133,31 +133,40 @@ function view(url)
 		  ArrayLine 			line 		= null;
 		  String				icon		= null;
 		  String				link		= null;
-          while (infosI.hasNext()) {
-			clipObject 	= (ClipboardSelection) infosI.next();
-            indexEntry 	= (IndexEntry) clipObject.getTransferData (ClipboardSelection.IndexFlavor);
-            line 		= arrayPane.addArrayLine();
-            
-            if ("node".equalsIgnoreCase(indexEntry.getObjectType()))
-            {
-            	icon = resources.getIcon("node");
-            	link = URLManager.getSimpleURL(URLManager.URL_TOPIC, indexEntry.getObjectId(), indexEntry.getComponent(), true);
-            } else {
-            	icon = resources.getIcon("publi");
-            	link = URLManager.getSimpleURL(URLManager.URL_PUBLI, indexEntry.getObjectId(), indexEntry.getComponent(), true);
-            }
-            line.addArrayCellText("<img src=\""+icon+"\" border=\"0\"/>");
-            line.addArrayCellLink(Encode.javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
-            //line.addArrayCellText(Encode.javaStringToHtmlString(indexEntry.getTitle()));
-			line.addArrayCellText(clipboardSC.getComponentLabel(indexEntry.getComponent()));
-			if (clipObject.isSelected ())
-		   		line.addArrayCellText("<input type=checkbox checked name='clipboardId"+String.valueOf(index)+"' value='' onclick='SelectClipboardObject("+String.valueOf(index)+", this)'>");
-			else
-				line.addArrayCellText("<input type=checkbox name='clipboardId"+String.valueOf(index)+"' value='' onclick='SelectClipboardObject("+String.valueOf(index)+", this)'>");
-				
-			index++;
-          }
+  		String iconComponent = null;
 
+  		while (infosI.hasNext()) {
+				clipObject 	= (ClipboardSelection) infosI.next();
+        indexEntry 	= (IndexEntry) clipObject.getTransferData (ClipboardSelection.IndexFlavor);
+        line 		= arrayPane.addArrayLine();
+        
+        if ("node".equalsIgnoreCase(indexEntry.getObjectType()))
+        {
+        	icon = resources.getIcon("node");
+        	link = URLManager.getSimpleURL(URLManager.URL_TOPIC, indexEntry.getObjectId(), indexEntry.getComponent(), true);
+        } else if ("component".equalsIgnoreCase(indexEntry.getObjectType()))
+        {
+        	icon = resources.getIcon("component");
+        	iconComponent = m_context + "/util/icons/component/" + URLManager.getComponentNameFromComponentId(indexEntry.getComponent()) +"Small.gif";
+        	link = URLManager.getSimpleURL(URLManager.URL_COMPONENT, indexEntry.getObjectId(), indexEntry.getComponent(), true);
+        } else {
+        	icon = resources.getIcon("publi");
+        	link = URLManager.getSimpleURL(URLManager.URL_PUBLI, indexEntry.getObjectId(), indexEntry.getComponent(), true);
+        }
+        line.addArrayCellText("<img src=\""+ icon+"\" border=\"0\"/>");
+        if ("component".equalsIgnoreCase(indexEntry.getObjectType()))
+	        line.addArrayCellLink("<img src=\""+ iconComponent+"\" border=\"0\"/>&nbsp;" + Encode.javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
+        else
+	        line.addArrayCellLink(Encode.javaStringToHtmlString(indexEntry.getTitle()), "javaScript:view('"+link+"');");
+        	
+				line.addArrayCellText(clipboardSC.getComponentLabel(indexEntry.getComponent()));
+				if (clipObject.isSelected ())
+			   		line.addArrayCellText("<input type=checkbox checked name='clipboardId"+String.valueOf(index)+"' value='' onclick='SelectClipboardObject("+String.valueOf(index)+", this)'>");
+				else
+					line.addArrayCellText("<input type=checkbox name='clipboardId"+String.valueOf(index)+"' value='' onclick='SelectClipboardObject("+String.valueOf(index)+", this)'>");
+				
+				index++;
+       }
           out.println(arrayPane.print());
           %>
           </td>

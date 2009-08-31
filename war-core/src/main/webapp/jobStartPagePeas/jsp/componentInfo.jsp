@@ -143,7 +143,7 @@ var currentLanguage = "<%=compoInst.getLanguage()%>";
 	{
 		lang = (String) codes.next();
 		out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+Encode.javaStringToHtmlParagraphe(compoInst.getDescription(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
 	}
 %>
 
@@ -203,7 +203,7 @@ out.println(board.printBefore());
 	</tr>
 	<tr>
 		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("GML.description") %> :</td>
-		<td align="left" valign="top" width="100%" id="compoDesc"><%=compoInst.getDescription(resource.getLanguage())%></td>
+		<td align="left" valign="top" width="100%" id="compoDesc"><%=Encode.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></td>
 	</tr>
 	<% if (compoInst.getCreateDate() != null) { %>
 	<tr>

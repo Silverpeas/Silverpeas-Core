@@ -333,7 +333,8 @@ function test(i, object, reload) {
 						selectedAttr = "selected";
 					}
 			
-					out.println("<option value=\"-\" "+selectedAttr+"></option>");
+					//out.println("<option value=\"-\" "+selectedAttr+"></option>");
+					out.println("<option value=\""+axisId+"|-\""+selectedAttr+"></option>");
 				}				
 		  %>
 		  </select>
