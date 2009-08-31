@@ -25,6 +25,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     private QualifiedUsers         workingUsers;
     private QualifiedUsers         interestedUsers;
     private AllowedActions         allowedActions;
+    private AllowedActions         filteredActions;
     private Action                 timeoutAction;
     private int                    timeoutInterval;
     private boolean                timeoutNotifyAdmin;
@@ -216,6 +217,18 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     {
         return new ActionRefs();
     }
+    
+    public Action[] getFilteredActions() {
+    	if (filteredActions == null)
+            return null;
+
+        return filteredActions.getAllowedActions();
+	}
+
+	@Override
+	public void setFilteredActions(AllowedActions allowedActions) {
+		filteredActions = allowedActions;
+	}
 
     /*
      * (non-Javadoc)

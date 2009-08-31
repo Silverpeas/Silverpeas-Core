@@ -154,5 +154,7 @@ public interface Consequence
      */
     public void setNotifiedUsers(QualifiedUsers notifiedUsers);
 
-    //public void setStep(int id);
+    public Triggers createTriggers();
+    
+    public Triggers getTriggers();
 }

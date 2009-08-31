@@ -191,7 +191,7 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
       folder.getNode(escapedName).remove();
     }
     Node fileNode = folder.addNode(escapedName, JcrConstants.NT_FILE);
-    if (document.getAuthorId() >= 0) {
+    if (document.getAuthorId() > 0) {
       fileNode.addMixin(JcrConstants.SLV_OWNABLE_MIXIN);
       fileNode.setProperty(JcrConstants.SLV_PROPERTY_OWNER, ""
           + document.getAuthorId());

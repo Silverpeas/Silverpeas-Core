@@ -7,6 +7,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A GenericDataRecord use a Field[]
@@ -100,10 +101,12 @@ public class GenericDataRecord implements DataRecord, Serializable
       for (int i=0 ; i<size ; i++)
       {
          theFieldName		= fieldNames[i];
-		 if (theFieldName.equals(fieldName))
+		 if (theFieldName.equalsIgnoreCase(fieldName))
 		 	return fields[i];
       }
-      throw new FormException("DataRecord", "form.EXP_UNKNOWN_FIELD");
+      SilverTrace.warn("form", "GenericDataRecord.getField", "form.EXP_UNKNOWN_FIELD", "fieldName '"+fieldName+"' in DB not found in XML descriptor");
+      return null;
+      //throw new FormException("DataRecord", "form.EXP_UNKNOWN_FIELD");
    }
 
   /**

@@ -3,14 +3,18 @@ package com.silverpeas.workflow.engine.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlForm;
+import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
+import com.silverpeas.form.record.GenericRecordTemplate;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
@@ -600,8 +604,38 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     {
         try
         {
-            return GenericRecordSetManager.getRecordSet(
-                getFormRecordSetName(formName));
+            RecordSet recordSet = GenericRecordSetManager.getRecordSet(getFormRecordSetName(formName));
+            
+            IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) recordSet.getRecordTemplate();
+            
+            GenericRecordTemplate wrapped = (GenericRecordTemplate) template.getWrappedTemplate();
+
+    		GenericFieldTemplate fieldTemplate = null;
+    		String  fieldName ;
+    		String  fieldType ;
+    		boolean isMandatory ;
+    		boolean isReadOnly ;
+    		boolean isHidden ;
+    		FormImpl form = (FormImpl) getForm(formName);
+    		FieldTemplate[] fields = form.toRecordTemplate(null, null).getFieldTemplates();
+
+    		for (int i=0; i<fields.length ; i++)
+    		{
+    			fieldName = fields[i].getFieldName();
+    			fieldType = fields[i].getTypeName();
+    			isMandatory = fields[i].isMandatory();
+    			isReadOnly = fields[i].isReadOnly();
+    			isHidden = fields[i].isHidden();
+
+    			fieldTemplate = new GenericFieldTemplate(fieldName, fieldType);
+    			fieldTemplate.setMandatory(isMandatory);
+    			fieldTemplate.setReadOnly(isReadOnly);
+    			fieldTemplate.setHidden(isHidden);
+
+    			wrapped.addFieldTemplate(fieldTemplate);
+    		}
+            
+            return recordSet;
         }
         catch (FormException e)
         {

@@ -22,6 +22,9 @@ import com.stratelia.silverpeas.silvertrace.*;
  * $Id: QuestionResultBmEJB.java,v 1.2 2006/08/16 11:56:47 neysseri Exp $
  * 
  * $Log: QuestionResultBmEJB.java,v $
+ * Revision 1.2.4.1  2009/08/21 13:26:34  sfariello
+ * Gestion non anonyme des enquêtes
+ *
  * Revision 1.2  2006/08/16 11:56:47  neysseri
  * no message
  *
@@ -104,6 +107,24 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
         catch (Exception e)
         {
 			throw new QuestionResultRuntimeException("QuestionResultBmEJB.getUserQuestionResultsToQuestion()", SilverpeasRuntimeException.ERROR, "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_FAILED", e);
+        }
+        finally
+        {
+            freeConnection(con);
+        }
+    }
+    
+    public Collection<String> getUsersByAnswer(String answerId) throws RemoteException
+    {
+        Connection con = null;
+    	try
+        {
+            con = getConnection();
+            return QuestionResultDAO.getUsersByAnswer(con, answerId);
+        }
+        catch (Exception e)
+        {
+			throw new QuestionResultRuntimeException("QuestionResultBmEJB.getUsersByAnswer()", SilverpeasRuntimeException.ERROR, "questionResult.GETTING_USER_RESPONSES_TO_QUESTION_FAILED", e);
         }
         finally
         {

@@ -168,9 +168,21 @@ class SQLStatement extends Object
 			List alValues = newPosition.getValues();
 			for(int nI=0; nI < alValues.size(); nI++)
 			{
-					sSQLStatement.append(m_sAxisColumn).append(((Value)alValues.get(nI)).getPhysicalAxisId()).append(" = '").append(((Value)alValues.get(nI)).getValue()).append("'");
-					if(nI < alValues.size()-1)
-						sSQLStatement.append(", ");
+				Value oneValue = (Value)alValues.get(nI);
+				sSQLStatement.append(m_sAxisColumn).append(oneValue.getPhysicalAxisId());
+				String value = oneValue.getValue();
+				if (value.equals("-"))
+				{
+					value = null;
+					sSQLStatement.append(" = ").append(value);
+				}
+				else
+				{
+					sSQLStatement.append(" = '").append(value).append("'");
+				}
+				
+				if(nI < alValues.size()-1)
+					sSQLStatement.append(", ");
 			}
 			
 			sSQLStatement.append(" WHERE ").append(m_sPositionIdColumn).append(" = ").append(newPosition.getPositionId());

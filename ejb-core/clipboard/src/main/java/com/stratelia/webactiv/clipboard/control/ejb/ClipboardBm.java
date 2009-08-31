@@ -2,12 +2,12 @@
 
 package com.stratelia.webactiv.clipboard.control.ejb;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.EJBObject;
 
-import com.stratelia.webactiv.clipboard.model.ClipboardSelection;
 
 /**
  * A ClipboardBm implement the clipboard mechanisme.

@@ -131,6 +131,8 @@ public interface State
      * @return allowedActions allowed actions
      */
     public Action[] getAllowedActions();
+    
+    public Action[] getFilteredActions();
 
     /**
      * Get all the allowed actions
@@ -143,6 +145,8 @@ public interface State
      * Set the allowed actions
      */
     public void setAllowedActions(AllowedActions allowedActions);
+    
+    public void setFilteredActions(AllowedActions allowedActions);
 
     /**
      * Create and return an object implementing QalifiedUsers

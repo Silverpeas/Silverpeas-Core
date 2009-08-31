@@ -283,6 +283,8 @@ public interface QuestionContainerBmSkeleton
      * @see
      */
     public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException;
+    
+    public void deleteVotes(QuestionContainerPK questionContainerPK) throws RemoteException;
 
     /**
      * Method declaration

@@ -36,7 +36,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   private DocumentPK documentPK;
   private int majorNumber;
   private int minorNumber;
-  private int authorId = -1;
+  private int authorId;
   private Date creationDate;
   private String comments;
   private int type = TYPE_DEFAULT_VERSION;
@@ -46,6 +46,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   private String mimeType;
   private int size;
   private String instanceId;
+  private String creatorName; //used by import/export XML
 
   public DocumentVersion() {
   }
@@ -301,4 +302,12 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
     }
     return directory + getPhysicalName();
   }
+  
+  public String getCreatorName() {
+		return creatorName;
+	}
+
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
 }

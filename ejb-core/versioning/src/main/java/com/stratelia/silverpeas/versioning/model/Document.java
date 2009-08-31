@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.versioning.importExport.VersionsType;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class Document implements java.io.Serializable, Cloneable {
@@ -31,9 +32,10 @@ public class Document implements java.io.Serializable, Cloneable {
     
 	private Date alertDate = null;			// date d'alerte pour la notification intermédiaire
 	private Date expiryDate = null;			// date d'expiration
-   
+	
+	private VersionsType versionsType;		//used by import/export engine
 
-    public Document() {
+	public Document() {
     }
 
     public Document(DocumentPK pk, WAPrimaryKey foreignKey, String name, String description, int status, int ownerId,
@@ -210,5 +212,13 @@ public class Document implements java.io.Serializable, Cloneable {
 	public void setExpiryDate(Date expiryDate)
 	{
 		this.expiryDate = expiryDate;
+	}
+	
+	public VersionsType getVersionsType() {
+		return versionsType;
+	}
+
+	public void setVersionsType(VersionsType versionsType) {
+		this.versionsType = versionsType;
 	}
 }

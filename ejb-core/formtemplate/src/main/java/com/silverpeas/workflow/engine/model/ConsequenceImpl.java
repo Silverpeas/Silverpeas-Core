@@ -9,6 +9,8 @@ import com.silverpeas.workflow.api.model.Consequence;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.StateSetter;
+import com.silverpeas.workflow.api.model.Trigger;
+import com.silverpeas.workflow.api.model.Triggers;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
@@ -24,6 +26,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
     private Vector         unsetStateList;
     private QualifiedUsers notifiedUsers;
     private int            step;
+    private Triggers 	   triggers;
 
     //~ Instance fields related to AbstractDescriptor ////////////////////////////////////////////////////////
 
@@ -38,6 +41,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
     {
         targetStateList = new Vector();
         unsetStateList = new Vector();
+        triggers = new TriggersImpl();
         kill = false;
     }
 
@@ -367,6 +371,21 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
     public int getStep()
     {
         return step;
+    }
+    
+    public Triggers createTriggers()
+    {
+    	return new TriggersImpl();
+    }
+    
+    public Triggers getTriggers()
+    {
+    	return triggers;
+    }
+    
+    public void setTriggers(Triggers triggers)
+    {
+    	this.triggers = triggers;
     }
     
     /************* Implemented methods *****************************************/

@@ -15,6 +15,15 @@ import com.stratelia.silverpeas.silvertrace.*;
  * $Id: QuestionContainerDAO.java,v 1.6 2006/11/15 14:09:19 sfariello Exp $
  * 
  * $Log: QuestionContainerDAO.java,v $
+ * Revision 1.6.4.3  2009/07/10 13:08:48  sfariello
+ * Modification de la mise à jour des question pour la modification à tout moment des enquêtes
+ *
+ * Revision 1.6.4.2  2009/06/26 09:32:19  sfariello
+ * no message
+ *
+ * Revision 1.6.4.1  2009/06/22 08:08:15  sfariello
+ * Ajout modification de l'enquête à tout moment
+ *
  * Revision 1.6  2006/11/15 14:09:19  sfariello
  * no message
  *
@@ -50,7 +59,7 @@ public class QuestionContainerDAO
 {
 
 	public static final String QUESTIONCONTAINERCOLUMNNAMES =
-		"qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, instanceId";
+		"qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, anonymous, instanceId";
 	public static final String COMMENTCOLUMNNAMES =
 		"commentId, commentFatherId, userId, commentComment, commentIsAnonymous, commentDate";
 
@@ -110,7 +119,8 @@ public class QuestionContainerDAO
 		int nbMaxParticipations = rs.getInt(12);
 		int nbParticipationsBeforeSolution = rs.getInt(13);
 		int maxTime = rs.getInt(14);
-		String instanceId = rs.getString(15);
+		boolean anonymous = (rs.getInt(15) == 1);
+		String instanceId = rs.getString(16);
 
 		questionContainerPK.setComponentName(instanceId);
 		
@@ -129,7 +139,8 @@ public class QuestionContainerDAO
 				nbQuestionsPage,
 				nbMaxParticipations,
 				nbParticipationsBeforeSolution,
-				maxTime);
+				maxTime, 
+				anonymous);
 		return result;
 	}
 
@@ -634,7 +645,7 @@ public class QuestionContainerDAO
 		String insertStatement =
 			"insert into "
 				+ questionContainerHeader.getPK().getTableName()
-				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 		try
 		{
@@ -688,6 +699,14 @@ public class QuestionContainerDAO
 			prepStmt.setInt(13, questionContainerHeader.getNbParticipationsBeforeSolution());
 			prepStmt.setInt(14, questionContainerHeader.getMaxTime());
 			prepStmt.setString(15, questionContainerHeader.getPK().getComponentName());
+			if (questionContainerHeader.isAnonymous())
+			{
+				prepStmt.setInt(16, 1);
+			}
+			else
+			{
+				prepStmt.setInt(16, 0);
+			}
 
 			prepStmt.executeUpdate();
 		}
@@ -726,11 +745,13 @@ public class QuestionContainerDAO
 				+ " qcComment = ?,"
 				+ " qcBeginDate = ?,"
 				+ " qcEndDate = ?,"
+				+ " qcNbVoters = ?,"
 				+ " qcNbQuestionsPage = ?,"
 				+ " qcNbMaxParticipations = ?,"
 				+ " qcNbTriesBeforeSolution = ?,"
 				+ " qcMaxTime = ?, "
-				+ " instanceId = ?"
+				+ " instanceId = ?, "
+				+ " anonymous = ?"
 				+ " where qcId = ?";
 
 		PreparedStatement prepStmt = null;
@@ -757,12 +778,21 @@ public class QuestionContainerDAO
 			{
 				prepStmt.setString(5, questionContainerHeader.getEndDate());
 			}
-			prepStmt.setInt(6, questionContainerHeader.getNbQuestionsPerPage());
-			prepStmt.setInt(7, questionContainerHeader.getNbMaxParticipations());
-			prepStmt.setInt(8, questionContainerHeader.getNbParticipationsBeforeSolution());
-			prepStmt.setInt(9, questionContainerHeader.getMaxTime());
-			prepStmt.setString(10, questionContainerHeader.getPK().getComponentName());
-			prepStmt.setInt(11, new Integer(questionContainerHeader.getPK().getId()).intValue());
+			prepStmt.setInt(6, questionContainerHeader.getNbVoters());
+			prepStmt.setInt(7, questionContainerHeader.getNbQuestionsPerPage());
+			prepStmt.setInt(8, questionContainerHeader.getNbMaxParticipations());
+			prepStmt.setInt(9, questionContainerHeader.getNbParticipationsBeforeSolution());
+			prepStmt.setInt(10, questionContainerHeader.getMaxTime());
+			prepStmt.setString(11, questionContainerHeader.getPK().getComponentName());
+			if (questionContainerHeader.isAnonymous())
+			{
+				prepStmt.setInt(12, 1);
+			}
+			else
+			{
+				prepStmt.setInt(12, 0);
+			}
+			prepStmt.setInt(13, new Integer(questionContainerHeader.getPK().getId()).intValue());
 			prepStmt.executeUpdate();
 		}
 		finally

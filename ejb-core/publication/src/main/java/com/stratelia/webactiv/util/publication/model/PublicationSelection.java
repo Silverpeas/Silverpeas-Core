@@ -1,13 +1,14 @@
 package com.stratelia.webactiv.util.publication.model;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.clipboard.SKDException;
+import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.clipboard.model.ClipboardSelection;
-import com.stratelia.webactiv.clipboard.model.SKDException;
-import com.stratelia.webactiv.clipboard.model.SilverpeasKeyData;
+
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;

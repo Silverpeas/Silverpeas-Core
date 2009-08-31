@@ -24,6 +24,12 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeExc
  * $Id: QuestionResultDAO.java,v 1.4 2006/08/16 11:56:47 neysseri Exp $
  * 
  * $Log: QuestionResultDAO.java,v $
+ * Revision 1.4.4.2  2009/08/21 13:26:34  sfariello
+ * Gestion non anonyme des enquêtes
+ *
+ * Revision 1.4.4.1  2009/07/16 13:31:04  sfariello
+ * trier les résultats d'une question par réponse
+ *
  * Revision 1.4  2006/08/16 11:56:47  neysseri
  * no message
  *
@@ -107,7 +113,7 @@ public class QuestionResultDAO
 				+ " from "
 				+ tableName
 				+ " where questionId = ? "
-				+ " and userId = ? ";
+				+ " and userId = ? order By answerId";
 
 		
 		PreparedStatement prepStmt = null;
@@ -123,6 +129,35 @@ public class QuestionResultDAO
 			{
 				questionResult = getQuestionResultFromResultSet(rs, questionPK);
 				result.add(questionResult);
+			}
+			return result;
+		}
+		finally
+		{
+			DBUtil.close(rs, prepStmt);
+		}	
+	}
+	
+	public static Collection<String> getUsersByAnswer(Connection con, String answerId) throws SQLException
+	{
+		SilverTrace.info("questionResult", "QuestionResultDAO.getUserQuestionResultsToQuestion()", "root.MSG_GEN_ENTER_METHOD", "answerId = " + answerId);
+		ResultSet rs = null;
+		String tableName = "SB_Question_QuestionResult";
+
+		String selectStatement = "select userId from " + tableName + " where answerId = ? ";
+		PreparedStatement prepStmt = null;
+
+		try
+		{
+			prepStmt = con.prepareStatement(selectStatement);
+			prepStmt.setInt(1, new Integer(answerId).intValue());
+			rs = prepStmt.executeQuery();
+			ArrayList<String> result = new ArrayList<String>();
+			String userId;
+			while (rs.next())
+			{
+				userId = rs.getString(1);
+				result.add(userId);
 			}
 			return result;
 		}

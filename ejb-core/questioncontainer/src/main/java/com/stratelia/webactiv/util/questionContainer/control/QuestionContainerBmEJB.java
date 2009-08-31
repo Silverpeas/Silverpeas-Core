@@ -1013,7 +1013,65 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         }
     }
 
-        public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException
+    
+    public void deleteVotes(QuestionContainerPK questionContainerPK)
+    {
+     	SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteVotes()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+        Connection con = null;
+        ScorePK    scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
+        QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
+        QuestionBm questionBm = getQuestionBm();
+        ScoreBm    scoreBm = getScoreBm();
+        QuestionResultBm questionResultBm = getQuestionResultBm();
+        
+        try
+        {
+        	QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
+        	
+        	// mise à zero du nombre de participation
+        	qch.setNbVoters(0);
+        	updateQuestionContainerHeader(qch);
+        	
+           	con = getConnection();
+            scoreBm.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
+            
+            // get all questions to delete results
+            Collection<Question> questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
+            if (questions != null && !questions.isEmpty())
+            {
+	            Iterator<Question>   iterator = questions.iterator();
+	            while (iterator.hasNext())
+	            {
+	            	Question question = (Question) iterator.next();
+	                QuestionPK questionPKToDelete = question.getPK();
+	                // delete all results
+	                questionResultBm.deleteQuestionResultsToQuestion(new ForeignPK(questionPKToDelete));
+	                Collection<Answer> answers = question.getAnswers();
+	                Collection<Answer> newAnswers = new ArrayList<Answer>();
+	                Iterator<Answer> itA = answers.iterator();
+	                while (itA.hasNext())
+	                {
+	                	Answer answer = (Answer) itA.next();
+	                	answer.setNbVoters(0);
+	                	newAnswers.add(answer);
+	                }
+	                question.setAnswers(newAnswers);
+                	questionBm.updateQuestion(question);
+	            }
+            }
+
+        }
+        catch (Exception e)
+        {
+            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.deleteVotes()", SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
+        }
+        finally
+        {
+            freeConnection(con);
+        }
+    }
+    
+    public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException
     {
                 SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
         Connection con = null;

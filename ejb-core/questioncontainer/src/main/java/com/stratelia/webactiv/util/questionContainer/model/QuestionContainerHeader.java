@@ -26,6 +26,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   private int maxTime = 0;
   private int nbMaxPoints = 0;
   private Collection scores = null;
+  private boolean anonymous;
 
   private String iconUrl;
 
@@ -46,6 +47,24 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setMaxTime(maxTime);
   }
 
+  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String comment,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage,int nbMaxParticipations,int nbParticipationsBeforeSolution,int maxTime, boolean anonymous) {
+	    setPK(questionContainerPK);
+	    setTitle(title);
+	    setDescription(description);
+	    setComment(comment);
+	    setCreatorId(creatorId);
+	    setCreationDate(creationDate);
+	    setBeginDate(beginDate);
+	    setEndDate(endDate);
+	    close(isClosed);
+	    setNbVoters(nbVoters);
+	    setNbQuestionsPerPage(nbQuestionsPerPage);
+	    setNbMaxParticipations(nbMaxParticipations);
+	    setNbParticipationsBeforeSolution(nbParticipationsBeforeSolution);
+	    setMaxTime(maxTime);
+	    setAnonymous(anonymous);
+  }
+  
   // @deprecated
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage) {
 	  setPK(questionContainerPK);
@@ -59,6 +78,21 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
 	close(isClosed);
 	setNbVoters(nbVoters);
 	setNbQuestionsPerPage(nbQuestionsPerPage);
+  }
+  
+  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage, boolean anonymous) {
+	  setPK(questionContainerPK);
+	  setTitle(title);
+	  setDescription(description);
+	  setComment(comment);
+	  setCreatorId(creatorId);
+	  setCreationDate(creationDate);
+	  setBeginDate(beginDate);
+	setEndDate(endDate);
+	close(isClosed);
+	setNbVoters(nbVoters);
+	setNbQuestionsPerPage(nbQuestionsPerPage);
+	setAnonymous(anonymous);
   }
 
 
@@ -253,5 +287,13 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     	{
     		return null;
     	}
+
+		public boolean isAnonymous() {
+			return anonymous;
+		}
+
+		public void setAnonymous(boolean anonymous) {
+			this.anonymous = anonymous;
+		}
 
 }

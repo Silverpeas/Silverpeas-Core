@@ -141,6 +141,11 @@ public class ProcessInstanceRowRecord implements DataRecord
   {
 	  //do nothing
   }
+  
+  public ProcessInstance getFullProcessInstance()
+  {
+	return instance;  
+  }
 
   /**
    * The process instance whose data are managed by this data record.

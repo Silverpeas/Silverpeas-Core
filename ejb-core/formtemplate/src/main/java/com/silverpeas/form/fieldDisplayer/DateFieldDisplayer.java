@@ -2,6 +2,7 @@ package com.silverpeas.form.fieldDisplayer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.ecs.AlignType;
@@ -21,6 +22,8 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+
 
 /**
  * A DateFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel to a end user
@@ -121,7 +124,15 @@ public class DateFieldDisplayer implements FieldDisplayer
     	String language = pagesContext.getLanguage();
 		Map parameters = template.getParameters(language);
 		String fieldName = template.getFieldName();
-		String value = (!field.isNull() ? field.getValue(language) : "");
+		
+		String defaultParam = (parameters.containsKey("default") ? (String)parameters.get("default") : "");
+		String defaultValue = "";
+		if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues())
+			defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
+		
+		String value = (!field.isNull() ? field.getValue(language) : defaultValue);
+		if (pagesContext.isBlankFieldsUse())
+			value = "";
 
 		Input input = new Input();
 		input.setID(fieldName);

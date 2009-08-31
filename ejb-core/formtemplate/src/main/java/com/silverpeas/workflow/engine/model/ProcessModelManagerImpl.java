@@ -558,10 +558,14 @@ public class ProcessModelManagerImpl implements ProcessModelManager
     public String getProcessModelDir()
     {
         String dir = settings.getString("ProcessModelDir");
+        
+        String fileSeparator = "\\";
+        if (dir.indexOf("/") != -1)
+        	fileSeparator = "/";
 
-        if (dir != null && dir.lastIndexOf("\\") != dir.length())
+        if (dir != null && dir.lastIndexOf(fileSeparator) != dir.length())
         {
-            dir += "\\";
+            dir += fileSeparator;
         }
         return dir;
     }

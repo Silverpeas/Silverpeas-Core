@@ -14,6 +14,9 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
  * $Id: QuestionResultBmBusinessSkeleton.java,v 1.2 2006/08/16 11:56:47 neysseri Exp $
  * 
  * $Log: QuestionResultBmBusinessSkeleton.java,v $
+ * Revision 1.2.4.1  2009/08/21 13:26:34  sfariello
+ * Gestion non anonyme des enquêtes
+ *
  * Revision 1.2  2006/08/16 11:56:47  neysseri
  * no message
  *
@@ -67,6 +70,16 @@ public interface QuestionResultBmBusinessSkeleton
      *
      */
     public Collection getUserQuestionResultsToQuestion(String userId, ForeignPK questionPK) throws RemoteException;
+    
+    /**
+     * Return all users by a answer
+     *
+     * @param answerPK			the Answer id
+     *
+     * @return a String Collection
+     *
+     */
+    public Collection<String> getUsersByAnswer(String answerId) throws RemoteException;
 
     /**
      * Return all user result to a given question for a given participation

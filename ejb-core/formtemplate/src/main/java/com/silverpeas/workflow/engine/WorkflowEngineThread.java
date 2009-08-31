@@ -14,6 +14,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.workflow.api.ProcessInstanceManager;
 import com.silverpeas.workflow.api.TaskManager;
+import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.GenericEvent;
@@ -33,10 +34,13 @@ import com.silverpeas.workflow.api.model.Consequences;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.model.Trigger;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
+import com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
+import com.silverpeas.workflow.external.ExternalAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 
@@ -339,7 +343,16 @@ class TaskDoneRequest implements Request
 			{
 				boolean removeInstance = processEvent(instance, step.getId());
 				if (removeInstance)
+				{
+					//remove data associated to forms and tasks
+					((ProcessInstanceManagerImpl) instanceManager).removeProcessInstanceData(instance);
+					
+					//remove instance itself
 					db.remove(instance);
+					
+					//remove errors
+					WorkflowHub.getErrorManager().removeErrorsOfInstance(instance.getInstanceId());
+				}
 			}
 			catch (WorkflowException we)
 			{
@@ -928,6 +941,7 @@ class WorkflowTools
 			oldActiveStates.put(states[i], states[i]);
 		}
 
+		Consequence consequence = null;
 		try
 		{
 			// Saving data of step and process instance
@@ -955,7 +969,6 @@ class WorkflowTools
 			Vector 		vConsequences = consequences.getConsequenceList();
 			Iterator 	iConsequences = vConsequences.iterator();
 			
-			Consequence consequence = null;
 			boolean verified = false;
 			while (!verified && iConsequences.hasNext())
 			{
@@ -981,6 +994,10 @@ class WorkflowTools
 				{
 					removeAffectations(instance, event, model.getState(states[i]));
 				}
+				
+				//process external actions
+				processTriggers(consequence, instance, event);
+				
 				return true;
 			}
 			State[] targetStates = consequence.getTargetStates();
@@ -1032,7 +1049,6 @@ class WorkflowTools
 				User sender = (forcedUser == null) ? event.getUser() : forcedUser;
 				taskManager.notifyUser(tasks[i], sender, actors[i].getUser(), message);
 			}
-
 		}
 		catch (Exception e)
 		{
@@ -1052,8 +1068,36 @@ class WorkflowTools
 		// change the action status of the step
 		step.setActionStatus(2); // Affectations done
 		instance.updateHistoryStep(step);
+		
+		//Process external actions
+		processTriggers(consequence, instance, event);
 
 		return false;
+	}
+	
+	private static void processTriggers(Consequence consequence, UpdatableProcessInstance instance, GenericEvent event)
+	{
+		if (consequence != null)
+		{
+			Iterator triggers = consequence.getTriggers().iterateTrigger();
+			ExternalAction externalAction;
+			while (triggers.hasNext())
+			{
+				Trigger trigger = (Trigger) triggers.next();
+				if (trigger != null)
+				{						
+					try {
+						externalAction = (ExternalAction) Class.forName(trigger.getClassName()).newInstance();
+						externalAction.setProcessInstance(instance);
+						externalAction.setEvent(event);
+						externalAction.setTrigger(trigger);
+						externalAction.execute();
+					} catch (Exception e) {
+						SilverTrace.error("workflowEngine", "WorkflowEngineThread.processTriggers()", "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "+event.getActionName()+", trigger = "+trigger.getName(), e);
+					}
+				}
+			}
+		}
 	}
 	
 	/**

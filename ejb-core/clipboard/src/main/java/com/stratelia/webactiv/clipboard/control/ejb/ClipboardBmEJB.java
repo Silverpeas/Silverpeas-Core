@@ -12,7 +12,7 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.clipboard.model.ClipboardSelection;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 /**

@@ -12,6 +12,8 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordSet;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.WorkflowException;
@@ -509,7 +511,6 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 	public void removeProcessInstance(String instanceId) throws WorkflowException
 	{
 		ProcessInstanceImpl instance;
-		String 				componentId = null;
 		Database 			db 			= null;
 		try
 		{
@@ -520,13 +521,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 			db = WorkflowJDOManager.getDatabase();
 			db.begin();
 			instance = (ProcessInstanceImpl) db.load(ProcessInstanceImpl.class, instanceId);
-			componentId = instance.getModelId();
 			db.remove(instance);
 			db.commit();
-			
-			//delete associated todos
-			TodoBackboneAccess tbba = new TodoBackboneAccess();
-			tbba.removeEntriesFromExternal("useless", componentId, instanceId+"##%");
 		}
 		catch (PersistenceException pe)
 		{
@@ -551,7 +547,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 	{
 		ProcessInstance instance = getProcessInstance(instanceId);
 		
-		ForeignPK foreignPK = new ForeignPK(instanceId, instance.getModelId());
+		removeProcessInstanceData(instance);
+	}
+	
+	public void removeProcessInstanceData(ProcessInstance instance) throws WorkflowException
+	{
+		ForeignPK foreignPK = new ForeignPK(instance.getInstanceId(), instance.getModelId());
 		
 		//delete attachments
 		AttachmentController.deleteAttachmentByCustomerPK(foreignPK);
@@ -562,10 +563,19 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 		} catch (Exception e) {
 			throw new WorkflowException(
 					"ProcessInstanceManagerImpl.removeProcessInstanceData",
-					"EX_ERR_CASTOR_REMOVE_INSTANCE",
+					"EX_ERR_CANT_REMOVE_VERSIONNING_FILES",
 					e);
 		}
 		
+		try {
+			RecordSet folderRecordSet = instance.getProcessModel().getFolderRecordSet();
+			folderRecordSet.delete(instance.getFolder());
+		} catch (FormException e) {
+			throw new WorkflowException(
+					"ProcessInstanceManagerImpl.removeProcessInstanceData",
+					"EX_ERR_CANT_REMOVE_FOLDER",
+					e);
+		}
 		
 		HistoryStep[] steps = instance.getHistorySteps();
 		for (int i = 0; steps != null && i < steps.length; i++)
@@ -573,6 +583,10 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 			if (!steps[i].getAction().equals("#question#") && !steps[i].getAction().equals("#response#"))
 				steps[i].deleteActionRecord();
 		}
+		
+		//delete associated todos
+		TodoBackboneAccess tbba = new TodoBackboneAccess();
+		tbba.removeEntriesFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId()+"##%");
 	}
 
 	/**
