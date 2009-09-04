@@ -1,5 +1,4 @@
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
-
 package com.stratelia.silverpeas.pdc.control;
 
 import java.util.List;
@@ -13,35 +12,33 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  *
  * @author neysseri
  */
-public class Pdc 
-{
-	private List	selectedSilverContents	= null;
-	private String	urlToReturn				= null;
+public class Pdc {
 
-    public Pdc()
-    {
+  private List selectedSilverContents = null;
+  private String urlToReturn = null;
+
+  public Pdc() {
+  }
+
+  public void setSelectedSilverContents(List selectedSilverContents) {
+    this.selectedSilverContents = selectedSilverContents;
+    GlobalSilverContent gsc = null;
+    for (int i = 0; i < selectedSilverContents.size(); i++) {
+      gsc = (GlobalSilverContent) selectedSilverContents.get(i);
+      SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()", "root.MSG_GEN_PARAM_VALUE",
+          "new silverContent selected = " + gsc.getName());
     }
+  }
 
-	public void setSelectedSilverContents(List selectedSilverContents) {
-		this.selectedSilverContents = selectedSilverContents;
-		GlobalSilverContent gsc = null;
-		for (int i=0; i<selectedSilverContents.size(); i++)
-		{	
-			gsc = (GlobalSilverContent) selectedSilverContents.get(i);
-			SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()", "root.MSG_GEN_PARAM_VALUE", "new silverContent selected = " + gsc.getName());
-		}
-	}
+  public List getSelectedSilverContents() {
+    return this.selectedSilverContents;
+  }
 
-	public List getSelectedSilverContents() {
-		return this.selectedSilverContents;
-	}
+  public void setURLToReturn(String url) {
+    urlToReturn = url;
+  }
 
-	public void setURLToReturn(String url) {
-		urlToReturn = url;
-	}
-
-	public String getURLToReturn() {
-		return urlToReturn;
-	}
-
+  public String getURLToReturn() {
+    return urlToReturn;
+  }
 }
