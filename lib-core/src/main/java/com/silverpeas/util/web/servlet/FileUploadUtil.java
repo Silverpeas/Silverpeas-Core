@@ -1,6 +1,7 @@
 package com.silverpeas.util.web.servlet;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,6 +14,10 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class FileUploadUtil {
 
@@ -113,5 +118,16 @@ public class FileUploadUtil {
     }
 
     return fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName.length());
+  }
+
+  public static void saveToFile(File file, FileItem item) throws IOException {
+    OutputStream out = FileUtils.openOutputStream(file);
+    InputStream in = item.getInputStream();
+    try {
+      IOUtils.copy(in, out);
+    } finally {
+      IOUtils.closeQuietly(in);
+      IOUtils.closeQuietly(out);
+    }
   }
 }
