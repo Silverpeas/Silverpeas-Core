@@ -213,16 +213,16 @@
     browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
 
     TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab("Axe", "", true);
+	tabbedPane.addTab(resource.getString("pdcPeas.Axe"), "", true);
 	// affichage dans la browsebar du bon message : creation ou modification ainsi que de l'onglet Gestionnaire
 	if (formAction.equals("CreateAxis"))
 	{
 		browseBar.setPath(resource.getString("pdcPeas.createAxis"));
-		tabbedPane.addTab("Gestionnaires", "ViewManager", false, false);
+		tabbedPane.addTab(resource.getString("pdcPeas.managers"), "ViewManager", false, false);
 	}
 	else {
 		browseBar.setPath(resource.getString("pdcPeas.editAxis"));
-		tabbedPane.addTab("Gestionnaires", "ViewManager", false);
+		tabbedPane.addTab(resource.getString("pdcPeas.managers"), "ViewManager", false);
 	}
 
 	out.println(window.printBefore());
