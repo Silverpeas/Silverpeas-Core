@@ -67,6 +67,10 @@ function refreshNavBar(){
     {
         window.parent.startPageNavigation.location.href="jobStartPageNav";
     }
+    else if (window.name == "IdleFrame")
+    {
+			parent.frames["bottomFrame"].frames["startPageNavigation"].location.href="<%=m_context%>/RjobStartPagePeas/jsp/jobStartPageNav";
+		}
     else
     {
         window.opener.parent.startPageNavigation.location.href="jobStartPageNav";

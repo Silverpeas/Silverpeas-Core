@@ -12,13 +12,14 @@ import java.util.List;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class AttachmentI18NDAO
 {
 	private static String attachmentTableName = "SB_Attachment_AttachmentI18N";
 	private static String attachmentTableColumns =
-		" id, attachmentId, lang, attachmentPhysicalName, attachmentLogicalName, attachmentType, attachmentSize, instanceId, attachmentCreationDate, attachmentAuthor, attachmentTitle, attachmentInfo ";
+		" id, attachmentId, lang, attachmentPhysicalName, attachmentLogicalName, attachmentType, attachmentSize, instanceId, attachmentCreationDate, attachmentAuthor, attachmentTitle, attachmentInfo, xmlForm ";
 
 	public AttachmentI18NDAO()
 	{
@@ -53,6 +54,7 @@ public class AttachmentI18NDAO
 		attachDetail.setTitle(rs.getString("attachmentTitle"));
 		attachDetail.setInfo(rs.getString("attachmentInfo"));
 		attachDetail.setInstanceId(rs.getString("instanceId"));
+		attachDetail.setXmlForm(rs.getString("xmlForm"));
 
 		return attachDetail;
 	}
@@ -99,7 +101,7 @@ public class AttachmentI18NDAO
 			throw new SQLException(e.toString());
 		}
 
-		String insertQuery = "insert into " + attachmentTableName + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
+		String insertQuery = "insert into " + attachmentTableName + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
 		PreparedStatement prepStmt = null;
 		try
 		{
@@ -116,6 +118,7 @@ public class AttachmentI18NDAO
 			prepStmt.setString(10, attach.getAuthor());
 			prepStmt.setString(11, attach.getTitle());
 			prepStmt.setString(12, attach.getInfo());
+			prepStmt.setString(13, attach.getXmlForm());
 			prepStmt.executeUpdate();
 		}
 		finally
@@ -188,6 +191,25 @@ public class AttachmentI18NDAO
 			prepStmt = con.prepareStatement(deleteQuery);
 			prepStmt.setInt(1, Integer.parseInt(primaryKey.getId()));
 			prepStmt.setString(2, primaryKey.getInstanceId());
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}
+	}
+	
+	public static void updateXmlForm(Connection con, AttachmentPK pk, String language, String xmlFormName) throws SQLException
+	{
+		String updateQuery = "update " + attachmentTableName + " set xmlForm = ? where attachmentid = ? and lang = ? ";
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(updateQuery);
+			prepStmt.setString(1, xmlFormName);
+			prepStmt.setInt(2, Integer.parseInt(pk.getId()));
+			prepStmt.setString(3, language);
+
 			prepStmt.executeUpdate();
 		}
 		finally

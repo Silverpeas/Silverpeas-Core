@@ -5,18 +5,18 @@
     <requirement>
     </requirement>
 
-    <current version="007">
+    <current version="008">
         <create_table>
-            <file name="postgres\versioning\007\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\versioning\008\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
         <create_constraint>
-            <file name="postgres\versioning\007\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\versioning\008\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
         <drop_table>
-            <file name="postgres\versioning\007\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\versioning\008\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_table>
         <drop_constraint>
-            <file name="postgres\versioning\007\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\versioning\008\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_constraint>
     </current>
 
@@ -50,6 +50,12 @@
 	<upgrade version="006">
 		 <create_table>
             <file name="postgres\versioning\up006\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+		 </create_table>
+	</upgrade>
+	
+	<upgrade version="007">
+		 <create_table>
+            <file name="postgres\versioning\up007\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
 		 </create_table>
 	</upgrade>
 

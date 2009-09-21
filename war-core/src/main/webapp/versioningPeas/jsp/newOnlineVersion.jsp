@@ -2,6 +2,8 @@
 <%@ include file="checkVersion.jsp"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar" %>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane" %>
+<%@ page import="com.silverpeas.publicationTemplate.*"%>
+<%@ page import="com.silverpeas.form.*"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -16,20 +18,46 @@
   String nokLabel = messages.getString("cancel");
   String[] radioButtonLabel = { messages.getString("public"), messages.getString("archive") };
   pageContext.setAttribute("radios", radioButtonLabel);
+  
+  Form 				formUpdate 	= (Form) request.getAttribute("XMLForm");
+  DataRecord 			data 		= (DataRecord) request.getAttribute("XMLData"); 
+  String				xmlFormName = (String) request.getAttribute("XMLFormName");
+  PagesContext		context		= (PagesContext) request.getAttribute("PagesContext");
+  if (context != null)
+  {
+  	context.setBorderPrinted(false);
+  	context.setFormIndex("0");
+  	context.setCurrentFieldIndex("3");
+  }
 %>
 
 <html>
 <title></title>
 <view:looknfeel />
 <head>
-<script>
-
+<script type="text/javascript">
+function addNewVersion()
+{
+	if (isCorrectForm())
+		document.addForm.submit();
+}
 </script>
+<% if (formUpdate != null) { %>
+	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+	<% formUpdate.displayScripts(out, context); %>
+<% } else { %>
+	<script type="text/javascript">
+		function isCorrectForm()
+		{
+			return true;
+		}
+	</script>
+<% } %>
 </head>
-<body>
+<body class="yui-skin-sam">
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.resourceBundle}" />
-      <form name="addForm" action="<c:url value="/RVersioningPeas/${param.ComponentId}/saveOnline" />" method="POST">
+      <form name="addForm" action="<c:url value="/RVersioningPeas/jsp/saveOnline" />" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="radio" value="0"/>
       <input type="hidden" name="action" value="checkin"/>
       <input type="hidden" name="publicationId" value="<c:out value="${param.Id}" />" />
@@ -50,12 +78,21 @@
           <td align=left valign="baseline"><textarea name="comments" rows="5" cols="60"></textarea></td>
         </tr>
       </table>
+	<br/>
+		<%if (formUpdate != null)
+		{
+			%>
+			<table CELLPADDING="2" CELLSPACING="0" BORDER="0" WIDTH="100%">
+				<tr><td class="intfdcolor6outline"><span class="txtlibform"><%=messages.getString("versioning.xmlForm.XtraData")%></span></td></tr>
+			</table>
+			<%formUpdate.display(out, context, data); 
+		}%>
       </form>
     <%
       ButtonPane buttonPane = gef.getButtonPane();
-      buttonPane.addButton(gef.getFormButton(okLabel, "javascript:document.addForm.submit();", false));
+      buttonPane.addButton(gef.getFormButton(okLabel, "javascript:addNewVersion();", false));
       buttonPane.addButton(gef.getFormButton(nokLabel,"javascript:parent.document.forms[0].action.value='checkin';parent.document.forms[0].submit();", false));
-      out.println("<br><center>");
+      out.println("<center>");
       out.println(buttonPane.print());
       out.println("</center>");
     %>

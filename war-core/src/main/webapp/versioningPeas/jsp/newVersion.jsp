@@ -1,4 +1,6 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+<%@ page import="com.silverpeas.publicationTemplate.*"%>
+<%@ page import="com.silverpeas.form.*"%>
 <%@ include file="checkVersion.jsp" %>
 
 <%
@@ -22,6 +24,16 @@ String componentId    = request.getParameter("ComponentId");
 String publicationId  = request.getParameter("Id");
 String hide_radio     = request.getParameter("hide_radio");
 
+Form 				formUpdate 	= (Form) request.getAttribute("XMLForm");
+DataRecord 			data 		= (DataRecord) request.getAttribute("XMLData"); 
+String				xmlFormName = (String) request.getAttribute("XMLFormName");
+PagesContext		context		= (PagesContext) request.getAttribute("PagesContext");
+if (context != null)
+{
+	context.setBorderPrinted(false);
+	context.setFormIndex("0");
+	context.setCurrentFieldIndex("7");
+}
 %>
 
 <html>
@@ -91,16 +103,27 @@ function isFormFilled(){
 }
 
 function addFile(){
-        if (!isFormFilled()){
-        document.addForm.submit();
+		if (!isFormFilled() && isCorrectForm()){
+        	document.addForm.submit();
         } else {
                 document.addForm.file_upload.value = '';
                 alert("<%=pleaseFill%>");
         }
 }
 </script>
+<% if (formUpdate != null) { %>
+	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+	<% formUpdate.displayScripts(out, context); %>
+<% } else { %>
+	<script type="text/javascript">
+		function isCorrectForm()
+		{
+			return true;
+		}
+	</script>
+<% } %>
 </head>
-<body>
+<body class="yui-skin-sam">
 <%
 Board board = gef.getBoard();
 
@@ -109,8 +132,10 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 
-<form name="addForm" action="<%=m_context%>/RVersioningPeas/jsp/saveFile.jsp?save=true&componentId=<%=componentId%>&spaceId=<%=spaceId%>&documentId=<%=documentId%>" method="POST" enctype="multipart/form-data">
-<input type="hidden" name="publicationId" value=<%=publicationId%>>
+<!-- <form name="addForm" action="<%=m_context%>/RVersioningPeas/jsp/saveFile.jsp?save=true&componentId=<%=componentId%>&spaceId=<%=spaceId%>&documentId=<%=documentId%>" method="POST" enctype="multipart/form-data"> -->
+<form name="addForm" action="<%=m_context%>/RVersioningPeas/jsp/SaveNewVersion" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="documentId" value="<%=documentId%>">
+<input type="hidden" name="publicationId" value="<%=publicationId%>">
 <input type="hidden" name="radio">
 
 <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
@@ -156,8 +181,18 @@ out.println(board.printBefore());
         </tr>
 
 </table>
-</form>
 <%
+		if (formUpdate != null)
+		{
+			%><br/>
+			<table CELLPADDING="2" CELLSPACING="0" BORDER="0" WIDTH="100%">
+				<tr><td class="intfdcolor6outline"><span class="txtlibform"><%=messages.getString("versioning.xmlForm.XtraData")%></span></td></tr>
+			</table>
+			<%formUpdate.display(out, context, data); 
+		}
+		%>
+		</form>
+		<%		
 		out.println(board.printAfter());
 
         ButtonPane buttonPane = gef.getButtonPane();

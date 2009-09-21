@@ -197,6 +197,12 @@
         }
         return false;
     }
+    
+    private boolean isFileSharingEnable(MainSessionController msc, String componentId)
+    {
+    	String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");
+    	return "yes".equalsIgnoreCase(param);
+    }
 %>
 
 <%
@@ -209,6 +215,11 @@
 		String onlineEditingFolder = attachmentSettings.getString("OnlineEditingFolder", "C:\\\\Documents Silverpeas\\\\");
 		boolean onlineEditingEnable =  m_MainSessionCtrl.getPersonalization().getOnlineEditingStatus() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
 		boolean webdavEditingEnable = m_MainSessionCtrl.getPersonalization().getWebdavEditingStatus() &&  attachmentSettings.getBoolean("OnlineEditingEnable", false);
+		boolean dragAndDropEnable 	= m_MainSessionCtrl.getPersonalization().getDragAndDropStatus() && attachmentSettings.getBoolean("DragAndDropEnable", false);
+		String sURI = request.getRequestURI();
+		String sRequestURL = request.getRequestURL().toString();
+		String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+		String httpServerBase = GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase", m_sAbsolute);
 		Window 			window 			= gef.getWindow();
 		Frame 			frame 			= gef.getFrame();
 		BrowseBar 		browseBar 		= window.getBrowseBar();

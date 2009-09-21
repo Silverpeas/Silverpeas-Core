@@ -36,7 +36,7 @@ public class AttachmentDAO
 	private static String attachmentTableColumns =
 		" attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, " +
 		"attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, " +
-		"attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate ";
+		"attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
 	private final static int nameMaxLength = 100;  
 
 	public AttachmentDAO()
@@ -148,6 +148,8 @@ public class AttachmentDAO
 		else
 			attachDetail.setExpiryDate(null);
 		
+		attachDetail.setXmlForm(rs.getString("xmlForm"));
+		
 		return attachDetail;
 	}
 
@@ -162,7 +164,7 @@ public class AttachmentDAO
 		if (ad != null)
 			attach.setOrderNum(ad.getOrderNum() + 1);
 
-		String insertQuery = "insert into " + attachmentTableName + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ?, ?, ?, ?)";
+		String insertQuery = "insert into " + attachmentTableName + " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ?, ?, ?, ?, ?)";
 		PreparedStatement prepStmt = null;
 		try
 		{
@@ -200,6 +202,8 @@ public class AttachmentDAO
 			else
 				prepStmt.setString(20, null);
 			
+			prepStmt.setString(21, attach.getXmlForm());
+			
 			prepStmt.executeUpdate();
 		}
 		finally
@@ -218,7 +222,7 @@ public class AttachmentDAO
 		String updateQuery = "update " + attachmentTableName + " set attachmentTitle = ?, attachmentInfo = ?, " +
 				"attachmentPhysicalName = ?, attachmentLogicalName = ?, attachmentDescription = ?, attachmentSize = ?, " +
 				"attachmentType = ?, attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, " +
-				"attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, reservationDate = ? , alertDate = ?, expiryDate = ? " +
+				"attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, reservationDate = ? , alertDate = ?, expiryDate = ?, xmlForm = ? " +
 				" where attachmentId = ? ";
 		PreparedStatement prepStmt = null;
 		try
@@ -275,8 +279,29 @@ public class AttachmentDAO
 				prepStmt.setString(17, DateUtil.date2SQLDate(attach.getExpiryDate()));
 			}
 			
+			prepStmt.setString(18, attach.getXmlForm());
 			
-			prepStmt.setInt(18, new Integer(attach.getPK().getId()).intValue());
+			prepStmt.setInt(19, new Integer(attach.getPK().getId()).intValue());
+			
+			prepStmt.executeUpdate();
+		}
+		finally
+		{
+			DBUtil.close(prepStmt);
+		}		
+	}
+	
+	public static void updateXmlForm(Connection con, AttachmentPK pk, String xmlFormName) throws SQLException
+	{
+		String updateQuery = "update " + attachmentTableName + " set xmlForm = ? " +
+				" where attachmentId = ? ";
+		PreparedStatement prepStmt = null;
+		try
+		{
+			prepStmt = con.prepareStatement(updateQuery);
+			
+			prepStmt.setString(1, xmlFormName);			
+			prepStmt.setInt(2, Integer.parseInt(pk.getId()));
 			
 			prepStmt.executeUpdate();
 		}

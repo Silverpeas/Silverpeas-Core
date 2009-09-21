@@ -3,6 +3,9 @@
 <%@ page import="com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
 
 <%@ include file="checkVersion.jsp"%>
+
+<script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
 <%
 	String id 			= request.getParameter("Id");
 	String componentId 	= request.getParameter("ComponentId");
@@ -125,14 +128,17 @@
 											</OBJECT>
 										</div>
 										<%
-							    }
-							    else
-							    {
-							    	out.println("<br>");
-							    }
+							    }							   
+									if (StringUtil.isDefined(document_version.getXmlForm()))
+									{
+										String xmlURL = m_context+"/RformTemplate/jsp/View?width=400&ObjectId="+document_version.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(document_version.getXmlForm());
+										%>
+										<br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=messages.getString("versioning.xmlForm.View")%></a>
+										<%
+									}
 									if (document_version.getMajorNumber() > 1)
 									{ %>
-				            	 >> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=messages.getString("allVersions")%></a><br>
+				            	 <br/>>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=messages.getString("allVersions")%></a><br>
 					       <% } %>
 				            &nbsp;<br></TD>
 				         </TR> <%
@@ -151,7 +157,7 @@
 	function viewPublicVersions(docId) {
 		url = "<%=m_context+URLManager.getURL("VersioningPeas", "useless", componentId)%>ListPublicVersionsOfDocument?DocId="+docId+"&Alias=<%=fromAlias%>&ComponentId=<%=componentId%>";
 		windowName = "publicVersionsWindow";
-		larg = "600";
+		larg = "800";
 		haut = "475";
 		windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
 		if (!publicVersionsWindow.closed && publicVersionsWindow.name== "publicVersionsWindow")
@@ -178,4 +184,49 @@
 			}
 		}
 <% } %>
+</script>
+<script type="text/javascript">
+// Create the tooltips only on document load
+$(document).ready(function() 
+{
+   // Use the each() method to gain access to each elements attributes
+   $('a[rel]').each(function()
+   {
+      $(this).qtip(
+      {
+         content: {
+            // Set the text to an image HTML string with the correct src URL to the loading image you want to use
+            text: '<img class="throbber" src="<%=m_context%>/util/icons/inProgress.gif" alt="Loading..." />',
+            url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
+            title: {
+               text: '<%=messages.getString("versioning.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+               button: '<%=resources.getString("GML.close")%>' // Show a close link in the title
+            }
+         },
+         position: {
+            corner: {
+               target: 'leftMiddle', // Position the tooltip above the link
+               tooltip: 'rightMiddle'
+            },
+            adjust: {
+               screen: true // Keep the tooltip on-screen at all times
+            }
+         },
+         show: { 
+            when: 'click', 
+            solo: true // Only show one tooltip at a time
+         },
+         hide: 'unfocus',
+         style: {
+            tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+            border: {
+               width: 0,
+               radius: 4
+            },
+            name: 'light', // Use the default light style
+            width: 570 // Set the tooltip width
+         }
+      })
+   });
+});
 </script>

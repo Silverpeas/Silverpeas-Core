@@ -211,6 +211,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	document.getElementById("img"+componentId).width = "20";
   	document.getElementById("img"+componentId).height = "8";
   	
+  	//Ajout DLE:
+  	var componentActiv = document.getElementById(componentId);
+		componentActiv.setAttribute("class", "browseComponentActiv");
+	  componentActiv.setAttribute("className", "browseComponentActiv");
+		//FiN DLE
+		
   	if (componentId != currentComponentId)
 	  	closeCurrentComponent();
   	
@@ -238,6 +244,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	   	document.getElementById("img"+currentComponentId).src = "icons/1px.gif";
 	   	document.getElementById("img"+currentComponentId).width = "1";
 	   	document.getElementById("img"+currentComponentId).height = "1";
+
+  	//Ajout DLE:
+  	var componentActiv = document.getElementById(currentComponentId);
+		componentActiv.setAttribute("class", "browseComponent");
+	  componentActiv.setAttribute("className", "browseComponent");
+		//FiN DLE
 	   		    	
 	   	currentComponentId = "";
   	}
@@ -684,11 +696,13 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   		   if (itemType == "component") {    			   
       		   newEntryIconSel.setAttribute("id", "img"+itemId);
   			   if (itemOpen == "true")
+  			   {
+						newEntry.setAttribute("class", "browseComponentActiv");
+  			   newEntry.setAttribute("className", "browseComponentActiv");			  
   				   newEntryIconSel.setAttribute("src", "icons/silverpeasV5/activComponent.gif");
+  				   }
   			   else
   				   newEntryIconSel.setAttribute("src", "icons/1px.gif");
-		   	   /*newEntryURL.setAttribute("class", "browseComponent");
-  			   newEntryURL.setAttribute("className", "browseComponent");*/
   			   newEntryURL.setAttribute("href", "javaScript:openComponent('"+itemId+"',"+itemLevel+",'"+itemURL+"')");
   			   
   			   if (displayComponentsIcons())

@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
@@ -21,7 +22,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see Form
  * @see FieldDisplayer
  */
-public class AccessPathFieldDisplayer implements FieldDisplayer
+public class AccessPathFieldDisplayer extends AbstractFieldDisplayer
 {
 	
 	/**

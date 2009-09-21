@@ -2,10 +2,6 @@
 <%@ include file="checkVersion.jsp" %>
 
 <%
-	String sURI = request.getRequestURI();
-	String sRequestURL = request.getRequestURL().toString();
-   	String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
    	ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
     ResourceLocator messages_attached = new ResourceLocator("com.stratelia.webactiv.util.attachment.multilang.attachment", m_MainSessionCtrl.getFavoriteLanguage());
     String pleaseFill = messages.getString("pleaseFill");
@@ -130,6 +126,31 @@
 			SP_openWindow(classicalFileURL, "test", "600", "240", "scrollbars, resizable, alwaysRaised");
 		}
 	}
+
+	function showDnD()
+	{
+		<%
+		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+		String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
+		String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
+		String language = versioningSC.getLanguage();
+		String pathInstallerJre = GeneralPropertiesManager.getGeneralResourceLocator().getString("pathInstallerJre");
+	  	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
+	    	pathInstallerJre = m_sAbsolute + pathInstallerJre;
+	  	String indexIt = "0";
+	  	if (versioningSC.isIndexable())
+	  		indexIt = "1";
+		String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+user_id+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt+"&DocumentId="+document.getPk().getId();
+		String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
+		String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
+		%>
+		showHideDragDrop('<%=publicURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningPublic_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/raduploadSingle.properties','<%=workURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+	}
+
+	function uploadCompleted(s)
+	{
+		location.href="<%=m_context%>/RVersioningPeas/jsp/ViewVersions";
+	}
 	</script>
 	</head>
 	<body>
@@ -166,6 +187,8 @@
 		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/editDocument.jsp?DocId="+id+"&Url="+url+"&profile="+flag).include(request, response);
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="Javascript">
 var activex = true;
 var action_bis;
@@ -212,9 +235,9 @@ function perfAction(action, fileName)
     	} else if (action == "checkin" &&  <%=webdavEditingEnable%> && <%=isOpenOffice%>) {
             messageObj = new DHTML_modalMessage();  // We only create one object of this class
             messageObj.setShadowOffset(5);  // Large shadow
-            messageObj.setSize(550,300);
+            //messageObj.setSize(550,300);
             messageObj.setCssClassMessageBox(false);
-            messageObj.setSource('<%=m_context%>/versioningPeas/jsp/newOnlineVersion.jsp?Id=<%=id%>&ComponentId=<%=document.getPk().getInstanceId()%>&SpaceId=<%=document.getPk().getSpaceId()%>&documentId=<%=document.getPk().getId()%>');
+            messageObj.setSource('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=<%=id%>&ComponentId=<%=document.getPk().getInstanceId()%>&SpaceId=<%=document.getPk().getSpaceId()%>&documentId=<%=document.getPk().getId()%>');
             messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
             messageObj.display();
         } else if (action == "checkin") {

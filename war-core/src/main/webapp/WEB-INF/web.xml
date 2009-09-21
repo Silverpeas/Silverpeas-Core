@@ -374,7 +374,37 @@
     <servlet-name>ChartServlet</servlet-name>
     <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.ChartServlet</servlet-class>
   </servlet>
-  
+  <servlet>
+		<servlet-name>FormTemplateRequestRouter</servlet-name>
+		<display-name>FormTemplateRequestRouter</display-name>
+		<description>no description</description>
+		<servlet-class>com.silverpeas.formTemplate.servlets.FormTemplateRequestRouter</servlet-class>
+	</servlet>
+  <servlet>
+    <servlet-name>VersioningDragAndDrop</servlet-name>
+    <display-name>VersioningDragAndDrop</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.DragAndDrop</servlet-class>
+  </servlet>
+    <servlet>
+    <servlet-name>FileSharingRequestRouter</servlet-name>
+    <display-name>FileSharingRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.external.filesharing.servlets.FileSharingRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GetInfoFromKey</servlet-name>
+    <display-name>GetInfoFromKey</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.external.filesharing.servlets.GetInfoFromKeyServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GetLinkFile</servlet-name>
+    <display-name>GetLinkFile</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.external.filesharing.servlets.GetLinkFileServlet</servlet-class>
+  </servlet>
+
   
   
   
@@ -628,6 +658,26 @@
   <servlet-mapping>
     <servlet-name>ChartServlet</servlet-name>
     <url-pattern>/ChartServlet/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+	    <servlet-name>FormTemplateRequestRouter</servlet-name>
+		<url-pattern>/RformTemplate/*</url-pattern>
+	</servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>VersioningDragAndDrop</servlet-name>
+    <url-pattern>/VersioningDragAndDrop/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>FileSharingRequestRouter</servlet-name>
+    <url-pattern>/RfileSharing/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GetInfoFromKey</servlet-name>
+    <url-pattern>/Ticket/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GetLinkFile</servlet-name>
+    <url-pattern>/LinkFile/*</url-pattern>
   </servlet-mapping>
   
   

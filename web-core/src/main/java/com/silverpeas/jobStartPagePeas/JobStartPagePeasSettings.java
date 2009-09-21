@@ -21,6 +21,7 @@ public class JobStartPagePeasSettings
     public static boolean isInheritanceEnable = false;
     public static boolean isPublicParameterEnable = false;
     public static boolean useJSR168Portlets = false;
+    public static boolean useComponentsCopy = false;
     
 	
     static
@@ -34,5 +35,6 @@ public class JobStartPagePeasSettings
         isInheritanceEnable = SilverpeasSettings.readBoolean(rs, "UseProfileInheritance", false);
         isPublicParameterEnable = SilverpeasSettings.readBoolean(rs, "UsePublicParameter", true);
         useJSR168Portlets = SilverpeasSettings.readBoolean(rs, "UseJSR168Portlets", false);
+        useComponentsCopy = SilverpeasSettings.readBoolean(rs, "UseComponentsCopy", false);
     }
 }

@@ -155,12 +155,12 @@ out.println(gef.getLookStyleSheet());
 -->
 </script>
 </head>
-<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" class="fondDomainsBar">
 <div id="redExp"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reduct.gif" border="0" align="absmiddle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
 <div id="domainsBar">
 	<div id="recherche">
 		<div id="submitRecherche">
-			<form name="searchForm" action="" method="POST" target="MyMain">
+			<form name="searchForm" action="<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch" method="POST" target="MyMain">
 			<input name="query" size="30" onkeydown="checkSubmitToSearch(event)"/><input type="hidden" name="mode" value="clear"/>
 			<a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" /></a>
 			</form>

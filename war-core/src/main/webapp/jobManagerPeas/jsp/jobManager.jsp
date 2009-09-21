@@ -13,8 +13,8 @@ MM_reloadPage(true);
 //-->
 </script>
 </head>
-<frameset rows="0,95,*" cols="*" border="0" framespacing="0" frameborder="NO"> 
-  <frame src="<%=m_context%>/admin/jsp/javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
+<frameset rows="0,95,*" cols="*" border="0" framespacing="0" frameborder="NO">
+  <frame src="<%=m_context%>/clipboard/jsp/Idle.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
   <frame src="TopBarManager" name="topFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
   <frame src="" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="auto" noresize frameborder="NO">
 </frameset><noframes></noframes>

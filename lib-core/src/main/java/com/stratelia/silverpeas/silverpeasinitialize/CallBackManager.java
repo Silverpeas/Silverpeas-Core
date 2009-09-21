@@ -32,7 +32,10 @@ public class CallBackManager
 	public final static int ACTION_COMMENT_ADD				= 15;
 	public final static int ACTION_COMMENT_REMOVE			= 16;
 	public final static int ACTION_CUTANDPASTE				= 17;
-    public final static int ACTION_LAST = 18;
+	public final static int ACTION_XMLCONTENT_CREATE		= 18;
+	public final static int ACTION_XMLCONTENT_UPDATE		= 19;
+	public final static int ACTION_XMLCONTENT_DELETE		= 20;
+    public final static int ACTION_LAST = 21;
 
     // HashTables
     // ----------
@@ -108,7 +111,9 @@ public class CallBackManager
 		case ACTION_COMMENT_ADD				: sb.append("ACTION_COMMENT_ADD"); break;
 		case ACTION_COMMENT_REMOVE			: sb.append("ACTION_COMMENT_REMOVE"); break;
 		case ACTION_CUTANDPASTE				: sb.append("ACTION_CUTANDPASTE"); break;
-		
+		case ACTION_XMLCONTENT_CREATE		: sb.append("ACTION_XMLCONTENT_CREATE"); break;
+		case ACTION_XMLCONTENT_UPDATE		: sb.append("ACTION_XMLCONTENT_UPDATE"); break;
+		case ACTION_XMLCONTENT_DELETE		: sb.append("ACTION_XMLCONTENT_DELETE"); break;
         default : sb.append("ACTION_UNKNOWN");
         }
         sb.append(" iParam = " + Integer.toString(iParam) + " sParam = " + sParam + " extraParam = ");

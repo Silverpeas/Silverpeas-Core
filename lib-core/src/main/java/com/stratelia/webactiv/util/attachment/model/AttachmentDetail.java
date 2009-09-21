@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
@@ -73,6 +74,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   private Date alertDate = null; // date d'alerte pour la notification
   // intermédiaire
   private Date expiryDate = null; // date d'expiration
+  private String xmlForm = null;
+  private XMLModelContentType xmlModelContentType = null;
 
   public String getCloneId() {
     return cloneId;
@@ -1124,4 +1127,33 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
             .equalsIgnoreCase(DEFAULT_MIME_TYPE)))
       type = AttachmentController.getMimeType(logicalName);
   }
+
+	public String getXmlForm() {
+		return xmlForm;
+	}
+	
+	public String getXmlForm(String language)
+	{
+		if (language == null || !I18NHelper.isI18N) {
+			return getXmlForm();
+		}
+	    AttachmentDetailI18N detail = getAttachment(language);
+	    if (detail == null) {
+	    	return getXmlForm();
+	    }
+	    return detail.getXmlForm();
+	}
+	
+	public void setXmlForm(String xmlForm) {
+		this.xmlForm = xmlForm;
+	}
+	
+	public XMLModelContentType getXMLModelContentType() {
+		return xmlModelContentType;
+	}
+
+	public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
+		this.xmlModelContentType = xmlModelContentType;
+	}
+   
 }

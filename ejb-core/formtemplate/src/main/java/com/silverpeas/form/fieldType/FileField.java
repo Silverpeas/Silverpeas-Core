@@ -15,7 +15,7 @@ public class FileField implements Field
   /**
    * The text field type name.
    */
-  static public final String TYPE = "file";
+  static public final String TYPE = TYPE_FILE;
   static public final String PARAM_NAME_SUFFIX	= "$$id";
 
   /**

@@ -7,7 +7,7 @@
 	
 	String 			m_Space 			= (String) request.getAttribute("currentSpaceName");
 	String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
-	
+	boolean			objectsSelectedInClipboard = new Boolean((String) request.getAttribute("ObjectsSelectedInClipboard")).booleanValue();
 	DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
     boolean 		isUserAdmin 		= ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
     boolean 		isBackupEnable 		= ((Boolean)request.getAttribute("IsBackupEnable")).booleanValue();
@@ -64,9 +64,8 @@
     	
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace?SousEspace=SousEspace', 750, 300)");
-        operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('UpdateJobStartPage', 750, 600)");
-        operationPane.addLine();
-
+				if (objectsSelectedInClipboard)
+					operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("JSPP.PasteComponent"),"javascript:onClick=clipboardPaste()");
         operationPane.addOperation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"javascript:onClick=openPopup('ListComponent', 750, 700)");
     }
     
@@ -83,7 +82,8 @@
         tabbedPane.addTab(resource.getString("JSPP.reader"), "SpaceManager?Role=reader", false);
     }
 %>
-<HTML>
+
+<%@page import="java.net.URLEncoder"%><HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
@@ -142,6 +142,11 @@ function openPopup(action, larg, haut)
 <% }
   }
 %>
+
+function clipboardPaste() {
+    top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
+}
+
 -->
 </script>
 </HEAD>

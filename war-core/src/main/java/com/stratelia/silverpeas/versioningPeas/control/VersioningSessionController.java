@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import javax.ejb.RemoveException;
 
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -109,6 +110,7 @@ public class VersioningSessionController extends
   private String componentLabel = null;
   private String nodeId = null;
   private boolean topicRightsEnabled = false;
+  private String xmlForm = null;
 
   private VersioningUtil versioningUtil = null;
   private AdminController m_AdminCtrl = null;
@@ -954,6 +956,9 @@ public class VersioningSessionController extends
     }
     initEJB();
     versioning_bm.deleteDocument(documentPK);
+    
+    CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_REMOVE, document
+            .getOwnerId(), document.getForeignKey().getInstanceId(), document);
   }
 
   /**
@@ -1249,15 +1254,33 @@ public class VersioningSessionController extends
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
 
-    // The selectable users and groups are component's ones.
-    ArrayList<String> profileNames = new ArrayList<String>();
-    profileNames.add(ADMIN);
-    profileNames.add(PUBLISHER);
-    profileNames.add(role);
-    if (role.equals(READER)) {
-      profileNames.add(WRITER);
+    if (!StringUtil.isDefined(getNodeId()))
+    {
+	    //Selectable users and groups are component's ones.
+	    ArrayList<String> profileNames = new ArrayList<String>();
+	    profileNames.add(ADMIN);
+	    profileNames.add(PUBLISHER);
+	    profileNames.add(role);
+	    if (role.equals(READER)) {
+	      profileNames.add(WRITER);
+	    }
+	    sug.setProfileNames(profileNames);
     }
-    sug.setProfileNames(profileNames);
+    else
+    {
+    	//Selectable users and groups are topic's ones.
+    	ProfileInst topicProfile = getTopicProfile(ADMIN, getNodeId());
+    	sug.addProfileId(topicProfile.getId());
+    	topicProfile = getTopicProfile(PUBLISHER, getNodeId());
+    	sug.addProfileId(topicProfile.getId());
+    	topicProfile = getTopicProfile(WRITER, getNodeId());
+    	sug.addProfileId(topicProfile.getId());
+    	if (role.equals(READER))
+    	{
+    		topicProfile = getTopicProfile(READER, getNodeId());
+        	sug.addProfileId(topicProfile.getId());
+    	}
+    }
     sel.setExtraParams(sug);
 
     // Rights of the document
@@ -1492,8 +1515,8 @@ public class VersioningSessionController extends
       if (topicRightsEnabled()) {
         NodeDetail nodeDetail = getNodeBm().getDetail(
             new NodePK(nodeId, getComponentId()));
-        if (nodeDetail.haveLocalRights()) {
-          profileInst = getTopicProfile(role, nodeId);
+        if (nodeDetail.haveRights()) {
+          profileInst = getTopicProfile(role, Integer.toString(nodeDetail.getRightsDependsOn()));
         } else {
           // Rights of the component
           profileInst = getComponentProfile(role);
@@ -1502,7 +1525,6 @@ public class VersioningSessionController extends
         // Rights of the component
         profileInst = getComponentProfile(role);
       }
-
     }
     return profileInst;
   }
@@ -1513,8 +1535,8 @@ public class VersioningSessionController extends
     if (topicRightsEnabled()) {
       NodeDetail nodeDetail = getNodeBm().getDetail(
           new NodePK(nodeId, getComponentId()));
-      if (nodeDetail.haveLocalRights()) {
-        profileInst = getTopicProfile(role, nodeId);
+      if (nodeDetail.haveRights()) {
+        profileInst = getTopicProfile(role, Integer.toString(nodeDetail.getRightsDependsOn()));
       } else {
         // Rights of the component
         profileInst = getComponentProfile(role);
@@ -1953,5 +1975,13 @@ public class VersioningSessionController extends
    */
   public int getSavedListType() throws RemoteException {
     return getVersioningBm().getSavedListType(getComponentId());
+  }
+  
+  public String getXmlForm() {
+	  return xmlForm;
+  }
+
+  public void setXmlForm(String xmlForm) {
+	  this.xmlForm = xmlForm;
   }
 }

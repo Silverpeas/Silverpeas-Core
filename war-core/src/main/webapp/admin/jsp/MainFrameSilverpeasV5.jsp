@@ -19,6 +19,7 @@ String			attachmentId		 	= (String) session.getValue("RedirectToAttachmentId");
 ResourceLocator generalMessage			= new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
+boolean			login					= false;
 
 //System.out.println("attachmentId = "+attachmentId);
 
@@ -39,6 +40,7 @@ else
 		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
 		
 		session.setAttribute("Silverpeas_LookHelper", helper);
+		login = true;
 	}
 	
 	boolean componentExists = false;
@@ -79,6 +81,9 @@ else
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
 		frameBottomParams 	= "?SpaceId=&ComponentId="+componentIdFromRedirect;
 	}
+	
+	if (login)
+		frameBottomParams += "&Login=1";
 	
 	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
 	{

@@ -47,7 +47,7 @@ public class RestRequest {
       pathInfo = pathInfo.substring(1);
     }
 
-    SilverTrace.debug("mailingList", "RestRequest()",
+    SilverTrace.debug("util", "RestRequest()",
         "root.MSG_GEN_ENTER_METHOD", "Parsing:" + pathInfo);
     StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/", false);
     String element = tokenizer.nextToken();
@@ -71,7 +71,7 @@ public class RestRequest {
         isKey = false;
       } else {
         this.elements.put(key, new String[] { value });
-        SilverTrace.debug("mailingList", "RestRequest()",
+        SilverTrace.debug("util", "RestRequest()",
             "root.MSG_GEN_ENTER_METHOD", key + '=' + value);
         isKey = true;
       }

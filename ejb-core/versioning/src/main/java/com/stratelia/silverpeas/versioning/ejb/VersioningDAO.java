@@ -763,7 +763,7 @@ public class VersioningDAO
 			+ " (versionId, "
 			+ " documentId, versionMajorNumber, versionMinorNumber, versionAuthorId, "
 			+ " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
-			+ " versionLogicalName, versionMimeType, versionSize, instanceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+			+ " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 	/**
 	 * 
@@ -836,6 +836,7 @@ public class VersioningDAO
 			prepStmt.setString(12, newVersion.getMimeType());
 			prepStmt.setInt(13, newVersion.getSize());
 			prepStmt.setString(14, newVersion.getInstanceId());
+			prepStmt.setString(15, newVersion.getXmlForm());
 
 			int rownum = prepStmt.executeUpdate();
 
@@ -944,7 +945,7 @@ public class VersioningDAO
 		"SELECT v.versionId, "
 			+ " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
 			+ " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
-			+ " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId "
+			+ " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
 			+ " FROM "
 			+ versionTableName
 			+ " v WHERE v.documentId = ? ORDER BY v.versionId ";
@@ -1017,7 +1018,7 @@ public class VersioningDAO
 		"SELECT v.versionId, "
 			+ " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
 			+ " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
-			+ " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId "
+			+ " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
 			+ " FROM "
 			+ versionTableName
 			+ " v WHERE  "
@@ -1196,6 +1197,7 @@ public class VersioningDAO
 		version.setMimeType(rs.getString(12));
 		version.setSize(rs.getInt(13));
 		version.setInstanceId(rs.getString(14));
+		version.setXmlForm(rs.getString(15));
 
 		return version;
 	}
@@ -1293,7 +1295,7 @@ public class VersioningDAO
 			"SELECT versionId, "
 				+ " documentId, versionMajorNumber , versionMinorNumber, versionAuthorId, "
 				+ " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
-				+ " versionLogicalName, versionMimeType, versionSize, instanceId "
+				+ " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm "
 				+ " FROM " + versionTableName
 				+ " WHERE documentId = ? "
 				+ " AND versionMinorNumber = 0 "

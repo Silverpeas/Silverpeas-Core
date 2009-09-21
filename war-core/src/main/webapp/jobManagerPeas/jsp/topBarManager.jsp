@@ -66,6 +66,9 @@ function notifyPopup(context,compoId,users,groups)
 								<a href="javascript:notifyPopup('<%=m_context%>','','Administrators','')"><img align="absmiddle" border="0" src="<%=resource.getIcon("JMP.mailAdmin")%>" alt="<%=resource.getString("JMP.feedback") %>" title="<%=resource.getString("JMP.feedback") %>"></a>&nbsp;
 								<a href="javascript:exit()"><img align="absmiddle" border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"></a>&nbsp;
 								<a href="/help_fr/Silverpeas.htm" target="_blank""><img align="absmiddle" border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"></a>&nbsp;
+								<a href="<%=m_context + URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>" target="IdleFrame"><img src="<%=resource.getIcon("JMP.clipboardIcon")%>" align="absmiddle" border="0" alt="<%=resource.getString("JMP.clipboard")%>" onFocus="self.blur()" title="<%=resource.getString("JMP.clipboard")%>"></a>&nbsp;
+								<a href="javascript:notifyPopup('<%=m_context%>','','Administrators','')"><img align="absmiddle" border="0" src="<%=resource.getIcon("JMP.mailAdmin")%>" alt="<%=resource.getString("JMP.feedback") %>" title="<%=resource.getString("JMP.feedback") %>"></a>&nbsp;
+
 								<a href="<%= (gef.getLookFrame().startsWith("/")) ? m_context : (m_context+"/admin/jsp/")%><%=gef.getLookFrame()%>" target="_top""><img align="absmiddle" border="0" src="<%=resource.getIcon("JMP.peas")%>" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"></a>&nbsp;
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<span class="txtPetitBlanc"><%=resource.getString("GML.date")%> :

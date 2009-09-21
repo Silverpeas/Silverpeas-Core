@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.external.filesharing.model.FileSharingInterface;
+import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -33,7 +36,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class AjaxServletLookV5 extends HttpServlet {
@@ -129,24 +131,31 @@ public class AjaxServletLookV5 extends HttpServlet {
 				if (!isAnonymousAccess && SilverpeasSettings.readBoolean(settings, "personnalSpaceVisible", true))
 				{
 					if (SilverpeasSettings.readBoolean(settings, "agendaVisible", true))
-						writer.write("<item id=\"agenda\" name=\""+Encode.escapeXml(message.getString("Diary"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_AGENDA)+"Main\"/>");
+						writer.write("<item id=\"agenda\" name=\""+EncodeHelper.escapeXml(message.getString("Diary"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_AGENDA)+"Main\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "todoVisible", true))
-						writer.write("<item id=\"todo\" name=\""+Encode.escapeXml(message.getString("ToDo"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp\"/>");
+						writer.write("<item id=\"todo\" name=\""+EncodeHelper.escapeXml(message.getString("ToDo"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "notificationVisible", true))
-						writer.write("<item id=\"notification\" name=\""+Encode.escapeXml(message.getString("Mail"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main\"/>");
+						writer.write("<item id=\"notification\" name=\""+EncodeHelper.escapeXml(message.getString("Mail"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "interestVisible", true))
-						writer.write("<item id=\"subscriptions\" name=\""+Encode.escapeXml(message.getString("MyInterestCenters"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) + "subscriptionList.jsp\"/>");
+						writer.write("<item id=\"subscriptions\" name=\""+EncodeHelper.escapeXml(message.getString("MyInterestCenters"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) + "subscriptionList.jsp\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "favRequestVisible", true))
-						writer.write("<item id=\"requests\" name=\""+Encode.escapeXml(message.getString("FavRequests"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)+ "iCenterList.jsp\"/>");
+						writer.write("<item id=\"requests\" name=\""+EncodeHelper.escapeXml(message.getString("FavRequests"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)+ "iCenterList.jsp\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "linksVisible", true))
-						writer.write("<item id=\"links\" name=\""+Encode.escapeXml(message.getString("FavLinks"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_MYLINKSPEAS)+ "Main\"/>");
+						writer.write("<item id=\"links\" name=\""+EncodeHelper.escapeXml(message.getString("FavLinks"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_MYLINKSPEAS)+ "Main\"/>");
+					
+					if (SilverpeasSettings.readBoolean(settings, "fileSharingVisible", false))
+					{
+						FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
+						if (fileSharing.getTicketsByUser(userId).size()>0)
+							writer.write("<item id=\"fileSharing\" name=\""+EncodeHelper.escapeXml(message.getString("FileSharing"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_FILESHARING)+ "Main\"/>");
+					}
 
 					if (SilverpeasSettings.readBoolean(settings, "customVisible", true))
-						writer.write("<item id=\"personalize\" name=\""+Encode.escapeXml(message.getString("Personalization"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "Main.jsp\"/>");
+						writer.write("<item id=\"personalize\" name=\""+EncodeHelper.escapeXml(message.getString("Personalization"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""+URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "Main.jsp\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "mailVisible", true))
-						writer.write("<item id=\"notifAdmins\" name=\""+Encode.escapeXml(message.getString("Feedback"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
+						writer.write("<item id=\"notifAdmins\" name=\""+EncodeHelper.escapeXml(message.getString("Feedback"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
 					if (SilverpeasSettings.readBoolean(settings, "clipboardVisible", true))
-						writer.write("<item id=\"clipboard\" name=\""+Encode.escapeXml(message.getString("Clipboard"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
+						writer.write("<item id=\"clipboard\" name=\""+EncodeHelper.escapeXml(message.getString("Clipboard"))+"\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
 				}
 				
 				writer.write("</spacePerso>");
@@ -280,7 +289,9 @@ public class AjaxServletLookV5 extends HttpServlet {
 		if (isTransverse)
 			attributeType = "spaceTransverse";
 		
-		return "id=\""+space.getFullId()+"\" name=\""+Encode.escapeXml(space.getName(language))+"\" description=\""+Encode.escapeXml(space.getDescription())+"\" type=\""+attributeType+"\" kind=\"space\" level=\""+space.getLevel()+"\" look=\""+spaceLook+"\" wallpaper=\""+spaceWallpaper+"\"";
+		return "id=\""+space.getFullId()+"\" name=\""+EncodeHelper.escapeXml(space.getName(language))+"\" description=\""
+        +EncodeHelper.escapeXml(space.getDescription())+"\" type=\""+attributeType+"\" kind=\"space\" level=\""
+        +space.getLevel()+"\" look=\""+spaceLook+"\" wallpaper=\""+spaceWallpaper+"\"";
 	}
 	
 	private void displayFirstLevelSpaces(String userId, String language, OrganizationController orgaController, LookHelper helper, Writer out) throws IOException
@@ -358,7 +369,10 @@ public class AjaxServletLookV5 extends HttpServlet {
 				if (descriptor != null && "RprocessManager".equalsIgnoreCase(descriptor.getRequestRouter()))
 					kind = "processManager";
 				
-				out.write("<item id=\""+component.getId()+"\" name=\""+Encode.escapeXml(component.getLabel(language))+"\" description=\""+Encode.escapeXml(component.getDescription(language))+"\" type=\"component\" kind=\""+Encode.escapeXml(kind)+"\" level=\""+level+"\" open=\""+open+"\" url=\""+url+"\"/>");
+				out.write("<item id=\""+component.getId()+"\" name=\""+EncodeHelper.escapeXml(component.getLabel(language))
+            +"\" description=\""+EncodeHelper.escapeXml(component.getDescription(language))
+            +"\" type=\"component\" kind=\""+EncodeHelper.escapeXml(kind)+"\" level=\""+level+"\" open=\""+open
+            +"\" url=\""+url+"\"/>");
 			}
 		}
 	}
@@ -397,7 +411,8 @@ public class AjaxServletLookV5 extends HttpServlet {
 				axis = (SearchAxis) primaryAxis.get(a);
 				if (axis != null && axis.getNbObjects() > 0)
 				{
-					out.write("<axis id=\""+axis.getAxisId()+"\" name=\""+Encode.escapeXml(axis.getAxisName())+"\" description=\"\" level=\"0\" open=\"false\" nbObjects=\""+axis.getNbObjects()+"\"/>");
+					out.write("<axis id=\""+axis.getAxisId()+"\" name=\""+EncodeHelper.escapeXml(axis.getAxisName())
+              +"\" description=\"\" level=\"0\" open=\"false\" nbObjects=\""+axis.getNbObjects()+"\"/>");
 				}
 			}
 		}
@@ -464,7 +479,9 @@ public class AjaxServletLookV5 extends HttpServlet {
 				value = (Value) daughters.get(v);
 				if (value != null && value.getMotherId().equals(valueId))
 				{
-					out.write("<value id=\""+value.getFullPath()+"\" name=\""+Encode.escapeXml(value.getName())+"\" description=\"\" level=\""+value.getLevelNumber()+"\" open=\"false\" nbObjects=\""+value.getNbObjects()+"\"/>");
+					out.write("<value id=\""+value.getFullPath()+"\" name=\""+EncodeHelper.escapeXml(value.getName())
+              +"\" description=\"\" level=\""+value.getLevelNumber()+"\" open=\"false\" nbObjects=\""
+              +value.getNbObjects()+"\"/>");
 				}
 			}
 			

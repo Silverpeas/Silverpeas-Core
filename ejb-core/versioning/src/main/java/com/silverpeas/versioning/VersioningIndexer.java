@@ -7,10 +7,15 @@ package com.silverpeas.versioning;
 import java.io.File;
 import java.rmi.RemoteException;
 
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -54,6 +59,10 @@ public class VersioningIndexer {
 			String lang = "fr";
 
 			indexEntry.addFileContent(path, encoding, format, lang);
+			
+			if (StringUtil.isDefined(lastVersion.getXmlForm()))
+	        	  updateIndexEntryWithXMLFormContent(lastVersion.getPk(), lastVersion.getXmlForm(), indexEntry);
+			
 			IndexEngineProxy.addIndexEntry(indexEntry);
 		}
 		catch (Exception e)
@@ -98,5 +107,19 @@ public class VersioningIndexer {
 			throw new VersioningRuntimeException("VersioningIndexer.createPath()",	SilverpeasException.ERROR, "root.EX_CANT_CREATE_FILE", e);
 		}
 	}
-
+	
+	private static void updateIndexEntryWithXMLFormContent(DocumentVersionPK pk, String xmlFormName, FullIndexEntry indexEntry)
+	{
+		SilverTrace.info("versioning", "VersioningIndexer.updateIndexEntryWithXMLFormContent()", "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
+		try {
+			String objectType = "Versioning";
+			PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(indexEntry.getComponent()+":"+objectType+":"+xmlFormName);
+			RecordSet set	= pub.getRecordSet();
+			set.indexRecord(pk.getId(), xmlFormName, indexEntry);
+		}
+		catch (Exception e)
+		{
+			SilverTrace.error("versioning", "VersioningIndexer.updateIndexEntryWithXMLFormContent()", "", e);
+		}
+	}
 }

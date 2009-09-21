@@ -10,23 +10,47 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import com.silverpeas.jobStartPagePeas.DisplaySorted;
+import com.silverpeas.jobStartPagePeas.JobStartPagePeasException;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.NavBarManager;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import java.util.*;
 
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.ComponentSelection;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.instance.control.ComponentPasteInterface;
+import com.stratelia.webactiv.beans.admin.instance.control.PasteDetail;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -962,7 +986,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         return m_BrothersComponents;
     }
 
-	//NEWD DLE
 	// get all components in the space
 	public ComponentInst[] getComponentsOfSpace(String spaceId)
 	{
@@ -985,7 +1008,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 		Arrays.sort(m_BrothersComponents);
 		return m_Components;
 	}
-	//NEWF DLE
 
     public void setComponentPlace(String idComponentBefore)
     {
@@ -1017,7 +1039,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         m_NavBarMgr.resetSpaceCache(getManagedSpaceId());
     }
 
-	//NEWD DLE
 	public void setMoveComponentToSpace(ComponentInst component, String destinationSpaceId, String idComponentBefore) throws AdminException
 	{
 		SilverTrace.info("jobStartPagePeas","JobStartPagePeasSessionController.setMoveComponentToSpace()","root.MSG_GEN_PARAM_VALUE","component = "+component.getId()+" espace dest:"+destinationSpaceId+" idComponentBefore="+idComponentBefore);
@@ -1064,8 +1085,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 		return m_DestBrothersComponents;
 	}
 
-	//NEWF DLE
-	
     public WAComponent[] getAllComponents()
     {
         //liste des composants triés ordre alphabétique
@@ -1457,5 +1476,165 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
         // Update the profile
        	m_AdminCtrl.updateProfileInst(profile);
+	}
+	
+	/**
+	 * Copy component
+	 * @param id
+	 * @throws RemoteException
+	 */
+	public void copyComponent(String id) throws RemoteException
+	{
+		ComponentInst componentInst = getComponentInst(id);
+		ComponentSelection compoSelect = new ComponentSelection(componentInst);
+		SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copyComponent()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + "' count=" + getClipboard().getCount());
+		getClipboard().add((ClipboardSelection) compoSelect);
+	}
+	
+	/**
+	 * Paste component(s) copied
+	 * @throws RemoteException
+	 * @throws JobStartPagePeasException
+	 */
+	public void pasteComponent() throws RemoteException, JobStartPagePeasException
+	{
+		try {
+			SilverTrace.info("jobStartPagePeas","JobStartPagePeasSessionController.pasteComponent()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + " count=" + getClipboard().getCount());
+			Collection clipObjects = getClipboard().getSelectedObjects();
+			Iterator clipObjectIterator = clipObjects.iterator();
+			while (clipObjectIterator.hasNext()) {
+				ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+				if (clipObject != null) {
+					if (clipObject.isDataFlavorSupported(ComponentSelection.ComponentDetailFlavor)) {
+						ComponentInst compo = (ComponentInst) clipObject.getTransferData(ComponentSelection.ComponentDetailFlavor);
+						pasteComponent(compo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new JobStartPagePeasException("JobStartPagePeasSessionController.pasteComponent()", SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
+		}
+
+		getClipboard().PasteDone();
+	}
+
+	/**
+	 * Paste component with profiles
+	 * @param compoInst
+	 * @throws JobStartPagePeasException
+	 */
+	public void pasteComponent(ComponentInst compoInst) throws JobStartPagePeasException
+	{
+		ComponentInst newCompo = (ComponentInst) compoInst.clone();
+        SpaceInst destinationSpace = getSpaceInstById();
+        OrganizationController oc = new OrganizationController();
+        
+        //Creation
+		newCompo.setId("-1");
+        newCompo.setDomainFatherId(destinationSpace.getId());
+		newCompo.setOrderNum(destinationSpace.getNumComponentInst());
+        newCompo.setCreateDate(new Date());
+        newCompo.setLanguage(getLanguage());
+        
+        //Rename if componentName already exists in the destination space
+        String label = renameComponentName(newCompo.getLabel(getLanguage()), destinationSpace.getAllComponentsInst());
+    	newCompo.setLabel(label);
+    	
+        //Delete profiles
+		newCompo.removeAllProfilesInst();
+		
+        // Add the component
+        String sComponentId = addComponentInst(newCompo);
+        
+        //Adding ok
+        if (sComponentId != null && sComponentId.length() > 0)
+        {
+        	setManagedInstanceId(sComponentId);
+        	//Get profiles from destination Space
+        	List<SpaceProfileInst> spaceProfiles = destinationSpace.getAllSpaceProfilesInst();
+           	if (spaceProfiles.size() > 1)
+        	{
+        		m_AdminCtrl.setSpaceProfilesToComponent(newCompo, destinationSpace);
+        	}
+        	else
+    		//Get Profiles from Component
+        	{
+               	List<ProfileInst> compoProfiles = compoInst.getAllProfilesInst();
+    			Iterator<ProfileInst> itProfIterator = compoProfiles.iterator();
+    			newCompo.setInheritanceBlocked(true);
+    			while (itProfIterator.hasNext())
+    			{
+    				ProfileInst profileInst = itProfIterator.next();
+    				
+    				// Create the profile
+        			ProfileInst newProfileInst = new ProfileInst();
+        			newProfileInst.setLabel(profileInst.getLabel());
+        			newProfileInst.setName(profileInst.getName());
+        			newProfileInst.setComponentFatherId(getManagedInstanceId());
+        			newProfileInst.setInherited(false);
+        			newProfileInst.setDescription(profileInst.getDescription());
+
+        			//Set groupIds and userIds
+        			String[] groupsIds = null;
+        			String[] usersIds = null;
+        			if (profileInst.getAllGroups() != null && profileInst.getAllGroups().size() > 0)
+        			{
+        				groupsIds = new String[profileInst.getAllGroups().size()];
+        				profileInst.getAllGroups().toArray(groupsIds);
+        			}
+        			if (profileInst.getAllUsers() != null && profileInst.getAllUsers().size() > 0)
+        			{
+        				usersIds = new String[profileInst.getAllUsers().size()];
+        				profileInst.getAllUsers().toArray(usersIds);
+        			}
+        			
+        			newProfileInst.setGroupsAndUsers(groupsIds, usersIds);
+
+    		        // Add the profile
+    		        m_AdminCtrl.addProfileInst(newProfileInst, getUserId());
+    				newCompo.addProfileInst(newProfileInst);
+    			}
+        	}
+			updateComponentInst(newCompo);
+			refreshCurrentSpaceCache();
+        }
+        
+        //Execute specific paste by the component  
+        try
+        {
+        	PasteDetail pasteDetail = new PasteDetail(compoInst.getId(), sComponentId, getUserId());
+        	String componentRootName = URLManager.getComponentNameFromComponentId(compoInst.getId());
+        	String className = "com.silverpeas.component." + componentRootName + "." + componentRootName.substring(0,1).toUpperCase() + componentRootName.substring(1) + "Paste";
+        	if (Class.forName(className).getClass() != null)
+        	{
+	        	ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.forName(className).newInstance();
+	        	componentPaste.paste(pasteDetail);
+        	}
+        }
+        catch (Exception e)
+        {
+        	SilverTrace.warn("jobStartPagePeas","JobStartPagePeasSessionController.pasteComponent()", "root.GEN_EXIT_METHOD", e);
+        }
+	}
+	
+	/**
+	 * Rename component Label if necessary
+	 * @param name
+	 * @param listComponents
+	 * @return
+	 */
+	private String renameComponentName(String label, ArrayList<ComponentInst> listComponents)
+	{
+        String newComponentLabel = label;  
+        for (int i=0; i<listComponents.size(); i++)
+        {
+        	ComponentInst componentInst = (ComponentInst) listComponents.get(i);
+        	if (componentInst.getLabel().equals(newComponentLabel))
+        	{
+        		newComponentLabel = getMultilang().getString("JSPP.CopyOf") + label;
+            	return renameComponentName(newComponentLabel, listComponents);
+        	}
+        }
+		return newComponentLabel;
 	}
 }

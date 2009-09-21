@@ -193,6 +193,10 @@
       <groupId>net.fortuna.ical4j</groupId>
       <artifactId>ical4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>ecs</groupId>
+      <artifactId>ecs</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

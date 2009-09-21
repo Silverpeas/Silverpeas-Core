@@ -3,6 +3,9 @@
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
+<script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
+
 <%
     ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
@@ -79,8 +82,15 @@ for (int i=0;i<vVersions.size();i++) {
 
    	ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreationDate()));
    	cell.setNoWrap(true);
+   	
+   	String xtraData = "";
+  	if (StringUtil.isDefined(publicVersion.getXmlForm()))
+  	{
+		String xmlURL = m_context+"/RformTemplate/jsp/View?ObjectId="+publicVersion.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(publicVersion.getXmlForm());
+		xtraData = "<a rel=\""+xmlURL+"\" href=\"#\" title=\""+document.getName()+" "+publicVersion.getMajorNumber()+"."+publicVersion.getMinorNumber()+"\"><img src=\""+m_context+"/util/icons/info.gif\" border=\"0\"></a> ";
+	}
 
-    arrayLine.addArrayCellText(publicVersion.getComments());
+    arrayLine.addArrayCellText(xtraData+publicVersion.getComments());
 
 }
 
@@ -112,3 +122,48 @@ for (int i=0;i<vVersions.size();i++) {
 	}
 </script>
 <% } %>
+<script type="text/javascript">
+// Create the tooltips only on document load
+$(document).ready(function() 
+{
+   // Use the each() method to gain access to each elements attributes
+   $('a[rel]').each(function()
+   {
+      $(this).qtip(
+      {
+         content: {
+            // Set the text to an image HTML string with the correct src URL to the loading image you want to use
+            text: '<img class="throbber" src="<%=m_context%>/util/icons/inProgress.gif" alt="Loading..." />',
+            url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
+            title: {
+               text: '<%=messages.getString("versioning.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+               button: '<%=resources.getString("GML.close")%>' // Show a close link in the title
+            }
+         },
+         position: {
+            corner: {
+               target: 'leftMiddle', // Position the tooltip above the link
+               tooltip: 'rightMiddle'
+            },
+            adjust: {
+               screen: true // Keep the tooltip on-screen at all times
+            }
+         },
+         show: { 
+            when: 'click', 
+            solo: true // Only show one tooltip at a time
+         },
+         hide: 'unfocus',
+         style: {
+            tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+            border: {
+               width: 0,
+               radius: 4
+            },
+            name: 'light', // Use the default light style
+            width: 350 // Set the tooltip width
+         }
+      })
+   });
+});
+</script>

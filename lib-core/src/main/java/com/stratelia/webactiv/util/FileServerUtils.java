@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * 
@@ -125,20 +126,19 @@ public class FileServerUtils extends Object {
   }
 
   public static String getAttachmentURL(String componentId, String logicalName,
-      String attachmentId, String lang) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
-    String language = lang;
-    if (language == null) {
-      language = I18NHelper.defaultLanguage;
-    }
-    String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("attached_file").append("/componentId/")
-        .append(componentId).append("/attachmentId/").append(attachmentId)
-        .append("/lang/").append(language).append("/name/").append(
-            newLogicalName);
-    return url.toString();
+	      String attachmentId, String lang) {
+	  SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL", "root.MSG_GEN_ENTER_METHOD", "componentId = "+componentId+", logicalName = "+logicalName+", attachmentId = "+attachmentId+", lang = "+lang);
+	  StringBuffer url = new StringBuffer();
+	  String language = lang;
+	  if (language == null) {
+		  language = I18NHelper.defaultLanguage;
+	  }
+	  SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL", "root.MSG_GEN_PARAM_VALUE", "language = "+language);
+	  String newLogicalName = replaceSpecialChars(logicalName);
+	  url.append("componentId/")
+	     .append(componentId).append("/attachmentId/").append(attachmentId)
+	     .append("/lang/").append(language).append("/name/").append(newLogicalName);
+	  return url.toString();
   }
 
   public static String getVersionedDocumentURL(String componentId,
@@ -148,7 +148,7 @@ public class FileServerUtils extends Object {
         .getString("ApplicationURL");
 
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("attached_file").append("/componentId/")
+    url.append(m_context).append("/attached_file").append("/componentId/")
     .append(componentId).append("/documentId/").append(documentId)
     .append("/versionId/").append(versionId).append("/name/").append(
         newLogicalName);

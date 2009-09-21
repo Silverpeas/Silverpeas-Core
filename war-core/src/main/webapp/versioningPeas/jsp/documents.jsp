@@ -15,6 +15,7 @@
 	String nodeId = request.getParameter("NodeId");
 	String versionningFileRightsMode = request.getParameter("VersionningFileRightsMode");
 	String s_topicRightsEnabled = request.getParameter("TopicRightsEnabled");
+	String xmlForm = request.getParameter("XMLFormName");
 	boolean topicRightsEnabled = false;
 	if (StringUtil.isDefined(s_topicRightsEnabled))
   {
@@ -36,11 +37,13 @@
   versioningSC.setIndexable(bIndexIt);
   versioningSC.setProfile(flag);
   versioningSC.setFileRightsMode(versionningFileRightsMode);
+  versioningSC.setXmlForm(xmlForm);
   List documents = versioningSC.getDocuments(foreignKey);
   Iterator documents_iterator = documents.iterator();
 %>
 
-<%@page import="com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException"%><script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<%@page import="com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException"%>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language='Javascript'>
 function open_pu_window(url,docid)
 {
@@ -50,8 +53,11 @@ function addNewDocument(pubId)
 {
   url = "<%=m_context%>/RVersioningPeas/jsp/AddNewDocument?PubId="+pubId+"&Url=<%=URLEncoder.encode(m_context+url)%>";
   width = "750";
-  height = "400";
-  SP_openWindow(url,"AddNewDocument",width,height,"");
+  <% if (StringUtil.isDefined(xmlForm)) { %>
+  	SP_openWindow(url,"AddNewDocument",width,"600","scrollbars=yes, resizable, alwaysRaised");
+  <% } else { %>
+  	SP_openWindow(url,"AddNewDocument",width,"400","");
+  <% } %>
 }
 
 function deleteDoc(docid)
@@ -61,8 +67,53 @@ function deleteDoc(docid)
   height = "130";
   SP_openWindow(url,"DeleteDocument",width,height,"");
 }
+
+function showDnD()
+{
+	<%
+	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+	String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
+	String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
+	String language = versioningSC.getLanguage();
+	String pathInstallerJre = GeneralPropertiesManager.getGeneralResourceLocator().getString("pathInstallerJre");
+  	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
+    	pathInstallerJre = m_sAbsolute + pathInstallerJre;
+	String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+userId+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt;
+	String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
+	String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
+	%>
+	showHideDragDrop('<%=publicURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningPublic_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','<%=workURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+}
+
+function uploadCompleted(s)
+{
+	location.href="<%=m_context%><%=url%>";
+}
+
+function ShareAttachment(id)
+{
+	var url = "<%=m_context%>/RfileSharing/jsp/NewTicket?FileId="+id+"&ComponentId=<%=componentId%>&Type=Version";
+	SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
+}
 </script>
+<script type="text/javascript" src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js"></script>
 <CENTER>
+<% if (dragAndDropEnable) { %>
+	<table width="98%" border="0" id="DropZone">
+		<tr><td colspan="3" align="right">
+			<a href="javascript:showDnD()" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
+		</td></tr>
+		<tr>
+			<td>
+				<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+			</td>
+			<td width="5%">&nbsp;</td>
+			<td>
+				<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+			</td>
+		</tr>
+	</table>
+<% } //end if dragAndDropEnable %>
 <%
 	ArrayPane arrayPane = gef.getArrayPane("docsList", m_context+url, request, session);
 	arrayPane.addArrayColumn(messages.getString("type"));
@@ -85,6 +136,7 @@ function deleteDoc(docid)
         if ( document_version.getSize() != 0 || !"dummy".equals(document_version.getLogicalName()) )
         {
           String lockedBy = "";
+          String share = "";
           if (document.getStatus() == Document.STATUS_CHECKOUTED)
           {
             String until = "";
@@ -94,12 +146,19 @@ function deleteDoc(docid)
             }
             lockedBy = "<br><font size=1>(" + messages.getString("lockedBy") + versioningSC.getUserNameByID(document.getOwnerId()) + "&nbsp;" + messages.getString("at") + "&nbsp;" + resources.getOutputDate(document.getLastCheckOutDate()) + until + ")</font>";
           }
+          else
+          {
+        	  if (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".equalsIgnoreCase(flag))
+              {
+        		  share = "<a href=\"javascript:onClick=ShareAttachment('"+ document.getPk().getId() +"')\"><img src=\""+m_context+"/util/icons/webLink.gif\" border=\"0\" alt=\""+messages.getString("attachment.share")+"\"/></a> ";
+              }
+          }
 					arrayLine.addArrayCellLink("<img src='"+versioningSC.getDocumentVersionIconPath( document_version.getPhysicalName())+"' border=0>", "javascript:open_pu_window('"+versioningSC.getDocumentVersionShowVersionsURL()+"',"+document.getPk().getId()+");");
 					arrayLine.addArrayCellText("<a href=\"#\" onClick=\"open_pu_window('"+versioningSC.getDocumentVersionShowVersionsURL()+"',"+document.getPk().getId()+");\">"+document.getName()+"</a>"+lockedBy);
 					arrayLine.addArrayCellText(document_version.getMajorNumber() + "." + document_version.getMinorNumber());
 					arrayLine.addArrayCellText(resources.getOutputDate(document_version.getCreationDate()));
 					arrayLine.addArrayCellText("<img src='"+versioningSC.getDocumentVersionStatusIconPath( document.getStatus() )+"'/>");
-					arrayLine.addArrayCellText("<a href=\"#\"><img border=0 src=\""+m_context+"/util/icons/delete.gif\" onclick = \"deleteDoc(" + document.getPk().getId() + ")\" style=\"cursor:hand\"></a>");
+					arrayLine.addArrayCellText(share+"<a href=\"#\"><img border=0 src=\""+m_context+"/util/icons/delete.gif\" onclick = \"deleteDoc(" + document.getPk().getId() + ")\" style=\"cursor:hand\"></a>");
         }
         else
         {

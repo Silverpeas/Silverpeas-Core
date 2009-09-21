@@ -1,4 +1,5 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
+<%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ include file="importFrameSet.jsp" %>
 
 <%
@@ -7,9 +8,12 @@ String spaceId 		= request.getParameter("SpaceId");
 String subSpaceId 	= request.getParameter("SubSpaceId");
 String fromTopBar 	= request.getParameter("FromTopBar");
 String componentId	= request.getParameter("ComponentId");
+String login		= request.getParameter("Login");
 
-//System.out.println("frameBottom : spaceId = "+spaceId);
-//System.out.println("frameBottom : componentId = "+componentId);
+LookSilverpeasV5Helper 	helper = (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+
+/*System.out.println("frameBottom : spaceId = "+spaceId);
+System.out.println("frameBottom : componentId = "+componentId);*/
 
 ResourceLocator rsc = gef.getFavoriteLookSettings();
 int framesetWidth = Integer.parseInt(rsc.getString("domainsBarFramesetWidth"));
@@ -38,17 +42,26 @@ else
 	}*/
 }
 
+//Allow to force a page only on login and when user clicks on logo
+boolean displayLoginHomepage = false;
+String loginHomepage = rsc.getString("loginHomepage");
+if (StringUtil.isDefined(loginHomepage) && (StringUtil.isDefined(login) || (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(subSpaceId) && !StringUtil.isDefined(componentId) && !StringUtil.isDefined(strGoToNew))))
+	displayLoginHomepage = true;
+
 String frameURL = "";
-if (strGoToNew==null)
+if (displayLoginHomepage)
 {
-	if (componentId != null && !"".equals(componentId))
+	frameURL = loginHomepage;
+}
+else if (strGoToNew==null)
+{
+	if (StringUtil.isDefined(componentId))
 	{
 		frameURL = URLManager.getApplicationURL()+URLManager.getURL(null, componentId)+"Main";
 	}
 	else
 	{
 		String homePage = rsc.getString("defaultHomepage", "/dt");
-		//System.out.println("homePage = "+homePage);
 		String param = "";
 		if (spaceId != null && spaceId.length() >= 3){
 		    param = "?SpaceId=" + spaceId;
@@ -67,7 +80,8 @@ session.putValue("RedirectToComponentId", null);
 session.putValue("RedirectToSpaceId", null);
 %>
 
-<html>
+
+<%@page import="com.silverpeas.util.StringUtil"%><html>
 <head>
 <script language="javascript">
 var columntype=""

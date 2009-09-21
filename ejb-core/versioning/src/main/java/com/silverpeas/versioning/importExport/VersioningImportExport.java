@@ -16,10 +16,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.silverpeas.form.importExport.FormTemplateImportExport;
+import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.versioning.VersioningIndexer;
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
@@ -122,9 +125,9 @@ public class VersioningImportExport {
 				//On crée un nouveau document
 				DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
 				document = new Document(docPK, pubPK, attachment.getLogicalName(), "", -1, userId, new Date(), null, componentId, null, null, 0, 0);
-				if (!StringUtil.isDefined(attachment.getTitle()))
+				if (StringUtil.isDefined(attachment.getTitle()))
 					document.setName(attachment.getTitle());
-				if (!StringUtil.isDefined(attachment.getInfo()))
+				if (StringUtil.isDefined(attachment.getInfo()))
 					document.setDescription(attachment.getInfo());
 					
 				//document.setDescription(attachment.getDescription());
@@ -284,17 +287,25 @@ public class VersioningImportExport {
 	{
 		SilverTrace.info("versioning", "VersioningImportExport.importDocuments()", "root.GEN_PARAM_VALUE", objectPK.toString());
 		int nbFilesProcessed = 0;
+		boolean launchCallback = false;
+		int userIdCallback = -1;
 		
 		//get existing documents of object
 		List existingDocuments = getVersioningBm().getDocuments(objectPK);
 		Document existingDocument = null;
 		
 		//DocumentVersion		version		= null;
+		XMLModelContentType xmlContent 	= null;
+		FormTemplateImportExport xmlIE = null;
 		Document			document	= null;
 		for (int a=0; a < documents.size(); a++)
 		{
-			document 			= (Document) documents.get(a);				
-			existingDocument 	= isDocumentExist(existingDocuments, document.getName());
+			document = (Document) documents.get(a);
+			
+			if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId()) && !document.getPk().getId().equals("-1"))
+				existingDocument = getVersioningBm().getDocument(document.getPk());
+			if (existingDocument == null)			
+				existingDocument = isDocumentExist(existingDocuments, document.getName());
 			
 			if (existingDocument != null)
 			{
@@ -308,6 +319,7 @@ public class VersioningImportExport {
 					int majorNumber = lastVersion.getMajorNumber();
 					int minorNumber = lastVersion.getMinorNumber();
 					DocumentVersion version;
+					versions = document.getVersionsType().getListVersions();
 					for (int v=0; v<versions.size(); v++)
 					{
 						version = (DocumentVersion) versions.get(v);
@@ -318,7 +330,32 @@ public class VersioningImportExport {
 							version.setCreationDate(new Date());
 						if (version.getAuthorId() == -1)
 							version.setAuthorId(userId);
+						
+						xmlContent = version.getXMLModelContentType();
+						if (xmlContent != null)
+							version.setXmlForm(xmlContent.getName());
+												
 						getVersioningBm().addDocumentVersion(document, version);
+						
+						if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION)
+						{
+							launchCallback = true;
+							userIdCallback = version.getAuthorId();
+						}
+						
+						//Store xml content
+						try {
+							if (xmlContent != null)
+							{
+								if (xmlIE == null)
+									xmlIE = new FormTemplateImportExport();
+								
+								ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
+								xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent, Integer.toString(version.getAuthorId()));
+							}
+						} catch (Exception e) {
+							SilverTrace.error("versioning","VersioningImportExport.importDocuments()","root.MSG_GEN_PARAM_VALUE",e);
+						}
 						
 						majorNumber = version.getMajorNumber();
 						minorNumber = version.getMinorNumber();
@@ -361,8 +398,19 @@ public class VersioningImportExport {
 							version.setCreationDate(new Date());
 						if (version.getAuthorId() == -1)
 							version.setAuthorId(userId);
+						
+						xmlContent = version.getXMLModelContentType();
+						if (xmlContent != null)
+							version.setXmlForm(xmlContent.getName());
+						
 						docPK = getVersioningBm().createDocument(document, version);
 						document.setPk(docPK);
+						
+						if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION)
+						{
+							launchCallback = true;
+							userIdCallback = version.getAuthorId();
+						}
 
 						VersioningUtil versioningUtil = new VersioningUtil(objectPK.getInstanceId(), document, new Integer(userId).toString(), "0"); //TODO
 						versioningUtil.setFileRights(document);
@@ -379,15 +427,48 @@ public class VersioningImportExport {
 							version.setCreationDate(new Date());
 						if (version.getAuthorId() == -1)
 							version.setAuthorId(userId);
+						
+						xmlContent = version.getXMLModelContentType();
+						if (xmlContent != null)
+							version.setXmlForm(xmlContent.getName());
+						
 						getVersioningBm().addDocumentVersion(document, version);
+						
+						if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION)
+						{
+							launchCallback = true;
+							userIdCallback = version.getAuthorId();
+						}
 						
 						majorNumber = version.getMajorNumber();
 						minorNumber = version.getMinorNumber();
 					}
+					
+					//Store xml content
+					try {
+						xmlContent = version.getXMLModelContentType();
+						if (xmlContent != null)
+						{
+							if (xmlIE == null)
+								xmlIE = new FormTemplateImportExport();
+							
+							ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
+							xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent, Integer.toString(version.getAuthorId()));
+						}
+					} catch (Exception e) {
+						SilverTrace.error("versioning","VersioningImportExport.importDocuments()","root.MSG_GEN_PARAM_VALUE",e);
+					}
+					
 					nbFilesProcessed++;
 					if (indexIt)
 						indexer.createIndex(document, version);
 				}
+			}
+			if (launchCallback)
+			{
+				CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
+				          userIdCallback, document.getForeignKey().getInstanceId(),
+				          document.getForeignKey().getId());
 			}
 		}
 		return nbFilesProcessed;

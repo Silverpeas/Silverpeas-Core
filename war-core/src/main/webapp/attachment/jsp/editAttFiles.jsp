@@ -48,12 +48,13 @@
   String indexIt = request.getParameter("IndexIt"); //indexIt can be 0 or 1 or notdefined (used only by kmelia actually)
   String checkOutStatus = request.getParameter("CheckOutStatus");
   String contentLanguage = request.getParameter("Language");
-
+  String xmlForm = request.getParameter("XMLFormName");
+  
   if (!StringUtil.isDefined(contentLanguage))
     contentLanguage = null;
 
   String profile = request.getParameter("Profile");
-  if (profile == null || "null".equals(profile) || profile.length() == 0)
+  if (!StringUtil.isDefined(profile))
     profile = "user";
 
   boolean originWysiwyg = false;
@@ -188,6 +189,11 @@ function handleError() {
 	    document.attachmentForm.submit();;
 	}
 
+	function EditXmlForm(id, lang)
+	{
+		SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm)%>&Url=<%=URLEncoder.encode(url)%>", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
+	}
+
 	function updateAttachment(id)
 	{
 		<%
@@ -249,7 +255,13 @@ function handleError() {
 		messageObj.setShadowDivVisible(false);	// Disable shadow for these boxes	
 		messageObj.display();
 	}
-
+	
+	function ShareAttachment(id)
+	{
+		var url = "<%=m_Context%>/RfileSharing/jsp/NewTicket?FileId="+id+"&ComponentId=<%=componentId%>";
+		SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
+	}
+	
 	function displayWarning()
 	{
 		messageObj.setSize(300,80);
@@ -496,6 +508,7 @@ function handleError() {
 
             Icon updateIcon = iconPane.addIcon();
             Icon deleteIcon = iconPane.addIcon();
+            Icon shareIcon 	= iconPane.addIcon();
             
             String attLanguages = "";
             Iterator itAttLanguages = attachmentDetail.getLanguages();
@@ -510,26 +523,43 @@ function handleError() {
                     resources.getString("GML.modify"),
                     "javascript:onClick=updateAttachment('" + attachmentId + "');");
                 deleteIcon.setProperties(ArrayPnoColorPix, "", "");
+                shareIcon.setProperties(ArrayPnoColorPix, "", "");
               } else {
                 updateIcon.setProperties(ArrayPnoColorPix, "", "");
                 deleteIcon.setProperties(ArrayPnoColorPix, "", "");
+                shareIcon.setProperties(ArrayPnoColorPix, "", "");
               }
             } else {
               updateIcon.setProperties(m_Context + "/util/icons/update.gif",
             		  resources.getString("GML.modify"),
                   "javascript:onClick=updateAttachment('" + attachmentId + "')");
-              deleteIcon.setProperties(m_Context + "/util/icons/delete.gif",
-            		  resources.getString("GML.delete"),
-                  "javascript:onClick=DeleteConfirmAttachment('"
-                      + Encode.javaStringToJsString(logicalName) + "','"
+              deleteIcon.setProperties(m_Context + "/util/icons/delete.gif", resources.getString("GML.delete"),
+                  "javascript:onClick=DeleteConfirmAttachment('"+ Encode.javaStringToJsString(logicalName) + "','"
                       + attachmentId + "', '"+attLanguages+"')");
+              
+              if (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".equalsIgnoreCase(profile))
+              {
+              	shareIcon.setProperties(m_Context + "/util/icons/webLink.gif", messages.getString("attachment.share"), 
+            		  "javascript:onClick=ShareAttachment('"+ attachmentId +"')");
+              }
+              else
+              {
+            	  shareIcon.setProperties(ArrayPnoColorPix, "", "");
+              }
+            }
+            
+            if (StringUtil.isDefined(xmlForm))
+            {
+	            Icon xmlIcon = iconPane.addIcon();
+	            xmlIcon.setProperties(m_Context + "/util/icons/add.gif",
+	                    messages.getString("attachment.xmlForm.Edit"), "javascript:onClick=EditXmlForm('"
+	                        + attachmentId + "','"+contentLanguage+"')");
             }
 
             Icon downIcon = iconPane.addIcon();
             if (itAttachment.hasNext())
               downIcon.setProperties(m_Context + "/util/icons/arrow/arrowDown.gif",
-                  messages.getString("Down"), "javascript:onClick=DownAttachment('"
-                      + attachmentId + "')");
+                  messages.getString("Down"), "javascript:onClick=DownAttachment('"+ attachmentId + "')");
             else
               downIcon.setProperties(ArrayPnoColorPix, "", "");
 

@@ -12,7 +12,7 @@ BODY                              {
 								   scrollbar-arrow-color: #AFB8C9
 								  margin : 0px;
 								  }
-								  
+IMG {border:0 }
 TD                                { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
 A                                 { font-family: "Verdana", "Arial", sans-serif; font-size: 10px; text-decoration: none; color: #000000}
 A:hover {
@@ -44,7 +44,7 @@ textarea                          {
 	color: #000000;
 	border: 1px solid #999999;
 }
-
+Label,legend                   { font-size: 11px; color: #666666; font-weight: bold }
 TABLE.frame                       { background-color: #CCCCCC}
 TR.frame                          { background-color: #CCCCCC}
 TD.frame                          { background-color: #CCCCCC; color: #FFFFFF; text-align: left;  font-style: normal;  font-weight: bold}
@@ -883,6 +883,9 @@ td.boxed_Domain a:hover
 }
 .browseComponent {
 	font-weight : normal;
+}
+.browseComponentActiv {
+	font-weight : bold;
 }
 .browseIconComponent {
 	margin-right: 2px;

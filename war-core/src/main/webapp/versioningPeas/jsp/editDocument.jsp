@@ -4,15 +4,14 @@
 <%@ include file="checkVersion.jsp" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+
+<script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
+<script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
+
 <%
     ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 	
-	String sURI = request.getRequestURI();
-	String sRequestURL = request.getRequestURL().toString();
-	String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
-	String httpServerBase = GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase", m_sAbsolute);
-
     boolean need_submit = false;
     String docId = request.getParameter("DocId");
     String flag = request.getParameter("profile");
@@ -145,6 +144,7 @@
 
     boolean is_user_writer = versioningSC.isWriter(document, user_id );
     boolean is_user_reader = versioningSC.isReader(document, new Integer(user_id).toString());
+    boolean	newVersionAllowed = false;
 
 	int j = 0;
 		
@@ -161,7 +161,14 @@
             filenames[j] = version.getLogicalName();
             creators[j] = versioningSC.getUserNameByID(version.getAuthorId());
             dates[j] = resources.getOutputDate(version.getCreationDate());
-            comments[j] = version.getComments();
+            
+            String xtraData = "";
+          	if (StringUtil.isDefined(version.getXmlForm()))
+          	{
+        		String xmlURL = m_context+"/RformTemplate/jsp/View?ObjectId="+version.getPk().getId()+"&ComponentId="+versioningSC.getComponentId()+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(version.getXmlForm());
+        		xtraData = "<a rel=\""+xmlURL+"\" href=\"#\" title=\""+documentName+" "+versions[j]+"\"><img src=\""+m_context+"/util/icons/info.gif\" border=\"0\"></a> ";
+        	}
+            comments[j] = xtraData+version.getComments();
             versionURL = versioningSC.getDocumentVersionURL(version.getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId());
 
 			if (lastVersion.getPk().getId().equals(version.getPk().getId())){
@@ -244,6 +251,7 @@ ArrayLine arrayLine = null; // declare line object of the array
                 if ( document.getOwnerId() == user_id)
                 {
                     operationPane.addOperation(iconsAddVersion,addVersion_msg,"AddNewVersion?documentId=" + docId);
+                    newVersionAllowed = true;
                 }
             }
         }
@@ -268,6 +276,7 @@ ArrayLine arrayLine = null; // declare line object of the array
                     if ( document.getOwnerId() == user_id && isWriter( users, user_id ) && version.getStatus() != DocumentVersion.STATUS_VALIDATION_REQUIRED )
                     {
 		                    operationPane.addOperation(iconsAddVersion,addVersion_msg,"AddNewVersion?documentId=" + docId);
+		                    newVersionAllowed = true;
                     }
                     is_buttons_visible = true;
                 }
@@ -302,6 +311,7 @@ ArrayLine arrayLine = null; // declare line object of the array
                     if ( user_id == user.getUserId() && user.isWriter() /*&& version.getStatus() != DocumentVersion.STATUS_VALIDATION_REQUIRED*/ )
                     {
 		                    operationPane.addOperation(iconsAddVersion,addVersion_msg,"AddNewVersion?documentId=" + docId + "&hide_radio=true");
+		                    newVersionAllowed = true;
                     }
 
                     is_buttons_visible = true;
@@ -415,7 +425,71 @@ for (int i=j-1;i>=0;i-- ){
 }
 
  	out.println(board.printAfter());
+ 	
+ 	if (dragAndDropEnable && newVersionAllowed) {
+ 		%><table width="100%" border="0" id="DropZone">
+ 			<tr><td colspan="3" align="right">
+ 				<a href="javascript:showDnD()" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
+ 			</td></tr>
+ 			<tr>
+ 				<td>
+ 					<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+ 				</td>
+ 				<td width="2%"><img src="<%=m_context %>/util/icons/colorPix/1px.gif" width="10px"/></td>
+ 				<td>
+ 					<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+ 				</td>
+ 			</tr>
+ 		</table>
+ 		<%
+ 	} //end if dragAndDropEnable
+ 	
  	out.println(arrayPane.print());
 	out.println(frame.printAfter());
  	out.println(window.printAfter());
 %>
+<script type="text/javascript">
+// Create the tooltips only on document load
+$(document).ready(function() 
+{
+   // Use the each() method to gain access to each elements attributes
+   $('a[rel]').each(function()
+   {
+      $(this).qtip(
+      {
+         content: {
+            // Set the text to an image HTML string with the correct src URL to the loading image you want to use
+            text: '<img class="throbber" src="<%=m_context%>/util/icons/inProgress.gif" alt="Loading..." />',
+            url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
+            title: {
+               text: '<%=messages.getString("versioning.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+               button: '<%=resources.getString("GML.close")%>' // Show a close link in the title
+            }
+         },
+         position: {
+            corner: {
+               target: 'leftMiddle', // Position the tooltip above the link
+               tooltip: 'rightMiddle'
+            },
+            adjust: {
+               screen: true // Keep the tooltip on-screen at all times
+            }
+         },
+         show: { 
+            when: 'click', 
+            solo: true // Only show one tooltip at a time
+         },
+         hide: 'unfocus',
+         style: {
+            tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+            border: {
+               width: 0,
+               radius: 4
+            },
+            name: 'light', // Use the default light style
+            width: 350 // Set the tooltip width
+         }
+      })
+   });
+});
+</script>

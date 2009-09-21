@@ -7,6 +7,7 @@ package com.stratelia.silverpeas.versioning.model;
 import java.io.File;
 import java.util.Date;
 
+import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,7 +47,9 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   private String mimeType;
   private int size;
   private String instanceId;
+  private String xmlForm = null;
   private String creatorName; //used by import/export XML
+  private XMLModelContentType xmlModelContentType = null;
 
   public DocumentVersion() {
   }
@@ -179,6 +182,11 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   public int getSize() {
     return size;
   }
+  
+  public String getDisplaySize()
+  {
+	  return FileRepositoryManager.formatFileSize(getSize());
+  }
 
   public void setSize(int size) {
     this.size = size;
@@ -309,5 +317,21 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
 	public void setCreatorName(String creatorName) {
 		this.creatorName = creatorName;
+	}
+	
+	public String getXmlForm() {
+		return xmlForm;
+	}
+
+	public void setXmlForm(String xmlForm) {
+		this.xmlForm = xmlForm;
+	}
+	
+	public XMLModelContentType getXMLModelContentType() {
+		return xmlModelContentType;
+	}
+
+	public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
+		this.xmlModelContentType = xmlModelContentType;
 	}
 }

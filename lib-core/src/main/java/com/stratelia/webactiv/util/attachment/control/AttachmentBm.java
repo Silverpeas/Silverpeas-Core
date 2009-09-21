@@ -38,4 +38,6 @@ public interface AttachmentBm
     public Collection getAllAttachmentToLib(Date date) throws AttachmentException;
     
     public void notifyUser(NotificationMetaData notifMetaData, String senderId, String componentId) throws AttachmentException;
+    
+    public void updateXmlForm(AttachmentPK pk, String language, String xmlFormName) throws AttachmentException;
 }

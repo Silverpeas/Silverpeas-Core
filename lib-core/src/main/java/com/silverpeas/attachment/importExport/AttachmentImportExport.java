@@ -15,6 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.silverpeas.form.importExport.FormTemplateImportExport;
+import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -63,13 +66,32 @@ public class AttachmentImportExport {
 	}
 
 	public List importAttachments(String pubId, String componentId, List attachments, String userId, boolean indexIt) {
-		List 				copiedAttachments 	= copyFiles(componentId, attachments);
-		Iterator 			itAttachments 		= copiedAttachments.iterator();
-		AttachmentDetail 	attDetail 			= null;
+		List 						copiedAttachments 	= copyFiles(componentId, attachments);
+		Iterator 					itAttachments 		= copiedAttachments.iterator();
+		AttachmentDetail 			attDetail 			= null;
+		FormTemplateImportExport 	xmlIE 				= null;
 		while (itAttachments.hasNext()) {
 			attDetail = (AttachmentDetail) itAttachments.next();
 			attDetail.setAuthor(userId);
+			XMLModelContentType xmlContent = attDetail.getXMLModelContentType();
+			if (xmlContent != null)
+				attDetail.setXmlForm(xmlContent.getName());
+						
 			this.addAttachmentToPublication(pubId, componentId, attDetail, CONTEXT_ATTACHMENTS, indexIt);
+			
+			//Store xml content
+			try {
+				if (xmlContent != null)
+				{
+					if (xmlIE == null)
+						xmlIE = new FormTemplateImportExport();
+					
+					ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
+					xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent, attDetail.getAuthor());
+				}
+			} catch (Exception e) {
+				SilverTrace.error("attachment","AttachmentImportExport.importAttachments()","root.MSG_GEN_PARAM_VALUE",e);
+			}
 		}
 		return copiedAttachments;
 	}
@@ -236,6 +258,7 @@ public class AttachmentImportExport {
 		ad_toCreate = new AttachmentDetail(atPK, a_Detail.getPhysicalName(), a_Detail.getLogicalName(), null, a_Detail.getType(), a_Detail.getSize(), context, new Date(), foreignKey, userId);
 		ad_toCreate.setTitle(a_Detail.getTitle());
 		ad_toCreate.setInfo(a_Detail.getInfo());
+		ad_toCreate.setXmlForm(a_Detail.getXmlForm());
 		AttachmentController.createAttachment(ad_toCreate, indexIt);
 
 		return ad_toCreate;

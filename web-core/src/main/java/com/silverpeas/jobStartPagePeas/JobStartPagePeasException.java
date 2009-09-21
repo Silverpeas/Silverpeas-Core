@@ -6,7 +6,8 @@
 
 package com.silverpeas.jobStartPagePeas;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 
 /*
  * CVS Informations

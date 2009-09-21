@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -369,6 +370,36 @@ public class AttachmentBmImpl implements AttachmentBm
 			closeConnection(con);
 		}
     }
+	
+	public void updateXmlForm(AttachmentPK pk, String language, String xmlFormName) throws AttachmentException
+	{
+		Connection con = getConnection();
+		try
+		{
+			if (!I18NHelper.isI18N || !StringUtil.isDefined(language))
+				AttachmentDAO.updateXmlForm(con, pk, xmlFormName);
+			else
+			{
+				AttachmentDetail attachment = AttachmentDAO.findByPrimaryKey(con, pk);
+				if (!StringUtil.isDefined(attachment.getLanguage()) || attachment.getLanguage().equals(language))
+				{
+					AttachmentDAO.updateXmlForm(con, pk, xmlFormName);
+				}
+				else
+				{
+					AttachmentI18NDAO.updateXmlForm(con, pk, language, xmlFormName);
+				}
+			}
+		}
+		catch (SQLException se)
+		{
+			throw new AttachmentException("AttachmentBmImpl.updateXmlForm()", SilverpeasException.ERROR, "EX_RECORD_NOT_UPDATE_ATTACHMENT", se);
+		}
+		finally
+		{
+			closeConnection(con);
+		}
+	}
 		
 	private Connection getConnection() throws AttachmentException
     {

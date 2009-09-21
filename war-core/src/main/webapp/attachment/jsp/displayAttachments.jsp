@@ -1,6 +1,9 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
 
+<script src="<%=m_Context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="<%=m_Context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
+
 <%
 	//initialisation des variables
 	String id 			= request.getParameter("Id");
@@ -111,13 +114,21 @@
 				out.println(" / ");
 			if (showDownloadEstimation)
 				out.println(attachmentDetail.getAttachmentDownloadEstimation(contentLanguage));
-			if (showDownloadEstimation || showFileSize)
-				out.println("<br>");
-			title = attachmentDetail.getTitle(contentLanguage);
-		    if (StringUtil.isDefined(title) && showTitle)
-			    out.println(attachmentDetail.getLogicalName(contentLanguage)+"<BR>");
+			/*if (showDownloadEstimation || showFileSize)
+				out.println("<br/>");*/
+			//title = attachmentDetail.getTitle(contentLanguage);
+		    if (StringUtil.isDefined(attachmentDetail.getTitle(contentLanguage)) && showTitle)
+			    out.println("<br/>"+attachmentDetail.getLogicalName(contentLanguage));
 			if (StringUtil.isDefined(info) && showInfo)
-				out.println("<i>"+Encode.javaStringToHtmlParagraphe(info)+"</i>");
+				out.println("<br/><i>"+Encode.javaStringToHtmlParagraphe(info)+"</i>");
+			
+			if (StringUtil.isDefined(attachmentDetail.getXmlForm(contentLanguage)))
+			{
+				String xmlURL = m_Context+"/RformTemplate/jsp/View?width=400&ObjectId="+attachmentDetail.getPK().getId()+"&ObjectLanguage="+contentLanguage+"&ComponentId="+componentId+"&ObjectType=Attachment&XMLFormName="+URLEncoder.encode(attachmentDetail.getXmlForm(contentLanguage));
+				%>
+				<br/><a rel="<%=xmlURL%>" href="#" title="<%=title %>"><%=messages.getString("attachment.xmlForm.View")%></a>
+				<%
+			}
 
 			if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable)
 		    {
@@ -195,3 +206,49 @@
 		}
 	</script>
 <% } %>
+
+<script type="text/javascript">
+// Create the tooltips only on document load
+$(document).ready(function() 
+{
+   // Use the each() method to gain access to each elements attributes
+   $('a[rel]').each(function()
+   {
+      $(this).qtip(
+      {
+         content: {
+            // Set the text to an image HTML string with the correct src URL to the loading image you want to use
+            text: '<img class="throbber" src="<%=m_Context%>/util/icons/inProgress.gif" alt="Loading..." />',
+            url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
+            title: {
+               text: '<%=messages.getString("attachment.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+               button: '<%=resources.getString("GML.close")%>' // Show a close link in the title
+            }
+         },
+         position: {
+            corner: {
+               target: 'leftMiddle', // Position the tooltip above the link
+               tooltip: 'rightMiddle'
+            },
+            adjust: {
+               screen: true // Keep the tooltip on-screen at all times
+            }
+         },
+         show: { 
+            when: 'click', 
+            solo: true // Only show one tooltip at a time
+         },
+         hide: 'unfocus',
+         style: {
+            tip: true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
+            border: {
+               width: 0,
+               radius: 4
+            },
+            name: 'light', // Use the default light style
+            width: 570 // Set the tooltip width
+         }
+      })
+   });
+});
+</script>

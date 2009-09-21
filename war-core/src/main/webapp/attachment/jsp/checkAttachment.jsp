@@ -78,6 +78,12 @@ private boolean runOnUnix()
 	ResourceLocator	settings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
 	return SilverpeasSettings.readBoolean(settings, "runOnSolaris", false);
 }
+
+private boolean isFileSharingEnable(MainSessionController msc, String componentId)
+{
+	String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");
+	return "yes".equalsIgnoreCase(param);
+}
 %>
 
 <%

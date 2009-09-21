@@ -1,7 +1,6 @@
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +13,15 @@ import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -26,12 +33,15 @@ import com.stratelia.silverpeas.versioning.ejb.RepositoryHelper;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.util.StringTokenizer;
 
 public class VersioningRequestRouter extends ComponentRequestRouter {
   public ComponentSessionController createComponentSessionController(
@@ -285,8 +295,21 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("CloseWindow")) {
         destination = rootDestination + "closeWindow.jsp";
       } else if (function.equals("AddNewVersion")) {
+    	  
+    	  //Display xmlForm if used
+    	  if (StringUtil.isDefined(versioningSC.getXmlForm()))
+    		  setXMLFormIntoRequest(request.getParameter("documentId"), versioningSC, request);
+    	  
         destination = rootDestination + "newVersion.jsp";
-      } else if (function.equals("ChangeValidator")) {
+      } 
+      else if (function.equals("AddNewOnlineVersion")) 
+      {
+    	  //Display xmlForm if used
+    	  if (StringUtil.isDefined(versioningSC.getXmlForm()))
+    		  setXMLFormIntoRequest(request.getParameter("documentId"), versioningSC, request);
+    	  
+        destination = rootDestination + "newOnlineVersion.jsp";
+      }else if (function.equals("ChangeValidator")) {
         String setTypeId = request.getParameter("VV");
         String setType = request.getParameter("SetType"); // 'U'for users or 'G'
                                                           // for groups
@@ -310,17 +333,28 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Alias", isAlias);
         destination = "/versioningPeas/jsp/publicVersions.jsp";
       } else if ("saveOnline".equals(function)) {
-        String documentId = request.getParameter("documentId");
+    	  List items = getRequestItems(request);
+    	  
+        String documentId = getParameterValue(items, "documentId");
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
             versioningSC.getSpaceId(), versioningSC.getComponentId());
         Document document = versioningSC.getDocument(documentPK);
         String userId = componentSC.getUserId();
-        String radio = request.getParameter("radio");
-        String comments = request.getParameter("comments");
+        String radio = getParameterValue(items, "radio");
+        String comments = getParameterValue(items, "comments");
         boolean force = "true".equalsIgnoreCase(request.getParameter("force_release"));
         destination = "/versioningPeas/jsp/documentSaved.jsp";
-        if(!saveOnline(document, versioningSC, comments, radio, Integer
-            .parseInt(userId), force)) {
+        
+        boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
+        
+        DocumentVersionPK newVersionPK = saveOnline(document, versioningSC, comments, radio, Integer.parseInt(userId), force, addXmlForm);
+        if (newVersionPK != null)
+        {
+        	if(addXmlForm) {
+              saveXMLData(versioningSC, newVersionPK, items);
+        	}
+        }
+        else {
           if("admin".equals(componentSC.getUserRoleLevel())) {
             //TODO MANU ecrire la page pour ressoumettre en forcant
             destination = "/versioningPeas/jsp/forceDocumentLocked.jsp";
@@ -361,11 +395,124 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("AddNewDocument")) {
         String pubId = request.getParameter("PubId");
         request.setAttribute("PubId", pubId);
+        
+        if (StringUtil.isDefined(versioningSC.getXmlForm()))
+        	setXMLFormIntoRequest(null, versioningSC, request);
+        
         destination = rootDestination + "newDocument.jsp";
       } else if (function.equals("SaveNewDocument")) {
         saveNewDocument(request, versioningSC);
         destination = getDestination("ViewVersions", versioningSC, request);
-      } else {
+      }
+      else if (function.equals("SaveNewVersion"))
+      {
+    	  List items = getRequestItems(request);
+            
+          String name = getParameterValue(items, "name");
+          String description = getParameterValue(items, "description");
+          String type = getParameterValue(items, "type");
+    	  String comments = getParameterValue(items, "comments");
+    	  String radio = getParameterValue(items, "radio");
+    	  String publicationId = getParameterValue(items, "publicationId");
+    	  String versionType = getParameterValue(items, "versionType");
+    	  String documentId = getParameterValue(items, "documentId");
+
+    	  //Save file on disk
+    	  FileItem fileItem = getUploadedFile(items, "file_upload");
+    	  ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+		    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
+		    String logicalName = fileItem.getName();
+		    String physicalName = "dummy";
+		    String mimeType = "dummy";
+		    File dir = null;
+		    int size = 0;
+		    if (logicalName != null) {
+
+		      if (runOnUnix)
+		        logicalName = logicalName.replace('\\', File.separatorChar);
+
+		      logicalName = logicalName.substring(logicalName
+		          .lastIndexOf(File.separator) + 1, logicalName.length());
+		      type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
+		          logicalName.length());
+		      physicalName = new Long(new Date().getTime()).toString() + "." + type;
+		      mimeType = FileUtil.getMimeType(logicalName);
+		      if (!StringUtil.isDefined(mimeType))
+		        mimeType = "unknown";
+		      dir = new File(versioningSC.createPath(versioningSC.getComponentId(),
+		          null)
+		          + physicalName);
+		      size = new Long(fileItem.getSize()).intValue();
+		      fileItem.write(dir);
+		    }
+		    
+		    //create DocumentVersion
+		    String componentId = versioningSC.getComponentId();
+            ForeignPK pubPK = new ForeignPK(publicationId, componentId);
+            DocumentPK docPK = new DocumentPK(Integer.parseInt(documentId), "useless", componentId );
+            int userId = Integer.parseInt(versioningSC.getUserId());
+            
+            DocumentVersion documentVersion = null;
+            DocumentVersion lastVersion = versioningSC.getLastVersion(docPK);
+            if(com.stratelia.silverpeas.versioning.ejb.RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+              destination = rootDestination+"documentLocked.jsp";
+            }else {
+
+              List versions = versioningSC.getDocumentVersions(docPK);
+              int majorNumber = 0;
+              int minorNumber = 1;
+              if ( versions != null && versions.size() > 0 )
+              {
+                 documentVersion =  (DocumentVersion) versions.get( versions.size()-1 );                 
+                 majorNumber = documentVersion.getMajorNumber();
+                 minorNumber = documentVersion.getMinorNumber();
+                 Document currdoc = versioningSC.getEditingDocument();
+                 DocumentVersion newVersion = new DocumentVersion( null, docPK, majorNumber, minorNumber, userId, new Date(),
+                		 					comments, Integer.parseInt(radio), documentVersion.getStatus(),
+							                physicalName, logicalName, mimeType, size, componentId);
+                 
+                 boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
+                 if (addXmlForm)
+                	 newVersion.setXmlForm(versioningSC.getXmlForm());
+
+                 newVersion = versioningSC.addNewDocumentVersion(newVersion);
+                 
+                 boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
+				//Specific case: 3d file to convert by Actify Publisher
+				if (actifyPublisherEnable)
+				{
+					String extensions = settings.getString("Actify3dFiles");
+					StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
+					//3d native file ?
+					boolean fileForActify = false;
+					SilverTrace.info("versioningPeas", "saveFile.jsp", "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="+tokenizer.countTokens());
+					while (tokenizer.hasMoreTokens() && !fileForActify)
+					{
+						String extension =  tokenizer.nextToken();
+						if (type.equalsIgnoreCase(extension))
+							fileForActify = true;
+					}
+					if (fileForActify)
+					{
+						String dirDestName 			= "v_" + componentId + "_" + documentId;
+						String actifyWorkingPath 	= settings.getString("ActifyPathSource") + File.separator + dirDestName;
+		
+						String destPath = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath; 
+						if (!new File(destPath).exists())
+							FileRepositoryManager.createGlobalTempPath(actifyWorkingPath);
+		
+						String destFile			= FileRepositoryManager.getTemporaryPath() + actifyWorkingPath + File.separator + logicalName;
+						FileRepositoryManager.copyFile(versioningSC.createPath(componentId, null) + File.separator + physicalName, destFile);
+					}
+				}
+				if (addXmlForm)
+					saveXMLData(versioningSC, newVersion.getPk(), items);
+              }
+              
+             destination = getDestination("ViewVersions", componentSC, request); 
+            }
+      }
+      else {
         destination = rootDestination + function;
       }
     } catch (Exception e) {
@@ -380,12 +527,12 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     return destination;
   }
   
-  protected boolean saveOnline(Document document,
+  protected DocumentVersionPK saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
-      int userId, boolean force) throws RemoteException {
+      int userId, boolean force, boolean addXmlForm) throws RemoteException {
     DocumentVersion lastVersion = versioningSC.getLastVersion(document.getPk());
     if(!force && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
-      return false;
+      return null;
     }
     String physicalName = new Long(new Date().getTime()).toString()
         + "."
@@ -398,9 +545,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         physicalName, lastVersion.getLogicalName(), lastVersion.getMimeType(),
         lastVersion.getSize(), lastVersion.getInstanceId());
     RepositoryHelper.getJcrDocumentService().getUpdatedDocument(newVersion);
-    versioningSC.addNewDocumentVersion(newVersion);
+    if (addXmlForm)
+    	newVersion.setXmlForm(versioningSC.getXmlForm());
+    newVersion = versioningSC.addNewDocumentVersion(newVersion);
     versioningSC.checkDocumentIn(document.getPk(), userId);
-    return true;
+    return newVersion.getPk();
   }
 
   /**
@@ -412,10 +561,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
    * @param userId
    * @throws RemoteException
    */
-  protected boolean saveOnline(Document document,
+  protected DocumentVersionPK saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
-      int userId) throws RemoteException {
-    return saveOnline(document, versioningSC, comments, radio, userId, false);
+      int userId, boolean addXmlForm) throws RemoteException {
+    return saveOnline(document, versioningSC, comments, radio, userId, false, addXmlForm);
   }
 
   /**
@@ -484,6 +633,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         majorNumber, minorNumber, new Integer(versioningSC.getUserId())
             .intValue(), new Date(), comments, versionType, 0, physicalName,
         logicalName, mimeType, size, versioningSC.getComponentId());
+    
+    boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
+    if (addXmlForm)
+    	documentVersion.setXmlForm(versioningSC.getXmlForm());
 
     // Document
     docPK = new DocumentPK(-1, versioningSC.getComponentId());
@@ -501,6 +654,13 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     String docId = versioningSC.createDocument(document, documentVersion)
         .getId();
+    
+    if (addXmlForm)
+    {
+    	//Save additional informations
+    	saveXMLData(versioningSC, documentVersion.getPk(), items);
+    }
+    
     versioningSC.setEditingDocument(document);
     versioningSC.setFileRights();
     versioningSC.updateWorkList(document);
@@ -548,5 +708,110 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     }
     return null;
   }
+  
+  private void saveXMLData(VersioningSessionController versioningSC, DocumentVersionPK newVersionPK, List items) throws Exception
+  {
+	  	String xmlFormName = versioningSC.getXmlForm();
+	  	if (StringUtil.isDefined(xmlFormName) && newVersionPK != null)
+	  	{
+			String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/")+1, xmlFormName.indexOf("."));
+			String objectId 		= newVersionPK.getId();
+			String objectType 		= "Versioning";
+			
+			String externalId = versioningSC.getComponentId()+":"+objectType+":"+xmlFormShortName; 
+			
+			//register xmlForm to object
+			PublicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlFormName);
+			
+			PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
+			
+			RecordSet 	set 	= pub.getRecordSet();			
+			Form 		form 	= pub.getUpdateForm();
+						
+			DataRecord data = set.getRecord(objectId);
+			if (data == null) {
+				data = set.getEmptyRecord();
+				data.setId(objectId);
+			}
+			
+			PagesContext context = new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.getComponentId(), versioningSC.getUserId());
+			context.setObjectId(objectId);
+			
+			form.update(items, data, context);
+			set.save(data);	
+	  	}
+  }
+  
+  private boolean isXMLFormEmpty(VersioningSessionController versioningSC, List items) throws Exception
+  {
+	  boolean isEmpty = true;
+	  	String xmlFormName = versioningSC.getXmlForm();
+	  	if (StringUtil.isDefined(xmlFormName))
+	  	{
+			String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/")+1, xmlFormName.indexOf("."));
+			String objectId 		= "unknown";
+			String objectType 		= "Versioning";
+			
+			String externalId = versioningSC.getComponentId()+":"+objectType+":"+xmlFormShortName; 
+			
+			//register xmlForm to object
+			PublicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlFormName);
+			
+			PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
+			
+			RecordSet 	set 	= pub.getRecordSet();			
+			Form 		form 	= pub.getUpdateForm();
+						
+			DataRecord data = set.getRecord(objectId);
+			if (data == null) {
+				data = set.getEmptyRecord();
+				data.setId(objectId);
+			}
+			
+			PagesContext context = new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.getComponentId(), versioningSC.getUserId());
+			context.setObjectId(objectId);
+			
+			isEmpty = form.isEmpty(items, data, context);
+	  	}
+	  	return isEmpty;
+  }
+  
+  private void setXMLFormIntoRequest(String documentId, VersioningSessionController versioningSC, HttpServletRequest request) throws Exception
+  {
+	  String componentId 	= versioningSC.getComponentId();
+	  String objectId		= request.getParameter("ObjectId");
+	  String objectType		= "Versioning";
+	  String xmlFormName	= versioningSC.getXmlForm();
+					
+	  String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/")+1, xmlFormName.indexOf("."));
+	
+	  //register xmlForm to object
+	  PublicationTemplateManager.addDynamicPublicationTemplate(componentId+":"+objectType+":"+xmlFormShortName, xmlFormName);
+					
+	  PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(componentId+":"+objectType+":"+xmlFormShortName, xmlFormName);
+	  Form formUpdate = pubTemplate.getUpdateForm();
+	  RecordSet recordSet = pubTemplate.getRecordSet();
 
+	  if (StringUtil.isDefined(documentId))
+	  {
+		  //Get last version to display its additional informations instead of blank fields
+		  DocumentVersion lastVersion = versioningSC.getLastVersion(new DocumentPK(Integer.parseInt(documentId), versioningSC.getComponentId()));
+		  if (lastVersion != null)
+			  objectId = lastVersion.getPk().getId();
+	  }
+		  
+	  DataRecord data = recordSet.getRecord(objectId);
+	  if (data == null) {
+		  data = recordSet.getEmptyRecord();
+		  data.setId(objectId);
+	  }
+	
+	  PagesContext pageContext = new PagesContext("toDefine", "toDefine", versioningSC.getLanguage(), false, componentId, versioningSC.getUserId());
+	  pageContext.setObjectId(objectId);
+	
+	  request.setAttribute("XMLForm", formUpdate);
+	  request.setAttribute("XMLData", data);
+	  request.setAttribute("XMLFormName", xmlFormName);
+	  request.setAttribute("PagesContext", pageContext);
+  }
 }

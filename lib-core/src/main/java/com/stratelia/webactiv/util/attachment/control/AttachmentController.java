@@ -8,6 +8,9 @@
  */
 package com.stratelia.webactiv.util.attachment.control;
 
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -634,6 +637,13 @@ public class AttachmentController {
         RepositoryHelper.getJcrAttachmentService().deleteAttachment(
           attachmentDetail, attachmentDetail.getLanguage());
       }
+      int authorId = -1;
+      if (StringUtil.isDefined(attachmentDetail.getAuthor()))
+    	  authorId = Integer.parseInt(attachmentDetail.getAuthor());
+      CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
+              authorId,
+              attachmentDetail.getPK().getInstanceId(),
+              attachmentDetail);
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
         "AttachmentController.deleteAttachment(AttachmentDetail attachDetail)",
@@ -656,6 +666,10 @@ public class AttachmentController {
         // delete all translation files
         deleteTranslations(attachDetail);
       }
+      CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
+              Integer.parseInt(attachDetail.getAuthor()),
+              attachDetail.getPK().getInstanceId(),
+              attachDetail);
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
         "AttachmentController.deleteAttachment(AttachmentPK pk)",
@@ -947,7 +961,7 @@ public class AttachmentController {
     }
   }
 
-  private static void createIndex(AttachmentPK pk) {
+  public static void createIndex(AttachmentPK pk) {
     AttachmentDetail attachment = searchAttachmentByPK(pk);
     createIndex(attachment);
   }
@@ -1029,6 +1043,9 @@ public class AttachmentController {
           String lang = translation.getLanguage();
 
           indexEntry.addFileContent(path, encoding, format, lang);
+          
+          if (StringUtil.isDefined(detail.getXmlForm()))
+        	  updateIndexEntryWithXMLFormContent(detail.getPK(), detail.getXmlForm(), indexEntry);
 
           IndexEngineProxy.addIndexEntry(indexEntry);
         }
@@ -1038,6 +1055,21 @@ public class AttachmentController {
           "root.EX_INDEX_FAILED");
       }
     }
+  }
+  
+  private static void updateIndexEntryWithXMLFormContent(AttachmentPK pk, String xmlFormName, FullIndexEntry indexEntry)
+  {
+	  SilverTrace.info("attachment", "AttachmentController.updateIndexEntryWithXMLFormContent()", "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
+	  try {
+		  String objectType = "Attachment";
+		  PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(indexEntry.getComponent()+":"+objectType+":"+xmlFormName);
+		  RecordSet set	= pub.getRecordSet();
+		  set.indexRecord(pk.getId(), xmlFormName, indexEntry);
+	  }
+	  catch (Exception e)
+	  {
+		  SilverTrace.error("attachment", "AttachmentController.updateIndexEntryWithXMLFormContent()", "", e);
+	  }
   }
 
   /**
@@ -1583,5 +1615,10 @@ public class AttachmentController {
 
     // Suppression du clone
     getAttachmentBm().deleteAttachment(clone.getPK());
+  }
+  
+  public static void addXmlForm(AttachmentPK pk, String language, String xmlFormName) throws AttachmentException
+  {
+	  getAttachmentBm().updateXmlForm(pk, language, xmlFormName);
   }
 }

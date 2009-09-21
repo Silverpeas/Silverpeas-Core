@@ -1,3 +1,3 @@
 ALTER TABLE SB_QuestionContainer_QC
-ADD anonymous	int	NOT NULL default(1)
+ADD anonymous int default(1) NOT NULL 
 ;

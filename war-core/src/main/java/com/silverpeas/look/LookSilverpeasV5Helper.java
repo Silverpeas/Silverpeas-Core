@@ -1,6 +1,7 @@
 package com.silverpeas.look;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -550,5 +553,51 @@ public class LookSilverpeasV5Helper implements LookHelper {
 			}
 	    }
 	    return publicationBm;
+	}
+	
+	public String getSpaceHomePage(String spaceId, HttpServletRequest request)
+	{
+		SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
+		
+		//Page d'accueil de l'espace = Composant
+		if (spaceStruct != null && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST) && spaceStruct.getFirstPageExtraParam() != null && spaceStruct.getFirstPageExtraParam().length() > 0)
+		{
+			if (getOrganizationController().isComponentAvailable(spaceStruct.getFirstPageExtraParam(), getUserId()))
+			{
+				return URLManager.getSimpleURL(URLManager.URL_COMPONENT, spaceStruct.getFirstPageExtraParam());
+			}
+		}
+		
+		//Page d'accueil de l'espace = URL
+		if (spaceStruct != null && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE) && (spaceStruct.getFirstPageExtraParam() != null) && (spaceStruct.getFirstPageExtraParam().length() > 0))
+		{
+			String destination = spaceStruct.getFirstPageExtraParam();
+			destination = getParsedDestination(destination, "%ST_USER_LOGIN%", getMainSessionController().getCurrentUserDetail().getLogin());
+			destination = getParsedDestination(destination, "%ST_USER_FULLNAME%", URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName()));
+			destination = getParsedDestination(destination, "%ST_USER_ID%", URLEncoder.encode(getMainSessionController().getUserId()));
+			destination = getParsedDestination(destination, "%ST_SESSION_ID%", URLEncoder.encode(request.getSession().getId()));
+	  
+	  		// !!!! Add the password : this is an uggly patch that use a session variable set in the "AuthenticationServlet" servlet
+			HttpSession session = request.getSession();
+	  		return getParsedDestination(destination, "%ST_USER_PASSWORD%", (String)session.getAttribute("Silverpeas_pwdForHyperlink"));
+		}
+		
+		return null;
+	}
+	
+	private String getParsedDestination(String sDestination, String sKeyword, String sValue) {
+		int nLoginIndex = sDestination.indexOf(sKeyword);
+		if (nLoginIndex != -1) {
+			// Replace the keyword with the actual value
+			String sParsed = sDestination.substring(0, nLoginIndex);
+			sParsed += sValue;
+			if (sDestination.length() > nLoginIndex + sKeyword.length())
+				sParsed
+					+= sDestination.substring(
+						nLoginIndex + sKeyword.length(),
+						sDestination.length());
+			sDestination = sParsed;
+		}
+		return sDestination;
 	}
 }

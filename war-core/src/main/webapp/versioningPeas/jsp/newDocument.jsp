@@ -1,4 +1,6 @@
 <%@ page import="com.stratelia.silverpeas.versioning.model.Document"%>
+<%@ page import="com.silverpeas.publicationTemplate.*"%>
+<%@ page import="com.silverpeas.form.*"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkVersion.jsp" %>
 
@@ -26,7 +28,17 @@
 
     String mandatoryField = m_context+"/util/icons/mandatoryField.gif";
 
-    String pubId        = (String) request.getAttribute("PubId");
+    String 			pubId       = (String) request.getAttribute("PubId");
+    Form 			formUpdate 	= (Form) request.getAttribute("XMLForm");
+    DataRecord 		data 		= (DataRecord) request.getAttribute("XMLData"); 
+    String			xmlFormName = (String) request.getAttribute("XMLFormName");
+    PagesContext	context		= (PagesContext) request.getAttribute("PagesContext");
+    if (context != null)
+    {
+    	context.setBorderPrinted(false);
+    	context.setFormIndex("0");
+    	context.setCurrentFieldIndex("7");
+    }
 
     Document document = null;
 %>
@@ -68,32 +80,35 @@ function trim(texte){
         return texte;
 }
 
-function addFile(){
-
-        if (!isFormFilled()) {
-	        document.addForm.submit();
+function addFile()
+{
+        if (!isFormFilled() && isCorrectForm()) {
+			document.addForm.submit();
         } else {
-                document.addForm.file_upload.value = '';
-                alert("<%=pleaseFill%>");
+            alert("<%=pleaseFill%>");
         }
 }
-
-
 </script>
+<% if (formUpdate != null) { %>
+	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+	<% formUpdate.displayScripts(out, context); %>
+<% } else { %>
+	<script type="text/javascript">
+		function isCorrectForm()
+		{
+			return true;
+		}
+	</script>
+<% } %>
 </head>
-<body>
+<body class="yui-skin-sam">
 <%
     out.println(gef.getLookStyleSheet());
-		out.println(window.printBefore());
-
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(messages.getString("versions.caption") , "#", false, false);
-    out.println(tabbedPane.print());
-		out.println(frame.printBefore());
+	out.println(window.printBefore());
+	out.println(frame.printBefore());
 
     Board board = gef.getBoard();
     out.println(board.printBefore());
-		
 %>
 	<form name="addForm" action="SaveNewDocument" method="POST" enctype="multipart/form-data">
 	<input type="hidden" name="publicationId" value="<%=pubId%>">
@@ -125,6 +140,17 @@ function addFile(){
 	                <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">: <%=requiredFieldLabel%>)</td>
 	        </tr>
 	</table>
+	<%
+		if (formUpdate != null)
+		{
+			%>
+			<br/>
+			<table CELLPADDING="2" CELLSPACING="0" BORDER="0" WIDTH="100%">
+				<tr><td class="intfdcolor6outline"><span class="txtlibform"><%=messages.getString("versioning.xmlForm.XtraData")%></span></td></tr>
+			</table>
+			<%formUpdate.display(out, context, data); 
+		}
+	%>
 	</form>
 <%
 		out.println(board.printAfter());
@@ -140,7 +166,6 @@ function addFile(){
 
 	  out.println(frame.printAfter());
 	  out.println(window.printAfter()); 
-
 %>
 
 <script language="Javascript">

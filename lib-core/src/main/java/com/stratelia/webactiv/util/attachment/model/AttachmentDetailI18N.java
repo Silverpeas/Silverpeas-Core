@@ -32,6 +32,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable
 	private String			title			= null;
 	private String			info			= null;
 	private String			instanceId		= null;
+	private String			xmlForm			= null;
 	
 	public AttachmentDetailI18N()
 	{
@@ -54,6 +55,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable
     	this.title = attachmentDetail.getTitle();
     	this.info = attachmentDetail.getInfo();
     	this.instanceId = attachmentDetail.getPK().getInstanceId();
+    	this.xmlForm = attachmentDetail.getXmlForm();
     }
 	
     /**
@@ -249,6 +251,14 @@ public class AttachmentDetailI18N extends Translation implements Serializable
 	public String getExtension()
 	{
 		return FileRepositoryManager.getFileExtension(logicalName);
+	}
+	
+	public String getXmlForm() {
+		return xmlForm;
+	}
+
+	public void setXmlForm(String xmlForm) {
+		this.xmlForm = xmlForm;
 	}
 	
 

@@ -54,6 +54,7 @@ public class URLManager
     public final static String CMP_MYLINKSPEAS = "myLinksPeas";
     public final static String CMP_PDCSUBSCRIPTION = "pdcSubscriptionPeas";
 	public final static String CMP_VERSIONINGPEAS = "versioningPeas";
+	public final static String CMP_FILESHARING = "fileSharing";
 
     public final static String CMP_EXPERTLOCATORPEAS = "expertLocatorPeas";
 

@@ -46,8 +46,16 @@ public class SelectionPeasWrapper extends ComponentRequestRouter
                 session.setFormName(request.getParameter("formName"));
                 session.setElementId(request.getParameter("elementId"));
                 session.setElementName(request.getParameter("elementName"));
-                session.setSelectedUserId(request.getParameter("selectedUser"));
-                return session.initSelectionPeas();
+                String selectionMultiple = request.getParameter("selectionMultiple");
+                String instanceId = request.getParameter("instanceId");
+                if ("true".equals(selectionMultiple)){
+                    session.setSelectedUserIds(request.getParameter("selectedUsers"));
+                    return session.initSelectionPeas(true, instanceId);
+                }
+                else {
+                    session.setSelectedUserId(request.getParameter("selectedUser"));
+                    return session.initSelectionPeas(false, null);
+                }
             }
             else if (function.equals("close"))
             {
@@ -56,9 +64,15 @@ public class SelectionPeasWrapper extends ComponentRequestRouter
                 request.setAttribute("elementId", session.getElementId());
                 request.setAttribute("elementName", session.getElementName());
 
-                request.setAttribute("user", session.getSelectedUser());
+                if (session.getSelection().isMultiSelect()) {
+                	request.setAttribute("users", session.getSelectedUsers());
+                    return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
+                }
+                else {
+                	request.setAttribute("user", session.getSelectedUser());
+                    return "/selectionPeas/jsp/closeWrapper.jsp";
+                } 
 
-                return "/selectionPeas/jsp/closeWrapper.jsp";
             }
             else
             {
