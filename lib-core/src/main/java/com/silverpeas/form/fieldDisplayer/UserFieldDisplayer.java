@@ -15,6 +15,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
@@ -170,40 +171,8 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer
       out.println(html);
    }
 
-
-   /**
-    * Updates the value of the field.
-    * 
-    * The fieldName must be used to retrieve the HTTP parameter from the request.
-    * 
-    * @throw FormException if the field type is not a managed type.
-    * @throw FormException if the field doesn't accept the new value.
-    */
-   /*public void update(HttpServletRequest request, Field field, 
-                      FieldTemplate template, 
-                      PagesContext pagesContext) throws FormException
-   {
-
-      String newId = request.getParameter(template.getFieldName()+"_id");
-      
-      if (field.getTypeName().equals(UserField.TYPE))
-      {
-		   if (newId == null || newId.trim().equals(""))
-			{
-			   field.setNull();
-			}
-			else
-			{
-            ((UserField) field).setUserId(newId);
-			}
-      }
-      else
-      {
-         throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", UserField.TYPE);
-      }
-   }*/
    
-   public void update(String newId, Field field, 
+   public List<String> update(String newId, Field field,
 						 FieldTemplate template, 
 						 PagesContext pagesContext) throws FormException
   {
@@ -225,6 +194,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer
 	 {
 		throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", UserField.TYPE);
 	 }
+   return new ArrayList<String>();
   }
 
    /**
@@ -252,13 +222,13 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer
    }
 
   @Override
-  public void update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws FormException {
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName() + UserField.PARAM_NAME_SUFFIX;
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-			return;
+			return new ArrayList<String>();
     }
-    update(value, field, template, pageContext);
+    return update(value, field, template, pageContext);
   }
 
 

@@ -223,7 +223,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public void update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
       FormException {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
         "parameterName = " + template.getFieldName());
@@ -242,13 +242,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_EXIT_METHOD",
         "parameterValue = " + value);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-			return;
+			return new ArrayList<String>();
     }
-    update(value, field, template, pageContext);
+    return update(value, field, template, pageContext);
   }
 
   @Override
-  public void update(String values,
+  public List<String> update(String values,
       Field field,
       FieldTemplate template,
       PagesContext PagesContext)
@@ -265,7 +265,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     } else {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
     }
-
+    return new ArrayList<String>();
   }
 
   @Override

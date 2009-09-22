@@ -22,6 +22,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
@@ -162,22 +163,26 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
-  public void update(String attachmentId, Field field,
+  public List<String> update(String attachmentId, Field field,
       FieldTemplate template,
       PagesContext pagesContext) throws FormException {
+    List<String> attachmentIds = new ArrayList<String>();
     if (field.getTypeName().equals(Field.TYPE_FILE)) {
       if (!StringUtil.isDefined(attachmentId)) {
         field.setNull();
       } else {
         ((FileField) field).setAttachmentId(attachmentId);
+        attachmentIds.add(attachmentId);
       }
     } else {
       throw new FormException("ImageFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", Field.TYPE_FILE);
     }
+    return attachmentIds;
   }
 
-  public void update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
       FormException {
+    List<String> attachmentIds = new ArrayList<String>();
     String itemName = template.getFieldName();
     try {
       String value = processUploadedImage(items, itemName, pageContext);
@@ -194,16 +199,17 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         } else if (value == null) {
           //pas de nouveau fichier, ni de suppression
           //le champ ne doit pas être mis à jour
-          return;
+          return attachmentIds;
         }
       }
       if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-        return;
+        return attachmentIds;
       }
-      update(value, field, template, pageContext);
+      attachmentIds.addAll(update(value, field, template, pageContext));
     } catch (Exception e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
+    return attachmentIds;
   }
 
   /**

@@ -1,6 +1,5 @@
 package com.silverpeas.form.fieldDisplayer;
 
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import java.io.PrintWriter;
 
 import com.silverpeas.form.Field;
@@ -177,18 +176,21 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
-  public void update(String attachmentId, Field field,
+  public List<String> update(String attachmentId, Field field,
       FieldTemplate template,
       PagesContext pagesContext) throws FormException {
+    List<String> attachmentIds = new ArrayList<String>();
     if (field.getTypeName().equals(FileField.TYPE)) {
       if (attachmentId == null || attachmentId.trim().equals("")) {
         field.setNull();
       } else {
         ((FileField) field).setAttachmentId(attachmentId);
+        attachmentIds.add(attachmentId);
       }
     } else {
       throw new FormException("FileFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", FileField.TYPE);
     }
+    return attachmentIds;
   }
 
   /**
@@ -214,7 +216,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public void update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
       FormException {
     String itemName = template.getFieldName();
     try {
@@ -232,16 +234,17 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
         } else if (value == null) {
           //pas de nouveau fichier, ni de suppression
           //le champ ne doit pas être mis à jour
-          return;
+          return new ArrayList<String>();
         }
       }
       if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-        return;
+        return new ArrayList<String>();
       }
-      update(value, field, template, pageContext);
+      return update(value, field, template, pageContext);
     } catch (Exception e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
+    return new ArrayList<String>();
   }
 
   private String processUploadedFile(List items, String parameterName, PagesContext pagesContext) throws Exception {

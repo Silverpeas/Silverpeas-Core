@@ -17,6 +17,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
@@ -180,7 +181,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 	 * @throw FormException if the field type is not a managed type.
 	 * @throw FormException if the field doesn't accept the new value.
 	 */
-	public void update(String newIds, Field field, FieldTemplate template,
+	public List<String> update(String newIds, Field field, FieldTemplate template,
 			PagesContext pagesContext) throws FormException {
 		if (field.getTypeName().equals(MultipleUserField.TYPE)) {
 			if (newIds == null || newIds.trim().equals("")) {
@@ -192,16 +193,17 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 			throw new FormException("UserFieldDisplayer.update",
 					"form.EX_NOT_CORRECT_VALUE", UserField.TYPE);
 		}
+    return new ArrayList<String>();
 	}
 
-  public void update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws FormException
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws FormException
   {
     String itemName = template.getFieldName() + MultipleUserField.PARAM_NAME_SUFFIX;
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-			return;
+			return new ArrayList<String>();
     }
-    update(value, field, template, pageContext);
+    return update(value, field, template, pageContext);
   }
 
 	/**

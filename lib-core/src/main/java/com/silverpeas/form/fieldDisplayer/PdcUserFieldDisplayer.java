@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
@@ -12,6 +13,8 @@ import com.silverpeas.form.fieldType.PdcUserField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A PdcUserFieldDisplayer is an object which can display a UserFiel in HTML
@@ -199,7 +202,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
       }
    }*/
    
-   public void update(String newId, Field field, 
+   public List<String> update(String newId, Field field,
 						 FieldTemplate template, 
 						 PagesContext pagesContext) throws FormException
 	  {
@@ -223,6 +226,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 									"form.EX_NOT_CORRECT_VALUE", 
 									PdcUserField.TYPE);
 		 }
+     return new ArrayList<String>();
 	  }
 
    /**

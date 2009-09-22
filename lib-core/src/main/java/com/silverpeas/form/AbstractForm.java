@@ -179,7 +179,8 @@ public abstract class AbstractForm implements Form {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public void update(List items, DataRecord record, PagesContext pagesContext) {
+  public List<String> update(List items, DataRecord record, PagesContext pagesContext) {
+    List<String> attachmentIds = new ArrayList<String>();
     Iterator itFields = null;
     if (fieldTemplates != null) {
       itFields = this.fieldTemplates.iterator();
@@ -199,7 +200,8 @@ public abstract class AbstractForm implements Form {
             }
             fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
-              fieldDisplayer.update((List<FileItem>)items, record.getField(fieldName), fieldTemplate, pagesContext);
+              attachmentIds.addAll(fieldDisplayer.update((List<FileItem>)items, record.getField(fieldName),
+                  fieldTemplate, pagesContext));
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
@@ -209,6 +211,7 @@ public abstract class AbstractForm implements Form {
         }
       }
     }
+    return attachmentIds;
   }
 
   @Override

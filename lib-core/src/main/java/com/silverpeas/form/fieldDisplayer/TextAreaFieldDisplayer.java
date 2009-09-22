@@ -6,12 +6,15 @@ import java.util.Map;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A TextAreaFieldDisplayer is an object which can display a TextFiel in HTML
@@ -144,7 +147,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer
 			out.println(html);
   }
    
-   public void update(String newValue,
+   public List<String> update(String newValue,
 						Field field,
 						FieldTemplate template,
 						PagesContext PagesContext)
@@ -156,7 +159,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer
 		   if (field.acceptValue(newValue, PagesContext.getLanguage()))
 			   field.setValue(newValue, PagesContext.getLanguage());
 		   else throw new FormException("TextAreaFieldDisplayer.update","form.EX_NOT_CORRECT_VALUE",TextField.TYPE);
-		
+		   return new ArrayList<String>();
 	  }
    
    public boolean isDisplayedMandatory() {

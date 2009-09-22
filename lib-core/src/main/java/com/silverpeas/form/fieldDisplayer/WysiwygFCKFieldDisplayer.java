@@ -23,6 +23,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import java.util.ArrayList;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML
@@ -178,7 +179,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public void update(String newValue, Field field, FieldTemplate template, PagesContext pageContext) throws
+  @Override
+  public List<String> update(String newValue, Field field, FieldTemplate template, PagesContext pageContext) throws
       FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
       throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", TextField.TYPE);
@@ -199,6 +201,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
     } else {
       throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
     }
+    return new ArrayList<String>();
 
   }
 

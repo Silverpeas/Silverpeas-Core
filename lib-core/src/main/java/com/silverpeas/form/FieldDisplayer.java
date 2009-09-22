@@ -66,7 +66,7 @@ public interface FieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public void update(List<FileItem> items,
+  public List<String> update(List<FileItem> items,
       Field field,
       FieldTemplate template,
       PagesContext PagesContext)
@@ -80,7 +80,7 @@ public interface FieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public void update(String value,
+  public List<String> update(String value,
       Field field,
       FieldTemplate template,
       PagesContext PagesContext)

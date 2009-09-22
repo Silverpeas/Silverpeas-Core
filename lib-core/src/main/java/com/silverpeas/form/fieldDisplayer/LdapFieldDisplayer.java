@@ -9,6 +9,7 @@ import com.novell.ldap.LDAPConnection;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
@@ -16,6 +17,8 @@ import com.silverpeas.form.fieldType.LdapField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A LDAPFieldDisplayer is an object which can display a listbox in HTML
@@ -323,7 +326,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-   public void update(String newValue,
+   public List<String> update(String newValue,
 						Field field,
 						FieldTemplate template,
 						PagesContext PagesContext)
@@ -335,7 +338,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer
 		   if (field.acceptValue(newValue, PagesContext.getLanguage()))
 			   field.setValue(newValue, PagesContext.getLanguage());
 		   else throw new FormException("LdapFieldDisplayer.update","form.EX_NOT_CORRECT_VALUE",LdapField.TYPE);
-		
+       return new ArrayList<String>();
 	  }
    
    public boolean isDisplayedMandatory() {

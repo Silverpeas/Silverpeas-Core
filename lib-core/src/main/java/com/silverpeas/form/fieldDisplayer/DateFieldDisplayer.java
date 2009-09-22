@@ -23,6 +23,8 @@ import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -209,7 +211,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer
 	 * @throw FormException if the field type is not a managed type.
 	 * @throw FormException if the field doesn't accept the new value.
 	 */
-	public void update(String newValue, Field field, FieldTemplate template, PagesContext pagesContext)
+	public List<String> update(String newValue, Field field, FieldTemplate template, PagesContext pagesContext)
 		throws FormException
 	{
 		if (field.acceptValue(newValue, pagesContext.getLanguage()))
@@ -220,6 +222,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer
 		{
 			throw new FormException("DateFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", DateField.TYPE);
 		}
+    return new ArrayList<String>();
 	}
 
 	public boolean isDisplayedMandatory()
