@@ -513,14 +513,14 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 		getMainSessionController().initClipboard();
     }
 
-    public PersonalizationBm getPersonalization()
+    public synchronized PersonalizationBm getPersonalization()
     {
         return getMainSessionController().getPersonalization();
     }
 
     public void initPersonalization()
     {
-		getMainSessionController().initPersonalization();
+      getMainSessionController().initPersonalization();
     }
 
     public String getUserAccessLevel()

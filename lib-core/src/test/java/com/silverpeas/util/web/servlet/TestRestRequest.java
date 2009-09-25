@@ -126,5 +126,22 @@ public class TestRestRequest extends TestCase {
     assertEquals("45", rest.getElementValue("mailingList"));
   }
 
+  public void testDaisyRestRequest() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    request.setRemoteHost("daisy");
+    request.setMethod("GET");
+    request.setRemotePort(80);
+    request.setScheme("http://");
+    request.setContextPath("/webUnifaf");
+    request.setPathInfo("/SilverpeasWebFileServer/componentId/kmelia24/attachmentId/797/lang/fr/name/CIBC%20HABILITES.pdf");
+    request.setRequestURI("/webUnifaf/SilverpeasWebFileServer/componentId/kmelia24/attachmentId/797/lang/fr/name/CIBC%20HABILITES.pdf");
+    RestRequest rest = new RestRequest(request, "");
+    assertEquals(RestRequest.FIND, rest.getAction());
+    assertEquals("kmelia24", rest.getElementValue("componentId"));
+    assertEquals("797", rest.getElementValue("attachmentId"));
+    assertEquals("fr", rest.getElementValue("lang"));
+    assertEquals("CIBC%20HABILITES.pdf", rest.getElementValue("name"));
+  }
+
 
 }

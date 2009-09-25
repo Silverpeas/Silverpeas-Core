@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
+import com.stratelia.silverpeas.domains.ldapdriver.LDAPUtility;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -106,7 +107,7 @@ public class UserTable extends Table
 		   if (s != 0)
 			   clauseIN.append(", ");
 		   specificId = (String) specificIds.get(s);
-		   clauseIN.append("'").append(specificId).append("'");
+		   clauseIN.append("'").append(LDAPUtility.dblBackSlashesForDNInFilters(specificId)).append("'");
 	   }
 	   clauseIN.append(")");
 	   String query = SELECT_USERS_BY_SPECIFICIDS+clauseIN;
