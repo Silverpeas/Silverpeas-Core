@@ -90,6 +90,8 @@
               <excludes>
                 <exclude>**/*.txt</exclude>
                 <exclude>**/*.sql</exclude>
+                <exclude>**/*.js</exclude>
+                <exclude>**/*.html</exclude>
               </excludes>
             </configuration>
             <executions>
