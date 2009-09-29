@@ -31,33 +31,32 @@ import java.io.UnsupportedEncodingException;
  */
 
 public class I18n {
-    public static final String DEFAULT_CHARSET = "UTF-8";
-    public static final String ASCII_CHARSET = "ISO-8859-1";
-    
-    public static String decodeCharset(String s, String charset) {
-        if (s == null) {
-            return null;
-        }
-        
-        try {
-            byte buf[] = s.getBytes(ASCII_CHARSET);
-            return new String(buf, 0, buf.length, charset);
-        } catch (UnsupportedEncodingException uee) {
-            return s;
-        }
-    }
-    
-    public static String encodeCharset(String s, String charset) {
-        if (s == null) {
-            return null;
-        }
-        
-        try {
-            byte buf[] = s.getBytes(charset);
-            return new String(buf, 0, buf.length, ASCII_CHARSET);
-        } catch (UnsupportedEncodingException uee) {
-            return s;
-        }
-    }
-}
+  public static final String DEFAULT_CHARSET = "UTF-8";
+  public static final String ASCII_CHARSET = "ISO-8859-1";
 
+  public static String decodeCharset(String s, String charset) {
+    if (s == null) {
+      return null;
+    }
+
+    try {
+      byte buf[] = s.getBytes(ASCII_CHARSET);
+      return new String(buf, 0, buf.length, charset);
+    } catch (UnsupportedEncodingException uee) {
+      return s;
+    }
+  }
+
+  public static String encodeCharset(String s, String charset) {
+    if (s == null) {
+      return null;
+    }
+
+    try {
+      byte buf[] = s.getBytes(charset);
+      return new String(buf, 0, buf.length, ASCII_CHARSET);
+    } catch (UnsupportedEncodingException uee) {
+      return s;
+    }
+  }
+}

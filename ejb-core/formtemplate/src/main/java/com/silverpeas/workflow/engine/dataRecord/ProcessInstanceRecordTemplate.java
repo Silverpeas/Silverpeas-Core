@@ -16,319 +16,265 @@ import com.silverpeas.workflow.api.model.Presentation;
 import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
- * A ProcessInstanceRecordTemplate describes all the data
- * grouped in a ProcessInstanceDataRecord.
- *
- * The instance : instance
- *                instance.title
- *                instance.<columnName>
- * The model    : model
- *                model.label
- *                model.peas-label
- * The folder   : <folderItem>
- * The forms    : form.<formName>
- *                form.<formName>.title
- *                form.<formName>.<fieldItem>
- * The actions  : action.<actionName>
- *                action.<actionName>.label
- *                action.<actionName>.date
- *                action.<actionName>.actor
- * The users    : participant.<participantName>
+ * A ProcessInstanceRecordTemplate describes all the data grouped in a
+ * ProcessInstanceDataRecord.
+ * 
+ * The instance : instance instance.title instance.<columnName> The model :
+ * model model.label model.peas-label The folder : <folderItem> The forms :
+ * form.<formName> form.<formName>.title form.<formName>.<fieldItem> The actions
+ * : action.<actionName> action.<actionName>.label action.<actionName>.date
+ * action.<actionName>.actor The users : participant.<participantName>
  */
-public class ProcessInstanceRecordTemplate implements RecordTemplate
-{
+public class ProcessInstanceRecordTemplate implements RecordTemplate {
   /**
    * Builds the record template of a process model.
-	*/
-   public ProcessInstanceRecordTemplate(ProcessModel processModel,
-	                                     String role,
-													 String lang)
-   {
-	  if (role==null) role = "";
-	  if (lang==null) lang = "";
-      this.processModel = processModel;
-      this.role = role;
-      this.lang = lang;
-		init();
-   }
+   */
+  public ProcessInstanceRecordTemplate(ProcessModel processModel, String role,
+      String lang) {
+    if (role == null)
+      role = "";
+    if (lang == null)
+      lang = "";
+    this.processModel = processModel;
+    this.role = role;
+    this.lang = lang;
+    init();
+  }
 
-   /**
-    * Returns all the field names of the DataRecord built on this template.
-    */
-   public String[] getFieldNames()
-   {
-	   if (fieldNames == null)
-		{
-		   fieldNames = new String[fields.size()];
-			Iterator names = fields.keySet().iterator();
-			String name;
-			while (names.hasNext())
-			{
-			   name = (String) names.next();
-				try
-				{
-			      fieldNames[getFieldIndex(name)] = name;
-				}
-				catch (Exception e)
-				{
-				   // can't happen : the name is a key
-				}
-			}
-		}
-		return fieldNames;
-   }
-
-   /**
-    * Returns all the field templates.
-    */
-   public FieldTemplate[] getFieldTemplates() throws FormException
-   {
-	   if (fieldTemplates == null)
-		{
-		   fieldTemplates = new FieldTemplate[fields.size()];
-			Iterator names = fields.keySet().iterator();
-			String name;
-			while (names.hasNext())
-			{
-			   name = (String) names.next();
-				try
-				{
-			      fieldTemplates[getFieldIndex(name)] = getFieldTemplate(name);
-				}
-				catch (Exception e)
-				{
-				   // can't happen : the name is a key
-				}
-			}
-		}
-		return fieldTemplates;
-   }
-
-   /**
-    * Returns the FieldTemplate of the named field.
-    *
-    * @throw FormException if the field name is unknown.
-    */
-   public FieldTemplate getFieldTemplate(String fieldName) throws FormException
-   {
-	   IndexedFieldTemplate indexed
-		   = (IndexedFieldTemplate) fields.get(fieldName);
-
-      if (indexed == null)
-      {
-         throw new FormException("ProcessInstanceRecordTemplate",
-                                 "form.EXP_UNKNOWN_FIELD",
-                                 fieldName);
+  /**
+   * Returns all the field names of the DataRecord built on this template.
+   */
+  public String[] getFieldNames() {
+    if (fieldNames == null) {
+      fieldNames = new String[fields.size()];
+      Iterator names = fields.keySet().iterator();
+      String name;
+      while (names.hasNext()) {
+        name = (String) names.next();
+        try {
+          fieldNames[getFieldIndex(name)] = name;
+        } catch (Exception e) {
+          // can't happen : the name is a key
+        }
       }
- 
-      return indexed.fieldTemplate;
-   }
+    }
+    return fieldNames;
+  }
 
-   /**
-    * Returns the FieldTemplate at the given position
-    *
-    * @throw FormException if the field index is out of bound.
-    */
-   public FieldTemplate getFieldTemplate(int fieldIndex) throws FormException
-   {
-	   if (0<=fieldIndex && fieldIndex<fields.size())
-		{
-	      return getFieldTemplates()[fieldIndex];
-		}
-		else
-		{
-         throw new FormException("ProcessInstanceRecordTemplate",
-                                 "form.EXP_UNKNOWN_FIELD",
-                                 ""+fieldIndex);
-		}
-	}
-
-   /**
-    * Returns the Field index of the named field.
-    *
-    * @throw FormException if the field name is unknown.
-    */
-   public int getFieldIndex(String fieldName) throws FormException
-   {
-	   IndexedFieldTemplate indexed
-		   = (IndexedFieldTemplate) fields.get(fieldName);
-
-      if (indexed == null)
-      {
-         throw new FormException("ProcessInstanceRecordTemplate",
-                                 "form.EXP_UNKNOWN_FIELD",
-                                 fieldName);
+  /**
+   * Returns all the field templates.
+   */
+  public FieldTemplate[] getFieldTemplates() throws FormException {
+    if (fieldTemplates == null) {
+      fieldTemplates = new FieldTemplate[fields.size()];
+      Iterator names = fields.keySet().iterator();
+      String name;
+      while (names.hasNext()) {
+        name = (String) names.next();
+        try {
+          fieldTemplates[getFieldIndex(name)] = getFieldTemplate(name);
+        } catch (Exception e) {
+          // can't happen : the name is a key
+        }
       }
- 
-      return indexed.index;
-   }
+    }
+    return fieldTemplates;
+  }
 
-   /**
-    * Throws an illegal call exception,
-	 * since an empty DataRecord can't be built from this template.
-    */
-   public DataRecord getEmptyRecord() throws FormException
-   {
-	   throw new FormException("workflowEngine",
-		                        "workflowEngine.EXP_ILLEGAL_CALL");
-   }
+  /**
+   * Returns the FieldTemplate of the named field.
+   * 
+   * @throw FormException if the field name is unknown.
+   */
+  public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
+    IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
-   /**
-    * Returns true if the data record is built on this template.
-    */
-   public boolean checkDataRecord(DataRecord record)
-   {
-	   if (record instanceof ProcessInstanceDataRecord)
-		{
-		   ProcessInstanceDataRecord instanceRecord =
-				(ProcessInstanceDataRecord) record;
-		   return this == instanceRecord.template;
-		}
-		else return false;
-   }
+    if (indexed == null) {
+      throw new FormException("ProcessInstanceRecordTemplate",
+          "form.EXP_UNKNOWN_FIELD", fieldName);
+    }
 
-   /**
-	 * Builds a Field[] with the correct size().
-	 */
-	public Field[] buildFieldsArray()
-	{
-	   return new Field[fields.size()];
-	}
+    return indexed.fieldTemplate;
+  }
 
-   /**
-	 * The process model.
-	 */
-	private final ProcessModel processModel;
+  /**
+   * Returns the FieldTemplate at the given position
+   * 
+   * @throw FormException if the field index is out of bound.
+   */
+  public FieldTemplate getFieldTemplate(int fieldIndex) throws FormException {
+    if (0 <= fieldIndex && fieldIndex < fields.size()) {
+      return getFieldTemplates()[fieldIndex];
+    } else {
+      throw new FormException("ProcessInstanceRecordTemplate",
+          "form.EXP_UNKNOWN_FIELD", "" + fieldIndex);
+    }
+  }
 
-   /**
-	 * The role giving this view of the process.
-	 */
-	private final String role;
+  /**
+   * Returns the Field index of the named field.
+   * 
+   * @throw FormException if the field name is unknown.
+   */
+  public int getFieldIndex(String fieldName) throws FormException {
+    IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
-   /**
-	 * The lang used for this view of the process.
-	 */
-	private final String lang;
+    if (indexed == null) {
+      throw new FormException("ProcessInstanceRecordTemplate",
+          "form.EXP_UNKNOWN_FIELD", fieldName);
+    }
 
-	/**
-	 * The field names.
-	 */
-	private String[] fieldNames = null;
+    return indexed.index;
+  }
 
-	/**
-	 * The field templates.
-	 */
-	private FieldTemplate[] fieldTemplates = null;
+  /**
+   * Throws an illegal call exception, since an empty DataRecord can't be built
+   * from this template.
+   */
+  public DataRecord getEmptyRecord() throws FormException {
+    throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");
+  }
 
-	/**
-	 * The map (fieldName -> IndexedFieldTemplate).
-	 */
-	private HashMap fields = new HashMap();
+  /**
+   * Returns true if the data record is built on this template.
+   */
+  public boolean checkDataRecord(DataRecord record) {
+    if (record instanceof ProcessInstanceDataRecord) {
+      ProcessInstanceDataRecord instanceRecord = (ProcessInstanceDataRecord) record;
+      return this == instanceRecord.template;
+    } else
+      return false;
+  }
 
-   /**
-	 * Inits the fields
-	 */
-	private void init()
-	{
-		// The instance : instance
-		//                instance.title
-		//                instance.state
+  /**
+   * Builds a Field[] with the correct size().
+   */
+  public Field[] buildFieldsArray() {
+    return new Field[fields.size()];
+  }
 
-		addField(new TitleTemplate("instance", processModel, role, lang));
-		addField(new TitleTemplate("instance.title", processModel, role, lang));
-		addField(new StateTemplate("instance.state", processModel, role, lang));
+  /**
+   * The process model.
+   */
+  private final ProcessModel processModel;
 
-		// The instance columns : instance.<columnName>
+  /**
+   * The role giving this view of the process.
+   */
+  private final String role;
 
-		Presentation presentation = processModel.getPresentation();
-		if (presentation != null)
-		{
-			Column[] columns = presentation.getColumns(role);
-			Item item ;
-			for (int i=0 ; columns != null && i<columns.length ; i++)
-			{
-				item = columns[i].getItem();
-				if (item != null)
-				{
-					addField(new ItemTemplate(
-						"instance."+item.getName(), item,role,lang));
-				}
-			}
-		}
-	    
+  /**
+   * The lang used for this view of the process.
+   */
+  private final String lang;
 
-		// The model    : model
-		//                model.label
-		//                model.peas-label
+  /**
+   * The field names.
+   */
+  private String[] fieldNames = null;
 
-		// xoxox à écrire
+  /**
+   * The field templates.
+   */
+  private FieldTemplate[] fieldTemplates = null;
 
-		// The folder   : folder.<folderItem>
+  /**
+   * The map (fieldName -> IndexedFieldTemplate).
+   */
+  private HashMap fields = new HashMap();
 
-		Item[] items = processModel.getDataFolder().getItems();
+  /**
+   * Inits the fields
+   */
+  private void init() {
+    // The instance : instance
+    // instance.title
+    // instance.state
 
-		for (int i=0 ; items != null && i<items.length ; i++)
-		{
-			if (items[i] != null)
-			{
-				addField(new ItemTemplate(
-					    "folder."+items[i].getName(), items[i],role,lang));
-			}
-		}
+    addField(new TitleTemplate("instance", processModel, role, lang));
+    addField(new TitleTemplate("instance.title", processModel, role, lang));
+    addField(new StateTemplate("instance.state", processModel, role, lang));
 
-		// The forms    : form.<formName>
-		//                form.<formName>.title
-		//                form.<formName>.<fieldItem>
+    // The instance columns : instance.<columnName>
 
-		// xoxox à écrire
+    Presentation presentation = processModel.getPresentation();
+    if (presentation != null) {
+      Column[] columns = presentation.getColumns(role);
+      Item item;
+      for (int i = 0; columns != null && i < columns.length; i++) {
+        item = columns[i].getItem();
+        if (item != null) {
+          addField(new ItemTemplate("instance." + item.getName(), item, role,
+              lang));
+        }
+      }
+    }
 
-		// The actions  : action.<actionName>
-		//                action.<actionName>.label
-		//                action.<actionName>.date
-		//                action.<actionName>.actor
+    // The model : model
+    // model.label
+    // model.peas-label
 
-	   	Action[] actions = processModel.getActions();
-	   	DataFolder userInfos = processModel.getUserInfos();
-		Item[] userItems = null;
-		if (userInfos != null)
-		{
-			userItems = userInfos.getItems();
-		}
+    // xoxox à écrire
 
-		for (int i=0 ; actions != null && i<actions.length ; i++)
-		{
-			addField(new ActionLabelTemplate(
-				"action."+actions[i].getName(), actions[i],role,lang));
-			addField(new ActionLabelTemplate(
-				"action."+actions[i].getName()+".label", actions[i],role,lang));
-			addField(new ActionDateTemplate(
-				"action."+actions[i].getName()+".date", actions[i],role,lang));
-			addField(new ActionActorTemplate(
-				"action."+actions[i].getName()+".actor", actions[i],role,lang));
-			
-			for (int j=0 ; userItems != null && j<userItems.length ; j++)
-			{
-				if (userItems[j] != null)
-				{
-					addField(new UserInfoTemplate(
-							"action."+actions[i].getName()+".actor."+userItems[j].getName(), userItems[j],role,lang));
-				}
-			}
+    // The folder : folder.<folderItem>
 
-		}
+    Item[] items = processModel.getDataFolder().getItems();
 
-		// The users    : participant.<participantName>
-       
-		// xoxox à écrire
-	}
+    for (int i = 0; items != null && i < items.length; i++) {
+      if (items[i] != null) {
+        addField(new ItemTemplate("folder." + items[i].getName(), items[i],
+            role, lang));
+      }
+    }
 
-	/**
-	 * Adds the given fieldTemplate.
-	 */
-	private void addField(FieldTemplate fieldTemplate)
-	{
-	   fields.put(fieldTemplate.getFieldName(),
-		           new IndexedFieldTemplate(fields.size(), fieldTemplate));
-	   
-	}
+    // The forms : form.<formName>
+    // form.<formName>.title
+    // form.<formName>.<fieldItem>
+
+    // xoxox à écrire
+
+    // The actions : action.<actionName>
+    // action.<actionName>.label
+    // action.<actionName>.date
+    // action.<actionName>.actor
+
+    Action[] actions = processModel.getActions();
+    DataFolder userInfos = processModel.getUserInfos();
+    Item[] userItems = null;
+    if (userInfos != null) {
+      userItems = userInfos.getItems();
+    }
+
+    for (int i = 0; actions != null && i < actions.length; i++) {
+      addField(new ActionLabelTemplate("action." + actions[i].getName(),
+          actions[i], role, lang));
+      addField(new ActionLabelTemplate("action." + actions[i].getName()
+          + ".label", actions[i], role, lang));
+      addField(new ActionDateTemplate("action." + actions[i].getName()
+          + ".date", actions[i], role, lang));
+      addField(new ActionActorTemplate("action." + actions[i].getName()
+          + ".actor", actions[i], role, lang));
+
+      for (int j = 0; userItems != null && j < userItems.length; j++) {
+        if (userItems[j] != null) {
+          addField(new UserInfoTemplate("action." + actions[i].getName()
+              + ".actor." + userItems[j].getName(), userItems[j], role, lang));
+        }
+      }
+
+    }
+
+    // The users : participant.<participantName>
+
+    // xoxox à écrire
+  }
+
+  /**
+   * Adds the given fieldTemplate.
+   */
+  private void addField(FieldTemplate fieldTemplate) {
+    fields.put(fieldTemplate.getFieldName(), new IndexedFieldTemplate(fields
+        .size(), fieldTemplate));
+
+  }
 }

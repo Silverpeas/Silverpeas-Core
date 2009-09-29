@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * IconWA.java
@@ -33,104 +34,99 @@ package com.stratelia.webactiv.util.viewGenerator.html.icons;
  * Exception
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class IconWA extends AbstractIcon
-{
+public class IconWA extends AbstractIcon {
 
-    /**
-     * Creates new IconWA
-     */
-    public IconWA()
-    {
-        super();
-    }
+  /**
+   * Creates new IconWA
+   */
+  public IconWA() {
+    super();
+  }
 
-	public IconWA(String iconName)
-    {
-        super(iconName);
-    }
+  public IconWA(String iconName) {
+    super(iconName);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param iconName
-     * @param altText
-     *
-     * @see
-     */
-    public IconWA(String iconName, String altText)
-    {
-        super(iconName, altText);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param iconName
+   * @param altText
+   * 
+   * @see
+   */
+  public IconWA(String iconName, String altText) {
+    super(iconName, altText);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param iconName
-     * @param altText
-     * @param action
-     *
-     * @see
-     */
-    public IconWA(String iconName, String altText, String action)
-    {
-        super(iconName, altText, action);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param iconName
+   * @param altText
+   * @param action
+   * 
+   * @see
+   */
+  public IconWA(String iconName, String altText, String action) {
+    super(iconName, altText, action);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param iconName
-     * @param altText
-     * @param action
-     * @param imagePath
-     *
-     * @see
-     */
-    public IconWA(String iconName, String altText, String action, String imagePath)
-    {
-        super(iconName, altText, action, imagePath);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param iconName
+   * @param altText
+   * @param action
+   * @param imagePath
+   * 
+   * @see
+   */
+  public IconWA(String iconName, String altText, String action, String imagePath) {
+    super(iconName, altText, action, imagePath);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String print()
-    {
-        String path = getRootImagePath() + getImagePath();
-        String action = getAction();
-        String iconName = getIconName();
-        String altText = getAltText();
-        StringBuffer str = new StringBuffer();
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String print() {
+    String path = getRootImagePath() + getImagePath();
+    String action = getAction();
+    String iconName = getIconName();
+    String altText = getAltText();
+    StringBuffer str = new StringBuffer();
 
-        if (!action.equals(""))
-            str.append("<A HREF=\"").append(action).append("\">");
+    if (!action.equals(""))
+      str.append("<A HREF=\"").append(action).append("\">");
 
-        str.append("<IMG SRC=\"").append(path).append(iconName).append("\" border=\"0\"");
+    str.append("<IMG SRC=\"").append(path).append(iconName).append(
+        "\" border=\"0\"");
 
-		if (altText != null && altText.length() > 0)
-			str.append("alt=\"").append(altText).append("\" title=\"").append(altText);
-		
-		str.append("\">");
+    if (altText != null && altText.length() > 0)
+      str.append("alt=\"").append(altText).append("\" title=\"")
+          .append(altText);
 
-		if (!action.equals(""))
-            str.append("</A>");
+    str.append("\">");
 
-        return str.toString();
-    }
+    if (!action.equals(""))
+      str.append("</A>");
+
+    return str.toString();
+  }
 
 }

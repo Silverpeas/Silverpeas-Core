@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 //
 // -- Java Code Generation Process --
@@ -29,27 +30,26 @@ import javax.ejb.CreateException;
 
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface ScoreBmHome extends javax.ejb.EJBHome
-{
+public interface ScoreBmHome extends javax.ejb.EJBHome {
 
-    /*
-     * Method:  create
-     */
+  /*
+   * Method: create
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws CreateException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public ScoreBm create() throws RemoteException, CreateException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public ScoreBm create() throws RemoteException, CreateException;
 }

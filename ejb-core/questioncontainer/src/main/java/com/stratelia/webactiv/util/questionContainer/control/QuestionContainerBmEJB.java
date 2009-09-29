@@ -94,927 +94,1049 @@ import com.stratelia.webactiv.util.score.model.ScorePK;
  * no message
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author neysseri
  */
-public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, SessionBean
-{
+public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
+    SessionBean {
 
-    private QuestionBm                 currentQuestionBm = null;
-    private QuestionResultBm           currentQuestionResultBm = null;
-    private AnswerBm                   currentAnswerBm = null;
-    private ScoreBm                    currentScoreBm = null;
-    
-    // if beginDate is null, it will be replace in database with it
-    private String                     nullBeginDate = new String("0000/00/00");
-    // if endDate is null, it will be replace in database with it
-    private String                     nullEndDate = new String("9999/99/99");
+  private QuestionBm currentQuestionBm = null;
+  private QuestionResultBm currentQuestionResultBm = null;
+  private AnswerBm currentAnswerBm = null;
+  private ScoreBm currentScoreBm = null;
 
-    private String                     dbName = JNDINames.QUESTIONCONTAINER_DATASOURCE;
+  // if beginDate is null, it will be replace in database with it
+  private String nullBeginDate = new String("0000/00/00");
+  // if endDate is null, it will be replace in database with it
+  private String nullEndDate = new String("9999/99/99");
 
-    public QuestionContainerBmEJB() {}
-   
-    public Collection getQuestionContainers(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainers()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
+  private String dbName = JNDINames.QUESTIONCONTAINER_DATASOURCE;
 
-        try
-        {
-            con = getConnection();
-            Collection questionContainerHeaders = QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
+  public QuestionContainerBmEJB() {
+  }
 
-            return this.setNbMaxPoints(questionContainerHeaders);
+  public Collection getQuestionContainers(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainers()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection questionContainerHeaders = QuestionContainerDAO
+          .getQuestionContainers(con, questionContainerPK);
+
+      return this.setNbMaxPoints(questionContainerHeaders);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainers()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getQuestionContainerHeaders(ArrayList pks)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainerHeaders()",
+        "root.MSG_GEN_ENTER_METHOD", "pks = " + pks.toString());
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection questionContainerHeaders = QuestionContainerDAO
+          .getQuestionContainers(con, pks);
+
+      return questionContainerHeaders;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainerHeaders()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  private Collection setNbMaxPoints(Collection questionContainerHeaders)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.setNbMaxPoints()", "root.MSG_GEN_ENTER_METHOD",
+        "");
+
+    QuestionBm questionBm = getQuestionBm();
+    Iterator it = questionContainerHeaders.iterator();
+    ArrayList result = new ArrayList();
+
+    while (it.hasNext()) {
+      int nbMaxPoints = 0;
+      Collection questions = null;
+      QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
+          .next();
+      QuestionPK questionPK = new QuestionPK(null, questionContainerHeader
+          .getPK());
+
+      try {
+        questions = questionBm.getQuestionsByFatherPK(questionPK,
+            questionContainerHeader.getPK().getId());
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.setNbMaxPoints()",
+            SilverpeasRuntimeException.ERROR,
+            "questionContainer.SETTING_NB_MAX_POINTS_TO_QUESTIONCONTAINER_FAILED",
+            e);
+      }
+      Iterator it2 = questions.iterator();
+
+      while (it2.hasNext()) {
+        Question question = (Question) it2.next();
+
+        nbMaxPoints += question.getNbPointsMax();
+      }
+      questionContainerHeader.setNbMaxPoints(nbMaxPoints);
+      result.add(questionContainerHeader);
+    }
+    return result;
+  }
+
+  private QuestionContainerHeader setNbMaxPoint(
+      QuestionContainerHeader questionContainerHeader) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.setNbMaxPoint()", "root.MSG_GEN_ENTER_METHOD",
+        "questionContainerHeader = " + questionContainerHeader);
+
+    int nbMaxPoints = 0;
+    QuestionBm questionBm = getQuestionBm();
+    Collection questions = null;
+    QuestionPK questionPK = new QuestionPK(null, questionContainerHeader
+        .getPK());
+
+    try {
+      questions = questionBm.getQuestionsByFatherPK(questionPK,
+          questionContainerHeader.getPK().getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.setNbMaxPoint()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONS_FAILED", e);
+    }
+    Iterator it2 = questions.iterator();
+
+    while (it2.hasNext()) {
+      Question question = (Question) it2.next();
+
+      nbMaxPoints += question.getNbPointsMax();
+    }
+    questionContainerHeader.setNbMaxPoints(nbMaxPoints);
+    return questionContainerHeader;
+  }
+
+  public Collection getNotClosedQuestionContainers(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getNotClosedQuestionContainers()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection questionContainerHeaders = QuestionContainerDAO
+          .getNotClosedQuestionContainers(con, questionContainerPK);
+
+      return this.setNbMaxPoints(questionContainerHeaders);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getNotClosedQuestionContainers()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_NOT_CLOSED_QUESTIONCONTAINERS_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getOpenedQuestionContainers(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getOpenedQuestionContainers()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection result = QuestionContainerDAO.getOpenedQuestionContainers(con,
+          questionContainerPK);
+
+      return this.setNbMaxPoints(result);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getOpenedQuestionContainers()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getOpenedQuestionContainersAndUserScores(
+      QuestionContainerPK questionContainerPK, String userId)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getOpenedQuestionContainersAndUserScores()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection questionContainerHeaders = QuestionContainerDAO
+          .getOpenedQuestionContainers(con, questionContainerPK);
+      Iterator it = questionContainerHeaders.iterator();
+      ArrayList result = new ArrayList();
+
+      while (it.hasNext()) {
+        QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
+            .next();
+
+        questionContainerHeader.setScores(this.getUserScoresByFatherId(
+            questionContainerHeader.getPK(), userId));
+        result.add(this.setNbMaxPoint(questionContainerHeader));
+      }
+      return result;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getOpenedQuestionContainersAndUserScores()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED",
+          e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getQuestionContainersWithScores(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainersWithScores()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection questionContainerHeaders = QuestionContainerDAO
+          .getQuestionContainers(con, questionContainerPK);
+      Iterator it = questionContainerHeaders.iterator();
+      ArrayList result = new ArrayList();
+
+      while (it.hasNext()) {
+        QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
+            .next();
+        Collection scoreDetails = this
+            .getScoresByFatherId(questionContainerHeader.getPK());
+
+        if (scoreDetails != null) {
+          questionContainerHeader.setScores(scoreDetails);
+          result.add(this.setNbMaxPoint(questionContainerHeader));
         }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainers()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
+      }
+      return result;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainersWithScores()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINERS_AND_SCORES_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getQuestionContainersWithUserScores(
+      QuestionContainerPK questionContainerPK, String userId)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainersWithUserScores()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection questionContainerHeaders = QuestionContainerDAO
+          .getQuestionContainers(con, questionContainerPK);
+      Iterator it = questionContainerHeaders.iterator();
+      ArrayList result = new ArrayList();
+
+      while (it.hasNext()) {
+        QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
+            .next();
+        Collection scoreDetails = this.getUserScoresByFatherId(
+            questionContainerHeader.getPK(), userId);
+
+        if (scoreDetails != null) {
+          questionContainerHeader.setScores(scoreDetails);
+          result.add(this.setNbMaxPoint(questionContainerHeader));
         }
-        finally
-        {
-            freeConnection(con);
-        }
+      }
+      return result;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainersWithUserScores()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED",
+          e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getClosedQuestionContainers(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getClosedQuestionContainers()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection result = QuestionContainerDAO.getClosedQuestionContainers(con,
+          questionContainerPK);
+
+      return this.setNbMaxPoints(result);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getClosedQuestionContainers()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_CLOSED_QUESTIONCONTAINERS_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getInWaitQuestionContainers(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getInWaitQuestionContainers()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection result = QuestionContainerDAO.getInWaitQuestionContainers(con,
+          questionContainerPK);
+
+      return this.setNbMaxPoints(result);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getInWaitQuestionContainers()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_INWAIT_QUESTIONCONTAINERS_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getUserScoresByFatherId(
+      QuestionContainerPK questionContainerPK, String userId)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getUserScoresByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    Collection scores = null;
+    ScoreBm scoreBm = getScoreBm();
+    ScorePK scorePK = new ScorePK(null, questionContainerPK);
+
+    try {
+      scores = scoreBm.getUserScoresByFatherId(scorePK, questionContainerPK
+          .getId(), userId);
+      if (scores != null) {
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.getUserScoresByFatherId()",
+            "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
+      } else {
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.getUserScoresByFatherId()",
+            "root.MSG_GEN_PARAM_VALUE", "Le score : null");
+      }
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getUserScoresByFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_USER_SCORES_FAILED", e);
+    }
+    return scores;
+  }
+
+  public Collection getBestScoresByFatherId(
+      QuestionContainerPK questionContainerPK, int nbBestScores)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getBestScoresByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", nbBestScores = " + nbBestScores);
+    Collection scores = null;
+    ScoreBm scoreBm = getScoreBm();
+    ScorePK scorePK = new ScorePK(null, questionContainerPK);
+
+    try {
+      scores = scoreBm.getBestScoresByFatherId(scorePK, nbBestScores,
+          questionContainerPK.getId());
+      return scores;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getBestScoresByFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_BEST_SCORES_FAILED", e);
+    }
+  }
+
+  public Collection getWorstScoresByFatherId(
+      QuestionContainerPK questionContainerPK, int nbScores)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getWorstScoresByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", nbScores = " + nbScores);
+    Collection scores = null;
+    ScoreBm scoreBm = getScoreBm();
+    ScorePK scorePK = new ScorePK(null, questionContainerPK);
+
+    try {
+      scores = scoreBm.getWorstScoresByFatherId(scorePK, nbScores,
+          questionContainerPK.getId());
+      return scores;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getWorstScoresByFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_WORST_SCORES_FAILED", e);
+    }
+  }
+
+  public Collection getScoresByFatherId(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getScoresByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Collection scores = null;
+    ScoreBm scoreBm = getScoreBm();
+    ScorePK scorePK = new ScorePK(null, questionContainerPK);
+
+    try {
+      scores = scoreBm
+          .getScoresByFatherId(scorePK, questionContainerPK.getId());
+      if (scores != null) {
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.getScoresByFatherId()",
+            "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
+      } else {
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.getScoresByFatherId()",
+            "root.MSG_GEN_PARAM_VALUE", "Le score : null");
+      }
+      return scores;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getScoresByFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_SCORES_FAILED", e);
+    }
+  }
+
+  public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getAverageScoreByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    float averageScore = 0;
+    ScoreBm scoreBm = getScoreBm();
+    ScorePK scorePK = new ScorePK(null, questionContainerPK);
+
+    try {
+      averageScore = scoreBm.getAverageScoreByFatherId(scorePK,
+          questionContainerPK.getId());
+      return averageScore;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getAverageScoreByFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_AVERAGE_SCORE_FAILED", e);
+    }
+  }
+
+  public QuestionContainerDetail getQuestionContainer(
+      QuestionContainerPK questionContainerPK, String userId)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    Connection con = null;
+    Collection questions = null;
+    Collection comments = null;
+    QuestionContainerHeader questionContainerHeader = null;
+    Collection userVotes = null;
+
+    questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
+
+    QuestionBm questionBm = getQuestionBm();
+    QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
+    int nbMaxPoints = 0;
+
+    try {
+      questions = questionBm.getQuestionsByFatherPK(questionPK,
+          questionContainerPK.getId());
+      Iterator it2 = questions.iterator();
+
+      while (it2.hasNext()) {
+        Question question = (Question) it2.next();
+
+        nbMaxPoints += question.getNbPointsMax();
+      }
+      questionContainerHeader.setNbMaxPoints(nbMaxPoints);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_FAILED", e);
     }
 
-        public Collection getQuestionContainerHeaders(ArrayList pks) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainerHeaders()", "root.MSG_GEN_ENTER_METHOD", "pks = " + pks.toString());
-        Connection con = null;
-
-        try
-        {
-            con = getConnection();
-            Collection questionContainerHeaders = QuestionContainerDAO.getQuestionContainers(con, pks);
-
-            return questionContainerHeaders;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainerHeaders()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+    try {
+      con = getConnection();
+      userVotes = getUserVotesToQuestionContainer(userId, questionContainerPK);
+    } finally {
+      freeConnection(con);
     }
 
-    private Collection setNbMaxPoints(Collection questionContainerHeaders) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.setNbMaxPoints()", "root.MSG_GEN_ENTER_METHOD", "");
-
-        QuestionBm questionBm = getQuestionBm();
-        Iterator   it = questionContainerHeaders.iterator();
-        ArrayList  result = new ArrayList();
-
-        while (it.hasNext())
-        {
-            int                     nbMaxPoints = 0;
-            Collection              questions = null;
-            QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it.next();
-            QuestionPK              questionPK = new QuestionPK(null, questionContainerHeader.getPK());
-
-            try
-            {
-                questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().getId());
-            }
-            catch (Exception e)
-            {
-                                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.setNbMaxPoints()", SilverpeasRuntimeException.ERROR, "questionContainer.SETTING_NB_MAX_POINTS_TO_QUESTIONCONTAINER_FAILED", e);
-            }
-            Iterator it2 = questions.iterator();
-
-            while (it2.hasNext())
-            {
-                Question question = (Question) it2.next();
-
-                nbMaxPoints += question.getNbPointsMax();
-            }
-            questionContainerHeader.setNbMaxPoints(nbMaxPoints);
-            result.add(questionContainerHeader);
-        }
-        return result;
+    try {
+      con = getConnection();
+      comments = getComments(questionContainerPK);
+    } finally {
+      freeConnection(con);
     }
 
-    private QuestionContainerHeader setNbMaxPoint(QuestionContainerHeader questionContainerHeader) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.setNbMaxPoint()", "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainer()",
+        "root.MSG_GEN_EXIT_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    return new QuestionContainerDetail(questionContainerHeader, questions,
+        comments, userVotes);
+  }
 
-        int        nbMaxPoints = 0;
-        QuestionBm questionBm = getQuestionBm();
-        Collection questions = null;
-        QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
+  public QuestionContainerHeader getQuestionContainerHeader(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainerHeader()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+    QuestionContainerHeader questionContainerHeader = null;
 
-        try
-        {
-            questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().getId());
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.setNbMaxPoint()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONS_FAILED", e);
-        }
-        Iterator it2 = questions.iterator();
-
-        while (it2.hasNext())
-        {
-            Question question = (Question) it2.next();
-
-            nbMaxPoints += question.getNbPointsMax();
-        }
-        questionContainerHeader.setNbMaxPoints(nbMaxPoints);
-        return questionContainerHeader;
+    try {
+      con = getConnection();
+      questionContainerHeader = QuestionContainerDAO
+          .getQuestionContainerHeader(con, questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_FAILED", e);
+    } finally {
+      freeConnection(con);
     }
 
+    return questionContainerHeader;
+  }
 
-    public Collection getNotClosedQuestionContainers(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getNotClosedQuestionContainers()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
+  public QuestionContainerDetail getQuestionContainerByParticipationId(
+      QuestionContainerPK questionContainerPK, String userId,
+      int participationId) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainerByParticipationId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId
+            + ", participationId = " + participationId);
+    Collection questions = null;
+    Collection comments = null;
+    QuestionContainerHeader questionContainerHeader = null;
+    Collection userVotes = null;
 
-        try
-        {
-            con = getConnection();
-            Collection questionContainerHeaders = QuestionContainerDAO.getNotClosedQuestionContainers(con, questionContainerPK);
+    questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
-            return this.setNbMaxPoints(questionContainerHeaders);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getNotClosedQuestionContainers()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_NOT_CLOSED_QUESTIONCONTAINERS_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+    QuestionBm questionBm = getQuestionBm();
+    QuestionResultBm questionResultBm = getQuestionResultBm();
+    QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
+    int nbMaxPoints = 0;
+
+    try {
+      questions = questionBm.getQuestionsByFatherPK(questionPK,
+          questionContainerPK.getId());
+      Iterator it2 = questions.iterator();
+
+      while (it2.hasNext()) {
+        Question question = (Question) it2.next();
+
+        userVotes = questionResultBm
+            .getUserQuestionResultsToQuestionByParticipation(userId,
+                new ForeignPK(question.getPK()), participationId);
+        question.setQuestionResults(userVotes);
+        nbMaxPoints += question.getNbPointsMax();
+      }
+      questionContainerHeader.setNbMaxPoints(nbMaxPoints);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getQuestionContainerByParticipationId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_FAILED", e);
     }
 
-    public Collection getOpenedQuestionContainers(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getOpenedQuestionContainers()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
+    comments = getComments(questionContainerPK);
 
-        try
-        {
-            con = getConnection();
-            Collection result = QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getQuestionContainerByParticipationId()",
+        "root.MSG_GEN_EXIT_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId
+            + ", participationId = " + participationId);
+    return new QuestionContainerDetail(questionContainerHeader, questions,
+        comments, userVotes);
+  }
 
-            return this.setNbMaxPoints(result);
+  public void closeQuestionContainer(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.closeQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+
+      // begin PDC integration
+      QuestionContainerHeader qc = QuestionContainerDAO
+          .getQuestionContainerHeader(con, questionContainerPK);
+      QuestionContainerContentManager.updateSilverContentVisibility(qc, false);
+      // end PDC integration
+
+      QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
+
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.closeQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.CLOSING_QUESTIONCONTAINER_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public void openQuestionContainer(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.openQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+
+      // begin PDC integration
+      QuestionContainerHeader qc = QuestionContainerDAO
+          .getQuestionContainerHeader(con, questionContainerPK);
+      QuestionContainerContentManager.updateSilverContentVisibility(qc, true);
+      // end PDC integration
+
+      QuestionContainerDAO.openQuestionContainer(con, questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.openQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.OPENING_QUESTIONCONTAINER_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public int getNbVotersByQuestionContainer(
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getNbVotersByQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    int nbVoters = 0;
+
+    ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
+        questionContainerPK.getComponentName());
+    ScoreBm scoreBm = getScoreBm();
+
+    try {
+      nbVoters = scoreBm.getNbVotersByFatherId(scorePK, questionContainerPK
+          .getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getNbVotersByQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_NUMBER_OF_VOTES_FAILED",
+          e);
+    }
+    return nbVoters;
+  }
+
+  public void recordReplyToQuestionContainerByUser(
+      QuestionContainerPK questionContainerPK, String userId, Hashtable reply)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    SimpleDateFormat formatterDB = new java.text.SimpleDateFormat("yyyy/MM/dd");
+    QuestionPK questionPK = null;
+    AnswerPK answerPK = null;
+    ScorePK scorePK = new ScorePK(null, questionContainerPK);
+    QuestionResult result = null;
+    QuestionResultBm questionResultBm = getQuestionResultBm();
+    AnswerBm answerBm = getAnswerBm();
+    QuestionBm questionBm = getQuestionBm();
+    ScoreBm scoreBm = getScoreBm();
+    Answer answer = null;
+    int participationId = scoreBm.getUserNbParticipationsByFatherId(scorePK,
+        questionContainerPK.getId(), userId) + 1;
+    int questionUserScore = 0;
+    int userScore = 0;
+
+    Enumeration keys = reply.keys();
+
+    while (keys.hasMoreElements()) {
+      questionUserScore = 0;
+      String questionId = (String) keys.nextElement();
+
+      questionPK = new QuestionPK(questionId, questionContainerPK);
+      Question question = null;
+
+      try {
+        question = questionBm.getQuestion(questionPK);
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+            SilverpeasRuntimeException.ERROR,
+            "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED",
+            e);
+      }
+
+      Vector answers = (Vector) reply.get(questionId);
+      String answerId = null;
+      int vectorSize = answers.size();
+      int newVectorSize = vectorSize;
+      int vectorBegin = 0;
+      // Treatment of the first vector element
+      // to know if the clue has been read
+      String cluePenalty = (String) answers.firstElement();
+      int penaltyValue = 0;
+
+      if (cluePenalty.startsWith("PC")) {
+        // It's a clue penalty field
+        penaltyValue = new Integer(cluePenalty.substring(2, cluePenalty
+            .length())).intValue();
+        vectorBegin = 1;
+      }
+
+      // Treatment of the last vector element
+      // to know if the answer is opened
+      String openedAnswer = (String) answers.lastElement();
+
+      if (openedAnswer.startsWith("OA")) {
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+            "root.MSG_GEN_PARAM_VALUE", "It's an open answer !");
+        // It's an open answer
+        // Fetch the correspondant answerId
+        answerId = (String) answers.get(vectorSize - 2);
+        openedAnswer = openedAnswer.substring(2, openedAnswer.length());
+
+        // User Score for this question
+        answer = question.getAnswer(answerId);
+        questionUserScore += answer.getNbPoints() - penaltyValue;
+
+        newVectorSize = vectorSize - 2;
+        answerPK = new AnswerPK(answerId, questionContainerPK);
+        result = new QuestionResult(null, new ForeignPK(questionPK), answerPK,
+            userId, openedAnswer);
+        result.setParticipationId(participationId);
+        result.setNbPoints(answer.getNbPoints() - penaltyValue);
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+            "root.MSG_GEN_PARAM_VALUE", "answer.getNbPoints(): "
+                + answer.getNbPoints() + ", penaltyValue=" + penaltyValue);
+        try {
+          questionResultBm.setQuestionResultToUser(result);
+        } catch (Exception e) {
+          throw new QuestionContainerRuntimeException(
+              "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+              SilverpeasRuntimeException.ERROR,
+              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED",
+              e);
         }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getOpenedQuestionContainers()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_FAILED", e);
+        try {
+          // Add this vote to the corresponding answer
+          answerBm.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
+        } catch (Exception e) {
+          throw new QuestionContainerRuntimeException(
+              "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+              SilverpeasRuntimeException.ERROR,
+              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED",
+              e);
         }
-        finally
-        {
-            freeConnection(con);
+      }
+
+      for (int i = vectorBegin; i < newVectorSize; i++) {
+        answerId = (String) answers.get(i);
+        SilverTrace.info("questionContainer",
+            "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+            "root.MSG_GEN_PARAM_VALUE", "It's a closed answer " + i);
+        answer = question.getAnswer(answerId);
+        questionUserScore += answer.getNbPoints() - penaltyValue;
+        answerPK = new AnswerPK(answerId, questionContainerPK);
+        result = new QuestionResult(null, new ForeignPK(questionPK), answerPK,
+            userId, null);
+        result.setParticipationId(participationId);
+        result.setNbPoints(answer.getNbPoints() - penaltyValue);
+        try {
+          questionResultBm.setQuestionResultToUser(result);
+        } catch (Exception e) {
+          throw new QuestionContainerRuntimeException(
+              "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+              SilverpeasRuntimeException.ERROR,
+              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED",
+              e);
         }
+        try {
+          // Add this vote to the corresponding answer
+          answerBm.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
+        } catch (Exception e) {
+          throw new QuestionContainerRuntimeException(
+              "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+              SilverpeasRuntimeException.ERROR,
+              "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED",
+              e);
+        }
+      }
+      SilverTrace.info("questionContainer",
+          "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+          "root.MSG_GEN_PARAM_VALUE", "Question ptsmin ="
+              + question.getNbPointsMin() + " - Question ptsmax ="
+              + question.getNbPointsMax());
+      if (question.getNbPointsMax() < questionUserScore) {
+        questionUserScore = question.getNbPointsMax();
+      } else if (question.getNbPointsMin() > questionUserScore) {
+        questionUserScore = question.getNbPointsMin();
+      }
+      userScore += questionUserScore;
+      SilverTrace.info("questionContainer",
+          "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+          "root.MSG_GEN_PARAM_VALUE", "questionUserScore =" + questionUserScore
+              + " - userScore =" + userScore);
     }
 
-    public Collection getOpenedQuestionContainersAndUserScores(QuestionContainerPK questionContainerPK, String userId) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getOpenedQuestionContainersAndUserScores()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        Connection con = null;
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+        "root.MSG_GEN_PARAM_VALUE", "User Score =" + userScore);
+    // Record the UserScore
+    ScoreDetail scoreDetail = new ScoreDetail(scorePK, questionContainerPK
+        .getId(), userId, participationId, formatterDB
+        .format(new java.util.Date()), userScore, 0, "");
 
-        try
-        {
-            con = getConnection();
-            Collection questionContainerHeaders = QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
-            Iterator   it = questionContainerHeaders.iterator();
-            ArrayList  result = new ArrayList();
+    scoreBm.addScore(scoreDetail);
 
-            while (it.hasNext())
-            {
-                QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it.next();
+    Connection con = null;
 
-                questionContainerHeader.setScores(this.getUserScoresByFatherId(questionContainerHeader.getPK(), userId));
-                result.add(this.setNbMaxPoint(questionContainerHeader));
-            }
-            return result;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getOpenedQuestionContainersAndUserScores()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+    try {
+      con = getConnection();
+      // Increment the number of voters
+      QuestionContainerDAO.addAVoter(con, questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED",
+          e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public void recordReplyToQuestionContainerByUser(
+      QuestionContainerPK questionContainerPK, String userId, Hashtable reply,
+      String comment, boolean isAnonymousComment) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId + ", comment = "
+            + comment);
+    recordReplyToQuestionContainerByUser(questionContainerPK, userId, reply);
+    addComment(questionContainerPK, userId, comment, isAnonymousComment);
+  }
+
+  private void addComment(QuestionContainerPK questionContainerPK,
+      String userId, String comment, boolean isAnonymousComment)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.addComment()", "root.MSG_GEN_ENTER_METHOD",
+        "questionContainerPK = " + questionContainerPK + ", userId = " + userId
+            + ", comment = " + comment);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Comment c = new Comment(null, questionContainerPK, userId, comment,
+          isAnonymousComment, null);
+
+      QuestionContainerDAO.addComment(con, c);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.addComment()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.ADDING_QUESTIONCONTAINER_COMMENT_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public QuestionContainerPK createQuestionContainer(
+      QuestionContainerPK questionContainerPK,
+      QuestionContainerDetail questionContainerDetail, String userId)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.createQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", questionContainerDetail = "
+            + questionContainerDetail + ", userId = " + userId);
+    Connection con = null;
+    QuestionContainerHeader questionContainerHeader = questionContainerDetail
+        .getHeader();
+
+    questionContainerHeader.setPK(questionContainerPK);
+    questionContainerHeader.setCreatorId(userId);
+
+    try {
+      con = getConnection();
+      questionContainerPK = QuestionContainerDAO.createQuestionContainerHeader(
+          con, questionContainerHeader);
+
+      questionContainerHeader.setPK(questionContainerPK);
+
+      QuestionContainerContentManager.createSilverContent(con,
+          questionContainerHeader, userId, true);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.createQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.CREATING_QUESTIONCONTAINER_FAILED", e);
+    } finally {
+      freeConnection(con);
     }
 
-    public Collection getQuestionContainersWithScores(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainersWithScores()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
+    QuestionBm questionBm = getQuestionBm();
+    QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
+    Collection questions = questionContainerDetail.getQuestions();
+    Iterator it = questions.iterator();
+    ArrayList q = new ArrayList();
 
-        try
-        {
-            con = getConnection();
-            Collection questionContainerHeaders = QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
-            Iterator   it = questionContainerHeaders.iterator();
-            ArrayList  result = new ArrayList();
+    while (it.hasNext()) {
+      Question question = (Question) it.next();
 
-            while (it.hasNext())
-            {
-                QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it.next();
-                Collection              scoreDetails = this.getScoresByFatherId(questionContainerHeader.getPK());
-
-                if (scoreDetails != null)
-                {
-                    questionContainerHeader.setScores(scoreDetails);
-                    result.add(this.setNbMaxPoint(questionContainerHeader));
-                }
-            }
-            return result;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainersWithScores()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINERS_AND_SCORES_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+      question.setPK(questionPK);
+      q.add(question);
     }
 
-    public Collection getQuestionContainersWithUserScores(QuestionContainerPK questionContainerPK, String userId) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainersWithUserScores()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        Connection con = null;
+    try {
+      questionBm.createQuestions(q, questionContainerPK.getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.createQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.CREATING_QUESTIONCONTAINER_FAILED", e);
+    }
+    createIndex(questionContainerHeader);
+    return questionContainerPK;
+  }
 
-        try
-        {
-            con = getConnection();
-            Collection questionContainerHeaders = QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
-            Iterator   it = questionContainerHeaders.iterator();
-            ArrayList  result = new ArrayList();
+  public void updateQuestionContainerHeader(
+      QuestionContainerHeader questionContainerHeader) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.updateQuestionContainerHeader()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
+            + questionContainerHeader);
+    Connection con = null;
 
-            while (it.hasNext())
-            {
-                QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it.next();
-                Collection              scoreDetails = this.getUserScoresByFatherId(questionContainerHeader.getPK(), userId);
+    try {
+      con = getConnection();
+      QuestionContainerDAO.updateQuestionContainerHeader(con,
+          questionContainerHeader);
 
-                if (scoreDetails != null)
-                {
-                    questionContainerHeader.setScores(scoreDetails);
-                    result.add(this.setNbMaxPoint(questionContainerHeader));
-                }
-            }
-            return result;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainersWithUserScores()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+      // start PDC integration
+      QuestionContainerContentManager.updateSilverContentVisibility(
+          questionContainerHeader, true);
+      // end PDC integration
+
+      createIndex(questionContainerHeader);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.updateQuestionContainerHeader()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.UPDATING_QUESTIONCONTAINER_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public void updateQuestions(QuestionContainerPK questionContainerPK,
+      Collection questions) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.updateQuestions()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    QuestionBm questionBm = getQuestionBm();
+    QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
+    Iterator it = questions.iterator();
+    ArrayList q = new ArrayList();
+
+    while (it.hasNext()) {
+      Question question = (Question) it.next();
+
+      question.setPK(questionPK);
+      q.add(question);
     }
 
-    public Collection getClosedQuestionContainers(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getClosedQuestionContainers()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
-
-        try
-        {
-            con = getConnection();
-            Collection result = QuestionContainerDAO.getClosedQuestionContainers(con, questionContainerPK);
-
-            return this.setNbMaxPoints(result);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getClosedQuestionContainers()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_CLOSED_QUESTIONCONTAINERS_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+    try {
+      // delete all old questions
+      questionBm.deleteQuestionsByFatherPK(questionPK, questionContainerPK
+          .getId());
+      // replace it with new ones
+      questionBm.createQuestions(questions, questionContainerPK.getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.updateQuestions()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.UPDATING_QUESTIONCONTAINER_QUESTIONS_FAILED", e);
     }
+  }
 
-    public Collection getInWaitQuestionContainers(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getInWaitQuestionContainers()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
-
-        try
-        {
-            con = getConnection();
-            Collection result = QuestionContainerDAO.getInWaitQuestionContainers(con, questionContainerPK);
-
-            return this.setNbMaxPoints(result);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getInWaitQuestionContainers()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_INWAIT_QUESTIONCONTAINERS_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-    }
-
-    public Collection getUserScoresByFatherId(QuestionContainerPK questionContainerPK, String userId) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getUserScoresByFatherId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        Collection scores = null;
-        ScoreBm    scoreBm = getScoreBm();
-        ScorePK    scorePK = new ScorePK(null, questionContainerPK);
-
-        try
-        {
-            scores = scoreBm.getUserScoresByFatherId(scorePK, questionContainerPK.getId(), userId);
-            if (scores != null)
-            {
-                                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getUserScoresByFatherId()", "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
-            }
-            else
-            {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getUserScoresByFatherId()", "root.MSG_GEN_PARAM_VALUE", "Le score : null");
-            }
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getUserScoresByFatherId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_USER_SCORES_FAILED", e);
-        }
-        return scores;
-    }
-
-    public Collection getBestScoresByFatherId(QuestionContainerPK questionContainerPK, int nbBestScores) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getBestScoresByFatherId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", nbBestScores = "+nbBestScores);
-        Collection scores = null;
-        ScoreBm    scoreBm = getScoreBm();
-        ScorePK    scorePK = new ScorePK(null, questionContainerPK);
-
-        try
-        {
-            scores = scoreBm.getBestScoresByFatherId(scorePK, nbBestScores, questionContainerPK.getId());
-            return scores;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getBestScoresByFatherId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_BEST_SCORES_FAILED", e);
-        }
-    }
-
-    public Collection getWorstScoresByFatherId(QuestionContainerPK questionContainerPK, int nbScores) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getWorstScoresByFatherId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", nbScores = "+nbScores);
-        Collection scores = null;
-        ScoreBm    scoreBm = getScoreBm();
-        ScorePK    scorePK = new ScorePK(null, questionContainerPK);
-
-        try
-        {
-            scores = scoreBm.getWorstScoresByFatherId(scorePK, nbScores, questionContainerPK.getId());
-            return scores;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getWorstScoresByFatherId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_WORST_SCORES_FAILED", e);
-        }
-    }
-
-    public Collection getScoresByFatherId(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Collection scores = null;
-        ScoreBm    scoreBm = getScoreBm();
-        ScorePK    scorePK = new ScorePK(null, questionContainerPK);
-
-        try
-        {
-            scores = scoreBm.getScoresByFatherId(scorePK, questionContainerPK.getId());
-            if (scores != null)
-            {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()", "root.MSG_GEN_PARAM_VALUE", "Le score : Size=" + scores.size());
-            }
-            else
-            {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getScoresByFatherId()", "root.MSG_GEN_PARAM_VALUE", "Le score : null");
-            }
-            return scores;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getScoresByFatherId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_SCORES_FAILED", e);
-        }
-    }
-
-    public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getAverageScoreByFatherId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        float   averageScore = 0;
-        ScoreBm scoreBm = getScoreBm();
-        ScorePK scorePK = new ScorePK(null, questionContainerPK);
-
-        try
-        {
-            averageScore = scoreBm.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
-            return averageScore;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getAverageScoreByFatherId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_AVERAGE_SCORE_FAILED", e);
-        }
-    }
-
-    public QuestionContainerDetail getQuestionContainer(QuestionContainerPK questionContainerPK, String userId) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        Connection              con = null;
-        Collection              questions = null;
-        Collection              comments = null;
-        QuestionContainerHeader questionContainerHeader = null;
-        Collection              userVotes = null;
-
-        questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
-        
-        QuestionBm questionBm = getQuestionBm();
-        QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
-        int        nbMaxPoints = 0;
-
-        try
-        {
-            questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-            Iterator it2 = questions.iterator();
-
-            while (it2.hasNext())
-            {
-                Question question = (Question) it2.next();
-
-                nbMaxPoints += question.getNbPointsMax();
-            }
-            questionContainerHeader.setNbMaxPoints(nbMaxPoints);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED", e);
-        }
-
-        try
-        {
-            con = getConnection();
-            userVotes = getUserVotesToQuestionContainer(userId, questionContainerPK);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-
-        try
-        {
-            con = getConnection();
-            comments = getComments(questionContainerPK);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainer()", "root.MSG_GEN_EXIT_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        return new QuestionContainerDetail(questionContainerHeader, questions, comments, userVotes);
-    }
-
-	public QuestionContainerHeader getQuestionContainerHeader(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainerHeader()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection              con = null;
-        QuestionContainerHeader questionContainerHeader = null;
-
-        try
-        {
-            con = getConnection();
-            questionContainerHeader = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
-        }
-        catch (Exception e)
-        {
-			throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-
-        return questionContainerHeader;
-    }
-
-    public QuestionContainerDetail getQuestionContainerByParticipationId(QuestionContainerPK questionContainerPK, String userId, int participationId) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainerByParticipationId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId+", participationId = "+participationId);
-        Collection              questions = null;
-        Collection              comments = null;
-        QuestionContainerHeader questionContainerHeader = null;
-        Collection              userVotes = null;
-
-        questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
-
-		QuestionBm       questionBm = getQuestionBm();
-        QuestionResultBm questionResultBm = getQuestionResultBm();
-        QuestionPK       questionPK = new QuestionPK(null, questionContainerPK);
-        int              nbMaxPoints = 0;
-
-        try
-        {
-            questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-            Iterator it2 = questions.iterator();
-
-            while (it2.hasNext())
-            {
-                Question question = (Question) it2.next();
-
-                userVotes = questionResultBm.getUserQuestionResultsToQuestionByParticipation(userId, new ForeignPK(question.getPK()), participationId);
-                question.setQuestionResults(userVotes);
-                nbMaxPoints += question.getNbPointsMax();
-            }
-            questionContainerHeader.setNbMaxPoints(nbMaxPoints);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionContainerByParticipationId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED", e);
-        }
-
-        comments = getComments(questionContainerPK);
-                
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getQuestionContainerByParticipationId()", "root.MSG_GEN_EXIT_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId+", participationId = "+participationId);
-        return new QuestionContainerDetail(questionContainerHeader, questions, comments, userVotes);
-    }
-
-    public void closeQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.closeQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection              con = null;
-        
-        try
-        {
-            con = getConnection();
-
-			//begin PDC integration
-			QuestionContainerHeader	qc = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
-			QuestionContainerContentManager.updateSilverContentVisibility(qc, false);
-			//end PDC integration
-            
-            QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
-
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.closeQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.CLOSING_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-    }
-
-    public void openQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.openQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection              con = null;
-
-        try
-        {
-            con = getConnection();
-
-			//begin PDC integration
-			QuestionContainerHeader	qc	=  QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
-			QuestionContainerContentManager.updateSilverContentVisibility(qc, true);
-			//end PDC integration
-
-            QuestionContainerDAO.openQuestionContainer(con, questionContainerPK);
-        }
-        catch (Exception e)
-        {
-             throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.openQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.OPENING_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-    }
-
-    public int getNbVotersByQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getNbVotersByQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        int     nbVoters = 0;
-
-        ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        ScoreBm scoreBm = getScoreBm();
-
-        try
-        {
-            nbVoters = scoreBm.getNbVotersByFatherId(scorePK, questionContainerPK.getId());
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getNbVotersByQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_NUMBER_OF_VOTES_FAILED", e);
-        }
-        return nbVoters;
-    }
-
-    public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK, String userId, Hashtable reply) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        SimpleDateFormat formatterDB = new java.text.SimpleDateFormat("yyyy/MM/dd");
-        QuestionPK       questionPK = null;
-        AnswerPK         answerPK = null;
-        ScorePK          scorePK = new ScorePK(null, questionContainerPK);
-        QuestionResult   result = null;
-        QuestionResultBm questionResultBm = getQuestionResultBm();
-        AnswerBm         answerBm = getAnswerBm();
-        QuestionBm       questionBm = getQuestionBm();
-        ScoreBm          scoreBm = getScoreBm();
-        Answer           answer = null;
-        int              participationId = scoreBm.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId) + 1;
-        int              questionUserScore = 0;
-        int              userScore = 0;
-
-        Enumeration      keys = reply.keys();
-
-        while (keys.hasMoreElements())
-        {
-            questionUserScore = 0;
-            String questionId = (String) keys.nextElement();
-
-            questionPK = new QuestionPK(questionId, questionContainerPK);
-            Question question = null;
-
-            try
-            {
-                question = questionBm.getQuestion(questionPK);
-            }
-            catch (Exception e)
-            {
-                                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", SilverpeasRuntimeException.ERROR, "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-            }
-
-            Vector answers = (Vector) reply.get(questionId);
-            String answerId = null;
-            int    vectorSize = answers.size();
-            int    newVectorSize = vectorSize;
-            int    vectorBegin = 0;
-            // Treatment of the first vector element
-            // to know if the clue has been read
-            String cluePenalty = (String) answers.firstElement();
-            int    penaltyValue = 0;
-
-            if (cluePenalty.startsWith("PC"))
-            {
-                // It's a clue penalty field
-                penaltyValue = new Integer(cluePenalty.substring(2, cluePenalty.length())).intValue();
-                vectorBegin = 1;
-            }
-
-            // Treatment of the last vector element
-            // to know if the answer is opened
-            String openedAnswer = (String) answers.lastElement();
-
-            if (openedAnswer.startsWith("OA"))
-            {
-                                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_PARAM_VALUE", "It's an open answer !");
-                // It's an open answer
-                // Fetch the correspondant answerId
-                answerId = (String) answers.get(vectorSize - 2);
-                openedAnswer = openedAnswer.substring(2, openedAnswer.length());
-
-                // User Score for this question
-                answer = question.getAnswer(answerId);
-                questionUserScore += answer.getNbPoints() - penaltyValue;
-
-                newVectorSize = vectorSize - 2;
-                answerPK = new AnswerPK(answerId, questionContainerPK);
-                result = new QuestionResult(null, new ForeignPK(questionPK), answerPK, userId, openedAnswer);
-                result.setParticipationId(participationId);
-                result.setNbPoints(answer.getNbPoints() - penaltyValue);
-                                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_PARAM_VALUE", "answer.getNbPoints(): " + answer.getNbPoints() + ", penaltyValue=" + penaltyValue);
-                try
-                {
-                    questionResultBm.setQuestionResultToUser(result);
-                }
-                catch (Exception e)
-                {
-                                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", SilverpeasRuntimeException.ERROR, "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-                }
-                try
-                {
-                    // Add this vote to the corresponding answer
-                    answerBm.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
-                }
-                catch (Exception e)
-                {
-                                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", SilverpeasRuntimeException.ERROR, "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-                }
-            }
-
-            for (int i = vectorBegin; i < newVectorSize; i++)
-            {
-                answerId = (String) answers.get(i);
-                                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_PARAM_VALUE", "It's a closed answer " + i);
-                answer = question.getAnswer(answerId);
-                questionUserScore += answer.getNbPoints() - penaltyValue;
-                answerPK = new AnswerPK(answerId, questionContainerPK);
-                result = new QuestionResult(null, new ForeignPK(questionPK), answerPK, userId, null);
-                result.setParticipationId(participationId);
-                result.setNbPoints(answer.getNbPoints() - penaltyValue);
-                try
-                {
-                    questionResultBm.setQuestionResultToUser(result);
-                }
-                catch (Exception e)
-                {
-                                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", SilverpeasRuntimeException.ERROR, "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-                }
-                try
-                {
-                    // Add this vote to the corresponding answer
-                    answerBm.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
-                }
-                catch (Exception e)
-                {
-                                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", SilverpeasRuntimeException.ERROR, "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-                }
-            }
-                        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_PARAM_VALUE", "Question ptsmin =" + question.getNbPointsMin() + " - Question ptsmax =" + question.getNbPointsMax());
-            if (question.getNbPointsMax() < questionUserScore)
-            {
-                questionUserScore = question.getNbPointsMax();
-            }
-            else if (question.getNbPointsMin() > questionUserScore)
-            {
-                questionUserScore = question.getNbPointsMin();
-            }
-            userScore += questionUserScore;
-                        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_PARAM_VALUE", "questionUserScore =" + questionUserScore + " - userScore =" + userScore);
-        }
-                
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_PARAM_VALUE", "User Score =" + userScore);
-        // Record the UserScore
-        ScoreDetail scoreDetail = new ScoreDetail(scorePK, questionContainerPK.getId(), userId, participationId, formatterDB.format(new java.util.Date()), userScore, 0, "");
-
-        scoreBm.addScore(scoreDetail);
-
-        Connection con = null;
-
-        try
-        {
-            con = getConnection();
-            // Increment the number of voters
-            QuestionContainerDAO.addAVoter(con, questionContainerPK);
-        }
-        catch (Exception e)
-        {       
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", SilverpeasRuntimeException.ERROR, "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-    }
-
-    public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK, String userId, Hashtable reply, String comment, boolean isAnonymousComment) throws RemoteException
-    {   
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId+", comment = "+comment);
-        recordReplyToQuestionContainerByUser(questionContainerPK, userId, reply);
-        addComment(questionContainerPK, userId, comment, isAnonymousComment);
-    }
-
-    private void addComment(QuestionContainerPK questionContainerPK, String userId, String comment, boolean isAnonymousComment) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.addComment()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId+", comment = "+comment);
-        Connection con = null;
-
-        try
-        {
-            con = getConnection();
-            Comment c = new Comment(null, questionContainerPK, userId, comment, isAnonymousComment, null);
-
-            QuestionContainerDAO.addComment(con, c);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.addComment()", SilverpeasRuntimeException.ERROR, "questionContainer.ADDING_QUESTIONCONTAINER_COMMENT_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-    }
-
-        public QuestionContainerPK createQuestionContainer(QuestionContainerPK questionContainerPK, QuestionContainerDetail questionContainerDetail, String userId) throws RemoteException
-        {
-            SilverTrace.info("questionContainer", "QuestionContainerBmEJB.createQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", questionContainerDetail = "+questionContainerDetail+", userId = "+userId);
-			Connection con = null;
-			QuestionContainerHeader questionContainerHeader = questionContainerDetail.getHeader();
-
-			questionContainerHeader.setPK(questionContainerPK);
-			questionContainerHeader.setCreatorId(userId);
-
-			try
-			{
-				con = getConnection();
-				questionContainerPK = QuestionContainerDAO.createQuestionContainerHeader(con, questionContainerHeader);
-
-				questionContainerHeader.setPK(questionContainerPK);
-
-				QuestionContainerContentManager.createSilverContent(con, questionContainerHeader, userId, true);
-			}
-			catch (Exception e)
-			{
-				throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.createQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.CREATING_QUESTIONCONTAINER_FAILED", e);
-			}
-			finally
-			{
-				freeConnection(con);
-			}
-
-			QuestionBm questionBm = getQuestionBm();
-			QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
-			Collection questions = questionContainerDetail.getQuestions();
-			Iterator   it = questions.iterator();
-			ArrayList  q = new ArrayList();
-
-			while (it.hasNext())
-			{
-				Question question = (Question) it.next();
-
-				question.setPK(questionPK);
-				q.add(question);
-			}
-
-			try
-			{
-				questionBm.createQuestions(q, questionContainerPK.getId());
-			}
-			catch (Exception e)
-			{
-				throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.createQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.CREATING_QUESTIONCONTAINER_FAILED", e);
-			}
-			createIndex(questionContainerHeader);
-			return questionContainerPK;
-        }
-
-    public void updateQuestionContainerHeader(QuestionContainerHeader questionContainerHeader) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.updateQuestionContainerHeader()", "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
-        Connection con = null;
-
-        try
-        {
-            con = getConnection();
-            QuestionContainerDAO.updateQuestionContainerHeader(con, questionContainerHeader);
-
-			//start PDC integration
-            QuestionContainerContentManager.updateSilverContentVisibility(questionContainerHeader, true);
-			//end PDC integration
-            
-			createIndex(questionContainerHeader);
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.updateQuestionContainerHeader()", SilverpeasRuntimeException.ERROR, "questionContainer.UPDATING_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
-    }
-
-    public void updateQuestions(QuestionContainerPK questionContainerPK, Collection questions) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.updateQuestions()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        QuestionBm questionBm = getQuestionBm();
-        QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
-        Iterator   it = questions.iterator();
-        ArrayList  q = new ArrayList();
-
-        while (it.hasNext())
-        {
-            Question question = (Question) it.next();
-
-            question.setPK(questionPK);
-            q.add(question);
-        }
-
-        try
-        {
-            // delete all old questions
-            questionBm.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-            // replace it with new ones
-            questionBm.createQuestions(questions, questionContainerPK.getId());
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.updateQuestions()", SilverpeasRuntimeException.ERROR, "questionContainer.UPDATING_QUESTIONCONTAINER_QUESTIONS_FAILED", e);
-        }
-    }
-
-    
-    public void deleteVotes(QuestionContainerPK questionContainerPK)
+  public void deleteVotes(QuestionContainerPK questionContainerPK)
     {
      	SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteVotes()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
         Connection con = null;
@@ -1070,436 +1192,469 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
             freeConnection(con);
         }
     }
-    
-    public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
-        ScorePK    scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        QuestionBm questionBm = getQuestionBm();
-        ScoreBm    scoreBm = getScoreBm();
 
-        try
-        {
-            scoreBm.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.deleteQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
-        }
-        try
-        {
-            questionBm.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-            deleteIndex(questionContainerPK);
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.deleteQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
-        }
+  public void deleteQuestionContainer(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.deleteQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    Connection con = null;
+    ScorePK scorePK = new ScorePK(questionContainerPK.getId(),
+        questionContainerPK.getSpace(), questionContainerPK.getComponentName());
+    QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(),
+        questionContainerPK.getSpace(), questionContainerPK.getComponentName());
+    QuestionBm questionBm = getQuestionBm();
+    ScoreBm scoreBm = getScoreBm();
 
-        try
-        {
-            con = getConnection();
-            QuestionContainerDAO.deleteComments(con, questionContainerPK);
-            QuestionContainerDAO.deleteQuestionContainerHeader(con, questionContainerPK);
-
-            QuestionContainerContentManager.deleteSilverContent(con, questionContainerPK);
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.deleteQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+    try {
+      scoreBm.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.deleteQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
+    }
+    try {
+      questionBm.deleteQuestionsByFatherPK(questionPK, questionContainerPK
+          .getId());
+      deleteIndex(questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.deleteQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
     }
 
-    private Collection getComments(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getComments()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
+    try {
+      con = getConnection();
+      QuestionContainerDAO.deleteComments(con, questionContainerPK);
+      QuestionContainerDAO.deleteQuestionContainerHeader(con,
+          questionContainerPK);
 
-        try
-        {
-            con = getConnection();
-            Collection comments = QuestionContainerDAO.getComments(con, questionContainerPK);
+      QuestionContainerContentManager.deleteSilverContent(con,
+          questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.deleteQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
 
-            return comments;
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getComments()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_COMMENTS_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+  private Collection getComments(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getComments()", "root.MSG_GEN_ENTER_METHOD",
+        "questionContainerPK = " + questionContainerPK);
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      Collection comments = QuestionContainerDAO.getComments(con,
+          questionContainerPK);
+
+      return comments;
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getComments()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_COMMENTS_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public Collection getSuggestions(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getSuggestions()", "root.MSG_GEN_ENTER_METHOD",
+        "questionContainerPK = " + questionContainerPK);
+    Collection suggestions = null;
+    QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(),
+        questionContainerPK.getSpace(), questionContainerPK.getComponentName());
+    QuestionResultBm questionResultBm = getQuestionResultBm();
+
+    try {
+      suggestions = questionResultBm.getQuestionResultToQuestion(new ForeignPK(
+          questionPK));
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getSuggestions()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_SUGGESTIONS_FAILED", e);
+    }
+    return suggestions;
+  }
+
+  private Collection getUserVotesToQuestionContainer(String userId,
+      QuestionContainerPK questionContainerPK) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getUserVotesToQuestionContainer()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    Collection votes = null;
+    QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK
+        .getSpace(), questionContainerPK.getComponentName());
+    QuestionBm questionBm = getQuestionBm();
+    Collection questions = null;
+
+    try {
+      questions = questionBm.getQuestionsByFatherPK(questionPK,
+          questionContainerPK.getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getUserVotesToQuestionContainer()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED",
+          e);
     }
 
-    public Collection getSuggestions(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getSuggestions()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Collection       suggestions = null;
-        QuestionPK       questionPK = new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        QuestionResultBm questionResultBm = getQuestionResultBm();
+    Iterator it = questions.iterator();
 
-        try
-        {
-            suggestions = questionResultBm.getQuestionResultToQuestion(new ForeignPK(questionPK));
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getSuggestions()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_SUGGESTIONS_FAILED", e);
-        }
-        return suggestions;
+    while (it.hasNext()) {
+      Question question = (Question) it.next();
+      QuestionResultBm questionResultBm = getQuestionResultBm();
+
+      try {
+        votes = questionResultBm.getUserQuestionResultsToQuestion(userId,
+            new ForeignPK(question.getPK()));
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.getUserVotesToQuestionContainer()",
+            SilverpeasRuntimeException.ERROR,
+            "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED",
+            e);
+      }
+      if (votes.size() > 0) {
+        break;
+      }
     }
+    return votes;
+  }
 
-    private Collection getUserVotesToQuestionContainer(String userId, QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getUserVotesToQuestionContainer()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        Collection votes = null;
-        QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        QuestionBm questionBm = getQuestionBm();
-        Collection questions = null;
+  public float getAveragePoints(QuestionContainerPK questionContainerPK)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getAveragePoints()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK);
+    float averagePoints = 0;
+    ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
+        questionContainerPK.getComponentName());
+    ScoreBm scoreBm = getScoreBm();
 
-        try
-        {
-            questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getUserVotesToQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED", e);
-        }
-
-        Iterator it = questions.iterator();
-
-        while (it.hasNext())
-        {
-            Question         question = (Question) it.next();
-            QuestionResultBm questionResultBm = getQuestionResultBm();
-
-            try
-            {
-                votes = questionResultBm.getUserQuestionResultsToQuestion(userId, new ForeignPK(question.getPK()));
-            }
-            catch (Exception e)
-            {
-                                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getUserVotesToQuestionContainer()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED", e);
-            }
-            if (votes.size() > 0)
-            {
-                break;
-            }
-        }
-        return votes;
+    try {
+      averagePoints = scoreBm.getAverageScoreByFatherId(scorePK,
+          questionContainerPK.getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getAveragePoints()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_AVERAGE_SCORES_FAILED",
+          e);
     }
+    return averagePoints;
+  }
 
-    public float getAveragePoints(QuestionContainerPK questionContainerPK) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getAveragePoints()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        float   averagePoints = 0;
-        ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        ScoreBm scoreBm = getScoreBm();
+  public int getUserNbParticipationsByFatherId(
+      QuestionContainerPK questionContainerPK, String userId)
+      throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getUserNbParticipationsByFatherId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId);
+    int nbPart = 0;
 
-        try
-        {
-            averagePoints = scoreBm.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getAveragePoints()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_AVERAGE_SCORES_FAILED", e);
-        }
-        return averagePoints;
+    ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
+        questionContainerPK.getComponentName());
+    ScoreBm scoreBm = getScoreBm();
+
+    try {
+      nbPart = scoreBm.getUserNbParticipationsByFatherId(scorePK,
+          questionContainerPK.getId(), userId);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getUserNbParticipationsByFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_NB_PARTICIPATION_TO_USER_FAILED",
+          e);
     }
+    return nbPart;
+  }
 
-    public int getUserNbParticipationsByFatherId(QuestionContainerPK questionContainerPK, String userId) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getUserNbParticipationsByFatherId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId);
-        int     nbPart = 0;
+  public ScoreDetail getUserScoreByFatherIdAndParticipationId(
+      QuestionContainerPK questionContainerPK, String userId,
+      int participationId) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getUserScoreByFatherIdAndParticipationId()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
+            + questionContainerPK + ", userId = " + userId
+            + ", participationId = " + participationId);
+    ScoreDetail scoreDetail = null;
 
-        ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        ScoreBm scoreBm = getScoreBm();
+    ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
+        questionContainerPK.getComponentName());
+    ScoreBm scoreBm = getScoreBm();
 
-        try
-        {
-            nbPart = scoreBm.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getUserNbParticipationsByFatherId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_NB_PARTICIPATION_TO_USER_FAILED", e);
-        }
-        return nbPart;
+    try {
+      scoreDetail = scoreBm.getUserScoreByFatherIdAndParticipationId(scorePK,
+          questionContainerPK.getId(), userId, participationId);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getUserScoreByFatherIdAndParticipationId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.GETTING_QUESTIONCONTAINER_USER_SCORE_TO_A_PARTICIPATION_FAILED",
+          e);
     }
+    return scoreDetail;
+  }
 
-    public ScoreDetail getUserScoreByFatherIdAndParticipationId(QuestionContainerPK questionContainerPK, String userId, int participationId) throws RemoteException
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.getUserScoreByFatherIdAndParticipationId()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", userId = "+userId+", participationId = "+participationId);
-        ScoreDetail scoreDetail = null;
+  public void updateScore(QuestionContainerPK questionContainerPK,
+      ScoreDetail scoreDetail) throws RemoteException {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.updateScore()", "root.MSG_GEN_ENTER_METHOD",
+        "questionContainerPK = " + questionContainerPK + ", scoreDetail = "
+            + scoreDetail);
+    ScoreBm scoreBm = getScoreBm();
 
-        ScorePK     scorePK = new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        ScoreBm     scoreBm = getScoreBm();
-
-        try
-        {
-            scoreDetail = scoreBm.getUserScoreByFatherIdAndParticipationId(scorePK, questionContainerPK.getId(), userId, participationId);
-        }
-        catch (Exception e)
-        {
-                        throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getUserScoreByFatherIdAndParticipationId()", SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_USER_SCORE_TO_A_PARTICIPATION_FAILED", e);
-        }
-        return scoreDetail;
+    try {
+      scoreBm.updateScore(scoreDetail);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.updateScore()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.UPDATING_QUESTIONCONTAINER_SCORE_FAILED", e);
     }
+  }
 
-    public void updateScore(QuestionContainerPK questionContainerPK, ScoreDetail scoreDetail) throws RemoteException
-    {
-        SilverTrace.info("questionContainer", "QuestionContainerBmEJB.updateScore()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK+", scoreDetail = "+scoreDetail);
-        ScoreBm scoreBm = getScoreBm();
+  /**
+   * Called on : - createQuestionContainer() - updateQuestionContainer()
+   */
+  private void createIndex(QuestionContainerHeader header) {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+        "header = " + header);
+    FullIndexEntry indexEntry = null;
 
-        try
-        {
-            scoreBm.updateScore(scoreDetail);
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.updateScore()", SilverpeasRuntimeException.ERROR, "questionContainer.UPDATING_QUESTIONCONTAINER_SCORE_FAILED", e);
-        }
+    if (header != null) {
+      // Index the QuestionContainerHeader
+      indexEntry = new FullIndexEntry(header.getPK().getComponentName(),
+          "QuestionContainer", header.getPK().getId());
+      indexEntry.setTitle(header.getTitle());
+      indexEntry.setPreView(header.getDescription());
+      indexEntry.setCreationDate(header.getCreationDate());
+      indexEntry.setCreationUser(header.getCreatorId());
+      if (header.getBeginDate() == null) {
+        indexEntry.setStartDate(nullBeginDate);
+      } else {
+        indexEntry.setStartDate(header.getBeginDate());
+      }
+      if (header.getEndDate() == null) {
+        indexEntry.setEndDate(nullEndDate);
+      } else {
+        indexEntry.setEndDate(header.getEndDate());
+      }
     }
+    IndexEngineProxy.addIndexEntry(indexEntry);
+  }
 
-    /**
-     * Called on : - createQuestionContainer()
-     * - updateQuestionContainer()
-     */
-    private void createIndex(QuestionContainerHeader header)
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD", "header = " + header);
-        FullIndexEntry indexEntry = null;
+  /**
+   * Called on : - deleteQuestionContainer()
+   */
+  public void deleteIndex(QuestionContainerPK pk) {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
+        "questionContainerPK = " + pk);
+    IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(),
+        "QuestionContainer", pk.getId());
 
-        if (header != null)
-        {
-            // Index the QuestionContainerHeader
-            indexEntry = new FullIndexEntry(header.getPK().getComponentName(), "QuestionContainer", header.getPK().getId());
-            indexEntry.setTitle(header.getTitle());
-            indexEntry.setPreView(header.getDescription());
-            indexEntry.setCreationDate(header.getCreationDate());
-            indexEntry.setCreationUser(header.getCreatorId());
-            if (header.getBeginDate() == null)
-            {
-                indexEntry.setStartDate(nullBeginDate);
-            }
-            else
-            {
-                indexEntry.setStartDate(header.getBeginDate());
-            }
-            if (header.getEndDate() == null)
-            {
-                indexEntry.setEndDate(nullEndDate);
-            }
-            else
-            {
-                indexEntry.setEndDate(header.getEndDate());
-            }
-        }
-        IndexEngineProxy.addIndexEntry(indexEntry);
+    IndexEngineProxy.removeIndexEntry(indexEntry);
+  }
+
+  public int getSilverObjectId(QuestionContainerPK pk) {
+    SilverTrace.info("questionContainer",
+        "QuestionContainerBmEJB.getSilverObjectId()",
+        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk.toString());
+    int silverObjectId = -1;
+    try {
+      silverObjectId = QuestionContainerContentManager.getSilverObjectId(pk
+          .getId(), pk.getComponentName());
+      if (silverObjectId == -1) {
+        QuestionContainerHeader questionContainerHeader = getQuestionContainerHeader(pk);
+        silverObjectId = QuestionContainerContentManager.createSilverContent(
+            null, questionContainerHeader, questionContainerHeader
+                .getCreatorId(), true);
+      }
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getSilverObjectId()",
+          SilverpeasRuntimeException.ERROR,
+          "questionContainer.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
+    return silverObjectId;
+  }
 
-    /**
-     * Called on : - deleteQuestionContainer()
-     */
-    public void deleteIndex(QuestionContainerPK pk)
-    {
-                SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + pk);
-        IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "QuestionContainer", pk.getId());
+  /**************************************************************************************************************************/
+  /* PRIVATE METHODS */
+  /**************************************************************************************************************************/
 
-        IndexEngineProxy.removeIndexEntry(indexEntry);
+  private QuestionBm getQuestionBm() {
+    if (currentQuestionBm == null) {
+      try {
+        QuestionBmHome questionBmHome = (QuestionBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.QUESTIONBM_EJBHOME, QuestionBmHome.class);
+
+        currentQuestionBm = questionBmHome.create();
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.getQuestionBm()",
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+            "Object = Question", e);
+      }
     }
+    return currentQuestionBm;
+  }
 
-	public int getSilverObjectId(QuestionContainerPK pk) {
-		SilverTrace.info("questionContainer","QuestionContainerBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD", "pk = "+pk.toString());
-		int					silverObjectId	= -1;
-		try {
-			silverObjectId	= QuestionContainerContentManager.getSilverObjectId(pk.getId(), pk.getComponentName());
-			if (silverObjectId == -1) {
-				QuestionContainerHeader questionContainerHeader	= getQuestionContainerHeader(pk);
-				silverObjectId	= QuestionContainerContentManager.createSilverContent(null, questionContainerHeader, questionContainerHeader.getCreatorId(), true);
-			}
-		} catch (Exception e) {
-			throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getSilverObjectId()",SilverpeasRuntimeException.ERROR,"questionContainer.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
-		}
-		return silverObjectId;
-	}
+  private AnswerBm getAnswerBm() {
+    if (currentAnswerBm == null) {
+      try {
+        AnswerBmHome answerBmHome = (AnswerBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.ANSWERBM_EJBHOME, AnswerBmHome.class);
 
-        /**************************************************************************************************************************/
-        /*      PRIVATE METHODS                                                                                                                                                                                                           */
-        /**************************************************************************************************************************/
-
-        private QuestionBm getQuestionBm()
-    {
-        if (currentQuestionBm == null)
-        {
-            try
-            {
-                QuestionBmHome questionBmHome = (QuestionBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.QUESTIONBM_EJBHOME, QuestionBmHome.class);
-
-                currentQuestionBm = questionBmHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionBm()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "Object = Question", e);
-            }
-        }
-        return currentQuestionBm;
+        currentAnswerBm = answerBmHome.create();
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.getQuestionBm()",
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+            "Object = Answer", e);
+      }
     }
+    return currentAnswerBm;
+  }
 
-    
-    private AnswerBm getAnswerBm()
-    {
-        if (currentAnswerBm == null)
-        {
-            try
-            {
-                AnswerBmHome answerBmHome = (AnswerBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.ANSWERBM_EJBHOME, AnswerBmHome.class);
+  private QuestionResultBm getQuestionResultBm() {
+    if (currentQuestionResultBm == null) {
+      try {
+        QuestionResultBmHome questionResultBmHome = (QuestionResultBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.QUESTIONRESULTBM_EJBHOME,
+                QuestionResultBmHome.class);
 
-                currentAnswerBm = answerBmHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionBm()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "Object = Answer", e);
-            }
-        }
-        return currentAnswerBm;
+        currentQuestionResultBm = questionResultBmHome.create();
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.getQuestionResultBm()",
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+            "Object = QuestionResult", e);
+      }
     }
+    return currentQuestionResultBm;
+  }
 
-    private QuestionResultBm getQuestionResultBm()
-    {
-        if (currentQuestionResultBm == null)
-        {
-            try
-            {
-                QuestionResultBmHome questionResultBmHome = (QuestionResultBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.QUESTIONRESULTBM_EJBHOME, QuestionResultBmHome.class);
+  private ScoreBm getScoreBm() {
+    if (currentScoreBm == null) {
+      try {
+        ScoreBmHome scoreBmHome = (ScoreBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.SCOREBM_EJBHOME, ScoreBmHome.class);
 
-                currentQuestionResultBm = questionResultBmHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getQuestionResultBm()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "Object = QuestionResult", e);
-            }
-        }
-        return currentQuestionResultBm;
+        currentScoreBm = scoreBmHome.create();
+      } catch (Exception e) {
+        throw new QuestionContainerRuntimeException(
+            "QuestionContainerBmEJB.getScoreBm()",
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+            "Object = Score", e);
+      }
     }
+    return currentScoreBm;
+  }
 
-    private ScoreBm getScoreBm()
-    {
-        if (currentScoreBm == null)
-        {
-            try
-            {
-                ScoreBmHome scoreBmHome = (ScoreBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SCOREBM_EJBHOME, ScoreBmHome.class);
+  private Connection getConnection() {
+    try {
+      return DBUtil.makeConnection(dbName);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+    }
+  }
 
-                currentScoreBm = scoreBmHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getScoreBm()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "Object = Score", e);
-            }
-        }
-        return currentScoreBm;
+  private void freeConnection(Connection con) {
+    if (con != null) {
+      try {
+        con.close();
+      } catch (Exception e) {
+        SilverTrace.error("questionContainer",
+            "QuestionContainerBmEJB.freeConnection()",
+            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      }
     }
+  }
 
-    private Connection getConnection()
-    {
-        try
-        {
-            return DBUtil.makeConnection(dbName);
-        }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getConnection()", SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-        }
-    }
+  public String getHTMLQuestionPath(QuestionContainerDetail questionDetail) {
+    String htmlPath = "";
+    try {
+      QuestionContainerHeader questionHeader = questionDetail.getHeader();
+      QuestionContainerPK pk = questionHeader.getPK();
 
-    private void freeConnection(Connection con)
-    {
-        if (con != null)
-        {
-            try
-            {
-                con.close();
-            }
-            catch (Exception e)
-            {
-                SilverTrace.error("questionContainer", "QuestionContainerBmEJB.freeConnection()", "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-            }
-        }
+      htmlPath = getSpacesPath(pk.getInstanceId())
+          + getComponentLabel(pk.getInstanceId()) + " > "
+          + questionHeader.getName();
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(
+          "QuestionContainerBmEJB.getHTMLQuestionPath()",
+          SilverpeasRuntimeException.ERROR,
+          "survey.IMPOSSIBLE_D_OBTENIR_LE_PATH", e);
     }
-    
-    public String getHTMLQuestionPath(QuestionContainerDetail questionDetail) 
-    {
-    	String htmlPath = "";
-		try 
-		{
-			QuestionContainerHeader questionHeader = questionDetail.getHeader();
-			QuestionContainerPK pk = questionHeader.getPK();
-			
-			htmlPath = getSpacesPath(pk.getInstanceId()) + getComponentLabel(pk.getInstanceId()) + " > " + questionHeader.getName();
-		} 
-		catch (Exception e) {
-			throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getHTMLQuestionPath()",SilverpeasRuntimeException.ERROR,"survey.IMPOSSIBLE_D_OBTENIR_LE_PATH", e);
-		}
-		return htmlPath;
-    }
-    
-    private String getSpacesPath(String componentId)
-	{
-		String spacesPath = "";
-		List spaces = getOrganizationController().getSpacePathToComponent(componentId);
-		Iterator iSpaces = spaces.iterator();
-		SpaceInst spaceInst = null;
-		while (iSpaces.hasNext())
-		{
-			spaceInst = (SpaceInst) iSpaces.next();
-			spacesPath += spaceInst.getName();
-			spacesPath += " > ";
-		}
-		return spacesPath;
-	}
-    
-    private String getComponentLabel(String componentId)
-	{
-		ComponentInstLight component = getOrganizationController().getComponentInstLight(componentId);
-		String componentLabel = "";
-		if (component != null)
-			componentLabel = component.getLabel();
-		return componentLabel;
-	}
-          
-    private OrganizationController getOrganizationController() 
-	{
-		OrganizationController orga = new OrganizationController();
-		return orga;       
-    }
-    
-    /**************************************************************************************************************************/
-    /*      EJB METHODS                                                                                                                                                                                                                       */
-    /**************************************************************************************************************************/
+    return htmlPath;
+  }
 
-    public void ejbCreate()
-    {
+  private String getSpacesPath(String componentId) {
+    String spacesPath = "";
+    List spaces = getOrganizationController().getSpacePathToComponent(
+        componentId);
+    Iterator iSpaces = spaces.iterator();
+    SpaceInst spaceInst = null;
+    while (iSpaces.hasNext()) {
+      spaceInst = (SpaceInst) iSpaces.next();
+      spacesPath += spaceInst.getName();
+      spacesPath += " > ";
     }
+    return spacesPath;
+  }
 
-    public void ejbRemove()
-    {
-    }
+  private String getComponentLabel(String componentId) {
+    ComponentInstLight component = getOrganizationController()
+        .getComponentInstLight(componentId);
+    String componentLabel = "";
+    if (component != null)
+      componentLabel = component.getLabel();
+    return componentLabel;
+  }
 
-    public void ejbActivate()
-    {
-    }
+  private OrganizationController getOrganizationController() {
+    OrganizationController orga = new OrganizationController();
+    return orga;
+  }
 
-    public void ejbPassivate()
-    {
-    }
+  /**************************************************************************************************************************/
+  /* EJB METHODS */
+  /**************************************************************************************************************************/
 
-    public void setSessionContext(SessionContext sc) {}
+  public void ejbCreate() {
+  }
+
+  public void ejbRemove() {
+  }
+
+  public void ejbActivate() {
+  }
+
+  public void ejbPassivate() {
+  }
+
+  public void setSessionContext(SessionContext sc) {
+  }
 
 }

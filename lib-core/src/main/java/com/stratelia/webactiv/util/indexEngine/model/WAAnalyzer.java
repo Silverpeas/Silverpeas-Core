@@ -22,167 +22,147 @@ import com.stratelia.webactiv.util.indexEngine.analysis.ElisionFilter;
 import com.stratelia.webactiv.util.indexEngine.analysis.SilverTokenizer;
 
 /**
- * Extends lucene Analyzer : prunes from a tokens stream
- * all the meaningless words and prunes all the special characters.
+ * Extends lucene Analyzer : prunes from a tokens stream all the meaningless
+ * words and prunes all the special characters.
  */
-public final class WAAnalyzer extends Analyzer
-{
-	/**
-     * Returns the analyzer to be used with texts of the given language.
-     * 
-     * The analyzers are cached.
-     */
-    static public Analyzer getAnalyzer(String language)
-    {
-        Analyzer analyzer = (Analyzer) languageMap.get(language);
+public final class WAAnalyzer extends Analyzer {
+  /**
+   * Returns the analyzer to be used with texts of the given language.
+   * 
+   * The analyzers are cached.
+   */
+  static public Analyzer getAnalyzer(String language) {
+    Analyzer analyzer = (Analyzer) languageMap.get(language);
 
-        if (analyzer == null)
-        {
-            analyzer = new WAAnalyzer(language);
-            languageMap.put(language, analyzer);
-        }
-
-        return analyzer;
+    if (analyzer == null) {
+      analyzer = new WAAnalyzer(language);
+      languageMap.put(language, analyzer);
     }
 
-    /**
-     * Returns a tokens stream built on top of the given reader.
+    return analyzer;
+  }
+
+  /**
+   * Returns a tokens stream built on top of the given reader.
+   */
+  public TokenStream tokenStream(Reader reader) {
+    // TokenStream result = new StandardTokenizer(reader);
+    TokenStream result = new SilverTokenizer(reader);
+
+    result = new StandardFilter(result); // remove 's and . from token
+    result = new LowerCaseFilter(result);
+    result = new StopFilter(result, stopWords); // remove some unexplicit terms
+    // according to the language
+    result = new ElisionFilter(result); // remove [cdjlmnst-qu]' from token
+    // result = new ApostropheFilter(result); //remove [cdlmnst]' from token
+    result = new ISOLatin1AccentFilter(result);
+    /*
+     * if (charReplacer != null) { result = new CharFilter(result,
+     * charReplacer); //unaccent terms }
      */
-    public TokenStream tokenStream(Reader reader)
-    {
-        //TokenStream result = new StandardTokenizer(reader);
-    	TokenStream result = new SilverTokenizer(reader);
-        
-        result = new StandardFilter(result);  	//remove 's and . from token
-        result = new LowerCaseFilter(result);
-        result = new StopFilter(result, stopWords);  //remove some unexplicit terms according to the language
-        result = new ElisionFilter(result);			//remove [cdjlmnst-qu]' from token
-        //result = new ApostropheFilter(result); 	//remove [cdlmnst]' from token
-        result = new ISOLatin1AccentFilter(result);
-        /*if (charReplacer != null)
-        {
-            result = new CharFilter(result, charReplacer); //unaccent terms
-        }*/
-        
-        /*try
-        {
-        	Token token = (Token) result.next();
-            while (token != null)
-            {
-            	SilverTrace.debug("indexEngine", "WAAnalyzer", "root.MSG_GEN_PARAM_VALUE", "token = "+token.termText());
-            	token = (Token) result.next();
-            }
-        }
-        catch (IOException ioe)
-        {
-        	SilverTrace.debug("indexEngine", "WAAnalyzer", "root.MSG_GEN_PARAM_VALUE", "ioe = "+ioe.toString());
-        }*/
-        
-        return result;
-    }
-    
-    public TokenStream tokenStream(String arg0, Reader reader) {
-		return tokenStream(reader);
-	}
 
-    /**
-     * The constructor is private : use @link #getAnalyzer().
+    /*
+     * try { Token token = (Token) result.next(); while (token != null) {
+     * SilverTrace.debug("indexEngine", "WAAnalyzer",
+     * "root.MSG_GEN_PARAM_VALUE", "token = "+token.termText()); token = (Token)
+     * result.next(); } } catch (IOException ioe) {
+     * SilverTrace.debug("indexEngine", "WAAnalyzer",
+     * "root.MSG_GEN_PARAM_VALUE", "ioe = "+ioe.toString()); }
      */
-    private WAAnalyzer(String language)
-    {
-        stopWords = getStopWords(language);
-        charReplacer = getCharReplacer(language);
-    }
 
-    /**
-     * Returns an array of words which are not usually usefull for searching.
-     */
-    private String[] getStopWords(String language)
-    {
-        List wordList = new ArrayList();
+    return result;
+  }
 
-        try
-        {
-            if (language == null || language.equals(""))
-            {
-            	language = "fr";
-            }
+  public TokenStream tokenStream(String arg0, Reader reader) {
+    return tokenStream(reader);
+  }
 
-            ResourceLocator resource = new ResourceLocator("com.stratelia.webactiv.util.indexEngine.StopWords", language);
+  /**
+   * The constructor is private : use @link #getAnalyzer().
+   */
+  private WAAnalyzer(String language) {
+    stopWords = getStopWords(language);
+    charReplacer = getCharReplacer(language);
+  }
 
-            Enumeration     stopWord = resource.getKeys();
+  /**
+   * Returns an array of words which are not usually usefull for searching.
+   */
+  private String[] getStopWords(String language) {
+    List wordList = new ArrayList();
 
-            while (stopWord.hasMoreElements())
-            {
-                wordList.add(stopWord.nextElement());
-            }
-        }
-        catch (MissingResourceException e)
-        {
-            SilverTrace.warn("indexEngine", "WAAnalyzer", "indexEngine.MSG_MISSING_STOPWORDS_DEFINITION");
-            return new String[0];
-        }
+    try {
+      if (language == null || language.equals("")) {
+        language = "fr";
+      }
 
-        return (String[]) wordList.toArray(new String[wordList.size()]);
+      ResourceLocator resource = new ResourceLocator(
+          "com.stratelia.webactiv.util.indexEngine.StopWords", language);
+
+      Enumeration stopWord = resource.getKeys();
+
+      while (stopWord.hasMoreElements()) {
+        wordList.add(stopWord.nextElement());
+      }
+    } catch (MissingResourceException e) {
+      SilverTrace.warn("indexEngine", "WAAnalyzer",
+          "indexEngine.MSG_MISSING_STOPWORDS_DEFINITION");
+      return new String[0];
     }
 
-    /**
-     * Returns an object which while replace all the special characters.
-     * 
-     * Returns null if the replacer do nothing.
-     */
-    private CharReplacer getCharReplacer(String language)
-    {
-        CharReplacer replacer = new CharReplacer();
-        int          replacementCount = 0;
+    return (String[]) wordList.toArray(new String[wordList.size()]);
+  }
 
-        try
-        {
-            if (language == null || language.equals(""))
-            {
-            	language = "fr";
-            }
+  /**
+   * Returns an object which while replace all the special characters.
+   * 
+   * Returns null if the replacer do nothing.
+   */
+  private CharReplacer getCharReplacer(String language) {
+    CharReplacer replacer = new CharReplacer();
+    int replacementCount = 0;
 
-            ResourceLocator resource = new ResourceLocator("com.stratelia.webactiv.util.indexEngine.SpecialChars", language);
+    try {
+      if (language == null || language.equals("")) {
+        language = "fr";
+      }
 
-            Enumeration     replacements = resource.getKeys();
+      ResourceLocator resource = new ResourceLocator(
+          "com.stratelia.webactiv.util.indexEngine.SpecialChars", language);
 
-            while (replacements.hasMoreElements())
-            {
-                String oldChars = (String) replacements.nextElement();
-                String newChars = resource.getString(oldChars);
+      Enumeration replacements = resource.getKeys();
 
-                replacer.setReplacement(oldChars, newChars);
-                replacementCount++;
-            }
-        }
-        catch (MissingResourceException e)
-        {
-            SilverTrace.warn("indexEngine", "WAAnalyzer", "indexEngine.MSG_MISSING_SPECIALCHARS_DEFINITION");
-        }
+      while (replacements.hasMoreElements()) {
+        String oldChars = (String) replacements.nextElement();
+        String newChars = resource.getString(oldChars);
 
-        if (replacementCount == 0)
-        {
-            return null;
-        }
-        else
-        {
-            return replacer;
-        }
+        replacer.setReplacement(oldChars, newChars);
+        replacementCount++;
+      }
+    } catch (MissingResourceException e) {
+      SilverTrace.warn("indexEngine", "WAAnalyzer",
+          "indexEngine.MSG_MISSING_SPECIALCHARS_DEFINITION");
     }
 
-    /**
+    if (replacementCount == 0) {
+      return null;
+    } else {
+      return replacer;
+    }
+  }
+
+  /**
      * 
      */
-    static private final Map languageMap = new HashMap();
+  static private final Map languageMap = new HashMap();
 
-    /**
-     * The words which are usually not usefull for searching.
-     */
-    private String[]         stopWords = null;
+  /**
+   * The words which are usually not usefull for searching.
+   */
+  private String[] stopWords = null;
 
-    /**
-     * The CharReplacer which will substitues special chars with more usual ones.
-     */
-    private CharReplacer     charReplacer = null;
+  /**
+   * The CharReplacer which will substitues special chars with more usual ones.
+   */
+  private CharReplacer charReplacer = null;
 }

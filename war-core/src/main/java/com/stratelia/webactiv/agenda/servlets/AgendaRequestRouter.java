@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 package com.stratelia.webactiv.agenda.servlets;
 
 import javax.servlet.http.*;
@@ -33,16 +34,16 @@ import org.apache.commons.fileupload.FileUploadException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AgendaRequestRouter extends ComponentRequestRouter {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public AgendaRequestRouter() {
@@ -50,43 +51,50 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param context
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
-  public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
-    ComponentSessionController component = (ComponentSessionController) new AgendaSessionController(mainSessionCtrl,
-        context);
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext context) {
+    ComponentSessionController component = (ComponentSessionController) new AgendaSessionController(
+        mainSessionCtrl, context);
 
     return component;
   }
 
   /**
    * This method has to be implemented in the component request router class.
-   * returns the session control bean name to be put in the request object
-   * ex : for almanach, returns "almanach"
+   * returns the session control bean name to be put in the request object ex :
+   * for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "agenda";
   }
 
   /**
-   * This method has to be implemented by the component request router
-   * it has to compute a destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Controller, build and initialised.
-   * @param request The entering request. The request router need it to get parameters
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * This method has to be implemented by the component request router it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Controller, build and initialised.
+   * @param request
+   *          The entering request. The request router need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   *         "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,
+      ComponentSessionController componentSC, HttpServletRequest request) {
 
-    SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
+        "root.MSG_GEN_ENTER_METHOD");
     AgendaSessionController scc = (AgendaSessionController) componentSC;
     String destination = "";
 
@@ -118,11 +126,13 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("NextYear")) {
         scc.setAgendaUserDetail(scc.getAgendaUserDetail());
         scc.nextYear();
-        destination = getDestination("ToChooseWorkingDays", componentSC, request);
+        destination = getDestination("ToChooseWorkingDays", componentSC,
+            request);
       } else if (function.startsWith("PreviousYear")) {
         scc.setAgendaUserDetail(scc.getAgendaUserDetail());
         scc.previousYear();
-        destination = getDestination("ToChooseWorkingDays", componentSC, request);
+        destination = getDestination("ToChooseWorkingDays", componentSC,
+            request);
       } else if (function.startsWith("ViewByDay")) {
         scc.setAgendaUserDetail(scc.getAgendaUserDetail());
         scc.viewByDay();
@@ -141,11 +151,12 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         setCommonAttributes(request, scc);
         destination = "/agenda/jsp/agenda.jsp";
       } else if (function.startsWith("searchResult")) {
-        destination = "/agenda/jsp/journal.jsp?Action=Update&JournalId=" + request.getParameter("Id");
+        destination = "/agenda/jsp/journal.jsp?Action=Update&JournalId="
+            + request.getParameter("Id");
       } else if (function.startsWith("diffusion")) {
         destination = scc.initSelectionPeas();
       } else if (function.startsWith("saveMembers")) {
-        //retour du userPanel
+        // retour du userPanel
         Collection attendees = scc.getUserSelected();
         scc.setCurrentAttendees(attendees);
         destination = "/agenda/jsp/journal.jsp?Action=DiffusionListOK";
@@ -158,19 +169,19 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           // permalink
           selectedUser = scc.getUserDetail(id);
         } else {
-          //userPanel return
+          // userPanel return
           selectedUser = scc.getSelectedUser();
         }
-        //request.setAttribute("userDetail",selectedUser);
+        // request.setAttribute("userDetail",selectedUser);
         scc.setAgendaUserDetail(selectedUser);
-        SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", selectedUser.
-            getDisplayedName());
+        SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", selectedUser.getDisplayedName());
 
         setCommonAttributes(request, scc);
         destination = "/agenda/jsp/agenda.jsp";
       } else if (function.startsWith("ViewCurrentAgenda")) {
-        SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", scc.getUserDetail().
-            getDisplayedName());
+        SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", scc.getUserDetail().getDisplayedName());
 
         UserDetail userDetail = scc.getUserDetail();
 
@@ -191,13 +202,16 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           request.setAttribute("ImportSettings", importSettings);
         }
         destination = "/agenda/jsp/importSettings.jsp";
-      } else if (function.startsWith("saveImportSettings") || function.startsWith("updateImportSettings")) {
+      } else if (function.startsWith("saveImportSettings")
+          || function.startsWith("updateImportSettings")) {
         // get updated imports settings for user
         CalendarImportSettings importSettings = new CalendarImportSettings();
         importSettings.setUserId(Integer.parseInt(scc.getUserId()));
         importSettings.setHostName(request.getParameter("hostName"));
-        importSettings.setSynchroDelay(Integer.parseInt(request.getParameter("synchroDelay")));
-        importSettings.setSynchroType(Integer.parseInt(request.getParameter("synchroType")));
+        importSettings.setSynchroDelay(Integer.parseInt(request
+            .getParameter("synchroDelay")));
+        importSettings.setSynchroType(Integer.parseInt(request
+            .getParameter("synchroType")));
 
         // store settings
         if (function.startsWith("saveImportSettings")) {
@@ -219,7 +233,8 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("ExportReturnCode", returnCode);
         destination = getDestination("ToExportIcal", componentSC, request);
       } else if (function.equals("ImportIcal")) {
-        ImportIcalManager.charset = scc.getSettings().getString("defaultCharset");
+        ImportIcalManager.charset = scc.getSettings().getString(
+            "defaultCharset");
         String returnCode = AgendaSessionController.IMPORT_FAILED;
         File fileUploaded = processFormUpload(scc, request);
         if (fileUploaded != null) {
@@ -238,7 +253,8 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           urlIcalendar = importSettings.getUrlIcalendar();
           loginIcalendar = importSettings.getLoginIcalendar();
           if (StringUtil.isDefined(importSettings.getPwdIcalendar())) {
-            pwdIcalendar = StringUtils.decodePassword(importSettings.getPwdIcalendar());
+            pwdIcalendar = StringUtils.decodePassword(importSettings
+                .getPwdIcalendar());
           }
           charset = importSettings.getCharset();
         }
@@ -248,7 +264,8 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Charset", charset);
         destination = "/agenda/jsp/synchroIcal.jsp";
       } else if (function.equals("SynchroIcal")) {
-        ImportIcalManager.charset = scc.getSettings().getString("defaultCharset");
+        ImportIcalManager.charset = scc.getSettings().getString(
+            "defaultCharset");
         // get updated imports settings for user
         boolean newSettings = false;
         boolean authNeeded = false;
@@ -281,7 +298,8 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         }
         String returnCode;
         if (authNeeded) {
-          returnCode = scc.synchroIcalAgenda(remoteUrlIcalendar, remoteLoginIcalendar, remotePwdIcalendar);
+          returnCode = scc.synchroIcalAgenda(remoteUrlIcalendar,
+              remoteLoginIcalendar, remotePwdIcalendar);
         } else {
           returnCode = scc.synchroIcalAgenda(remoteUrlIcalendar);
         }
@@ -309,13 +327,15 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         String date = request.getParameter("Date");
         String status = request.getParameter("Status");
         scc.changeDateStatus(date, status);
-        destination = getDestination("ToChooseWorkingDays", componentSC, request);
+        destination = getDestination("ToChooseWorkingDays", componentSC,
+            request);
       } else if (function.equals("ChangeDayOfWeekStatus")) {
         String year = request.getParameter("Year");
         String month = request.getParameter("Month");
         String day = request.getParameter("DayOfWeek");
         scc.changeDayOfWeekStatus(year, month, day);
-        destination = getDestination("ToChooseWorkingDays", componentSC, request);
+        destination = getDestination("ToChooseWorkingDays", componentSC,
+            request);
       } else if (function.equals("UpdateEvent")) {
         String journalId = request.getParameter("JournalId");
         request.setAttribute("JournalId", journalId);
@@ -336,14 +356,12 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           i++;
         }
         String journalId = request.getParameter("JournalId");
-        /*if (StringUtil.isDefined(journalId) && !"-1".equals(journalId))
-        scc.setJournalCategories(journalId, categoryIds);
-        else
-        {
-
-        scc.setCurrentCategories(categories);
-        journalId = "-1";
-        }*/
+        /*
+         * if (StringUtil.isDefined(journalId) && !"-1".equals(journalId))
+         * scc.setJournalCategories(journalId, categoryIds); else {
+         * 
+         * scc.setCurrentCategories(categories); journalId = "-1"; }
+         */
         scc.setCurrentCategories(categories);
 
         request.setAttribute("FromCategories", "1");
@@ -358,12 +376,14 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  private void setCommonAttributes(HttpServletRequest request, AgendaSessionController controller) {
+  private void setCommonAttributes(HttpServletRequest request,
+      AgendaSessionController controller) {
     request.setAttribute("MyAgendaUrl", controller.getMyAgendaUrl());
     request.setAttribute("RSSUrl", controller.getRSSUrl());
   }
 
-  private List getRequestItems(HttpServletRequest request) throws FileUploadException {
+  private List getRequestItems(HttpServletRequest request)
+      throws FileUploadException {
     DiskFileUpload dfu = new DiskFileUpload();
     List items = dfu.parseRequest(request);
     return items;
@@ -380,8 +400,8 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
     return null;
   }
 
-  private File processFormUpload(AgendaSessionController agendaSc, HttpServletRequest request) throws
-      FileUploadException {
+  private File processFormUpload(AgendaSessionController agendaSc,
+      HttpServletRequest request) throws FileUploadException {
     String logicalName = "";
     String tempFolderName = "";
     String tempFolderPath = "";
@@ -395,39 +415,52 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
       if (fileItem != null) {
         logicalName = fileItem.getName();
         if (logicalName != null) {
-          logicalName = logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+          logicalName = logicalName.substring(logicalName
+              .lastIndexOf(File.separator) + 1, logicalName.length());
 
-          //Name of temp folder: timestamp and userId
-          tempFolderName = new Long(new Date().getTime()).toString() + "_" + agendaSc.getUserId();
+          // Name of temp folder: timestamp and userId
+          tempFolderName = new Long(new Date().getTime()).toString() + "_"
+              + agendaSc.getUserId();
 
-          //Mime type of the file
+          // Mime type of the file
           fileType = fileItem.getContentType();
           fileSize = fileItem.getSize();
 
-          //Directory Temp for the uploaded file
-          tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc.getComponentId()) + GeneralPropertiesManager.
-              getGeneralResourceLocator().getString("RepositoryTypeTemp") + File.separator + tempFolderName;
+          // Directory Temp for the uploaded file
+          tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc
+              .getComponentId())
+              + GeneralPropertiesManager.getGeneralResourceLocator().getString(
+                  "RepositoryTypeTemp") + File.separator + tempFolderName;
           if (!new File(tempFolderPath).exists()) {
-            FileRepositoryManager.createAbsolutePath(agendaSc.getComponentId(), GeneralPropertiesManager.
-                getGeneralResourceLocator().getString("RepositoryTypeTemp") + File.separator + tempFolderName);
+            FileRepositoryManager.createAbsolutePath(agendaSc.getComponentId(),
+                GeneralPropertiesManager.getGeneralResourceLocator().getString(
+                    "RepositoryTypeTemp")
+                    + File.separator + tempFolderName);
           }
 
-          //Creation of the file in the temp folder
-          fileUploaded = new File(
-              FileRepositoryManager.getAbsolutePath(agendaSc.getComponentId()) + GeneralPropertiesManager.
-              getGeneralResourceLocator().getString("RepositoryTypeTemp") + File.separator + tempFolderName + File.separator + logicalName);
+          // Creation of the file in the temp folder
+          fileUploaded = new File(FileRepositoryManager
+              .getAbsolutePath(agendaSc.getComponentId())
+              + GeneralPropertiesManager.getGeneralResourceLocator().getString(
+                  "RepositoryTypeTemp")
+              + File.separator
+              + tempFolderName
+              + File.separator + logicalName);
           fileItem.write(fileUploaded);
 
-          //Is a real file ?
+          // Is a real file ?
           if (fileSize > 0) {
-            SilverTrace.debug("agenda", "AgendaRequestRouter.processFormUpload()", "root.MSG_GEN_PARAM_VALUE",
-                "fileUploaded = " + fileUploaded + " fileSize=" + fileSize + " fileType=" + fileType);
+            SilverTrace.debug("agenda",
+                "AgendaRequestRouter.processFormUpload()",
+                "root.MSG_GEN_PARAM_VALUE", "fileUploaded = " + fileUploaded
+                    + " fileSize=" + fileSize + " fileType=" + fileType);
           }
         }
       }
     } catch (Exception e) {
-      //Other exception
-      SilverTrace.warn("agenda", "AgendaRequestRouter.processFormUpload()", "root.EX_LOAD_ATTACHMENT_FAILED", e);
+      // Other exception
+      SilverTrace.warn("agenda", "AgendaRequestRouter.processFormUpload()",
+          "root.EX_LOAD_ATTACHMENT_FAILED", e);
     }
     return fileUploaded;
   }

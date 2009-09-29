@@ -19,7 +19,6 @@ public class CryptMD5 {
    * @param original : la chaine à encoder
    * 
    * @return la valeur (string) hexadécimale sur 32 bits
-   * 
    */
   public static String crypt(String original) throws UtilException {
 
@@ -55,9 +54,10 @@ public class CryptMD5 {
   /*
    * 
    * Compute the MD5 hash of a file.
-   * @param file: the file to be MD5 hashed.
-   * @return the MD5 hash as a String.
    * 
+   * @param file: the file to be MD5 hashed.
+   * 
+   * @return the MD5 hash as a String.
    */
   public static String hash(File file) throws UtilException {
     MessageDigest digest;

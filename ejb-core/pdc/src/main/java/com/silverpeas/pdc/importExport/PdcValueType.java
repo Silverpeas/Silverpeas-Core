@@ -10,28 +10,27 @@ import java.util.List;
 
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 
-
 /**
  * @author tleroi
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * 
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class PdcValueType extends TreeNode {
 
-	private List listPdcValueType;//liste de PdcValueType
+  private List listPdcValueType;// liste de PdcValueType
 
-	/**
-	 * @return
-	 */
-	public List getListPdcValueType() {
-		return listPdcValueType;
-	}
+  /**
+   * @return
+   */
+  public List getListPdcValueType() {
+    return listPdcValueType;
+  }
 
-	/**
-	 * @param list
-	 */
-	public void setListPdcValueType(List list) {
-		listPdcValueType = list;
-	}
+  /**
+   * @param list
+   */
+  public void setListPdcValueType(List list) {
+    listPdcValueType = list;
+  }
 }

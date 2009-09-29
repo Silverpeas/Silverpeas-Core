@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.treeManager.model;
 
@@ -21,121 +22,109 @@ import java.util.ArrayList;
  * no message
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class Tree implements java.io.Serializable
-{
+public class Tree implements java.io.Serializable {
 
-    private List tree = null;
+  private List tree = null;
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param treeNodes
-     *
-     * @see
-     */
-    public Tree(List treeNodes)
-    {
-        tree = treeNodes;
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param treeNodes
+   * 
+   * @see
+   */
+  public Tree(List treeNodes) {
+    tree = treeNodes;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public List getTree()
-    {
-        return (this.tree);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public List getTree() {
+    return (this.tree);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param treeNodes
-     *
-     * @see
-     */
-    public void setTree(List treeNodes)
-    {
-        this.tree = treeNodes;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param treeNodes
+   * 
+   * @see
+   */
+  public void setTree(List treeNodes) {
+    this.tree = treeNodes;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public int getDepth()
-    {
-        if (getTree() != null && getTree().size() > 0)
-        {
-            ArrayList tree = (ArrayList) getTree();
-            int       maxLevel = 0;
-            int       rootLevel = 0;
-			int		  level = 0;
-            TreeNode  node = null;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getDepth() {
+    if (getTree() != null && getTree().size() > 0) {
+      ArrayList tree = (ArrayList) getTree();
+      int maxLevel = 0;
+      int rootLevel = 0;
+      int level = 0;
+      TreeNode node = null;
 
-            for (int i = 0; i < tree.size(); i++)
-            {
-                node = (TreeNode) tree.get(0);
-                level = node.getLevelNumber();
-                if (i == 0)
-                {
-                    rootLevel = level;
-                }
-                if (level > maxLevel)
-                {
-                    maxLevel = level;
-                }
-            }
-            return maxLevel - rootLevel;
+      for (int i = 0; i < tree.size(); i++) {
+        node = (TreeNode) tree.get(0);
+        level = node.getLevelNumber();
+        if (i == 0) {
+          rootLevel = level;
         }
-        return 0;
-    }
-
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public TreeNode getRoot()
-    {
-        if (getTree() != null && getTree().size() > 0)
-        {
-            return (TreeNode) getTree().get(0);
+        if (level > maxLevel) {
+          maxLevel = level;
         }
-        return null;
+      }
+      return maxLevel - rootLevel;
     }
+    return 0;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String toString()
-    {
-        return "(tree = " + getTree() + ")";
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public TreeNode getRoot() {
+    if (getTree() != null && getTree().size() > 0) {
+      return (TreeNode) getTree().get(0);
     }
+    return null;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String toString() {
+    return "(tree = " + getTree() + ")";
+  }
 
 }

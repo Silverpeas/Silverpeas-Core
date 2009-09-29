@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
@@ -12,41 +13,38 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  * @version %I%, %G%
  */
-public class ReadMessage implements SILVERMAILRequestHandler
-{
+public class ReadMessage implements SILVERMAILRequestHandler {
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param componentSC
-	 * @param request
-	 *
-	 * @return
-	 *
-	 * @throws SILVERMAILException
-	 *
-	 * @see
-	 */
-	public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request) throws SILVERMAILException
-	{
-		try
-		{
-			String sId = (String) request.getParameter("ID");
-			long   ID = Long.parseLong(sId);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param componentSC
+   * @param request
+   * 
+   * @return
+   * 
+   * @throws SILVERMAILException
+   * 
+   * @see
+   */
+  public String handleRequest(ComponentSessionController componentSC,
+      HttpServletRequest request) throws SILVERMAILException {
+    try {
+      String sId = (String) request.getParameter("ID");
+      long ID = Long.parseLong(sId);
 
-			((SILVERMAILSessionController) componentSC).setCurrentMessageId(ID);
-		}
-		catch (NumberFormatException e)
-        {
-			SilverTrace.error("silvermail", "ReadMessage.handleRequest()", "root.EX_IGNORED", "", e);
-        }
-		return "/SILVERMAIL/jsp/readMessage.jsp";
-	}
+      ((SILVERMAILSessionController) componentSC).setCurrentMessageId(ID);
+    } catch (NumberFormatException e) {
+      SilverTrace.error("silvermail", "ReadMessage.handleRequest()",
+          "root.EX_IGNORED", "", e);
+    }
+    return "/SILVERMAIL/jsp/readMessage.jsp";
+  }
 
 }

@@ -22,19 +22,20 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.context.registry;
 
 /**
- * PortletRegistryContextFactory is responsible to creating the PortletRegistryContext
- * object.
+ * PortletRegistryContextFactory is responsible to creating the
+ * PortletRegistryContext object.
  */
 public interface PortletRegistryContextFactory {
-    
-    public PortletRegistryContext getPortletRegistryContext() throws PortletRegistryException;
-    
-    public PortletRegistryContext getPortletRegistryContext(String context) throws PortletRegistryException;
-    
-    public PortletRegistryContext getPortletRegistryContext(String portalId,
-            String namespace) throws PortletRegistryException;
+
+  public PortletRegistryContext getPortletRegistryContext()
+      throws PortletRegistryException;
+
+  public PortletRegistryContext getPortletRegistryContext(String context)
+      throws PortletRegistryException;
+
+  public PortletRegistryContext getPortletRegistryContext(String portalId,
+      String namespace) throws PortletRegistryException;
 }

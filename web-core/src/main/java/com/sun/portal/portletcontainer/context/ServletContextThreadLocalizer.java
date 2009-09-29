@@ -26,49 +26,53 @@ package com.sun.portal.portletcontainer.context;
 import javax.servlet.ServletContext;
 
 /**
- * This class provides access to the ServletContext using ThreadLocal class
- * It is required by WSRP caching implementaion.
+ * This class provides access to the ServletContext using ThreadLocal class It
+ * is required by WSRP caching implementaion.
  */
 public class ServletContextThreadLocalizer {
 
-    private static ThreadLocal servletContextThreadLocal = new ThreadLocal();
+  private static ThreadLocal servletContextThreadLocal = new ThreadLocal();
 
-    private ServletContextThreadLocalizer() {
+  private ServletContextThreadLocalizer() {
     // nothing, cannot be called
+  }
+
+  /**
+   * Returns ServletContext
+   * 
+   * @return
+   */
+  public static ServletContext get() {
+    ServletContext sc = (ServletContext) servletContextThreadLocal.get();
+    if (sc == null) {
+      throw new Error(
+          "ServletContextThreadLocalizer.get(): no thread local set for this thread");
     }
 
-    /**
-     * Returns ServletContext
-     * @return
-     */
-    public static ServletContext get() {
-        ServletContext sc = (ServletContext) servletContextThreadLocal.get();
-        if (sc == null) {
-            throw new Error("ServletContextThreadLocalizer.get(): no thread local set for this thread");
-        }
+    return sc;
+  }
 
-        return sc;
-    }
+  /**
+   * Sets ServletContext in the ThreadLocal variable
+   * 
+   * @param sc
+   *          ServletContextContext
+   */
+  public static void set(ServletContext sc) {
+    servletContextThreadLocal.set(sc);
+  }
 
-    /**
-     * Sets ServletContext in the ThreadLocal variable
-     * @param sc ServletContextContext 
-     */
-    public static void set(ServletContext sc) {
-        servletContextThreadLocal.set(sc);
+  /**
+   * Checks whether ServletContext is set in the ThreadLocal variable
+   * 
+   * @param boolean
+   */
+  public static synchronized boolean exists() {
+    ServletContext sc = (ServletContext) servletContextThreadLocal.get();
+    if (sc != null) {
+      return true;
+    } else {
+      return false;
     }
-
-    /**
-     * Checks whether ServletContext is set in the ThreadLocal variable
-     * @param boolean 
-     */    
-    public static synchronized boolean exists() {
-        ServletContext sc = (ServletContext) servletContextThreadLocal.get();
-        if (sc != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+  }
 }
-

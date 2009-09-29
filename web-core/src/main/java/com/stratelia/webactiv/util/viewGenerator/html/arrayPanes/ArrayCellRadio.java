@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
@@ -35,213 +36,194 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
  * 
  * @author
  */
-public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement
-{
+public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // Attributs
-    // -----------------------------------------------------------------------------------------------------------------
-    private String  name;
-    private String  value = null;
-    private boolean checked = false;
-    private String  cellAlign = null;
-    private String  action = null; // Action javaScript
+  // -----------------------------------------------------------------------------------------------------------------
+  // Attributs
+  // -----------------------------------------------------------------------------------------------------------------
+  private String name;
+  private String value = null;
+  private boolean checked = false;
+  private String cellAlign = null;
+  private String action = null; // Action javaScript
 
-    private String  syntax = "";
+  private String syntax = "";
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // Constructeur
-    // -----------------------------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------------------------
+  // Constructeur
+  // -----------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param name
-     * @param value
-     * @param checked
-     * @param line
-     * 
-     * @see
-     */
-    public ArrayCellRadio(String name, String value, boolean checked, ArrayLine line)
-    {
-        super(line);
-        this.name = name;
-        this.value = value;
-        this.checked = checked;
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param name
+   * @param value
+   * @param checked
+   * @param line
+   * 
+   * @see
+   */
+  public ArrayCellRadio(String name, String value, boolean checked,
+      ArrayLine line) {
+    super(line);
+    this.name = name;
+    this.value = value;
+    this.checked = checked;
+  }
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Méthodes
+  // -----------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getCellAlign() {
+    return cellAlign;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param cellAlign
+   * 
+   * @see
+   */
+  public void setCellAlign(String cellAlign) {
+    this.cellAlign = cellAlign;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getValue() {
+    return value;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public boolean getChecked() {
+    return checked;
+  }
+
+  /**
+   * Get the JavaScript action
+   */
+  public String getAction() {
+    return action;
+  }
+
+  /**
+   * Set the JavaScript action e.g. "onLoad=doOnLoad();"
+   * 
+   * @param strAction
+   *          the event name and the action
+   */
+  public void setAction(String strAction) {
+    action = strAction;
+  }
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
+  // -----------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getSyntax() {
+
+    syntax += " <input style=\"background-color:#FFFFFF;\" type=\"radio\" name=\"";
+
+    // param name
+    if (getName() == null) {
+      syntax += "radio\" value=\"";
+    } else {
+      syntax += getName() + "\" value=\"";
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // Méthodes
-    // -----------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String getCellAlign()
-    {
-        return cellAlign;
+    // param value
+    if (getValue() == null) {
+      syntax += "radio\"";
+    } else {
+      syntax += getValue() + "\"";
     }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param cellAlign
-     * 
-     * @see
-     */
-    public void setCellAlign(String cellAlign)
-    {
-        this.cellAlign = cellAlign;
+    // param action JavaScript
+    if (getAction() != null) {
+      syntax += " " + getAction();
     }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String getName()
-    {
-        return name;
+    // param activate
+    if (getChecked() == true) {
+      syntax += " checked";
     }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String getValue()
-    {
-        return value;
+    syntax += ">";
+
+    return syntax;
+  }
+
+  // -----------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String print() {
+    String result = "<td ";
+
+    if (getCellAlign() != null) {
+      if (getCellAlign().equalsIgnoreCase("center")
+          || getCellAlign().equalsIgnoreCase("right")) {
+        result += " align=\"" + getCellAlign() + "\"";
+      }
     }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public boolean getChecked()
-    {
-        return checked;
-    }
+    result += " >";
 
-    /**
-     * Get the JavaScript action
-     */
-    public String getAction() 
-    {
-        return action;
-    }
+    result += getSyntax();
 
-    /**
-     * Set the JavaScript action e.g. "onLoad=doOnLoad();"
-     * 
-     * @param strAction the event name and the action
-     */
-    public void setAction(String strAction) 
-    {
-        action = strAction;
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // Ecriture de l'input en fonction de son type, de sa valeur et de son nom
-    // -----------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String getSyntax()
-    {
-
-        syntax += " <input style=\"background-color:#FFFFFF;\" type=\"radio\" name=\"";
-
-        // param name
-        if (getName() == null)
-        {
-            syntax += "radio\" value=\"";
-        }
-        else
-        {
-            syntax += getName() + "\" value=\"";
-        }
-
-        // param value
-        if (getValue() == null)
-        {
-            syntax += "radio\"";
-        }
-        else
-        {
-            syntax += getValue() + "\"";
-        }
-
-        // param action JavaScript
-        if (getAction() != null) 
-        {
-            syntax += " " + getAction();
-        }
-
-        // param activate
-        if (getChecked() == true)
-        {
-            syntax += " checked";
-        }
-
-        syntax += ">";
-
-        return syntax;
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String print()
-    {
-        String result = "<td ";
-
-        if (getCellAlign() != null)
-        {
-            if (getCellAlign().equalsIgnoreCase("center") || getCellAlign().equalsIgnoreCase("right"))
-            {
-                result += " align=\"" + getCellAlign() + "\"";
-            }
-        }
-
-        result += " >";
-
-        result += getSyntax();
-
-        result += "</td>\n";
-        return result;
-    }
+    result += "</td>\n";
+    return result;
+  }
 
 }

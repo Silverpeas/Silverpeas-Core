@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.questionContainer.control;
 
@@ -17,11 +18,13 @@ import javax.ejb.*;
  * no message
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author neysseri
  */
-public interface QuestionContainerBm extends QuestionContainerBmSkeleton, EJBObject {}
+public interface QuestionContainerBm extends QuestionContainerBmSkeleton,
+    EJBObject {
+}

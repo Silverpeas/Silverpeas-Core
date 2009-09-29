@@ -22,40 +22,38 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.invoker;
 
 import com.sun.portal.container.ErrorCode;
 
 /**
- * WindowErrorCode that must have localized message strings
- * corresponding to each.
+ * WindowErrorCode that must have localized message strings corresponding to
+ * each.
  **/
 public class WindowErrorCode extends ErrorCode {
-    
-    //1
-    public static final WindowErrorCode GENERIC_ERROR =
-            new WindowErrorCode("GENERIC_ERROR");
-    
-    //2
-    public static final WindowErrorCode CONTENT_EXCEPTION =
-            new WindowErrorCode("CONTENT_EXCEPTION");
-    
-    //3
-    public static final WindowErrorCode INVALID_WINDOW_STATE_CHANGE_REQUEST =
-            new WindowErrorCode("INVALID_WINDOW_STATE_CHANGE_REQUEST");
-    
-    //4
-    public static final WindowErrorCode INVALID_MODE_CHANGE_REQUEST =
-            new WindowErrorCode("INVALID_MODE_CHANGE_REQUEST");
-    
-    //5
-    public static final WindowErrorCode CONTAINER_EXCEPTION =
-            new WindowErrorCode("CONTAINER_EXCEPTION");
-    
-    
-    public WindowErrorCode(String errorCodeKey) {
-        super(errorCodeKey);
-    }
-    
+
+  // 1
+  public static final WindowErrorCode GENERIC_ERROR = new WindowErrorCode(
+      "GENERIC_ERROR");
+
+  // 2
+  public static final WindowErrorCode CONTENT_EXCEPTION = new WindowErrorCode(
+      "CONTENT_EXCEPTION");
+
+  // 3
+  public static final WindowErrorCode INVALID_WINDOW_STATE_CHANGE_REQUEST = new WindowErrorCode(
+      "INVALID_WINDOW_STATE_CHANGE_REQUEST");
+
+  // 4
+  public static final WindowErrorCode INVALID_MODE_CHANGE_REQUEST = new WindowErrorCode(
+      "INVALID_MODE_CHANGE_REQUEST");
+
+  // 5
+  public static final WindowErrorCode CONTAINER_EXCEPTION = new WindowErrorCode(
+      "CONTAINER_EXCEPTION");
+
+  public WindowErrorCode(String errorCodeKey) {
+    super(errorCodeKey);
+  }
+
 }

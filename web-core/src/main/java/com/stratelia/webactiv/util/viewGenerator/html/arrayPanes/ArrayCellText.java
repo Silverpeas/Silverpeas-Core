@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
@@ -38,215 +39,192 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
  * 
  * @author
  */
-public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Comparable
-{
-    private String  text;
-    private String  alignement = null;
-    private String  color = null;
-	private String  valignement = null;
-	private boolean	noWrap = false;
+public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
+    Comparable {
+  private String text;
+  private String alignement = null;
+  private String color = null;
+  private String valignement = null;
+  private boolean noWrap = false;
 
-    private Comparable compareOn = null;
+  private Comparable compareOn = null;
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param text
-     * @param line
-     * 
-     * @see
-     */
-    public ArrayCellText(String text, ArrayLine line)
-    {
-        super(line);
-        this.text = text;
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param text
+   * @param line
+   * 
+   * @see
+   */
+  public ArrayCellText(String text, ArrayLine line) {
+    super(line);
+    this.text = text;
+  }
+
+  /**
+   * @return
+   */
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * @return
+   */
+  public String getAlignement() {
+    return alignement;
+  }
+
+  /**
+   * @param textAlign
+   */
+  public void setAlignement(String alignement) {
+    this.alignement = alignement;
+  }
+
+  /**
+   * @return
+   */
+  public boolean getNoWrap() {
+    return noWrap;
+  }
+
+  /**
+   * @param noWrap
+   */
+  public void setNoWrap(boolean noWrap) {
+    this.noWrap = noWrap;
+  }
+
+  /**
+   * @return
+   */
+  public String getColor() {
+    return color;
+  }
+
+  /**
+   * @param textAlign
+   */
+  public void setColor(String color) {
+    this.color = color;
+  }
+
+  public String getValignement() {
+    return valignement;
+  }
+
+  /**
+   * @param textValign
+   */
+  public void setValignement(String valignement) {
+    this.valignement = valignement;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String print() {
+    StringBuffer result = new StringBuffer();
+
+    result.append("<td ");
+
+    if (getAlignement() != null) {
+      if (getAlignement().equalsIgnoreCase("center")
+          || getAlignement().equalsIgnoreCase("right")) {
+        result.append(" align=\"").append(getAlignement()).append("\"");
+      }
     }
 
-    /**
-     * @return
-     */
-    public String getText()
-    {
-        return text;
+    if (getValignement() != null) {
+      if (getValignement().equalsIgnoreCase("bottom")
+          || getValignement().equalsIgnoreCase("top")
+          || getValignement().equalsIgnoreCase("baseline")) {
+        result.append(" valign=\"").append(getValignement()).append("\"");
+      }
     }
 
-    /**
-     * @return
-     */
-    public String getAlignement()
-    {
-        return alignement;
+    if (getNoWrap()) {
+      result.append(" nowrap");
     }
 
-    /**
-     * @param textAlign
-     */
-    public void setAlignement(String alignement)
-    {
-        this.alignement = alignement;
+    result.append(" class=\"").append(getStyleSheet()).append("\">");
+
+    if (getColor() != null) {
+      result.append(" <font color=\"").append(getColor()).append("\">");
+      result.append(getText());
+      result.append("</font>");
+    } else {
+      result.append(getText());
     }
 
-    /**
-     * @return
-     */
-    public boolean getNoWrap()
-    {
-        return noWrap;
+    result.append("</td>\n");
+    return result.toString();
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param object
+   * 
+   * @see
+   */
+  public void setCompareOn(Comparable object) {
+    this.compareOn = object;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public Comparable getCompareOn() {
+    return this.compareOn;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param other
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int compareTo(final java.lang.Object other) {
+    if (other instanceof ArrayEmptyCell) {
+      return 1;
     }
-
-    /**
-     * @param noWrap
-     */
-    public void setNoWrap(boolean noWrap)
-    {
-        this.noWrap = noWrap;
+    if (!(other instanceof ArrayCellText)) {
+      return 0;
     }
+    ArrayCellText tmp = (ArrayCellText) other;
 
-    /**
-     * @return
-     */
-    public String getColor()
-    {
-        return color;
+    if (getCompareOn() != null) {
+      if (tmp.getCompareOn() != null) {
+        return getCompareOn().compareTo(tmp.getCompareOn());
+      }
     }
-
-    /**
-     * @param textAlign
-     */
-    public void setColor(String color)
-    {
-        this.color = color;
-    }
-
-	public String getValignement()
-    {
-        return valignement;
-    }
-
-    /**
-     * @param textValign
-     */
-    public void setValignement(String valignement)
-    {
-        this.valignement = valignement;
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String print()
-    {
-        StringBuffer result = new StringBuffer();
-		
-		result.append("<td ");
-
-        if (getAlignement() != null)
-        {
-            if (getAlignement().equalsIgnoreCase("center") || getAlignement().equalsIgnoreCase("right"))
-            {
-                result.append(" align=\"").append(getAlignement()).append("\"");
-            }
-        }
-
-		if (getValignement() != null)
-        {
-            if (getValignement().equalsIgnoreCase("bottom") || getValignement().equalsIgnoreCase("top") || getValignement().equalsIgnoreCase("baseline"))
-            {
-                result.append(" valign=\"").append(getValignement()).append("\"");
-            }
-        }
-
-		if (getNoWrap())
-		{
-			result.append(" nowrap");
-		}
-		
-        result.append(" class=\"").append(getStyleSheet()).append("\">");
-
-        if (getColor() != null)
-        {
-            result.append(" <font color=\"").append(getColor()).append("\">");
-            result.append(getText());
-            result.append("</font>");
-        }
-        else
-        {
-            result.append(getText());
-        }
-
-        result.append("</td>\n");
-        return result.toString();
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param object
-     * 
-     * @see
-     */
-    public void setCompareOn(Comparable object)
-    {
-        this.compareOn = object;
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public Comparable getCompareOn()
-    {
-        return this.compareOn;
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param other
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public int compareTo(final java.lang.Object other)
-    {
-        if (other instanceof ArrayEmptyCell)
-        {
-            return 1;
-        }
-        if (!(other instanceof ArrayCellText))
-        {
-            return 0;
-        }
-        ArrayCellText tmp = (ArrayCellText) other;
-
-        if (getCompareOn() != null)
-        {
-            if (tmp.getCompareOn() != null)
-            {
-                return getCompareOn().compareTo(tmp.getCompareOn());
-            }
-        }
-        // if(m_SortMode == ArrayCell.CELLSORT_CASE_INSENSITIVE)
-        // {
-        return this.getText().compareToIgnoreCase(tmp.getText());
-        // }
-        // else
-        // {
-        // return this.getText().compareTo(tmp.getText());
-        // }
-    }
+    // if(m_SortMode == ArrayCell.CELLSORT_CASE_INSENSITIVE)
+    // {
+    return this.getText().compareToIgnoreCase(tmp.getText());
+    // }
+    // else
+    // {
+    // return this.getText().compareTo(tmp.getText());
+    // }
+  }
 
 }

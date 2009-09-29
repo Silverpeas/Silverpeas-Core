@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 package com.stratelia.silverpeas.pdc.control;
 
 import java.util.List;
@@ -7,9 +8,9 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This object is used by the MainSessionController like userPanel, personalization.
- * It allows to transmit data from pdcPeas to component.
- *
+ * This object is used by the MainSessionController like userPanel,
+ * personalization. It allows to transmit data from pdcPeas to component.
+ * 
  * @author neysseri
  */
 public class Pdc {
@@ -25,8 +26,9 @@ public class Pdc {
     GlobalSilverContent gsc = null;
     for (int i = 0; i < selectedSilverContents.size(); i++) {
       gsc = (GlobalSilverContent) selectedSilverContents.get(i);
-      SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()", "root.MSG_GEN_PARAM_VALUE",
-          "new silverContent selected = " + gsc.getName());
+      SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()",
+          "root.MSG_GEN_PARAM_VALUE", "new silverContent selected = "
+              + gsc.getName());
     }
   }
 

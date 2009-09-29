@@ -20,148 +20,170 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-public class VersioningSchedulerImpl implements SchedulerEventHandler
-{
-    public static final String VERSIONING_JOB_NAME_PROCESS_ACTIFY = "V_ProcessActify";
-    public static final String VERSIONING_JOB_NAME_PURGE_ACTIFY = "V_PurgeActify";
+public class VersioningSchedulerImpl implements SchedulerEventHandler {
+  public static final String VERSIONING_JOB_NAME_PROCESS_ACTIFY = "V_ProcessActify";
+  public static final String VERSIONING_JOB_NAME_PURGE_ACTIFY = "V_PurgeActify";
 
-	private ResourceLocator resourcesAttachment = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+  private ResourceLocator resourcesAttachment = new ResourceLocator(
+      "com.stratelia.webactiv.util.attachment.Attachment", "");
 
-	public VersioningSchedulerImpl() 	{}
+  public VersioningSchedulerImpl() {
+  }
 
-	public void initialize()
-	{
-        if (resourcesAttachment.getBoolean("ActifyPublisherEnable",false))
-        {
-			try
-			{
-				String cronScheduleProcess = resourcesAttachment.getString("ScheduledProcessActify");
-				String cronSchedulePurge = resourcesAttachment.getString("ScheduledPurgeActify");
+  public void initialize() {
+    if (resourcesAttachment.getBoolean("ActifyPublisherEnable", false)) {
+      try {
+        String cronScheduleProcess = resourcesAttachment
+            .getString("ScheduledProcessActify");
+        String cronSchedulePurge = resourcesAttachment
+            .getString("ScheduledPurgeActify");
 
-		        Vector jobList = SimpleScheduler.getJobList(this);
-				if (jobList != null && jobList.size() > 0)
-				{
-					SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
-					SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
-				}
-				SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess, this, "doProcessActify");
-				SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this, "doPurgeActify");
-			}
-			catch (Exception e)
-			{
-				SilverTrace.error("versioningPeas", "VersioningScheduleImpl.initialize()", "", e);
-			}
+        Vector jobList = SimpleScheduler.getJobList(this);
+        if (jobList != null && jobList.size() > 0) {
+          SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
+          SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
         }
-	}
-
-    public void handleSchedulerEvent(SchedulerEvent aEvent)
-    {
-        switch (aEvent.getType())
-        {
-			case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-				SilverTrace.error("versioningPeas", "VersioningScheduleImpl.handleSchedulerEvent", "The job '" + aEvent.getJob().getJobName() + "' was not successfull");
-	            break;
-
-			case SchedulerEvent.EXECUTION_SUCCESSFULL:
-	            SilverTrace.debug("versioningPeas", "VersioningScheduleImpl.handleSchedulerEvent", "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-	            break;
-
-			default:
-	            SilverTrace.error("versioningPeas", "VersioningScheduleImpl.handleSchedulerEvent", "Illegal event type");
-	            break;
-        }
+        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY,
+            cronScheduleProcess, this, "doProcessActify");
+        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY,
+            cronSchedulePurge, this, "doPurgeActify");
+      } catch (Exception e) {
+        SilverTrace.error("versioningPeas",
+            "VersioningScheduleImpl.initialize()", "", e);
+      }
     }
+  }
 
-    /**
-     * Publish in Silverpeas 3d files converted by Actify
-     * @throws IOException
-     * @throws Exception
-     */
-	public synchronized void doProcessActify(java.util.Date date) throws
-		VersioningRuntimeException, RemoteException,
-		FileNotFoundException, IOException, Exception
-	{
-		VersioningUtil versioningUtil = new VersioningUtil();
-		String componentId;
-		String documentId;
-		long now = new Date().getTime();
+  public void handleSchedulerEvent(SchedulerEvent aEvent) {
+    switch (aEvent.getType()) {
+      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
+        SilverTrace.error("versioningPeas",
+            "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
+                + aEvent.getJob().getJobName() + "' was not successfull");
+        break;
 
-		String resultActifyPath 	= resourcesAttachment.getString("ActifyPathResult");
-		int	delayBeforeProcess		= new Integer(resourcesAttachment.getString("DelayBeforeProcess")).intValue();
+      case SchedulerEvent.EXECUTION_SUCCESSFULL:
+        SilverTrace.debug("versioningPeas",
+            "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
+                + aEvent.getJob().getJobName() + "' was successfull");
+        break;
 
-		File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath() + resultActifyPath);
-		File[] elementsList = folderToAnalyse.listFiles();
+      default:
+        SilverTrace
+            .error("versioningPeas",
+                "VersioningScheduleImpl.handleSchedulerEvent",
+                "Illegal event type");
+        break;
+    }
+  }
 
-		//List all folders in Actify
-		for (int i=0; i<elementsList.length; i++)
-		{
-			File element = elementsList[i];
-			
-			long lastModified = element.lastModified();
-			String dirName = element.getName();
-			String resultActifyFullPath = FileRepositoryManager.getTemporaryPath() + resultActifyPath + File.separator + dirName;
+  /**
+   * Publish in Silverpeas 3d files converted by Actify
+   * 
+   * @throws IOException
+   * @throws Exception
+   */
+  public synchronized void doProcessActify(java.util.Date date)
+      throws VersioningRuntimeException, RemoteException,
+      FileNotFoundException, IOException, Exception {
+    VersioningUtil versioningUtil = new VersioningUtil();
+    String componentId;
+    String documentId;
+    long now = new Date().getTime();
 
-			//Directory to process ?
-			// Ex of idir:  v_kmelia116_docId
-			if (element.isDirectory() && (lastModified + delayBeforeProcess*1000*60 < now) && dirName.substring(0,2).equals("v_"))
-			{
-				componentId 	= dirName.substring(dirName.indexOf("_")+1, dirName.lastIndexOf("_"));
-				documentId		= dirName.substring(dirName.lastIndexOf("_")+1);
-				
-				String detailPathToAnalyse 	= element.getAbsolutePath();
-				SilverTrace.info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()", "root.MSG_GEN_PARAM_VALUE","detailPathToAnalyse="+detailPathToAnalyse);
-				folderToAnalyse 			= new File(detailPathToAnalyse);
-				File[] filesList 			= folderToAnalyse.listFiles();
+    String resultActifyPath = resourcesAttachment.getString("ActifyPathResult");
+    int delayBeforeProcess = new Integer(resourcesAttachment
+        .getString("DelayBeforeProcess")).intValue();
 
-				DocumentPK docPK 			= new DocumentPK(Integer.parseInt(documentId),  componentId);
-				DocumentVersion doc				= versioningUtil.getLastVersion(docPK);
+    File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
+        + resultActifyPath);
+    File[] elementsList = folderToAnalyse.listFiles();
 
-				for (int j=0; j<filesList.length; j++)
-				{
-					File file = filesList[j];
-					String fileName 			= file.getName();
-					String physicalName	 		= new Long(new Date().getTime()).toString() + ".3d";
-					String logicalName			= fileName.substring(0,fileName.lastIndexOf(".")) + ".3d";
-					String mimeType 			= FileUtil.getMimeType(physicalName);
-					DocumentVersion newVersion 		= new DocumentVersion( null, docPK, doc.getMajorNumber(), doc.getMinorNumber(), doc.getAuthorId(),
-    						new Date(), null, doc.getType(), doc.getStatus(),
-    						physicalName, logicalName, mimeType, new Long(file.length()).intValue(), componentId );
-					versioningUtil.addNewDocumentVersion(newVersion, doc.getType());
-					String physicalPath		= versioningUtil.createPath(null, componentId, null);
+    // List all folders in Actify
+    for (int i = 0; i < elementsList.length; i++) {
+      File element = elementsList[i];
 
-					String srcFile			= resultActifyFullPath + File.separator + logicalName;
-					String destFile			= physicalPath + File.separator + physicalName;
-    				FileRepositoryManager.copyFile(srcFile, destFile);
-				}
-				FileFolderManager.deleteFolder(resultActifyFullPath);
-			}
-		}
-		SilverTrace.info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()", "root.MSG_GEN_EXIT_METHOD");
-	}
-	
-	/**
-	 * Purge native 3D files alreday converted by Actify
-	 * @throws Exception
-	 */
-	public synchronized void doPurgeActify(Date date) throws Exception
-	{
-		int	delayBeforePurge		= new Integer(resourcesAttachment.getString("DelayBeforePurge")).intValue();
-		long now = new Date().getTime();
-		
-		File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath() + resourcesAttachment.getString("ActifyPathSource"));
-		File[] elementsList = folderToAnalyse.listFiles();
+      long lastModified = element.lastModified();
+      String dirName = element.getName();
+      String resultActifyFullPath = FileRepositoryManager.getTemporaryPath()
+          + resultActifyPath + File.separator + dirName;
 
-		//List all folders in Actify
-		for (int i=0; i<elementsList.length; i++)
-		{
-			File element = elementsList[i];
-			long lastModified = element.lastModified();
-			if (element.isDirectory() && lastModified + delayBeforePurge*1000*60 < now)
-			{
-				SilverTrace.info("versioningPeas", "VersioningSchedulerImpl.doPurgeActify()", "root.MSG_GEN_PARAM_VALUE","pathToPurge="+element.getName());
-				FileFolderManager.deleteFolder(element.getAbsolutePath());
-			}
-		}
-	}
+      // Directory to process ?
+      // Ex of idir: v_kmelia116_docId
+      if (element.isDirectory()
+          && (lastModified + delayBeforeProcess * 1000 * 60 < now)
+          && dirName.substring(0, 2).equals("v_")) {
+        componentId = dirName.substring(dirName.indexOf("_") + 1, dirName
+            .lastIndexOf("_"));
+        documentId = dirName.substring(dirName.lastIndexOf("_") + 1);
+
+        String detailPathToAnalyse = element.getAbsolutePath();
+        SilverTrace.info("versioningPeas",
+            "VersioningSchedulerImpl.doProcessActify()",
+            "root.MSG_GEN_PARAM_VALUE", "detailPathToAnalyse="
+                + detailPathToAnalyse);
+        folderToAnalyse = new File(detailPathToAnalyse);
+        File[] filesList = folderToAnalyse.listFiles();
+
+        DocumentPK docPK = new DocumentPK(Integer.parseInt(documentId),
+            componentId);
+        DocumentVersion doc = versioningUtil.getLastVersion(docPK);
+
+        for (int j = 0; j < filesList.length; j++) {
+          File file = filesList[j];
+          String fileName = file.getName();
+          String physicalName = new Long(new Date().getTime()).toString()
+              + ".3d";
+          String logicalName = fileName.substring(0, fileName.lastIndexOf("."))
+              + ".3d";
+          String mimeType = FileUtil.getMimeType(physicalName);
+          DocumentVersion newVersion = new DocumentVersion(null, docPK, doc
+              .getMajorNumber(), doc.getMinorNumber(), doc.getAuthorId(),
+              new Date(), null, doc.getType(), doc.getStatus(), physicalName,
+              logicalName, mimeType, new Long(file.length()).intValue(),
+              componentId);
+          versioningUtil.addNewDocumentVersion(newVersion, doc.getType());
+          String physicalPath = versioningUtil.createPath(null, componentId,
+              null);
+
+          String srcFile = resultActifyFullPath + File.separator + logicalName;
+          String destFile = physicalPath + File.separator + physicalName;
+          FileRepositoryManager.copyFile(srcFile, destFile);
+        }
+        FileFolderManager.deleteFolder(resultActifyFullPath);
+      }
+    }
+    SilverTrace
+        .info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()",
+            "root.MSG_GEN_EXIT_METHOD");
+  }
+
+  /**
+   * Purge native 3D files alreday converted by Actify
+   * 
+   * @throws Exception
+   */
+  public synchronized void doPurgeActify(Date date) throws Exception {
+    int delayBeforePurge = new Integer(resourcesAttachment
+        .getString("DelayBeforePurge")).intValue();
+    long now = new Date().getTime();
+
+    File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
+        + resourcesAttachment.getString("ActifyPathSource"));
+    File[] elementsList = folderToAnalyse.listFiles();
+
+    // List all folders in Actify
+    for (int i = 0; i < elementsList.length; i++) {
+      File element = elementsList[i];
+      long lastModified = element.lastModified();
+      if (element.isDirectory()
+          && lastModified + delayBeforePurge * 1000 * 60 < now) {
+        SilverTrace.info("versioningPeas",
+            "VersioningSchedulerImpl.doPurgeActify()",
+            "root.MSG_GEN_PARAM_VALUE", "pathToPurge=" + element.getName());
+        FileFolderManager.deleteFolder(element.getAbsolutePath());
+      }
+    }
+  }
 
 }

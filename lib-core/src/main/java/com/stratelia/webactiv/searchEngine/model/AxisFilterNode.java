@@ -8,24 +8,20 @@
  */
 package com.stratelia.webactiv.searchEngine.model;
 
-public class AxisFilterNode
-{
-    private String property;
-    private String value;
+public class AxisFilterNode {
+  private String property;
+  private String value;
 
-    public AxisFilterNode( String property, String value)
-    {
-        this.property = property;
-        this.value = value;
-    }
+  public AxisFilterNode(String property, String value) {
+    this.property = property;
+    this.value = value;
+  }
 
-    public String getPriperty()
-    {
-        return property;
-    }
+  public String getPriperty() {
+    return property;
+  }
 
-    public String getValue()
-    {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 }

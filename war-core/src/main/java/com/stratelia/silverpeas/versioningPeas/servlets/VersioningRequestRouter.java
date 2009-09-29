@@ -526,12 +526,13 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         "Destination=" + destination);
     return destination;
   }
-  
+
   protected DocumentVersionPK saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
       int userId, boolean force, boolean addXmlForm) throws RemoteException {
     DocumentVersion lastVersion = versioningSC.getLastVersion(document.getPk());
-    if(!force && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+    if (!force
+        && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
       return null;
     }
     String physicalName = new Long(new Date().getTime()).toString()
@@ -546,7 +547,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         lastVersion.getSize(), lastVersion.getInstanceId());
     RepositoryHelper.getJcrDocumentService().getUpdatedDocument(newVersion);
     if (addXmlForm)
-    	newVersion.setXmlForm(versioningSC.getXmlForm());
+      newVersion.setXmlForm(versioningSC.getXmlForm());
     newVersion = versioningSC.addNewDocumentVersion(newVersion);
     versioningSC.checkDocumentIn(document.getPk(), userId);
     return newVersion.getPk();
@@ -564,7 +565,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   protected DocumentVersionPK saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
       int userId, boolean addXmlForm) throws RemoteException {
-    return saveOnline(document, versioningSC, comments, radio, userId, false, addXmlForm);
+    return saveOnline(document, versioningSC, comments, radio, userId, false,
+        addXmlForm);
   }
 
   /**
@@ -633,10 +635,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         majorNumber, minorNumber, new Integer(versioningSC.getUserId())
             .intValue(), new Date(), comments, versionType, 0, physicalName,
         logicalName, mimeType, size, versioningSC.getComponentId());
-    
+
     boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
     if (addXmlForm)
-    	documentVersion.setXmlForm(versioningSC.getXmlForm());
+      documentVersion.setXmlForm(versioningSC.getXmlForm());
 
     // Document
     docPK = new DocumentPK(-1, versioningSC.getComponentId());
@@ -654,13 +656,12 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     String docId = versioningSC.createDocument(document, documentVersion)
         .getId();
-    
-    if (addXmlForm)
-    {
-    	//Save additional informations
-    	saveXMLData(versioningSC, documentVersion.getPk(), items);
+
+    if (addXmlForm) {
+      // Save additional informations
+      saveXMLData(versioningSC, documentVersion.getPk(), items);
     }
-    
+
     versioningSC.setEditingDocument(document);
     versioningSC.setFileRights();
     versioningSC.updateWorkList(document);
@@ -708,110 +709,128 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     }
     return null;
   }
-  
-  private void saveXMLData(VersioningSessionController versioningSC, DocumentVersionPK newVersionPK, List items) throws Exception
-  {
-	  	String xmlFormName = versioningSC.getXmlForm();
-	  	if (StringUtil.isDefined(xmlFormName) && newVersionPK != null)
-	  	{
-			String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/")+1, xmlFormName.indexOf("."));
-			String objectId 		= newVersionPK.getId();
-			String objectType 		= "Versioning";
-			
-			String externalId = versioningSC.getComponentId()+":"+objectType+":"+xmlFormShortName; 
-			
-			//register xmlForm to object
-			PublicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlFormName);
-			
-			PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
-			
-			RecordSet 	set 	= pub.getRecordSet();			
-			Form 		form 	= pub.getUpdateForm();
-						
-			DataRecord data = set.getRecord(objectId);
-			if (data == null) {
-				data = set.getEmptyRecord();
-				data.setId(objectId);
-			}
-			
-			PagesContext context = new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.getComponentId(), versioningSC.getUserId());
-			context.setObjectId(objectId);
-			
-			form.update(items, data, context);
-			set.save(data);	
-	  	}
-  }
-  
-  private boolean isXMLFormEmpty(VersioningSessionController versioningSC, List items) throws Exception
-  {
-	  boolean isEmpty = true;
-	  	String xmlFormName = versioningSC.getXmlForm();
-	  	if (StringUtil.isDefined(xmlFormName))
-	  	{
-			String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/")+1, xmlFormName.indexOf("."));
-			String objectId 		= "unknown";
-			String objectType 		= "Versioning";
-			
-			String externalId = versioningSC.getComponentId()+":"+objectType+":"+xmlFormShortName; 
-			
-			//register xmlForm to object
-			PublicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlFormName);
-			
-			PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
-			
-			RecordSet 	set 	= pub.getRecordSet();			
-			Form 		form 	= pub.getUpdateForm();
-						
-			DataRecord data = set.getRecord(objectId);
-			if (data == null) {
-				data = set.getEmptyRecord();
-				data.setId(objectId);
-			}
-			
-			PagesContext context = new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.getComponentId(), versioningSC.getUserId());
-			context.setObjectId(objectId);
-			
-			isEmpty = form.isEmpty(items, data, context);
-	  	}
-	  	return isEmpty;
-  }
-  
-  private void setXMLFormIntoRequest(String documentId, VersioningSessionController versioningSC, HttpServletRequest request) throws Exception
-  {
-	  String componentId 	= versioningSC.getComponentId();
-	  String objectId		= request.getParameter("ObjectId");
-	  String objectType		= "Versioning";
-	  String xmlFormName	= versioningSC.getXmlForm();
-					
-	  String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/")+1, xmlFormName.indexOf("."));
-	
-	  //register xmlForm to object
-	  PublicationTemplateManager.addDynamicPublicationTemplate(componentId+":"+objectType+":"+xmlFormShortName, xmlFormName);
-					
-	  PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(componentId+":"+objectType+":"+xmlFormShortName, xmlFormName);
-	  Form formUpdate = pubTemplate.getUpdateForm();
-	  RecordSet recordSet = pubTemplate.getRecordSet();
 
-	  if (StringUtil.isDefined(documentId))
-	  {
-		  //Get last version to display its additional informations instead of blank fields
-		  DocumentVersion lastVersion = versioningSC.getLastVersion(new DocumentPK(Integer.parseInt(documentId), versioningSC.getComponentId()));
-		  if (lastVersion != null)
-			  objectId = lastVersion.getPk().getId();
-	  }
-		  
-	  DataRecord data = recordSet.getRecord(objectId);
-	  if (data == null) {
-		  data = recordSet.getEmptyRecord();
-		  data.setId(objectId);
-	  }
-	
-	  PagesContext pageContext = new PagesContext("toDefine", "toDefine", versioningSC.getLanguage(), false, componentId, versioningSC.getUserId());
-	  pageContext.setObjectId(objectId);
-	
-	  request.setAttribute("XMLForm", formUpdate);
-	  request.setAttribute("XMLData", data);
-	  request.setAttribute("XMLFormName", xmlFormName);
-	  request.setAttribute("PagesContext", pageContext);
+  private void saveXMLData(VersioningSessionController versioningSC,
+      DocumentVersionPK newVersionPK, List items) throws Exception {
+    String xmlFormName = versioningSC.getXmlForm();
+    if (StringUtil.isDefined(xmlFormName) && newVersionPK != null) {
+      String xmlFormShortName = xmlFormName.substring(
+          xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      String objectId = newVersionPK.getId();
+      String objectType = "Versioning";
+
+      String externalId = versioningSC.getComponentId() + ":" + objectType
+          + ":" + xmlFormShortName;
+
+      // register xmlForm to object
+      PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
+          xmlFormName);
+
+      PublicationTemplate pub = PublicationTemplateManager
+          .getPublicationTemplate(externalId);
+
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+
+      DataRecord data = set.getRecord(objectId);
+      if (data == null) {
+        data = set.getEmptyRecord();
+        data.setId(objectId);
+      }
+
+      PagesContext context = new PagesContext("myForm", "3", versioningSC
+          .getLanguage(), false, versioningSC.getComponentId(), versioningSC
+          .getUserId());
+      context.setObjectId(objectId);
+
+      form.update(items, data, context);
+      set.save(data);
+    }
+  }
+
+  private boolean isXMLFormEmpty(VersioningSessionController versioningSC,
+      List items) throws Exception {
+    boolean isEmpty = true;
+    String xmlFormName = versioningSC.getXmlForm();
+    if (StringUtil.isDefined(xmlFormName)) {
+      String xmlFormShortName = xmlFormName.substring(
+          xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      String objectId = "unknown";
+      String objectType = "Versioning";
+
+      String externalId = versioningSC.getComponentId() + ":" + objectType
+          + ":" + xmlFormShortName;
+
+      // register xmlForm to object
+      PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
+          xmlFormName);
+
+      PublicationTemplate pub = PublicationTemplateManager
+          .getPublicationTemplate(externalId);
+
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+
+      DataRecord data = set.getRecord(objectId);
+      if (data == null) {
+        data = set.getEmptyRecord();
+        data.setId(objectId);
+      }
+
+      PagesContext context = new PagesContext("myForm", "3", versioningSC
+          .getLanguage(), false, versioningSC.getComponentId(), versioningSC
+          .getUserId());
+      context.setObjectId(objectId);
+
+      isEmpty = form.isEmpty(items, data, context);
+    }
+    return isEmpty;
+  }
+
+  private void setXMLFormIntoRequest(String documentId,
+      VersioningSessionController versioningSC, HttpServletRequest request)
+      throws Exception {
+    String componentId = versioningSC.getComponentId();
+    String objectId = request.getParameter("ObjectId");
+    String objectType = "Versioning";
+    String xmlFormName = versioningSC.getXmlForm();
+
+    String xmlFormShortName = xmlFormName.substring(
+        xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+
+    // register xmlForm to object
+    PublicationTemplateManager.addDynamicPublicationTemplate(componentId + ":"
+        + objectType + ":" + xmlFormShortName, xmlFormName);
+
+    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+        .getPublicationTemplate(componentId + ":" + objectType + ":"
+            + xmlFormShortName, xmlFormName);
+    Form formUpdate = pubTemplate.getUpdateForm();
+    RecordSet recordSet = pubTemplate.getRecordSet();
+
+    if (StringUtil.isDefined(documentId)) {
+      // Get last version to display its additional informations instead of
+      // blank fields
+      DocumentVersion lastVersion = versioningSC.getLastVersion(new DocumentPK(
+          Integer.parseInt(documentId), versioningSC.getComponentId()));
+      if (lastVersion != null)
+        objectId = lastVersion.getPk().getId();
+    }
+
+    DataRecord data = recordSet.getRecord(objectId);
+    if (data == null) {
+      data = recordSet.getEmptyRecord();
+      data.setId(objectId);
+    }
+
+    PagesContext pageContext = new PagesContext("toDefine", "toDefine",
+        versioningSC.getLanguage(), false, componentId, versioningSC
+            .getUserId());
+    pageContext.setObjectId(objectId);
+
+    request.setAttribute("XMLForm", formUpdate);
+    request.setAttribute("XMLData", data);
+    request.setAttribute("XMLFormName", xmlFormName);
+    request.setAttribute("PagesContext", pageContext);
   }
 }

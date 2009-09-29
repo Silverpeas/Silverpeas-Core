@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * JobManagerSettings.java
@@ -58,96 +59,89 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class manage the informations needed for job manager
- *
+ * 
  * @t.leroi
  */
-public class JobManagerSettings
-{
-    public static int     m_UsersByPage = 10;
-    public static int     m_GroupsByPage = 10;
-    public static boolean m_IsKMVisible = false;
-	public static boolean m_IsToolsVisible = false;
-	public static boolean m_IsToolSpecificAuthentVisible = false;
-    public static boolean m_IsToolWorkflowDesignerVisible = false;
-    public static boolean m_IsTemplateDesignerVisible = false;
-    public static boolean m_IsPortletDeployerVisible = false;
+public class JobManagerSettings {
+  public static int m_UsersByPage = 10;
+  public static int m_GroupsByPage = 10;
+  public static boolean m_IsKMVisible = false;
+  public static boolean m_IsToolsVisible = false;
+  public static boolean m_IsToolSpecificAuthentVisible = false;
+  public static boolean m_IsToolWorkflowDesignerVisible = false;
+  public static boolean m_IsTemplateDesignerVisible = false;
+  public static boolean m_IsPortletDeployerVisible = false;
 
-    static
-    {
-        ResourceLocator rs = new ResourceLocator("com.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings", "");
+  static {
+    ResourceLocator rs = new ResourceLocator(
+        "com.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings", "");
 
-        m_UsersByPage = readInt(rs, "UsersByPage", 10);
-        m_GroupsByPage = readInt(rs, "GroupsByPage", 10);
-        m_IsKMVisible = readBoolean(rs,"IsKMVisible", false);
-		m_IsToolsVisible = readBoolean(rs,"IsToolsVisible", false);
-		m_IsToolSpecificAuthentVisible = readBoolean(rs,"IsToolSpecificAuthentVisible", false);
-		m_IsToolWorkflowDesignerVisible = readBoolean(rs,"IsToolWorkflowDesignerVisible", false);
-		m_IsTemplateDesignerVisible = readBoolean(rs,"IsTemplateDesignerVisible", false);
-		m_IsPortletDeployerVisible = readBoolean(rs,"IsPortletDeployerVisible", false);
+    m_UsersByPage = readInt(rs, "UsersByPage", 10);
+    m_GroupsByPage = readInt(rs, "GroupsByPage", 10);
+    m_IsKMVisible = readBoolean(rs, "IsKMVisible", false);
+    m_IsToolsVisible = readBoolean(rs, "IsToolsVisible", false);
+    m_IsToolSpecificAuthentVisible = readBoolean(rs,
+        "IsToolSpecificAuthentVisible", false);
+    m_IsToolWorkflowDesignerVisible = readBoolean(rs,
+        "IsToolWorkflowDesignerVisible", false);
+    m_IsTemplateDesignerVisible = readBoolean(rs, "IsTemplateDesignerVisible",
+        false);
+    m_IsPortletDeployerVisible = readBoolean(rs, "IsPortletDeployerVisible",
+        false);
+  }
+
+  static protected int readInt(ResourceLocator rs, String propName,
+      int defaultValue) {
+    String s = rs.getString(propName, Integer.toString(defaultValue));
+    return Integer.parseInt(s);
+  }
+
+  static protected boolean readBoolean(ResourceLocator rs, String propName,
+      boolean defaultValue) {
+    String s = null;
+    if (defaultValue)
+      s = rs.getString(propName, "true");
+    else
+      s = rs.getString(propName, "false");
+
+    boolean valret = defaultValue;
+    if (defaultValue) {
+      if (s.equalsIgnoreCase("false")) {
+        valret = false;
+      }
+    } else {
+      if (s.equalsIgnoreCase("true")) {
+        valret = true;
+      }
     }
 
-    static protected int readInt(ResourceLocator rs, String propName, int defaultValue)
-    {
-        String s = rs.getString(propName, Integer.toString(defaultValue));
-        return Integer.parseInt(s);
-    }
+    return valret;
+  }
 
-    static protected boolean readBoolean(ResourceLocator rs, String propName, boolean defaultValue)
-    {
-        String s = null;
-        if (defaultValue)
-            s = rs.getString(propName, "true");
-        else
-            s = rs.getString(propName, "false");
+  static public void sortGroups(Group[] toSort) {
+    Arrays.sort(toSort, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return (((Group) o1).getName()).compareTo(((Group) o2).getName());
+      }
 
-        boolean valret = defaultValue;
-        if (defaultValue)
-        {
-            if (s.equalsIgnoreCase("false"))
-            {
-                valret = false;
-            }
-        }
-        else
-        {
-            if (s.equalsIgnoreCase("true"))
-            {
-                valret = true;
-            }
-        }
+      public boolean equals(Object o) {
+        return false;
+      }
 
-        return valret;
-    }
+    });
+  }
 
-    static public void sortGroups(Group[] toSort)
-    {
-        Arrays.sort(toSort, new Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return (((Group)o1).getName()).compareTo(((Group)o2).getName());
-            }
-            public boolean equals(Object o)
-            {
-                return false;
-            }
+  static public void sortUsers(UserDetail[] toSort) {
+    Arrays.sort(toSort, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return (((UserDetail) o1).getLastName()).compareTo(((UserDetail) o2)
+            .getLastName());
+      }
 
-        });
-    }
+      public boolean equals(Object o) {
+        return false;
+      }
 
-    static public void sortUsers(UserDetail[] toSort)
-    {
-        Arrays.sort(toSort, new Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return (((UserDetail)o1).getLastName()).compareTo(((UserDetail)o2).getLastName());
-            }
-            public boolean equals(Object o)
-            {
-                return false;
-            }
-
-        });
-    }
+    });
+  }
 }

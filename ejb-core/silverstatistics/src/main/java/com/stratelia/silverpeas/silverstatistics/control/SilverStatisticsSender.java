@@ -1,7 +1,7 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.silverstatistics.control;
-
 
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -39,111 +39,99 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public final class SilverStatisticsSender
-{
-    private QueueConnection      queueConnection = null;
-    private QueueSender          queueSender = null;
-    private QueueSession         queueSession = null;
-    private Queue                queue = null;
-    private TextMessage          msg = null;
+public final class SilverStatisticsSender {
+  private QueueConnection queueConnection = null;
+  private QueueSender queueSender = null;
+  private QueueSession queueSession = null;
+  private Queue queue = null;
+  private TextMessage msg = null;
 
-    private Context              ctx = null;
+  private Context ctx = null;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws NamingException
-     *
-     * @see
-     */
-    protected Context getInitialContext() throws NamingException
-    {
-        if (ctx == null)
-        {
-            ctx = new InitialContext();
-        }
-        return ctx;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws NamingException
+   * 
+   * @see
+   */
+  protected Context getInitialContext() throws NamingException {
+    if (ctx == null) {
+      ctx = new InitialContext();
     }
+    return ctx;
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @see
-     */
-    public SilverStatisticsSender() throws Exception
-    {
-        try
-        {
-            Context                ctx = getInitialContext();
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public SilverStatisticsSender() throws Exception {
+    try {
+      Context ctx = getInitialContext();
 
-            QueueConnectionFactory factory = (QueueConnectionFactory) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_FACTORY);
+      QueueConnectionFactory factory = (QueueConnectionFactory) ctx
+          .lookup(JNDINames.SILVERSTATISTICS_JMS_FACTORY);
 
-            queueConnection = factory.createQueueConnection();
+      queueConnection = factory.createQueueConnection();
 
-            // Create a non-transacted JMS Session
-            queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+      // Create a non-transacted JMS Session
+      queueSession = queueConnection.createQueueSession(false,
+          Session.AUTO_ACKNOWLEDGE);
 
-            queue = (Queue) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_QUEUE);
+      queue = (Queue) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_QUEUE);
 
-            queueSender = queueSession.createSender(queue);
+      queueSender = queueSession.createSender(queue);
 
-            msg = queueSession.createTextMessage();
+      msg = queueSession.createTextMessage();
 
-            queueConnection.start();
+      queueConnection.start();
 
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
+    } catch (Exception e) {
+      throw e;
     }
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param message
-     *
-     * @throws JMSException
-     *
-     * @see
-     */
-    public void send(String message) throws JMSException
-    {
-        try
-        {
-            msg.setText(message);
-            queueSender.send(msg);
-        }
-        catch (JMSException e)
-        {
-            throw e;
-        }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param message
+   * 
+   * @throws JMSException
+   * 
+   * @see
+   */
+  public void send(String message) throws JMSException {
+    try {
+      msg.setText(message);
+      queueSender.send(msg);
+    } catch (JMSException e) {
+      throw e;
     }
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @throws JMSException
-     *
-     * @see
-     */
-    public void close() throws JMSException
-    {
-        queueSender.close();
-        queueSession.close();
-        queueConnection.close();
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @throws JMSException
+   * 
+   * @see
+   */
+  public void close() throws JMSException {
+    queueSender.close();
+    queueSession.close();
+    queueConnection.close();
+  }
 
 }
-
-

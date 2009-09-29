@@ -16,26 +16,24 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 	Thomas Breitkreuz (tb@cdoc.de)
-*/
+ */
 
 package com.stratelia.silverpeas.scheduler;
 
 /**
- * This exception is thrown by the scheduler framework. Could be
- * used for exception classification.
+ * This exception is thrown by the scheduler framework. Could be used for
+ * exception classification.
  */
-public class SchedulerException extends Exception
-{
-	public SchedulerException ()
-	{
-		super ();
-	}
+public class SchedulerException extends Exception {
+  public SchedulerException() {
+    super();
+  }
 
-	/**
-	 * @param aMessage The exception message
-	 */
-	public SchedulerException (String aMessage)
-	{
-		super (aMessage);
-	}
+  /**
+   * @param aMessage
+   *          The exception message
+   */
+  public SchedulerException(String aMessage) {
+    super(aMessage);
+  }
 }

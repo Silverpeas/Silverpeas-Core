@@ -30,38 +30,65 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * The PortletWindowData is responsible for providing the
- * data related to the Portlet Window to the view. 
- * The information includes title, portlet content, view ,edit and help URLs.
+ * The PortletWindowData is responsible for providing the data related to the
+ * Portlet Window to the view. The information includes title, portlet content,
+ * view ,edit and help URLs.
  */
 public interface PortletWindowData {
-    
-    public void init(HttpServletRequest request, PortletRegistryContext portletRegistryContext,
-            String portletWindowName) throws PortletRegistryException;
-    public String getPortletName();
-    public String getPortletWindowName();
-    public String getTitle();
-    public StringBuffer getContent();
-    public boolean isView();
-    public String getViewURL();
-    public boolean isEdit();
-    public String getEditURL();
-    public boolean isHelp();
-    public String getHelpURL();
-    public boolean isNormalized();
-    public String getNormalizedURL();
-    public boolean isMaximized();
-    public String getMaximizedURL();
-    public boolean isMinimized();
-    public String getMinimizedURL();
-    public String getCurrentMode();
-    public String getCurrentWindowState();
-    public boolean isRemove();
-    public String getRemoveURL();
-    public boolean isThin();
-    public boolean isThick();
-    public String getWidth();
-    public Integer getRowNumber();
-    public String getSpaceId();   
-    public void setSpaceId(String spaceId);
+
+  public void init(HttpServletRequest request,
+      PortletRegistryContext portletRegistryContext, String portletWindowName)
+      throws PortletRegistryException;
+
+  public String getPortletName();
+
+  public String getPortletWindowName();
+
+  public String getTitle();
+
+  public StringBuffer getContent();
+
+  public boolean isView();
+
+  public String getViewURL();
+
+  public boolean isEdit();
+
+  public String getEditURL();
+
+  public boolean isHelp();
+
+  public String getHelpURL();
+
+  public boolean isNormalized();
+
+  public String getNormalizedURL();
+
+  public boolean isMaximized();
+
+  public String getMaximizedURL();
+
+  public boolean isMinimized();
+
+  public String getMinimizedURL();
+
+  public String getCurrentMode();
+
+  public String getCurrentWindowState();
+
+  public boolean isRemove();
+
+  public String getRemoveURL();
+
+  public boolean isThin();
+
+  public boolean isThick();
+
+  public String getWidth();
+
+  public Integer getRowNumber();
+
+  public String getSpaceId();
+
+  public void setSpaceId(String spaceId);
 }

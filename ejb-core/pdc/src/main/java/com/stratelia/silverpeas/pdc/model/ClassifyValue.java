@@ -3,40 +3,42 @@ package com.stratelia.silverpeas.pdc.model;
 import java.util.List;
 
 /**
-* @author Nicolas EYSSERIC
-*/
-public class ClassifyValue extends com.stratelia.silverpeas.classifyEngine.Value implements java.io.Serializable {
+ * @author Nicolas EYSSERIC
+ */
+public class ClassifyValue extends
+    com.stratelia.silverpeas.classifyEngine.Value implements
+    java.io.Serializable {
 
-	private List fullPath = null;
+  private List fullPath = null;
 
-	private String axisName = null;
-	
-	public ClassifyValue() {}
+  private String axisName = null;
 
-	public ClassifyValue(int nGivenAxisId, String sGivenValue)
-    {
-		super(nGivenAxisId, sGivenValue);
-    }
+  public ClassifyValue() {
+  }
 
-	//return a list of Value objects
-	public List getFullPath() {
-		return this.fullPath;
-	}
+  public ClassifyValue(int nGivenAxisId, String sGivenValue) {
+    super(nGivenAxisId, sGivenValue);
+  }
 
-	public void setFullPath(List fullPath) {
-		this.fullPath = fullPath;
-	}
+  // return a list of Value objects
+  public List getFullPath() {
+    return this.fullPath;
+  }
 
-	public String getAxisName() {
-		return this.axisName;
-	}
+  public void setFullPath(List fullPath) {
+    this.fullPath = fullPath;
+  }
 
-	public void setAxisName(String axisName) {
-		this.axisName = axisName;
-	}
+  public String getAxisName() {
+    return this.axisName;
+  }
 
-    public String toString() {
-        return "ClassifyValue object :[ AxisId=" + getAxisId() + ", " +
-                 " value=" + getValue();
-    }
+  public void setAxisName(String axisName) {
+    this.axisName = axisName;
+  }
+
+  public String toString() {
+    return "ClassifyValue object :[ AxisId=" + getAxisId() + ", " + " value="
+        + getValue();
+  }
 }

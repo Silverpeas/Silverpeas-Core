@@ -64,7 +64,7 @@ public class RestOnlineFileServer extends HttpServlet {
   protected OnlineFile getWantedFile(RestRequest restRequest)
       throws RemoteException {
     OnlineFile file = getWantedAttachment(restRequest);
-    if(file == null) {
+    if (file == null) {
       file = getWantedVersionnedDocument(restRequest);
     }
     return file;

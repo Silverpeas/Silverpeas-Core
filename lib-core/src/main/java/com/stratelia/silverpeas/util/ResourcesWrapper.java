@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.util;
 
@@ -57,8 +58,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class ResourcesWrapper {
@@ -70,12 +71,12 @@ public class ResourcesWrapper {
   private String language = null;
 
   /**
-   * @param specificMultilang -
-   *          Multilang of component
-   * @param specificIcons -
-   *          Icons of component
-   * @param language -
-   *          user's language
+   * @param specificMultilang
+   *          - Multilang of component
+   * @param specificIcons
+   *          - Icons of component
+   * @param language
+   *          - user's language
    */
   public ResourcesWrapper(ResourceLocator specificMultilang,
       ResourceLocator specificIcons, String language) {
@@ -87,14 +88,14 @@ public class ResourcesWrapper {
   }
 
   /**
-   * @param specificMultilang -
-   *          Multilang of component
-   * @param specificIcons -
-   *          Icons of component
-   * @param specificSettings -
-   *          Settings of component
-   * @param language -
-   *          user's language
+   * @param specificMultilang
+   *          - Multilang of component
+   * @param specificIcons
+   *          - Icons of component
+   * @param specificSettings
+   *          - Settings of component
+   * @param language
+   *          - user's language
    */
   public ResourcesWrapper(ResourceLocator specificMultilang,
       ResourceLocator specificIcons, ResourceLocator specificSettings,
@@ -108,10 +109,10 @@ public class ResourcesWrapper {
   }
 
   /**
-   * @param specificMultilang -
-   *          Multilang of component
-   * @param language -
-   *          user's language
+   * @param specificMultilang
+   *          - Multilang of component
+   * @param language
+   *          - user's language
    */
   public ResourcesWrapper(ResourceLocator specificMultilang, String language) {
     this.specificMultilang = specificMultilang;
@@ -122,6 +123,7 @@ public class ResourcesWrapper {
 
   /**
    * Return the ResourceBundle for usage in JSTL.
+   * 
    * @return the ResourceBundle under the ResourceLocator.
    */
   public ResourceBundle getMultilangBundle() {
@@ -130,6 +132,7 @@ public class ResourcesWrapper {
 
   /**
    * Return the icons ResourceBundle for usage in JSTL.
+   * 
    * @return the icons ResourceBundle under the ResourceLocator.
    */
   public ResourceBundle getIconsBundle() {
@@ -137,8 +140,8 @@ public class ResourcesWrapper {
   }
 
   /**
-   * @param key -
-   *          key in the multilang file
+   * @param key
+   *          - key in the multilang file
    * @return the value of the key according to the key. If key starts with
    *         "GML.", we look at in the general multilang. Else, we look at in
    *         the component multilang
@@ -202,9 +205,9 @@ public class ResourcesWrapper {
 
   /**
    * We look at the key in the specific settings file.
-   *
-   * @param key -
-   *          key in the settings file
+   * 
+   * @param key
+   *          - key in the settings file
    * @return the value of the key if the key exists and if a value is specified.
    *         null otherwise.
    */

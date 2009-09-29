@@ -1,10 +1,10 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.treeManager.model;
 
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-
 
 /*
  * CVS Informations
@@ -46,362 +46,351 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
  * no message
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class TreeNodePersistence extends SilverpeasBean implements java.io.Serializable
-{
-	private String	   treeId;
-    private String     name;
-    private String     description;
-    private String     creationDate;
-    private String     creatorId;
-    private String     path;
-    private int        levelNumber;
-	private int		   orderNumber;
-    private String     fatherId;
-    private String 	   lang = null;
+public class TreeNodePersistence extends SilverpeasBean implements
+    java.io.Serializable {
+  private String treeId;
+  private String name;
+  private String description;
+  private String creationDate;
+  private String creatorId;
+  private String path;
+  private int levelNumber;
+  private int orderNumber;
+  private String fatherId;
+  private String lang = null;
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @see
-     */
-    public TreeNodePersistence()
-    {
-        init("0", "", "", "", "", "", "", 0, 0, "0");
-    }
-    
-    public TreeNodePersistence(TreeNode node)
-	{
-		setPK(node.getPK());
-		this.treeId = node.getTreeId();
-		this.name = node.getName();
-		this.description = node.getDescription();
-		this.creationDate = node.getCreationDate();
-		this.creatorId = node.getCreatorId();
-		this.path = node.getPath();
-		this.levelNumber = node.getLevelNumber();
-		this.orderNumber = node.getOrderNumber();
-		this.fatherId = node.getFatherId();
-		this.lang = node.getLanguage();
-	}
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public TreeNodePersistence() {
+    init("0", "", "", "", "", "", "", 0, 0, "0");
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param id
-     * @param name
-     * @param description
-     * @param creationDate
-     * @param creatorId
-     * @param path
-     * @param levelNumber
-     * @param fatherId
-     *
-     * @see
-     */
-    private void init(String id, String treeId, String name, String description, String creationDate, String creatorId, String path, int levelNumber, int orderNumber, String fatherId)
-    {
-        setPK(new TreeNodePK(id));
-		this.treeId = treeId;
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
-        this.creatorId = creatorId;
-        this.path = path;
-        this.levelNumber = levelNumber;
-        this.fatherId = fatherId;
-		this.orderNumber = orderNumber;
-    }
+  public TreeNodePersistence(TreeNode node) {
+    setPK(node.getPK());
+    this.treeId = node.getTreeId();
+    this.name = node.getName();
+    this.description = node.getDescription();
+    this.creationDate = node.getCreationDate();
+    this.creatorId = node.getCreatorId();
+    this.path = node.getPath();
+    this.levelNumber = node.getLevelNumber();
+    this.orderNumber = node.getOrderNumber();
+    this.fatherId = node.getFatherId();
+    this.lang = node.getLanguage();
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param pk
-     * @param name
-     * @param description
-     * @param creationDate
-     * @param creatorId
-     * @param path
-     * @param levelNumber
-     * @param fatherId
-     *
-     * @see
-     */
-    public TreeNodePersistence(TreeNodePK pk, String treeId, String name, String description, String creationDate, String creatorId, String path, int levelNumber, int orderNumber, String fatherId)
-    {
-        setPK(pk);
-		this.treeId = treeId;
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
-        this.creatorId = creatorId;
-        this.path = path;
-        this.levelNumber = levelNumber;
-		this.orderNumber = orderNumber;
-        this.fatherId = fatherId;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param id
+   * @param name
+   * @param description
+   * @param creationDate
+   * @param creatorId
+   * @param path
+   * @param levelNumber
+   * @param fatherId
+   * 
+   * @see
+   */
+  private void init(String id, String treeId, String name, String description,
+      String creationDate, String creatorId, String path, int levelNumber,
+      int orderNumber, String fatherId) {
+    setPK(new TreeNodePK(id));
+    this.treeId = treeId;
+    this.name = name;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.creatorId = creatorId;
+    this.path = path;
+    this.levelNumber = levelNumber;
+    this.fatherId = fatherId;
+    this.orderNumber = orderNumber;
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param id
-     * @param name
-     * @param description
-     * @param creationDate
-     * @param creatorId
-     * @param path
-     * @param levelNumber
-     * @param fatherId
-     *
-     * @see
-     */
-    public TreeNodePersistence(String id, String treeId, String name, String description, String creationDate, String creatorId, String path, int levelNumber, int orderNumber, String fatherId)
-    {
-        init(id, treeId, name, description, creationDate, creatorId, path, levelNumber, orderNumber, fatherId);
-    }
-    
-    public TreeNodePersistence(String id, String treeId, String name, String description, String creationDate, String creatorId, String path, int levelNumber, int orderNumber, String fatherId, String lang)
-    {
-        init(id, treeId, name, description, creationDate, creatorId, path, levelNumber, orderNumber, fatherId);
-        this.lang = lang;
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param pk
+   * @param name
+   * @param description
+   * @param creationDate
+   * @param creatorId
+   * @param path
+   * @param levelNumber
+   * @param fatherId
+   * 
+   * @see
+   */
+  public TreeNodePersistence(TreeNodePK pk, String treeId, String name,
+      String description, String creationDate, String creatorId, String path,
+      int levelNumber, int orderNumber, String fatherId) {
+    setPK(pk);
+    this.treeId = treeId;
+    this.name = name;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.creatorId = creatorId;
+    this.path = path;
+    this.levelNumber = levelNumber;
+    this.orderNumber = orderNumber;
+    this.fatherId = fatherId;
+  }
 
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * @param name
+   * @param description
+   * @param creationDate
+   * @param creatorId
+   * @param path
+   * @param levelNumber
+   * @param fatherId
+   * 
+   * @see
+   */
+  public TreeNodePersistence(String id, String treeId, String name,
+      String description, String creationDate, String creatorId, String path,
+      int levelNumber, int orderNumber, String fatherId) {
+    init(id, treeId, name, description, creationDate, creatorId, path,
+        levelNumber, orderNumber, fatherId);
+  }
 
-	public String getTreeId() {
-		return this.treeId;
-	}
+  public TreeNodePersistence(String id, String treeId, String name,
+      String description, String creationDate, String creatorId, String path,
+      int levelNumber, int orderNumber, String fatherId, String lang) {
+    init(id, treeId, name, description, creationDate, creatorId, path,
+        levelNumber, orderNumber, fatherId);
+    this.lang = lang;
+  }
 
-	public void setTreeId(String treeId) {
-		this.treeId = treeId;
-	}
+  public String getTreeId() {
+    return this.treeId;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getName()
-    {
-        return (this.name);
-    }
+  public void setTreeId(String treeId) {
+    this.treeId = treeId;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getDescription()
-    {
-        return (this.description);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getName() {
+    return (this.name);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getCreationDate()
-    {
-        return (this.creationDate);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getDescription() {
+    return (this.description);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getCreatorId()
-    {
-        return (this.creatorId);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getCreationDate() {
+    return (this.creationDate);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getPath()
-    {
-        return (this.path);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getCreatorId() {
+    return (this.creatorId);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public int getLevelNumber()
-    {
-        return (this.levelNumber);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getPath() {
+    return (this.path);
+  }
 
-	/**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public int getOrderNumber()
-    {
-        return (this.orderNumber);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getLevelNumber() {
+    return (this.levelNumber);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getFatherId()
-    {
-        return (this.fatherId);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getOrderNumber() {
+    return (this.orderNumber);
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getFatherId() {
+    return (this.fatherId);
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-    
-	/**
-     * Method declaration
-     *
-     *
-     * @param date
-     *
-     * @see
-     */
-    public void setCreationDate(String date)
-    {
-        this.creationDate = date;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param creatorId
-     *
-     * @see
-     */
-    public void setCreatorId(String creatorId)
-    {
-        this.creatorId = creatorId;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherId
-     *
-     * @see
-     */
-    public void setFatherId(String fatherId)
-    {
-        this.fatherId = fatherId;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param date
+   * 
+   * @see
+   */
+  public void setCreationDate(String date) {
+    this.creationDate = date;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param path
-     *
-     * @see
-     */
-    public void setPath(String path)
-    {
-        this.path = path;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param creatorId
+   * 
+   * @see
+   */
+  public void setCreatorId(String creatorId) {
+    this.creatorId = creatorId;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param levelNumber
-     *
-     * @see
-     */
-    public void setLevelNumber(int levelNumber)
-    {
-        this.levelNumber = levelNumber;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherId
+   * 
+   * @see
+   */
+  public void setFatherId(String fatherId) {
+    this.fatherId = fatherId;
+  }
 
-	/**
-     * Method declaration
-     *
-     *
-     * @param levelNumber
-     *
-     * @see
-     */
-    public void setOrderNumber(int orderNumber)
-    {
-        this.orderNumber = orderNumber;
-    }
-    
-    public String getLang(){
-		return this.lang;
-	}
-	
-	public void setLang(String lang){
-		this.lang = lang;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param path
+   * 
+   * @see
+   */
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String toString()
-    {
-        return "(pk = " + getPK().toString() + ", treeId = "+treeId+", name = " + getName() + ", path = " + getPath() + ", levelNumber = " + getLevelNumber() + ", fatherId = " + getFatherId() + ")";
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param levelNumber
+   * 
+   * @see
+   */
+  public void setLevelNumber(int levelNumber) {
+    this.levelNumber = levelNumber;
+  }
 
-	/**
-	 * determine the connection type to the database
-	 */
-	public int _getConnectionType()
-	{
-		return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param levelNumber
+   * 
+   * @see
+   */
+  public void setOrderNumber(int orderNumber) {
+    this.orderNumber = orderNumber;
+  }
+
+  public String getLang() {
+    return this.lang;
+  }
+
+  public void setLang(String lang) {
+    this.lang = lang;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String toString() {
+    return "(pk = " + getPK().toString() + ", treeId = " + treeId + ", name = "
+        + getName() + ", path = " + getPath() + ", levelNumber = "
+        + getLevelNumber() + ", fatherId = " + getFatherId() + ")";
+  }
+
+  /**
+   * determine the connection type to the database
+   */
+  public int _getConnectionType() {
+    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
+  }
 
 }

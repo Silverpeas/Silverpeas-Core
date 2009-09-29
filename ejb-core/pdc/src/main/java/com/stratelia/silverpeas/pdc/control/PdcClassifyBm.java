@@ -12,111 +12,149 @@ import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.util.JoinStatement;
 
-public interface PdcClassifyBm
-{
+public interface PdcClassifyBm {
 
-	/**
-	 * Check if the object is already classified on the position
-	 * @param silverObjectId
-	 * @param position
-	 * @return the positionId if the object is already classified, -1 otherwise.
-	 * @throws PdcException
-	 */
-	public int isPositionAlreadyExists(int silverObjectId, ClassifyPosition position) throws PdcException;
-	
-    /**
-     * Add new position for an object
-     *
-     * @param silverObjectId - id of the object to classify
-	 * @param position - the position of the object
-     *
-     * @return 0 position is OK, insertion have been done. 1 if variant constraint not respected
-     *
-     * @throws PdcException
-     *
-     */
-    public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId) throws PdcException;
+  /**
+   * Check if the object is already classified on the position
+   * 
+   * @param silverObjectId
+   * @param position
+   * @return the positionId if the object is already classified, -1 otherwise.
+   * @throws PdcException
+   */
+  public int isPositionAlreadyExists(int silverObjectId,
+      ClassifyPosition position) throws PdcException;
 
-    /**
-     * Update the position of an object
-     *
-     * @param silverObjectId - id of the object
-	 * @param position - the position of the object
-     *
-     * @return 0 position is OK, insertion have been done. 1 if variant constraint not respected
-     *
-     * @throws PdcException
-     *
-     */
-    public int updatePosition(ClassifyPosition position) throws PdcException;
+  /**
+   * Add new position for an object
+   * 
+   * @param silverObjectId
+   *          - id of the object to classify
+   * @param position
+   *          - the position of the object
+   * 
+   * @return 0 position is OK, insertion have been done. 1 if variant constraint
+   *         not respected
+   * 
+   * @throws PdcException
+   * 
+   */
+  public int addPosition(int silverObjectId, ClassifyPosition position,
+      String sComponentId) throws PdcException;
 
-	public int updatePositions(List classifyValues,int silverObjectId) throws PdcException;
+  /**
+   * Update the position of an object
+   * 
+   * @param silverObjectId
+   *          - id of the object
+   * @param position
+   *          - the position of the object
+   * 
+   * @return 0 position is OK, insertion have been done. 1 if variant constraint
+   *         not respected
+   * 
+   * @throws PdcException
+   * 
+   */
+  public int updatePosition(ClassifyPosition position) throws PdcException;
 
-	/**
-     * Delete the position of an object
-     *
-     * @param silverObjectId - id of the object
-	 * @param position - the id of the position
-     *
-     *
-     * @throws PdcException
-     *
-     */
-    public void deletePosition(int positionId, String sComponentId) throws PdcException;
+  public int updatePositions(List classifyValues, int silverObjectId)
+      throws PdcException;
 
-	/**
-     * Returns all positions of an object
-     *
-     * @param silverObjectId - id of the object
-     *
-     * @return a Position List
-     *
-     * @throws PdcException
-     *
-     */
-    public List getPositions(int silverObjectId, String sComponentId) throws PdcException;
+  /**
+   * Delete the position of an object
+   * 
+   * @param silverObjectId
+   *          - id of the object
+   * @param position
+   *          - the id of the position
+   * 
+   * 
+   * @throws PdcException
+   * 
+   */
+  public void deletePosition(int positionId, String sComponentId)
+      throws PdcException;
 
-	public JoinStatement getPositionsJoinStatement(String sComponentId) throws PdcException;
-	public JoinStatement getPositionsJoinStatement(List alComponentId) throws PdcException ;
+  /**
+   * Returns all positions of an object
+   * 
+   * @param silverObjectId
+   *          - id of the object
+   * 
+   * @return a Position List
+   * 
+   * @throws PdcException
+   * 
+   */
+  public List getPositions(int silverObjectId, String sComponentId)
+      throws PdcException;
 
-	public void registerAxis(Connection con, int axisId) throws PdcException;
+  public JoinStatement getPositionsJoinStatement(String sComponentId)
+      throws PdcException;
 
-	public void unregisterAxis(Connection con, int axisId) throws PdcException;
+  public JoinStatement getPositionsJoinStatement(List alComponentId)
+      throws PdcException;
 
-	public void createValuesAndReplace(Connection con,String axisId,ArrayList oldPath,ArrayList newPath) throws PdcException;
+  public void registerAxis(Connection con, int axisId) throws PdcException;
 
-	/** Remove all the positions of the given content */
-	public List removePosition(Connection connection, int nSilverContentId) throws PdcException;
+  public void unregisterAxis(Connection con, int axisId) throws PdcException;
 
-	/** Find all the SilverContentId with the given position */
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId, String authorId, String afterDate, String beforeDate) throws PdcException;
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId, String authorId, String afterDate, String beforeDate, boolean recursiveSearch, boolean visibilitySensitive) throws PdcException;
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId) throws PdcException;
+  public void createValuesAndReplace(Connection con, String axisId,
+      ArrayList oldPath, ArrayList newPath) throws PdcException;
 
-	public boolean hasAlreadyPositions(List objectIdList, UsedAxis usedAxis)throws PdcException;
+  /** Remove all the positions of the given content */
+  public List removePosition(Connection connection, int nSilverContentId)
+      throws PdcException;
 
-	/** Returns a list of object for one instance */
-	public List getObjectsByInstance(String instanceId) throws PdcException ;
+  /** Find all the SilverContentId with the given position */
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId,
+      String authorId, String afterDate, String beforeDate) throws PdcException;
 
-	//Recherche globale
-	public List getPertinentAxis(SearchContext searchContext, List axisIds) throws PdcException ;
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId,
+      String authorId, String afterDate, String beforeDate,
+      boolean recursiveSearch, boolean visibilitySensitive) throws PdcException;
 
-	//Recherche globale
-	public List getPertinentValues(SearchContext searchContext, int axisId) throws PdcException ;
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId)
+      throws PdcException;
 
-	//recherche à l'intérieur d'une instance
-	public List getPertinentAxis(SearchContext searchContext, List axisIds, JoinStatement joinStatementAllPositions) throws PdcException ;
+  public boolean hasAlreadyPositions(List objectIdList, UsedAxis usedAxis)
+      throws PdcException;
 
-	//recherche à l'intérieur d'une instance
-	public PertinentAxis getPertinentAxis(SearchContext searchContext, String axisId, String sRootValue, JoinStatement joinStatementAllPositions) throws PdcException ;
+  /** Returns a list of object for one instance */
+  public List getObjectsByInstance(String instanceId) throws PdcException;
 
-	//recherche à l'intérieur d'une instance
-	public List getPertinentValues(SearchContext searchContext, int axisId, JoinStatement joinStatementAllPositions) throws PdcException ;
-	
-	/*
-	 * recherche tous les objets classés sur l'axe axisId selon le searchContext et le JoinStatement
-	 * @return une List de ObjectValuePair
-	 */
-	public List getObjectValuePairs(SearchContext searchContext, int axisId, JoinStatement joinStatementAllPositions) throws PdcException;
+  // Recherche globale
+  public List getPertinentAxis(SearchContext searchContext, List axisIds)
+      throws PdcException;
+
+  // Recherche globale
+  public List getPertinentValues(SearchContext searchContext, int axisId)
+      throws PdcException;
+
+  // recherche à l'intérieur d'une instance
+  public List getPertinentAxis(SearchContext searchContext, List axisIds,
+      JoinStatement joinStatementAllPositions) throws PdcException;
+
+  // recherche à l'intérieur d'une instance
+  public PertinentAxis getPertinentAxis(SearchContext searchContext,
+      String axisId, String sRootValue, JoinStatement joinStatementAllPositions)
+      throws PdcException;
+
+  // recherche à l'intérieur d'une instance
+  public List getPertinentValues(SearchContext searchContext, int axisId,
+      JoinStatement joinStatementAllPositions) throws PdcException;
+
+  /*
+   * recherche tous les objets classés sur l'axe axisId selon le searchContext
+   * et le JoinStatement
+   * 
+   * @return une List de ObjectValuePair
+   */
+  public List getObjectValuePairs(SearchContext searchContext, int axisId,
+      JoinStatement joinStatementAllPositions) throws PdcException;
 
 }

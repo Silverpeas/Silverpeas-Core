@@ -16,65 +16,63 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 	Thomas Breitkreuz (tb@cdoc.de)
-*/
+ */
 
 package com.stratelia.silverpeas.scheduler;
 
 /**
- * The class 'SchedulerEvent' holds the event information, if there is a event fired by the
- * scheduler. Only events of the type 'EXECUTION.
+ * The class 'SchedulerEvent' holds the event information, if there is a event
+ * fired by the scheduler. Only events of the type 'EXECUTION.
  */
-public class SchedulerEvent
-{
-	/**
-	 * Event Type
-	 */
-	public static final int	EXECUTION_SUCCESSFULL			= 1;
+public class SchedulerEvent {
+  /**
+   * Event Type
+   */
+  public static final int EXECUTION_SUCCESSFULL = 1;
 
-	/**
-	 * Event Type
-	 */
-	public static final int	EXECUTION_NOT_SUCCESSFULL		= 2;
+  /**
+   * Event Type
+   */
+  public static final int EXECUTION_NOT_SUCCESSFULL = 2;
 
-	/**
-	 * Event Type
-	 */
-	public static final int	EXECUTION							= 3;
+  /**
+   * Event Type
+   */
+  public static final int EXECUTION = 3;
 
+  private SchedulerJob theJob;
+  private int theType;
 
-	private SchedulerJob	theJob;
-	private int				theType;
+  /**
+   * This method returns the job
+   * 
+   * @return The job, which is the source for the event
+   */
+  public SchedulerJob getJob() {
+    return theJob;
+  }
 
-	/**
-	 * This method returns the job
-	 *
-	 * @return	The job, which is the source for the event
-	 */
-	public SchedulerJob getJob ()
-	{
-		return theJob;
-	}
+  /**
+   * This method returns the event type
+   * 
+   * @return The type of the event
+   */
+  public int getType() {
+    return theType;
+  }
 
-	/**
-	 * This method returns the event type
-	 *
-	 * @return	The type of the event
-	 */
-	public int getType ()
-	{
-		return theType;
-	}
-
-	/**
-	 *	The constructor has proteceted access, because the generation of events should be done internally
-	 *
-	 * @param aType	The type of the event
-	 * @param aJob		The job, which is the source for the event
-	 */
-	protected SchedulerEvent (int aType, SchedulerJob aJob)
-	{
-		theType 		= aType;
-		theJob			= aJob;
-	}
+  /**
+   * The constructor has proteceted access, because the generation of events
+   * should be done internally
+   * 
+   * @param aType
+   *          The type of the event
+   * @param aJob
+   *          The job, which is the source for the event
+   */
+  protected SchedulerEvent(int aType, SchedulerJob aJob) {
+    theType = aType;
+    theJob = aJob;
+  }
 
 }

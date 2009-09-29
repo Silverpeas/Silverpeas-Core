@@ -30,21 +30,24 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryContextFa
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletAdminDataFactory is a factory object that creates and returns
- * a new instance of the PortletAdminData.
+ * PortletAdminDataFactory is a factory object that creates and returns a new
+ * instance of the PortletAdminData.
  */
 public class PortletAdminDataFactory {
-    
-    /**
-     * Returns a new instance of the PortletAdminData object
-     */
-    
-    public static PortletAdminData getPortletAdminData(String context) throws PortletRegistryException {
-        PortletAdminData portletAdminData = new PortletAdminDataImpl();
-        PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
-        PortletRegistryContextFactory factory = afactory.getPortletRegistryContextFactory();
-        PortletRegistryContext portletRegistryContext = factory.getPortletRegistryContext(context);
-        portletAdminData.init(portletRegistryContext);
-        return portletAdminData;
-    }
+
+  /**
+   * Returns a new instance of the PortletAdminData object
+   */
+
+  public static PortletAdminData getPortletAdminData(String context)
+      throws PortletRegistryException {
+    PortletAdminData portletAdminData = new PortletAdminDataImpl();
+    PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
+    PortletRegistryContextFactory factory = afactory
+        .getPortletRegistryContextFactory();
+    PortletRegistryContext portletRegistryContext = factory
+        .getPortletRegistryContext(context);
+    portletAdminData.init(portletRegistryContext);
+    return portletAdminData;
+  }
 }

@@ -1,30 +1,25 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
-public class UserIdCountVolumeCouple
-{
-    private String userId;
-    private int countVolume;
-    
-    public String getUserId()
-    {
-        return userId;
-    }
+public class UserIdCountVolumeCouple {
+  private String userId;
+  private int countVolume;
 
-    public void setUserId(String id)
-    {
-        userId = id;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public int getCountVolume()
-    {
-        return countVolume;
-    }
+  public void setUserId(String id) {
+    userId = id;
+  }
 
-    public void setCountVolume(int volume)
-    {
-         countVolume=volume;
-    }
+  public int getCountVolume() {
+    return countVolume;
+  }
+
+  public void setCountVolume(int volume) {
+    countVolume = volume;
+  }
 }
-

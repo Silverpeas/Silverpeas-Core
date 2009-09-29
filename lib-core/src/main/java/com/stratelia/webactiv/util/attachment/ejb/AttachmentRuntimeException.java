@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /**
  * Titre : Silverpeas<p>
@@ -48,77 +49,71 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * 
  * @author
  */
-public class AttachmentRuntimeException extends SilverpeasRuntimeException
-{
+public class AttachmentRuntimeException extends SilverpeasRuntimeException {
 
-    /**
-     * method of interface FromModule
-     */
-    public String getModule()
-    {
-        return "attachment";
-    }
+  /**
+   * method of interface FromModule
+   */
+  public String getModule() {
+    return "attachment";
+  }
 
-    /**
-     * constructors
-     */
+  /**
+   * constructors
+   */
 
-    public AttachmentRuntimeException(String callingClass, int errorLevel, String message)
-    {
-        super(callingClass, errorLevel, message);
-    }
+  public AttachmentRuntimeException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * 
-     * @see
-     */
-    public AttachmentRuntimeException(String callingClass, int errorLevel, String message, String extraParams)
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * 
+   * @see
+   */
+  public AttachmentRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param nested
-     * 
-     * @see
-     */
-    public AttachmentRuntimeException(String callingClass, int errorLevel, String message, Exception nested)
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param nested
+   * 
+   * @see
+   */
+  public AttachmentRuntimeException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * @param nested
-     * 
-     * @see
-     */
-    public AttachmentRuntimeException(String callingClass, int errorLevel, String message, String extraParams, Exception nested)
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * @param nested
+   * 
+   * @see
+   */
+  public AttachmentRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 
 }
-
-
-
-

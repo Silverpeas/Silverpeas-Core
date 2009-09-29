@@ -10,23 +10,23 @@ import java.util.List;
 
 /**
  * @author sdevolder
- *
+ * 
  */
 public class PdcPositionsType {
 
-	private List listClassifyPosition;//List de ClassifyPosition
-	 
-	/**
-	 * @return
-	 */
-	public List getListClassifyPosition() {
-		return listClassifyPosition;
-	}
-	
-	/**
-	 * @param listClassifyPosition
-	 */
-	public void setListClassifyPosition(List listClassifyPosition) {
-		this.listClassifyPosition = listClassifyPosition;
-	}
+  private List listClassifyPosition;// List de ClassifyPosition
+
+  /**
+   * @return
+   */
+  public List getListClassifyPosition() {
+    return listClassifyPosition;
+  }
+
+  /**
+   * @param listClassifyPosition
+   */
+  public void setListClassifyPosition(List listClassifyPosition) {
+    this.listClassifyPosition = listClassifyPosition;
+  }
 }

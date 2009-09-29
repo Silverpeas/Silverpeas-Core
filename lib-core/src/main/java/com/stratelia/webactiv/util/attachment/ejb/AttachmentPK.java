@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /**
  * Titre : Silverpeas<p>
@@ -46,119 +47,108 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * 
  * @author
  */
-public class AttachmentPK extends WAPrimaryKey implements Serializable
-{
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param id
-     * 
-     * @see
-     */
-    public AttachmentPK(String id)
-    {
-        super(id);
+public class AttachmentPK extends WAPrimaryKey implements Serializable {
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * 
+   * @see
+   */
+  public AttachmentPK(String id) {
+    super(id);
+  }
+
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * @param spaceId
+   * @param componentId
+   * 
+   * @see
+   */
+  public AttachmentPK(String id, String spaceId, String componentId) {
+    super(id, spaceId, componentId);
+  }
+
+  public AttachmentPK(String id, String componentId) {
+    super(id, null, componentId);
+  }
+
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * @param pk
+   * 
+   * @see
+   */
+  public AttachmentPK(String id, WAPrimaryKey pk) {
+    super(id, pk);
+  }
+
+  /**
+   * **********
+   */
+
+  public String getRootTableName() {
+    return "Attachment";
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getTableName() {
+    return "SB_Attachment_Attachment";
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param other
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public boolean equals(Object other) {
+    if (!(other instanceof AttachmentPK)) {
+      return false;
     }
+    return (id.equals(((AttachmentPK) other).getId()))
+        && (componentName.equals(((AttachmentPK) other).getComponentName()));
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param id
-     * @param spaceId
-     * @param componentId
-     * 
-     * @see
-     */
-    public AttachmentPK(String id, String spaceId, String componentId)
-    {
-        super(id, spaceId, componentId);
-    }
-    
-    public AttachmentPK(String id, String componentId)
-    {
-        super(id, null, componentId);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String toString() {
+    return "(id = " + getId() + ", componentName = " + getComponentName() + ")";
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param id
-     * @param pk
-     * 
-     * @see
-     */
-    public AttachmentPK(String id, WAPrimaryKey pk)
-    {
-        super(id, pk);
-    }
-
-    /**
-     * **********
-     */
-
-
-    public String getRootTableName()
-    {
-        return "Attachment";
-    }
-
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String getTableName()
-    {
-        return "SB_Attachment_Attachment";
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param other
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public boolean equals(Object other)
-    {
-        if (!(other instanceof AttachmentPK))
-        {
-            return false;
-        }
-        return (id.equals(((AttachmentPK) other).getId())) && (componentName.equals(((AttachmentPK) other).getComponentName()));
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String toString()
-    {
-        return "(id = " + getId() + ", componentName = " + getComponentName() + ")";
-    }
-
-    /**
-     * 
-     * Returns a hash code for the key
-     * @return A hash code for this object
-     */
-    public int hashCode()
-    {
-        return toString().hashCode();
-    }
+  /**
+   * 
+   * Returns a hash code for the key
+   * 
+   * @return A hash code for this object
+   */
+  public int hashCode() {
+    return toString().hashCode();
+  }
 
 }

@@ -32,157 +32,158 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  * 
  * @author
  */
-public class OnlineFileServer extends HttpServlet
-{
+public class OnlineFileServer extends HttpServlet {
 
-    HttpSession session;
-    PrintWriter out;
+  HttpSession session;
+  PrintWriter out;
 
-    public void init(ServletConfig config)
-    {
-        try
-        {
-            super.init(config);
-        }
-        catch (ServletException se)
-        {
-            SilverTrace.fatal("peasUtil", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
-        }
+  public void init(ServletConfig config) {
+    try {
+      super.init(config);
+    } catch (ServletException se) {
+      SilverTrace.fatal("peasUtil", "FileServer.init",
+          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+    }
+  }
+
+  public void doGet(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException {
+    doPost(req, res);
+  }
+
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException {
+    SilverTrace.info("peasUtil", "OnlineFileServer.doPost",
+        "root.MSG_GEN_ENTER_METHOD");
+    String mimeType = req.getParameter("MimeType");
+    String sourceFile = req.getParameter("SourceFile");
+    String directory = req.getParameter("Directory");
+    String componentId = req.getParameter("ComponentId");
+
+    String attachmentId = req.getParameter("attachmentId");
+    String language = req.getParameter("lang");
+    AttachmentDetail attachment = null;
+    if (StringUtil.isDefined(attachmentId)) {
+      // Check first if attachment exists
+      attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
+          attachmentId));
+      if (attachment != null) {
+        mimeType = attachment.getType(language);
+        sourceFile = attachment.getPhysicalName(language);
+        directory = FileRepositoryManager.getRelativePath(FileRepositoryManager
+            .getAttachmentContext(attachment.getContext()));
+      }
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-    {
-        doPost(req, res);
+    String documentId = req.getParameter("DocumentId");
+    if (StringUtil.isDefined(documentId)) {
+      String versionId = req.getParameter("VersionId");
+      VersioningUtil versioning = new VersioningUtil();
+      DocumentVersionPK versionPK = new DocumentVersionPK(Integer
+          .parseInt(versionId), "useless", componentId);
+      DocumentVersion version = versioning.getDocumentVersion(versionPK);
+
+      if (version != null) {
+        mimeType = version.getMimeType();
+        sourceFile = version.getPhysicalName();
+
+        String[] path = new String[1];
+        path[0] = "Versioning";
+        directory = FileRepositoryManager.getRelativePath(path);
+      }
     }
 
-    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-    {
-        SilverTrace.info("peasUtil", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
-        String mimeType		= req.getParameter("MimeType");
-        String sourceFile 	= req.getParameter("SourceFile");
-        String directory 	= req.getParameter("Directory");
-        String componentId 	= req.getParameter("ComponentId");
-        
-        String attachmentId = req.getParameter("attachmentId");
-        String language		= req.getParameter("lang");
-        AttachmentDetail attachment = null;
-        if (StringUtil.isDefined(attachmentId))
-        {
-        	//Check first if attachment exists
-        	attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId));
-        	if (attachment != null)
-        	{
-        		mimeType = attachment.getType(language);
-        		sourceFile = attachment.getPhysicalName(language);
-        		directory = FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(attachment.getContext()));
-        	}
-        }
-        
-        String documentId = req.getParameter("DocumentId");
-        if (StringUtil.isDefined(documentId))
-        {
-        	String versionId = req.getParameter("VersionId");
-        	VersioningUtil versioning = new VersioningUtil();
-        	DocumentVersionPK versionPK = new DocumentVersionPK(Integer.parseInt(versionId), "useless", componentId);
-        	DocumentVersion version = versioning.getDocumentVersion(versionPK);
-        	
-        	if (version != null)
-        	{
-        		mimeType = version.getMimeType();
-        		sourceFile = version.getPhysicalName();
+    String filePath = FileRepositoryManager.getAbsolutePath(componentId)
+        + directory + File.separator + sourceFile;
 
-        		String[] path = new String[1];
-        		path[0] = "Versioning";
-        		directory = FileRepositoryManager.getRelativePath(path);
-        	}
-        }
-        
-        String filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator + sourceFile;
+    res.setContentType(mimeType);
 
-        res.setContentType(mimeType);
-        
-        display(res, filePath);
+    display(res, filePath);
+  }
+
+  /**
+   * This method writes the result of the preview action.
+   * 
+   * @param res
+   *          - The HttpServletResponse where the html code is write
+   * @param htmlFilePath
+   *          - the canonical path of the html document generated by the parser
+   *          tools. if this String is null that an exception had been catched
+   *          the html document generated is empty !! also, we display a warning
+   *          html page
+   */
+  private void display(HttpServletResponse res, String htmlFilePath)
+      throws IOException {
+    OutputStream out2 = res.getOutputStream();
+    int read;
+    BufferedInputStream input = null; // for the html document generated
+    SilverTrace.info("peasUtil", "OnlineFileServer.display()",
+        "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + htmlFilePath);
+    try {
+      input = new BufferedInputStream(new FileInputStream(htmlFilePath));
+      read = input.read();
+      SilverTrace.info("peasUtil", "OnlineFileServer.display()",
+          "root.MSG_GEN_ENTER_METHOD", " BufferedInputStream read " + read);
+      if (read == -1) {
+        displayWarningHtmlCode(res);
+      } else {
+        while (read != -1) {
+          out2.write(read); // writes bytes into the response
+          read = input.read();
+        }
+      }
+    } catch (Exception e) {
+      SilverTrace.warn("peasUtil", "OnlineFileServer.doPost",
+          "root.EX_CANT_READ_FILE", "file name=" + htmlFilePath);
+      displayWarningHtmlCode(res);
+    } finally {
+      SilverTrace.info("peasUtil", "OnlineFileServer.display()", "",
+          " finally ");
+      // we must close the in and out streams
+      try {
+        if (input != null) {
+          input.close();
+        }
+        out2.close();
+      } catch (Exception e) {
+        SilverTrace.warn("peasUtil", "OnlineFileServer.display",
+            "root.EX_CANT_READ_FILE", "close failed");
+      }
     }
-    
-    /**
-     * This method writes the result of the preview action.
-	 * @param res - The HttpServletResponse where the html code is write
-	 * @param htmlFilePath - the canonical path of the html document generated by the parser tools. if this String is null that an exception had been catched
-	 * the html document generated is empty !! also, we display a warning html page
-     */
-    private void display(HttpServletResponse res, String htmlFilePath) throws IOException
-    {
-        OutputStream        out2 = res.getOutputStream();
-        int                 read;
-        BufferedInputStream input = null; // for the html document generated
-        SilverTrace.info("peasUtil", "OnlineFileServer.display()", "root.MSG_GEN_ENTER_METHOD", " htmlFilePath "+htmlFilePath);
-        try
-        {
-                input = new BufferedInputStream(new FileInputStream(htmlFilePath));
-                read = input.read();
-				SilverTrace.info("peasUtil", "OnlineFileServer.display()", "root.MSG_GEN_ENTER_METHOD", " BufferedInputStream read "+read);
-                if (read == -1){
-                	displayWarningHtmlCode(res);
-                } else {
-					while (read != -1)
-					{
-						out2.write(read); // writes bytes into the response
-						read = input.read();
-					}
-				}
-        }
-        catch (Exception e)
-        {
-            SilverTrace.warn("peasUtil", "OnlineFileServer.doPost", "root.EX_CANT_READ_FILE", "file name=" + htmlFilePath);
-           displayWarningHtmlCode(res);
-        }
-        finally
-        {
-            SilverTrace.info("peasUtil", "OnlineFileServer.display()", "", " finally ");
-            // we must close the in and out streams
-            try
-            {
-                if (input != null)
-                {
-                    input.close();
-                }
-                out2.close();
-            }
-            catch (Exception e)
-            {
-                SilverTrace.warn("peasUtil", "OnlineFileServer.display", "root.EX_CANT_READ_FILE", "close failed");
-            }
-        }
+  }
+
+  // Add By Mohammed Hguig
+
+  private void displayWarningHtmlCode(HttpServletResponse res)
+      throws IOException {
+    StringReader sr = null;
+    OutputStream out2 = res.getOutputStream();
+    int read;
+    ResourceLocator resourceLocator = new ResourceLocator(
+        "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
+
+    sr = new StringReader(resourceLocator.getString("warning"));
+    try {
+      read = sr.read();
+      while (read != -1) {
+        SilverTrace.info("peasUtil", "OnlineFileServer.displayHtmlCode()",
+            "root.MSG_GEN_ENTER_METHOD", " StringReader read " + read);
+        out2.write(read); // writes bytes into the response
+        read = sr.read();
+      }
+    } catch (Exception e) {
+      SilverTrace.warn("peasUtil", "OnlineFileServer.displayWarningHtmlCode",
+          "root.EX_CANT_READ_FILE", "warning properties");
+    } finally {
+      try {
+        if (sr != null)
+          sr.close();
+        out2.close();
+      } catch (Exception e) {
+        SilverTrace.warn("peasUtil", "OnlineFileServer.displayHtmlCode",
+            "root.EX_CANT_READ_FILE", "close failed");
+      }
     }
-
-    // Add By Mohammed Hguig
-
-    private void displayWarningHtmlCode(HttpServletResponse res) throws IOException{
-        StringReader        sr = null; 
-        OutputStream        out2 = res.getOutputStream();
-        int                 read;
-		ResourceLocator resourceLocator = new ResourceLocator("com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
-
-		sr = new StringReader(resourceLocator.getString("warning"));
-		try{
-			read = sr.read();
-			while (read != -1){
-				SilverTrace.info("peasUtil", "OnlineFileServer.displayHtmlCode()", "root.MSG_GEN_ENTER_METHOD", " StringReader read "+read);
-				out2.write(read); // writes bytes into the response
-				read = sr.read();
-			}
-		} catch (Exception e){
-            SilverTrace.warn("peasUtil", "OnlineFileServer.displayWarningHtmlCode", "root.EX_CANT_READ_FILE", "warning properties");
-		} finally {
-			try{
-                if (sr != null)
-                    sr.close();
-                out2.close();
-			} catch (Exception e){
-                SilverTrace.warn("peasUtil", "OnlineFileServer.displayHtmlCode", "root.EX_CANT_READ_FILE", "close failed");
-			}
-		}
-	}
-
+  }
 
 }

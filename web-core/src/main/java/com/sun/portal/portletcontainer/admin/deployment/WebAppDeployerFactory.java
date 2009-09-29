@@ -36,69 +36,77 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
  * Factory class to provide access to the WebAppDeployer implementation class.
  * This is a singleton class which reads the configuration file to obtain the
  * name of the class which implements WebAppDeployer interface and loads the
- * class, creates an instance of that class, and returns the same for the callers.
+ * class, creates an instance of that class, and returns the same for the
+ * callers.
  */
 public class WebAppDeployerFactory {
-    private static final WebAppDeployerFactory factory = new WebAppDeployerFactory();
-    private WebAppDeployer manager = null;
-    
-    private static final String DEPLOYMENT_MANAGER_CLASS = "deployment.manager.class";
-    private static final String DEFAULT_DEPLOYMENT_MANAGER_CLASS =
-            "com.sun.portal.portletadmin.deployment.DefaultWebAppDeployer";
-    private static Logger logger = Logger.getLogger(WebAppDeployerFactory.class.getPackage().getName(),
-            "com.silverpeas.portlets.PALogMessages");
-    
-    
-    /**
-     * Reads the configuration file to intialize the manager with the appropriate WebAppDeployer
-     * implementation class.
-     */
-    private WebAppDeployerFactory(){
-        FileInputStream config = null;
+  private static final WebAppDeployerFactory factory = new WebAppDeployerFactory();
+  private WebAppDeployer manager = null;
+
+  private static final String DEPLOYMENT_MANAGER_CLASS = "deployment.manager.class";
+  private static final String DEFAULT_DEPLOYMENT_MANAGER_CLASS = "com.sun.portal.portletadmin.deployment.DefaultWebAppDeployer";
+  private static Logger logger = Logger.getLogger(WebAppDeployerFactory.class
+      .getPackage().getName(), "com.silverpeas.portlets.PALogMessages");
+
+  /**
+   * Reads the configuration file to intialize the manager with the appropriate
+   * WebAppDeployer implementation class.
+   */
+  private WebAppDeployerFactory() {
+    FileInputStream config = null;
+    try {
+      String portletContainerConfigDir = PortletRegistryHelper
+          .getConfigFileLocation();
+      if (portletContainerConfigDir != null) {
+        String configFileName = portletContainerConfigDir + File.separator
+            + WebAppDeployer.CONFIG_FILE;
+        config = new FileInputStream(configFileName);
+        Properties properties = new Properties();
+        properties.load(config);
+        String deploymentManagerClass = properties
+            .getProperty(DEPLOYMENT_MANAGER_CLASS);
+        manager = (WebAppDeployer) Class.forName(deploymentManagerClass)
+            .newInstance();
+      }
+    } catch (Throwable t) {
+      System.out.println("Exception: " + t.toString()
+          + ". Using DefaultWebAppDeployer");
+      try {
+        manager = (WebAppDeployer) Class.forName(
+            DEFAULT_DEPLOYMENT_MANAGER_CLASS).newInstance();
+      } catch (Throwable t1) {
+        System.out.println("Exception initializing DefaultWebAppDeployer: "
+            + t1.toString());
+      }
+    } finally {
+      if (config != null) {
         try {
-            String portletContainerConfigDir = PortletRegistryHelper.getConfigFileLocation();
-            if(portletContainerConfigDir != null) {
-                String configFileName = portletContainerConfigDir + File.separator + WebAppDeployer.CONFIG_FILE;
-                config = new FileInputStream(configFileName);
-                Properties properties = new Properties();
-                properties.load(config);
-                String deploymentManagerClass = properties.getProperty(DEPLOYMENT_MANAGER_CLASS);
-                manager = (WebAppDeployer)Class.forName(deploymentManagerClass).newInstance();
-            }
-        } catch (Throwable t) {
-            System.out.println("Exception: " + t.toString() + ". Using DefaultWebAppDeployer");
-            try {
-                manager = (WebAppDeployer)Class.forName(DEFAULT_DEPLOYMENT_MANAGER_CLASS).newInstance();
-            } catch (Throwable t1) {
-                System.out.println("Exception initializing DefaultWebAppDeployer: " + t1.toString());
-            }
-        } finally {
-            if(config != null){
-                try {
-                    config.close();
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
+          config.close();
+        } catch (IOException ex) {
+          // ignore
         }
+      }
     }
-    
-    /**
-     * Returns the singleton instance of the Factory class.
-     *
-     * @return WebAppDeployerFactory The singleton instance of this Factory class.
-     */
-    public static WebAppDeployerFactory getInstance(){
-        return factory;
-    }
-    
-    /**
-     * Returns the WebAppDeployer implementation instance as provided by the configuration.
-     *
-     * @return WebAppDeployer The instance of the class implementing WebAppDeployer.
-     */
-    public WebAppDeployer getDeploymentManager(){
-        return manager;
-    }
-    
+  }
+
+  /**
+   * Returns the singleton instance of the Factory class.
+   * 
+   * @return WebAppDeployerFactory The singleton instance of this Factory class.
+   */
+  public static WebAppDeployerFactory getInstance() {
+    return factory;
+  }
+
+  /**
+   * Returns the WebAppDeployer implementation instance as provided by the
+   * configuration.
+   * 
+   * @return WebAppDeployer The instance of the class implementing
+   *         WebAppDeployer.
+   */
+  public WebAppDeployer getDeploymentManager() {
+    return manager;
+  }
+
 }

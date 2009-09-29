@@ -5,7 +5,6 @@ package com.stratelia.silverpeas.notificationserver.channel.server;
  * @version 1.0
  */
 
-public class SERVERConstant
-{
+public class SERVERConstant {
   public static final String CHANNEL = "SERVER";
 }

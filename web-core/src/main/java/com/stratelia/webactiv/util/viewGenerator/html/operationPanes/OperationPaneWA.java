@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * ArrayPaneWA.java
@@ -12,7 +13,7 @@ import java.util.Vector;
 
 /**
  * The default implementation of ArrayPane interface
- *
+ * 
  * @author squere
  * @version 1.0
  */
@@ -20,8 +21,8 @@ public class OperationPaneWA extends AbstractOperationPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public OperationPaneWA() {
@@ -30,12 +31,12 @@ public class OperationPaneWA extends AbstractOperationPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param iconPath
    * @param altText
    * @param action
-   *
+   * 
    * @see
    */
   public void addOperation(String iconPath, String altText, String action) {
@@ -57,8 +58,8 @@ public class OperationPaneWA extends AbstractOperationPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void addLine() {
@@ -75,10 +76,10 @@ public class OperationPaneWA extends AbstractOperationPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {

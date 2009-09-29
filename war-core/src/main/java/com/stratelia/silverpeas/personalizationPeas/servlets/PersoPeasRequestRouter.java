@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.personalizationPeas.servlets;
 
@@ -116,221 +117,250 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class PersoPeasRequestRouter extends ComponentRequestRouter
-{
+public class PersoPeasRequestRouter extends ComponentRequestRouter {
 
-    /**
+  /**
 	 *
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-     * Method declaration
-     *
-     *
-     * @param mainSessionCtrl
-     * @param componentContext
-     *
-     * @return
-     *
-     * @see
-     */
-    public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-    {
-        return new PersonalizationSessionController(mainSessionCtrl, componentContext);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * @param componentContext
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    return new PersonalizationSessionController(mainSessionCtrl,
+        componentContext);
+  }
 
-    /**
-     * This method has to be implemented in the component request rooter class.
-     * returns the session control bean name to be put in the request object
-     * ex : for notificationUser, returns "notificationUser"
-     */
-    public String getSessionControlBeanName()
-    {
-        return "personalizationPeas";
-    }
+  /**
+   * This method has to be implemented in the component request rooter class.
+   * returns the session control bean name to be put in the request object ex :
+   * for notificationUser, returns "notificationUser"
+   */
+  public String getSessionControlBeanName() {
+    return "personalizationPeas";
+  }
 
-    /**
-     * This method has to be implemented by the component request rooter
-     * it has to compute a destination page
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param componentSC The component Session Control, build and initialised.
-     * @param request The entering request. The request rooter need it to get parameters
-     * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
-     */
-    public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
-    {
-        SilverTrace.info(getSessionControlBeanName(), "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "function = " + function);
-		PersonalizationSessionController personalizationScc = (PersonalizationSessionController) componentSC;
+  /**
+   * This method has to be implemented by the component request rooter it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
+   * @param request
+   *          The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   */
+  public String getDestination(String function,
+      ComponentSessionController componentSC, HttpServletRequest request) {
+    SilverTrace.info(getSessionControlBeanName(),
+        "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+        "function = " + function);
+    PersonalizationSessionController personalizationScc = (PersonalizationSessionController) componentSC;
 
-		ResourceLocator rl = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+    ResourceLocator rl = new ResourceLocator(
+        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
+        "");
 
-        String destination			= "";
-		String selectedLanguage		= null;
-		String thesaurusStatus		= null;
-		String dragDropStatus		= null;
-		String onlineEditingStatus	= null;
-		String webdavEditingStatus  = null;
-		String selectedWorkSpace	= null;
-		String selectedLook			= null;
+    String destination = "";
+    String selectedLanguage = null;
+    String thesaurusStatus = null;
+    String dragDropStatus = null;
+    String onlineEditingStatus = null;
+    String webdavEditingStatus = null;
+    String selectedWorkSpace = null;
+    String selectedLook = null;
 
-		UserDetail currentUser = personalizationScc.getUserDetail();
-        try
-        {
-	        if (function.startsWith("Main"))
-	        {
-				//language parameter
-				selectedLanguage = personalizationScc.getFavoriteLanguage();
+    UserDetail currentUser = personalizationScc.getUserDetail();
+    try {
+      if (function.startsWith("Main")) {
+        // language parameter
+        selectedLanguage = personalizationScc.getFavoriteLanguage();
 
-				//thesaurus parameter
-				thesaurusStatus =  new Boolean(personalizationScc.getThesaurusStatus()).toString();
+        // thesaurus parameter
+        thesaurusStatus = new Boolean(personalizationScc.getThesaurusStatus())
+            .toString();
 
-				//drag and drop parameter
-				dragDropStatus =  new Boolean(personalizationScc.getDragAndDropStatus()).toString();
+        // drag and drop parameter
+        dragDropStatus = new Boolean(personalizationScc.getDragAndDropStatus())
+            .toString();
 
-				//online editing parameter
-				onlineEditingStatus =  new Boolean(personalizationScc.getOnlineEditingStatus()).toString();
-			//online editing parameter
-        webdavEditingStatus =  new Boolean(personalizationScc.getWebdavEditingStatus()).toString();
+        // online editing parameter
+        onlineEditingStatus = new Boolean(personalizationScc
+            .getOnlineEditingStatus()).toString();
+        // online editing parameter
+        webdavEditingStatus = new Boolean(personalizationScc
+            .getWebdavEditingStatus()).toString();
 
-				//favorite look
-				selectedLook = personalizationScc.getFavoriteLook();
-				request.setAttribute("selectedLanguage", selectedLanguage);
-				request.setAttribute("thesaurusStatus", thesaurusStatus);
-				request.setAttribute("dragDropStatus", dragDropStatus);
-				request.setAttribute("onlineEditingStatus", onlineEditingStatus);
-				request.setAttribute("webdavEditingStatus", webdavEditingStatus);
-				request.setAttribute("FavoriteSpace", personalizationScc.getFavoriteSpace());
-				request.setAttribute("selectedLook", selectedLook);
-				request.setAttribute("SpaceTreeview", personalizationScc.getSpaceTreeview());
-				request.setAttribute("AllLanguages", personalizationScc.getAllLanguages());
+        // favorite look
+        selectedLook = personalizationScc.getFavoriteLook();
+        request.setAttribute("selectedLanguage", selectedLanguage);
+        request.setAttribute("thesaurusStatus", thesaurusStatus);
+        request.setAttribute("dragDropStatus", dragDropStatus);
+        request.setAttribute("onlineEditingStatus", onlineEditingStatus);
+        request.setAttribute("webdavEditingStatus", webdavEditingStatus);
+        request.setAttribute("FavoriteSpace", personalizationScc
+            .getFavoriteSpace());
+        request.setAttribute("selectedLook", selectedLook);
+        request.setAttribute("SpaceTreeview", personalizationScc
+            .getSpaceTreeview());
+        request.setAttribute("AllLanguages", personalizationScc
+            .getAllLanguages());
 
-		        destination = "/personalizationPeas/jsp/personalization_Language.jsp";
-	        }
-			else if (function.equals("SavePreferences"))
-			{
-				selectedLanguage	= request.getParameter("SelectedLanguage");
-				thesaurusStatus		= request.getParameter("opt_thesaurusStatus");
-				dragDropStatus		= request.getParameter("opt_dragDropStatus");
-				onlineEditingStatus	= request.getParameter("opt_onlineEditingStatus");
-				webdavEditingStatus = request.getParameter("opt_webdavEditingStatus");
-				selectedWorkSpace	= request.getParameter("SelectedWorkSpace");
-				selectedLook		= request.getParameter("SelectedLook");
+        destination = "/personalizationPeas/jsp/personalization_Language.jsp";
+      } else if (function.equals("SavePreferences")) {
+        selectedLanguage = request.getParameter("SelectedLanguage");
+        thesaurusStatus = request.getParameter("opt_thesaurusStatus");
+        dragDropStatus = request.getParameter("opt_dragDropStatus");
+        onlineEditingStatus = request.getParameter("opt_onlineEditingStatus");
+        webdavEditingStatus = request.getParameter("opt_webdavEditingStatus");
+        selectedWorkSpace = request.getParameter("SelectedWorkSpace");
+        selectedLook = request.getParameter("SelectedLook");
 
-				Boolean mustBeReloaded = isFramesetMustBeReloaded(selectedLanguage, selectedLook, personalizationScc);
+        Boolean mustBeReloaded = isFramesetMustBeReloaded(selectedLanguage,
+            selectedLook, personalizationScc);
 
-				Vector languages = new Vector();
-				languages.add(selectedLanguage);
-				personalizationScc.setLanguages(languages);
+        Vector languages = new Vector();
+        languages.add(selectedLanguage);
+        personalizationScc.setLanguages(languages);
 
-				personalizationScc.setFavoriteLook(selectedLook);
-				personalizationScc.setThesaurusStatus(new Boolean(thesaurusStatus).booleanValue());
-				personalizationScc.setDragAndDropStatus(new Boolean(dragDropStatus).booleanValue());
-				personalizationScc.setOnlineEditingStatus(new Boolean(onlineEditingStatus).booleanValue());
-				personalizationScc.setWebdavEditingStatus(new Boolean(webdavEditingStatus).booleanValue());
+        personalizationScc.setFavoriteLook(selectedLook);
+        personalizationScc.setThesaurusStatus(new Boolean(thesaurusStatus)
+            .booleanValue());
+        personalizationScc.setDragAndDropStatus(new Boolean(dragDropStatus)
+            .booleanValue());
+        personalizationScc.setOnlineEditingStatus(new Boolean(
+            onlineEditingStatus).booleanValue());
+        personalizationScc.setWebdavEditingStatus(new Boolean(
+            webdavEditingStatus).booleanValue());
 
-				if (selectedWorkSpace == null || selectedWorkSpace.equals("null"))
-					personalizationScc.setPersonalWorkSpace(null);
-				else
-					personalizationScc.setPersonalWorkSpace(selectedWorkSpace);
+        if (selectedWorkSpace == null || selectedWorkSpace.equals("null"))
+          personalizationScc.setPersonalWorkSpace(null);
+        else
+          personalizationScc.setPersonalWorkSpace(selectedWorkSpace);
 
-				request.setAttribute("FramesetMustBeReloaded", mustBeReloaded);
+        request.setAttribute("FramesetMustBeReloaded", mustBeReloaded);
 
-				destination = getDestination("Main", componentSC, request);
-			}
-	        else if (function.startsWith("personalization_Language"))
-	        {
-				SilverTrace.info(getSessionControlBeanName(), "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE");
-				destination = getDestination("Main", componentSC, request);
-	        }
-	        else if (function.startsWith("ChangePassword"))
-	        {
-	        	//Détermination du domaine du user
-	        	boolean domainRW = personalizationScc.isUserDomainRW();
-	        	if (domainRW)
-	        		request.setAttribute("action","userModify");
-	        	else
-	        		request.setAttribute("action","userMS");
+        destination = getDestination("Main", componentSC, request);
+      } else if (function.startsWith("personalization_Language")) {
+        SilverTrace.info(getSessionControlBeanName(),
+            "PersoPeasRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE");
+        destination = getDestination("Main", componentSC, request);
+      } else if (function.startsWith("ChangePassword")) {
+        // Détermination du domaine du user
+        boolean domainRW = personalizationScc.isUserDomainRW();
+        if (domainRW)
+          request.setAttribute("action", "userModify");
+        else
+          request.setAttribute("action", "userMS");
 
-	        	UserFull uf = personalizationScc.getTargetUserFull();
+        UserFull uf = personalizationScc.getTargetUserFull();
 
-				boolean updateIsAllowed = domainRW || personalizationScc.isPasswordChangeAllowed() || (uf.isPasswordValid() && uf.isPasswordAvailable());
+        boolean updateIsAllowed = domainRW
+            || personalizationScc.isPasswordChangeAllowed()
+            || (uf.isPasswordValid() && uf.isPasswordAvailable());
 
-				request.setAttribute("userObject", uf);
-				request.setAttribute("UpdateIsAllowed", new Boolean(updateIsAllowed));
-				request.setAttribute("minLengthPwd", new Integer(personalizationScc.getMinLengthPwd()));
-                request.setAttribute("blanksAllowedInPwd", new Boolean(personalizationScc.isBlanksAllowedInPwd()));
-				destination = "/personalizationPeas/jsp/changePassword.jsp";
-	        }
-			else if (function.startsWith("EffectiveChangePassword"))
-			{
-				//Update informations only if updateMode is allowed for each field
-				try
-				{
-					boolean updateFirstNameIsAllowed = rl.getBoolean("updateFirstName",false);
-					boolean updateLastNameIsAllowed = rl.getBoolean("updateLastName",false);
-					boolean updateEmailIsAllowed = rl.getBoolean("updateEmail",false);
-					String userFirstName = updateFirstNameIsAllowed ? request.getParameter("userFirstName") : currentUser.getFirstName();
-					String userLastName = updateLastNameIsAllowed ? request.getParameter("userLastName") : currentUser.getLastName();
-					String userEmail = updateEmailIsAllowed ? request.getParameter("userEMail") : currentUser.geteMail();
-					SilverTrace.info(getSessionControlBeanName(), "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE","userFirstName="+userFirstName+" - userLastName="+userLastName+" userEmail="+userEmail);
+        request.setAttribute("userObject", uf);
+        request.setAttribute("UpdateIsAllowed", new Boolean(updateIsAllowed));
+        request.setAttribute("minLengthPwd", new Integer(personalizationScc
+            .getMinLengthPwd()));
+        request.setAttribute("blanksAllowedInPwd", new Boolean(
+            personalizationScc.isBlanksAllowedInPwd()));
+        destination = "/personalizationPeas/jsp/changePassword.jsp";
+      } else if (function.startsWith("EffectiveChangePassword")) {
+        // Update informations only if updateMode is allowed for each field
+        try {
+          boolean updateFirstNameIsAllowed = rl.getBoolean("updateFirstName",
+              false);
+          boolean updateLastNameIsAllowed = rl.getBoolean("updateLastName",
+              false);
+          boolean updateEmailIsAllowed = rl.getBoolean("updateEmail", false);
+          String userFirstName = updateFirstNameIsAllowed ? request
+              .getParameter("userFirstName") : currentUser.getFirstName();
+          String userLastName = updateLastNameIsAllowed ? request
+              .getParameter("userLastName") : currentUser.getLastName();
+          String userEmail = updateEmailIsAllowed ? request
+              .getParameter("userEMail") : currentUser.geteMail();
+          SilverTrace.info(getSessionControlBeanName(),
+              "PersoPeasRequestRouter.getDestination()",
+              "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
+                  + " - userLastName=" + userLastName + " userEmail="
+                  + userEmail);
 
-					//process extra properties
-	                HashMap properties = new HashMap();
-	                Enumeration parameters = request.getParameterNames();
-	                String parameterName = null;
-	                String property = null;
-	                while (parameters.hasMoreElements())
-	                {
-	                	parameterName = (String) parameters.nextElement();
-	                	if (parameterName.startsWith("prop_"))
-	                	{
-	                		property = parameterName.substring(5, parameterName.length()); //remove "prop_"
-	                		properties.put(property, request.getParameter(parameterName));
-	                	}
-	                }
+          // process extra properties
+          HashMap properties = new HashMap();
+          Enumeration parameters = request.getParameterNames();
+          String parameterName = null;
+          String property = null;
+          while (parameters.hasMoreElements()) {
+            parameterName = (String) parameters.nextElement();
+            if (parameterName.startsWith("prop_")) {
+              property = parameterName.substring(5, parameterName.length()); // remove
+              // "prop_"
+              properties.put(property, request.getParameter(parameterName));
+            }
+          }
 
-					personalizationScc.modifyUser(currentUser.getId(),EncodeHelper.htmlStringToJavaString(userLastName),EncodeHelper.htmlStringToJavaString(userFirstName),EncodeHelper.htmlStringToJavaString(userEmail),EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),EncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")), EncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")), properties);
-					request.setAttribute("Message", personalizationScc.getString("MessageOK"));
-				}
-				catch (AuthenticationBadCredentialException e)
-				{
-					request.setAttribute("Message", personalizationScc.getString("Error_bad_credential"));
-				}
-				catch (AuthenticationException e)
-				{
-					request.setAttribute("Message", personalizationScc.getString("Error_unknown"));
-				}
-				destination = getDestination("ChangePassword", componentSC, request);
-			}
-	        else
-	        {
-	            destination = "/personalizationPeas/jsp/" + function;
-	        }
+          personalizationScc.modifyUser(currentUser.getId(), EncodeHelper
+              .htmlStringToJavaString(userLastName), EncodeHelper
+              .htmlStringToJavaString(userFirstName), EncodeHelper
+              .htmlStringToJavaString(userEmail), EncodeHelper
+              .htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              EncodeHelper.htmlStringToJavaString(request
+                  .getParameter("OldPassword")), EncodeHelper
+                  .htmlStringToJavaString(request.getParameter("NewPassword")),
+              properties);
+          request.setAttribute("Message", personalizationScc
+              .getString("MessageOK"));
+        } catch (AuthenticationBadCredentialException e) {
+          request.setAttribute("Message", personalizationScc
+              .getString("Error_bad_credential"));
+        } catch (AuthenticationException e) {
+          request.setAttribute("Message", personalizationScc
+              .getString("Error_unknown"));
         }
-		catch (Exception e)
-		{
-			request.setAttribute("javax.servlet.jsp.jspException", e);
-			destination = "/admin/jsp/errorpageMain.jsp";
-		}
-
-        SilverTrace.info(getSessionControlBeanName(), "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
-        return destination;
+        destination = getDestination("ChangePassword", componentSC, request);
+      } else {
+        destination = "/personalizationPeas/jsp/" + function;
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-	private Boolean isFramesetMustBeReloaded(String newLanguage, String newLook, PersonalizationSessionController personalizationScc) throws PeasCoreException
-	{
-		String actualLanguage 	= personalizationScc.getFavoriteLanguage();
-		String actualLook 		= personalizationScc.getFavoriteLook();
+    SilverTrace.info(getSessionControlBeanName(),
+        "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+        "destination = " + destination);
+    return destination;
+  }
 
-		if (!newLanguage.equals(actualLanguage) || !newLook.equals(actualLook)) {
-			return new Boolean(true);
-		} else {
-			return new Boolean(false);
-		}
-	}
+  private Boolean isFramesetMustBeReloaded(String newLanguage, String newLook,
+      PersonalizationSessionController personalizationScc)
+      throws PeasCoreException {
+    String actualLanguage = personalizationScc.getFavoriteLanguage();
+    String actualLook = personalizationScc.getFavoriteLook();
+
+    if (!newLanguage.equals(actualLanguage) || !newLook.equals(actualLook)) {
+      return new Boolean(true);
+    } else {
+      return new Boolean(false);
+    }
+  }
 }

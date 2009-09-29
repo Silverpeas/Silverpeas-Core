@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * TabbedPane.java
@@ -13,7 +14,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- *
+ * 
  * @author squere
  * @version
  */
@@ -21,8 +22,8 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public TabbedPaneWA() {
@@ -31,10 +32,10 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {
@@ -47,9 +48,9 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
     for (int j = 0; j < nbLines; j++) {
       tabs = (Collection) tabLines.get(j);
-      result.append("<table id=\"tabbedPane\" cellpadding=\"0\" ")
-          .append("cellspacing=\"0\" border=\"0\" width=\"100%\">\r\n")
-          .append("<tr><td align=\"right\" width=\"100%\">");
+      result.append("<table id=\"tabbedPane\" cellpadding=\"0\" ").append(
+          "cellspacing=\"0\" border=\"0\" width=\"100%\">\r\n").append(
+          "<tr><td align=\"right\" width=\"100%\">");
       result.append(printTabLine(tabs));
       result.append("</td><td><img src=\"").append(iconsPath).append(
           "/tabs/1px.gif\" width=").append(incr * 17).append(
@@ -61,12 +62,12 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param tabs
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String printTabLine(Collection tabs) {
@@ -75,9 +76,8 @@ public class TabbedPaneWA extends AbstractTabbedPane {
     String iconsPath = getIconsPath();
     int indentation = getIndentation();
 
-    result
-        .append("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" " +
-        		"width=\"100%\">");
+    result.append("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" "
+        + "width=\"100%\">");
     result.append("<tr align=\"right\">");
     if (indentation == RIGHT) {
       result.append("<td width=\"100%\">&nbsp;</td>\n");

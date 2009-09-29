@@ -12,419 +12,458 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
-* This class manage one particular group. It is a base class to derive from. 
-* The child classes manages the particular method to retreive the groups' elements(groups or users)
-* 
-* @author tleroi
-*/
+ * This class manage one particular group. It is a base class to derive from.
+ * The child classes manages the particular method to retreive the groups'
+ * elements(groups or users)
+ * 
+ * @author tleroi
+ */
 
-abstract public class AbstractLDAPGroup extends Object
-{
-    LDAPSettings driverSettings = null;
-    LDAPSynchroCache synchroCache = null;
-    StringBuffer synchroReport = null;
-    boolean      synchroInProcess = false;
+abstract public class AbstractLDAPGroup extends Object {
+  LDAPSettings driverSettings = null;
+  LDAPSynchroCache synchroCache = null;
+  StringBuffer synchroReport = null;
+  boolean synchroInProcess = false;
 
-    /**
-    * Initialize the settings from the read ones
-    *
-    * @param driverSettings  the settings retreived from the property file
-    */
-    public void init(LDAPSettings driverSettings, LDAPSynchroCache synchroCache)
-    {
-        this.driverSettings = driverSettings;
-        this.synchroCache = synchroCache;
+  /**
+   * Initialize the settings from the read ones
+   * 
+   * @param driverSettings
+   *          the settings retreived from the property file
+   */
+  public void init(LDAPSettings driverSettings, LDAPSynchroCache synchroCache) {
+    this.driverSettings = driverSettings;
+    this.synchroCache = synchroCache;
+  }
+
+  /**
+   * Called when Admin starts the synchronization
+   */
+  public void beginSynchronization() throws Exception {
+    synchroReport = new StringBuffer();
+    synchroInProcess = true;
+  }
+
+  /**
+   * Called when Admin ends the synchronization
+   */
+  public String endSynchronization() throws Exception {
+    synchroInProcess = false;
+    return synchroReport.toString();
+  }
+
+  public Group[] getAllChangedGroups(String lds, String extraFilter)
+      throws AdminException {
+    return getAllGroups(lds, extraFilter);
+  }
+
+  /**
+   * Return all groups
+   * 
+   * @param ld
+   *          the LDAP connection
+   * @return all groups
+   * @throws AdminException
+   *           if an error occur during LDAP operations
+   */
+  public Group[] getAllGroups(String lds, String extraFilter)
+      throws AdminException {
+    Group[] groupsVector = null;
+    Hashtable groupsDone = new Hashtable();
+    ArrayList groupsCurrent = new ArrayList();
+    Group group = null;
+    String groupId = null;
+    int i = 0;
+
+    // Get the root Groups and add them to the current list
+    groupsVector = getGroups(lds, null, extraFilter);
+    for (i = 0; i < groupsVector.length; i++) {
+      groupsCurrent.add(groupsVector[i]);
+    }
+    // While there is something in the current list
+    while (groupsCurrent.size() > 0) {
+      // Remove one group from the current list
+      group = (Group) groupsCurrent.remove(groupsCurrent.size() - 1);
+      groupId = group.getSpecificId();
+      // If not already treated -> call to retreive his childs
+      if (groupsDone.get(groupId) == null) {
+        // Add the group to the already treated groups
+        groupsDone.put(groupId, group);
+        // Retreives his childs
+        groupsVector = getGroups(lds, groupId, extraFilter);
+        for (i = 0; i < groupsVector.length; i++) {
+          // If child is not already treated, add it to the current list
+          groupsCurrent.add(groupsVector[i]);
+        }
+      }
+    }
+    return (Group[]) groupsDone.values().toArray(new Group[0]);
+  }
+
+  /**
+   * Return all groups found in the tree that are childs of parentId group or
+   * return root groups if parentId is null or empty
+   * 
+   * @param ld
+   *          the LDAP connection
+   * @param parentId
+   *          the parent group Id to start search, if null or empty, root groups
+   *          are returned
+   * @return all founded groups
+   * @throws AdminException
+   *           if an error occur during LDAP operations
+   */
+  public Group[] getGroups(String lds, String parentId, String extraFilter)
+      throws AdminException {
+    Group[] groupsProcessed = null;
+    ArrayList groupsReturned = new ArrayList();
+    LDAPEntry[] groupsFounded = null;
+
+    // Only for the same group splitted into several groups (ie Novell LDAP MGI
+    // COUTIER)
+    ArrayList groupMerged = new ArrayList();
+
+    int i;
+    if (parentId == null)
+      SynchroReport.info("AbstractLDAPGroup.getGroups()",
+          "Recherche des groupes racine du domaine LDAP distant...", null);
+    else
+      SynchroReport.info("AbstractLDAPGroup.getGroups()",
+          "Recherche des groupes fils inclus au groupe " + parentId
+              + " du domaine LDAP distant...", null);
+    groupsFounded = getChildGroupsEntry(lds, parentId, extraFilter);
+
+    SynchroReport.info("AbstractLDAPGroup.getGroups()", "groupsFounded="
+        + groupsFounded.length, null);
+    groupsProcessed = new Group[groupsFounded.length];
+
+    for (i = 0; i < groupsFounded.length; i++) {
+      int cpt = i;
+      boolean groupSplitted = false;
+      // if there is a group after the current group
+      if (i + 1 < groupsFounded.length) {
+        String firstGroupSplitted = groupsFounded[i].getDN();
+        // if the following group has same name of the current group => this
+        // group is splitted in several groups
+        while (i + 1 < groupsFounded.length
+            && firstGroupSplitted.equals(groupsFounded[++cpt].getDN())) {
+          groupSplitted = true;
+          groupMerged.add(groupsFounded[cpt - 1]);
+          i++;
+        }
+      }
+      if (groupSplitted) {
+        // Merge multiple groups with same name in one
+        groupMerged.add(groupsFounded[cpt - 1]);
+        // Convert it into Group
+        groupsProcessed[i] = translateGroups(lds, groupMerged);
+        groupSplitted = false;
+      } else
+        groupsProcessed[i] = translateGroup(lds, groupsFounded[i]);
+
+      // Add this group to the returned groups
+      groupsReturned.add(groupsProcessed[i]);
+
+      if (groupsProcessed[i] != null)
+        SynchroReport.warn("AbstractLDAPGroup.getGroups()",
+            "groupsReturned[i]" + groupsProcessed[i].getId() + " - "
+                + groupsProcessed[i].getName(), null);
+
+      String StrTypeGroup = "";
+      if (parentId == null)
+        StrTypeGroup = "Groupe racine";
+      else
+        StrTypeGroup = "Groupe fils";
+      if (groupsProcessed[i].getUserIds().length != 0) {
+        SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
+            + " trouvé no : " + Integer.toString(i) + ", nom du groupe : "
+            + groupsProcessed[i].getSpecificId() + ", desc. : "
+            + groupsProcessed[i].getDescription() + ". "
+            + groupsProcessed[i].getUserIds().length
+            + " utilisateur(s) membre(s) associé(s)", null);
+        // Only for DEBUG :
+        // String StrListUser="";
+        // for (int j=0; j<groupsReturned[i].getUserIds().length; j++)
+        // StrListUser = StrListUser + " " + groupsReturned[i].getUserIds()[j];
+        // SynchroReport.debug("GroupManager.getGroupsOfDomain()",
+        // "Liste des logins user : " + StrListUser, null );
+      } else
+        SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
+            + " trouvé no : " + Integer.toString(i) + ", nom du groupe : "
+            + groupsProcessed[i].getSpecificId() + ", desc. : "
+            + groupsProcessed[i].getDescription(), null);
+
+      SilverTrace.info("admin", "AbstractLDAPGroup.getGroups()",
+          "root.MSG_GEN_PARAM_VALUE", "Group " + Integer.toString(i) + " : "
+              + groupsProcessed[i].getName() + " Parent = " + parentId);
+      groupsProcessed[i].traceGroup();
     }
 
-   /**
-    * Called when Admin starts the synchronization
-    */
-   public void beginSynchronization() throws Exception 
-   { 
-       synchroReport = new StringBuffer();
-       synchroInProcess = true;
-   }
+    if (parentId == null)
+      SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
+          + groupsFounded.length + " groupes racine du domaine LDAP distant",
+          null);
+    else
+      SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
+          + groupsFounded.length + " groupes fils du groupe " + parentId, null);
 
-   /**
-    * Called when Admin ends the synchronization
-    */
-   public String endSynchronization() throws Exception 
-   { 
-       synchroInProcess = false;
-       return synchroReport.toString(); 
-   }
+    return (Group[]) groupsReturned.toArray(new Group[0]);
+  }
 
-    public Group[] getAllChangedGroups(String lds, String extraFilter) throws AdminException
-    {
-        return getAllGroups(lds, extraFilter);
+  /**
+   * Return a Group object filled with the infos of the group having ID = id
+   * NOTE : the DomainID and the ID are not set. THIS FUNCTION THROW EXCEPTION
+   * ONLY WHEN NO SYNCHRO IS RUNNING
+   * 
+   * @param ld
+   *          the LDAP connection
+   * @param id
+   *          the group id (most case : LDAP DN)
+   * @return the group object
+   * @throws AdminException
+   *           if an error occur during LDAP operations or if the group is not
+   *           found
+   */
+  public Group getGroup(String lds, String id) throws AdminException {
+    LDAPEntry theEntry = null;
+    Group groupInfos = null;
+
+    try {
+      theEntry = getGroupEntry(lds, id);
+    } catch (AdminException e) {
+      if (synchroInProcess) {
+        SilverTrace.warn("admin", "AbstractLDAPGroup.getGroup",
+            "admin.EX_ERR_GET_GROUP", "GroupId=" + id, e);
+        synchroReport.append("PB getting Group : " + id + "\n");
+      } else {
+        throw e;
+      }
+    }
+    groupInfos = translateGroup(lds, theEntry);
+    theEntry = null;
+    return groupInfos;
+  }
+
+  public Group getGroupByName(String lds, String name) throws AdminException {
+    LDAPEntry theEntry = null;
+    Group groupInfos = null;
+
+    try {
+      theEntry = getGroupEntryByName(lds, name);
+    } catch (AdminException e) {
+      if (synchroInProcess) {
+        SilverTrace.warn("admin", "AbstractLDAPGroup.getGroupByName",
+            "admin.EX_ERR_GET_GROUP", "GroupId=" + name, e);
+        synchroReport.append("PB getting Group : " + name + "\n");
+      } else {
+        throw e;
+      }
+    }
+    groupInfos = translateGroup(lds, theEntry);
+    theEntry = null;
+    return groupInfos;
+  }
+
+  public AbstractLDAPTimeStamp getMaxTimeStamp(String lds, String minTimeStamp)
+      throws AdminException {
+    AbstractLDAPTimeStamp theTimeStamp = driverSettings
+        .newLDAPTimeStamp(minTimeStamp);
+    theTimeStamp.initFromServer(lds, driverSettings
+        .getGroupsSpecificGroupsBaseDN(), driverSettings.getGroupsFullFilter(),
+        driverSettings.getGroupsNameField());
+    return theTimeStamp;
+  }
+
+  /**
+   * Translate a group LDAPEntry into a Group object NOTE : the GroupParentId,
+   * the DomainID and the ID are not set. THIS FUNCTION THROW EXCEPTION ONLY
+   * WHEN NO SYNCHRO IS RUNNING
+   * 
+   * @param groupEntry
+   *          the LDAP group object
+   * @return the group object
+   * @throws AdminException
+   *           if an error occur during LDAP operations or if there is no
+   *           groupEntry object
+   */
+  protected Group translateGroup(String lds, LDAPEntry groupEntry)
+      throws AdminException {
+    Group groupInfos = new Group();
+
+    if (groupEntry == null) {
+      throw new AdminException("AbstractLDAPGroup.translateGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
     }
 
-    /**
-    * Return all groups
-    *
-    * @param ld     the LDAP connection
-    * @return       all groups
-    * @throws AdminException if an error occur during LDAP operations
-    */
-    public Group[] getAllGroups(String lds, String extraFilter) throws AdminException
-    {
-        Group[]     groupsVector = null;
-        Hashtable   groupsDone = new Hashtable();
-        ArrayList   groupsCurrent = new ArrayList();
-        Group       group = null;
-        String      groupId = null;
-        int         i = 0;
+    // We don't set : GroupParentID, DomainId and Id...
+    // ------------------------------------------------
+    groupInfos.setSpecificId(LDAPUtility.getFirstAttributeValue(groupEntry,
+        driverSettings.getGroupsIdField()));
+    groupInfos.setName(LDAPUtility.getFirstAttributeValue(groupEntry,
+        driverSettings.getGroupsNameField()));
+    groupInfos.setDescription(LDAPUtility.getFirstAttributeValue(groupEntry,
+        driverSettings.getGroupsDescriptionField()));
+    try {
+      groupInfos.setUserIds(getUserIds(lds, groupEntry));
+    } catch (AdminException e) {
+      if (synchroInProcess) {
+        SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroup",
+            "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
+        synchroReport.append("PB getting Group's childs : "
+            + groupInfos.getName() + "\n");
+        SynchroReport.error("AbstractLDAPGroup.translateGroup()",
+            "Pb de récupération des membres utilisateurs du groupe "
+                + groupInfos.getSpecificId(), e);
+      } else {
+        throw e;
+      }
+    }
+    return groupInfos;
+  }
 
-        // Get the root Groups and add them to the current list
-        groupsVector = getGroups(lds,null,extraFilter);
-        for (i = 0; i < groupsVector.length; i++)
-        {
-            groupsCurrent.add(groupsVector[i]);
-        }
-        // While there is something in the current list
-        while (groupsCurrent.size() > 0)
-        {
-            // Remove one group from the current list
-            group = (Group)groupsCurrent.remove(groupsCurrent.size() - 1);
-            groupId = group.getSpecificId();
-            // If not already treated -> call to retreive his childs
-            if (groupsDone.get(groupId) == null)
-            {
-                // Add the group to the already treated groups
-                groupsDone.put(groupId,group);
-                // Retreives his childs
-                groupsVector = getGroups(lds,groupId,extraFilter);
-                for (i = 0; i < groupsVector.length; i++)
-                { 
-                    // If child is not already treated, add it to the current list
-                    groupsCurrent.add(groupsVector[i]);
-                }
-            }
-        }
-        return (Group[])groupsDone.values().toArray(new Group[0]);
+  /**
+   * 
+   * Translate several groups LDAPEntry into a Group object NOTE : the
+   * GroupParentId, the DomainID and the ID are not set. THIS FUNCTION THROW
+   * EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
+   * 
+   * @param lds
+   * @param groupEntries
+   * @return
+   * @throws AdminException
+   */
+  protected Group translateGroups(String lds, ArrayList groupEntries)
+      throws AdminException {
+    Group groupInfos = new Group();
+    ArrayList allUserIds = new ArrayList();
+
+    if (groupEntries.size() == 0) {
+      throw new AdminException("AbstractLDAPGroup.translateGroups",
+          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
     }
 
-    /**
-    * Return all groups found in the tree that are childs of parentId group or return root groups if parentId is null or empty
-    *
-    * @param ld       the LDAP connection
-    * @param parentId the parent group Id to start search, if null or empty, root groups are returned
-    * @return         all founded groups
-    * @throws AdminException if an error occur during LDAP operations
-    */
-    public Group[] getGroups(String lds, String parentId, String extraFilter) throws AdminException
-    {
-        Group[]      groupsProcessed = null;
-        ArrayList    groupsReturned = new ArrayList();
-        LDAPEntry[]  groupsFounded = null;
-
-        //Only for the same group splitted into several groups (ie Novell LDAP MGI COUTIER)
-        ArrayList	groupMerged = new ArrayList();
-        
-        int          i;
-		if (parentId==null)
-			SynchroReport.info("AbstractLDAPGroup.getGroups()", "Recherche des groupes racine du domaine LDAP distant...", null);
-		else
-			SynchroReport.info("AbstractLDAPGroup.getGroups()", "Recherche des groupes fils inclus au groupe " + parentId + " du domaine LDAP distant...", null);
-        groupsFounded = getChildGroupsEntry(lds,parentId,extraFilter);
-
-        SynchroReport.info("AbstractLDAPGroup.getGroups()", "groupsFounded="+groupsFounded.length, null);
-        groupsProcessed = new Group[groupsFounded.length];
-        
-		for (i = 0; i < groupsFounded.length; i++ )
-        {
-    		int cpt = i;
-        	boolean groupSplitted = false;
-        	//if there is a group after the current group
-        	if (i+1 < groupsFounded.length)
-        	{
-        		String firstGroupSplitted = groupsFounded[i].getDN();
-        		//if the following group has same name of the current group => this group is splitted in several groups 
-	        	while (i+1 < groupsFounded.length && firstGroupSplitted.equals(groupsFounded[++cpt].getDN()))
-	        	{
-	        		groupSplitted = true;
-	        		groupMerged.add(groupsFounded[cpt-1]);
-	        		i++;
-	        	}
-        	}
-        	if (groupSplitted)
-        	{
-        		//Merge multiple groups with same name in one
-        		groupMerged.add(groupsFounded[cpt-1]);
-        		//Convert it into Group
-        		groupsProcessed[i] = translateGroups(lds, groupMerged);
-        		groupSplitted = false;
-        	}
-        	else
-        		groupsProcessed[i] = translateGroup(lds, groupsFounded[i]);
-
-        	//Add this group to the returned groups
-        	groupsReturned.add(groupsProcessed[i]);
-
-            if (groupsProcessed[i] != null)
-            	SynchroReport.warn("AbstractLDAPGroup.getGroups()", "groupsReturned[i]"+groupsProcessed[i].getId()+" - "+groupsProcessed[i].getName(), null);
-			
-            String StrTypeGroup="";
-			if (parentId==null)
-				StrTypeGroup="Groupe racine";
-			else
-				StrTypeGroup="Groupe fils";
-			if (groupsProcessed[i].getUserIds().length !=0)
-				{
-				SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup + " trouvé no : " +Integer.toString(i) + ", nom du groupe : " + groupsProcessed[i].getSpecificId() + ", desc. : " + groupsProcessed[i].getDescription() + ". " + groupsProcessed[i].getUserIds().length + " utilisateur(s) membre(s) associé(s)", null );
-				//Only for DEBUG :
-				//String StrListUser="";
-				//for (int j=0; j<groupsReturned[i].getUserIds().length; j++)
-				//	StrListUser = StrListUser + " " + groupsReturned[i].getUserIds()[j];
-				//SynchroReport.debug("GroupManager.getGroupsOfDomain()", "Liste des logins user : " + StrListUser, null );
-				}
-			else
-				SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup + " trouvé no : " +Integer.toString(i) + ", nom du groupe : " + groupsProcessed[i].getSpecificId() + ", desc. : " + groupsProcessed[i].getDescription(), null );
-			
-            SilverTrace.info("admin","AbstractLDAPGroup.getGroups()","root.MSG_GEN_PARAM_VALUE", "Group " + Integer.toString(i) + " : " + groupsProcessed[i].getName() + " Parent = " + parentId);
-            groupsProcessed[i].traceGroup();
+    Iterator groupsEntriesIterator = groupEntries.iterator();
+    boolean first = true;
+    while (groupsEntriesIterator.hasNext()) {
+      LDAPEntry groupEntry = (LDAPEntry) groupsEntriesIterator.next();
+      if (first) {
+        groupInfos.setSpecificId(LDAPUtility.getFirstAttributeValue(groupEntry,
+            driverSettings.getGroupsIdField()));
+        groupInfos.setName(LDAPUtility.getFirstAttributeValue(groupEntry,
+            driverSettings.getGroupsNameField()));
+        groupInfos.setDescription(LDAPUtility.getFirstAttributeValue(
+            groupEntry, driverSettings.getGroupsDescriptionField()));
+        first = false;
+      }
+      try {
+        String[] userIds = getUserIds(lds, groupEntry);
+        SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
+            "Users in group: " + userIds.length, null);
+        for (int i = 0; i < userIds.length; i++) {
+          allUserIds.add(userIds[i]);
         }
-		
-		if (parentId==null)
-			SynchroReport.info("AbstractLDAPGroup.getGroups()","Récupération de " + groupsFounded.length + " groupes racine du domaine LDAP distant",null );
-		else
-			SynchroReport.info("AbstractLDAPGroup.getGroups()","Récupération de " + groupsFounded.length + " groupes fils du groupe " + parentId,null );
-		
-        return (Group[]) groupsReturned.toArray(new Group[0]);
+      } catch (AdminException e) {
+        if (synchroInProcess) {
+          SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroups",
+              "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
+          synchroReport.append("PB getting Group's childs : "
+              + groupInfos.getName() + "\n");
+          SynchroReport.error("AbstractLDAPGroup.translateGroups()",
+              "Pb de récupération des membres utilisateurs du groupe "
+                  + groupInfos.getSpecificId(), e);
+        } else {
+          throw e;
+        }
+      }
     }
+    groupInfos.setUserIds((String[]) allUserIds.toArray(new String[0]));
+    SynchroReport.warn("AbstractLDAPGroup.translateGroups()",
+        "Users in merged Group: " + groupInfos.getNbUsers(), null);
+    return groupInfos;
+  }
 
-	/**
-    * Return a Group object filled with the infos of the group having ID = id
-    * NOTE : the DomainID and the ID are not set.
-    * THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-    *
-    * @param ld the LDAP connection
-    * @param id the group id (most case : LDAP DN)
-    * @return the group object
-    * @throws AdminException if an error occur during LDAP operations or if the group is not found
-    */
-    public Group getGroup(String lds, String id) throws AdminException
-    {
-        LDAPEntry theEntry = null;
-        Group     groupInfos = null;
+  /**
+   * return the group's parent groups IDs THIS FUNCTION ALWAYS THROW EXCEPTION
+   * (EVEN IF A SYNCHRO IS RUNNING)
+   * 
+   * @param groupId
+   *          the group's Id
+   * @return the groups that contain the group
+   * @throws AdminException
+   */
+  abstract public String[] getGroupMemberGroupIds(String lds, String groupId)
+      throws AdminException;
 
-        try
-        {
-            theEntry = getGroupEntry(lds,id);
-        }
-        catch (AdminException e)
-        {
-            if (synchroInProcess)
-            {
-                SilverTrace.warn("admin", "AbstractLDAPGroup.getGroup", "admin.EX_ERR_GET_GROUP", "GroupId=" + id, e);
-                synchroReport.append("PB getting Group : " + id + "\n");
-            }
-            else
-            {
-                throw e;
-            }
-        }
-        groupInfos = translateGroup(lds,theEntry);
-        theEntry = null;
-        return groupInfos;
-    }
+  /**
+   * return the users groups IDs THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A
+   * SYNCHRO IS RUNNING)
+   * 
+   * @param userId
+   *          the user's Id
+   * @return the groups that contain the user
+   * @throws AdminException
+   */
+  abstract public String[] getUserMemberGroupIds(String lds, String userId)
+      throws AdminException;
 
-    public Group getGroupByName(String lds, String name) throws AdminException
-    {
-        LDAPEntry theEntry = null;
-        Group     groupInfos = null;
+  /**
+   * return the users ID that are directly in the group discribes by groupEntry
+   * THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
+   * 
+   * @param groupEntry
+   *          the group that contains users
+   * @return the father's group ID or empty string if the group is at the root
+   *         level
+   * @throws AdminException
+   */
+  abstract protected String[] getUserIds(String lds, LDAPEntry groupEntry)
+      throws AdminException;
 
-        try
-        {
-            theEntry = getGroupEntryByName(lds,name);
-        }
-        catch (AdminException e)
-        {
-            if (synchroInProcess)
-            {
-                SilverTrace.warn("admin", "AbstractLDAPGroup.getGroupByName", "admin.EX_ERR_GET_GROUP", "GroupId=" + name, e);
-                synchroReport.append("PB getting Group : " + name + "\n");
-            }
-            else
-            {
-                throw e;
-            }
-        }
-        groupInfos = translateGroup(lds,theEntry);
-        theEntry = null;
-        return groupInfos;
-    }
+  /**
+   * Return a set of LDAP entries that are the child groups of a parent one THIS
+   * FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
+   * 
+   * @param ld
+   *          the LDAP connection
+   * @param parentId
+   *          Id of the parent group
+   * @return all founded child groups or root groups if parentId is equal to
+   *         null or is empty
+   * @throws AdminException
+   *           if an error occur during LDAP operations
+   */
+  abstract protected LDAPEntry[] getChildGroupsEntry(String lds,
+      String parentId, String extraFilter) throws AdminException;
 
-    public AbstractLDAPTimeStamp getMaxTimeStamp(String lds, String minTimeStamp)throws AdminException
-    {
-    	AbstractLDAPTimeStamp theTimeStamp = driverSettings.newLDAPTimeStamp(minTimeStamp);
-    	theTimeStamp.initFromServer(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getGroupsFullFilter(), driverSettings.getGroupsNameField());
-    	return theTimeStamp;
-    } 
+  /**
+   * Return the LDAP entry of the specified group Id THIS FUNCTION ALWAYS THROW
+   * EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
+   * 
+   * @param ld
+   *          the LDAP connection
+   * @param groupId
+   *          group's Id
+   * @return group's entry
+   * @throws AdminException
+   *           if an error occur during LDAP operations
+   */
+  protected LDAPEntry getGroupEntry(String lds, String groupId)
+      throws AdminException {
+    SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntry()",
+        "root.MSG_GEN_ENTER_METHOD", "groupId=" + groupId);
+    return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
+        .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
+        driverSettings.getGroupsIdFilter(groupId), driverSettings
+            .getGroupAttributes());
+  }
 
-    /**
-    * Translate a group LDAPEntry into a Group object
-    * NOTE : the GroupParentId, the DomainID and the ID are not set.
-    * THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-    *
-    * @param groupEntry     the LDAP group object
-    * @return the group object
-    * @throws AdminException if an error occur during LDAP operations or if there is no groupEntry object
-    */
-    protected Group translateGroup(String lds,LDAPEntry groupEntry) throws AdminException
-    {
-        Group      groupInfos = new Group();
-
-        if (groupEntry == null)
-        {
-			throw new AdminException("AbstractLDAPGroup.translateGroup", SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
-        }
-
-        // We don't set : GroupParentID, DomainId and Id...
-        // ------------------------------------------------
-        groupInfos.setSpecificId(LDAPUtility.getFirstAttributeValue(groupEntry,driverSettings.getGroupsIdField()));
-        groupInfos.setName(LDAPUtility.getFirstAttributeValue(groupEntry,driverSettings.getGroupsNameField()));
-        groupInfos.setDescription(LDAPUtility.getFirstAttributeValue(groupEntry,driverSettings.getGroupsDescriptionField()));
-        try
-        {
-            groupInfos.setUserIds(getUserIds(lds,groupEntry));
-        }
-        catch (AdminException e)
-        {
-            if (synchroInProcess)
-            {
-                SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroup", "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-                synchroReport.append("PB getting Group's childs : " + groupInfos.getName() + "\n");
-				SynchroReport.error("AbstractLDAPGroup.translateGroup()", "Pb de récupération des membres utilisateurs du groupe " + groupInfos.getSpecificId() , e );
-            }
-            else
-            {
-                throw e;
-            }
-        }
-        return groupInfos;
-    }
-
-    /**
-     * 
-     * Translate several groups LDAPEntry into a Group object
-     * NOTE : the GroupParentId, the DomainID and the ID are not set.
-     * THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-     * @param lds
-     * @param groupEntries
-     * @return
-     * @throws AdminException
-     */
-    protected Group translateGroups(String lds, ArrayList groupEntries) throws AdminException
-    {
-        Group      groupInfos = new Group();
-        ArrayList  allUserIds = new ArrayList();
-        
-        if (groupEntries.size() == 0)
-        {
-			throw new AdminException("AbstractLDAPGroup.translateGroups", SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
-        }
-
-        Iterator groupsEntriesIterator = groupEntries.iterator();
-        boolean first = true;
-        while (groupsEntriesIterator.hasNext())
-        {
-        	LDAPEntry groupEntry = (LDAPEntry) groupsEntriesIterator.next();
-        	if (first)
-        	{
-		        groupInfos.setSpecificId(LDAPUtility.getFirstAttributeValue(groupEntry,driverSettings.getGroupsIdField()));
-		        groupInfos.setName(LDAPUtility.getFirstAttributeValue(groupEntry,driverSettings.getGroupsNameField()));
-		        groupInfos.setDescription(LDAPUtility.getFirstAttributeValue(groupEntry,driverSettings.getGroupsDescriptionField()));
-		        first = false;
-        	}
-	        try
-	        {
-	        	String[] userIds = getUserIds(lds, groupEntry);
-				SynchroReport.warn("AbstractLDAPGroup.translateGroups()", "Users in group: " + userIds.length , null);
-	        	for (int i=0; i<userIds.length; i++)
-	        	{
-	        		allUserIds.add(userIds[i]);
-	        	}
-	        }
-	        catch (AdminException e)
-	        {
-	            if (synchroInProcess)
-	            {
-	                SilverTrace.warn("admin", "AbstractLDAPGroup.translateGroups", "admin.EX_ERR_CHILD_USERS", "Group=" + groupInfos.getName(), e);
-	                synchroReport.append("PB getting Group's childs : " + groupInfos.getName() + "\n");
-					SynchroReport.error("AbstractLDAPGroup.translateGroups()", "Pb de récupération des membres utilisateurs du groupe " + groupInfos.getSpecificId() , e );
-	            }
-	            else
-	            {
-	                throw e;
-	            }
-	        }
-        }
-        groupInfos.setUserIds((String []) allUserIds.toArray(new String[0]));
-		SynchroReport.warn("AbstractLDAPGroup.translateGroups()", "Users in merged Group: " + groupInfos.getNbUsers() , null);
-        return groupInfos;
-    }
-
-
-    /**
-    * return the group's parent groups IDs
-    * THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
-    *
-    * @param groupId the group's Id
-    * @return the groups that contain the group
-    * @throws AdminException
-    */
-    abstract public String[] getGroupMemberGroupIds(String lds,String groupId) throws AdminException;
-
-    /**
-    * return the users groups IDs
-    * THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
-    *
-    * @param userId the user's Id
-    * @return the groups that contain the user
-    * @throws AdminException
-    */
-    abstract public String[] getUserMemberGroupIds(String lds,String userId) throws AdminException;
-    
-    /**
-    * return the users ID that are directly in the group discribes by groupEntry
-    * THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
-    *
-    * @param groupEntry the group that contains users
-    * @return the father's group ID or empty string if the group is at the root level
-    * @throws AdminException
-    */
-    abstract protected String[] getUserIds(String lds,LDAPEntry groupEntry) throws AdminException;
-
-	/**
-    * Return a set of LDAP entries that are the child groups of a parent one
-    * THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-    *
-    * @param ld         the LDAP connection
-    * @param parentId   Id of the parent group
-    * @return           all founded child groups or root groups if parentId is equal to null or is empty
-    * @throws AdminException if an error occur during LDAP operations
-    */
-    abstract protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter) throws AdminException;
-
-    /**
-    * Return the LDAP entry of the specified group Id
-    * THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
-    *
-    * @param ld         the LDAP connection
-    * @param groupId    group's Id
-    * @return           group's entry
-    * @throws AdminException if an error occur during LDAP operations
-    */
-    protected LDAPEntry getGroupEntry(String lds, String groupId) throws AdminException
-    {
-        SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntry()", "root.MSG_GEN_ENTER_METHOD", "groupId=" + groupId);
-        return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(), driverSettings.getGroupsIdFilter(groupId), driverSettings.getGroupAttributes());
-    }
-
-    protected LDAPEntry getGroupEntryByName(String lds, String groupName) throws AdminException
-    {
-        SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntryByName()", "root.MSG_GEN_ENTER_METHOD", "groupName="+groupName);
-        return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(), driverSettings.getGroupsNameFilter(groupName), driverSettings.getGroupAttributes());
-    }
+  protected LDAPEntry getGroupEntryByName(String lds, String groupName)
+      throws AdminException {
+    SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntryByName()",
+        "root.MSG_GEN_ENTER_METHOD", "groupName=" + groupName);
+    return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
+        .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
+        driverSettings.getGroupsNameFilter(groupName), driverSettings
+            .getGroupAttributes());
+  }
 }

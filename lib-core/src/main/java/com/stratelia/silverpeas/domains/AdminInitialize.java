@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.domains;
 
@@ -12,39 +13,36 @@ import com.stratelia.webactiv.beans.admin.AdminController;
  * 
  * @author
  */
-public class AdminInitialize implements IInitialize
-{
+public class AdminInitialize implements IInitialize {
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @see
-     */
-    public AdminInitialize() {}
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public AdminInitialize() {
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public boolean Initialize()
-    {
-        // Initialize SilverTrace
-        AdminController ac = new AdminController("");
-        try
-        {
-            ac.startServer();
-        }
-        catch (Exception e)
-        {
-			SilverTrace.error("admin", "AdminInitialize.Initialize()", "admin.MSG_ERR_GET_DOMAIN", e);
-            return false;
-        }
-        return true;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public boolean Initialize() {
+    // Initialize SilverTrace
+    AdminController ac = new AdminController("");
+    try {
+      ac.startServer();
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminInitialize.Initialize()",
+          "admin.MSG_ERR_GET_DOMAIN", e);
+      return false;
     }
+    return true;
+  }
 
 }

@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin;
 
 import java.io.File;
@@ -75,144 +74,157 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWebAppUpdater;
 
 /**
- * PortletRegistryGenerator is responsible for parsing the portlet.xml
- * using the DeploymentDescriptorReader and generating Portlet Registry Elements
- * like PortletAppRegistry, PortletWindowRegistry and PortletWindowPreferenceRegistry
+ * PortletRegistryGenerator is responsible for parsing the portlet.xml using the
+ * DeploymentDescriptorReader and generating Portlet Registry Elements like
+ * PortletAppRegistry, PortletWindowRegistry and PortletWindowPreferenceRegistry
  */
 public class PortletRegistryGenerator implements PortletRegistryTags {
-    private static final String WEB_INF_PREFIX = "WEB-INF" + "/";
-    private static final String WEB_XML = "web.xml";
-    
-    private static final String PORTLET_XML = "portlet.xml";
-    private static final String SUN_PORTLET_XML = "sun-portlet.xml";
-    private static final String DD_SUFFIX = "_portlet.xml";
-    private static final String WAR_SUFFIX = ".war";
-    
-    private PortletsDescriptor portletsDescriptor;
-    private PortletAppDescriptor portletAppDescriptor;
-    private String portletAppName;
-    private String warName;
-    private Properties configProps = null;
-    private List portletAppElementList;
-    private List portletWindowElementList;
-    private List portletWindowPreferenceElementList;
-    
-    // Create a logger for this class
-    private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
-            "com.silverpeas.portlets.PALogMessages");
-    
-    public PortletRegistryGenerator() {
-        configProps = new Properties();
-        portletAppElementList = new ArrayList();
-        portletWindowElementList = new ArrayList();
-        portletWindowPreferenceElementList = new ArrayList();
+  private static final String WEB_INF_PREFIX = "WEB-INF" + "/";
+  private static final String WEB_XML = "web.xml";
+
+  private static final String PORTLET_XML = "portlet.xml";
+  private static final String SUN_PORTLET_XML = "sun-portlet.xml";
+  private static final String DD_SUFFIX = "_portlet.xml";
+  private static final String WAR_SUFFIX = ".war";
+
+  private PortletsDescriptor portletsDescriptor;
+  private PortletAppDescriptor portletAppDescriptor;
+  private String portletAppName;
+  private String warName;
+  private Properties configProps = null;
+  private List portletAppElementList;
+  private List portletWindowElementList;
+  private List portletWindowPreferenceElementList;
+
+  // Create a logger for this class
+  private static Logger logger = Logger.getLogger(
+      "com.sun.portal.portletcontainer.admin",
+      "com.silverpeas.portlets.PALogMessages");
+
+  public PortletRegistryGenerator() {
+    configProps = new Properties();
+    portletAppElementList = new ArrayList();
+    portletWindowElementList = new ArrayList();
+    portletWindowPreferenceElementList = new ArrayList();
+  }
+
+  // get the portlet.xml as InputStream
+  private InputStream getPortletXmlStream(JarFile jar) throws Exception {
+    InputStream in = null;
+    try {
+      ZipEntry portletXMLEntry = jar.getEntry(WEB_INF_PREFIX + PORTLET_XML);
+      in = jar.getInputStream(portletXMLEntry);
+    } catch (IOException ioe) {
+      Object[] tokens = { jar.getName() };
+      throw new PortletRegistryException("errorStreamRead", ioe, tokens);
+    } catch (Exception ex) {
+      String[] tokens = { WEB_INF_PREFIX + PORTLET_XML };
+      throw new PortletRegistryException("invalidWar", ex, tokens);
     }
-    
-    // get the portlet.xml as InputStream
-    private InputStream getPortletXmlStream(JarFile jar) throws Exception {
-        InputStream in = null;
-        try {
-            ZipEntry portletXMLEntry = jar.getEntry(WEB_INF_PREFIX + PORTLET_XML );
-            in = jar.getInputStream(portletXMLEntry);
-        } catch (IOException ioe) {
-            Object[] tokens = { jar.getName() };
-            throw new PortletRegistryException("errorStreamRead",ioe, tokens);
-        }catch (Exception ex) {
-            String[] tokens = {WEB_INF_PREFIX + PORTLET_XML};
-            throw new PortletRegistryException("invalidWar", ex , tokens);
+    return in;
+  }
+
+  private List getWebAppRoles(JarFile jar) throws Exception {
+    InputStream webXMLStream = null;
+    List roles = new ArrayList();
+    try {
+      ZipEntry webXMLEntry = jar.getEntry(WEB_INF_PREFIX + WEB_XML);
+      webXMLStream = (InputStream) jar.getInputStream(webXMLEntry);
+      roles = PortletWebAppUpdater.getRoles(webXMLStream);
+    } catch (IOException ioe) {
+      throw new PortletRegistryException("errorGettingRoles", ioe);
+    } catch (Exception ex) {
+      String[] tokens = { WEB_INF_PREFIX + WEB_XML };
+      throw new PortletRegistryException("invalidWar", ex, tokens);
+    } finally {
+      try {
+        if (webXMLStream != null) {
+          webXMLStream.close();
         }
-        return in;
+      } catch (IOException ignored) {
+      }
     }
-    
-    private List getWebAppRoles(JarFile jar) throws Exception {
-        InputStream webXMLStream = null;
-        List roles = new ArrayList();
-        try {
-            ZipEntry webXMLEntry = jar.getEntry(WEB_INF_PREFIX + WEB_XML );
-            webXMLStream = (InputStream)jar.getInputStream(webXMLEntry);
-            roles = PortletWebAppUpdater.getRoles(webXMLStream);
-        } catch (IOException ioe) {
-            throw new PortletRegistryException("errorGettingRoles", ioe);
-        }  catch (Exception ex) {
-            String[] tokens = {WEB_INF_PREFIX + WEB_XML};
-            throw new PortletRegistryException("invalidWar", ex , tokens);
-        } finally {
-            try {
-                if(webXMLStream != null) {
-                    webXMLStream.close();
-                }
-            } catch (IOException ignored) {}
+    return roles;
+  }
+
+  public void register(File updatedArchiveFile, String warFileLocation,
+      Properties roleProperties, Properties userInfoProperties,
+      PortletLang portletLang) throws Exception {
+    JarFile jar = new JarFile(updatedArchiveFile);
+    String configFileLocation = PortletRegistryHelper.getConfigFileLocation();
+    DeploymentDescriptorReader ddReader = new DeploymentDescriptorReader(
+        configFileLocation);
+
+    String registryLocation = PortletRegistryHelper.getRegistryLocation();
+    logger.log(Level.FINE, "PSPL_CSPPAM0006", registryLocation);
+
+    warName = updatedArchiveFile.getName();
+    logger.log(Level.FINE, "PSPL_CSPPAM0005", warName);
+    portletAppName = warName.substring(0, warName.lastIndexOf('.'));
+
+    InputStream portletXmlStream = null;
+    try {
+      portletXmlStream = getPortletXmlStream(jar);
+      portletAppDescriptor = ddReader.loadPortletAppDescriptor(portletAppName,
+          portletXmlStream);
+      ddReader.processDeployPortletExtensionDescriptor(updatedArchiveFile,
+          configFileLocation);
+    } catch (DeploymentDescriptorException dde) {
+      Object[] tokens = { dde.toString() };
+      throw new PortletRegistryException("errorReadingPortletDD", tokens);
+    } finally {
+      try {
+        if (portletXmlStream != null) {
+          portletXmlStream.close();
         }
-        return roles;
+      } catch (IOException ignored) {
+      }
     }
-    
-    
-    public void register(File updatedArchiveFile, String warFileLocation,
-            Properties roleProperties, Properties userInfoProperties, PortletLang portletLang) throws Exception {
-        JarFile jar = new JarFile(updatedArchiveFile);
-        String configFileLocation = PortletRegistryHelper.getConfigFileLocation();
-        DeploymentDescriptorReader ddReader = new DeploymentDescriptorReader(configFileLocation);
-        
-        String registryLocation = PortletRegistryHelper.getRegistryLocation();
-        logger.log(Level.FINE, "PSPL_CSPPAM0006", registryLocation);
-        
-        warName = updatedArchiveFile.getName();
-        logger.log(Level.FINE, "PSPL_CSPPAM0005", warName);
-        portletAppName = warName.substring(0, warName.lastIndexOf('.'));
-        
-        InputStream portletXmlStream = null;
-        try {
-            portletXmlStream = getPortletXmlStream(jar);
-            portletAppDescriptor = ddReader.loadPortletAppDescriptor(portletAppName, portletXmlStream);
-            ddReader.processDeployPortletExtensionDescriptor(updatedArchiveFile, configFileLocation);
-        } catch (DeploymentDescriptorException dde) {
-            Object[] tokens = {dde.toString()};
-            throw new PortletRegistryException("errorReadingPortletDD", tokens);
-        } finally {
-            try {
-                if(portletXmlStream != null) {
-                    portletXmlStream.close();
-                }
-            } catch (IOException ignored) {}
+    portletsDescriptor = portletAppDescriptor.getPortletsDescriptor();
+    createPortletRegistryElements(roleProperties, userInfoProperties,
+        getWebAppRoles(jar), portletLang);
+
+    PortletRegistryWriter portletAppRegistryWriter = new PortletAppRegistryWriter(
+        registryLocation);
+    portletAppRegistryWriter.appendDocument(portletAppElementList);
+    logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-app-registry.xml");
+
+    PortletRegistryWriter portletWindowRegistryWriter = new PortletWindowRegistryWriter(
+        registryLocation, null);
+    portletWindowRegistryWriter.appendDocument(portletWindowElementList);
+    logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-registry.xml");
+
+    PortletRegistryWriter portletWindowPreferenceRegistryWriter = new PortletWindowPreferenceRegistryWriter(
+        registryLocation, null);
+    portletWindowPreferenceRegistryWriter
+        .appendDocument(portletWindowPreferenceElementList);
+    logger.log(Level.FINE, "PSPL_CSPPAM0010",
+        "portlet-window-preference-registry.xml");
+
+    try {
+      portletXmlStream = getPortletXmlStream(jar);
+      copyPortletXML(portletXmlStream, warFileLocation, portletAppName);
+    } catch (IOException ioe) {
+      throw new PortletRegistryException("errorSavingFile", ioe);
+    } finally {
+      try {
+        if (portletXmlStream != null) {
+          portletXmlStream.close();
         }
-        portletsDescriptor = portletAppDescriptor.getPortletsDescriptor();
-        createPortletRegistryElements(roleProperties, userInfoProperties, getWebAppRoles(jar), portletLang);
-        
-        PortletRegistryWriter portletAppRegistryWriter = new PortletAppRegistryWriter(registryLocation);
-        portletAppRegistryWriter.appendDocument(portletAppElementList);
-        logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-app-registry.xml");
-        
-        PortletRegistryWriter portletWindowRegistryWriter = new PortletWindowRegistryWriter(registryLocation, null);
-        portletWindowRegistryWriter.appendDocument(portletWindowElementList);
-        logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-registry.xml");
-        
-        PortletRegistryWriter portletWindowPreferenceRegistryWriter = new PortletWindowPreferenceRegistryWriter(registryLocation, null);
-        portletWindowPreferenceRegistryWriter.appendDocument(portletWindowPreferenceElementList);
-        logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-preference-registry.xml");
-        
-        try {
-            portletXmlStream = getPortletXmlStream(jar);
-            copyPortletXML(portletXmlStream, warFileLocation, portletAppName);
-        } catch (IOException ioe) {
-            throw new PortletRegistryException("errorSavingFile", ioe);
-        } finally {
-            try {
-                if(portletXmlStream != null) {
-                    portletXmlStream.close();
-                }
-            } catch (IOException ignored) {}
-        }
+      } catch (IOException ignored) {
+      }
     }
-    
-    public String getPortletAppName() {
-        return portletAppName;
-    }
-    
-    public String getPortletWarName() {
-        return warName;
-    }
-    
-    private void createPortletRegistryElements(Properties roleProperties, Properties userInfoProperties, List webAppRoles, PortletLang portletLang) throws PortletRegistryException {
+  }
+
+  public String getPortletAppName() {
+    return portletAppName;
+  }
+
+  public String getPortletWarName() {
+    return warName;
+  }
+
+  private void createPortletRegistryElements(Properties roleProperties, Properties userInfoProperties, List webAppRoles, PortletLang portletLang) throws PortletRegistryException {
         List portletDescriptors = portletsDescriptor.getPortletDescriptors();
         PortletRegistryElement portletApp, portletWindow, portletWindowPreference;
         int size = portletDescriptors.size();
@@ -485,136 +497,152 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
             }
         }
     }
-    
-    public Boolean unregister(String configFileLocation, String warFileLocation, String warName) throws Exception {
-        File warFile = new File(warFileLocation, warName+WAR_SUFFIX);
-        String ddName = warName + DD_SUFFIX;
-        InputStream in = null;
-        try {
-            File portletFile = new File(warFileLocation, ddName);
-            if(!portletFile.exists()) {
-                if(logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, "PSPL_CSPPAM0034", portletFile.getPath());
-                }
-                return Boolean.FALSE;
-            }
-            in = new FileInputStream(portletFile);
-            Properties properties = new Properties();
-            properties.put(PortletDeployConfigReader.VALIDATE_PROPERTY, "false");
-            DeploymentDescriptorReader ddReader = new DeploymentDescriptorReader(properties);
-            portletAppDescriptor = ddReader.loadPortletAppDescriptor(warName, in);
-            ddReader.processUndeployPortletExtensionDescriptor(warFile, configFileLocation);
-        } catch (IOException ioe) {
-            Object[] tokens = { warFileLocation + File.separator + ddName, warName + WAR_SUFFIX };
-            throw new PortletRegistryException("errorStreamReadWhileUndeploy", ioe, tokens);
-        }finally{
-            try{
-                if(in != null){
-                    in.close();
-                }
-            }catch(Exception ignoreit){}
-        }
-        this.portletAppName = warName;
-        
-        portletsDescriptor = portletAppDescriptor.getPortletsDescriptor();
-        List portletDescriptors = portletsDescriptor.getPortletDescriptors();
-        PortletRegistryContext portletRegistryContext = getPortletRegistryContext();
-        for (int i = 0; i < portletDescriptors.size(); i++) {
-            PortletDescriptor portletDescriptor = (PortletDescriptor) portletDescriptors.get(i);
-            String portletName = portletDescriptor.getPortletName();
-            logger.log(Level.FINE, "PSPL_CSPPAM0007", portletName);
-            PortletID portletID = new PortletID(getPortletAppName(), portletName);
-            if(logger.isLoggable(Level.FINEST)) {
-                logger.log(Level.FINEST, "PSPL_CSPPAM0008", portletID);
-            }
-            portletRegistryContext.removePortlet(portletID.toString());
-        }
-        return Boolean.TRUE;
-    }
-    
-    public void removePortletWar(String warFileLocation, String warName) throws Exception {
-        String ddName = warName + DD_SUFFIX;
-        // Remove the portlet war and portlet xml created in pc.home/war directory
-        File portletFile = new File(warFileLocation, ddName);
-        boolean portletFileRemoved = portletFile.delete();
-        if(logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "PSPL_CSPPAM0018",
-                    new String[]{ portletFile.getAbsolutePath(), String.valueOf(portletFileRemoved) } );
-        }
-        File warFile = new File(warFileLocation, warName+WAR_SUFFIX);
-        boolean warFileRemoved = warFile.delete();
-        if(logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "PSPL_CSPPAM0019",
-                    new String[]{ warFile.getAbsolutePath(), String.valueOf(warFileRemoved) } );
-        }
-    }
-    
-    public void registerRemote(String portletWindowName, String consumerId, String producerEntityId,
-            String portletHandle, String portletId) throws Exception{
-        
-        PortletRegistryElement portletWindow = new PortletWindow();
-        String registryLocation = PortletRegistryHelper.getRegistryLocation();
-        
-        portletWindow.setName(portletWindowName);
-        portletWindow.setPortletName(portletId);
-        portletWindow.setRemote(Boolean.TRUE.toString());
-        
-        portletWindow.setStringProperty(CONSUMER_ID, consumerId);
-        portletWindow.setStringProperty(PRODUCER_ENTITY_ID, producerEntityId);
-        portletWindow.setStringProperty(PORTLET_HANDLE, portletHandle);
-        portletWindow.setStringProperty(PORTLET_ID, portletId);
-        
-        portletWindowElementList.add(portletWindow);
-        PortletRegistryWriter portletWindowRegistryWriter = new PortletWindowRegistryWriter(registryLocation, null);
-        portletWindowRegistryWriter.appendDocument(portletWindowElementList);
-        logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-registry.xml");
-        
-        PortletWindowPreference portletWindowPreference = new PortletWindowPreference();
-        portletWindowPreferenceElementList.add(portletWindowPreference);
-        portletWindowPreference.setPortletName(portletId);
-        portletWindowPreference.setName(portletWindowName);
-        Map preferences = new HashMap();
-        preferences.put(PORTLET_HANDLE,portletHandle);
-        portletWindowPreference.setCollectionProperty(PREFERENCE_PROPERTIES_KEY, preferences);
-        PortletRegistryWriter portletWindowPreferenceRegistryWriter = new PortletWindowPreferenceRegistryWriter(registryLocation, null);
-        portletWindowPreferenceRegistryWriter.appendDocument(portletWindowPreferenceElementList);
-        logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-preference-registry.xml");
-    }
-    
-    public void unregisterRemote(String portletWindowName) throws Exception{
-        PortletWindowRegistryContext pwrContext = new PortletWindowRegistryContextImpl(null);
-        //String portletName = pwrContext.getPortletName(portletWindowName);
-        PortletRegistryContext portletRegistryContext = getPortletRegistryContext();
-        portletRegistryContext.removePortletWindow(portletWindowName);
-    }
-    
-    private void copyPortletXML(InputStream portletXMLStream, String warFileLocation,
-            String portletAppName) throws Exception {
-        String destFile = warFileLocation + "/" + portletAppName + DD_SUFFIX;
-        FileOutputStream out= null;
-        try{
-            out = new FileOutputStream(destFile);
-            byte[] buffer = new byte[8 * 1024];
-            int count = 0;
-            do {
-                out.write(buffer, 0, count);
-                count = portletXMLStream.read(buffer, 0, buffer.length);
-            } while (count != -1);
-        }catch(IOException ioe){
-            throw new PortletRegistryException("errorStreamRead",ioe);
-            
-        }finally{
-            if(out!=null){
-                out.close();
-            }
-        }
-        logger.log(Level.FINE, "PSPL_CSPPAM0011", destFile);
-    }
 
-    private PortletRegistryContext getPortletRegistryContext() throws PortletRegistryException {
-        PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
-        PortletRegistryContextFactory factory = afactory.getPortletRegistryContextFactory();
-        return factory.getPortletRegistryContext();
+  public Boolean unregister(String configFileLocation, String warFileLocation,
+      String warName) throws Exception {
+    File warFile = new File(warFileLocation, warName + WAR_SUFFIX);
+    String ddName = warName + DD_SUFFIX;
+    InputStream in = null;
+    try {
+      File portletFile = new File(warFileLocation, ddName);
+      if (!portletFile.exists()) {
+        if (logger.isLoggable(Level.WARNING)) {
+          logger.log(Level.WARNING, "PSPL_CSPPAM0034", portletFile.getPath());
+        }
+        return Boolean.FALSE;
+      }
+      in = new FileInputStream(portletFile);
+      Properties properties = new Properties();
+      properties.put(PortletDeployConfigReader.VALIDATE_PROPERTY, "false");
+      DeploymentDescriptorReader ddReader = new DeploymentDescriptorReader(
+          properties);
+      portletAppDescriptor = ddReader.loadPortletAppDescriptor(warName, in);
+      ddReader.processUndeployPortletExtensionDescriptor(warFile,
+          configFileLocation);
+    } catch (IOException ioe) {
+      Object[] tokens = { warFileLocation + File.separator + ddName,
+          warName + WAR_SUFFIX };
+      throw new PortletRegistryException("errorStreamReadWhileUndeploy", ioe,
+          tokens);
+    } finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (Exception ignoreit) {
+      }
     }
+    this.portletAppName = warName;
+
+    portletsDescriptor = portletAppDescriptor.getPortletsDescriptor();
+    List portletDescriptors = portletsDescriptor.getPortletDescriptors();
+    PortletRegistryContext portletRegistryContext = getPortletRegistryContext();
+    for (int i = 0; i < portletDescriptors.size(); i++) {
+      PortletDescriptor portletDescriptor = (PortletDescriptor) portletDescriptors
+          .get(i);
+      String portletName = portletDescriptor.getPortletName();
+      logger.log(Level.FINE, "PSPL_CSPPAM0007", portletName);
+      PortletID portletID = new PortletID(getPortletAppName(), portletName);
+      if (logger.isLoggable(Level.FINEST)) {
+        logger.log(Level.FINEST, "PSPL_CSPPAM0008", portletID);
+      }
+      portletRegistryContext.removePortlet(portletID.toString());
+    }
+    return Boolean.TRUE;
+  }
+
+  public void removePortletWar(String warFileLocation, String warName)
+      throws Exception {
+    String ddName = warName + DD_SUFFIX;
+    // Remove the portlet war and portlet xml created in pc.home/war directory
+    File portletFile = new File(warFileLocation, ddName);
+    boolean portletFileRemoved = portletFile.delete();
+    if (logger.isLoggable(Level.FINEST)) {
+      logger.log(Level.FINEST, "PSPL_CSPPAM0018", new String[] {
+          portletFile.getAbsolutePath(), String.valueOf(portletFileRemoved) });
+    }
+    File warFile = new File(warFileLocation, warName + WAR_SUFFIX);
+    boolean warFileRemoved = warFile.delete();
+    if (logger.isLoggable(Level.FINEST)) {
+      logger.log(Level.FINEST, "PSPL_CSPPAM0019", new String[] {
+          warFile.getAbsolutePath(), String.valueOf(warFileRemoved) });
+    }
+  }
+
+  public void registerRemote(String portletWindowName, String consumerId,
+      String producerEntityId, String portletHandle, String portletId)
+      throws Exception {
+
+    PortletRegistryElement portletWindow = new PortletWindow();
+    String registryLocation = PortletRegistryHelper.getRegistryLocation();
+
+    portletWindow.setName(portletWindowName);
+    portletWindow.setPortletName(portletId);
+    portletWindow.setRemote(Boolean.TRUE.toString());
+
+    portletWindow.setStringProperty(CONSUMER_ID, consumerId);
+    portletWindow.setStringProperty(PRODUCER_ENTITY_ID, producerEntityId);
+    portletWindow.setStringProperty(PORTLET_HANDLE, portletHandle);
+    portletWindow.setStringProperty(PORTLET_ID, portletId);
+
+    portletWindowElementList.add(portletWindow);
+    PortletRegistryWriter portletWindowRegistryWriter = new PortletWindowRegistryWriter(
+        registryLocation, null);
+    portletWindowRegistryWriter.appendDocument(portletWindowElementList);
+    logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-registry.xml");
+
+    PortletWindowPreference portletWindowPreference = new PortletWindowPreference();
+    portletWindowPreferenceElementList.add(portletWindowPreference);
+    portletWindowPreference.setPortletName(portletId);
+    portletWindowPreference.setName(portletWindowName);
+    Map preferences = new HashMap();
+    preferences.put(PORTLET_HANDLE, portletHandle);
+    portletWindowPreference.setCollectionProperty(PREFERENCE_PROPERTIES_KEY,
+        preferences);
+    PortletRegistryWriter portletWindowPreferenceRegistryWriter = new PortletWindowPreferenceRegistryWriter(
+        registryLocation, null);
+    portletWindowPreferenceRegistryWriter
+        .appendDocument(portletWindowPreferenceElementList);
+    logger.log(Level.FINE, "PSPL_CSPPAM0010",
+        "portlet-window-preference-registry.xml");
+  }
+
+  public void unregisterRemote(String portletWindowName) throws Exception {
+    PortletWindowRegistryContext pwrContext = new PortletWindowRegistryContextImpl(
+        null);
+    // String portletName = pwrContext.getPortletName(portletWindowName);
+    PortletRegistryContext portletRegistryContext = getPortletRegistryContext();
+    portletRegistryContext.removePortletWindow(portletWindowName);
+  }
+
+  private void copyPortletXML(InputStream portletXMLStream,
+      String warFileLocation, String portletAppName) throws Exception {
+    String destFile = warFileLocation + "/" + portletAppName + DD_SUFFIX;
+    FileOutputStream out = null;
+    try {
+      out = new FileOutputStream(destFile);
+      byte[] buffer = new byte[8 * 1024];
+      int count = 0;
+      do {
+        out.write(buffer, 0, count);
+        count = portletXMLStream.read(buffer, 0, buffer.length);
+      } while (count != -1);
+    } catch (IOException ioe) {
+      throw new PortletRegistryException("errorStreamRead", ioe);
+
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
+    logger.log(Level.FINE, "PSPL_CSPPAM0011", destFile);
+  }
+
+  private PortletRegistryContext getPortletRegistryContext()
+      throws PortletRegistryException {
+    PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
+    PortletRegistryContextFactory factory = afactory
+        .getPortletRegistryContextFactory();
+    return factory.getPortletRegistryContext();
+  }
 }
-

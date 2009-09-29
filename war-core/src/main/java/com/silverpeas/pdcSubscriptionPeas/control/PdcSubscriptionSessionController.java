@@ -29,257 +29,216 @@ import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 
-public class PdcSubscriptionSessionController extends AbstractComponentSessionController
-{
+public class PdcSubscriptionSessionController extends
+    AbstractComponentSessionController {
 
-	private PdcSubscriptionBm scBm = null;
-	private PdcBm pdcBm = null;
+  private PdcSubscriptionBm scBm = null;
+  private PdcBm pdcBm = null;
 
-	/**
-	 * Constructor
-	 * Creates new PdcSubscription Session Controller
-	 */
-	public PdcSubscriptionSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-	{
-		super(
-			mainSessionCtrl,
-			componentContext,
-			"com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
-			"com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
-	}
+  /**
+   * Constructor Creates new PdcSubscription Session Controller
+   */
+  public PdcSubscriptionSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    super(mainSessionCtrl, componentContext,
+        "com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
+        "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
+  }
 
-	/**
-	 * Method initEJB
-	 * initializes EJB
-	 */
-	private void initEJB()
-	{
-		if (scBm == null)
-		{
-			try
-			{
-				PdcSubscriptionBmHome icEjbHome =
-					(PdcSubscriptionBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBmHome.class);
-				scBm = icEjbHome.create();
-			}
-			catch (Exception e)
-			{
-				throw new PdcSubscriptionRuntimeException(
-					"PdcSubscriptionSessionController.initEJB()",
-					SilverTrace.TRACE_LEVEL_ERROR,
-					"root.EX_CANT_GET_REMOTE_OBJECT",
-					e);
-			}
-		}
-	}
+  /**
+   * Method initEJB initializes EJB
+   */
+  private void initEJB() {
+    if (scBm == null) {
+      try {
+        PdcSubscriptionBmHome icEjbHome = (PdcSubscriptionBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME,
+                PdcSubscriptionBmHome.class);
+        scBm = icEjbHome.create();
+      } catch (Exception e) {
+        throw new PdcSubscriptionRuntimeException(
+            "PdcSubscriptionSessionController.initEJB()",
+            SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
+    }
+  }
 
-	private PdcBm getPdcBm()
-	{
-		if (pdcBm == null)
-		{
-			pdcBm = new PdcBmImpl();
-		}
-		return pdcBm;
-	}
-	
-	private SubscribeBm getSubscribeBm()
-	{
-		SubscribeBm subscribeBm = null;
-		try
-		{
-			SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
-					.getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME,
-							SubscribeBmHome.class);
-			subscribeBm = subscribeBmHome.create();
-		}
-		catch (Exception e)
-		{
-			throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getSubscribeBm()",
-					SilverTrace.TRACE_LEVEL_ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
-		}
-		return subscribeBm;
-	}
-	
-	public NodeBm getNodeBm() {
-		  NodeBm nodeBm = null;
-		  try {
-			  NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-	          nodeBm = nodeBmHome.create();
-		  } catch (Exception e) {
-			  throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeBm()",
-					  SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-		  }
-		  return nodeBm;
-	  }
-	
-	public Collection getUserSubscribe(String userId)
-	{
-		Collection subscribe = new ArrayList();
-		if (userId == null || "".equals(userId) || ("null".equals(userId)) )
-			userId = getUserId();
-		try 
-		{
-			Collection list =  getSubscribeBm().getUserSubscribePKs(userId);
-            Iterator i = list.iterator();
-            while (i.hasNext()) 
-            {
-                 NodePK pk = (NodePK) i.next();
-                 
-                 try {
-					Collection path = getNodeBm().getPath(pk);
-					subscribe.add(path);
-				} catch (RemoteException e) {
-					//User is subscribe to a non existing component or topic
-					//Do nothing. Process next subscription. 
-				}
-            }
-		} 
-		catch (RemoteException e) 
-		{
-			throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getUserSubscribe()",
-					SilverTrace.TRACE_LEVEL_ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
-		}
-		return subscribe;
-	}
+  private PdcBm getPdcBm() {
+    if (pdcBm == null) {
+      pdcBm = new PdcBmImpl();
+    }
+    return pdcBm;
+  }
 
-	public void deleteThemes(String[] themes)
-	{
-		try 
-		{
-			for (int i = 0 ; i < themes.length ; i++)
-			{
-				// convertir la chaine en NodePK
-				String nodeId = themes[i].substring(0,themes[i].lastIndexOf("-"));
-				String instanceId = themes[i].substring(themes[i].lastIndexOf("-")+1,themes[i].length());
-				NodePK node = new NodePK(nodeId,instanceId);
-				getSubscribeBm().removeSubscribe(getUserId(),node);
-			}
-		}		
-		catch (RemoteException e) 
-		{
-				throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getUserSubscribe()",
-						SilverTrace.TRACE_LEVEL_ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
-		}
- 	}
-	
-	public ArrayList getUserPDCSubscription() throws RemoteException
-	{
-		initEJB();
-		return scBm.getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
-	}
+  private SubscribeBm getSubscribeBm() {
+    SubscribeBm subscribeBm = null;
+    try {
+      SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
+          .getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME, SubscribeBmHome.class);
+      subscribeBm = subscribeBmHome.create();
+    } catch (Exception e) {
+      throw new PdcSubscriptionRuntimeException(
+          "PdcSubscriptionSessionController.getSubscribeBm()",
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return subscribeBm;
+  }
 
-	public ArrayList getUserPDCSubscription(int userId) throws RemoteException
-	{
-		initEJB();
-		return scBm.getPDCSubscriptionByUserId(userId);
-	}
+  public NodeBm getNodeBm() {
+    NodeBm nodeBm = null;
+    try {
+      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      nodeBm = nodeBmHome.create();
+    } catch (Exception e) {
+      throw new PdcSubscriptionRuntimeException(
+          "PdcSubscriptionSessionController.getNodeBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return nodeBm;
+  }
 
-	public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException
-	{
-		initEJB();
-		return scBm.getPDCSubsriptionById(id);
-	}
+  public Collection getUserSubscribe(String userId) {
+    Collection subscribe = new ArrayList();
+    if (userId == null || "".equals(userId) || ("null".equals(userId)))
+      userId = getUserId();
+    try {
+      Collection list = getSubscribeBm().getUserSubscribePKs(userId);
+      Iterator i = list.iterator();
+      while (i.hasNext()) {
+        NodePK pk = (NodePK) i.next();
 
-	public void createPDCSubscription(PDCSubscription subscription) throws RemoteException
-	{
-		initEJB();
-		subscription.setId(scBm.createPDCSubscription(subscription));
-	}
+        try {
+          Collection path = getNodeBm().getPath(pk);
+          subscribe.add(path);
+        } catch (RemoteException e) {
+          // User is subscribe to a non existing component or topic
+          // Do nothing. Process next subscription.
+        }
+      }
+    } catch (RemoteException e) {
+      throw new PdcSubscriptionRuntimeException(
+          "PdcSubscriptionSessionController.getUserSubscribe()",
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return subscribe;
+  }
 
-	public void updateIC(PDCSubscription subscription) throws RemoteException
-	{
-		initEJB();
-		scBm.updatePDCSubscription(subscription);
-	}
+  public void deleteThemes(String[] themes) {
+    try {
+      for (int i = 0; i < themes.length; i++) {
+        // convertir la chaine en NodePK
+        String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
+        String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
+            themes[i].length());
+        NodePK node = new NodePK(nodeId, instanceId);
+        getSubscribeBm().removeSubscribe(getUserId(), node);
+      }
+    } catch (RemoteException e) {
+      throw new PdcSubscriptionRuntimeException(
+          "PdcSubscriptionSessionController.getUserSubscribe()",
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
 
-	public void removePDCSubscriptionById(int id) throws RemoteException
-	{
-		initEJB();
-		scBm.removePDCSubscriptionById(id);
-	}
+  public ArrayList getUserPDCSubscription() throws RemoteException {
+    initEJB();
+    return scBm.getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
+  }
 
-	public void removeICByPK(int[] ids) throws RemoteException
-	{
-		initEJB();
-		scBm.removePDCSubscriptionById(ids);
-	}
+  public ArrayList getUserPDCSubscription(int userId) throws RemoteException {
+    initEJB();
+    return scBm.getPDCSubscriptionByUserId(userId);
+  }
 
-	public AxisHeader getAxisHeader(String axisId) throws PdcException
-	{
-		AxisHeader axisHeader = getPdcBm().getAxisHeader(axisId);
-		return axisHeader;
-	}
+  public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException {
+    initEJB();
+    return scBm.getPDCSubsriptionById(id);
+  }
 
-	public List getFullPath(String valueId, String treeId) throws PdcException
-	{
-		return getPdcBm().getFullPath(valueId, treeId);
-	}
+  public void createPDCSubscription(PDCSubscription subscription)
+      throws RemoteException {
+    initEJB();
+    subscription.setId(scBm.createPDCSubscription(subscription));
+  }
 
-	private String getLastValueOf(String path)
-	{
+  public void updateIC(PDCSubscription subscription) throws RemoteException {
+    initEJB();
+    scBm.updatePDCSubscription(subscription);
+  }
 
-		String newValueId = path;
-		int len = path.length();
-		path = path.substring(0, len - 1); // on retire le slash
+  public void removePDCSubscriptionById(int id) throws RemoteException {
+    initEJB();
+    scBm.removePDCSubscriptionById(id);
+  }
 
-		if (path.equals("/"))
-		{
-			newValueId = newValueId.substring(1); // on retire le slash
-		}
-		else
-		{
-			int lastIdx = path.lastIndexOf("/");
-			newValueId = path.substring(lastIdx + 1);
-		}
-		return newValueId;
-	}
+  public void removeICByPK(int[] ids) throws RemoteException {
+    initEJB();
+    scBm.removePDCSubscriptionById(ids);
+  }
 
-	public List getPathCriterias(List searchCriterias) throws Exception
-	{
-		ArrayList pathCriteria = new ArrayList();
+  public AxisHeader getAxisHeader(String axisId) throws PdcException {
+    AxisHeader axisHeader = getPdcBm().getAxisHeader(axisId);
+    return axisHeader;
+  }
 
-		if (searchCriterias.size() > 0)
-		{
-			for (int i = 0; i < searchCriterias.size(); i++)
-			{
-				Criteria sc = (Criteria) searchCriterias.get(i);
+  public List getFullPath(String valueId, String treeId) throws PdcException {
+    return getPdcBm().getFullPath(valueId, treeId);
+  }
 
-				int searchAxisId = sc.getAxisId();
-				String searchValue = getLastValueOf(sc.getValue());
-				AxisHeader axis = getAxisHeader(new Integer(searchAxisId).toString());
+  private String getLastValueOf(String path) {
 
-				String treeId = null;
-				if (axis != null)
-				{
-					treeId = new Integer(axis.getRootId()).toString();
-				}
+    String newValueId = path;
+    int len = path.length();
+    path = path.substring(0, len - 1); // on retire le slash
 
-				List fullPath = new ArrayList();
-				if (searchValue != null && treeId != null)
-				{
-					fullPath = getFullPath(searchValue, treeId);
-				}
+    if (path.equals("/")) {
+      newValueId = newValueId.substring(1); // on retire le slash
+    } else {
+      int lastIdx = path.lastIndexOf("/");
+      newValueId = path.substring(lastIdx + 1);
+    }
+    return newValueId;
+  }
 
-				pathCriteria.add(fullPath);
-			}
-		}
-		return pathCriteria;
-	}
+  public List getPathCriterias(List searchCriterias) throws Exception {
+    ArrayList pathCriteria = new ArrayList();
 
-	public void close()
-	{
-		try
-		{
-			if (scBm != null) scBm.remove();
-		}
-		catch (RemoteException e)
-		{
-			SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
-		}
-		catch (RemoveException e)
-		{
-			SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
-		}
-	}
+    if (searchCriterias.size() > 0) {
+      for (int i = 0; i < searchCriterias.size(); i++) {
+        Criteria sc = (Criteria) searchCriterias.get(i);
+
+        int searchAxisId = sc.getAxisId();
+        String searchValue = getLastValueOf(sc.getValue());
+        AxisHeader axis = getAxisHeader(new Integer(searchAxisId).toString());
+
+        String treeId = null;
+        if (axis != null) {
+          treeId = new Integer(axis.getRootId()).toString();
+        }
+
+        List fullPath = new ArrayList();
+        if (searchValue != null && treeId != null) {
+          fullPath = getFullPath(searchValue, treeId);
+        }
+
+        pathCriteria.add(fullPath);
+      }
+    }
+    return pathCriteria;
+  }
+
+  public void close() {
+    try {
+      if (scBm != null)
+        scBm.remove();
+    } catch (RemoteException e) {
+      SilverTrace.error("pdcSubscription",
+          "PdcSubscriptionSessionController.close", "", e);
+    } catch (RemoveException e) {
+      SilverTrace.error("pdcSubscription",
+          "PdcSubscriptionSessionController.close", "", e);
+    }
+  }
 
 }

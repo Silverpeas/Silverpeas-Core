@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * TabbedPane.java
@@ -13,7 +14,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- *
+ * 
  * @author squere
  * @version
  */
@@ -21,8 +22,8 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public TabbedPaneWA3() {
@@ -31,10 +32,10 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {
@@ -62,12 +63,12 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param tabs
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String printTabLine(Collection tabs) {
@@ -85,7 +86,8 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
         "/tabs/left1.gif\" width=\"15\" height=\"2\"></td>\r\n");
 
     /*
-     * if (indentation == RIGHT) result.append("<td width=\"100%\">&nbsp;</td>\n");
+     * if (indentation == RIGHT)
+     * result.append("<td width=\"100%\">&nbsp;</td>\n");
      */
 
     Iterator i = tabs.iterator();
@@ -181,7 +183,8 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
     // fin while
 
     /*
-     * if (indentation == LEFT) { result.append("<td width=\"100%\">&nbsp;</td>\n"); }
+     * if (indentation == LEFT) {
+     * result.append("<td width=\"100%\">&nbsp;</td>\n"); }
      */
 
     result.append("<td><img src=\"").append(iconsPath).append(

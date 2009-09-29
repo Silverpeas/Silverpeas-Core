@@ -8,39 +8,34 @@ import com.silverpeas.workflow.external.ExternalAction;
 
 public abstract class ExternalActionImpl implements ExternalAction {
 
-	private ProcessInstance process;
-	private GenericEvent	event;
-	private Trigger			trigger;
-	
-	public void setProcessInstance(ProcessInstance process)
-	{
-		this.process = process;
-	}
-	
-	public void setEvent(GenericEvent event)
-	{
-		this.event = event;
-	}
+  private ProcessInstance process;
+  private GenericEvent event;
+  private Trigger trigger;
 
-	public void setTrigger(Trigger trigger) {
-		this.trigger = trigger;
-	}
-	
-	public Parameter getTriggerParameter(String paramName)
-	{
-		return trigger.getParameter(paramName);
-	}
+  public void setProcessInstance(ProcessInstance process) {
+    this.process = process;
+  }
 
-	public ProcessInstance getProcessInstance()
-	{
-		return process;
-	}
-	
-	public GenericEvent getEvent()
-	{
-		return event;
-	}
-	
-	public abstract void execute();
+  public void setEvent(GenericEvent event) {
+    this.event = event;
+  }
+
+  public void setTrigger(Trigger trigger) {
+    this.trigger = trigger;
+  }
+
+  public Parameter getTriggerParameter(String paramName) {
+    return trigger.getParameter(paramName);
+  }
+
+  public ProcessInstance getProcessInstance() {
+    return process;
+  }
+
+  public GenericEvent getEvent() {
+    return event;
+  }
+
+  public abstract void execute();
 
 }

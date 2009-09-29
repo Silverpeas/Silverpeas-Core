@@ -15,77 +15,64 @@ import com.silverpeas.workflow.engine.event.TaskDoneEventImpl;
 /**
  * AbstractTaskImpl implements methods shared by TaskImpl ans CreateTaskImpl.
  */
-public abstract class AbstractTaskImpl implements Task
-{
-    /**
-     * Builds a TaskImpl.
-     */
-    public AbstractTaskImpl(User user,
-                    String roleName,
-                    ProcessModel processModel)
-       throws WorkflowException
-    {
-       this.user = user;
-       this.roleName = roleName;
-       this.processModel = processModel;
-    }
-    
-    /**
-     * Returns the user.
-     */
-    public User getUser()
-    {
-       return user;
-    }
+public abstract class AbstractTaskImpl implements Task {
+  /**
+   * Builds a TaskImpl.
+   */
+  public AbstractTaskImpl(User user, String roleName, ProcessModel processModel)
+      throws WorkflowException {
+    this.user = user;
+    this.roleName = roleName;
+    this.processModel = processModel;
+  }
 
-    /**
-     * Returns the name of the role which gived the responsability
-     * of this task to the user.
-     */
-    public String getUserRoleName()
-    {
-       return roleName;
-    }
+  /**
+   * Returns the user.
+   */
+  public User getUser() {
+    return user;
+  }
 
-    /**
-     * Returns the process model.
-     */
-    public ProcessModel getProcessModel()
-    {
-       return processModel;
-    }
+  /**
+   * Returns the name of the role which gived the responsability of this task to
+   * the user.
+   */
+  public String getUserRoleName() {
+    return roleName;
+  }
 
-    /**
-     * Builds a TaskDoneEvent from this Task.
-     */
-    public TaskDoneEvent buildTaskDoneEvent(String actionName,
-                                            DataRecord  data)
-    {
-       return (TaskDoneEvent) new TaskDoneEventImpl(this, actionName, data);
-    }
+  /**
+   * Returns the process model.
+   */
+  public ProcessModel getProcessModel() {
+    return processModel;
+  }
 
-    /**
-     * Builds a QuestionEvent from this Task.
-     */
-    public QuestionEvent buildQuestionEvent(String stepId,
-                                            DataRecord  data)
-    {
-       return (QuestionEvent) new QuestionEventImpl(this, stepId, data);
-    }
+  /**
+   * Builds a TaskDoneEvent from this Task.
+   */
+  public TaskDoneEvent buildTaskDoneEvent(String actionName, DataRecord data) {
+    return (TaskDoneEvent) new TaskDoneEventImpl(this, actionName, data);
+  }
 
-    /**
-     * Builds a ResponseEvent from this Task.
-     */
-    public ResponseEvent buildResponseEvent(String questionId,
-                                            DataRecord  data)
-    {
-       return (ResponseEvent) new ResponseEventImpl(this, questionId, data);
-    }
+  /**
+   * Builds a QuestionEvent from this Task.
+   */
+  public QuestionEvent buildQuestionEvent(String stepId, DataRecord data) {
+    return (QuestionEvent) new QuestionEventImpl(this, stepId, data);
+  }
 
-	/*
-     * Internal fields
-     */
-    private User user = null;
-    private String roleName = null;
-    private ProcessModel processModel = null;
+  /**
+   * Builds a ResponseEvent from this Task.
+   */
+  public ResponseEvent buildResponseEvent(String questionId, DataRecord data) {
+    return (ResponseEvent) new ResponseEventImpl(this, questionId, data);
+  }
+
+  /*
+   * Internal fields
+   */
+  private User user = null;
+  private String roleName = null;
+  private ProcessModel processModel = null;
 }

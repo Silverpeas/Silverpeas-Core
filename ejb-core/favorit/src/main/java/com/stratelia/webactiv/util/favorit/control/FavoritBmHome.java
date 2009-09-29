@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.favorit.control;
 
@@ -13,19 +14,18 @@ import java.rmi.RemoteException;
  * @author
  * @version %I%, %G%
  */
-public interface FavoritBmHome extends EJBHome
-{
+public interface FavoritBmHome extends EJBHome {
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @throws CreateException
-     * @throws RemoteException
-     * 
-     * @see
-     */
-    FavoritBm create() throws RemoteException, CreateException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  FavoritBm create() throws RemoteException, CreateException;
 }

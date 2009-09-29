@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.question.control;
 
@@ -18,11 +19,12 @@ import javax.ejb.*;
  * Silvertrace et exceptions + javadoc
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface QuestionBm extends EJBObject, QuestionBmBusinessSkeleton {}
+public interface QuestionBm extends EJBObject, QuestionBmBusinessSkeleton {
+}

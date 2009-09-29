@@ -24,246 +24,289 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ScheduledReservedFile implements SchedulerEventHandler {
-	
-    public static final String VERSIONING_JOB_NAME_PROCESS = "A_ProcessReservedFileVersioning";
-    
-	private ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.util.versioning.Versioning", "");
-	private ResourceLocator generalMessage = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", ""); 
 
-	
-	public void initialize()
-	{
-		try
-		{
-			String cron = resources.getString("cronScheduledReservedFile");
-			Vector jobList = SimpleScheduler.getJobList(this);
-			if (jobList != null && jobList.size() > 0)
-				SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS);
-			SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS, cron, this, "doScheduledReservedFile");
-		}
-		catch (Exception e)
-		{
-			SilverTrace.error("versioning", "ScheduledReservedFile.initialize()", "versioning.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
-		}
-	}
+  public static final String VERSIONING_JOB_NAME_PROCESS = "A_ProcessReservedFileVersioning";
 
-	public void handleSchedulerEvent(SchedulerEvent aEvent)
-    {
-        switch (aEvent.getType())
-        {
-			case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-				SilverTrace.error("versioning", "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '" + aEvent.getJob().getJobName() + "' was not successfull");
-	            break;
+  private ResourceLocator resources = new ResourceLocator(
+      "com.stratelia.webactiv.util.versioning.Versioning", "");
+  private ResourceLocator generalMessage = new ResourceLocator(
+      "com.stratelia.webactiv.multilang.generalMultilang", "");
 
-			case SchedulerEvent.EXECUTION_SUCCESSFULL:
-	            SilverTrace.debug("versioning", "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-	            break;
-
-			default:
-	            SilverTrace.error("versioning", "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "Illegal event type");
-	            break;
-        }
+  public void initialize() {
+    try {
+      String cron = resources.getString("cronScheduledReservedFile");
+      Vector jobList = SimpleScheduler.getJobList(this);
+      if (jobList != null && jobList.size() > 0)
+        SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS);
+      SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS, cron, this,
+          "doScheduledReservedFile");
+    } catch (Exception e) {
+      SilverTrace.error("versioning", "ScheduledReservedFile.initialize()",
+          "versioning.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
     }
-	
-	public void doScheduledReservedFile(Date date) 
-	{
-		SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_ENTER_METHOD");
-				
-		try
-		{
-	        ResourceLocator	message		= new ResourceLocator("com.stratelia.webactiv.util.versioning.multilang.versioning", "fr");
-   			ResourceLocator	message_en	= new ResourceLocator("com.stratelia.webactiv.util.versioning.multilang.versioning", "en");
-        	
-	        StringBuffer messageBody = new StringBuffer();
-        	StringBuffer messageBody_en = new StringBuffer();
+  }
 
-			// 1. rechercher la liste des fichiers arrivant à échéance
-			Date expiryDate;
-			Calendar calendar = Calendar.getInstance(Locale.FRENCH);
-			calendar.add(Calendar.DATE, 1);
-			expiryDate = calendar.getTime();
+  public void handleSchedulerEvent(SchedulerEvent aEvent) {
+    switch (aEvent.getType()) {
+      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
+        SilverTrace.error("versioning",
+            "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+                + aEvent.getJob().getJobName() + "' was not successfull");
+        break;
 
-			SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
-			
-			Collection documents = getVersioningBm().getAllFilesReservedByDate(expiryDate, false);
-			SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
+      case SchedulerEvent.EXECUTION_SUCCESSFULL:
+        SilverTrace.debug("versioning",
+            "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+                + aEvent.getJob().getJobName() + "' was successfull");
+        break;
 
-        	Iterator it = documents.iterator();
-	        while (it.hasNext())
-	        {
-	        	Document doc = (Document) it.next();
-	        	messageBody.append(message.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
- 	        	messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
-	        	SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-	        	//Création du message à envoyer 
-	        	createMessage(message, messageBody, message_en, messageBody_en, doc, false, false);
-	        	messageBody = new StringBuffer();
-	        	messageBody_en = new StringBuffer();
-	        }
-	        
-	        // 2. rechercher la liste des fichiers arrivant à la date intermédiaire
-			Date alertDate;
-			calendar = Calendar.getInstance(Locale.FRENCH);
-			alertDate = calendar.getTime();
-			
-			SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "alertDate = " + alertDate.toString());
+      default:
+        SilverTrace.error("versioning",
+            "Versioning_TimeoutManagerImpl.handleSchedulerEvent",
+            "Illegal event type");
+        break;
+    }
+  }
 
-			documents = getVersioningBm().getAllFilesReservedByDate(alertDate, true);
-			SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
+  public void doScheduledReservedFile(Date date) {
+    SilverTrace.info("versioning",
+        "ScheduledReservedFile.doScheduledReservedFile()",
+        "root.MSG_GEN_ENTER_METHOD");
 
-	        messageBody = new StringBuffer();
-        	messageBody_en = new StringBuffer();
+    try {
+      ResourceLocator message = new ResourceLocator(
+          "com.stratelia.webactiv.util.versioning.multilang.versioning", "fr");
+      ResourceLocator message_en = new ResourceLocator(
+          "com.stratelia.webactiv.util.versioning.multilang.versioning", "en");
 
-        	Iterator itA = documents.iterator();
-	        while (itA.hasNext())
-	        {
-	        	Document doc = (Document) itA.next();
-	        	messageBody.append(message.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
- 	        	messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
-	        	SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-	        	//Création du message à envoyer 
-	        	createMessage(message, messageBody, message_en, messageBody_en, doc, true, false);
-	        	messageBody = new StringBuffer();
-	        	messageBody_en = new StringBuffer();
-	        }
-	        
-	        // 2. rechercher la liste des fichiers ayant dépassé la date d'expiration
-			Date libDate;
-			calendar = Calendar.getInstance(Locale.FRENCH);
-			libDate = calendar.getTime();
-			
-			SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "libDate = " + libDate.toString());
+      StringBuffer messageBody = new StringBuffer();
+      StringBuffer messageBody_en = new StringBuffer();
 
-			documents = getVersioningBm().getAllDocumentsToLib(libDate);
-			SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
+      // 1. rechercher la liste des fichiers arrivant à échéance
+      Date expiryDate;
+      Calendar calendar = Calendar.getInstance(Locale.FRENCH);
+      calendar.add(Calendar.DATE, 1);
+      expiryDate = calendar.getTime();
 
-	        messageBody = new StringBuffer();
-        	messageBody_en = new StringBuffer();
+      SilverTrace.info("versioning",
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
 
-        	Iterator itL = documents.iterator();
-	        while (itL.hasNext())
-	        {
-	        	Document doc = (Document) itL.next();
-	        	
-				// envoyer une notif 
-	        	messageBody.append(message.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
- 	        	messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
-	        	SilverTrace.info("versioning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-	        	//Création du message à envoyer 
-	        	createMessage(message, messageBody, message_en, messageBody_en, doc, false, true);
-	        	messageBody = new StringBuffer();
-	        	messageBody_en = new StringBuffer();
-	        	
-	        	// et pour chaque message, le libérer
-				getVersioningBm().checkDocumentIn(doc.getPk(), doc.getOwnerId());
-	        }
- 		}
-		catch (Exception e)
-		{
-			throw new VersioningRuntimeException("ScheduledReservedFile.doScheduledReservedFile()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-		}
-		
-		SilverTrace.info("versionning", "ScheduledReservedFile.doScheduledReservedFile()", "root.MSG_GEN_EXIT_METHOD");
-	} 
-	
-	private void createMessage(ResourceLocator	message, StringBuffer messageBody, ResourceLocator	message_en, StringBuffer messageBody_en, Document doc, boolean alert, boolean lib) throws VersioningRuntimeException
-	{
-		Calendar atDate = Calendar.getInstance();
-        atDate.setTime(doc.getExpiryDate());
-		int day = atDate.get(Calendar.DAY_OF_WEEK);
-     	String jour = "GML.jour" + day;
-     	int month = atDate.get(Calendar.MONTH);
-     	String mois = "GML.mois" + month;
-		String date = generalMessage.getString(jour)+ " " + atDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR);
+      Collection documents = getVersioningBm().getAllFilesReservedByDate(
+          expiryDate, false);
+      SilverTrace.info("versioning",
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
 
-		SilverTrace.info("versioning", "ScheduledReservedFile.createMessage()", "root.MSG_GEN_ENTER_METHOD");
-		// 1. création du message
+      Iterator it = documents.iterator();
+      while (it.hasNext()) {
+        Document doc = (Document) it.next();
+        messageBody.append(message.getString("versioning.notifName")).append(
+            " '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName"))
+            .append(" '").append(doc.getName()).append("'");
+        SilverTrace.info("versioning",
+            "ScheduledReservedFile.doScheduledReservedFile()",
+            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+        // Création du message à envoyer
+        createMessage(message, messageBody, message_en, messageBody_en, doc,
+            false, false);
+        messageBody = new StringBuffer();
+        messageBody_en = new StringBuffer();
+      }
 
-		//french notifications
-		String subject	= "";
-		String body 	= "";
-		if (lib)
-		{
-			subject	= message.getString("versioning.notifSubjectLib");
-			body 	= messageBody.append(" ").append(message.getString("versioning.notifUserLib")).append("\n\n").toString();
-		}
-		else
-		{
-			if (alert)
-			{
-				subject	= message.getString("versioning.notifSubjectAlert");
-				body 	= messageBody.append(" ").append(message.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").append("\n\n").toString();
-			}
-			else
-			{
-				subject	= message.getString("versioning.notifSubjectExpiry");
-				body 	= messageBody.append(" ").append(message.getString("versioning.notifUserExpiry")).append("\n\n").toString();
-			}
-		}
-			
-		//english notifications
-		String subject_en	= "";
-		String body_en 		= "";
-		if (lib)
-		{
-			subject_en	= message_en.getString("versioning.notifSubjectLib");
-			body_en	= messageBody.append(" ").append(message_en.getString("versioning.notifUserLib")).append("\n\n").toString();
-		}
-		else
-		{
-			if (alert)
-			{
-				subject_en	= message_en.getString("versioning.notifSubjectAlert");
-				body_en  = messageBody_en.append(" ").append(message_en.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").append("\n\n").toString();
-			}
-			else
-			{
-				subject_en	= message_en.getString("versioning.notifSubjectExpiry");
-				body_en  = messageBody_en.append(" ").append(message_en.getString("versioning.notifUserExpiry")).append("\n\n").toString();
-			}
-		}
-		
-    	SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()", "root.MSG_GEN_PARAM_VALUE", " subject = " + subject + "body = " + body);
+      // 2. rechercher la liste des fichiers arrivant à la date intermédiaire
+      Date alertDate;
+      calendar = Calendar.getInstance(Locale.FRENCH);
+      alertDate = calendar.getTime();
 
-		NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-		notifMetaData.addLanguage("en", subject_en, body_en);
-		
-	   	SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()", "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getLanguages() = " + notifMetaData.getLanguages());
+      SilverTrace.info("versioning",
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          "root.MSG_GEN_PARAM_VALUE", "alertDate = " + alertDate.toString());
 
-		notifMetaData.addUserRecipient(Integer.toString(doc.getOwnerId()));
+      documents = getVersioningBm().getAllFilesReservedByDate(alertDate, true);
+      SilverTrace.info("versioning",
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
 
-		String url 	= URLManager.getURL(null,null,doc.getInstanceId())+"GoToFilesTab?Id="+doc.getForeignKey().getId();
-		notifMetaData.setLink(url);
+      messageBody = new StringBuffer();
+      messageBody_en = new StringBuffer();
 
-	   	SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()", "root.MSG_GEN_PARAM_VALUE", " url = " + url);
+      Iterator itA = documents.iterator();
+      while (itA.hasNext()) {
+        Document doc = (Document) itA.next();
+        messageBody.append(message.getString("versioning.notifName")).append(
+            " '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName"))
+            .append(" '").append(doc.getName()).append("'");
+        SilverTrace.info("versioning",
+            "ScheduledReservedFile.doScheduledReservedFile()",
+            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+        // Création du message à envoyer
+        createMessage(message, messageBody, message_en, messageBody_en, doc,
+            true, false);
+        messageBody = new StringBuffer();
+        messageBody_en = new StringBuffer();
+      }
 
-		notifMetaData.setComponentId(doc.getInstanceId());
-		
-	   	SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()", "root.MSG_GEN_PARAM_VALUE", " notifMetaData = " + notifMetaData.toString());
+      // 2. rechercher la liste des fichiers ayant dépassé la date d'expiration
+      Date libDate;
+      calendar = Calendar.getInstance(Locale.FRENCH);
+      libDate = calendar.getTime();
 
-		// 2. envoie de la notification 
-		try
-		{
-			getVersioningBm().notifyUser(notifMetaData, Integer.toString(doc.getOwnerId()), doc.getInstanceId());
-		}
-		catch (Exception e)
-		{
-			throw new VersioningRuntimeException("ScheduledReservedfile.createMessage()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-		} 
-	}
-		
-	public VersioningBm getVersioningBm()
-	{
-		VersioningBm versioning_bm = null;
-		try
-		{
-			VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
-			versioning_bm = vscEjbHome.create();
-		}
-		catch (Exception e)
-		{
-			throw new VersioningRuntimeException("ScheduledReservedFile.getVersioningBm", SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-		}
-		return versioning_bm;
-	}
+      SilverTrace.info("versioning",
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          "root.MSG_GEN_PARAM_VALUE", "libDate = " + libDate.toString());
+
+      documents = getVersioningBm().getAllDocumentsToLib(libDate);
+      SilverTrace.info("versioning",
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          "root.MSG_GEN_PARAM_VALUE", "Documents = " + documents.size());
+
+      messageBody = new StringBuffer();
+      messageBody_en = new StringBuffer();
+
+      Iterator itL = documents.iterator();
+      while (itL.hasNext()) {
+        Document doc = (Document) itL.next();
+
+        // envoyer une notif
+        messageBody.append(message.getString("versioning.notifName")).append(
+            " '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName"))
+            .append(" '").append(doc.getName()).append("'");
+        SilverTrace.info("versioning",
+            "ScheduledReservedFile.doScheduledReservedFile()",
+            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
+        // Création du message à envoyer
+        createMessage(message, messageBody, message_en, messageBody_en, doc,
+            false, true);
+        messageBody = new StringBuffer();
+        messageBody_en = new StringBuffer();
+
+        // et pour chaque message, le libérer
+        getVersioningBm().checkDocumentIn(doc.getPk(), doc.getOwnerId());
+      }
+    } catch (Exception e) {
+      throw new VersioningRuntimeException(
+          "ScheduledReservedFile.doScheduledReservedFile()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+
+    SilverTrace.info("versionning",
+        "ScheduledReservedFile.doScheduledReservedFile()",
+        "root.MSG_GEN_EXIT_METHOD");
+  }
+
+  private void createMessage(ResourceLocator message, StringBuffer messageBody,
+      ResourceLocator message_en, StringBuffer messageBody_en, Document doc,
+      boolean alert, boolean lib) throws VersioningRuntimeException {
+    Calendar atDate = Calendar.getInstance();
+    atDate.setTime(doc.getExpiryDate());
+    int day = atDate.get(Calendar.DAY_OF_WEEK);
+    String jour = "GML.jour" + day;
+    int month = atDate.get(Calendar.MONTH);
+    String mois = "GML.mois" + month;
+    String date = generalMessage.getString(jour) + " "
+        + atDate.get(Calendar.DATE) + " " + generalMessage.getString(mois)
+        + " " + atDate.get(Calendar.YEAR);
+
+    SilverTrace.info("versioning", "ScheduledReservedFile.createMessage()",
+        "root.MSG_GEN_ENTER_METHOD");
+    // 1. création du message
+
+    // french notifications
+    String subject = "";
+    String body = "";
+    if (lib) {
+      subject = message.getString("versioning.notifSubjectLib");
+      body = messageBody.append(" ").append(
+          message.getString("versioning.notifUserLib")).append("\n\n")
+          .toString();
+    } else {
+      if (alert) {
+        subject = message.getString("versioning.notifSubjectAlert");
+        body = messageBody.append(" ").append(
+            message.getString("versioning.notifUserAlert")).append(" (")
+            .append(date).append(") ").append("\n\n").toString();
+      } else {
+        subject = message.getString("versioning.notifSubjectExpiry");
+        body = messageBody.append(" ").append(
+            message.getString("versioning.notifUserExpiry")).append("\n\n")
+            .toString();
+      }
+    }
+
+    // english notifications
+    String subject_en = "";
+    String body_en = "";
+    if (lib) {
+      subject_en = message_en.getString("versioning.notifSubjectLib");
+      body_en = messageBody.append(" ").append(
+          message_en.getString("versioning.notifUserLib")).append("\n\n")
+          .toString();
+    } else {
+      if (alert) {
+        subject_en = message_en.getString("versioning.notifSubjectAlert");
+        body_en = messageBody_en.append(" ").append(
+            message_en.getString("versioning.notifUserAlert")).append(" (")
+            .append(date).append(") ").append("\n\n").toString();
+      } else {
+        subject_en = message_en.getString("versioning.notifSubjectExpiry");
+        body_en = messageBody_en.append(" ").append(
+            message_en.getString("versioning.notifUserExpiry")).append("\n\n")
+            .toString();
+      }
+    }
+
+    SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
+        "root.MSG_GEN_PARAM_VALUE", " subject = " + subject + "body = " + body);
+
+    NotificationMetaData notifMetaData = new NotificationMetaData(
+        NotificationParameters.NORMAL, subject, body);
+    notifMetaData.addLanguage("en", subject_en, body_en);
+
+    SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
+        "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getLanguages() = "
+            + notifMetaData.getLanguages());
+
+    notifMetaData.addUserRecipient(Integer.toString(doc.getOwnerId()));
+
+    String url = URLManager.getURL(null, null, doc.getInstanceId())
+        + "GoToFilesTab?Id=" + doc.getForeignKey().getId();
+    notifMetaData.setLink(url);
+
+    SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
+        "root.MSG_GEN_PARAM_VALUE", " url = " + url);
+
+    notifMetaData.setComponentId(doc.getInstanceId());
+
+    SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
+        "root.MSG_GEN_PARAM_VALUE", " notifMetaData = "
+            + notifMetaData.toString());
+
+    // 2. envoie de la notification
+    try {
+      getVersioningBm().notifyUser(notifMetaData,
+          Integer.toString(doc.getOwnerId()), doc.getInstanceId());
+    } catch (Exception e) {
+      throw new VersioningRuntimeException(
+          "ScheduledReservedfile.createMessage()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+
+  public VersioningBm getVersioningBm() {
+    VersioningBm versioning_bm = null;
+    try {
+      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire
+          .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+      versioning_bm = vscEjbHome.create();
+    } catch (Exception e) {
+      throw new VersioningRuntimeException(
+          "ScheduledReservedFile.getVersioningBm",
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return versioning_bm;
+  }
 }

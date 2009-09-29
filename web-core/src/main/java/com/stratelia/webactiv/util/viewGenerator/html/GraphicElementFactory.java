@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /**
  * GraphicElementFactory.java
@@ -49,8 +50,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWA;
  * The GraphicElementFactory is the only class to instanciate in this package.
  * You should have one factory for each client (for future evolution). The
  * GraphicElementFactory is responsible from graphic component instanciation.
- * You should never directly instanciate a component without using this factory !
- * This class uses the "factory design pattern".
+ * You should never directly instanciate a component without using this factory
+ * ! This class uses the "factory design pattern".
  */
 public class GraphicElementFactory extends Object {
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
@@ -73,10 +74,10 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param look
-   *
+   * 
    * @see
    */
   public GraphicElementFactory(String look) {
@@ -101,65 +102,77 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Get the settings for the factory.
-   *
+   * 
    * @return The ResourceLocator returned contains all default environment
    *         settings necessary to know wich component to instanciate, but also
    *         to know how to generate html code.
    */
   public static ResourceLocator getSettings() {
     if (settings == null) {
-      settings = new ResourceLocator("com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
+      settings = new ResourceLocator(
+          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings",
+          "");
     }
     return settings;
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ResourceLocator getLookSettings() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("viewgenerator",
+        "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_ENTER_METHOD");
     if (lookSettings == null) {
-      SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
+      SilverTrace.info("viewgenerator",
+          "GraphicElementFactory.getLookSettings()",
+          "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
-        lookSettings = new ResourceLocator("com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "");
+        lookSettings = new ResourceLocator(
+            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings",
+            "");
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined
         // get the default silverpeas looks
         lookSettings = getSilverpeasLookSettings();
       }
     }
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("viewgenerator",
+        "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_EXIT_METHOD");
     return lookSettings;
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ResourceLocator getSilverpeasLookSettings() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getSilverpeasLookSettings()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("viewgenerator",
+        "GraphicElementFactory.getSilverpeasLookSettings()",
+        "root.MSG_GEN_ENTER_METHOD");
     if (silverpeasLookSettings == null) {
-      silverpeasLookSettings = new ResourceLocator("com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "");
+      silverpeasLookSettings = new ResourceLocator(
+          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings",
+          "");
     }
     return silverpeasLookSettings;
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ResourceLocator getFavoriteLookSettings() {
@@ -168,10 +181,10 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param look
-   *
+   * 
    * @see
    */
   public void setLook(String look) {
@@ -185,7 +198,8 @@ public class GraphicElementFactory extends Object {
       // the customer lookSettings is undefined
       // get the default silverpeas looks
       // lookSettings = null;
-      SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()", "root.MSG_GEN_PARAM_VALUE", " customer lookSettings is undefined !");
+      SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
+          "root.MSG_GEN_PARAM_VALUE", " customer lookSettings is undefined !");
       lookSettings = getSilverpeasLookSettings();
 
       selectedLook = silverpeasLookSettings.getString(look, null);
@@ -195,7 +209,9 @@ public class GraphicElementFactory extends Object {
       }
     }
 
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()", "root.MSG_GEN_PARAM_VALUE", " look = " + look + " | corresponding settings = " + selectedLook);
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
+        "root.MSG_GEN_PARAM_VALUE", " look = " + look
+            + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -204,40 +220,42 @@ public class GraphicElementFactory extends Object {
   public String getCurrentLookName() {
     return currentLookName;
   }
-  
-  public void setExternalStylesheet(String externalStylesheet)
-  {
-	  this.externalStylesheet = externalStylesheet;
+
+  public void setExternalStylesheet(String externalStylesheet) {
+    this.externalStylesheet = externalStylesheet;
   }
 
-  public boolean hasExternalStylesheet()
-  {
-	  return (externalStylesheet != null);
+  public boolean hasExternalStylesheet() {
+    return (externalStylesheet != null);
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getLookFrame() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()", "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "+getFavoriteLookSettings().getString("FrameJSP"));
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
+        "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
+            + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getLookStyleSheet() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("viewgenerator",
+        "GraphicElementFactory.getLookStyleSheet()",
+        "root.MSG_GEN_ENTER_METHOD");
     String standardStyle = "/util/styleSheets/globalSP_SilverpeasV4.css";
     String v5Style = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
@@ -245,19 +263,22 @@ public class GraphicElementFactory extends Object {
     String charset = getGeneralSettings().getString("charset", "ISO-8859-1");
     StringBuffer code = new StringBuffer();
 
-    code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset="+ charset + "\">\n");
-    
-    if (externalStylesheet == null)
-    {
-    	code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(contextPath).append(standardStyle).append("\">\n");
-    	code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(contextPath).append(v5Style).append("\">\n");
-    	if (lookStyle.length() > 0) {
-    		code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(lookStyle).append("\">");
-    	}
-    }
-    else
-    {
-    	code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet).append("\">\n");
+    code
+        .append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset="
+            + charset + "\">\n");
+
+    if (externalStylesheet == null) {
+      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
+          contextPath).append(standardStyle).append("\">\n");
+      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
+          contextPath).append(v5Style).append("\">\n");
+      if (lookStyle.length() > 0) {
+        code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"")
+            .append(lookStyle).append("\">");
+      }
+    } else {
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
+          externalStylesheet).append("\">\n");
     }
 
     if (getFavoriteLookSettings() != null
@@ -265,7 +286,9 @@ public class GraphicElementFactory extends Object {
             .endsWith("web20"))
       code.append(getYahooElements());
 
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
+            "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
   }
 
@@ -274,7 +297,9 @@ public class GraphicElementFactory extends Object {
     StringBuffer code = new StringBuffer();
 
     code.append("<!-- CSS for Menu -->");
-    code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+getSettings().getString("YUIMenuCss", contextPath+"/util/yui/menu/assets/menu.css")+"\">");
+    code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
+        + getSettings().getString("YUIMenuCss",
+            contextPath + "/util/yui/menu/assets/menu.css") + "\">");
     code.append("<!-- Page-specific styles -->");
     code.append("<style type=\"text/css\">");
     code.append("    div.yuimenu {");
@@ -282,34 +307,38 @@ public class GraphicElementFactory extends Object {
     code.append("    visibility:hidden;");
     code.append("    }");
     code.append("</style>");
-    
-    code.append("<script type=\"text/javascript\" src=\""+contextPath+"/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
-    code.append("<script type=\"text/javascript\" src=\""+contextPath+"/util/yui/container/container_core-min.js\"></script>");
-    code.append("<script type=\"text/javascript\" src=\""+contextPath+"/util/yui/menu/menu-min.js\"></script>");
+
+    code.append("<script type=\"text/javascript\" src=\"" + contextPath
+        + "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
+    code.append("<script type=\"text/javascript\" src=\"" + contextPath
+        + "/util/yui/container/container_core-min.js\"></script>");
+    code.append("<script type=\"text/javascript\" src=\"" + contextPath
+        + "/util/yui/menu/menu-min.js\"></script>");
 
     return code.toString();
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getIcon(String iconKey) {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getIcon()", "root.MSG_GEN_ENTER_METHOD", "iconKey = " + iconKey);
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getIcon()",
+        "root.MSG_GEN_ENTER_METHOD", "iconKey = " + iconKey);
     String iconURL = getFavoriteLookSettings().getString(iconKey, null);
     return iconURL;
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Vector getAvailableLooks() {
@@ -325,7 +354,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new button.
-   *
+   * 
    * @param label
    *          The new button label
    * @param action
@@ -357,7 +386,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new frame.
-   *
+   * 
    * @param title
    *          The new frame title
    * @return returns an object implementing the Frame interface. That's the new
@@ -379,7 +408,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new board.
-   *
+   * 
    * @return returns an object implementing the Board interface. That's the new
    *         board to use.
    */
@@ -399,7 +428,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new navigation list.
-   *
+   * 
    * @return returns an object implementing the NavigationList interface.
    */
   public NavigationList getNavigationList() {
@@ -421,7 +450,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new button.
-   *
+   * 
    * @deprecated
    * @return returns an object implementing the FormButton interface. That's the
    *         new button to use.
@@ -443,7 +472,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new TabbedPane.
-   *
+   * 
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane() {
@@ -467,7 +496,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new TabbedPane.
-   *
+   * 
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane(int nbLines) {
@@ -491,7 +520,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   *
+   * 
    * @deprecated
    * @param name
    *          The name from your array. This name has to be unique in the
@@ -502,7 +531,7 @@ public class GraphicElementFactory extends Object {
    *          is used to both get new request (sort on a new column), and keep
    *          the current state (via the session).
    * @return An object implementing the ArrayPane interface.
-   *
+   * 
    */
   public ArrayPane getArrayPane(String name,
       javax.servlet.jsp.PageContext pageContext) {
@@ -525,7 +554,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   *
+   * 
    * @deprecated
    * @param name
    *          The name from your array. This name has to be unique in the
@@ -537,7 +566,7 @@ public class GraphicElementFactory extends Object {
    *          The client session (to get the old status, like on which column we
    *          are sorted)
    * @return An object implementing the ArrayPane interface.
-   *
+   * 
    */
   public ArrayPane getArrayPane(String name,
       javax.servlet.ServletRequest request,
@@ -561,7 +590,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   *
+   * 
    * @param name
    *          The name from your array. This name has to be unique in the
    *          session. It will be used to put some information (including the
@@ -576,7 +605,7 @@ public class GraphicElementFactory extends Object {
    *          The client session (to get the old status, like on which column we
    *          are sorted)
    * @return An object implementing the ArrayPane interface.
-   *
+   * 
    */
   public ArrayPane getArrayPane(String name, String url,
       javax.servlet.ServletRequest request,
@@ -600,7 +629,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new main Window using the object specified in the properties.
-   *
+   * 
    * @return An object implementing Window interface
    */
   public Window getWindow() {
@@ -621,7 +650,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ButtonPane.
-   *
+   * 
    * @return An object implementing the ButtonPane interface
    */
   public ButtonPane getButtonPane() {
@@ -640,7 +669,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new IconPane.
-   *
+   * 
    * @return An object implementing the IconPane interface.
    */
   public IconPane getIconPane() {
@@ -657,7 +686,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new FormPane.
-   *
+   * 
    * @param name
    * @param actionURL
    * @param pageContext
@@ -670,7 +699,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new OperationPane.
-   *
+   * 
    * @return An object implementing the OperationPane interface.
    */
   public OperationPane getOperationPane() {
@@ -690,7 +719,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new BrowseBar.
-   *
+   * 
    * @return An object implementing the BrowseBar interface.
    */
   public BrowseBar getBrowseBar() {
@@ -709,9 +738,9 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new monthCalendar.
-   *
-   * @param String:
-   *          the language to use by the monthCalendar
+   * 
+   * @param String
+   *          : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
   public MonthCalendar getMonthCalendar(String language) {
@@ -720,9 +749,9 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new Calendar.
-   *
-   * @param String:
-   *          the language to use by the monthCalendar
+   * 
+   * @param String
+   *          : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
   public Calendar getCalendar(String context, String language, Date date) {

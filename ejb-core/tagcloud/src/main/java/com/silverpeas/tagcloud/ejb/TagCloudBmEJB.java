@@ -24,260 +24,223 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class TagCloudBmEJB implements SessionBean {
-	
-	private Connection openConnection()
-	{
-		try
-		{
-			return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
-		}
-		catch (Exception e)
-		{
-			throw new TagCloudRuntimeException("TagCloudBmEJB.getConnection()",
-				SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-		}
-	}
 
-    private void closeConnection(Connection con)
-    {
-        if (con != null)
-        {
-            try
-            {
-                con.close();
+  private Connection openConnection() {
+    try {
+      return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+    }
+  }
+
+  private void closeConnection(Connection con) {
+    if (con != null) {
+      try {
+        con.close();
+      } catch (Exception e) {
+        SilverTrace.error("tagCloud", "TagCloudBmEJB.closeConnection()",
+            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      }
+    }
+  }
+
+  /**
+   * @param tagCloud
+   *          The tagcloud to create in database.
+   * @throws RemoteException
+   */
+  public void createTagCloud(TagCloud tagCloud) throws RemoteException {
+    Connection con = openConnection();
+    try {
+      TagCloudDAO.createTagCloud(con, tagCloud);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.createTagCloud()",
+          SilverpeasRuntimeException.ERROR,
+          "tagCloud.CREATING_NEW_TAGCLOUD_FAILED", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  /**
+   * @param pk
+   *          The primary key of the tagcloud to delete from database.
+   * @throws RemoteException
+   */
+  public void deleteTagCloud(TagCloudPK pk, int type) throws RemoteException {
+    Connection con = openConnection();
+    try {
+      TagCloudDAO.deleteTagCloud(con, pk, type);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.deleteTagCloud()",
+          SilverpeasRuntimeException.ERROR, "tagCloud.DELETE_TAGCLOUD_FAILED",
+          e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  /**
+   * @param instanceId
+   *          The id of the instance which tagclouds are searched for.
+   * @return The list of tagclouds corresponding to the instance.
+   * @throws RemoteException
+   */
+  public Collection getInstanceTagClouds(String instanceId)
+      throws RemoteException {
+    return getInstanceTagClouds(instanceId, -1);
+  }
+
+  /**
+   * @param instanceId
+   *          The id of the instance which tagclouds are searched for.
+   * @param maxCount
+   *          The maximum number of required tagclouds (all are returned it is
+   *          lower than 0).
+   * @return The list of tagclouds corresponding to the instance.
+   * @throws RemoteException
+   */
+  public Collection getInstanceTagClouds(String instanceId, int maxCount)
+      throws RemoteException {
+    Connection con = openConnection();
+    try {
+      Collection tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
+      List tagList = new ArrayList();
+      if (tagClouds.size() > 0) {
+        Iterator iter = tagClouds.iterator();
+        tagList.add((TagCloud) iter.next());
+        TagCloud iterTagCloud;
+        String iterTag;
+        TagCloud currentTagCloud;
+        int i;
+        boolean tagExists;
+        while (iter.hasNext()) {
+          iterTagCloud = (TagCloud) iter.next();
+          iterTag = iterTagCloud.getTag();
+          i = 0;
+          tagExists = false;
+          while (i < tagList.size() && !tagExists) {
+            currentTagCloud = (TagCloud) tagList.get(i);
+            if (currentTagCloud.getTag().equals(iterTag)) {
+              tagExists = true;
+              currentTagCloud.incrementCount();
             }
-            catch (Exception e)
-            {
-            	SilverTrace.error("tagCloud", "TagCloudBmEJB.closeConnection()",
-            		"root.EX_CONNECTION_CLOSE_FAILED", "", e);
-            }
+            i++;
+          }
+          if (!tagExists) {
+            tagList.add(iterTagCloud);
+          }
         }
-    }
 
-    /**
-     * @param tagCloud The tagcloud to create in database.
-     * @throws RemoteException
-     */
-    public void createTagCloud(TagCloud tagCloud)
-    	throws RemoteException
-    {
-        Connection con = openConnection();
-        try
-        {
-            TagCloudDAO.createTagCloud(con, tagCloud);
+        if (maxCount > 0 && tagList.size() > maxCount) {
+          Collections.sort(tagList, new TagCloudByCountComparator());
+          tagList = tagList.subList(0, maxCount);
+          Collections.sort(tagList, new TagCloudByNameComparator());
         }
-        catch (Exception e)
-        {
-            throw new TagCloudRuntimeException("TagCloudBmEJB.createTagCloud()",
-            	SilverpeasRuntimeException.ERROR, "tagCloud.CREATING_NEW_TAGCLOUD_FAILED", e);
-        }
-        finally
-        {
-            closeConnection(con);
-        }
+      }
+      return tagList;
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException(
+          "TagCloudBmEJB.getInstanceTagClouds()",
+          SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
+    } finally {
+      closeConnection(con);
     }
+  }
 
-    /**
-     * @param pk The primary key of the tagcloud to delete from database.
-     * @throws RemoteException
-     */
-    public void deleteTagCloud(TagCloudPK pk, int type)
-    	throws RemoteException
-    {
-        Connection con = openConnection();
-        try
-        {
-            TagCloudDAO.deleteTagCloud(con, pk, type);
-        }
-        catch (Exception e)
-        {
-            throw new TagCloudRuntimeException("TagCloudBmEJB.deleteTagCloud()",
-            	SilverpeasRuntimeException.ERROR, "tagCloud.DELETE_TAGCLOUD_FAILED", e);
-        }
-        finally
-        {
-            closeConnection(con);
-        }
+  /**
+   * @param externalId
+   *          The id of the element which tagclouds are searched for.
+   * @return The list of tagclouds corresponding to the element.
+   * @throws RemoteException
+   */
+  public Collection getElementTagClouds(TagCloudPK pk) throws RemoteException {
+    Connection con = openConnection();
+    try {
+      return TagCloudDAO.getElementTagClouds(con, pk);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getElementTagClouds()",
+          SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
+    } finally {
+      closeConnection(con);
     }
-    
-    /**
-     * @param instanceId The id of the instance which tagclouds are searched for.
-     * @return The list of tagclouds corresponding to the instance.
-     * @throws RemoteException
-     */
-    public Collection getInstanceTagClouds(String instanceId)
-    	throws RemoteException
-	{
-    	return getInstanceTagClouds(instanceId, -1);
-	}
-    
-    /**
-     * @param instanceId The id of the instance which tagclouds are searched for.
-     * @param maxCount The maximum number of required tagclouds (all are returned it is lower than 0).
-     * @return The list of tagclouds corresponding to the instance.
-     * @throws RemoteException
-     */
-    public Collection getInstanceTagClouds(String instanceId, int maxCount)
-    	throws RemoteException
-	{
-        Connection con = openConnection();
-        try
-        {
-        	Collection tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
-        	List tagList = new ArrayList();
-        	if (tagClouds.size() > 0)
-        	{
-	        	Iterator iter = tagClouds.iterator();
-	        	tagList.add((TagCloud)iter.next());
-	        	TagCloud iterTagCloud;
-	        	String iterTag;
-	        	TagCloud currentTagCloud;
-	        	int i;
-	        	boolean tagExists;
-	        	while (iter.hasNext())
-	        	{
-	        		iterTagCloud = (TagCloud)iter.next();
-	        		iterTag = iterTagCloud.getTag();
-	        		i = 0;
-	        		tagExists = false;
-	        		while (i < tagList.size() && !tagExists)
-	        		{
-	        			currentTagCloud = (TagCloud)tagList.get(i);
-	        			if (currentTagCloud.getTag().equals(iterTag))
-	        			{
-	        				tagExists = true;
-	        				currentTagCloud.incrementCount();
-	        			}
-	        			i++;
-	        		}
-	        		if (!tagExists)
-	        		{
-	        			tagList.add(iterTagCloud);
-	        		}
-	        	}
-	        	
-	        	if (maxCount > 0 && tagList.size() > maxCount) {
-	        		Collections.sort(tagList, new TagCloudByCountComparator());
-	        		tagList = tagList.subList(0, maxCount);
-	        		Collections.sort(tagList, new TagCloudByNameComparator());
-	        	}
-        	}
-        	return tagList;
-        }
-        catch (Exception e)
-        {
-            throw new TagCloudRuntimeException("TagCloudBmEJB.getInstanceTagClouds()",
-            	SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
-        }
-        finally
-        {
-            closeConnection(con);
-        }
-	}
-    
-    /**
-     * @param externalId The id of the element which tagclouds are searched for.
-     * @return The list of tagclouds corresponding to the element.
-     * @throws RemoteException
-     */
-    public Collection getElementTagClouds(TagCloudPK pk)
-		throws RemoteException
-	{
-	    Connection con = openConnection();
-	    try
-	    {
-	        return TagCloudDAO.getElementTagClouds(con, pk);
-	    }
-	    catch (Exception e)
-	    {
-	        throw new TagCloudRuntimeException("TagCloudBmEJB.getElementTagClouds()",
-	        	SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
-	    }
-	    finally
-	    {
-	        closeConnection(con);
-	    }
-	}
-    
-    /**
-     * @param tags The searched tags.
-     * @param instanceId The id of the instance.
-     * @param type The type of elements referenced by the tagclouds (publications or forums).
-     * @return The list of tagclouds which correspond to the tag and the id of the instance given
-     * 		as parameters.
-     * @throws RemoteException
-     */
-    public Collection getTagCloudsByTags(String tags, String instanceId, int type)
-		throws RemoteException
-	{
-	    Connection con = openConnection();
-	    try
-	    {
-	        return TagCloudDAO.getTagCloudsByTags(con, TagCloudUtil.getTag(tags), instanceId, type);
-	    }
-	    catch (Exception e)
-	    {
-	        throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByTags()",
-	        	SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
-	    }
-	    finally
-	    {
-	        closeConnection(con);
-	    }
-	}
-    
-    /**
-     * @param instanceId The id of the instance.
-     * @param externalId The id of the element.
-     * @return The list of tagclouds corresponding to the ids given as parameters.
-     * @throws RemoteException
-     */
-    public Collection getTagCloudsByElement(String instanceId, String externalId, int type)
-		throws RemoteException
-	{
-	    Connection con = openConnection();
-	    try
-	    {
-	        return TagCloudDAO.getTagCloudsByElement(con, instanceId, externalId, type);
-	    }
-	    catch (Exception e)
-	    {
-	        throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByElement()",
-	        	SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
-	    }
-	    finally
-	    {
-	        closeConnection(con);
-	    }
-	}
-    
-    public String getTagsByElement(TagCloudPK pk)
-		throws RemoteException
-	{
-	    Connection con = openConnection();
-	    try
-	    {
-	        return TagCloudDAO.getTagsByElement(con, pk);
-	    }
-	    catch (Exception e)
-	    {
-	        throw new TagCloudRuntimeException("TagCloudBmEJB.getTagsByElement()",
-	        	SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
-	    }
-	    finally
-	    {
-	        closeConnection(con);
-	    }
-	}
-    
-    public void ejbCreate() throws CreateException {}
-    
-    public void ejbRemove() {}
-    
-    public void ejbActivate() {}
-    
-    public void ejbPassivate() {}
-    
-    public void setSessionContext(SessionContext sc) {}
-    
+  }
+
+  /**
+   * @param tags
+   *          The searched tags.
+   * @param instanceId
+   *          The id of the instance.
+   * @param type
+   *          The type of elements referenced by the tagclouds (publications or
+   *          forums).
+   * @return The list of tagclouds which correspond to the tag and the id of the
+   *         instance given as parameters.
+   * @throws RemoteException
+   */
+  public Collection getTagCloudsByTags(String tags, String instanceId, int type)
+      throws RemoteException {
+    Connection con = openConnection();
+    try {
+      return TagCloudDAO.getTagCloudsByTags(con, TagCloudUtil.getTag(tags),
+          instanceId, type);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByTags()",
+          SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  /**
+   * @param instanceId
+   *          The id of the instance.
+   * @param externalId
+   *          The id of the element.
+   * @return The list of tagclouds corresponding to the ids given as parameters.
+   * @throws RemoteException
+   */
+  public Collection getTagCloudsByElement(String instanceId, String externalId,
+      int type) throws RemoteException {
+    Connection con = openConnection();
+    try {
+      return TagCloudDAO.getTagCloudsByElement(con, instanceId, externalId,
+          type);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException(
+          "TagCloudBmEJB.getTagCloudsByElement()",
+          SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  public String getTagsByElement(TagCloudPK pk) throws RemoteException {
+    Connection con = openConnection();
+    try {
+      return TagCloudDAO.getTagsByElement(con, pk);
+    } catch (Exception e) {
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagsByElement()",
+          SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  public void ejbCreate() throws CreateException {
+  }
+
+  public void ejbRemove() {
+  }
+
+  public void ejbActivate() {
+  }
+
+  public void ejbPassivate() {
+  }
+
+  public void setSessionContext(SessionContext sc) {
+  }
+
 }

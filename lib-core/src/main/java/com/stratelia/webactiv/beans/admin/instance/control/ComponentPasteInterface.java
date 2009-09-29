@@ -4,6 +4,6 @@ import java.rmi.RemoteException;
 
 public interface ComponentPasteInterface {
 
-	void paste(PasteDetail pasteDetail) throws RemoteException;
-	
+  void paste(PasteDetail pasteDetail) throws RemoteException;
+
 }

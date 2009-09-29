@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.invoker.util;
 
 import java.io.StringWriter;
@@ -49,27 +48,31 @@ import org.w3c.dom.Element;
 import com.sun.portal.container.ContainerLogger;
 import com.sun.portal.portletcontainer.invoker.ResponseProperties;
 
-
 /**
  * InvokerUtil has utility methods needed by the Window Invoker
- *
+ * 
  */
-public class InvokerUtil  {
-    
-    public static String MARKUP_HEADERS = "com.sun.portal.portletcontainer.markupHeaders";    
-    
-    // Create a logger for this class
-    private static Logger logger = ContainerLogger.getLogger(InvokerUtil.class, "com.silverpeas.portlets.PCCTXLogMessages");
-    
-    /**
-     * Sets the response properties like cookies and headers in the HttpServletResponse
-     * and sets the markup header in Session so that it will be set in the <head> tag in
-     * header.jsp
-     * @param request the HttpServletRequest object
-     * @param response the HttpServletResponse object
-     * @param responseProperties the ResponseProperties responseProperties object
-     */
-    public static void setResponseProperties(HttpServletRequest request,
+public class InvokerUtil {
+
+  public static String MARKUP_HEADERS = "com.sun.portal.portletcontainer.markupHeaders";
+
+  // Create a logger for this class
+  private static Logger logger = ContainerLogger.getLogger(InvokerUtil.class,
+      "com.silverpeas.portlets.PCCTXLogMessages");
+
+  /**
+   * Sets the response properties like cookies and headers in the
+   * HttpServletResponse and sets the markup header in Session so that it will
+   * be set in the <head> tag in header.jsp
+   * 
+   * @param request
+   *          the HttpServletRequest object
+   * @param response
+   *          the HttpServletResponse object
+   * @param responseProperties
+   *          the ResponseProperties responseProperties object
+   */
+  public static void setResponseProperties(HttpServletRequest request,
             HttpServletResponse response, ResponseProperties responseProperties) {
         if(responseProperties != null) {
             List<Cookie> cookies = responseProperties.getCookies();
@@ -101,31 +104,33 @@ public class InvokerUtil  {
             }
         }
     }
-    
-    /**
-     * Clears the response properties
-     * 
-     * @param responseProperties the ResponseProperties responseProperties object
-     */
-    public static void clearResponseProperties(ResponseProperties responseProperties) {
-        if(responseProperties != null) {
-            responseProperties.clear();
-        }
+
+  /**
+   * Clears the response properties
+   * 
+   * @param responseProperties
+   *          the ResponseProperties responseProperties object
+   */
+  public static void clearResponseProperties(
+      ResponseProperties responseProperties) {
+    if (responseProperties != null) {
+      responseProperties.clear();
     }
-   
-    private static String convertElementToString(Element element) {
-        try {
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            StringWriter sw = new StringWriter();
-            transformer.transform(new DOMSource(element), new StreamResult(sw));
-            return sw.toString();
-        } catch (TransformerException ex) {
-            if(logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, "PSPCD_CSPPD0010", ex.toString());
-            }
-        }
-        return null;
+  }
+
+  private static String convertElementToString(Element element) {
+    try {
+      TransformerFactory tFactory = TransformerFactory.newInstance();
+      Transformer transformer = tFactory.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      StringWriter sw = new StringWriter();
+      transformer.transform(new DOMSource(element), new StreamResult(sw));
+      return sw.toString();
+    } catch (TransformerException ex) {
+      if (logger.isLoggable(Level.WARNING)) {
+        logger.log(Level.WARNING, "PSPCD_CSPPD0010", ex.toString());
+      }
     }
+    return null;
+  }
 }

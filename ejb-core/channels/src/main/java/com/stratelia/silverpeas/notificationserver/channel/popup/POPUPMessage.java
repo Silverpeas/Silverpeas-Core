@@ -1,277 +1,255 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-
 /**
- * Titre :
- * Description :
- * Copyright :    Copyright (c) 2001
- * Société :
+ * Titre : Description : Copyright : Copyright (c) 2001 Société :
+ * 
  * @author eDurand
  * @version 2.0
  */
 
-public class POPUPMessage
-{
-	private String m_Date;
-	private String m_Time;
+public class POPUPMessage {
+  private String m_Date;
+  private String m_Time;
 
-	/**
-	 * Constructor declaration
-	 *
-	 *
-	 * @see
-	 */
-	public POPUPMessage() {}
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public POPUPMessage() {
+  }
 
-	private long m_Id;
+  private long m_Id;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setId(long value)
-	{
-		m_Id = value;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setId(long value) {
+    m_Id = value;
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public long getId()
-	{
-		return m_Id;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public long getId() {
+    return m_Id;
+  }
 
-	private long userId = -1;
+  private long userId = -1;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public long getUserId()
-	{
-		return userId;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public long getUserId() {
+    return userId;
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setUserId(long value)
-	{
-		userId = value;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setUserId(long value) {
+    userId = value;
+  }
 
-	private String m_UserLogin;
+  private String m_UserLogin;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setUserLogin(String value)
-	{
-		m_UserLogin = value;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setUserLogin(String value) {
+    m_UserLogin = value;
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public String getUserLogin()
-	{
-		return m_UserLogin;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getUserLogin() {
+    return m_UserLogin;
+  }
 
-	private String m_SenderName;
+  private String m_SenderName;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setSenderName(String value)
-	{
-		m_SenderName = value;
-		
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setSenderName(String value) {
+    m_SenderName = value;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public String getSenderName()
-	{
-		return m_SenderName;
-	}
+  }
 
-	private String m_Subject;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getSenderName() {
+    return m_SenderName;
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setSubject(String value)
-	{
-		m_Subject = value;
-	}
+  private String m_Subject;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public String getSubject()
-	{
-		return m_Subject;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setSubject(String value) {
+    m_Subject = value;
+  }
 
-	private String m_Body;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getSubject() {
+    return m_Subject;
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setBody(String value)
-	{
-		m_Body = value;
-	}
+  private String m_Body;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public String getBody()
-	{
-		return m_Body;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setBody(String value) {
+    m_Body = value;
+  }
 
-	private String m_Source;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getBody() {
+    return m_Body;
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param value
-	 *
-	 * @see
-	 */
-	public void setSource(String source)
-	{
-		m_Source = source;
-	}
+  private String m_Source;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	public String getSource()
-	{
-		return m_Source;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setSource(String source) {
+    m_Source = source;
+  }
 
-	/**
-	 * @author dlesimple
-	 * Sender
-	 */
-	private String m_senderId = null;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getSource() {
+    return m_Source;
+  }
 
-	public String getSenderId() {
-		return m_senderId;
-	}
+  /**
+   * @author dlesimple Sender
+   */
+  private String m_senderId = null;
 
-	public void setSenderId(String senderId) {
-		this.m_senderId = senderId;
-	}
+  public String getSenderId() {
+    return m_senderId;
+  }
 
-	/**
-	 * @author dlesimple
-	 * isAnswerAllowed
-	 */
-	private boolean m_answerAllowed = false;
+  public void setSenderId(String senderId) {
+    this.m_senderId = senderId;
+  }
 
-	public boolean isAnswerAllowed() {
-		return m_answerAllowed;
-	}
+  /**
+   * @author dlesimple isAnswerAllowed
+   */
+  private boolean m_answerAllowed = false;
 
-	public void setAnswerAllowed(boolean answerAllowed) {
-		this.m_answerAllowed = answerAllowed;
-	}
-	
-	public void setAnswerAllowed(String answerAllowed) {			
-		this.m_answerAllowed = "1".equals(answerAllowed);
-	}
+  public boolean isAnswerAllowed() {
+    return m_answerAllowed;
+  }
 
-	public void setDate(String date)
-	{
-		m_Date = date;
-	}
+  public void setAnswerAllowed(boolean answerAllowed) {
+    this.m_answerAllowed = answerAllowed;
+  }
 
-	public void setTime(String time)
-	{
-		m_Time = time;
-	}
+  public void setAnswerAllowed(String answerAllowed) {
+    this.m_answerAllowed = "1".equals(answerAllowed);
+  }
 
-	public String getDate()
-	{
-		return m_Date;
-	}
+  public void setDate(String date) {
+    m_Date = date;
+  }
 
-	public String getTime()
-	{
-		return m_Time;
-	}
+  public void setTime(String time) {
+    m_Time = time;
+  }
+
+  public String getDate() {
+    return m_Date;
+  }
+
+  public String getTime() {
+    return m_Time;
+  }
 
 }

@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.publication.control;
 
@@ -148,432 +149,492 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface PublicationBmBusinessSkeleton
-{
+public interface PublicationBmBusinessSkeleton {
 
-    /**
-     * get details on the publication specified by the
-     * primary key given in pubPK parameter
-     */
-    public PublicationDetail getDetail(PublicationPK pubPK) throws RemoteException;
+  /**
+   * get details on the publication specified by the primary key given in pubPK
+   * parameter
+   */
+  public PublicationDetail getDetail(PublicationPK pubPK)
+      throws RemoteException;
 
-    /**
-     * Create a new publication
-     * A new line will be added in publication table.
-     * The "id" in "detail" is not used (a new one will be computed).
-     * The "ed" is used to know the table name.
-     */
-    public PublicationPK createPublication(PublicationDetail detail) throws RemoteException;
+  /**
+   * Create a new publication A new line will be added in publication table. The
+   * "id" in "detail" is not used (a new one will be computed). The "ed" is used
+   * to know the table name.
+   */
+  public PublicationPK createPublication(PublicationDetail detail)
+      throws RemoteException;
 
-    public void movePublication(PublicationPK pubPK, NodePK nodePK, boolean indexIt) throws RemoteException;
-    
-    /**
-     * Change order of the given publication identified by pubPK in the given nodePK.
-     * direction less than 0 means "up" else it means "down" 
-     * @param pubPK the publication's id to move 
-     * @param nodePK the publication's place
-     * @param direction must be different to 0
-     * @throws RemoteException
-     */
-    public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction) throws RemoteException;
-    
-    /**
-     * remove the publication designed by pubPK parameter.
-     */
-    public void removePublication(PublicationPK pubPK) throws RemoteException;
-    
-    /**
-     * remove the image associated to publication designed by pubPK parameter.
-     */
-    public void removeImage(PublicationPK pubPK) throws RemoteException;
+  public void movePublication(PublicationPK pubPK, NodePK nodePK,
+      boolean indexIt) throws RemoteException;
 
-    /**
-     * update the publication content.
-     */
-    public void setDetail(PublicationDetail detaile) throws RemoteException;
+  /**
+   * Change order of the given publication identified by pubPK in the given
+   * nodePK. direction less than 0 means "up" else it means "down"
+   * 
+   * @param pubPK
+   *          the publication's id to move
+   * @param nodePK
+   *          the publication's place
+   * @param direction
+   *          must be different to 0
+   * @throws RemoteException
+   */
+  public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK,
+      int direction) throws RemoteException;
 
-    /**
-     * add a new father (designed by "fatherPK") to a publication ("pubPK")
-     * The publication will be visible from its new father node.
-     */
-    public void addFather(PublicationPK pubPK, NodePK fatherPK) throws RemoteException;
+  /**
+   * remove the publication designed by pubPK parameter.
+   */
+  public void removePublication(PublicationPK pubPK) throws RemoteException;
 
-    /**
-     * remove a father (designed by "fatherPK") from a publication ("pubPK")
-     * The publication won't be visible from its old father node.
-     */
-    public void removeFather(PublicationPK pubPK, NodePK fatherPK) throws RemoteException;
+  /**
+   * remove the image associated to publication designed by pubPK parameter.
+   */
+  public void removeImage(PublicationPK pubPK) throws RemoteException;
 
-    /**
-     * remove a father (designed by "fatherPK") from a publication ("pubPK")
-     * The publication won't be visible from its old father node.
-     */
-    public void removeFather(NodePK fatherPK) throws RemoteException;
+  /**
+   * update the publication content.
+   */
+  public void setDetail(PublicationDetail detaile) throws RemoteException;
 
-    /**
-     * remove a father (designed by "fatherPK") from a publication ("pubPK")
-     * The publication won't be visible from its old father node.
-     */
-    public void removeFathers(PublicationPK pubPK, Collection fatherIds) throws RemoteException;
+  /**
+   * add a new father (designed by "fatherPK") to a publication ("pubPK") The
+   * publication will be visible from its new father node.
+   */
+  public void addFather(PublicationPK pubPK, NodePK fatherPK)
+      throws RemoteException;
 
-    /**
-     * remove all father from a publication ("pubPK")
-     * The publication won't be visible.
-     */
-    public void removeAllFather(PublicationPK pubPK) throws RemoteException;
+  /**
+   * remove a father (designed by "fatherPK") from a publication ("pubPK") The
+   * publication won't be visible from its old father node.
+   */
+  public void removeFather(PublicationPK pubPK, NodePK fatherPK)
+      throws RemoteException;
 
-    /**
-     * remove all links between publications and node N
-     * N is a descendant of the node designed by originPK
-     */
-    //public void removeAllIssue(NodePK originPK, PublicationPK pubPK) throws RemoteException;
+  /**
+   * remove a father (designed by "fatherPK") from a publication ("pubPK") The
+   * publication won't be visible from its old father node.
+   */
+  public void removeFather(NodePK fatherPK) throws RemoteException;
 
-    /**
-     * return the Detail of publication which are not linked to a father
-     */
-    public Collection getOrphanPublications(PublicationPK pubPK) throws RemoteException;
+  /**
+   * remove a father (designed by "fatherPK") from a publication ("pubPK") The
+   * publication won't be visible from its old father node.
+   */
+  public void removeFathers(PublicationPK pubPK, Collection fatherIds)
+      throws RemoteException;
 
-	/**
-	* return the Detail of publication which are linked to at least one father
-	*/
-	public Collection getNotOrphanPublications(PublicationPK pubPK) throws RemoteException;
+  /**
+   * remove all father from a publication ("pubPK") The publication won't be
+   * visible.
+   */
+  public void removeAllFather(PublicationPK pubPK) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param pubPK
-     * @param creatorId
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId) throws RemoteException;
+  /**
+   * remove all links between publications and node N N is a descendant of the
+   * node designed by originPK
+   */
+  // public void removeAllIssue(NodePK originPK, PublicationPK pubPK) throws
+  // RemoteException;
 
-    /**
-     * return the publications :
-     * - which take place in the basket
-     * - which are out of the visibility period
-     */
-    public Collection getUnavailablePublicationsByPublisherId(PublicationPK pubPK, String publisherId, String nodeId) throws RemoteException;
+  /**
+   * return the Detail of publication which are not linked to a father
+   */
+  public Collection getOrphanPublications(PublicationPK pubPK)
+      throws RemoteException;
 
-    /**
-     * return a collection, containing all node primary key from where the
-     * publication is visible
-     */
-    public Collection getAllFatherPK(PublicationPK pubPK) throws RemoteException;
-    
-    /**
-     * return the publication's collection of Alias
-     */
-    public Collection getAlias(PublicationPK pubPK) throws RemoteException;
-    
-    public void addAlias(PublicationPK pubPK, List alias) throws RemoteException;
-    
-    public void removeAlias(PublicationPK pubPK, List alias) throws RemoteException;
+  /**
+   * return the Detail of publication which are linked to at least one father
+   */
+  public Collection getNotOrphanPublications(PublicationPK pubPK)
+      throws RemoteException;
 
-    /**
-     * return a PublicationDetail collection of all publication visible
-     * from the node identified by "fatherPK" parameter
-     */
-    public Collection getDetailsByFatherPK(NodePK fatherPK) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pubPK
+   * @param creatorId
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK,
+      String creatorId) throws RemoteException;
 
-    public Collection getDetailsByFatherPK(NodePK fatherPK, String sorting) throws RemoteException;
-    
-    public Collection getDetailsByFatherPK(NodePK fatherPK, String sorting, boolean filterOnVisibilityPeriod) throws RemoteException;
-    
-    public Collection getDetailsByFatherPK(NodePK fatherPK, String sorting, boolean filterOnVisibilityPeriod, String userId) throws RemoteException;
+  /**
+   * return the publications : - which take place in the basket - which are out
+   * of the visibility period
+   */
+  public Collection getUnavailablePublicationsByPublisherId(
+      PublicationPK pubPK, String publisherId, String nodeId)
+      throws RemoteException;
 
-    /**
-     * return a PublicationDetail collection of all publications not in 
-     * the node identified by "fatherPK" parameter
-     */
-    public Collection getDetailsNotInFatherPK(NodePK fatherPK) throws RemoteException;
+  /**
+   * return a collection, containing all node primary key from where the
+   * publication is visible
+   */
+  public Collection getAllFatherPK(PublicationPK pubPK) throws RemoteException;
 
-    public Collection getDetailsNotInFatherPK(NodePK fatherPK, String sorting) throws RemoteException;
-    
-    /**
-     * return a PublicationDetail collection of x last publications
-     */
-    public Collection getDetailsByBeginDateDescAndStatus(PublicationPK pk, String status, int nbPubs) throws RemoteException;
+  /**
+   * return the publication's collection of Alias
+   */
+  public Collection getAlias(PublicationPK pubPK) throws RemoteException;
 
-    /**
-     * return a PublicationDetail collection of x last publications
-     */
-    public Collection getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs) throws RemoteException;
+  public void addAlias(PublicationPK pubPK, List alias) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param pk
-     * @param status
-     * @param nbPubs
-     * @param fatherId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(PublicationPK pk, String status, int nbPubs, String fatherId) throws RemoteException;
+  public void removeAlias(PublicationPK pubPK, List alias)
+      throws RemoteException;
 
-    /**
-     *
-     */
-    public Collection getAllModelsDetail( /* PublicationPK pubPK */) throws RemoteException;
+  /**
+   * return a PublicationDetail collection of all publication visible from the
+   * node identified by "fatherPK" parameter
+   */
+  public Collection getDetailsByFatherPK(NodePK fatherPK)
+      throws RemoteException;
 
-    /**
-     *
-     */
-    public ModelDetail getModelDetail(ModelPK modelPK) throws RemoteException;
+  public Collection getDetailsByFatherPK(NodePK fatherPK, String sorting)
+      throws RemoteException;
 
-    /**
-     *
-     */
-    public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos) throws RemoteException;
+  public Collection getDetailsByFatherPK(NodePK fatherPK, String sorting,
+      boolean filterOnVisibilityPeriod) throws RemoteException;
 
-    /**
-     *
-     */
-    public void createInfoModelDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos) throws RemoteException;
+  public Collection getDetailsByFatherPK(NodePK fatherPK, String sorting,
+      boolean filterOnVisibilityPeriod, String userId) throws RemoteException;
 
-    /**
-     *
-     */
-    public InfoDetail getInfoDetail(PublicationPK pubPK) throws RemoteException;
+  /**
+   * return a PublicationDetail collection of all publications not in the node
+   * identified by "fatherPK" parameter
+   */
+  public Collection getDetailsNotInFatherPK(NodePK fatherPK)
+      throws RemoteException;
 
-    /**
-     *
-     */
-    public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos) throws RemoteException;
-    
-	public void deleteInfoLinks(PublicationPK pubPK, List pubIds) throws RemoteException;
+  public Collection getDetailsNotInFatherPK(NodePK fatherPK, String sorting)
+      throws RemoteException;
 
-    /**
+  /**
+   * return a PublicationDetail collection of x last publications
+   */
+  public Collection getDetailsByBeginDateDescAndStatus(PublicationPK pk,
+      String status, int nbPubs) throws RemoteException;
+
+  /**
+   * return a PublicationDetail collection of x last publications
+   */
+  public Collection getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs)
+      throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param status
+   * @param nbPubs
+   * @param fatherId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
+      PublicationPK pk, String status, int nbPubs, String fatherId)
+      throws RemoteException;
+
+  /**
      *
      */
-    public CompletePublication getCompletePublication(PublicationPK pubPK) throws RemoteException;
+  public Collection getAllModelsDetail( /* PublicationPK pubPK */)
+      throws RemoteException;
 
-    /**
+  /**
      *
      */
-    public Collection getPublications(Collection publicationPKs) throws RemoteException;
+  public ModelDetail getModelDetail(ModelPK modelPK) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param status
-     * @param pubPK
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getPublicationsByStatus(String status, PublicationPK pubPK) throws RemoteException;
-    
-    public Collection getPublicationPKsByStatus(String status, List componentIds) throws RemoteException;
-    
-    public Collection getPublicationsByStatus(String status, List componentIds) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param query
-     * @param pubPK
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection searchByKeywords(String query, PublicationPK pubPK) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherPKs
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public int getNbPubInFatherPKs(Collection fatherPKs) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherPK
-     * @param fatherPath
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath) throws RemoteException;
-    
-    public Hashtable getDistribution(String instanceId, String statusSubQuery, boolean checkVisibility) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherIds
-     * @param pubPK
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getDetailsByFatherIds(ArrayList fatherIds, PublicationPK pubPK) throws RemoteException;
-    
-    public Collection getDetailsByFatherIds(ArrayList fatherIds, PublicationPK pubPK, boolean filterOnVisibilityPeriod) throws RemoteException;
-
-	public Collection getDetailsByFatherIds(ArrayList fatherIds, PublicationPK pubPK, String sorting) throws RemoteException;
-
-	public Collection getDetailsByFatherIdsAndStatus(ArrayList fatherIds, PublicationPK pubPK, String sorting, String status) throws RemoteException;
-
-	public Collection getDetailsByFatherIdsAndStatusList(ArrayList fatherIds, PublicationPK pubPK, String sorting, ArrayList status) throws RemoteException;
-	
-	public Collection getDetailsByFatherIdsAndStatusList(ArrayList fatherIds, PublicationPK pubPK, String sorting, ArrayList status, boolean filterOnVisibilityPeriod) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherPKs
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getPubPKsInFatherPKs(Collection fatherPKs) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherPK
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getPubPKsInFatherPK(NodePK fatherPK) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param pubPK
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void createIndex(PublicationPK pubPK) throws RemoteException;
-    
-	public void createIndex(PublicationDetail pubDetail) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param pubPK
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void deleteIndex(PublicationPK pubPK) throws RemoteException;
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param pubPK
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getAllPublications(PublicationPK pubPK) throws RemoteException;
-
-	public Collection getAllPublications(PublicationPK pubPK, String sorting) throws RemoteException;
-
-
-	/**
-     * Looking for, in the instance identified by pubPK, a publication named pubName.
-     *
-     * @param pubPK the identifier of the instance
-     * @param pubName the publication's name we are looking for
-     *
-     * @return the pubId if a publication already exists in this component's instance. null otherwise.
-     *
-     * @throws RemoteException
+  /**
      *
      */
-	public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName) throws RemoteException;
-	
-	public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK, String pubName, int nodeId) throws RemoteException;
+  public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK,
+      InfoDetail infos) throws RemoteException;
 
-	/**
-     * A wysiwyg's content has been added or modified to a publication.
-     * Its content must be added to the indexed content of the publication
-	 *
-     * @param pubPK the identifier of the publication associated to the wysiwyg
-     *
-     * @throws RemoteException
+  /**
      *
      */
-	public void processWysiwyg(PublicationPK pubPK) throws RemoteException;
-	
-	/**
-     *
-     * @param beginDate 
-     * @param endDate
-     * @param instanceId
-     *
-     * @return Collection of PublicationDetail.
-     *
-     * @throws RemoteException
+  public void createInfoModelDetail(PublicationPK pubPK, ModelPK modelPK,
+      InfoDetail infos) throws RemoteException;
+
+  /**
      *
      */
-	public Collection getDetailBetweenDate(String beginDate, String endDate, String instanceId) throws RemoteException;
-	
-	public List getValidationSteps(PublicationPK pubPK) throws RemoteException;
-	
-	public ValidationStep getValidationStepByUser(PublicationPK pubPK, String userId) throws RemoteException;
-	
-	public void addValidationStep(ValidationStep step) throws RemoteException;
-	
-	public void removeValidationSteps(PublicationPK pubPK) throws RemoteException;
-	
-	public void changePublicationsOrder(List ids, NodePK nodePK) throws RemoteException;
-	
+  public InfoDetail getInfoDetail(PublicationPK pubPK) throws RemoteException;
+
+  /**
+     *
+     */
+  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
+      throws RemoteException;
+
+  public void deleteInfoLinks(PublicationPK pubPK, List pubIds)
+      throws RemoteException;
+
+  /**
+     *
+     */
+  public CompletePublication getCompletePublication(PublicationPK pubPK)
+      throws RemoteException;
+
+  /**
+     *
+     */
+  public Collection getPublications(Collection publicationPKs)
+      throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param status
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getPublicationsByStatus(String status, PublicationPK pubPK)
+      throws RemoteException;
+
+  public Collection getPublicationPKsByStatus(String status, List componentIds)
+      throws RemoteException;
+
+  public Collection getPublicationsByStatus(String status, List componentIds)
+      throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param query
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection searchByKeywords(String query, PublicationPK pubPK)
+      throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherPKs
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public int getNbPubInFatherPKs(Collection fatherPKs) throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherPK
+   * @param fatherPath
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath)
+      throws RemoteException;
+
+  public Hashtable getDistribution(String instanceId, String statusSubQuery,
+      boolean checkVisibility) throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherIds
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getDetailsByFatherIds(ArrayList fatherIds,
+      PublicationPK pubPK) throws RemoteException;
+
+  public Collection getDetailsByFatherIds(ArrayList fatherIds,
+      PublicationPK pubPK, boolean filterOnVisibilityPeriod)
+      throws RemoteException;
+
+  public Collection getDetailsByFatherIds(ArrayList fatherIds,
+      PublicationPK pubPK, String sorting) throws RemoteException;
+
+  public Collection getDetailsByFatherIdsAndStatus(ArrayList fatherIds,
+      PublicationPK pubPK, String sorting, String status)
+      throws RemoteException;
+
+  public Collection getDetailsByFatherIdsAndStatusList(ArrayList fatherIds,
+      PublicationPK pubPK, String sorting, ArrayList status)
+      throws RemoteException;
+
+  public Collection getDetailsByFatherIdsAndStatusList(ArrayList fatherIds,
+      PublicationPK pubPK, String sorting, ArrayList status,
+      boolean filterOnVisibilityPeriod) throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherPKs
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getPubPKsInFatherPKs(Collection fatherPKs)
+      throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherPK
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getPubPKsInFatherPK(NodePK fatherPK) throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pubPK
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void createIndex(PublicationPK pubPK) throws RemoteException;
+
+  public void createIndex(PublicationDetail pubDetail) throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pubPK
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void deleteIndex(PublicationPK pubPK) throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getAllPublications(PublicationPK pubPK)
+      throws RemoteException;
+
+  public Collection getAllPublications(PublicationPK pubPK, String sorting)
+      throws RemoteException;
+
+  /**
+   * Looking for, in the instance identified by pubPK, a publication named
+   * pubName.
+   * 
+   * @param pubPK
+   *          the identifier of the instance
+   * @param pubName
+   *          the publication's name we are looking for
+   * 
+   * @return the pubId if a publication already exists in this component's
+   *         instance. null otherwise.
+   * 
+   * @throws RemoteException
+   * 
+   */
+  public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName)
+      throws RemoteException;
+
+  public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK,
+      String pubName, int nodeId) throws RemoteException;
+
+  /**
+   * A wysiwyg's content has been added or modified to a publication. Its
+   * content must be added to the indexed content of the publication
+   * 
+   * @param pubPK
+   *          the identifier of the publication associated to the wysiwyg
+   * 
+   * @throws RemoteException
+   * 
+   */
+  public void processWysiwyg(PublicationPK pubPK) throws RemoteException;
+
+  /**
+   * 
+   * @param beginDate
+   * @param endDate
+   * @param instanceId
+   * 
+   * @return Collection of PublicationDetail.
+   * 
+   * @throws RemoteException
+   * 
+   */
+  public Collection getDetailBetweenDate(String beginDate, String endDate,
+      String instanceId) throws RemoteException;
+
+  public List getValidationSteps(PublicationPK pubPK) throws RemoteException;
+
+  public ValidationStep getValidationStepByUser(PublicationPK pubPK,
+      String userId) throws RemoteException;
+
+  public void addValidationStep(ValidationStep step) throws RemoteException;
+
+  public void removeValidationSteps(PublicationPK pubPK) throws RemoteException;
+
+  public void changePublicationsOrder(List ids, NodePK nodePK)
+      throws RemoteException;
+
 }

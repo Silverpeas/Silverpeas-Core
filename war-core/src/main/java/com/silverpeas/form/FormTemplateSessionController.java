@@ -5,61 +5,62 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
- *
- * @author  neysseri
+ * 
+ * @author neysseri
  * @version
  */
-public class FormTemplateSessionController extends AbstractComponentSessionController
-{
-	private String componentId;
-	private String objectId;
-	private String objectType;
-	private String xmlFormName;
-	private String objectLanguage;
-	
-	public FormTemplateSessionController(MainSessionController mainSessionCtrl, ComponentContext context)
-	{
-		super(mainSessionCtrl, context, "com.silverpeas.form.multilang.formBundle", null, null);
-	}
-	
-	public String getComponentId() {
-		return componentId;
-	}
+public class FormTemplateSessionController extends
+    AbstractComponentSessionController {
+  private String componentId;
+  private String objectId;
+  private String objectType;
+  private String xmlFormName;
+  private String objectLanguage;
 
-	public void setComponentId(String componentId) {
-		this.componentId = componentId;
-	}
+  public FormTemplateSessionController(MainSessionController mainSessionCtrl,
+      ComponentContext context) {
+    super(mainSessionCtrl, context, "com.silverpeas.form.multilang.formBundle",
+        null, null);
+  }
 
-	public String getObjectId() {
-		return objectId;
-	}
+  public String getComponentId() {
+    return componentId;
+  }
 
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
 
-	public String getObjectType() {
-		return objectType;
-	}
+  public String getObjectId() {
+    return objectId;
+  }
 
-	public void setObjectType(String objectType) {
-		this.objectType = objectType;
-	}
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
+  }
 
-	public String getXmlFormName() {
-		return xmlFormName;
-	}
+  public String getObjectType() {
+    return objectType;
+  }
 
-	public void setXmlFormName(String xmlFormName) {
-		this.xmlFormName = xmlFormName;
-	}
-	
-	public String getObjectLanguage() {
-		return objectLanguage;
-	}
+  public void setObjectType(String objectType) {
+    this.objectType = objectType;
+  }
 
-	public void setObjectLanguage(String objectLanguage) {
-		this.objectLanguage = objectLanguage;
-	}
-	
+  public String getXmlFormName() {
+    return xmlFormName;
+  }
+
+  public void setXmlFormName(String xmlFormName) {
+    this.xmlFormName = xmlFormName;
+  }
+
+  public String getObjectLanguage() {
+    return objectLanguage;
+  }
+
+  public void setObjectLanguage(String objectLanguage) {
+    this.objectLanguage = objectLanguage;
+  }
+
 }

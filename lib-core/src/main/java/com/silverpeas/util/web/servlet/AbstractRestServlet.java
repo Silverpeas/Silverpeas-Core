@@ -24,19 +24,19 @@ public abstract class AbstractRestServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(request, getServletRequestPath());
     switch (restRequest.getAction()) {
-    case RestRequest.CREATE:
-      create(restRequest, response);
-      break;
-    case RestRequest.UPDATE:
-      update(restRequest, response);
-      break;
-    case RestRequest.DELETE:
-      delete(restRequest, response);
-      break;
-    case RestRequest.FIND:
-    default:
-      find(restRequest, response);
-      break;
+      case RestRequest.CREATE:
+        create(restRequest, response);
+        break;
+      case RestRequest.UPDATE:
+        update(restRequest, response);
+        break;
+      case RestRequest.DELETE:
+        delete(restRequest, response);
+        break;
+      case RestRequest.FIND:
+      default:
+        find(restRequest, response);
+        break;
     }
   }
 

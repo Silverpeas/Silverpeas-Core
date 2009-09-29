@@ -13,265 +13,280 @@ import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;action&gt; element of a Process Model.
-**/
-public class ActionImpl extends AbstractReferrableObject implements Action, AbstractDescriptor, Serializable 
-{
-    private String                 name;
-    private String                 kind;
-    private ContextualDesignations labels;
-    private ContextualDesignations descriptions;
-    private QualifiedUsers         allowedUsers;
-    private Form                   form;
-    private Consequences           consequences;
+ * Class implementing the representation of the &lt;action&gt; element of a
+ * Process Model.
+ **/
+public class ActionImpl extends AbstractReferrableObject implements Action,
+    AbstractDescriptor, Serializable {
+  private String name;
+  private String kind;
+  private ContextualDesignations labels;
+  private ContextualDesignations descriptions;
+  private QualifiedUsers allowedUsers;
+  private Form form;
+  private Consequences consequences;
 
-    //~ Instance fields related to AbstractDescriptor ////////////////////////////////////////////////////////
+  // ~ Instance fields related to AbstractDescriptor
+  // ////////////////////////////////////////////////////////
 
-    private AbstractDescriptor     parent;
-    private boolean                hasId = false;
-    private int                    id;
+  private AbstractDescriptor parent;
+  private boolean hasId = false;
+  private int id;
 
-    /**
-     * Constructor
-     */
-    public ActionImpl() 
-    {
-        reset();
-    }
+  /**
+   * Constructor
+   */
+  public ActionImpl() {
+    reset();
+  }
 
-    /**
-     * Constructor
-     * @param    name    action name
-     */
-    public ActionImpl(String name) 
-    {
-        this();
-        this.name = name;
-    }
+  /**
+   * Constructor
+   * 
+   * @param name
+   *          action name
+   */
+  public ActionImpl(String name) {
+    this();
+    this.name = name;
+  }
 
-    /**
-     * reset attributes
-     */
-    private void reset()
-    {
-        labels        = new SpecificLabelListHelper();
-        descriptions  = new SpecificLabelListHelper();
-        kind          = "update";
-    }
+  /**
+   * reset attributes
+   */
+  private void reset() {
+    labels = new SpecificLabelListHelper();
+    descriptions = new SpecificLabelListHelper();
+    kind = "update";
+  }
 
-    /* (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#createDesignation()
-     */
-    public ContextualDesignation createDesignation()
-    {
-        return labels.createContextualDesignation();
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.silverpeas.workflow.api.model.Action#createDesignation()
+   */
+  public ContextualDesignation createDesignation() {
+    return labels.createContextualDesignation();
+  }
 
-    /* (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#getLabels()
-     */
-    public ContextualDesignations getLabels() 
-    {
-        return labels;
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.silverpeas.workflow.api.model.Action#getLabels()
+   */
+  public ContextualDesignations getLabels() {
+    return labels;
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#getLabel(java.lang.String, java.lang.String)
-     */
-    public String getLabel(String role, String language)
-    {
-        return labels.getLabel(role, language);
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.silverpeas.workflow.api.model.Action#getLabel(java.lang.String,
+   * java.lang.String)
+   */
+  public String getLabel(String role, String language) {
+    return labels.getLabel(role, language);
+  }
 
-    /* (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#addLabel(com.silverpeas.workflow.api.model.ContextualDesignation)
-     */
-    public void addLabel(ContextualDesignation label)
-    {
-        labels.addContextualDesignation(label);
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * com.silverpeas.workflow.api.model.Action#addLabel(com.silverpeas.workflow
+   * .api.model.ContextualDesignation)
+   */
+  public void addLabel(ContextualDesignation label) {
+    labels.addContextualDesignation(label);
+  }
 
-    /* (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#iterateLabel()
-     */
-    public Iterator iterateLabel()
-    {
-        return labels.iterateContextualDesignation();
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.silverpeas.workflow.api.model.Action#iterateLabel()
+   */
+  public Iterator iterateLabel() {
+    return labels.iterateContextualDesignation();
+  }
 
-    /**
-     * Get all the users allowed to execute this action
-     * @return object containing QualifiedUsers
-     */
-    public QualifiedUsers getAllowedUsers()
-    {
-        return allowedUsers;
-    }
+  /**
+   * Get all the users allowed to execute this action
+   * 
+   * @return object containing QualifiedUsers
+   */
+  public QualifiedUsers getAllowedUsers() {
+    return allowedUsers;
+  }
 
-    /**
-     * Get all the consequences of this action
-     * @return Consequences objects
-     */
-    public Consequences getConsequences()
-    {
-        return consequences;
-    }
+  /**
+   * Get all the consequences of this action
+   * 
+   * @return Consequences objects
+   */
+  public Consequences getConsequences() {
+    return consequences;
+  }
 
-    /**
-     * Get the form associated with this action
-     * @return form object
-     */
-    public Form getForm()
-    {
-        return form;
-    }
+  /**
+   * Get the form associated with this action
+   * 
+   * @return form object
+   */
+  public Form getForm() {
+    return form;
+  }
 
-    /**
-     * Get the name of this action
-     * @return action's name
-     */
-    public String getName()
-    {
-        return name;
-    }
+  /**
+   * Get the name of this action
+   * 
+   * @return action's name
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * Get the kind of this action (update, create or delete)
-     * @return action's kind
-     */
-    public String getKind()
-    {
-        return kind;
-    }
+  /**
+   * Get the kind of this action (update, create or delete)
+   * 
+   * @return action's kind
+   */
+  public String getKind() {
+    return kind;
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#getDescriptions()
-     */
-    public ContextualDesignations getDescriptions() 
-    {
-        return descriptions;
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.silverpeas.workflow.api.model.Action#getDescriptions()
+   */
+  public ContextualDesignations getDescriptions() {
+    return descriptions;
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#getDescription(java.lang.String, java.lang.String)
-     */
-    public String getDescription(String role, String language)
-    {
-        return descriptions.getLabel(role, language);
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * com.silverpeas.workflow.api.model.Action#getDescription(java.lang.String,
+   * java.lang.String)
+   */
+  public String getDescription(String role, String language) {
+    return descriptions.getLabel(role, language);
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#addDescription(com.silverpeas.workflow.api.model.ContextualDesignation)
-     */
-    public void addDescription(ContextualDesignation description)
-    {
-        descriptions.addContextualDesignation(description);
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * com.silverpeas.workflow.api.model.Action#addDescription(com.silverpeas.
+   * workflow.api.model.ContextualDesignation)
+   */
+  public void addDescription(ContextualDesignation description) {
+    descriptions.addContextualDesignation(description);
+  }
 
-    /* (non-Javadoc)
-     * @see com.silverpeas.workflow.api.model.Action#iterateDescription()
-     */
-    public Iterator iterateDescription()
-    {
-        return descriptions.iterateContextualDesignation();
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.silverpeas.workflow.api.model.Action#iterateDescription()
+   */
+  public Iterator iterateDescription() {
+    return descriptions.iterateContextualDesignation();
+  }
 
-    /**
-     * Create and return an object implementing QalifiedUsers
-     */
-    public QualifiedUsers createQualifiedUsers()
-    {
-        return new QualifiedUsersImpl();
-    }
+  /**
+   * Create and return an object implementing QalifiedUsers
+   */
+  public QualifiedUsers createQualifiedUsers() {
+    return new QualifiedUsersImpl();
+  }
 
-    /**
-     * Set the list of users allowed to execute this action
-     * @param allowedUsers allowed users
-    **/
-    public void setAllowedUsers(QualifiedUsers allowedUsers)
-    {
-        this.allowedUsers = allowedUsers;
-    }
+  /**
+   * Set the list of users allowed to execute this action
+   * 
+   * @param allowedUsers
+   *          allowed users
+   **/
+  public void setAllowedUsers(QualifiedUsers allowedUsers) {
+    this.allowedUsers = allowedUsers;
+  }
 
-    /**
-     * Create and return and object implementing Consequences
-     */
-    public Consequences createConsequences()
-    {
-        return new ConsequencesImpl();
-    }
-    
-    /**
-     * Set the consequences of this action
-     * @param consequences
-     */
-    public void setConsequences(Consequences consequences)
-    {
-        this.consequences = consequences;
-    }
+  /**
+   * Create and return and object implementing Consequences
+   */
+  public Consequences createConsequences() {
+    return new ConsequencesImpl();
+  }
 
-    /**
-     * Set the form associated to this action
-     * @param form associated form
-    **/
-    public void setForm(Form form)
-    {
-        this.form = form;
-    }
+  /**
+   * Set the consequences of this action
+   * 
+   * @param consequences
+   */
+  public void setConsequences(Consequences consequences) {
+    this.consequences = consequences;
+  }
 
-    /**
-     * Set the name of this action
-     * @param name    action's name
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  /**
+   * Set the form associated to this action
+   * 
+   * @param form
+   *          associated form
+   **/
+  public void setForm(Form form) {
+    this.form = form;
+  }
 
-    /**
-     * Set the kind of this action
-     * @param kind    action's kind
-     */
-    public void setKind(String kind)
-    {
-        this.kind = kind;
-    }
+  /**
+   * Set the name of this action
+   * 
+   * @param name
+   *          action's name
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * Get the unique key, used by equals method
-     * @return    unique key 
-     */
-    public String getKey()
-    {
-        return name;
-    }
-    
-    /************* Implemented methods *****************************************/
+  /**
+   * Set the kind of this action
+   * 
+   * @param kind
+   *          action's kind
+   */
+  public void setKind(String kind) {
+    this.kind = kind;
+  }
 
-    //~ Methods ////////////////////////////////////////////////////////////////
+  /**
+   * Get the unique key, used by equals method
+   * 
+   * @return unique key
+   */
+  public String getKey() {
+    return name;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-        hasId = true;
-    }
+  /************* Implemented methods *****************************************/
 
-    public int getId() {
-        return id;
-    }
+  // ~ Methods ////////////////////////////////////////////////////////////////
 
-    public void setParent(AbstractDescriptor parent) {
-        this.parent = parent;
-    }
+  public void setId(int id) {
+    this.id = id;
+    hasId = true;
+  }
 
-    public AbstractDescriptor getParent() {
-        return parent;
-    }
+  public int getId() {
+    return id;
+  }
 
-    public boolean hasId() {
-        return hasId;
-    }
+  public void setParent(AbstractDescriptor parent) {
+    this.parent = parent;
+  }
+
+  public AbstractDescriptor getParent() {
+    return parent;
+  }
+
+  public boolean hasId() {
+    return hasId;
+  }
 }

@@ -8,8 +8,7 @@ import javax.ejb.EJBHome;
 /**
  * The home interface for the state-full EJB session SearchEngineBm.
  */
-public interface SearchEngineBmHome extends EJBHome
-{
+public interface SearchEngineBmHome extends EJBHome {
   /**
    * Create a SearchEngineBm.
    */

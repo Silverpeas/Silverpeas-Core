@@ -9,44 +9,44 @@ import java.util.Date;
 
 /**
  * @author neysseri
- *
+ * 
  */
 public class HolidayDetail implements Serializable {
 
-	private Date 	holidayDate = null;
-	private String 	userId 	= null;
+  private Date holidayDate = null;
+  private String userId = null;
 
-	public HolidayDetail(Date holidayDate, String userId) {
-		setDate(holidayDate);
-		setUserId(userId);
-	}
+  public HolidayDetail(Date holidayDate, String userId) {
+    setDate(holidayDate);
+    setUserId(userId);
+  }
 
-	/**
-	 * @return
-	 */
-	public Date getDate() {
-		return holidayDate;
-	}
+  /**
+   * @return
+   */
+  public Date getDate() {
+    return holidayDate;
+  }
 
-	/**
-	 * @return
-	 */
-	public String getUserId() {
-		return userId;
-	}
+  /**
+   * @return
+   */
+  public String getUserId() {
+    return userId;
+  }
 
-	/**
-	 * @param date
-	 */
-	public void setDate(Date date) {
-		holidayDate = date;
-	}
+  /**
+   * @param date
+   */
+  public void setDate(Date date) {
+    holidayDate = date;
+  }
 
-	/**
-	 * @param string
-	 */
-	public void setUserId(String string) {
-		userId = string;
-	}
-	
+  /**
+   * @param string
+   */
+  public void setUserId(String string) {
+    userId = string;
+  }
+
 }

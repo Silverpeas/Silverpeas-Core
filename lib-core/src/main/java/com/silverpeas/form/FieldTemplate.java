@@ -5,14 +5,13 @@ import java.util.Map;
 /**
  * A FieldTemplate describes a specific field of a DataRecord.
  * 
- * A FieldTemplate gives the field name, type information
- * and display information.
- *
+ * A FieldTemplate gives the field name, type information and display
+ * information.
+ * 
  * @see DataRecord
  * @see RecordTemplate
  */
-public interface FieldTemplate
-{
+public interface FieldTemplate {
   /**
    * Returns the field name of the Field built on this template.
    */
@@ -64,14 +63,14 @@ public interface FieldTemplate
   public boolean isHidden();
 
   /**
-   * Returns a Map (String -> String) of named parameters
-   * which can be used by the displayer (max-size, length ...).
+   * Returns a Map (String -> String) of named parameters which can be used by
+   * the displayer (max-size, length ...).
    */
-  //public Map getParameters();
-  
+  // public Map getParameters();
+
   /**
-   * Returns a Map (String -> String) of named parameters
-   * which can be used by the displayer (max-size, length ...).
+   * Returns a Map (String -> String) of named parameters which can be used by
+   * the displayer (max-size, length ...).
    */
   public Map getParameters(String language);
 
@@ -79,8 +78,8 @@ public interface FieldTemplate
    * Returns an empty Field built on this template.
    */
   public Field getEmptyField() throws FormException;
-  
+
   public boolean isSearchable();
-  
+
   public String getTemplateName();
 }

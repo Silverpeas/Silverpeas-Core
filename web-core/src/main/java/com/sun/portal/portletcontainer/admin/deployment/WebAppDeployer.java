@@ -25,28 +25,31 @@
 package com.sun.portal.portletcontainer.admin.deployment;
 
 /**
- * An interface which defines methods to deploy and undeploy Portlet war files on a 
- * Web Container. The realizations of this inteface will provide Container specific 
- * implementations for deploying and undeploying on the particular web containers.
+ * An interface which defines methods to deploy and undeploy Portlet war files
+ * on a Web Container. The realizations of this inteface will provide Container
+ * specific implementations for deploying and undeploying on the particular web
+ * containers.
  */
 public interface WebAppDeployer {
-    public static String CONFIG_FILE = "pcenv.conf";
-    public static String WAR_NOT_DEPLOYED = "warNotDeployed";
-    public static String WAR_NOT_UNDEPLOYED = "warNotUndeployed";
-    
-    /**
-     * Deploys the Portlet war on the web container.
-     *
-     * @param warFileName The complete path to the Portlet war file.
-     * @return boolean Returns true if the deployment is successful.
-     */
-    public boolean deploy(String warFileName) throws WebAppDeployerException;
-    
-    /**
-     * Undeploys the Portlet war from the web container.
-     *
-     * @param warFileName The name of the Portlet war file.
-     * @return boolean Returns true if the undeployment is successful.
-     */
-    public boolean undeploy(String warFileName) throws WebAppDeployerException;
+  public static String CONFIG_FILE = "pcenv.conf";
+  public static String WAR_NOT_DEPLOYED = "warNotDeployed";
+  public static String WAR_NOT_UNDEPLOYED = "warNotUndeployed";
+
+  /**
+   * Deploys the Portlet war on the web container.
+   * 
+   * @param warFileName
+   *          The complete path to the Portlet war file.
+   * @return boolean Returns true if the deployment is successful.
+   */
+  public boolean deploy(String warFileName) throws WebAppDeployerException;
+
+  /**
+   * Undeploys the Portlet war from the web container.
+   * 
+   * @param warFileName
+   *          The name of the Portlet war file.
+   * @return boolean Returns true if the undeployment is successful.
+   */
+  public boolean undeploy(String warFileName) throws WebAppDeployerException;
 }

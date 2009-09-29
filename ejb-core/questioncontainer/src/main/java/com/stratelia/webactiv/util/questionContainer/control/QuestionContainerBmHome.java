@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.questionContainer.control;
 
@@ -19,27 +20,26 @@ import java.rmi.RemoteException;
  * no message
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author neysseri
  */
-public interface QuestionContainerBmHome extends EJBHome
-{
+public interface QuestionContainerBmHome extends EJBHome {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws CreateException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    QuestionContainerBm create() throws RemoteException, CreateException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  QuestionContainerBm create() throws RemoteException, CreateException;
 
 }

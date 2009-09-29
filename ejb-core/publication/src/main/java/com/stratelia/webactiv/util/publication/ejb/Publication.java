@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.publication.ejb;
 
@@ -50,167 +51,173 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * Stabilisation Lot 2 : Exceptions et Silvertrace
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface Publication extends EJBObject
-{
+public interface Publication extends EJBObject {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public PublicationDetail getDetail() throws RemoteException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public PublicationDetail getDetail() throws RemoteException, SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public CompletePublication getCompletePublication() throws RemoteException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public CompletePublication getCompletePublication() throws RemoteException,
+      SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param pubDetail
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public void setDetail(PublicationDetail pubDetail) throws RemoteException, SQLException;
-    
-    public void removeImage() throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pubDetail
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public void setDetail(PublicationDetail pubDetail) throws RemoteException,
+      SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherPK
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public void addFather(NodePK fatherPK) throws RemoteException, SQLException;
-    
-    public void move(NodePK fatherPK) throws RemoteException, SQLException;
+  public void removeImage() throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param fatherPK
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public void removeFather(NodePK fatherPK) throws RemoteException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherPK
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public void addFather(NodePK fatherPK) throws RemoteException, SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public void removeAllFather() throws RemoteException, SQLException;
+  public void move(NodePK fatherPK) throws RemoteException, SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public Collection getAllFatherPK() throws RemoteException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param fatherPK
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public void removeFather(NodePK fatherPK) throws RemoteException,
+      SQLException;
 
-    public Collection getAllFatherPK(String sorting) throws RemoteException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public void removeAllFather() throws RemoteException, SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param modelPK
-     * @param infos
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     * @throws UtilException
-     *
-     * @see
-     */
-    public void createInfoDetail(ModelPK modelPK, InfoDetail infos) throws RemoteException, UtilException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public Collection getAllFatherPK() throws RemoteException, SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param modelPK
-     * @param infos
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     * @throws UtilException
-     *
-     * @see
-     */
-    public void createInfoModelDetail(ModelPK modelPK, InfoDetail infos) throws RemoteException, UtilException, SQLException;
+  public Collection getAllFatherPK(String sorting) throws RemoteException,
+      SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param infos
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     * @throws UtilException
-     *
-     * @see
-     */
-    public void updateInfoDetail(InfoDetail infos) throws RemoteException, UtilException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param modelPK
+   * @param infos
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * @throws UtilException
+   * 
+   * @see
+   */
+  public void createInfoDetail(ModelPK modelPK, InfoDetail infos)
+      throws RemoteException, UtilException, SQLException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws RemoteException
-     * @throws SQLException
-     *
-     * @see
-     */
-    public InfoDetail getInfoDetail() throws RemoteException, SQLException;
-    
-	public void deleteInfoLinks(List pubIds) throws RemoteException, SQLException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param modelPK
+   * @param infos
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * @throws UtilException
+   * 
+   * @see
+   */
+  public void createInfoModelDetail(ModelPK modelPK, InfoDetail infos)
+      throws RemoteException, UtilException, SQLException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param infos
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * @throws UtilException
+   * 
+   * @see
+   */
+  public void updateInfoDetail(InfoDetail infos) throws RemoteException,
+      UtilException, SQLException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public InfoDetail getInfoDetail() throws RemoteException, SQLException;
+
+  public void deleteInfoLinks(List pubIds) throws RemoteException, SQLException;
 }

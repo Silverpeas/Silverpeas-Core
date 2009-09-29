@@ -23,145 +23,140 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public abstract class AbstractCalendar implements com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar
-{
-    protected boolean navigationBar = true;
-    protected boolean shortName = true;
-    protected boolean monthVisible = true;
-    protected String  weekDayStyle = "class=\"txtnav\""; 
-    protected String  monthDayStyle = "class=\"txtnav3\"";
-    protected String  monthDayStyleEvent = "class=\"intfdcolor3\"";
-    private String	context = "";
-    protected ResourceLocator settings = null;
-    protected String language = null;
-    private List events = null;
-    private List nonSelectableDays = null;
-    private Date currentDate = null;
-	private boolean emptyDayNonSelectable = false;    // true => les jours sans evenements ne sont pas selectionnables
-	
-    
-	public AbstractCalendar(String context, String language, Date date) 
-    {
-    	//this.context = context+URLManager.getURL(URLManager.CMP_AGENDA);
-    	this.context = context;
-    	this.language = language;
-    	this.currentDate = date;
-    	this.settings = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
-    }
-    
-    public void setEvents(List events)
-    {
-    	this.events = events;
-    }
-    
-    public void addEvent(Event event)
-    {
-    	if (events == null)
-    		events = new ArrayList();
-    	events.add(event);
-    }
-    
-    public boolean isEmptyDayNonSelectable() {
-		return emptyDayNonSelectable;
-	}
+public abstract class AbstractCalendar implements
+    com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar {
+  protected boolean navigationBar = true;
+  protected boolean shortName = true;
+  protected boolean monthVisible = true;
+  protected String weekDayStyle = "class=\"txtnav\"";
+  protected String monthDayStyle = "class=\"txtnav3\"";
+  protected String monthDayStyleEvent = "class=\"intfdcolor3\"";
+  private String context = "";
+  protected ResourceLocator settings = null;
+  protected String language = null;
+  private List events = null;
+  private List nonSelectableDays = null;
+  private Date currentDate = null;
+  private boolean emptyDayNonSelectable = false; // true => les jours sans
 
-	public void setEmptyDayNonSelectable(boolean nonSelectable) {
-		this.emptyDayNonSelectable = nonSelectable;
-	}
+  // evenements ne sont pas
+  // selectionnables
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param value
-     *
-     * @see
-     */
-    public void setWeekDayStyle(String value)
-    {
-        weekDayStyle = value;
-    }
+  public AbstractCalendar(String context, String language, Date date) {
+    // this.context = context+URLManager.getURL(URLManager.CMP_AGENDA);
+    this.context = context;
+    this.language = language;
+    this.currentDate = date;
+    this.settings = new ResourceLocator(
+        "com.stratelia.webactiv.multilang.generalMultilang", language);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param value
-     *
-     * @see
-     */
-    public void setMonthDayStyle(String value)
-    {
-        monthDayStyle = value;
-    }
+  public void setEvents(List events) {
+    this.events = events;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param value
-     *
-     * @see
-     */
-    public void setMonthVisible(boolean value)
-    {
-        monthVisible = value;
-    }
+  public void addEvent(Event event) {
+    if (events == null)
+      events = new ArrayList();
+    events.add(event);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param value
-     *
-     * @see
-     */
-    public void setNavigationBar(boolean value)
-    {
-        navigationBar = value;
-    }
+  public boolean isEmptyDayNonSelectable() {
+    return emptyDayNonSelectable;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param value
-     *
-     * @see
-     */
-    public void setShortName(boolean value)
-    {
-        shortName = value;
-    }
+  public void setEmptyDayNonSelectable(boolean nonSelectable) {
+    this.emptyDayNonSelectable = nonSelectable;
+  }
 
-	/**
-	 * @return
-	 */
-	public String getContext() {
-		return context;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setWeekDayStyle(String value) {
+    weekDayStyle = value;
+  }
 
-	public Collection getEvents() {
-		return events;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setMonthDayStyle(String value) {
+    monthDayStyle = value;
+  }
 
-	public List getNonSelectableDays() {
-		return nonSelectableDays;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setMonthVisible(boolean value) {
+    monthVisible = value;
+  }
 
-	public void setNonSelectableDays(List nonSelectableDays) {
-		this.nonSelectableDays = nonSelectableDays;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setNavigationBar(boolean value) {
+    navigationBar = value;
+  }
 
-	public Date getCurrentDate() {
-		return currentDate;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @see
+   */
+  public void setShortName(boolean value) {
+    shortName = value;
+  }
 
-	public void setCurrentDate(Date currentDate) {
-		this.currentDate = currentDate;
-	}
+  /**
+   * @return
+   */
+  public String getContext() {
+    return context;
+  }
+
+  public Collection getEvents() {
+    return events;
+  }
+
+  public List getNonSelectableDays() {
+    return nonSelectableDays;
+  }
+
+  public void setNonSelectableDays(List nonSelectableDays) {
+    this.nonSelectableDays = nonSelectableDays;
+  }
+
+  public Date getCurrentDate() {
+    return currentDate;
+  }
+
+  public void setCurrentDate(Date currentDate) {
+    this.currentDate = currentDate;
+  }
 }

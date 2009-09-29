@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.publication.control;
 
@@ -17,11 +18,12 @@ import javax.ejb.EJBObject;
  * Stabilisation Lot 2 : Exceptions et Silvertrace
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface PublicationBm extends EJBObject, PublicationBmBusinessSkeleton {}
+public interface PublicationBm extends EJBObject, PublicationBmBusinessSkeleton {
+}

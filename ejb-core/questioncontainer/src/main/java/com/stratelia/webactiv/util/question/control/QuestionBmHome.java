@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.question.control;
 
@@ -20,26 +21,25 @@ import java.rmi.RemoteException;
  * Silvertrace et exceptions + javadoc
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface QuestionBmHome extends EJBHome
-{
+public interface QuestionBmHome extends EJBHome {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws CreateException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    QuestionBm create() throws RemoteException, CreateException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  QuestionBm create() throws RemoteException, CreateException;
 }

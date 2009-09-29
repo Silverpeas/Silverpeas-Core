@@ -86,164 +86,150 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class SeeAlsoDAO
-{
-	private static String SEEALSO_TABLENAME = "SB_SeeAlso_Link";
+public class SeeAlsoDAO {
+  private static String SEEALSO_TABLENAME = "SB_SeeAlso_Link";
 
-	/**
-	 * Constructor declaration
-	 *
-	 *
-	 * @see
-	 */
-	public SeeAlsoDAO()
-	{
-	}
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public SeeAlsoDAO() {
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param con
-	 * @param infoPK
-	 * @param infoLink
-	 *
-	 * @throws SQLException
-	 *
-	 * @see
-	 */
-	public static void addLink(Connection con, WAPrimaryKey objectPK, WAPrimaryKey targetPK) throws SQLException
-	{
-		int newId = -1;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param infoPK
+   * @param infoLink
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static void addLink(Connection con, WAPrimaryKey objectPK,
+      WAPrimaryKey targetPK) throws SQLException {
+    int newId = -1;
 
-		try
-		{
-			/* Recherche de la nouvelle PK de la table */
-			newId = DBUtil.getNextId(SEEALSO_TABLENAME, "id");
-		}
-		catch (Exception ex)
-		{
-			throw new PublicationRuntimeException("SeeAlsoDAO.addLink()", SilverpeasRuntimeException.ERROR,	"root.EX_GET_NEXTID_FAILED", ex);
-		}
+    try {
+      /* Recherche de la nouvelle PK de la table */
+      newId = DBUtil.getNextId(SEEALSO_TABLENAME, "id");
+    } catch (Exception ex) {
+      throw new PublicationRuntimeException("SeeAlsoDAO.addLink()",
+          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
+    }
 
-		String insertStatement = "insert into " + SEEALSO_TABLENAME + " values ( ? , ? , ? , ? , ? )";
-		PreparedStatement prepStmt = null;
+    String insertStatement = "insert into " + SEEALSO_TABLENAME
+        + " values ( ? , ? , ? , ? , ? )";
+    PreparedStatement prepStmt = null;
 
-		try
-		{
-			prepStmt = con.prepareStatement(insertStatement);
-			prepStmt.setInt(1, newId);
-			prepStmt.setInt(2, Integer.parseInt(objectPK.getId()));
-			prepStmt.setString(3, objectPK.getInstanceId());
-			prepStmt.setInt(4, Integer.parseInt(targetPK.getId()));
-			prepStmt.setString(5, targetPK.getInstanceId());
+    try {
+      prepStmt = con.prepareStatement(insertStatement);
+      prepStmt.setInt(1, newId);
+      prepStmt.setInt(2, Integer.parseInt(objectPK.getId()));
+      prepStmt.setString(3, objectPK.getInstanceId());
+      prepStmt.setInt(4, Integer.parseInt(targetPK.getId()));
+      prepStmt.setString(5, targetPK.getInstanceId());
 
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			DBUtil.close(prepStmt);
-		}
-	}
-	
-	public static void deleteLink(Connection con, WAPrimaryKey objectPK, WAPrimaryKey targetPK) throws SQLException
-	{
-		String deleteStatement = "delete from " + SEEALSO_TABLENAME + " where objectId = ? AND objectInstanceId = ? AND targetId = ? AND targetInstanceId = ? ";
-		PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
-		try
-		{
-			prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
-			prepStmt.setString(2, objectPK.getInstanceId());
-			prepStmt.setInt(3, Integer.parseInt(targetPK.getId()));
-			prepStmt.setString(4, targetPK.getInstanceId());
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			DBUtil.close(prepStmt);
-		}
-	}
-	
-	public static void deleteLinksByObjectId(Connection con, WAPrimaryKey objectPK) throws SQLException
-	{
-		String deleteStatement = "delete from " + SEEALSO_TABLENAME + " where objectId = ? AND objectInstanceId = ? ";
-		PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
+  public static void deleteLink(Connection con, WAPrimaryKey objectPK,
+      WAPrimaryKey targetPK) throws SQLException {
+    String deleteStatement = "delete from "
+        + SEEALSO_TABLENAME
+        + " where objectId = ? AND objectInstanceId = ? AND targetId = ? AND targetInstanceId = ? ";
+    PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
 
-		try
-		{
-			prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
-			prepStmt.setString(2, objectPK.getInstanceId());
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			DBUtil.close(prepStmt);
-		}
-	}
-	
-	public static void deleteLinksByTargetId(Connection con, WAPrimaryKey targetPK) throws SQLException
-	{
-		String deleteStatement = "delete from " + SEEALSO_TABLENAME + " where targetId = ? AND targetInstanceId = ? ";
-		PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
+    try {
+      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
+      prepStmt.setString(2, objectPK.getInstanceId());
+      prepStmt.setInt(3, Integer.parseInt(targetPK.getId()));
+      prepStmt.setString(4, targetPK.getInstanceId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
-		try
-		{
-			prepStmt.setInt(1, Integer.parseInt(targetPK.getId()));
-			prepStmt.setString(2, targetPK.getInstanceId());
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			DBUtil.close(prepStmt);
-		}
-	}
+  public static void deleteLinksByObjectId(Connection con, WAPrimaryKey objectPK)
+      throws SQLException {
+    String deleteStatement = "delete from " + SEEALSO_TABLENAME
+        + " where objectId = ? AND objectInstanceId = ? ";
+    PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param con
-	 * @param infoPK
-	 *
-	 * @return
-	 *
-	 * @throws SQLException
-	 *
-	 * @see
-	 */
-	public static List getLinks(Connection con, WAPrimaryKey objectPK) throws SQLException
-	{
-		ResultSet rs = null;
-		String selectStatement = "select targetId, targetInstanceId from " + SEEALSO_TABLENAME + " where objectId  = ? AND objectInstanceId = ? ";
-		PreparedStatement prepStmt = con.prepareStatement(selectStatement);
+    try {
+      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
+      prepStmt.setString(2, objectPK.getInstanceId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
-		try
-		{
-			prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
-			prepStmt.setString(2,objectPK.getInstanceId());
-			rs = prepStmt.executeQuery();
+  public static void deleteLinksByTargetId(Connection con, WAPrimaryKey targetPK)
+      throws SQLException {
+    String deleteStatement = "delete from " + SEEALSO_TABLENAME
+        + " where targetId = ? AND targetInstanceId = ? ";
+    PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
 
-			String targetId 		= "";
-			String targetInstanceId = "";
-			List list = new ArrayList();
-			while (rs.next())
-			{
-				targetId = Integer.toString(rs.getInt(1));
-				targetInstanceId = rs.getString(2);
-				ForeignPK targetPK = new ForeignPK(targetId, targetInstanceId);
+    try {
+      prepStmt.setInt(1, Integer.parseInt(targetPK.getId()));
+      prepStmt.setString(2, targetPK.getInstanceId());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
-				list.add(targetPK);
-			}
-			return list;
-		}
-		finally
-		{
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param infoPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static List getLinks(Connection con, WAPrimaryKey objectPK)
+      throws SQLException {
+    ResultSet rs = null;
+    String selectStatement = "select targetId, targetInstanceId from "
+        + SEEALSO_TABLENAME + " where objectId  = ? AND objectInstanceId = ? ";
+    PreparedStatement prepStmt = con.prepareStatement(selectStatement);
+
+    try {
+      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
+      prepStmt.setString(2, objectPK.getInstanceId());
+      rs = prepStmt.executeQuery();
+
+      String targetId = "";
+      String targetInstanceId = "";
+      List list = new ArrayList();
+      while (rs.next()) {
+        targetId = Integer.toString(rs.getInt(1));
+        targetInstanceId = rs.getString(2);
+        ForeignPK targetPK = new ForeignPK(targetId, targetInstanceId);
+
+        list.add(targetPK);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 }

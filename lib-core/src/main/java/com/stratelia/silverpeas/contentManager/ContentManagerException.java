@@ -1,7 +1,7 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.contentManager;
-
 
 import com.stratelia.webactiv.util.exception.*;
 
@@ -27,45 +27,47 @@ import com.stratelia.webactiv.util.exception.*;
  * Centralize URLS + Stabilisation Lot 2 - SilverTrace et Exceptions
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author n.chaix
  */
-public class ContentManagerException extends SilverpeasException
-{
-	/**--------------------------------------------------------------------------constructor
-	 * constructor
-	 */
-    public ContentManagerException(String callingClass, int errorLevel, String message) 
-    {
-        super(callingClass, errorLevel, message);
-    }
-    public ContentManagerException(String callingClass, int errorLevel, String message, String extraParams) 
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
-    public ContentManagerException(String callingClass, int errorLevel, String message, Exception nested) 
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
-    public ContentManagerException(String callingClass, int errorLevel, String message, String extraParams, Exception nested) 
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getModule()
-    {
-        return "contentManager";
-    }
-}
+public class ContentManagerException extends SilverpeasException {
+  /**
+   * --------------------------------------------------------------------------
+   * constructor constructor
+   */
+  public ContentManagerException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
+  }
 
+  public ContentManagerException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
+
+  public ContentManagerException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public ContentManagerException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getModule() {
+    return "contentManager";
+  }
+}

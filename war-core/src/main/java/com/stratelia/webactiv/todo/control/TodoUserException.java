@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * TodoUserException.java
@@ -10,34 +11,29 @@ package com.stratelia.webactiv.todo.control;
 
 import java.lang.Exception;
 
-
 /**
  * 
- * @author  mmarengo
+ * @author mmarengo
  * @version 1.0
  */
-public class TodoUserException extends Exception
-{
+public class TodoUserException extends Exception {
 
-	/**
-     * Constructor declaration
-     * 
-     * @param message
-     * 
-     * @see
-     */
-    public TodoUserException(String message)
-    {
-        super(message);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * @param message
+   * 
+   * @see
+   */
+  public TodoUserException(String message) {
+    super(message);
+  }
 
-
-    /**
-     * getModule
-     */
-    public String getModule()
-    {
-        return "todo";
-    }
+  /**
+   * getModule
+   */
+  public String getModule() {
+    return "todo";
+  }
 
 }

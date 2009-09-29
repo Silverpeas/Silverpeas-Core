@@ -1,6 +1,5 @@
 package com.silverpeas.jcrutil.servlets;
 
-
 public class RmiConfiguration {
   private String host;
   private int port;

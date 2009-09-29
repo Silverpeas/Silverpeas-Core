@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.statistic.model;
 
@@ -27,133 +28,123 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * no message
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class StatisticResultDetail implements Serializable
-{
+public class StatisticResultDetail implements Serializable {
 
-    private WAPrimaryKey pk;
-    private String       result;
-    private Object       detail = null;
+  private WAPrimaryKey pk;
+  private String result;
+  private Object detail = null;
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param pk
-     * @param result
-     *
-     * @see
-     */
-    public StatisticResultDetail(WAPrimaryKey pk, String result)
-    {
-        this.pk = pk;
-        this.result = result;
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param pk
+   * @param result
+   * 
+   * @see
+   */
+  public StatisticResultDetail(WAPrimaryKey pk, String result) {
+    this.pk = pk;
+    this.result = result;
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param pk
-     * @param result
-     * @param detail
-     *
-     * @see
-     */
-    public StatisticResultDetail(WAPrimaryKey pk, String result, Object detail)
-    {
-        this.pk = pk;
-        this.result = result;
-        this.detail = detail;
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param pk
+   * @param result
+   * @param detail
+   * 
+   * @see
+   */
+  public StatisticResultDetail(WAPrimaryKey pk, String result, Object detail) {
+    this.pk = pk;
+    this.result = result;
+    this.detail = detail;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public WAPrimaryKey getPK()
-    {
-        return pk;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public WAPrimaryKey getPK() {
+    return pk;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getResult()
-    {
-        return result;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getResult() {
+    return result;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public Object getDetail()
-    {
-        return detail;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public Object getDetail() {
+    return detail;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param detail
-     *
-     * @see
-     */
-    public void setDetail(Object detail)
-    {
-        this.detail = detail;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param detail
+   * 
+   * @see
+   */
+  public void setDetail(Object detail) {
+    this.detail = detail;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param pk
-     * @param list
-     *
-     * @return
-     *
-     * @see
-     */
-    static public StatisticResultDetail getFromCollection(WAPrimaryKey pk, Collection list)
-    {
-        Iterator i = list.iterator();
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param list
+   * 
+   * @return
+   * 
+   * @see
+   */
+  static public StatisticResultDetail getFromCollection(WAPrimaryKey pk,
+      Collection list) {
+    Iterator i = list.iterator();
 
-        while (i.hasNext())
-        {
-            try
-            {
-                StatisticResultDetail detail = (StatisticResultDetail) i.next();
+    while (i.hasNext()) {
+      try {
+        StatisticResultDetail detail = (StatisticResultDetail) i.next();
 
-                if (detail.getPK().equals(pk))
-                {
-                    return detail;
-                }
-            }
-            catch (Exception e) {}
+        if (detail.getPK().equals(pk)) {
+          return detail;
         }
-        return null;
+      } catch (Exception e) {
+      }
     }
+    return null;
+  }
 
 }

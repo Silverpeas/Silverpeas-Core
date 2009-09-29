@@ -28,7 +28,7 @@ package com.silverpeas.portlets.portal;
  * DesktopConstants defines constants that are used in the DesktopServlet.
  */
 public interface DesktopConstants {
-    public static String PORTLET_CONTENT = "content";
-    public static String PORTLET_TITLE = "title";
-    public static String PORTLET_WINDOWS = "com.sun.portal.portletcontainer.driver.portletWindows";    
+  public static String PORTLET_CONTENT = "content";
+  public static String PORTLET_TITLE = "title";
+  public static String PORTLET_WINDOWS = "com.sun.portal.portletcontainer.driver.portletWindows";
 }

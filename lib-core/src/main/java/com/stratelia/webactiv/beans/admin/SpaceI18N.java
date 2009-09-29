@@ -5,51 +5,48 @@ import com.stratelia.webactiv.organization.SpaceI18NRow;
 
 public class SpaceI18N extends Translation {
 
-	private String name	= null;
-	private String description = null;
-	
-	public SpaceI18N()
-	{
-	}
-	
-	public SpaceI18N(String lang, String name, String description)
-	{
-		if (lang != null)
-			super.setLanguage(lang);
-		this.name = name;
-		this.description = description;
-	}
-	
-	public SpaceI18N(SpaceI18NRow row)
-	{
-		super.setId(row.id);
-		super.setLanguage(row.lang);
-		name = row.name;
-		description = row.description;
-	}
+  private String name = null;
+  private String description = null;
 
-	public String getDescription() {
-		return description;
-	}
+  public SpaceI18N() {
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public SpaceI18N(String lang, String name, String description) {
+    if (lang != null)
+      super.setLanguage(lang);
+    this.name = name;
+    this.description = description;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public SpaceI18N(SpaceI18NRow row) {
+    super.setId(row.id);
+    super.setLanguage(row.lang);
+    name = row.name;
+    description = row.description;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getSpaceId() {
-		return super.getObjectId();
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setSpaceId(String id) {
-		super.setObjectId(id);
-	}
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getSpaceId() {
+    return super.getObjectId();
+  }
+
+  public void setSpaceId(String id) {
+    super.setObjectId(id);
+  }
 
 }

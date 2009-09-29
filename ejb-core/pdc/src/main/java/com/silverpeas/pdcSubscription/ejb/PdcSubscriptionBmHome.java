@@ -10,6 +10,6 @@ import java.rmi.RemoteException;
 
 public interface PdcSubscriptionBmHome extends EJBHome {
 
-    PdcSubscriptionBm create() throws RemoteException, CreateException;
+  PdcSubscriptionBm create() throws RemoteException, CreateException;
 
 }

@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * Button.java
@@ -12,46 +13,45 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * 
- * @author  neysseri
+ * @author neysseri
  * @version
  */
-public interface Button extends SimpleGraphicElement
-{
+public interface Button extends SimpleGraphicElement {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param label
-     * @param action
-     * @param disabled
-     *
-     * @see
-     */
-    public void init(String label, String action, boolean disabled);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param label
+   * @param action
+   * @param disabled
+   * 
+   * @see
+   */
+  public void init(String label, String action, boolean disabled);
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String print();
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String print();
 
-    /*
-     * @deprecated
-     */
+  /*
+   * @deprecated
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param s
-     *
-     * @see
-     */
-    public void setRootImagePath(String s);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param s
+   * 
+   * @see
+   */
+  public void setRootImagePath(String s);
 
 }

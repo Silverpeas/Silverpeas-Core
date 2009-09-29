@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
@@ -27,87 +28,80 @@ package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
  * 
  * @author
  */
-public class ArrayPaneStatusBean
-{
-    private int firstVisibleLine = 0;
-    private int maximumVisibleLine = 10;
-    private int sortColumn = 0;  // no column is sorted by default
+public class ArrayPaneStatusBean {
+  private int firstVisibleLine = 0;
+  private int maximumVisibleLine = 10;
+  private int sortColumn = 0; // no column is sorted by default
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param firstVisibleLine
-     * 
-     * @see
-     */
-    public void setFirstVisibleLine(int firstVisibleLine)
-    {
-        this.firstVisibleLine = firstVisibleLine;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param firstVisibleLine
+   * 
+   * @see
+   */
+  public void setFirstVisibleLine(int firstVisibleLine) {
+    this.firstVisibleLine = firstVisibleLine;
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public int getFirstVisibleLine()
-    {
-        return firstVisibleLine;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getFirstVisibleLine() {
+    return firstVisibleLine;
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param maximumVisibleLine
-     * 
-     * @see
-     */
-    public void setMaximumVisibleLine(int maximumVisibleLine)
-    {
-        this.maximumVisibleLine = maximumVisibleLine;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param maximumVisibleLine
+   * 
+   * @see
+   */
+  public void setMaximumVisibleLine(int maximumVisibleLine) {
+    this.maximumVisibleLine = maximumVisibleLine;
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public int getMaximumVisibleLine()
-    {
-        return maximumVisibleLine;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getMaximumVisibleLine() {
+    return maximumVisibleLine;
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param sortColumn
-     * 
-     * @see
-     */
-    public void setSortColumn(int sortColumn)
-    {
-        this.sortColumn = sortColumn;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param sortColumn
+   * 
+   * @see
+   */
+  public void setSortColumn(int sortColumn) {
+    this.sortColumn = sortColumn;
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public int getSortColumn()
-    {
-        return sortColumn;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getSortColumn() {
+    return sortColumn;
+  }
 }

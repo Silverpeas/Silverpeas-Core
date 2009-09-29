@@ -53,288 +53,292 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * @author dle
- *
+ * 
  */
 public class ExportIcalManager {
 
-    private CalendarBm calendarBm;
-    private static final String firstDate = "1970/01/01";
-    private static final String lastDate = "2050/01/01";
-    private String userId;
-    private String language ="fr";
-    
-	public ExportIcalManager(AgendaSessionController agendaSessionController)
-    {
-		this.userId = agendaSessionController.getUserId();
-		this.language = agendaSessionController.getLanguage();
-		setCalendarBm();
+  private CalendarBm calendarBm;
+  private static final String firstDate = "1970/01/01";
+  private static final String lastDate = "2050/01/01";
+  private String userId;
+  private String language = "fr";
+
+  public ExportIcalManager(AgendaSessionController agendaSessionController) {
+    this.userId = agendaSessionController.getUserId();
+    this.language = agendaSessionController.getLanguage();
+    setCalendarBm();
+  }
+
+  /**
+   * Constructor for Servlet SubscribeAgenda call
+   * 
+   * @param userId
+   */
+  public ExportIcalManager(String userId) {
+    this.userId = userId;
+    setCalendarBm();
+  }
+
+  private String getUserId() {
+    return this.userId;
+  }
+
+  private String getLanguage() {
+    return this.language;
+  }
+
+  /**
+   * Export Calendar in Ical file format
+   * 
+   * @param startDate
+   * @param endDate
+   * @return ReturnCode
+   * @throws Exception
+   * @throws AgendaException
+   * @throws FileNotFoundException
+   * @throws ValidationException
+   * @throws IOException
+   * @throws ParseException
+   */
+  public String exportIcalAgenda(String startDate, String endDate)
+      throws Exception, AgendaException, FileNotFoundException,
+      ValidationException, IOException, ParseException {
+    String returnCode = AgendaSessionController.EXPORT_SUCCEEDED;
+    String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX
+        + getUserId() + ".ics";
+
+    CalendarOutputter outputter = new CalendarOutputter();
+    Calendar calendarIcs = getIcsCalendarHeader();
+    calendarIcs = getIcsCalendarContent(calendarIcs, startDate, endDate);
+    if (calendarIcs.getComponents().isEmpty())
+      returnCode = AgendaSessionController.EXPORT_EMPTY;
+    else {
+      FileOutputStream fileOutput = new FileOutputStream(FileRepositoryManager
+          .getTemporaryPath()
+          + calendarIcsFileName);
+      try {
+        outputter.output(calendarIcs, fileOutput);
+        fileOutput.close();
+      } catch (Exception e) {
+        fileOutput.close();
+        FileFolderManager.deleteFile(FileRepositoryManager.getTemporaryPath()
+            + calendarIcsFileName);
+        throw new AgendaException("ExportIcalManager.exportIcalAgenda()",
+            SilverpeasException.ERROR, "agenda.EXPORT_ICAL_FAILED", e);
+      }
+    }
+    return returnCode;
+  }
+
+  /**
+   * Export Calendar in Ical file format
+   * 
+   * @return
+   * @throws Exception
+   * @throws AgendaException
+   * @throws FileNotFoundException
+   * @throws ValidationException
+   * @throws IOException
+   * @throws ParseException
+   */
+  public String exportIcalAgenda() throws Exception, AgendaException,
+      FileNotFoundException, ValidationException, IOException, ParseException {
+    return exportIcalAgenda(null, null);
+  }
+
+  /**
+   * Export Calendar in Ical format (call by SubscribeAgenda)
+   * 
+   * @param startDate
+   * @param endDate
+   * @return ReturnCode
+   * @throws Exception
+   * @throws AgendaException
+   * @throws FileNotFoundException
+   * @throws ValidationException
+   * @throws IOException
+   * @throws ParseException
+   */
+  public String exportIcalAgendaForSynchro() throws Exception, AgendaException,
+      FileNotFoundException, ValidationException, IOException, ParseException {
+    String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX
+        + getUserId() + ".ics";
+    String filePath = null;
+    CalendarOutputter outputter = new CalendarOutputter();
+    Calendar calendarIcs = getIcsCalendarHeader();
+    calendarIcs = getIcsCalendarContent(calendarIcs, null, null);
+    if (!calendarIcs.getComponents().isEmpty()) {
+      filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
+      FileOutputStream fileOutput = new FileOutputStream(filePath);
+      try {
+        outputter.output(calendarIcs, fileOutput);
+        fileOutput.flush();
+        fileOutput.close();
+      } catch (Exception e) {
+        fileOutput.close();
+        FileFolderManager.deleteFile(FileRepositoryManager.getTemporaryPath()
+            + calendarIcsFileName);
+        throw new AgendaException("ExportIcalManager.exportIcalAgenda()",
+            SilverpeasException.ERROR, "agenda.EXPORT_ICAL_FAILED", e);
+      }
+    }
+    return filePath;
+  }
+
+  /**
+   * Get Ical header
+   * 
+   * @return CalendarIcs
+   */
+  private Calendar getIcsCalendarHeader() {
+    Calendar calendarIcs = new Calendar();
+    calendarIcs.getProperties()
+        .add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
+    calendarIcs.getProperties().add(Version.VERSION_2_0);
+    calendarIcs.getProperties().add(CalScale.GREGORIAN);
+    return calendarIcs;
+  }
+
+  /**
+   * Get Ical contents
+   * 
+   * @param calendarIcs
+   * @param startDate
+   * @param endDate
+   * @return CalendarIcs
+   * @throws ParseException
+   * @throws RemoteException
+   * @throws SocketException
+   */
+  private Calendar getIcsCalendarContent(Calendar calendarIcs,
+      String startDate, String endDate) throws ParseException, RemoteException,
+      SocketException, AgendaException, URISyntaxException {
+    SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
+        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
+        "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
+            + endDate);
+    boolean exportAll = true;
+    if (StringUtil.isDefined(startDate) && StringUtil.isDefined(startDate))
+      exportAll = false;
+    if (exportAll) {
+      startDate = DateUtil.getInputDate(firstDate, getLanguage());
+      endDate = DateUtil.getInputDate(lastDate, getLanguage());
+      SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
+          "root.MSG_GEN_PARAM_VALUE", "exportAll");
+      SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
+          "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
+              + endDate);
     }
 
-	/**
-	 * Constructor for Servlet SubscribeAgenda call
-	 * @param userId
-	 */
-	public ExportIcalManager(String userId)
-    {
-		this.userId = userId;
-		setCalendarBm();
+    Iterator itSchedules = getSchedulableCalendar(startDate, endDate)
+        .iterator();
+    final List events = new ArrayList();
+    while (itSchedules.hasNext()) {
+      Object obj = itSchedules.next();
+
+      if (obj instanceof Schedulable) {
+        Schedulable eventAgenda = (Schedulable) obj;
+
+        SilverTrace.debug("agenda",
+            "ExportIcalManager.getIcsCalendarContent()",
+            "root.MSG_GEN_PARAM_VALUE", "eventAgenda.getStartDay()="
+                + eventAgenda.getStartDay() + " eventAgenda.getStartDate()="
+                + eventAgenda.getStartDate());
+
+        // Conv startDateTime and endDateTime in ICal format
+        DateTime startDateTime = new DateTime(eventAgenda.getStartDate());
+        DateTime endDateTime = new DateTime(eventAgenda.getEndDate());
+
+        // Define event
+        VEvent event = new VEvent(startDateTime, endDateTime, eventAgenda
+            .getName());
+        event.getProperties().add(new UidGenerator(Uid.UID).generateUid());
+
+        // Add Description
+        event.getProperties()
+            .add(new Description(eventAgenda.getDescription()));
+        // Add Classification
+        event.getProperties().add(
+            new Clazz(eventAgenda.getClassification().getString()));
+        // Add Priority
+        event.getProperties().add(
+            new Priority(eventAgenda.getPriority().getValue()));
+
+        // Add Categories
+        Collection categories = calendarBm.getJournalCategories(eventAgenda
+            .getId());
+        if (!categories.isEmpty()) {
+          CategoryList categoryList = new CategoryList();
+          Iterator categoriesIt = categories.iterator();
+          while (categoriesIt.hasNext()) {
+            Category categorie = (Category) categoriesIt.next();
+            categoryList.add(categorie.getName());
+          }
+          event.getProperties().add(new Categories(categoryList));
+        }
+
+        // Add attendees
+        Collection attendees = calendarBm.getJournalAttendees(eventAgenda
+            .getId());
+        if (!attendees.isEmpty()) {
+          Iterator attendeesIt = attendees.iterator();
+          while (attendeesIt.hasNext()) {
+            Attendee attendeeAgenda = (Attendee) attendeesIt.next();
+            OrganizationController oc = new OrganizationController();
+            UserDetail user = oc.getUserDetail(attendeeAgenda.getUserId());
+            if (user != null) {
+              String email = user.geteMail();
+              if (StringUtil.isDefined(email))
+                event.getProperties().add(
+                    new net.fortuna.ical4j.model.property.Attendee(email));
+            }
+          }
+        }
+
+        // Add this event
+        events.add(event);
+      }
     }
+    if (!events.isEmpty())
+      calendarIcs.getComponents().addAll(events);
+    SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
+        "root.MSG_GEN_EXIT_METHOD");
+    return calendarIcs;
+  }
 
-	private String getUserId()
-	{
-		return this.userId;
-	}
-	
-	private String getLanguage()
-	{
-		return this.language;
-	}
-	
-	/**
-	 * Export Calendar in Ical file format
-	 * 
-	 * @param startDate
-	 * @param endDate
-	 * @return ReturnCode
-	 * @throws Exception
-	 * @throws AgendaException
-	 * @throws FileNotFoundException
-	 * @throws ValidationException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public String exportIcalAgenda(String startDate, String endDate) throws
-	Exception, AgendaException, FileNotFoundException, ValidationException, IOException, ParseException
-	{
-		String returnCode = AgendaSessionController.EXPORT_SUCCEEDED;
-		String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX + getUserId() + ".ics";
-		
-		CalendarOutputter outputter = new CalendarOutputter();
-		Calendar calendarIcs = getIcsCalendarHeader(); 
-		calendarIcs = getIcsCalendarContent(calendarIcs, startDate, endDate);
-		if (calendarIcs.getComponents().isEmpty())
-			returnCode = AgendaSessionController.EXPORT_EMPTY;
-		else
-		{ 
-			FileOutputStream fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath() + calendarIcsFileName);
-			try
-			{
-				outputter.output(calendarIcs, fileOutput);
-				fileOutput.close();
-			}
-			catch (Exception e)
-			{
-				fileOutput.close();
-				FileFolderManager.deleteFile(FileRepositoryManager.getTemporaryPath() + calendarIcsFileName);
-				throw new AgendaException("ExportIcalManager.exportIcalAgenda()",SilverpeasException.ERROR,"agenda.EXPORT_ICAL_FAILED",e);
-			}
-		}
-		return returnCode;
-	}
+  /**
+   * Get All events between period
+   * 
+   * @param startDate
+   * @param endDate
+   * @return Collections of Schedulable events
+   * @throws RemoteException
+   * @throws ParseException
+   */
+  private Collection getSchedulableCalendar(String startDate, String endDate)
+      throws RemoteException, ParseException {
+    return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(
+        startDate, getLanguage()), DateUtil
+        .date2SQLDate(endDate, getLanguage()), getUserId(), null,
+        new ParticipationStatus(ParticipationStatus.ACCEPTED).getString());
+  }
 
-	/**
-	 * Export Calendar in Ical file format
-	 * @return
-	 * @throws Exception
-	 * @throws AgendaException
-	 * @throws FileNotFoundException
-	 * @throws ValidationException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public String exportIcalAgenda() throws
-		Exception, AgendaException, FileNotFoundException, ValidationException, IOException, ParseException
-	{
-		return exportIcalAgenda(null, null);
-	}
-
-	/**
-	 * Export Calendar in Ical format (call by SubscribeAgenda)
-	 * 
-	 * @param startDate
-	 * @param endDate
-	 * @return ReturnCode
-	 * @throws Exception
-	 * @throws AgendaException
-	 * @throws FileNotFoundException
-	 * @throws ValidationException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public String exportIcalAgendaForSynchro() throws
-	Exception, AgendaException, FileNotFoundException, ValidationException, IOException, ParseException
-	{
-		String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX + getUserId() + ".ics";
-		String filePath = null;
-		CalendarOutputter outputter = new CalendarOutputter();
-		Calendar calendarIcs = getIcsCalendarHeader(); 
-		calendarIcs = getIcsCalendarContent(calendarIcs, null, null);
-		if (!calendarIcs.getComponents().isEmpty())
-		{ 
-			filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
-			FileOutputStream fileOutput = new FileOutputStream(filePath);
-			try
-			{
-				outputter.output(calendarIcs, fileOutput);
-				fileOutput.flush();
-				fileOutput.close();
-			}
-			catch (Exception e)
-			{
-				fileOutput.close();
-				FileFolderManager.deleteFile(FileRepositoryManager.getTemporaryPath() + calendarIcsFileName);
-				throw new AgendaException("ExportIcalManager.exportIcalAgenda()",SilverpeasException.ERROR,"agenda.EXPORT_ICAL_FAILED",e);
-			}
-		}
-		return filePath;
-	}
-
-	/**
-	 * Get Ical header
-	 * @return CalendarIcs
-	 */
-	private Calendar getIcsCalendarHeader()
-	{
-		Calendar calendarIcs = new Calendar(); 
-		calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
-		calendarIcs.getProperties().add(Version.VERSION_2_0);
-		calendarIcs.getProperties().add(CalScale.GREGORIAN);
-		return calendarIcs;
-	}
-
-	/**
-	 * Get Ical contents
-	 * @param calendarIcs
-	 * @param startDate
-	 * @param endDate
-	 * @return CalendarIcs
-	 * @throws ParseException
-	 * @throws RemoteException
-	 * @throws SocketException
-	 */
-	private Calendar getIcsCalendarContent(Calendar calendarIcs, String startDate, String endDate)
-		throws ParseException, RemoteException, SocketException, AgendaException, URISyntaxException
-	{
-		SilverTrace.info("agenda","ExportIcalManager.getIcsCalendarContent()","root.MSG_GEN_ENTER_METHOD");
-		SilverTrace.debug("agenda","ExportIcalManager.getIcsCalendarContent()","root.MSG_GEN_PARAM_VALUE","startDate="+startDate+" endDate="+endDate);
-		boolean exportAll = true;
-		if (StringUtil.isDefined(startDate) && StringUtil.isDefined(startDate)) 
-			exportAll = false;
-		if (exportAll)
-		{
-			startDate = DateUtil.getInputDate(firstDate, getLanguage()); 
-			endDate = DateUtil.getInputDate(lastDate, getLanguage());
-			SilverTrace.debug("agenda","ExportIcalManager.getIcsCalendarContent()","root.MSG_GEN_PARAM_VALUE","exportAll");
-			SilverTrace.debug("agenda","ExportIcalManager.getIcsCalendarContent()","root.MSG_GEN_PARAM_VALUE","startDate="+startDate+" endDate="+endDate);
-		}
-		
-		Iterator itSchedules = getSchedulableCalendar(startDate, endDate).iterator();
-		final List events = new ArrayList();
-		while (itSchedules.hasNext())
-		{
-			Object obj = itSchedules.next();
-
-			if (obj instanceof Schedulable)
-			{
-				Schedulable eventAgenda = (Schedulable) obj;
-
-				SilverTrace.debug("agenda","ExportIcalManager.getIcsCalendarContent()","root.MSG_GEN_PARAM_VALUE","eventAgenda.getStartDay()="+eventAgenda.getStartDay()+" eventAgenda.getStartDate()="+eventAgenda.getStartDate());
-
-				// Conv startDateTime and endDateTime in ICal format
-				DateTime startDateTime = new DateTime(eventAgenda.getStartDate());
-				DateTime endDateTime = new DateTime(eventAgenda.getEndDate());
-				
-				//Define event
-				VEvent event = new VEvent(startDateTime, endDateTime, eventAgenda.getName());
-				event.getProperties().add(new UidGenerator(Uid.UID).generateUid());
-				
-				//Add Description
-				event.getProperties().add(new Description(eventAgenda.getDescription()));
-				//Add Classification
-				event.getProperties().add(new Clazz(eventAgenda.getClassification().getString()));
-				//Add Priority
-				event.getProperties().add(new Priority(eventAgenda.getPriority().getValue()));
-
-				//Add Categories
-				Collection categories = calendarBm.getJournalCategories(eventAgenda.getId());
-				if (!categories.isEmpty())
-				{
-					CategoryList categoryList = new CategoryList();
-			    	Iterator categoriesIt = categories.iterator();
-			    	while (categoriesIt.hasNext())
-			    	{	
-			    		Category categorie = (Category) categoriesIt.next();
-			    		categoryList.add(categorie.getName());
-			    	}
-					event.getProperties().add(new Categories(categoryList));
-				}
-
-				//Add attendees
-				Collection attendees = calendarBm.getJournalAttendees(eventAgenda.getId());
-				if (!attendees.isEmpty())
-				{
-			    	Iterator attendeesIt = attendees.iterator();
-			    	while (attendeesIt.hasNext())
-			    	{
-			    		Attendee attendeeAgenda = (Attendee) attendeesIt.next();
-			    		OrganizationController oc = new OrganizationController();
-			    		UserDetail user = oc.getUserDetail(attendeeAgenda.getUserId());
-			    		if (user != null)
-			    		{
-			    			String email = user.geteMail();
-			    			if (StringUtil.isDefined(email))
-			    				event.getProperties().add(new net.fortuna.ical4j.model.property.Attendee(email));
-			    		}
-			    	}
-				}
-				
-				// Add this event
- 				events.add(event);
-			}
-		}
-		if (!events.isEmpty())
-			calendarIcs.getComponents().addAll(events);			
-		SilverTrace.info("agenda","ExportIcalManager.getIcsCalendarContent()","root.MSG_GEN_EXIT_METHOD");
-		return calendarIcs;
-	}
-	
-	/**
-	 * Get All events between period 
-	 * @param startDate
-	 * @param endDate
-	 * @return Collections of Schedulable events
-	 * @throws RemoteException
-	 * @throws ParseException
-	 */
-	private Collection getSchedulableCalendar(String startDate, String endDate) throws RemoteException, ParseException
-	{
-		return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(startDate, getLanguage()),
-				DateUtil.date2SQLDate(endDate, getLanguage()),
-				getUserId(),
-			null, new ParticipationStatus(ParticipationStatus.ACCEPTED).getString());
-	}
-
-	/**
-	 * Method declaration
-	 * @see
-	 */
-	private void setCalendarBm()
-	{
-		if (calendarBm == null)
-		{
-			try
-			{
-				calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
-			}
-			catch (Exception e)
-			{
-				throw new AgendaRuntimeException(
-					"ExportIcalManager.setCalendarBm()",
-					SilverpeasException.ERROR,
-					"root.EX_CANT_GET_REMOTE_OBJECT",
-					e);
-			}
-		}
-	}
+  /**
+   * Method declaration
+   * 
+   * @see
+   */
+  private void setCalendarBm() {
+    if (calendarBm == null) {
+      try {
+        calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+      } catch (Exception e) {
+        throw new AgendaRuntimeException("ExportIcalManager.setCalendarBm()",
+            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
+    }
+  }
 
 }

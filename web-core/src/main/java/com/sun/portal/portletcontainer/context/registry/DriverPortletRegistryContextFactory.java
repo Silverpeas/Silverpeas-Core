@@ -25,39 +25,44 @@
 package com.sun.portal.portletcontainer.context.registry;
 
 /**
- * DriverPortletRegistryContextFactory provides the implementation of the abstract methods
- * of PortletRegistryContextFactory.
- *
+ * DriverPortletRegistryContextFactory provides the implementation of the
+ * abstract methods of PortletRegistryContextFactory.
+ * 
  */
-public class DriverPortletRegistryContextFactory implements PortletRegistryContextFactory {
-    
-    public DriverPortletRegistryContextFactory() {
-    }
-    private static String implementation = "com.sun.portal.portletcontainer.admin.PortletRegistryContextImpl";
-        
-    /**
-     * Returns a new instance of the Portlet Registry
-     */
-    
-    public PortletRegistryContext getPortletRegistryContext() throws PortletRegistryException {
-    	return getPortletRegistryContext(null);
-    }
-    
-    public PortletRegistryContext getPortletRegistryContext(String context) throws PortletRegistryException {        
-        Object classInstance = null;
-        try {
-            classInstance = Class.forName(implementation).newInstance();
-        } catch (Exception ex) {
-            throw new PortletRegistryException(ex);
-        }
-        PortletRegistryContext portletRegistryContext = (PortletRegistryContext) classInstance;
-        portletRegistryContext.init(context);
-        
-        return portletRegistryContext;        
-    }
+public class DriverPortletRegistryContextFactory implements
+    PortletRegistryContextFactory {
 
-    public PortletRegistryContext getPortletRegistryContext(String portalId, String namespace) throws PortletRegistryException {
-        return getPortletRegistryContext();
+  public DriverPortletRegistryContextFactory() {
+  }
+
+  private static String implementation = "com.sun.portal.portletcontainer.admin.PortletRegistryContextImpl";
+
+  /**
+   * Returns a new instance of the Portlet Registry
+   */
+
+  public PortletRegistryContext getPortletRegistryContext()
+      throws PortletRegistryException {
+    return getPortletRegistryContext(null);
+  }
+
+  public PortletRegistryContext getPortletRegistryContext(String context)
+      throws PortletRegistryException {
+    Object classInstance = null;
+    try {
+      classInstance = Class.forName(implementation).newInstance();
+    } catch (Exception ex) {
+      throw new PortletRegistryException(ex);
     }
-    
+    PortletRegistryContext portletRegistryContext = (PortletRegistryContext) classInstance;
+    portletRegistryContext.init(context);
+
+    return portletRegistryContext;
+  }
+
+  public PortletRegistryContext getPortletRegistryContext(String portalId,
+      String namespace) throws PortletRegistryException {
+    return getPortletRegistryContext();
+  }
+
 }

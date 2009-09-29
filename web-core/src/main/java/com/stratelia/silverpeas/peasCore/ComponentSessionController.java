@@ -1,7 +1,7 @@
 /**
  * @author nicolas eysseric et didier wenzek
  * @version 1.0
-*/
+ */
 
 package com.stratelia.silverpeas.peasCore;
 
@@ -16,70 +16,72 @@ import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
  * The interface for all component session controllers.
  */
 
-public interface ComponentSessionController
-{
-    /** Return the organizationController */
-    public OrganizationController getOrganizationController();
+public interface ComponentSessionController {
+  /** Return the organizationController */
+  public OrganizationController getOrganizationController();
 
-    /** Return the user language */
-    public String getLanguage() ;
+  /** Return the user language */
+  public String getLanguage();
 
-    /** Return the UserDetail of the current user */
-    public UserDetail getUserDetail();
+  /** Return the UserDetail of the current user */
+  public UserDetail getUserDetail();
 
-    /** Return the UserId of the current user */
-    public String getUserId();
+  /** Return the UserId of the current user */
+  public String getUserId();
 
-    /** Return the space label (as known by the user)*/
-    public String getSpaceLabel();
+  /** Return the space label (as known by the user) */
+  public String getSpaceLabel();
 
-    /** Return the space id */
-    public String getSpaceId();
+  /** Return the space id */
+  public String getSpaceId();
 
-    /** Return the name of the component (as specified in the xmlComponent)*/
-    public String getComponentName();
-    
-    /** Return the component label (as known by the user)*/
-    public String getComponentLabel();
+  /** Return the name of the component (as specified in the xmlComponent) */
+  public String getComponentName();
 
-    /** Return the component id */
-    public String getComponentId();
+  /** Return the component label (as known by the user) */
+  public String getComponentLabel();
 
-    /** Return the parameters for this component instance */
-    public List getComponentParameters();
-    
-     /** Return the parameter value for this component instance and the given parameter name */
-    public String getComponentParameterValue(String parameterName);
+  /** Return the component id */
+  public String getComponentId();
 
-    public String[] getUserAvailComponentIds();
+  /** Return the parameters for this component instance */
+  public List getComponentParameters();
 
-    public String[] getUserAvailSpaceIds();
+  /**
+   * Return the parameter value for this component instance and the given
+   * parameter name
+   */
+  public String getComponentParameterValue(String parameterName);
 
-    public String getComponentUrl();
+  public String[] getUserAvailComponentIds();
 
-    /** Return the name of the user's roles */
-    public String[] getUserRoles();
+  public String[] getUserAvailSpaceIds();
 
-    /** Return the higher user's role (admin, publisher or user) */
-    public String getUserRoleLevel();
+  public String getComponentUrl();
 
-    public ClipboardBm getClipboard();
+  /** Return the name of the user's roles */
+  public String[] getUserRoles();
 
-    public PersonalizationBm getPersonalization();
+  /** Return the higher user's role (admin, publisher or user) */
+  public String getUserRoleLevel();
 
-    public ResourceLocator getMultilang();
+  public ClipboardBm getClipboard();
 
-    public ResourceLocator getIcon();
-    
-    public ResourceLocator getSettings();
+  public PersonalizationBm getPersonalization();
 
-    // Maintenance Mode
-    public boolean isAppInMaintenance();
+  public ResourceLocator getMultilang();
 
-    public void setAppModeMaintenance(boolean mode);
+  public ResourceLocator getIcon();
 
-    public boolean isSpaceInMaintenance(String spaceId);
+  public ResourceLocator getSettings();
 
-    public void setSpaceModeMaintenance(String spaceId, boolean mode); 
+  // Maintenance Mode
+  public boolean isAppInMaintenance();
+
+  public void setAppModeMaintenance(boolean mode);
+
+  public boolean isSpaceInMaintenance(String spaceId);
+
+  public void setSpaceModeMaintenance(String spaceId, boolean mode);
 
 }

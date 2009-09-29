@@ -18,211 +18,193 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
+public abstract class Schema {
+  private boolean isLocalConnection = true;
+  private boolean haveToTestConnections = true;
+  private int connectionLot = 0;
+  private Map statementsMap = new HashMap();
+  private Connection connection = null;
 
-public abstract class Schema
-{
-   private boolean isLocalConnection = true;
-   private boolean haveToTestConnections = true;
-   private int connectionLot = 0;
-   private Map statementsMap = new HashMap();
-   private Connection connection = null;
+  abstract protected String getJNDIName();
 
-    abstract protected String getJNDIName();
+  public Schema(int cl, Connection co) throws UtilException {
+    connectionLot = cl;
+    connection = co;
+    isLocalConnection = false;
+  }
 
-    public Schema(int cl, Connection co) throws UtilException
-    {
-      connectionLot = cl;
-      connection = co;
-      isLocalConnection = false;
+  public Schema(int cl) throws UtilException {
+    connectionLot = cl;
+    createConnection();
+    ResourceLocator resources = new ResourceLocator(
+        "com.stratelia.webactiv.beans.admin.admin", "");
+    String m_sHaveToTestConnections = resources
+        .getString("HaveToTestConnections");
+    if ((m_sHaveToTestConnections != null)
+        && (m_sHaveToTestConnections.equalsIgnoreCase("false"))) {
+      haveToTestConnections = false;
     }
+  }
 
-    public Schema(int cl) throws UtilException
-    {
-      connectionLot = cl;
-      createConnection();
-      ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin","");
-      String m_sHaveToTestConnections = resources.getString("HaveToTestConnections");
-      if ((m_sHaveToTestConnections != null) && (m_sHaveToTestConnections.equalsIgnoreCase("false")))
-      {
-          haveToTestConnections = false;
+  protected void createConnection() throws UtilException {
+    SilverTrace.info("util", "Schema.createConnection()",
+        "root.MSG_GEN_ENTER_METHOD");
+    try {
+      Context ctx = new InitialContext();
+      DataSource src = (DataSource) ctx.lookup(getJNDIName());
+      connection = src.getConnection();
+      connection.setAutoCommit(false);
+      isLocalConnection = true;
+      SilverTrace.info("util", "Schema.createConnection()",
+          "root.MSG_GEN_PARAM_VALUE", "Connection Created !");
+    } catch (NamingException e) {
+      // throw new UtilException("Schema.Schema", SilverpeasException.ERROR,
+      // "root.EX_DATASOURCE_NOT_FOUND", e);
+      // the JNDI name have not been found in the current context
+      // The caller is not takes place in any context (web application nor ejb
+      // container)
+      // So lookup operation cannot find JNDI properties !
+      // This is absolutly normal according to the j2ee specification
+      // Unfortunately, only BES takes care about this spec. This exception
+      // doesn't appear with orion or BEA !
+
+      try {
+        // Get the initial Context
+        Context ctx = new InitialContext();
+        // Look up the datasource directly without JNDI access
+        DataSource dataSource = (DataSource) ctx
+            .lookup(JNDINames.DIRECT_DATASOURCE);
+        // Create a connection object
+        this.connection = dataSource.getConnection();
+      } catch (NamingException ne) {
+        throw new UtilException("Schema.createConnection",
+            SilverpeasException.ERROR, "root.EX_DATASOURCE_NOT_FOUND",
+            "Data source " + JNDINames.DIRECT_DATASOURCE + " not found", ne);
+      } catch (SQLException se) {
+        throw new UtilException("Schema.createConnection",
+            SilverpeasException.ERROR, "can't get connection for dataSource "
+                + JNDINames.DIRECT_DATASOURCE, se);
       }
+    } catch (SQLException e) {
+      throw new UtilException("Schema.createConnection",
+          SilverpeasException.ERROR, "root.EX_DATASOURCE_INVALID", e);
     }
+  }
 
-    protected void createConnection() throws UtilException
-    {
-         SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_ENTER_METHOD");
-          try
-          {
-             Context ctx = new InitialContext();
-             DataSource  src = (DataSource) ctx.lookup(getJNDIName());
-             connection = src.getConnection();
-             connection.setAutoCommit(false);
-             isLocalConnection = true;
-             SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_PARAM_VALUE", "Connection Created !");
-          }
-          catch (NamingException e)
-          {
-            //throw new UtilException("Schema.Schema", SilverpeasException.ERROR, "root.EX_DATASOURCE_NOT_FOUND", e);
-            //the JNDI name have not been found in the current context
-            //The caller is not takes place in any context (web application nor ejb container)
-            //So lookup operation cannot find JNDI properties !
-            //This is absolutly normal according to the j2ee specification
-            //Unfortunately, only BES takes care about this spec. This exception doesn't appear with orion or BEA !
-            
-            try {
-                // Get the initial Context
-                Context ctx = new InitialContext() ;
-                // Look up the datasource directly without JNDI access
-                DataSource dataSource = (DataSource) ctx.lookup (JNDINames.DIRECT_DATASOURCE);
-                //Create a connection object
-                this.connection = dataSource.getConnection() ;
-            } catch(NamingException ne) {
-                throw new UtilException("Schema.createConnection", SilverpeasException.ERROR, "root.EX_DATASOURCE_NOT_FOUND", "Data source "+JNDINames.DIRECT_DATASOURCE+" not found", ne);
-            } catch(SQLException se) {
-                throw new UtilException("Schema.createConnection", SilverpeasException.ERROR, "can't get connection for dataSource "+JNDINames.DIRECT_DATASOURCE, se);
-            }
-          }
-          catch (SQLException e)
-          {
-             throw new UtilException("Schema.createConnection", SilverpeasException.ERROR, "root.EX_DATASOURCE_INVALID", e);
-          }
+  public synchronized void commit() throws UtilException {
+    SilverTrace.info("util", "Schema.commit()", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      connection.commit();
+    } catch (SQLException e) {
+      throw new UtilException("Schema.commit", SilverpeasException.ERROR,
+          "root.EX_ERR_COMMIT", e);
     }
-    
-    public synchronized void commit() throws UtilException
-    {
-         SilverTrace.info("util", "Schema.commit()", "root.MSG_GEN_ENTER_METHOD");
-        try {
-            connection.commit();
-        }
-        catch (SQLException e)
-        {
-			  throw new UtilException("Schema.commit", SilverpeasException.ERROR, "root.EX_ERR_COMMIT", e);
-        }
+  }
+
+  public synchronized void rollback() throws UtilException {
+    SilverTrace.info("util", "Schema.rollback()", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      connection.rollback();
+    } catch (SQLException e) {
+      throw new UtilException("Schema.rollback", SilverpeasException.ERROR,
+          "root.EX_ERR_ROLLBACK", e);
     }
+  }
 
-    public synchronized void rollback() throws UtilException
-    {
-         SilverTrace.info("util", "Schema.rollback()", "root.MSG_GEN_ENTER_METHOD");
-        try {
-            connection.rollback();
-        }
-        catch (SQLException e)
-        {
-			  throw new UtilException("Schema.rollback", SilverpeasException.ERROR, "root.EX_ERR_ROLLBACK", e);
-        }
+  public synchronized void close() {
+    SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
+    Iterator i = statementsMap.values().iterator();
+
+    while (i.hasNext()) {
+      DBUtil.close((Statement) i.next());
     }
-
-    public synchronized void close()
-    {
-        SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
-        Iterator i = statementsMap.values().iterator();
-
-        while (i.hasNext())
-        {
-            DBUtil.close((Statement) i.next());
-        }
-        statementsMap.clear();
-        try
-        {
-            if (isLocalConnection)
-            {
-                connection.close();
-            }
-        }
-        catch (SQLException e)
-        {
-            SilverTrace.error("util", "Schema.close", "util.CAN_T_CLOSE_CONNECTION", e);
-        }
-        finally
-        {
-            connection = null;
-        }
-    }
-
-   /**
-    * Returns true if the connection can be used.
-    */
-   public boolean isOk()
-   {
-      Statement st = null;
-
-      try
-      {
-         if (connection == null || connection.isClosed()) 
-             return false;
-         else 
-          {
-             if (haveToTestConnections)
-             {
-                 SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD", "Connection Test");
-                 st = connection.createStatement();
-                 st.close();
-                 st = null;
-             }
-             return true;
-          }
+    statementsMap.clear();
+    try {
+      if (isLocalConnection) {
+        connection.close();
       }
-      catch (SQLException e)
-      {
-          SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD", "Connection Test Problem !!!", e);
-          return false;
+    } catch (SQLException e) {
+      SilverTrace.error("util", "Schema.close", "util.CAN_T_CLOSE_CONNECTION",
+          e);
+    } finally {
+      connection = null;
+    }
+  }
+
+  /**
+   * Returns true if the connection can be used.
+   */
+  public boolean isOk() {
+    Statement st = null;
+
+    try {
+      if (connection == null || connection.isClosed())
+        return false;
+      else {
+        if (haveToTestConnections) {
+          SilverTrace.info("util", "Schema.isOk()",
+              "root.MSG_GEN_ENTER_METHOD", "Connection Test");
+          st = connection.createStatement();
+          st.close();
+          st = null;
+        }
+        return true;
       }
-   }
+    } catch (SQLException e) {
+      SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD",
+          "Connection Test Problem !!!", e);
+      return false;
+    }
+  }
 
-   /**
-    * All the statements are prepared and cached
-    */
-   public PreparedStatement getStatement(String query) throws SQLException
-   {
-      SilverTrace.info("util", "Schema.getStatement()", "root.MSG_GEN_ENTER_METHOD", query);
-/*      PreparedStatement statement =(PreparedStatement) statementsMap.get(query);
-      if (statement == null)
-      {
-         statement = connection.prepareStatement(query);
-         statementsMap.put(query, statement);
+  /**
+   * All the statements are prepared and cached
+   */
+  public PreparedStatement getStatement(String query) throws SQLException {
+    SilverTrace.info("util", "Schema.getStatement()",
+        "root.MSG_GEN_ENTER_METHOD", query);
+    /*
+     * PreparedStatement statement =(PreparedStatement)
+     * statementsMap.get(query); if (statement == null) { statement =
+     * connection.prepareStatement(query); statementsMap.put(query, statement);
+     * } return statement;
+     */
+    PreparedStatement statement = getConnection().prepareStatement(query);
+    SilverTrace.info("util", "Schema.getStatement()",
+        "root.MSG_GEN_PARAM_VALUE", "statement=" + statement);
+    return statement;
+  }
+
+  public void releaseAll(ResultSet rs, PreparedStatement ps) {
+    SilverTrace.info("util", "Schema.releaseAll()",
+        "root.MSG_GEN_ENTER_METHOD", "rs=" + rs + " ,ps=" + ps);
+    DBUtil.close(rs, ps);
+    // DBUtil.close(rs);
+  }
+
+  public void releaseStatement(PreparedStatement ps) {
+    DBUtil.close(ps);
+  }
+
+  public Connection getConnection() {
+    if (!isOk() && isLocalConnection) {
+      SilverTrace.info("util", "Schema.getConnection",
+          "root.MSG_GEN_ENTER_METHOD",
+          "Connection WAS CLOSED !!!! -> Create new one");
+      try {
+        createConnection();
+      } catch (UtilException e) {
+        SilverTrace.error("util", "Schema.getConnection",
+            "util.CAN_T_CLOSE_CONNECTION", e);
       }
-      return statement;
-*/	  
-      PreparedStatement statement = getConnection().prepareStatement(query);
-      SilverTrace.info("util", "Schema.getStatement()", "root.MSG_GEN_PARAM_VALUE", "statement=" + statement);
-	  return statement;
-   }
+    } else {
+      SilverTrace.info("util", "Schema.getConnection",
+          "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
+    }
+    return connection;
+  }
 
-   public void releaseAll(ResultSet rs, PreparedStatement ps)
-   {
-        SilverTrace.info("util", "Schema.releaseAll()", "root.MSG_GEN_ENTER_METHOD", "rs=" + rs + " ,ps=" + ps);
-	  DBUtil.close(rs,ps);
-//	  DBUtil.close(rs);
-   }
-
-   public void releaseStatement(PreparedStatement ps)
-   {
-	  DBUtil.close(ps);
-   }
-
-   public Connection getConnection()
-   {
-       if (!isOk() && isLocalConnection)
-       {
-            SilverTrace.info("util", "Schema.getConnection", "root.MSG_GEN_ENTER_METHOD", "Connection WAS CLOSED !!!! -> Create new one");
-            try
-            {
-                  createConnection();
-            }
-            catch (UtilException e)
-            {
-                SilverTrace.error("util", "Schema.getConnection", "util.CAN_T_CLOSE_CONNECTION", e);
-            }
-       }
-       else
-       {
-            SilverTrace.info("util", "Schema.getConnection", "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
-       }
-       return connection;
-   }
-
-   public int getConnectionLot()
-   {
-        return connectionLot;
-   }
+  public int getConnectionLot() {
+    return connectionLot;
+  }
 }

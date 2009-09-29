@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.subscribe.control;
 
@@ -26,135 +27,142 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * no message
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface SubscribeBm extends EJBObject
-{
+public interface SubscribeBm extends EJBObject {
 
-    /**
-     * addPublicationInNode()
-     * This method has to be called each time a publication is added in a node.
-     * This will enable to send email if some users are subscribers of this node.
-     */
-    // public void addPublicationInNode(PublicationPK pub, NodePK node) throws RemoteException;
+  /**
+   * addPublicationInNode() This method has to be called each time a publication
+   * is added in a node. This will enable to send email if some users are
+   * subscribers of this node.
+   */
+  // public void addPublicationInNode(PublicationPK pub, NodePK node) throws
+  // RemoteException;
 
-    public void addSubscribe(String userId, NodePK node) throws RemoteException;
+  public void addSubscribe(String userId, NodePK node) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param userId
-     * @param node
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void removeSubscribe(String userId, NodePK node) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param userId
+   * @param node
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void removeSubscribe(String userId, NodePK node)
+      throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param userId
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void removeUserSubscribes(String userId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param userId
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void removeUserSubscribes(String userId) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param node
-     * @param path
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void removeNodeSubscribes(NodePK node, String path) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param node
+   * @param path
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void removeNodeSubscribes(NodePK node, String path)
+      throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param userId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getUserSubscribePKs(String userId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param userId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getUserSubscribePKs(String userId) throws RemoteException;
 
-// NEWD DLE
-    /**
-     * Method declaration
-     *
-     *
-     * @param userId
-     * @param space
-     * @param componentName
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-//    public Collection getUserSubscribePKsBySpaceAndComponent(String userId, String space, String componentName) throws RemoteException;
+  // NEWD DLE
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param userId
+   * @param space
+   * @param componentName
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  // public Collection getUserSubscribePKsBySpaceAndComponent(String userId,
+  // String space, String componentName) throws RemoteException;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param userId
-	 * @param componentName
-	 *
-	 * @return
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public Collection getUserSubscribePKsByComponent(String userId, String componentName) throws RemoteException;
-// NEWF DLE
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param userId
+   * @param componentName
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getUserSubscribePKsByComponent(String userId,
+      String componentName) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param node
-     *
-     * @return a Collection of userId
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getNodeSubscriberDetails(NodePK node) throws RemoteException;
+  // NEWF DLE
 
-	/**
-     * Method declaration
-     *
-     *
-     * @param nodePKs
-     *
-     * @return a Collection of userId
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-	public Collection getNodeSubscriberDetails(Collection nodePKs) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param node
+   * 
+   * @return a Collection of userId
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getNodeSubscriberDetails(NodePK node)
+      throws RemoteException;
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param nodePKs
+   * 
+   * @return a Collection of userId
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getNodeSubscriberDetails(Collection nodePKs)
+      throws RemoteException;
 }

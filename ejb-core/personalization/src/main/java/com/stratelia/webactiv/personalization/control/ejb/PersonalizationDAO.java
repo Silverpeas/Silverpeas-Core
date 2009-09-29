@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.personalization.control.ejb;
 
@@ -9,8 +10,8 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PersonalizationDAO {
@@ -20,12 +21,12 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param str
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private static Vector String2Vector(String str) {
@@ -46,12 +47,12 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param vector
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private static String Vector2String(Vector vector) {
@@ -66,14 +67,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param rs
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static PersonalizeDetail getPersonalizeDetailFromResultSet(
@@ -116,15 +117,15 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static PersonalizeDetail getPersonalizeDetail(Connection con,
@@ -158,14 +159,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param languages
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void setLanguages(Connection con, String userId,
@@ -207,14 +208,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param look
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void setFavoriteLook(Connection con, String userId, String look)
@@ -239,14 +240,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param thesaurusStatus
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void setThesaurusStatus(Connection con, String userId,
@@ -273,14 +274,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param thesaurusStatus
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void setDragAndDropStatus(Connection con, String userId,
@@ -307,14 +308,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param onlineEditingStatus
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void setOnlineEditingStatus(Connection con, String userId,
@@ -341,14 +342,14 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param webdavEditingStatus
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void setWebdavEditingStatus(Connection con, String userId,
@@ -373,25 +374,25 @@ public class PersonalizationDAO {
     }
   }
 
-
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param userId
    * @param languages
    * @param look
    * @param thesaurusStatus
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void insertPersonalizeDetail(Connection con, String userId,
       Vector languages, String look, String defaultPersonalWSId,
       boolean thesaurusStatus, boolean dragAndDropStatus,
-      boolean onlineEditingStatus, boolean webdavEditingStatus) throws SQLException {
+      boolean onlineEditingStatus, boolean webdavEditingStatus)
+      throws SQLException {
     SilverTrace.info("personalization",
         "PersonalizationDAO.insertPersonalizeDetail()",
         "root.MSG_GEN_ENTER_METHOD", "userId =" + userId);

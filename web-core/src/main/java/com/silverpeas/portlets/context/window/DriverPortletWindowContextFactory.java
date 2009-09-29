@@ -32,33 +32,35 @@ import com.sun.portal.container.PortletWindowContextException;
 import com.sun.portal.container.PortletWindowContextFactory;
 
 /**
- * DriverPortletWindowContextFactory provides the implementation of the abstract methods
- * of PortletWindowContextFactory.
- *
+ * DriverPortletWindowContextFactory provides the implementation of the abstract
+ * methods of PortletWindowContextFactory.
+ * 
  */
-public class DriverPortletWindowContextFactory implements PortletWindowContextFactory {
-    
-    private PortletWindowContext portletWindowContext;
-    
-    public DriverPortletWindowContextFactory() {
-    }
-    
-    public PortletWindowContext getPortletWindowContext(HttpServletRequest request) 
-                        throws PortletWindowContextException {
-        if(portletWindowContext == null) {
-            portletWindowContext = new PortletWindowContextImpl();
-            portletWindowContext.init(request);
-        }
-        return portletWindowContext;
-    }
+public class DriverPortletWindowContextFactory implements
+    PortletWindowContextFactory {
 
-    public PortletWindowContext getPortletWindowContext(HttpServletRequest request, String userID)
-                        throws PortletWindowContextException {
-        if(portletWindowContext == null) {
-            portletWindowContext = new PortletWindowContextImpl(userID);
-            portletWindowContext.init(request);
-        }
-        return portletWindowContext;
+  private PortletWindowContext portletWindowContext;
+
+  public DriverPortletWindowContextFactory() {
+  }
+
+  public PortletWindowContext getPortletWindowContext(HttpServletRequest request)
+      throws PortletWindowContextException {
+    if (portletWindowContext == null) {
+      portletWindowContext = new PortletWindowContextImpl();
+      portletWindowContext.init(request);
     }
-    
+    return portletWindowContext;
+  }
+
+  public PortletWindowContext getPortletWindowContext(
+      HttpServletRequest request, String userID)
+      throws PortletWindowContextException {
+    if (portletWindowContext == null) {
+      portletWindowContext = new PortletWindowContextImpl(userID);
+      portletWindowContext.init(request);
+    }
+    return portletWindowContext;
+  }
+
 }

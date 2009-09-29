@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.silverpeas.portlets.portal;
 
 import java.io.IOException;
@@ -35,64 +34,68 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * PropertiesContext loads the content of driverconfig.properties
  */
 public class PropertiesContext {
-    
-    private static Properties configProperties;
-    //private static String CONFIG_FILE = "DriverConfig.properties";
-    private static String CONFIG_FILE = "DriverConfig";
-    // Constants for properties defined in the config file
-    private static final String PORTLET_RENDER_MODE_PARALLEL = "portletRenderModeParallel";
-    private static final String ENABLE_AUTODEPLOY = "enableAutodeploy";
-    private static final String AUTODEPLOY_DIR_WATCH_INTERVAL = "autodeployDirWatchInterval";
-    
-    public static void init() {
-        InputStream defaultConfigBundle = null;
-        Properties defaultProperties = new Properties();
+
+  private static Properties configProperties;
+  // private static String CONFIG_FILE = "DriverConfig.properties";
+  private static String CONFIG_FILE = "DriverConfig";
+  // Constants for properties defined in the config file
+  private static final String PORTLET_RENDER_MODE_PARALLEL = "portletRenderModeParallel";
+  private static final String ENABLE_AUTODEPLOY = "enableAutodeploy";
+  private static final String AUTODEPLOY_DIR_WATCH_INTERVAL = "autodeployDirWatchInterval";
+
+  public static void init() {
+    InputStream defaultConfigBundle = null;
+    Properties defaultProperties = new Properties();
+    try {
+      ResourceLocator properties = new ResourceLocator(
+          "com.silverpeas.portlets." + CONFIG_FILE, "");
+      defaultProperties = properties.getProperties();
+      /*
+       * String configFile = PortletRegistryHelper.getConfigFileLocation() +
+       * File.separator + CONFIG_FILE; defaultConfigBundle = new
+       * FileInputStream(configFile);
+       * defaultProperties.load(defaultConfigBundle);
+       */
+      // } catch (IOException e) {
+      // System.out.println(e);
+    } finally {
+      if (defaultConfigBundle != null) {
         try {
-        	ResourceLocator properties = new ResourceLocator("com.silverpeas.portlets."+CONFIG_FILE, "");
-        	defaultProperties = properties.getProperties();
-            /*String configFile = PortletRegistryHelper.getConfigFileLocation() + File.separator + CONFIG_FILE;
-            defaultConfigBundle = new FileInputStream(configFile);
-            defaultProperties.load(defaultConfigBundle);*/
-        //} catch (IOException e) {
-        //    System.out.println(e);
-        } finally {
-            if (defaultConfigBundle != null) {
-                try {
-                    defaultConfigBundle.close();
-                } catch (IOException e) {
-                    //drop through
-                }
-            }
+          defaultConfigBundle.close();
+        } catch (IOException e) {
+          // drop through
         }
-        configProperties = new Properties(defaultProperties);
+      }
     }
-    
-    public static boolean isPortletRenderModeParallel() {
-        String value = configProperties.getProperty(PORTLET_RENDER_MODE_PARALLEL);
-        if("true".equals(value))
-            return true;
-        return false;
+    configProperties = new Properties(defaultProperties);
+  }
+
+  public static boolean isPortletRenderModeParallel() {
+    String value = configProperties.getProperty(PORTLET_RENDER_MODE_PARALLEL);
+    if ("true".equals(value))
+      return true;
+    return false;
+  }
+
+  public static boolean enableAutodeploy() {
+    String value = configProperties.getProperty(ENABLE_AUTODEPLOY);
+    if ("true".equals(value))
+      return true;
+    return false;
+  }
+
+  public static long getAutodeployDirWatchInterval() {
+    String value = configProperties.getProperty(AUTODEPLOY_DIR_WATCH_INTERVAL);
+    long watchInterval;
+    try {
+      watchInterval = Long.parseLong(value);
+    } catch (NumberFormatException nfe) {
+      watchInterval = -1;
     }
-    
-    public static boolean enableAutodeploy() {
-        String value = configProperties.getProperty(ENABLE_AUTODEPLOY);
-        if("true".equals(value))
-            return true;
-        return false;
+    if (watchInterval <= 0) {
+      watchInterval = 5;
     }
-    
-    public static long getAutodeployDirWatchInterval() {
-        String value = configProperties.getProperty(AUTODEPLOY_DIR_WATCH_INTERVAL);
-        long watchInterval;
-        try {
-            watchInterval = Long.parseLong(value);
-        } catch (NumberFormatException nfe){
-            watchInterval = -1;
-        }
-        if(watchInterval <= 0) {
-            watchInterval = 5;
-        }
-        return (watchInterval*1000);
-    }
-    
+    return (watchInterval * 1000);
+  }
+
 }

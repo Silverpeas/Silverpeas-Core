@@ -13,37 +13,40 @@ public class MyLinksInstanciator implements ComponentsInstanciatorIntf {
 
   public MyLinksInstanciator() {
   }
-  
-  public void create(Connection con, String spaceId, String componentId, String userId) throws InstanciationException {
-	SilverTrace.info("myLinks", "MyLinksInstanciator.create()", "root.MSG_GEN_ENTER_METHOD", "space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
 
-	
-	
-	SilverTrace.info("myLinks","MyLinksInstanciator.create()","root.MSG_GEN_EXIT_METHOD");
+  public void create(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("myLinks", "MyLinksInstanciator.create()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
+
+    SilverTrace.info("myLinks", "MyLinksInstanciator.create()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws InstanciationException 
-  {
-	SilverTrace.info("myLinks","MyLinksInstanciator.delete()","root.MSG_GEN_ENTER_METHOD","space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
+  public void delete(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("myLinks", "MyLinksInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
 
-	try {
-		PreparedStatement prepStmt = null;
-		try
-		{
-			String query = "delete from SB_MyLinks_Link where instanceId = ? ";
-			prepStmt = con.prepareStatement(query);
-			prepStmt.setString(1, componentId);
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			// fermeture
-			DBUtil.close(prepStmt);
-		}
-	} catch (SQLException e) {
-		throw new InstanciationException("Can't delete links for component '"+componentId+"'");
-	}
+    try {
+      PreparedStatement prepStmt = null;
+      try {
+        String query = "delete from SB_MyLinks_Link where instanceId = ? ";
+        prepStmt = con.prepareStatement(query);
+        prepStmt.setString(1, componentId);
+        prepStmt.executeUpdate();
+      } finally {
+        // fermeture
+        DBUtil.close(prepStmt);
+      }
+    } catch (SQLException e) {
+      throw new InstanciationException("Can't delete links for component '"
+          + componentId + "'");
+    }
 
-	SilverTrace.info("myLinks","MyLinksInstanciator.delete()","root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("myLinks", "MyLinksInstanciator.delete()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 }

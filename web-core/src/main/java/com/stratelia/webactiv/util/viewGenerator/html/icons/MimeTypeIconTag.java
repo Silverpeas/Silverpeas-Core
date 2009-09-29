@@ -15,8 +15,8 @@ public class MimeTypeIconTag extends TagSupport {
   static {
     try {
       ClassLoader loader = TagSupport.class.getClassLoader();
-      InputStream in = loader.getResourceAsStream(
-      "com/silverpeas/view/generator/mime_types_styles.properties");
+      InputStream in = loader
+          .getResourceAsStream("com/silverpeas/view/generator/mime_types_styles.properties");
       STYLES.load(in);
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -25,7 +25,7 @@ public class MimeTypeIconTag extends TagSupport {
   }
   private String fileExtension = "";
   private String divId = "";
-  
+
   public int doEndTag() throws JspException {
     try {
       pageContext.getOut().println("</div>");
@@ -39,13 +39,13 @@ public class MimeTypeIconTag extends TagSupport {
     try {
       boolean styleFound = true;
       String style = STYLES.getProperty(this.fileExtension);
-      if(style == null) {
+      if (style == null) {
         styleFound = false;
         style = STYLES.getProperty(DEFAULT_STYLE);
-      }      
+      }
       pageContext.getOut().print("<div class=\"");
       pageContext.getOut().print(style);
-      if(this.divId != null) {
+      if (this.divId != null) {
         styleFound = true;
         pageContext.getOut().print("\" id=\"");
         pageContext.getOut().print(divId);
@@ -54,7 +54,7 @@ public class MimeTypeIconTag extends TagSupport {
       if (styleFound) {
         pageContext.getOut().print("&nbsp;");
         return SKIP_BODY;
-      }      
+      }
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
       throw new JspException(ioex);
@@ -77,7 +77,7 @@ public class MimeTypeIconTag extends TagSupport {
   public void setFileExtension(String fileExtension) {
     this.fileExtension = fileExtension;
   }
-  
+
   /**
    * @param divId
    *          the id attribute for the cerated div.

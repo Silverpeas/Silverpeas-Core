@@ -6,49 +6,46 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class Alias extends NodePK {
 
-	private String 	userId 	= null;
-	private Date	date	= null;
-	
-	private String	userName = null;   //Not persistent
-	
-	public Alias(String nodeId, String instanceId)
-	{
-		super(nodeId, instanceId);
-	}
+  private String userId = null;
+  private Date date = null;
 
-	public String getUserId() {
-		return userId;
-	}
+  private String userName = null; // Not persistent
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+  public Alias(String nodeId, String instanceId) {
+    super(nodeId, instanceId);
+  }
 
-	public Date getDate() {
-		return date;
-	}
+  public String getUserId() {
+    return userId;
+  }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	public boolean equals(Object other) {
-		if (other instanceof Alias) {
-			Alias otherAlias = (Alias) other;
-			return (otherAlias.getId().equals(super.id) && otherAlias.componentName.equals(super.componentName));
-		}
-		return false;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public String getUserName() {
-		return userName;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-	
-	
-	
-	
+  public boolean equals(Object other) {
+    if (other instanceof Alias) {
+      Alias otherAlias = (Alias) other;
+      return (otherAlias.getId().equals(super.id) && otherAlias.componentName
+          .equals(super.componentName));
+    }
+    return false;
+  }
+
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
 }

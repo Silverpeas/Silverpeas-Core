@@ -1,5 +1,3 @@
-
-
 /**
  * Titre : Silverpeas<p>
  * Description : This object provides the calendar exeception<p>
@@ -10,19 +8,11 @@
  * Created on 26 decembre 2001, 16:38
  */
 
-
 package com.stratelia.webactiv.agenda.control;
 
+public class AgendaUserException extends Exception {
 
-
-
-public class AgendaUserException extends Exception
-{
-
-    public AgendaUserException(String message)
-    {
-        super(message);
-    }
+  public AgendaUserException(String message) {
+    super(message);
+  }
 }
-
-

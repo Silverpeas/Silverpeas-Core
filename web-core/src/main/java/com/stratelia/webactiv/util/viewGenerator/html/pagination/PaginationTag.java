@@ -41,7 +41,7 @@ public class PaginationTag extends TagSupport {
   }
 
   public int doEndTag() throws JspException {
-    if(nbPages <=1 ){
+    if (nbPages <= 1) {
       return EVAL_PAGE;
     }
     boolean hasParam = action.indexOf('?') > 0;
@@ -53,21 +53,26 @@ public class PaginationTag extends TagSupport {
           "<tr valign=\"middle\" class=\"intfdcolor\">");
       pageContext.getOut().println(
           "<td align=\"center\" class=\"ArrayNavigation\">");
-      if(currentPage > 0) {
+      if (currentPage > 0) {
         pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
         pageContext.getOut().print(getUrl(action, hasParam, (currentPage - 1)));
         pageContext.getOut().print("\">");
-        pageContext.getOut().print("<img src=\"" + getIconsPath()
-            + "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""
-            + altPreviousAction + "\"/></a>");
+        pageContext
+            .getOut()
+            .print(
+                "<img src=\""
+                    + getIconsPath()
+                    + "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""
+                    + altPreviousAction + "\"/></a>");
       } else {
         pageContext.getOut().println("&#160;&#160;&#160;");
       }
-      for (int i = 0; i< nbPages; i++)
-      {
+      for (int i = 0; i < nbPages; i++) {
         if (i == currentPage) {
-          pageContext.getOut().println(" <span class=\"ArrayNavigationOn\">&#160;" + (i + 1) + "&#160;</span>");
-        }else {
+          pageContext.getOut().println(
+              " <span class=\"ArrayNavigationOn\">&#160;" + (i + 1)
+                  + "&#160;</span>");
+        } else {
           pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
           pageContext.getOut().print(getUrl(action, hasParam, (i)));
           pageContext.getOut().print("\">");
@@ -75,15 +80,19 @@ public class PaginationTag extends TagSupport {
           pageContext.getOut().print("</a> ");
         }
       }
-      if ( (currentPage +1) >= nbPages) {
+      if ((currentPage + 1) >= nbPages) {
         pageContext.getOut().print("&#160;&#160;&#160;");
-      }else {
+      } else {
         pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
         pageContext.getOut().print(getUrl(action, hasParam, (currentPage + 1)));
         pageContext.getOut().print("\">");
-        pageContext.getOut().print("<img src=\"" + getIconsPath()
-            + "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""
-            + altNextAction + "\"/></a>");
+        pageContext
+            .getOut()
+            .print(
+                "<img src=\""
+                    + getIconsPath()
+                    + "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""
+                    + altNextAction + "\"/></a>");
       }
       pageContext.getOut().println("</td>");
       pageContext.getOut().println("</tr>");
@@ -96,7 +105,7 @@ public class PaginationTag extends TagSupport {
   }
 
   public String getUrl(String elAction, boolean hasParam, int page) {
-    StringBuffer buffer  = new StringBuffer(200);
+    StringBuffer buffer = new StringBuffer(200);
     buffer.append(elAction);
     if (hasParam) {
       buffer.append('&');
@@ -107,8 +116,7 @@ public class PaginationTag extends TagSupport {
     return buffer.toString();
   }
 
-public String getIconsPath()
-{
-return GraphicElementFactory.getIconsPath();
-}
+  public String getIconsPath() {
+    return GraphicElementFactory.getIconsPath();
+  }
 }

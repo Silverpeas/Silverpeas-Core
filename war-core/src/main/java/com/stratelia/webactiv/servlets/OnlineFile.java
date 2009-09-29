@@ -31,7 +31,5 @@ public class OnlineFile {
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
-  
-  
-  
+
 }

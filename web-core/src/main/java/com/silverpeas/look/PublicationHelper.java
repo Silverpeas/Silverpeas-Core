@@ -8,7 +8,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import java.util.List;
 
 /**
- *
+ * 
  * @author ehugonnet
  */
 public interface PublicationHelper {

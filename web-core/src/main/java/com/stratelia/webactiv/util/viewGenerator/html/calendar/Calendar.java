@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * SilverpeasCalendar.java
@@ -15,29 +16,28 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * 
- * @author  groccia
+ * @author groccia
  * @version
  */
-public interface Calendar extends SimpleGraphicElement
-{
-	public void setEvents(List events);
-    
-    public void addEvent(Event event);
-    
-    public void setWeekDayStyle(String value);
+public interface Calendar extends SimpleGraphicElement {
+  public void setEvents(List events);
 
-    public void setMonthDayStyle(String value);
+  public void addEvent(Event event);
 
-    public void setMonthVisible(boolean value);
+  public void setWeekDayStyle(String value);
 
-    public void setNavigationBar(boolean value);
+  public void setMonthDayStyle(String value);
 
-    public void setShortName(boolean value);
-    
-    public void setNonSelectableDays(List nonSelectableDays);
-    
-    public void setEmptyDayNonSelectable(boolean nonSelectable);
-	
-    public String print();
+  public void setMonthVisible(boolean value);
+
+  public void setNavigationBar(boolean value);
+
+  public void setShortName(boolean value);
+
+  public void setNonSelectableDays(List nonSelectableDays);
+
+  public void setEmptyDayNonSelectable(boolean nonSelectable);
+
+  public String print();
 
 }

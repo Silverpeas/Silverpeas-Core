@@ -90,10 +90,12 @@ public class FileUtil implements MimeTypes {
     }
     return (String[]) folders.toArray(new String[folders.size()]);
   }
-  
+
   /**
    * Read the content of a file in a byte array.
-   * @param file the file to be read.
+   * 
+   * @param file
+   *          the file to be read.
    * @return the bytes array containing the content of the file.
    * @throws IOException
    */
@@ -118,11 +120,14 @@ public class FileUtil implements MimeTypes {
       }
     }
   }
-  
+
   /**
    * Write a stream into a file.
-   * @param file the file to be written.
-   * @param data the data to be written.
+   * 
+   * @param file
+   *          the file to be written.
+   * @param data
+   *          the data to be written.
    * @throws IOException
    */
   public static void writeFile(File file, InputStream data) throws IOException {
@@ -145,11 +150,14 @@ public class FileUtil implements MimeTypes {
       }
     }
   }
-  
+
   /**
    * Write a stream into a file.
-   * @param file the file to be written.
-   * @param data the data to be written.
+   * 
+   * @param file
+   *          the file to be written.
+   * @param data
+   *          the data to be written.
    * @throws IOException
    */
   public static void writeFile(File file, Reader data) throws IOException {

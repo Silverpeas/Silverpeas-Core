@@ -10,45 +10,51 @@ import java.util.ArrayList;
 
 /**
  * Classe utilisée pour le mapping castor
+ * 
  * @author sdevolder
  */
 public class AxisType {
 
-	private int id;
-	private String path;
-	private ArrayList listPdcValueType; //liste de PdcValueType; 
-	private String name;
-	
-	/**
-	 * @return
-	 */
-	public int getId() {
-		return id;
-	}
+  private int id;
+  private String path;
+  private ArrayList listPdcValueType; // liste de PdcValueType;
+  private String name;
 
-	/**
-	 * @param i
-	 */
-	public void setId(int i) {
-		id = i;
-	}
+  /**
+   * @return
+   */
+  public int getId() {
+    return id;
+  }
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public ArrayList getListPdcValueType() {
-		return listPdcValueType;
-	}
-	public void setListPdcValueType(ArrayList listPdcValueType) {
-		this.listPdcValueType = listPdcValueType;
-	}
-	public String getPath() {
-		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
-	}
+  /**
+   * @param i
+   */
+  public void setId(int i) {
+    id = i;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public ArrayList getListPdcValueType() {
+    return listPdcValueType;
+  }
+
+  public void setListPdcValueType(ArrayList listPdcValueType) {
+    this.listPdcValueType = listPdcValueType;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
 }

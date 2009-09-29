@@ -134,15 +134,14 @@ public abstract class RssServlet extends HttpServlet {
       }
     }
   }
-  
-  public String getChannelTitle(String instanceId)
-  {
-	  OrganizationController orga = new OrganizationController();
-      ComponentInstLight instance = orga.getComponentInstLight(instanceId);
-	  if (instance != null)
-      	return instance.getLabel();
-	  
-	  return "";
+
+  public String getChannelTitle(String instanceId) {
+    OrganizationController orga = new OrganizationController();
+    ComponentInstLight instance = orga.getComponentInstLight(instanceId);
+    if (instance != null)
+      return instance.getLabel();
+
+    return "";
   }
 
   public String getServerURL(AdminController admin, String domainId) {
@@ -150,8 +149,7 @@ public abstract class RssServlet extends HttpServlet {
     return defaultDomain.getSilverpeasServerURL();
   }
 
-  public boolean isComponentRss(String instanceId) 
-  {
+  public boolean isComponentRss(String instanceId) {
     OrganizationController orga = new OrganizationController();
     String paramRssValue = orga.getComponentParameterValue(instanceId, "rss");
 

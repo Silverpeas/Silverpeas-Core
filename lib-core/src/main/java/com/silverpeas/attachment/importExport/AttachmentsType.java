@@ -7,24 +7,25 @@ import java.util.List;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
+ * 
  * @author sdevolder
  */
 public class AttachmentsType {
-	
-	private List listAttachmentDetail;//AttachmentDetail 
 
-	/**
-	 * @return
-	 */
-	public List getListAttachmentDetail() {
-		return listAttachmentDetail;
-	}
+  private List listAttachmentDetail;// AttachmentDetail
 
-	/**
-	 * @param list
-	 */
-	public void setListAttachmentDetail(List list) {
-		listAttachmentDetail = list;
-	}
+  /**
+   * @return
+   */
+  public List getListAttachmentDetail() {
+    return listAttachmentDetail;
+  }
+
+  /**
+   * @param list
+   */
+  public void setListAttachmentDetail(List list) {
+    listAttachmentDetail = list;
+  }
 
 }

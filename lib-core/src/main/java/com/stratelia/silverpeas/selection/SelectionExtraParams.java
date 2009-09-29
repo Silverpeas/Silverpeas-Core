@@ -1,8 +1,7 @@
 package com.stratelia.silverpeas.selection;
 
-public interface SelectionExtraParams
-{
-	
-	abstract String getParameter(String name);
-	
+public interface SelectionExtraParams {
+
+  abstract String getParameter(String name);
+
 }

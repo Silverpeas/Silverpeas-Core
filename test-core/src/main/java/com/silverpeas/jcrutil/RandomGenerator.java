@@ -82,7 +82,7 @@ public class RandomGenerator {
   public static String getRandomLanguage() {
     return LANGUAGES[random.nextInt(LANGUAGES.length)];
   }
-  
+
   /**
    * Generate a random boolean.
    * 
@@ -91,7 +91,7 @@ public class RandomGenerator {
   public static boolean getRandomBoolean() {
     return random.nextBoolean();
   }
-  
+
   /**
    * Generate a random int.
    * 
@@ -100,10 +100,12 @@ public class RandomGenerator {
   public static int getRandomInt() {
     return random.nextInt();
   }
-  
+
   /**
    * Generate a random int in the 0 inclusive max exclusive.
-   * @param max the exclusive maximum of the random int.
+   * 
+   * @param max
+   *          the exclusive maximum of the random int.
    * @return a random int.
    */
   public static int getRandomInt(int max) {

@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * ArrayPaneWithDataSource.java
@@ -19,7 +20,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * The default implementation of ArrayPane interface.
- *
+ * 
  * @author squere
  * @version 1.0
  */
@@ -49,7 +50,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)})
-   *
+   * 
    * @see ArrayColum.setRoutingAddress(String address)
    */
   private String m_RoutingAddress = null;
@@ -65,7 +66,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
    * Generic class to display a typical WA array table pane. A unique name
    * identifier is to be used in html pages for this array specific actions
    * (exemple : sort on a specific column)
-   *
+   * 
    * @param name
    *          A unique name in the page to display
    */
@@ -79,12 +80,12 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param name
    * @param request
    * @param session
-   *
+   * 
    * @see
    */
   public ArrayPaneWithDataSource(String name,
@@ -94,10 +95,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param p
-   *
+   * 
    * @see
    */
   public void setDataSource(WADataPaginator p) {
@@ -107,13 +108,13 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param name
    * @param url
    * @param request
    * @param session
-   *
+   * 
    * @see
    */
   public ArrayPaneWithDataSource(String name, String url,
@@ -125,7 +126,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
    * Generic class to display a typical WA array table pane. A unique name
    * identifier is to be used in html pages for this array specific actions
    * (exemple : sort on a specific column)
-   *
+   * 
    * @param name
    *          A unique name in the page to display
    */
@@ -135,12 +136,12 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param name
    * @param request
    * @param session
-   *
+   * 
    * @see
    */
   public void init(String name, javax.servlet.ServletRequest request,
@@ -150,13 +151,13 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param name
    * @param url
    * @param request
    * @param session
-   *
+   * 
    * @see
    */
   public void init(String name, String url,
@@ -228,10 +229,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param maximum
-   *
+   * 
    * @see
    */
   public void setVisibleLineNumber(int maximum) {
@@ -274,7 +275,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Add a new column to the table.
-   *
+   * 
    * @param title
    *          The column title to display
    * @return The new column header. You can use this object to modify the
@@ -328,10 +329,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getName() {
@@ -355,10 +356,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public int getColumnToSort() {
@@ -379,10 +380,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public int getSortMode() {
@@ -391,11 +392,11 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param columnNumber
    * @param mode
-   *
+   * 
    * @see
    */
   public void setColumnBehaviour(int columnNumber, int mode) {
@@ -409,7 +410,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   /**
    * Set all array columns to be sortable or not. By default, all colums are
    * sortable.
-   *
+   * 
    * @param sortable
    *          Set sortable to false if you want all the table to be unsortable.
    */
@@ -424,10 +425,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public boolean getSortable() {
@@ -436,10 +437,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String printPseudoColumn() {
@@ -448,10 +449,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {
@@ -464,10 +465,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String dataSourcePrint() {
@@ -824,10 +825,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getUrl() {
@@ -858,10 +859,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public HttpSession getSession() {
@@ -870,10 +871,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ServletRequest getRequest() {
@@ -882,10 +883,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getIconsPath() {

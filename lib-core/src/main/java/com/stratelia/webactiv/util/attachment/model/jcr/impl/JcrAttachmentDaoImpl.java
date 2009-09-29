@@ -29,10 +29,12 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /*
    * (non-Javadoc)
-   *
-   * @see com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#createAttachmentNode(javax.jcr.Session,
-   *      com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
-   *      java.lang.String)
+   * 
+   * @see
+   * com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#
+   * createAttachmentNode(javax.jcr.Session,
+   * com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
+   * java.lang.String)
    */
   public void createAttachmentNode(Session session,
       AttachmentDetail attachment, String language) throws RepositoryException,
@@ -50,10 +52,9 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
         contextFolder = addFolder(contextFolder, contexts[i]);
       }
     }
-    if (attachment.getPK().getId() != null)
-	{
-    	contextFolder = addFolder(contextFolder, attachment.getPK().getId());
-	}
+    if (attachment.getPK().getId() != null) {
+      contextFolder = addFolder(contextFolder, attachment.getPK().getId());
+    }
     if (language != null && !"".equals(language.trim())) {
       contextFolder = addFolder(contextFolder, language);
     }
@@ -74,10 +75,12 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /*
    * (non-Javadoc)
-   *
-   * @see com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#deleteAttachmentNode(javax.jcr.Session,
-   *      com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
-   *      java.lang.String)
+   * 
+   * @see
+   * com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#
+   * deleteAttachmentNode(javax.jcr.Session,
+   * com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
+   * java.lang.String)
    */
   public void deleteAttachmentNode(Session session,
       AttachmentDetail attachment, String language) throws RepositoryException,
@@ -90,15 +93,19 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
       // Le noeud n'existe pas
     }
   }
-  
+
   /**
-   * Indicate if the node for the specified attachment is currently locked 
-   * (for example by Office in the case of a webdav online edition).
-   * @param session the JCR session. 
-   * @param attachment the attachment.
-   * @param language the language to obtain the file.
+   * Indicate if the node for the specified attachment is currently locked (for
+   * example by Office in the case of a webdav online edition).
+   * 
+   * @param session
+   *          the JCR session.
+   * @param attachment
+   *          the attachment.
+   * @param language
+   *          the language to obtain the file.
    * @return true if the node is locked - false otherwise.
-   * @throws RepositoryException 
+   * @throws RepositoryException
    */
   public boolean isNodeLocked(Session session, AttachmentDetail attachment,
       String language) throws RepositoryException {
@@ -153,7 +160,7 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /**
    * Add a folder node into the repository
-   *
+   * 
    * @param parent
    *          the parent node
    * @param name
@@ -180,7 +187,7 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /**
    * Add a file node into the repository
-   *
+   * 
    * @param parent
    *          the folder node containing the file node.
    * @param attachment
@@ -193,17 +200,19 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
    */
   protected Node addFile(Node folder, AttachmentDetail attachment,
       String language) throws RepositoryException, IOException {
-	  String escapedName = StringUtil.escapeQuote(attachment.getLogicalName(getLanguage(language)));
-	  if(folder.hasNode(escapedName)) {
-	    folder.getNode(escapedName).remove();
-	  }
-    Node fileNode = folder.addNode(escapedName, JcrConstants.NT_FILE);
-    if(attachment.getWorkerId() != null) {
-      fileNode.addMixin(JcrConstants.SLV_OWNABLE_MIXIN);
-      fileNode.setProperty(JcrConstants.SLV_PROPERTY_OWNER, attachment.getWorkerId());
+    String escapedName = StringUtil.escapeQuote(attachment
+        .getLogicalName(getLanguage(language)));
+    if (folder.hasNode(escapedName)) {
+      folder.getNode(escapedName).remove();
     }
-    Node contentNode = fileNode
-        .addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
+    Node fileNode = folder.addNode(escapedName, JcrConstants.NT_FILE);
+    if (attachment.getWorkerId() != null) {
+      fileNode.addMixin(JcrConstants.SLV_OWNABLE_MIXIN);
+      fileNode.setProperty(JcrConstants.SLV_PROPERTY_OWNER, attachment
+          .getWorkerId());
+    }
+    Node contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT,
+        JcrConstants.NT_RESOURCE);
     contentNode.setProperty(JcrConstants.JCR_MIMETYPE, attachment
         .getType(language));
     contentNode.setProperty(JcrConstants.JCR_ENCODING, "");

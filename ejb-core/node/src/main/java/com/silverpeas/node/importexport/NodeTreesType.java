@@ -7,22 +7,24 @@ import java.util.List;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
+ * 
  * @author sdevolder
  */
 public class NodeTreesType {
-	private List listNodeTreeType;//liste de NodeTreeType
-	/**
-	 * @return
-	 */
-	public List getListNodeTreeType() {
-		return listNodeTreeType;
-	}
+  private List listNodeTreeType;// liste de NodeTreeType
 
-	/**
-	 * @param list
-	 */
-	public void setListNodeTreeType(List list) {
-		listNodeTreeType = list;
-	}
+  /**
+   * @return
+   */
+  public List getListNodeTreeType() {
+    return listNodeTreeType;
+  }
+
+  /**
+   * @param list
+   */
+  public void setListNodeTreeType(List list) {
+    listNodeTreeType = list;
+  }
 
 }

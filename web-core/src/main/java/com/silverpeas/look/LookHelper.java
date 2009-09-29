@@ -8,88 +8,90 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 public interface LookHelper {
 
-	public abstract String getSpaceId();
+  public abstract String getSpaceId();
 
-	public abstract void setSpaceId(String spaceId);
+  public abstract void setSpaceId(String spaceId);
 
-	public abstract String getSubSpaceId();
+  public abstract String getSubSpaceId();
 
-	public abstract void setSubSpaceId(String subSpaceId);
+  public abstract void setSubSpaceId(String subSpaceId);
 
-	public abstract String getComponentId();
+  public abstract String getComponentId();
 
-	public abstract void setComponentId(String componentId);
+  public abstract void setComponentId(String componentId);
 
-	/**
-	 * @param spaceId can be id of a space or a subspace
-	 */
-	public abstract void setSpaceIdAndSubSpaceId(String spaceId);
+  /**
+   * @param spaceId
+   *          can be id of a space or a subspace
+   */
+  public abstract void setSpaceIdAndSubSpaceId(String spaceId);
 
-	public abstract void setComponentIdAndSpaceIds(String spaceId,
-			String subSpaceId, String componentId);
+  public abstract void setComponentIdAndSpaceIds(String spaceId,
+      String subSpaceId, String componentId);
 
-	public abstract void init(MainSessionController mainSessionController,
-			ResourceLocator resources);
+  public abstract void init(MainSessionController mainSessionController,
+      ResourceLocator resources);
 
-	public abstract String getUserFullName(String userId);
+  public abstract String getUserFullName(String userId);
 
-	public abstract String getUserFullName();
+  public abstract String getUserFullName();
 
-	public abstract String getUserId();
+  public abstract String getUserId();
 
-	public abstract String getAnonymousUserId();
+  public abstract String getAnonymousUserId();
 
-	public abstract String getLanguage();
+  public abstract String getLanguage();
 
-	public abstract boolean isAnonymousUser();
+  public abstract boolean isAnonymousUser();
 
-	public abstract boolean displayPDCInNavigationFrame();
+  public abstract boolean displayPDCInNavigationFrame();
 
-	public abstract boolean displayPDCFrame();
-	
-	public abstract boolean displayContextualPDC();
+  public abstract boolean displayPDCFrame();
 
-	public abstract boolean displaySpaceIcons();
+  public abstract boolean displayContextualPDC();
 
-	public abstract String getSpaceId(String componentId);
+  public abstract boolean displaySpaceIcons();
 
-	public abstract String getWallPaper(String spaceId);
+  public abstract String getSpaceId(String componentId);
 
-	public abstract int getNBConnectedUsers();
+  public abstract String getWallPaper(String spaceId);
 
-	public abstract boolean isAnonymousAccess();
+  public abstract int getNBConnectedUsers();
 
-	public abstract boolean getSettings(String key);
+  public abstract boolean isAnonymousAccess();
 
-	public abstract boolean getSettings(String key, boolean defaultValue);
+  public abstract boolean getSettings(String key);
 
-	public abstract String getSettings(String key, String defaultValue);
+  public abstract boolean getSettings(String key, boolean defaultValue);
 
-	public abstract String getString(String key);
+  public abstract String getSettings(String key, String defaultValue);
 
-	public abstract boolean isBackOfficeVisible();
+  public abstract String getString(String key);
 
-	/**
-	 * @param componentIds - a String like that kmelia12, toolbox35,
-	 * @return a List of ComponentInst available to current user 
-	 */
-	public abstract List getTopItems();
+  public abstract boolean isBackOfficeVisible();
 
-	public abstract List getTopSpaceIds();
+  /**
+   * @param componentIds
+   *          - a String like that kmelia12, toolbox35,
+   * @return a List of ComponentInst available to current user
+   */
+  public abstract List getTopItems();
 
-	public abstract String getMainFrame();
+  public abstract List getTopSpaceIds();
 
-	public abstract void setMainFrame(String mainFrame);
+  public abstract String getMainFrame();
 
-	public abstract String getSpaceWallPaper();
-	
-	public abstract String getComponentURL(String componentId);
-	
-	public abstract String getDate();
-	
-	public abstract String getDefaultSpaceId();
-	
-	public abstract List getLatestPublications(String spaceId, int nbPublis);
-	
-	public abstract List getValidPublications(NodePK nodePK);
+  public abstract void setMainFrame(String mainFrame);
+
+  public abstract String getSpaceWallPaper();
+
+  public abstract String getComponentURL(String componentId);
+
+  public abstract String getDate();
+
+  public abstract String getDefaultSpaceId();
+
+  public abstract List getLatestPublications(String spaceId, int nbPublis);
+
+  public abstract List getValidPublications(NodePK nodePK);
 }

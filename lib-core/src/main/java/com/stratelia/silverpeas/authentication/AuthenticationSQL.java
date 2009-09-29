@@ -113,7 +113,7 @@ public class AuthenticationSQL extends Authentication {
       String thepasswd = passwd;
       if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption))
         thepasswd = CryptMD5.crypt(passwd);
-      
+
       if (StringUtil.isDefined(m_UserPasswordAvailableColumnName)) {
         loginQuery = "SELECT " + m_UserLoginColumnName + ", "
             + m_UserPasswordColumnName + ", "
@@ -145,32 +145,32 @@ public class AuthenticationSQL extends Authentication {
             throw new AuthenticationBadCredentialException(
                 "AuthenticationSQL.internalAuthentication()",
                 SilverpeasException.ERROR,
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="+login);
+                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
+                    + login);
           }
         } else {
-        	boolean passwordsMatch = true;
-        	if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption))
-        	{
-        		//String crypt2Check = jcrypt.crypt(cryptPwdInDB, clearPwd);
-        		//si crypt2Check == cryptPwdInDB alors authentification OK sinon notOK
-        		String crypt2Check = "";
-        		if (sqlPasswd.startsWith(UnixMD5Crypt.MAGIC))
-        		{
-        			crypt2Check = UnixMD5Crypt.crypt(sqlPasswd, passwd);
-        		}
-        		else
-        		{
-        			crypt2Check = jcrypt.crypt(sqlPasswd, passwd);
-        		}
-        		passwordsMatch = crypt2Check.equals(sqlPasswd);
-        	}
-        	else
-        	{
-        		passwordsMatch = thepasswd.equals(sqlPasswd);
-        	}
-        	if (!passwordsMatch) {
-	        	throw new AuthenticationBadCredentialException("AuthenticationSQL.internalAuthentication()", SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="+login);
-        	}
+          boolean passwordsMatch = true;
+          if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
+            // String crypt2Check = jcrypt.crypt(cryptPwdInDB, clearPwd);
+            // si crypt2Check == cryptPwdInDB alors authentification OK sinon
+            // notOK
+            String crypt2Check = "";
+            if (sqlPasswd.startsWith(UnixMD5Crypt.MAGIC)) {
+              crypt2Check = UnixMD5Crypt.crypt(sqlPasswd, passwd);
+            } else {
+              crypt2Check = jcrypt.crypt(sqlPasswd, passwd);
+            }
+            passwordsMatch = crypt2Check.equals(sqlPasswd);
+          } else {
+            passwordsMatch = thepasswd.equals(sqlPasswd);
+          }
+          if (!passwordsMatch) {
+            throw new AuthenticationBadCredentialException(
+                "AuthenticationSQL.internalAuthentication()",
+                SilverpeasException.ERROR,
+                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
+                    + login);
+          }
         }
       } else {
         throw new AuthenticationBadCredentialException(
@@ -267,21 +267,15 @@ public class AuthenticationSQL extends Authentication {
       String newPassword) throws AuthenticationException {
     String passwordInDB = getPassword(login);
     boolean passwordsMatch = true;
-    if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption))
-    {
-    	String crypt2Check = "";
-		if (passwordInDB.startsWith(UnixMD5Crypt.MAGIC))
-		{
-			crypt2Check = UnixMD5Crypt.crypt(passwordInDB, oldPassword);
-		}
-		else
-		{
-			crypt2Check = jcrypt.crypt(passwordInDB, oldPassword);
-		}
-    	passwordsMatch = crypt2Check.equals(passwordInDB);
-    } 
-    else if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption)) 
-    {
+    if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
+      String crypt2Check = "";
+      if (passwordInDB.startsWith(UnixMD5Crypt.MAGIC)) {
+        crypt2Check = UnixMD5Crypt.crypt(passwordInDB, oldPassword);
+      } else {
+        crypt2Check = jcrypt.crypt(passwordInDB, oldPassword);
+      }
+      passwordsMatch = crypt2Check.equals(passwordInDB);
+    } else if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption)) {
       try {
         String thepasswd = CryptMD5.crypt(oldPassword);
         passwordsMatch = thepasswd.equals(passwordInDB);
@@ -291,10 +285,8 @@ public class AuthenticationSQL extends Authentication {
             SilverpeasException.ERROR, "authentication.EX_INCORRECT_PASSWORD",
             "Crypt Md5 impossible");
       }
-    }
-    else if (Authentication.ENC_TYPE_CLEAR.equals(m_PasswordEncryption)) 
-    {
-    	passwordsMatch = oldPassword.equals(passwordInDB);
+    } else if (Authentication.ENC_TYPE_CLEAR.equals(m_PasswordEncryption)) {
+      passwordsMatch = oldPassword.equals(passwordInDB);
     }
     if (!passwordsMatch)
       throw new AuthenticationBadCredentialException(

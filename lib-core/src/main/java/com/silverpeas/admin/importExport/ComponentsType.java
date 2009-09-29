@@ -8,15 +8,18 @@ import java.util.List;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
+ * 
  * @author sdevolder
  */
 public class ComponentsType {
 
-	private List listComponentInst;//liste de ComponentInst
-	public List getListComponentInst() {
-		return listComponentInst;
-	}
-	public void setListComponentInst(List listComponentInst) {
-		this.listComponentInst = listComponentInst;
-	}
+  private List listComponentInst;// liste de ComponentInst
+
+  public List getListComponentInst() {
+    return listComponentInst;
+  }
+
+  public void setListComponentInst(List listComponentInst) {
+    this.listComponentInst = listComponentInst;
+  }
 }

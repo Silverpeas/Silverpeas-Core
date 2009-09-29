@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * @author Norbert CHAIX
@@ -18,7 +19,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * UserManagement, etc... It provides access functions to query and modify the
  * domains as well as the company organization It should be used only by a
  * client that has the administrator rights
- *
+ * 
  * @author
  */
 public class OrganizationController extends AdminReference implements
@@ -31,10 +32,10 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param userId
-   *
+   * 
    * @deprecated
    */
   public OrganizationController(String userId) {
@@ -42,10 +43,10 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param auc
-   *
+   * 
    * @deprecated
    */
   public OrganizationController(AdminUserConnections auc) {
@@ -118,10 +119,10 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getGeneralSpaceId() {
@@ -307,8 +308,8 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * @param spaceId -
-   *          id of the space or subSpace
+   * @param spaceId
+   *          - id of the space or subSpace
    * @return a List of SpaceInst ordered from root to subSpace
    * @throws Exception
    */
@@ -581,8 +582,8 @@ public class OrganizationController extends AdminReference implements
   public String[] getUserProfiles(String userId, String componentId,
       int objectId, String objectType) {
     try {
-      return m_Admin
-          .getProfilesByObjectAndUserId(objectId, objectType, componentId, userId);
+      return m_Admin.getProfilesByObjectAndUserId(objectId, objectType,
+          componentId, userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId = "
@@ -727,7 +728,7 @@ public class OrganizationController extends AdminReference implements
 
   // -------------------------------------------------------------------
   // RE-INDEXATION
-  // -------------------------------------------------------------------  
+  // -------------------------------------------------------------------
   public String[] getAllSpaceIds(String sUserId) {
     try {
       return m_Admin.getAllSpaceIds(sUserId);
@@ -755,19 +756,19 @@ public class OrganizationController extends AdminReference implements
       return new String[0];
     }
   }
-  
+
   /**
    * Return all the root spaceIds
    */
   public String[] getAllRootSpaceIds() {
-	    try {
-	      return m_Admin.getAllRootSpaceIds();
-	    } catch (Exception e) {
-	      SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
-	          "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", e);
-	      return new String[0];
-	    }
-	  }
+    try {
+      return m_Admin.getAllRootSpaceIds();
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
+          "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", e);
+      return new String[0];
+    }
+  }
 
   /**
    * Return all the root spaceIds available for the user sUserId
@@ -809,7 +810,8 @@ public class OrganizationController extends AdminReference implements
       return m_Admin.getAllComponentIds(sSpaceId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllComponentIds",
-          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space id=" + sSpaceId, e);
+          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space id="
+              + sSpaceId, e);
       return new String[0];
     }
   }
@@ -824,7 +826,8 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin",
           "OrganizationController.getAllComponentIdsRecur",
-          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "spaceId = " + sSpaceId, e);
+          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "spaceId = "
+              + sSpaceId, e);
       return new String[0];
     }
   }
@@ -833,7 +836,7 @@ public class OrganizationController extends AdminReference implements
    * Return all the components Id recursively in (Space+subspaces, or only
    * subspaces or all silverpeas) available in silverpeas given a userId and a
    * componentNameRoot
-   *
+   * 
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -880,10 +883,11 @@ public class OrganizationController extends AdminReference implements
     }
   }
 
-  public boolean isObjectAvailable(int objectId, String objectType, String componentId,
-      String userId) {
+  public boolean isObjectAvailable(int objectId, String objectType,
+      String componentId, String userId) {
     try {
-      return m_Admin.isObjectAvailable(componentId, objectId, objectType, userId);
+      return m_Admin.isObjectAvailable(componentId, objectId, objectType,
+          userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isObjectAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_OBJECT", "userId = " + userId
@@ -947,7 +951,7 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Return userIds according to a list of profile names
-   *
+   * 
    * @param componentId
    *          the instance id
    * @param profileNames
@@ -957,34 +961,32 @@ public class OrganizationController extends AdminReference implements
   public String[] getUsersIdsByRoleNames(String componentId, List profileNames) {
     try {
       ComponentInst componentInst = getComponentInst(componentId);
-      
+
       List profiles = componentInst.getAllProfilesInst();
       ProfileInst profileInst = null;
       List profileIds = new ArrayList();
-      for (int p=0; p<profiles.size(); p++)
-      {
-    	  profileInst = (ProfileInst) profiles.get(p);
-    	  if (profileNames.contains(profileInst.getName()))
-    	  {
-    		  profileIds.add(profileInst.getId());
-    		  SilverTrace.info("admin",
-    	              "OrganizationController.getUsersIdsByRoleNames",
-    	              "root.MSG_GEN_PARAM_VALUE", "profileName = " + profileInst.getName() + ", profileId = "+profileInst.getId());
-    	  }
+      for (int p = 0; p < profiles.size(); p++) {
+        profileInst = (ProfileInst) profiles.get(p);
+        if (profileNames.contains(profileInst.getName())) {
+          profileIds.add(profileInst.getId());
+          SilverTrace.info("admin",
+              "OrganizationController.getUsersIdsByRoleNames",
+              "root.MSG_GEN_PARAM_VALUE", "profileName = "
+                  + profileInst.getName() + ", profileId = "
+                  + profileInst.getId());
+        }
       }
-      
-      if (!profileIds.isEmpty())
-      {
-	      String[] pIds = (String[])profileIds.toArray(new String[profileIds.size()]);
-	      SilverTrace.info("admin",
-	              "OrganizationController.getUsersIdsByRoleNames",
-	              "root.MSG_GEN_PARAM_VALUE", "pIds = " + pIds);
-	
-	      return m_Admin.searchUsersIds(null, null, pIds, new UserDetail());
-      }
-      else
-      {
-    	  return new String[0];
+
+      if (!profileIds.isEmpty()) {
+        String[] pIds = (String[]) profileIds.toArray(new String[profileIds
+            .size()]);
+        SilverTrace.info("admin",
+            "OrganizationController.getUsersIdsByRoleNames",
+            "root.MSG_GEN_PARAM_VALUE", "pIds = " + pIds);
+
+        return m_Admin.searchUsersIds(null, null, pIds, new UserDetail());
+      } else {
+        return new String[0];
       }
     } catch (Exception e) {
       SilverTrace.error("admin",
@@ -993,33 +995,40 @@ public class OrganizationController extends AdminReference implements
       return null;
     }
   }
-  
-  public String[] getUsersIdsByRoleNames(String componentId, String objectId, String objectType, List profileNames) {
-	  	SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames", "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId+", objectId = "+objectId);
-	    try {
-	    	List profiles = m_Admin.getProfilesByObject(objectId, objectType, componentId);
-	    	
-	    	ProfileInst profile 	= null;
-	    	List		profileIds	= new ArrayList();
-		    for (int i = 0; i < profiles.size(); i++) 
-		    {
-		    	profile = (ProfileInst) profiles.get(i);
-		    	if (profile != null && profileNames.contains(profile.getName()))
-		    	{
-		    		profileIds.add(profile.getId());
-		    	}
-		    }
-		    
-		    SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames", "root.MSG_GEN_PARAM_VALUE", "profileIds = " + profileIds.toString());
-		    
-		    if (profileIds.isEmpty())
-		    	return new String[0];	//else return all users !!
-	    		      
-		    return m_Admin.searchUsersIds(null, null, (String[]) profileIds.toArray(new String[profileIds.size()]), new UserDetail());
-	    } catch (Exception e) {
-	      SilverTrace.error("admin", "OrganizationController.getUsersIdsByRoleNames", "admin.MSG_ERR_GET_ALL_USERS", e);
-	      return null;
-	    }
+
+  public String[] getUsersIdsByRoleNames(String componentId, String objectId,
+      String objectType, List profileNames) {
+    SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
+        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId
+            + ", objectId = " + objectId);
+    try {
+      List profiles = m_Admin.getProfilesByObject(objectId, objectType,
+          componentId);
+
+      ProfileInst profile = null;
+      List profileIds = new ArrayList();
+      for (int i = 0; i < profiles.size(); i++) {
+        profile = (ProfileInst) profiles.get(i);
+        if (profile != null && profileNames.contains(profile.getName())) {
+          profileIds.add(profile.getId());
+        }
+      }
+
+      SilverTrace.info("admin",
+          "OrganizationController.getUsersIdsByRoleNames",
+          "root.MSG_GEN_PARAM_VALUE", "profileIds = " + profileIds.toString());
+
+      if (profileIds.isEmpty())
+        return new String[0]; // else return all users !!
+
+      return m_Admin.searchUsersIds(null, null, (String[]) profileIds
+          .toArray(new String[profileIds.size()]), new UserDetail());
+    } catch (Exception e) {
+      SilverTrace.error("admin",
+          "OrganizationController.getUsersIdsByRoleNames",
+          "admin.MSG_ERR_GET_ALL_USERS", e);
+      return null;
+    }
   }
 
   public String[] searchGroupsIds(boolean isRootGroup, String componentId,

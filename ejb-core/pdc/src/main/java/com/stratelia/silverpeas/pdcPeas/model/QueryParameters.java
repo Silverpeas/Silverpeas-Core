@@ -10,215 +10,195 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 
-public class QueryParameters implements java.io.Serializable 
-{
-	private String 		keywords	= null;
-	private String 		spaceId		= null;
-	private String 		instanceId	= null;
-	private String 		creatorId	= null;
-	private String 		afterdate	= null;
-	private String 		beforedate	= null;
-	
-	private Hashtable 	xmlQuery	= null;
-	private String		xmlTitle	= null;
+public class QueryParameters implements java.io.Serializable {
+  private String keywords = null;
+  private String spaceId = null;
+  private String instanceId = null;
+  private String creatorId = null;
+  private String afterdate = null;
+  private String beforedate = null;
 
-	//attributes below are used only to display info in the search page
-	private UserDetail	creatorDetail	= null;
+  private Hashtable xmlQuery = null;
+  private String xmlTitle = null;
 
-	//private SimpleDateFormat formatter		= null;
-	private String		language	= null;
-	
-	
-	public QueryParameters(String language) {
-		this.language = language;
-	}
-	
-	public QueryParameters(String keywords, String spaceId, String instanceId, String creatorId, String afterDate, String beforeDate){
-		this.keywords	= keywords;
-		if (spaceId != null && spaceId.length() > 0)
-			this.spaceId	= spaceId;
-		if (instanceId != null && instanceId.length() > 0)
-			this.instanceId	= instanceId;
-		if (creatorId != null && creatorId.length() > 0)
-			this.creatorId	= creatorId;
-		if (afterDate != null && afterDate.length() > 0)
-			this.afterdate	= afterDate;
-		if (beforeDate != null && beforeDate.length() > 0)
-			this.beforedate	= beforeDate;
-	}
+  // attributes below are used only to display info in the search page
+  private UserDetail creatorDetail = null;
 
-	public void clear(){
-		this.keywords		= null;
-		this.spaceId		= null;
-		this.instanceId		= null;
-		this.creatorId		= null;
-		this.afterdate		= null;
-		this.beforedate		= null;
-		this.creatorDetail	= null;
-		this.xmlQuery		= null;
-	}
+  // private SimpleDateFormat formatter = null;
+  private String language = null;
 
-	public String getKeywords()
-	{
-		return keywords;
-	}
+  public QueryParameters(String language) {
+    this.language = language;
+  }
 
-	public void setKeywords(String keywords)
-	{
-		this.keywords = keywords;
-	}
+  public QueryParameters(String keywords, String spaceId, String instanceId,
+      String creatorId, String afterDate, String beforeDate) {
+    this.keywords = keywords;
+    if (spaceId != null && spaceId.length() > 0)
+      this.spaceId = spaceId;
+    if (instanceId != null && instanceId.length() > 0)
+      this.instanceId = instanceId;
+    if (creatorId != null && creatorId.length() > 0)
+      this.creatorId = creatorId;
+    if (afterDate != null && afterDate.length() > 0)
+      this.afterdate = afterDate;
+    if (beforeDate != null && beforeDate.length() > 0)
+      this.beforedate = beforeDate;
+  }
 
-	public String getSpaceId()
-	{
-		return spaceId;
-	}
+  public void clear() {
+    this.keywords = null;
+    this.spaceId = null;
+    this.instanceId = null;
+    this.creatorId = null;
+    this.afterdate = null;
+    this.beforedate = null;
+    this.creatorDetail = null;
+    this.xmlQuery = null;
+  }
 
-	public void setSpaceId(String spaceId)
-	{
-		if (!StringUtil.isDefined(spaceId) || spaceId.equals("*"))
-			this.spaceId = null;
-		else
-			this.spaceId = spaceId;			
-	}
+  public String getKeywords() {
+    return keywords;
+  }
 
-	public String getInstanceId()
-	{
-		return instanceId;
-	}
+  public void setKeywords(String keywords) {
+    this.keywords = keywords;
+  }
 
-	public void setInstanceId(String instanceId)
-	{
-		if (!StringUtil.isDefined(instanceId) || instanceId.equals("*"))
-			this.instanceId = null;
-		else
-			this.instanceId = instanceId;
-	}
+  public String getSpaceId() {
+    return spaceId;
+  }
 
-	public String getCreatorId()
-	{
-		return creatorId;
-	}
+  public void setSpaceId(String spaceId) {
+    if (!StringUtil.isDefined(spaceId) || spaceId.equals("*"))
+      this.spaceId = null;
+    else
+      this.spaceId = spaceId;
+  }
 
-	public void setCreatorId(String creatorId)
-	{
-		if (creatorId == null || creatorId.length()==0 || creatorId.equals("*"))
-		{
-			this.creatorId = null;
-			this.creatorDetail = null;
-		}
-		else
-			this.creatorId = creatorId;
-	}
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-	public String getAfterDate()
-	{
-		return afterdate;
-	}
+  public void setInstanceId(String instanceId) {
+    if (!StringUtil.isDefined(instanceId) || instanceId.equals("*"))
+      this.instanceId = null;
+    else
+      this.instanceId = instanceId;
+  }
 
-	public void setAfterDate(String afterdate)
-	{
-		this.afterdate = afterdate;
-	}
+  public String getCreatorId() {
+    return creatorId;
+  }
 
-	public void setAfterDate(Date afterdate)
-	{
-		this.afterdate = date2stringDate(afterdate);
-	}
+  public void setCreatorId(String creatorId) {
+    if (creatorId == null || creatorId.length() == 0 || creatorId.equals("*")) {
+      this.creatorId = null;
+      this.creatorDetail = null;
+    } else
+      this.creatorId = creatorId;
+  }
 
-	public String getBeforeDate()
-	{
-		return beforedate;
-	}
+  public String getAfterDate() {
+    return afterdate;
+  }
 
-	public void setBeforeDate(String beforedate)
-	{
-		this.beforedate = beforedate;
-	}
+  public void setAfterDate(String afterdate) {
+    this.afterdate = afterdate;
+  }
 
-	public void setBeforeDate(Date beforedate)
-	{
-		this.beforedate = date2stringDate(beforedate);
-	}
-	
-	public void addXmlSubQuery(String field, String query)
-	{
-		if (xmlQuery == null)
-			xmlQuery = new Hashtable();
-		 
-		xmlQuery.put(field, query);
-	}
-	
-	public Hashtable getXmlQuery()
-	{
-		return xmlQuery;
-	}
-	
-	public void clearXmlQuery()
-	{
-		xmlQuery = null;
-	}
+  public void setAfterDate(Date afterdate) {
+    this.afterdate = date2stringDate(afterdate);
+  }
 
-	public QueryDescription getQueryDescription(String searchingUser, String searchingLanguage) throws ParseException
-	{
-		QueryDescription query = new QueryDescription(getKeywords());
+  public String getBeforeDate() {
+    return beforedate;
+  }
 
-		query.setSearchingUser(searchingUser);
-		query.setRequestedLanguage(searchingLanguage);
+  public void setBeforeDate(String beforedate) {
+    this.beforedate = beforedate;
+  }
 
-		if (getCreatorId() != null && !getCreatorId().equals(""))
-			query.setRequestedAuthor(getCreatorId());
-		else
-			query.setRequestedAuthor(null);
+  public void setBeforeDate(Date beforedate) {
+    this.beforedate = date2stringDate(beforedate);
+  }
 
-		if (getAfterDate() != null && !getAfterDate().equals(""))
-			query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate(), searchingLanguage/*getSQLAfterDate()*/));
-		else
-			query.setRequestedCreatedAfter(null);
+  public void addXmlSubQuery(String field, String query) {
+    if (xmlQuery == null)
+      xmlQuery = new Hashtable();
 
-		if (getBeforeDate() != null && !getBeforeDate().equals(""))
-			query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate(), searchingLanguage/*getSQLBeforeDate()*/));
-		else
-			query.setRequestedCreatedBefore(null);
-		
-		if (xmlQuery != null)
-			query.setXmlQuery(xmlQuery);
-		
-		if (xmlTitle != null)
-			query.setXmlTitle(xmlTitle);
+    xmlQuery.put(field, query);
+  }
 
-		return query;
-	}
+  public Hashtable getXmlQuery() {
+    return xmlQuery;
+  }
 
-	public void setCreatorDetail(UserDetail userDetail)
-	{
-		this.creatorDetail = userDetail;
-	}
+  public void clearXmlQuery() {
+    xmlQuery = null;
+  }
 
-	public UserDetail getCreatorDetail()
-	{
-		return this.creatorDetail;
-	}
+  public QueryDescription getQueryDescription(String searchingUser,
+      String searchingLanguage) throws ParseException {
+    QueryDescription query = new QueryDescription(getKeywords());
 
-	private String date2stringDate(Date date)
-	{
-		SilverTrace.info("pdcPeas", "QueryParameters.date2stringDate()", "root.MSG_GEN_ENTER_METHOD", "date = "+date);
-		String stringDate = "";
-		if (date != null)
-			stringDate = DateUtil.getInputDate(date, language);//formatter.format(date);
-		return stringDate;
-	}
+    query.setSearchingUser(searchingUser);
+    query.setRequestedLanguage(searchingLanguage);
 
-	public String getXmlTitle() {
-		return xmlTitle;
-	}
+    if (getCreatorId() != null && !getCreatorId().equals(""))
+      query.setRequestedAuthor(getCreatorId());
+    else
+      query.setRequestedAuthor(null);
 
-	public void setXmlTitle(String xmlTitle) {
-		if (isDefined(xmlTitle))
-			this.xmlTitle = xmlTitle;
-	}
-	
-	private boolean isDefined(String param)
-    {
-    	return param != null && !"".equals(param.trim()) && !"null".equals(param.trim());
-    }
+    if (getAfterDate() != null && !getAfterDate().equals(""))
+      query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate(),
+          searchingLanguage/* getSQLAfterDate() */));
+    else
+      query.setRequestedCreatedAfter(null);
+
+    if (getBeforeDate() != null && !getBeforeDate().equals(""))
+      query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate(),
+          searchingLanguage/* getSQLBeforeDate() */));
+    else
+      query.setRequestedCreatedBefore(null);
+
+    if (xmlQuery != null)
+      query.setXmlQuery(xmlQuery);
+
+    if (xmlTitle != null)
+      query.setXmlTitle(xmlTitle);
+
+    return query;
+  }
+
+  public void setCreatorDetail(UserDetail userDetail) {
+    this.creatorDetail = userDetail;
+  }
+
+  public UserDetail getCreatorDetail() {
+    return this.creatorDetail;
+  }
+
+  private String date2stringDate(Date date) {
+    SilverTrace.info("pdcPeas", "QueryParameters.date2stringDate()",
+        "root.MSG_GEN_ENTER_METHOD", "date = " + date);
+    String stringDate = "";
+    if (date != null)
+      stringDate = DateUtil.getInputDate(date, language);// formatter.format(date);
+    return stringDate;
+  }
+
+  public String getXmlTitle() {
+    return xmlTitle;
+  }
+
+  public void setXmlTitle(String xmlTitle) {
+    if (isDefined(xmlTitle))
+      this.xmlTitle = xmlTitle;
+  }
+
+  private boolean isDefined(String param) {
+    return param != null && !"".equals(param.trim())
+        && !"null".equals(param.trim());
+  }
 }

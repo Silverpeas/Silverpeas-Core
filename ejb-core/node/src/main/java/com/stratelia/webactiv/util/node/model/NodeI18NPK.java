@@ -4,8 +4,8 @@ import java.io.Serializable;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
- * It's the Node PrimaryKey object
- * It identify a Node
+ * It's the Node PrimaryKey object It identify a Node
+ * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -15,71 +15,78 @@ public class NodeI18NPK extends WAPrimaryKey implements Serializable {
   transient public NodeI18NDetail nodeI18NDetail = null;
 
   /**
-	* Constructor which set only the id
-	* @since 1.0
-	*/
-  public NodeI18NPK (String id) {
+   * Constructor which set only the id
+   * 
+   * @since 1.0
+   */
+  public NodeI18NPK(String id) {
     super(id);
   }
 
   /**
-	* Constructor which set id, space and component name
-	* @since 1.0
-	*/
-  public NodeI18NPK (String id, String space, String componentName) {
+   * Constructor which set id, space and component name
+   * 
+   * @since 1.0
+   */
+  public NodeI18NPK(String id, String space, String componentName) {
     super(id, space, componentName);
   }
-  
-  public NodeI18NPK(String id, String componentId)
-  {
-	  super(id, componentId);
+
+  public NodeI18NPK(String id, String componentId) {
+    super(id, componentId);
   }
-  
+
   /**
-	* Constructor which set the id
-	* The WAPrimaryKey provides space and component name
-	* @since 1.0
-	*/
-  public NodeI18NPK (String id, WAPrimaryKey pk) {
+   * Constructor which set the id The WAPrimaryKey provides space and component
+   * name
+   * 
+   * @since 1.0
+   */
+  public NodeI18NPK(String id, WAPrimaryKey pk) {
     super(id, pk);
   }
-  
+
   /**
-	* Return the object root table name
-	* @return the root table name of the object
-	* @since 1.0
-	*/
+   * Return the object root table name
+   * 
+   * @return the root table name of the object
+   * @since 1.0
+   */
   public String getRootTableName() {
     return "NodeI18N";
   }
 
   /**
-	* Return the object table name
-	* @return the table name of the object
-	* @since 1.0
-	*/
+   * Return the object table name
+   * 
+   * @return the table name of the object
+   * @since 1.0
+   */
   public String getTableName() {
     return "SB_Node_NodeI18N";
   }
 
-
   /**
-	* Check if an another object is equal to this object
-	* @return true if other is equals to this object
-	* @param other the object to compare to this NodePK
-	* @since 1.0
-	*/
+   * Check if an another object is equal to this object
+   * 
+   * @return true if other is equals to this object
+   * @param other
+   *          the object to compare to this NodePK
+   * @since 1.0
+   */
   public boolean equals(Object other) {
-    if (!(other instanceof NodeI18NPK)) return false;
-    return (id.equals( ((NodeI18NPK) other).getId()) ) &&
-       (componentName.equals(((NodeI18NPK) other).getComponentName()) );
+    if (!(other instanceof NodeI18NPK))
+      return false;
+    return (id.equals(((NodeI18NPK) other).getId()))
+        && (componentName.equals(((NodeI18NPK) other).getComponentName()));
   }
 
-	/**
-	* Returns a hash code for the key
-	* @return A hash code for this object
-	*/
-	public int hashCode() {
-		return this.id.hashCode() ^ this.componentName.hashCode();
-	}
+  /**
+   * Returns a hash code for the key
+   * 
+   * @return A hash code for this object
+   */
+  public int hashCode() {
+    return this.id.hashCode() ^ this.componentName.hashCode();
+  }
 }

@@ -5,67 +5,68 @@ import com.silverpeas.workflow.api.user.*;
 import com.silverpeas.workflow.api.*;
 import com.silverpeas.form.*;
 
-public interface HistoryStep 
-{
-   /**
-    * @return ProcessInstance
-    */
-   public ProcessInstance getProcessInstance();
+public interface HistoryStep {
+  /**
+   * @return ProcessInstance
+   */
+  public ProcessInstance getProcessInstance();
 
-   /**
-    * @return the actor
-    */
-   public User getUser() throws WorkflowException;
-   
-   /**
-    * Get the step id
-    * @return	the step id
-    */
-   public String getId();
+  /**
+   * @return the actor
+   */
+  public User getUser() throws WorkflowException;
 
-   /**
-    * Get the role under which the user did the action
-    * @return	the role's name
-    */
-   public String getUserRoleName();
+  /**
+   * Get the step id
+   * 
+   * @return the step id
+   */
+  public String getId();
 
-   /**
-    * @return the action name
-    */
-   public String getAction();
+  /**
+   * Get the role under which the user did the action
+   * 
+   * @return the role's name
+   */
+  public String getUserRoleName();
 
-   /**
-    * @return the action date
-	*/
-   public Date getActionDate();
+  /**
+   * @return the action name
+   */
+  public String getAction();
 
-   /**
-    * @return the resolved state name
-    */
-   public String getResolvedState();
+  /**
+   * @return the action date
+   */
+  public Date getActionDate();
 
-   /**
-    * @return the resulting state name
-    */
-   public String getResultingState();
+  /**
+   * @return the resolved state name
+   */
+  public String getResolvedState();
 
-   /**
-    * @return int
-    */
-   public int getActionStatus();
+  /**
+   * @return the resulting state name
+   */
+  public String getResultingState();
 
-   /**
-    * Get the data filled at this step
-	*/
-	public DataRecord getActionRecord() throws WorkflowException;
+  /**
+   * @return int
+   */
+  public int getActionStatus();
 
-   /**
-    * Set the data filled at this step
-	*/
-	public void setActionRecord(DataRecord data) throws WorkflowException;
+  /**
+   * Get the data filled at this step
+   */
+  public DataRecord getActionRecord() throws WorkflowException;
 
-   /**
-    * Delete the data filled at this step
-	*/
-	public void deleteActionRecord() throws WorkflowException;
+  /**
+   * Set the data filled at this step
+   */
+  public void setActionRecord(DataRecord data) throws WorkflowException;
+
+  /**
+   * Delete the data filled at this step
+   */
+  public void deleteActionRecord() throws WorkflowException;
 }

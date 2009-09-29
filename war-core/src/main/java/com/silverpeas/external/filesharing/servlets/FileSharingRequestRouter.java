@@ -23,43 +23,44 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
+public class FileSharingRequestRouter extends ComponentRequestRouter {
+  /**
+   * This method has to be implemented in the component request rooter class.
+   * returns the session control bean name to be put in the request object ex :
+   * for almanach, returns "almanach"
+   */
+  public String getSessionControlBeanName() {
+    return "FileSharing";
+  }
 
-public class FileSharingRequestRouter extends ComponentRequestRouter
-{
-    /**
-     * This method has to be implemented in the component request rooter class.
-     * returns the session control bean name to be put in the request object
-     * ex : for almanach, returns "almanach"
-     */
-    public String getSessionControlBeanName()
-	 {
-	    return "FileSharing";
-	 }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * @param componentContext
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    return new FileSharingSessionController(mainSessionCtrl, componentContext);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param mainSessionCtrl
-     * @param componentContext
-     *
-     * @return
-     *
-     * @see
-     */
-    public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-    {
-        return new FileSharingSessionController(mainSessionCtrl, componentContext);
-    }
-
-    /**
-     * This method has to be implemented by the component request rooter
-     * it has to compute a destination page
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param componentSC The component Session Control, build and initialised.
-     * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
-     */
-    public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
+  /**
+   * This method has to be implemented by the component request rooter it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex :
+   *         "/almanach/jsp/almanach.jsp?flag=user")
+   */
+  public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
     {
         String destination 	= "";
         String rootDest 	= "/fileSharing/jsp/";
@@ -166,29 +167,32 @@ public class FileSharingRequestRouter extends ComponentRequestRouter
         SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
         return destination;
 
-    } 
-        
-    private TicketDetail generateTicket(FileSharingSessionController fileSharingSC, HttpServletRequest request) throws ParseException
-    {
-    	int fileId = Integer.parseInt(request.getParameter("FileId"));
-		String componentId = request.getParameter("ComponentId");
-		boolean versioning = false;
-		if ("true".equals(request.getParameter("Versioning")))
-			versioning = true;
-		String date = request.getParameter("EndDate");
-     	Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
-		int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
-		return new TicketDetail(fileId, componentId, versioning, null, new Date(), endDate, nbAccessMax);
-    } 
-    
-    private TicketDetail updateTicket(String keyFile, FileSharingSessionController fileSharingSC, HttpServletRequest request) throws ParseException, RemoteException
-    {
-    	TicketDetail ticket = fileSharingSC.getTicket(keyFile);
-		String date = request.getParameter("EndDate");
-     	Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
-		int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
-		ticket.setEndDate(endDate);
-		ticket.setNbAccessMax(nbAccessMax);
-		return ticket;
-    } 
+    }
+
+  private TicketDetail generateTicket(
+      FileSharingSessionController fileSharingSC, HttpServletRequest request)
+      throws ParseException {
+    int fileId = Integer.parseInt(request.getParameter("FileId"));
+    String componentId = request.getParameter("ComponentId");
+    boolean versioning = false;
+    if ("true".equals(request.getParameter("Versioning")))
+      versioning = true;
+    String date = request.getParameter("EndDate");
+    Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
+    int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
+    return new TicketDetail(fileId, componentId, versioning, null, new Date(),
+        endDate, nbAccessMax);
+  }
+
+  private TicketDetail updateTicket(String keyFile,
+      FileSharingSessionController fileSharingSC, HttpServletRequest request)
+      throws ParseException, RemoteException {
+    TicketDetail ticket = fileSharingSC.getTicket(keyFile);
+    String date = request.getParameter("EndDate");
+    Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
+    int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
+    ticket.setEndDate(endDate);
+    ticket.setNbAccessMax(nbAccessMax);
+    return ticket;
+  }
 }

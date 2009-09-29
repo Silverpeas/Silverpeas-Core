@@ -8,50 +8,49 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.user.*;
 import com.silverpeas.workflow.api.*;
 
-public interface WorkflowError 
-{
-	/**
-	 * @return ProcessInstance
-	 */
-	public ProcessInstance getProcessInstance() throws WorkflowException;
-   
-	/**
-	 * @return history step
-	 */
-	public HistoryStep getHistoryStep() throws WorkflowException;
+public interface WorkflowError {
+  /**
+   * @return ProcessInstance
+   */
+  public ProcessInstance getProcessInstance() throws WorkflowException;
 
-	/**
-	 * @return error message
-	 */
-	public String getErrorMessage();
+  /**
+   * @return history step
+   */
+  public HistoryStep getHistoryStep() throws WorkflowException;
 
-	/**
-	 * @return stack trace
-	 */
-	public String getStackTrace();
+  /**
+   * @return error message
+   */
+  public String getErrorMessage();
 
-	/**
-	 * @return user
-	 */
-	public User getUser() throws WorkflowException;
+  /**
+   * @return stack trace
+   */
+  public String getStackTrace();
 
-	/**
-	 * @return action
-	 */
-	public Action getAction() throws WorkflowException;
+  /**
+   * @return user
+   */
+  public User getUser() throws WorkflowException;
 
-	/**
-	 * @return action date
-	 */
-	public Date getActionDate();
+  /**
+   * @return action
+   */
+  public Action getAction() throws WorkflowException;
 
-	/**
-	 * @return user role 
-	 */
-	public String getUserRole();
+  /**
+   * @return action date
+   */
+  public Date getActionDate();
 
-	/**
-	 * @return resolved state
-	 */
-	public State getResolvedState() throws WorkflowException;
+  /**
+   * @return user role
+   */
+  public String getUserRole();
+
+  /**
+   * @return resolved state
+   */
+  public State getResolvedState() throws WorkflowException;
 }

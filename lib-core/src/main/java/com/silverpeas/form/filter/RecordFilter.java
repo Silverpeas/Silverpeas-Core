@@ -4,12 +4,11 @@ import com.silverpeas.form.*;
 
 /**
  * RecordFilter
- *
+ * 
  * @see DataRecord
  * @see FieldFilter
  */
-public interface RecordFilter
-{
+public interface RecordFilter {
   /**
    * Returns true if the given record match this Filter criteria.
    */

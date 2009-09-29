@@ -25,20 +25,20 @@
 package com.sun.portal.portletcontainer.admin.deployment;
 
 /**
- * The DefaultWebAppDeployer class provides the default implementation of the 
+ * The DefaultWebAppDeployer class provides the default implementation of the
  * the WebAppDeployer interface.
- *
+ * 
  */
 public class DefaultWebAppDeployer implements WebAppDeployer {
-    
-    public DefaultWebAppDeployer() {
-    }
 
-    public boolean deploy(String warFileName) throws WebAppDeployerException {
-        throw new WebAppDeployerException("Deploy failed");
-    }
+  public DefaultWebAppDeployer() {
+  }
 
-    public boolean undeploy(String warFileName) throws WebAppDeployerException {
-        throw new WebAppDeployerException("undeploy failed");
-    }
+  public boolean deploy(String warFileName) throws WebAppDeployerException {
+    throw new WebAppDeployerException("Deploy failed");
+  }
+
+  public boolean undeploy(String warFileName) throws WebAppDeployerException {
+    throw new WebAppDeployerException("undeploy failed");
+  }
 }

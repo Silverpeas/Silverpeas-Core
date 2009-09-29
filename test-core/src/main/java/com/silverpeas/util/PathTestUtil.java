@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * 
  * @author ehugonnet
  */
 public class PathTestUtil {
@@ -21,12 +21,12 @@ public class PathTestUtil {
   public static String BUILD_PATH = "";
   static {
     try {
-      TESTS_PROPS.load(PathTestUtil.class.getClassLoader().
-          getResourceAsStream("maven.properties"));
-      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/',
-          SEPARATOR);
+      TESTS_PROPS.load(PathTestUtil.class.getClassLoader().getResourceAsStream(
+          "maven.properties"));
+      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/', SEPARATOR);
     } catch (IOException ex) {
-      Logger.getLogger(PathTestUtil.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(PathTestUtil.class.getName())
+          .log(Level.SEVERE, null, ex);
     }
   }
 }

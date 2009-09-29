@@ -1,7 +1,7 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.peasCore;
-
 
 import com.stratelia.webactiv.util.exception.*;
 
@@ -21,45 +21,46 @@ import com.stratelia.webactiv.util.exception.*;
  * Centralize URLS + Stabilisation Lot 2 - SilverTrace et Exceptions
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author t.leroi
  */
-public class PeasCoreException extends SilverpeasException
-{
-	/**--------------------------------------------------------------------------constructor
-	 * constructor
-	 */
-    public PeasCoreException(String callingClass, int errorLevel, String message) 
-    {
-        super(callingClass, errorLevel, message);
-    }
-    public PeasCoreException(String callingClass, int errorLevel, String message, String extraParams) 
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
-    public PeasCoreException(String callingClass, int errorLevel, String message, Exception nested) 
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
-    public PeasCoreException(String callingClass, int errorLevel, String message, String extraParams, Exception nested) 
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getModule()
-    {
-        return "peasCore";
-    }
-}
+public class PeasCoreException extends SilverpeasException {
+  /**
+   * --------------------------------------------------------------------------
+   * constructor constructor
+   */
+  public PeasCoreException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
 
+  public PeasCoreException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
+
+  public PeasCoreException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public PeasCoreException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getModule() {
+    return "peasCore";
+  }
+}

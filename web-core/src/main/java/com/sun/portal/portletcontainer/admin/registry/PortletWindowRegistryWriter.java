@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin.registry;
 
 import java.util.List;
@@ -36,36 +35,45 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowRegistryWriter is responsible for updating the portlet-window-registry.xml file
+ * PortletWindowRegistryWriter is responsible for updating the
+ * portlet-window-registry.xml file
  */
-public class PortletWindowRegistryWriter extends PortletRegistryWriter { 
-    
-    public PortletWindowRegistryWriter(String registryLocation, String context) {
-        super(registryLocation, PortletRegistryFile.PORTLET_WINDOW_REGISTRY_FILE, context);
+public class PortletWindowRegistryWriter extends PortletRegistryWriter {
+
+  public PortletWindowRegistryWriter(String registryLocation, String context) {
+    super(registryLocation, PortletRegistryFile.PORTLET_WINDOW_REGISTRY_FILE,
+        context);
+  }
+
+  public void appendDocument(List portletWindowElementList)
+      throws PortletRegistryException {
+    PortletRegistryReader portletWindowRegistryReader = new PortletWindowRegistryReader(
+        registryLocation, context);
+    PortletRegistryObject portletWindowRegistry = portletWindowRegistryReader
+        .readDocument();
+    write(portletWindowElementList, portletWindowRegistry);
+  }
+
+  public void writeDocument(List portletWindowElementList)
+      throws PortletRegistryException {
+    // TODO: Not in use. Should be removed?
+    // PortletRegistryReader portletWindowRegistryReader = new
+    // PortletWindowRegistryReader(registryLocation);
+    PortletRegistryObject portletWindowRegistry = new PortletWindowRegistry();
+    write(portletWindowElementList, portletWindowRegistry);
+  }
+
+  private void write(List portletWindowElementList,
+      PortletRegistryObject portletWindowRegistry)
+      throws PortletRegistryException {
+    int size = portletWindowElementList.size();
+    PortletRegistryElement portletWindow;
+    for (int i = 0; i < size; i++) {
+      portletWindow = (PortletRegistryElement) portletWindowElementList.get(i);
+      portletWindowRegistry.addRegistryElement(portletWindow);
     }
-    
-    public void appendDocument(List portletWindowElementList) throws PortletRegistryException {
-        PortletRegistryReader portletWindowRegistryReader = new PortletWindowRegistryReader(registryLocation, context);
-        PortletRegistryObject portletWindowRegistry = portletWindowRegistryReader.readDocument();
-        write(portletWindowElementList, portletWindowRegistry);
-    }
-    
-    public void writeDocument(List portletWindowElementList) throws PortletRegistryException {
-       //TODO: Not in use. Should be removed? 
-      //PortletRegistryReader portletWindowRegistryReader = new PortletWindowRegistryReader(registryLocation);
-        PortletRegistryObject portletWindowRegistry = new PortletWindowRegistry();
-        write(portletWindowElementList, portletWindowRegistry);
-    }
-    
-    private void write(List portletWindowElementList, PortletRegistryObject portletWindowRegistry) throws PortletRegistryException {
-        int size = portletWindowElementList.size();
-        PortletRegistryElement portletWindow;
-        for(int i=0; i<size; i++){
-            portletWindow = (PortletRegistryElement)portletWindowElementList.get(i);
-            portletWindowRegistry.addRegistryElement(portletWindow);
-        }
-        write(portletWindowRegistry);
-        PortletRegistryCache.refreshPortletWindowRegistryCache(true);
-        
-    }
+    write(portletWindowRegistry);
+    PortletRegistryCache.refreshPortletWindowRegistryCache(true);
+
+  }
 }

@@ -1,4 +1,3 @@
-
 /*
  * Aliaksei_Budnikau
  * Date: Oct 14, 2002
@@ -11,6 +10,6 @@ import java.rmi.RemoteException;
 
 public interface InterestCenterBmHome extends EJBHome {
 
-    public InterestCenterBm create() throws RemoteException, CreateException;
+  public InterestCenterBm create() throws RemoteException, CreateException;
 
 }

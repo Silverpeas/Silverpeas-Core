@@ -1,5 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
-
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /**
  * Titre : Silverpeas<p>
@@ -11,12 +11,9 @@
  * Created on 26 decembre 2001, 16:38
  */
 
-
 package com.stratelia.silverpeas.portlet;
 
-
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 
 /*
  * CVS Informations
@@ -36,90 +33,83 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * stabilisation lot2
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class PortletException extends SilverpeasException
-{
+public class PortletException extends SilverpeasException {
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     *
-     * @see
-     */
-    public PortletException(String callingClass, int errorLevel, String message)
-    {
-        super(callingClass, errorLevel, message);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * 
+   * @see
+   */
+  public PortletException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     *
-     * @see
-     */
-    public PortletException(String callingClass, int errorLevel, String message, String extraParams)
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * 
+   * @see
+   */
+  public PortletException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param nested
+   * 
+   * @see
+   */
+  public PortletException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param nested
-     *
-     * @see
-     */
-    public PortletException(String callingClass, int errorLevel, String message, Exception nested)
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * @param nested
+   * 
+   * @see
+   */
+  public PortletException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 
-
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * @param nested
-     *
-     * @see
-     */
-    public PortletException(String callingClass, int errorLevel, String message, String extraParams, Exception nested)
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
-
-    /**
-     * method of interface FromModule
-     */
-    public String getModule()
-    {
-        return "portlet";
-    }
+  /**
+   * method of interface FromModule
+   */
+  public String getModule() {
+    return "portlet";
+  }
 
 }
-
-

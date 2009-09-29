@@ -4,6 +4,6 @@ package com.stratelia.webactiv.util.exception;
 
 public interface WithNested {
 
-    public Exception getNested();
+  public Exception getNested();
 
 }

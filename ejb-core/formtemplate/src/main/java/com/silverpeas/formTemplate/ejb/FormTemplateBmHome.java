@@ -6,10 +6,9 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- *
+ * 
  * @author neysseri
  */
-public interface FormTemplateBmHome extends EJBHome
-{
-	FormTemplateBm create() throws RemoteException, CreateException;
+public interface FormTemplateBmHome extends EJBHome {
+  FormTemplateBm create() throws RemoteException, CreateException;
 }

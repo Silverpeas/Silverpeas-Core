@@ -43,22 +43,22 @@ public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
    * Silverpeas publication translation node qname.
    */
   String SLV_I18N_PUBLICATION = "slv:i18nPublication";
-  
+
   /**
    * Silverpeas versionning document node qname.
    */
   String SLV_DOCUMENT = "slv:document";
-  
+
   /**
    * Silverpeas versionning document versionnode qname.
    */
   String SLV_DOCUMENT_ATTACHMENT = "slv:documentAttachment";
-  
+
   /**
    * Silverpeas attachment node qname.
    */
   String SLV_ATTACHMENT = "slv:attachment";
-  
+
   /**
    * Silverpeas attachment translation node qname.
    */
@@ -98,17 +98,17 @@ public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
    * Silverpeas WebSites component node.
    */
   String SLV_WEB_SITES = "slv:webSites";
-  
+
   /**
    * Silverpeas Record (FormTemplate) component node.
    */
   String SLV_XML_FORM = "slv:xmlForm";
-  
+
   /**
    * Silverpeas Data Record (FormTemplate) component node.
    */
   String SLV_XML_FORM_DATA = "slv:xmlFormData";
-  
+
   /**
    * Silverpeas Mixin to add an owner to the node.
    */

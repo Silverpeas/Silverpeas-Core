@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.statistic.control;
 
@@ -26,26 +27,25 @@ import javax.ejb.EJBHome;
  * no message
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface StatisticBmHome extends EJBHome
-{
+public interface StatisticBmHome extends EJBHome {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws CreateException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    StatisticBm create() throws RemoteException, CreateException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  StatisticBm create() throws RemoteException, CreateException;
 }

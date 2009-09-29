@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * TabbedPane.java
@@ -13,7 +14,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- *
+ * 
  * @author squere
  * @version
  */
@@ -21,8 +22,8 @@ public class TabbedPaneWA2 extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public TabbedPaneWA2() {
@@ -31,10 +32,10 @@ public class TabbedPaneWA2 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {
@@ -61,12 +62,12 @@ public class TabbedPaneWA2 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param tabs
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String printTabLine(Collection tabs) {
@@ -95,7 +96,7 @@ public class TabbedPaneWA2 extends AbstractTabbedPane {
 
       /*
        * result.append("<td>\n");
-       *
+       * 
        * result.append("<table border=0 cellspacing=0 cellpadding=0>\n");
        * result.append("<tr>\n"); result.append("<td colspan=3 rowspan=3><img
        * src=\"").append(iconsPath).append("/tabs/bt2_hg.gif\"></td>\n");
@@ -103,11 +104,14 @@ public class TabbedPaneWA2 extends AbstractTabbedPane {
        * src=\"").append(iconsPath).append("/tabs/1px.gif\"></td>\n");
        * result.append("<td colspan=3 rowspan=3><img
        * src=\"").append(iconsPath).append("/tabs/bt2_hd.gif\"></td>\n");
-       * result.append("</tr>\n"); result.append("<tr>\n"); result.append("<td bgcolor=#FFFFFF width=1><img
+       * result.append("</tr>\n"); result.append("<tr>\n"); result.append("<td
+       * bgcolor=#FFFFFF width=1><img
        * src=\"").append(iconsPath).append("/tabs/1px.gif\"></td>\n");
-       * result.append("</tr>\n"); result.append("<tr>\n"); result.append("<td class=ongletColorLight><img
+       * result.append("</tr>\n"); result.append("<tr>\n"); result.append("<td
+       * class=ongletColorLight><img
        * src=\"").append(iconsPath).append("/tabs/1px.gif\"></td>\n");
-       * result.append("</tr>\n"); result.append("<tr>\n"); result.append("<td bgcolor=#666666><img
+       * result.append("</tr>\n"); result.append("<tr>\n"); result.append("<td
+       * bgcolor=#666666><img
        * src=\"").append(iconsPath).append("/tabs/1px.gif\"></td>\n");
        * result.append("<td bgcolor=#CCCCCC><img
        * src=\"").append(iconsPath).append("/tabs/1px.gif\"></td>\n");
@@ -116,13 +120,13 @@ public class TabbedPaneWA2 extends AbstractTabbedPane {
        */
 
       if (tab.getEnabled()) {
-        result.append("<td align=\"center\" nowrap class=").append(style).append(
-            "><a href=\"").append(tab.getAction()).append("\" class=\"").append(
-            style).append("\">&nbsp;").append(tab.getLabel()).append(
-            "&nbsp;</td>\n");
+        result.append("<td align=\"center\" nowrap class=").append(style)
+            .append("><a href=\"").append(tab.getAction())
+            .append("\" class=\"").append(style).append("\">&nbsp;").append(
+                tab.getLabel()).append("&nbsp;</td>\n");
       } else {
-        result.append("<td align=\"center\" nowrap class=\"").append(style).append(
-            "\">").append(tab.getLabel()).append("</td>\n");
+        result.append("<td align=\"center\" nowrap class=\"").append(style)
+            .append("\">").append(tab.getLabel()).append("</td>\n");
       }
 
       result.append(TabbedPaneWA2StringFactory.getPrintAfterString());

@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.publication.control;
 
@@ -23,26 +24,25 @@ import javax.ejb.EJBHome;
  * Stabilisation Lot 2 : Exceptions et Silvertrace
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface PublicationBmHome extends EJBHome
-{
+public interface PublicationBmHome extends EJBHome {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws CreateException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    PublicationBm create() throws RemoteException, CreateException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  PublicationBm create() throws RemoteException, CreateException;
 }

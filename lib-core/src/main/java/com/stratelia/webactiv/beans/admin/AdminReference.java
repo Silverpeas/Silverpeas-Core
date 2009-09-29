@@ -6,11 +6,9 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-public class AdminReference
-{
-    protected static Admin m_Admin = new Admin();
+public class AdminReference {
+  protected static Admin m_Admin = new Admin();
 
-    public AdminReference()
-    {
-    }
+  public AdminReference() {
+  }
 }

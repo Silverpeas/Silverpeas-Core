@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * Item.java
@@ -11,239 +12,223 @@ package com.stratelia.webactiv.util.viewGenerator.html.navigationList;
 import java.util.Collection;
 
 /**
- * Item of a list. This item must contain a label and an URL ; and optionnally it can have a number of elements and a string (informations).
+ * Item of a list. This item must contain a label and an URL ; and optionnally
+ * it can have a number of elements and a string (informations).
+ * 
  * @author lloiseau
  * @version 1.0
  */
-public class Item
-{
+public class Item {
 
-    private String     	label;
-    private String     	URL;
-    private int        	nbelem;
-    private String     	info;
-    private Collection 	links;
-    private String		universalLink;
+  private String label;
+  private String URL;
+  private int nbelem;
+  private String info;
+  private Collection links;
+  private String universalLink;
 
-    /**
-     * Creates new Item
-     * Contain a label, number of elements and information
-     * @param label
-     * @param URL
-     * @param nbelem
-     * @param info
-     */
-    public Item(String label, String URL, int nbelem, Collection links)
-    {
-        this.URL = URL;
-        this.label = label;
-        this.nbelem = nbelem;
-        this.links = links;
-    }
+  /**
+   * Creates new Item Contain a label, number of elements and information
+   * 
+   * @param label
+   * @param URL
+   * @param nbelem
+   * @param info
+   */
+  public Item(String label, String URL, int nbelem, Collection links) {
+    this.URL = URL;
+    this.label = label;
+    this.nbelem = nbelem;
+    this.links = links;
+  }
 
+  /**
+   * Creates new Item Contain a label, number of elements and information
+   * 
+   * @param label
+   * @param URL
+   * @param nbelem
+   * @param info
+   */
+  public Item(String label, String URL, int nbelem, String info) {
+    this.URL = URL;
+    this.label = label;
+    this.nbelem = nbelem;
+    this.info = info;
+  }
 
-    /**
-     * Creates new Item
-     * Contain a label, number of elements and information
-     * @param label
-     * @param URL
-     * @param nbelem
-     * @param info
-     */
-    public Item(String label, String URL, int nbelem, String info)
-    {
-        this.URL = URL;
-        this.label = label;
-        this.nbelem = nbelem;
-        this.info = info;
-    }
+  /**
+   * Creates new Item Contain a label and information but no elements
+   */
+  public Item(String label, String URL, String info) {
+    this.label = label;
+    this.URL = URL;
+    this.nbelem = -1;
+    this.info = info;
+  }
 
-    /**
-     * Creates new Item
-     * Contain a label and information but no elements
-     */
-    public Item(String label, String URL, String info)
-    {
-        this.label = label;
-        this.URL = URL;
-        this.nbelem = -1;
-        this.info = info;
-    }
+  /**
+   * Creates new Item Contain a lonely label :o(
+   */
+  public Item(String label, String URL) {
+    this.label = label;
+    this.URL = URL;
+    this.nbelem = -1;
+    this.info = null;
+  }
 
-    /**
-     * Creates new Item
-     * Contain a lonely label :o(
-     */
-    public Item(String label, String URL)
-    {
-        this.label = label;
-        this.URL = URL;
-        this.nbelem = -1;
-        this.info = null;
-    }
+  // Return the label
 
-    // Return the label
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getLabel() {
+    return label;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getLabel()
-    {
-        return label;
-    }
+  // To set a new label
 
-    // To set a new label
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param label
+   * 
+   * @see
+   */
+  public void setLabel(String label) {
+    this.label = label;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param label
-     *
-     * @see
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
+  // Return the URL
 
-    // Return the URL
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getURL() {
+    return URL;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getURL()
-    {
-        return URL;
-    }
+  // To set a new URL
 
-    // To set a new URL
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param URL
+   * 
+   * @see
+   */
+  public void setURL(String URL) {
+    this.URL = URL;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param URL
-     *
-     * @see
-     */
-    public void setURL(String URL)
-    {
-        this.URL = URL;
-    }
+  // Return the number of elements
 
-    // Return the number of elements
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int getNbelem() {
+    return nbelem;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public int getNbelem()
-    {
-        return nbelem;
-    }
+  // To set the number of elements
 
-    // To set the number of elements
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param nbelem
+   * 
+   * @see
+   */
+  public void setNbelem(int nbelem) {
+    this.nbelem = nbelem;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param nbelem
-     *
-     * @see
-     */
-    public void setNbelem(int nbelem)
-    {
-        this.nbelem = nbelem;
-    }
+  // Return informations
 
-    // Return informations
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getInfo() {
+    return info;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getInfo()
-    {
-        return info;
-    }
+  // To set the informations
 
-    // To set the informations
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param info
+   * 
+   * @see
+   */
+  public void setInfo(String info) {
+    this.info = info;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param info
-     *
-     * @see
-     */
-    public void setInfo(String info)
-    {
-        this.info = info;
-    }
+  // Return collection of links
 
-    // Return collection of links
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public Collection getLinks() {
+    return links;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public Collection getLinks()
-    {
-        return links;
-    }
+  // To set the commection of links
 
-    // To set the commection of links
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param links
+   * 
+   * @see
+   */
+  public void setLinks(Collection links) {
+    this.links = links;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param links
-     *
-     * @see
-     */
-    public void setLinks(Collection links)
-    {
-        this.links = links;
-    }
+  /**
+   * @return
+   */
+  public String getUniversalLink() {
+    return universalLink;
+  }
 
-	/**
-	 * @return
-	 */
-	public String getUniversalLink() {
-		return universalLink;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setUniversalLink(String string) {
-		universalLink = string;
-	}
+  /**
+   * @param string
+   */
+  public void setUniversalLink(String string) {
+    universalLink = string;
+  }
 
 }

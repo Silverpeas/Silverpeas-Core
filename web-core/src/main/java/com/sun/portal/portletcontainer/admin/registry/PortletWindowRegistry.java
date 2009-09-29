@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin.registry;
 
 import java.util.ArrayList;
@@ -40,101 +39,108 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowRegistry represents the PortletWindowRegistry Element in portlet-window-registry.xml
+ * PortletWindowRegistry represents the PortletWindowRegistry Element in
+ * portlet-window-registry.xml
  */
-public class PortletWindowRegistry implements PortletRegistryTags, PortletRegistryObject {
-    
-    private String version;
-    private Map portletWindowTable;
-    private List portletWindowList;
-    
-    public PortletWindowRegistry() {
-        portletWindowTable = new LinkedHashMap();
-        portletWindowList = new ArrayList();
+public class PortletWindowRegistry implements PortletRegistryTags,
+    PortletRegistryObject {
+
+  private String version;
+  private Map portletWindowTable;
+  private List portletWindowList;
+
+  public PortletWindowRegistry() {
+    portletWindowTable = new LinkedHashMap();
+    portletWindowList = new ArrayList();
+  }
+
+  public Map getPortletWindowRegistryTable() {
+    return this.portletWindowTable;
+  }
+
+  public void read(Document document) throws PortletRegistryException {
+    Element root = PortletRegistryHelper.getRootElement(document);
+    if (root != null)
+      populate(root);
+  }
+
+  public void addRegistryElement(PortletRegistryElement portletWindow) {
+    portletWindowTable.put(portletWindow.getName(), portletWindow);
+    portletWindowList.add(portletWindow);
+  }
+
+  public PortletRegistryElement getRegistryElement(String name) {
+    return (PortletRegistryElement) portletWindowTable.get(name);
+  }
+
+  public List getRegistryElements() {
+    return this.portletWindowList;
+  }
+
+  public boolean removeRegistryElement(PortletRegistryElement portletWindow) {
+    portletWindowTable.remove(portletWindow.getName());
+    return portletWindowList.remove(portletWindow);
+  }
+
+  private void populate(Element root) {
+    // Get the attributes for PortletWindowRegistry Tag.
+    Map portletWindowRegistryAttributes = XMLDocumentHelper
+        .createAttributeTable(root);
+    setVersion((String) portletWindowRegistryAttributes
+        .get(PortletRegistryTags.VERSION_KEY));
+    // Get a list of PortletWindow tags and populate values from it.
+    List portletWindowTags = XMLDocumentHelper.createElementList(root);
+    int numOfPortletWindowTags = portletWindowTags.size();
+    PortletWindow portletWindow;
+    for (int i = 0; i < numOfPortletWindowTags; i++) {
+      Element portletWindowTag = (Element) portletWindowTags.get(i);
+      portletWindow = new PortletWindow();
+      portletWindow.populateValues(portletWindowTag);
+      addRegistryElement(portletWindow);
     }
-    
-    public Map getPortletWindowRegistryTable() {
-        return this.portletWindowTable;
+    // System.out.println(portletWindowTable);
+  }
+
+  public String getVersion() {
+    if (this.version == null)
+      return PortletRegistryConstants.VERSION;
+    return this.version;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public void write(Document document) {
+    Element rootTag = XMLDocumentHelper.createElement(document,
+        PORTLET_WINDOW_REGISTRY_TAG);
+    // Add the atribute to the child
+    rootTag.setAttribute(VERSION_KEY, getVersion());
+    document.appendChild(rootTag);
+    Iterator itr = portletWindowTable.values().iterator();
+    PortletWindow portletWindow;
+    int newRow = -1;
+    while (itr.hasNext()) {
+      portletWindow = (PortletWindow) itr.next();
+      // Get the new row number.
+      int row = portletWindow.getRow();
+      if (row == -1) {
+        // row number has not been assigned, use the new row number
+        newRow++;
+        portletWindow.setStringProperty(ROW_KEY, String.valueOf(newRow));
+      }
+      if (row > newRow) {
+        newRow = row;
+      }
+      if (portletWindow.getStringProperty(VISIBLE_KEY) == null) {
+        portletWindow.setStringProperty(VISIBLE_KEY,
+            PortletRegistryConstants.VISIBLE_TRUE);
+      }
+      if (portletWindow.getStringProperty(WIDTH_KEY) == null) {
+        portletWindow.setStringProperty(WIDTH_KEY,
+            PortletRegistryConstants.WIDTH_THICK);
+      }
+      portletWindow.create(document, rootTag);
     }
-    
-    public void read(Document document) throws PortletRegistryException {
-        Element root = PortletRegistryHelper.getRootElement(document);
-        if(root != null)
-            populate(root);
-    }
-    
-    public void addRegistryElement(PortletRegistryElement portletWindow) {
-        portletWindowTable.put(portletWindow.getName(), portletWindow);
-        portletWindowList.add(portletWindow);
-    }
-    
-    public PortletRegistryElement getRegistryElement(String name){
-        return (PortletRegistryElement)portletWindowTable.get(name);
-    }
-    
-    public List getRegistryElements() {
-        return this.portletWindowList;
-    }
-    
-    public boolean removeRegistryElement(PortletRegistryElement portletWindow) {
-        portletWindowTable.remove(portletWindow.getName());
-        return portletWindowList.remove(portletWindow);
-    }
-    
-    private void populate(Element root){
-        // Get the attributes for PortletWindowRegistry Tag.
-        Map portletWindowRegistryAttributes = XMLDocumentHelper.createAttributeTable(root);
-        setVersion((String)portletWindowRegistryAttributes.get(PortletRegistryTags.VERSION_KEY));
-        // Get a list of PortletWindow tags and populate values from it.
-        List portletWindowTags = XMLDocumentHelper.createElementList(root);
-        int numOfPortletWindowTags = portletWindowTags.size();
-        PortletWindow portletWindow;
-        for(int i=0; i<numOfPortletWindowTags; i++) {
-            Element portletWindowTag = (Element)portletWindowTags.get(i);
-            portletWindow = new PortletWindow();
-            portletWindow.populateValues(portletWindowTag);
-            addRegistryElement(portletWindow);
-        }
-        //System.out.println(portletWindowTable);
-    }
-    
-    public String getVersion() {
-        if(this.version == null)
-            return PortletRegistryConstants.VERSION;
-        return this.version;
-    }
-    
-    public void setVersion(String version){
-        this.version = version;
-    }
-    
-    public void write(Document document) {
-        Element rootTag = XMLDocumentHelper.createElement(document, PORTLET_WINDOW_REGISTRY_TAG);
-        //Add the atribute to the child
-        rootTag.setAttribute(VERSION_KEY, getVersion());
-        document.appendChild(rootTag);
-        Iterator itr = portletWindowTable.values().iterator();
-        PortletWindow portletWindow;
-        int newRow = -1;
-        while(itr.hasNext()){
-            portletWindow = (PortletWindow)itr.next();
-            // Get the new row number.
-            int row = portletWindow.getRow();
-            if(row == -1) {
-                // row number has not been assigned, use the new row number
-                newRow++;
-                portletWindow.setStringProperty(ROW_KEY, String.valueOf(newRow));
-            }
-            if(row > newRow) {
-                newRow = row;
-            }
-            if(portletWindow.getStringProperty(VISIBLE_KEY) == null){
-                portletWindow.setStringProperty(VISIBLE_KEY, PortletRegistryConstants.VISIBLE_TRUE);
-            }
-            if(portletWindow.getStringProperty(WIDTH_KEY) == null){
-                portletWindow.setStringProperty(WIDTH_KEY, PortletRegistryConstants.WIDTH_THICK);
-            }
-            portletWindow.create(document, rootTag);
-        }
-    }
+  }
 }

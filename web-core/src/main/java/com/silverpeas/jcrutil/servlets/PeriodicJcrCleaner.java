@@ -17,7 +17,8 @@ public class PeriodicJcrCleaner implements Runnable {
 
   public PeriodicJcrCleaner(Repository repository) throws ItemStateException,
       RepositoryException {
-    SessionImpl session = (SessionImpl) repository.login(new SilverpeasSystemCredentials());
+    SessionImpl session = (SessionImpl) repository
+        .login(new SilverpeasSystemCredentials());
     gc = session.createDataStoreGarbageCollector();
     this.running = true;
   }
@@ -27,7 +28,8 @@ public class PeriodicJcrCleaner implements Runnable {
       while (running) {
         synchronized (this) {
           SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
-              "RepositoryAccessServlet initialized", "Cleaning the repository ...........");
+              "RepositoryAccessServlet initialized",
+              "Cleaning the repository ...........");
           System.gc();
           if (gc != null && gc.getDataStore() != null) {
             gc.scan();

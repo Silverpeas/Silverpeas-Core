@@ -10,6 +10,9 @@ import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
 
 public interface ContactHome extends EJBHome {
-  public Contact create(ContactDetail pubDetail) throws CreateException, RemoteException;
-  public Contact findByPrimaryKey(ContactPK pk) throws FinderException, RemoteException;
+  public Contact create(ContactDetail pubDetail) throws CreateException,
+      RemoteException;
+
+  public Contact findByPrimaryKey(ContactPK pk) throws FinderException,
+      RemoteException;
 }

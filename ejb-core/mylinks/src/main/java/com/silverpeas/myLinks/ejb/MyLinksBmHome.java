@@ -6,5 +6,5 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
 
 public interface MyLinksBmHome extends EJBHome {
-    public MyLinksBm create() throws RemoteException, CreateException;
+  public MyLinksBm create() throws RemoteException, CreateException;
 }

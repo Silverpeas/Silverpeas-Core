@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.treeManager.model;
 
@@ -18,114 +19,107 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * no message
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class TreeNodePK extends WAPrimaryKey implements Serializable
-{
+public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param id
-     *
-     * @see
-     */
-    public TreeNodePK(String id)
-    {
-        super(id);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * 
+   * @see
+   */
+  public TreeNodePK(String id) {
+    super(id);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param id
-     * @param space
-     * @param componentName
-     *
-     * @see
-     */
-    public TreeNodePK(String id, String space, String componentName)
-    {
-        super(id, space, componentName);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * @param space
+   * @param componentName
+   * 
+   * @see
+   */
+  public TreeNodePK(String id, String space, String componentName) {
+    super(id, space, componentName);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param id
-     * @param pk
-     *
-     * @see
-     */
-    public TreeNodePK(String id, WAPrimaryKey pk)
-    {
-        super(id, pk);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param id
+   * @param pk
+   * 
+   * @see
+   */
+  public TreeNodePK(String id, WAPrimaryKey pk) {
+    super(id, pk);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getRootTableName()
-    {
-        return "Tree";
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getRootTableName() {
+    return "Tree";
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getTableName()
-    {
-        return "SB_Tree_Tree";
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getTableName() {
+    return "SB_Tree_Tree";
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param other
-     *
-     * @return
-     *
-     * @see
-     */
-    public boolean equals(Object other)
-    {
-        if (!(other instanceof TreeNodePK))
-        {
-            return false;
-        }
-        return (id.equals(((TreeNodePK) other).getId())) && (space.equals(((TreeNodePK) other).getSpace())) && (componentName.equals(((TreeNodePK) other).getComponentName()));
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param other
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public boolean equals(Object other) {
+    if (!(other instanceof TreeNodePK)) {
+      return false;
     }
+    return (id.equals(((TreeNodePK) other).getId()))
+        && (space.equals(((TreeNodePK) other).getSpace()))
+        && (componentName.equals(((TreeNodePK) other).getComponentName()));
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public int hashCode()
-    {
-        return toString().hashCode();
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public int hashCode() {
+    return toString().hashCode();
+  }
 
 }

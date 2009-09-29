@@ -6,10 +6,9 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- *
+ * 
  * @author neysseri
  */
-public interface PdcBmHome extends EJBHome
-{
-	PdcBm create() throws RemoteException, CreateException;
+public interface PdcBmHome extends EJBHome {
+  PdcBm create() throws RemoteException, CreateException;
 }

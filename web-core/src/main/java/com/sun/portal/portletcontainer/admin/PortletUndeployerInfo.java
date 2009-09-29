@@ -41,56 +41,58 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  * PortletUndeployerInfo has the list of the portlets that are undeployed.
  */
 public class PortletUndeployerInfo {
-    
-    private static final String UNDEPLOY_PORTLET_FILE = ".undeploy-portlet";
-    private String undeployPortletFilename;
-    
-    // Create a logger for this class
-    private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
-            "com.silverpeas.portlets.PALogMessages");
-    
-    public PortletUndeployerInfo() throws PortletRegistryException {
-        undeployPortletFilename = PortletRegistryHelper.getRegistryLocation()
-                                        + File.separator + UNDEPLOY_PORTLET_FILE;
-    }
-    
-    public List read() {
-        List list = new ArrayList();
-        BufferedReader reader = null;
-        File file = null;
+
+  private static final String UNDEPLOY_PORTLET_FILE = ".undeploy-portlet";
+  private String undeployPortletFilename;
+
+  // Create a logger for this class
+  private static Logger logger = Logger.getLogger(
+      "com.sun.portal.portletcontainer.admin",
+      "com.silverpeas.portlets.PALogMessages");
+
+  public PortletUndeployerInfo() throws PortletRegistryException {
+    undeployPortletFilename = PortletRegistryHelper.getRegistryLocation()
+        + File.separator + UNDEPLOY_PORTLET_FILE;
+  }
+
+  public List read() {
+    List list = new ArrayList();
+    BufferedReader reader = null;
+    File file = null;
+    try {
+      file = new File(undeployPortletFilename);
+      reader = new BufferedReader(new FileReader(file));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        list.add(line);
+      }
+    } catch (Exception e) {
+      logger.log(Level.FINEST, "PSPL_CSPPAM0029", e.getMessage());
+    } finally {
+      if (reader != null) {
         try {
-            file = new File(undeployPortletFilename);
-            reader = new BufferedReader(new FileReader(file));
-            String line;
-            while((line = reader.readLine()) != null){
-                list.add(line);
-            }
-        } catch(Exception e) {
-            logger.log(Level.FINEST, "PSPL_CSPPAM0029", e.getMessage());
-        } finally {
-            if(reader != null){
-                try {
-                    reader.close();
-                } catch (IOException ignored) {}
-            }
-            if(file != null) {
-                file.delete();
-            }
+          reader.close();
+        } catch (IOException ignored) {
         }
-        return list;
+      }
+      if (file != null) {
+        file.delete();
+      }
     }
-    
-    public void write(String undeployedPortletWar) {
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(new FileWriter(undeployPortletFilename, true));
-            writer.println(undeployedPortletWar);
-        } catch(Exception e){
-            logger.log(Level.WARNING, "PSPL_CSPPAM0030", e);
-        } finally {
-            if(writer != null){
-                writer.close();
-            }
-        }
+    return list;
+  }
+
+  public void write(String undeployedPortletWar) {
+    PrintWriter writer = null;
+    try {
+      writer = new PrintWriter(new FileWriter(undeployPortletFilename, true));
+      writer.println(undeployedPortletWar);
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "PSPL_CSPPAM0030", e);
+    } finally {
+      if (writer != null) {
+        writer.close();
+      }
     }
+  }
 }

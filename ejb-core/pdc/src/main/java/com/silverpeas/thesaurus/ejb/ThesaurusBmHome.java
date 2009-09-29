@@ -7,6 +7,6 @@ import javax.ejb.EJBHome;
 
 public interface ThesaurusBmHome extends EJBHome {
 
-	ThesaurusBm create() throws RemoteException, CreateException;
+  ThesaurusBm create() throws RemoteException, CreateException;
 
 }

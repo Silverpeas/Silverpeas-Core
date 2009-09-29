@@ -4,221 +4,238 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 /**
-* This class contains headers of axis.
-* And uses the persistence class for the DAO.
-* The user can access to the axis main information.
-* @author Sébastien Antonio
-*/
-public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Serializable {
-		
-	/**
-	* The name of the axe
-	*/
-	private String name = null;
-
-	/**
-	* The type of the axe
-	*/
-	private String type = null;
-
-	/**
-	* The date of creation  of the axe
-	*/
-	private String creationDate = null;
-
-	/**
-	* The id of the owner of the axe
-	*/
-	private String creatorId = null;
-
-	
-	/**
-	* The order of the axe
-	*/
-	private int order = -1;
-
-	/**
-	* The rootId of the axe
-	*/
-	private int rootId = -1;
-
-	/**
- 	* The description of the axe
- 	*/
-	private String  description = null;
-	
-	private String lang = null;
-
-
-	public AxisHeaderPersistence(){}
-	
-	public AxisHeaderPersistence(AxisHeader axis)
-	{
-		setPK(axis.getPK());
-		this.name = axis.getName();
-		this.description = axis.getDescription();
-		this.creationDate = axis.getCreationDate();
-		this.creatorId = axis.getCreatorId();
-		this.order = axis.getAxisOrder();
-		this.rootId = axis.getRootId();
-		this.type = axis.getAxisType();
-		this.lang = axis.getLanguage();
-	}
-
-		/**
-	* Returns the name of the axe.
-	* @return the name
-	*/
-	public String getName(){
-		return this.name;
-	}
-	
-	/**
-	* set a name for an axe
-	* @param name - the name of the axe
-	*/
-	public void setName(String name){
-		this.name = name;
-	}
-	
-	/**
-	* Returns the type of the axe.
-	* @return the type
-	*/
-	public String getAxisType(){
-		return this.type;
-	}
-
-
-	/**
-	* set a type for an axe
-	* @param type - the type of the axe
-	*/
-	public void setAxisType(String type){
-		this.type = type;
-	}
-
-	/**
-	* Returns the order of the axe.
-	* @return the order
-	*/
-	public int getAxisOrder(){
-		return this.order;
-	}
-
-	/**
-	* set an order for an axe
-	* @param order - the order of the axe
-	*/
-	public void setAxisOrder(int order){
-		this.order = order;
-	}
-
-
-	/**
-	* Returns the id of the axe root.
-	* @return the root id
-	*/
-	public int getRootId(){
-		return this.rootId;
-	}
-
-	/**
-	* set a root id for an axe
-	* @param rootId - the id of the axe root
-	*/
-	public void setRootId(int rootId){
-		this.rootId = rootId;
-	}
-
-
-	/**
-	* Returns the date of creation of the axe.
-	* @return the creationDate
-	*/
-	public String getCreationDate(){
-		return this.creationDate;
-	}
-
-	/**
-	* set a date of creation for an axe
-	* @param creationDate - the date of creation of the axe
-	*/
-	public void setCreationDate(String creationDate){
-		this.creationDate = creationDate;
-	}
-
-
-	/**
-	* Returns the id of the axe owner.
-	* @return the creatorId
-	*/
-	public String getCreatorId(){
-		return this.creatorId;
-	}
-
-	/**
-	* set the id of the axe owner.
-	* @param creatorId - the id of the axe owner.
-	*/
-	public void setCreatorId(String creatorId){
-		this.creatorId = creatorId;
-	}
-
-	/**
-	* Returns the description of the axe.
-	* @return the description
-	*/
-	public String getDescription(){
-		return this.description;
-	}
- 
-	/**
-	* set a description for an axe
-	* @param description - the description of the axe
-	*/
-	public void setDescription(String description){
-		this.description = description;
-	}
-	
-	public String getLang(){
-		return this.lang;
-	}
-	
-	public void setLang(String lang){
-		this.lang = lang;
-	}
+ * This class contains headers of axis. And uses the persistence class for the
+ * DAO. The user can access to the axis main information.
+ * 
+ * @author Sébastien Antonio
+ */
+public class AxisHeaderPersistence extends SilverpeasBean implements
+    java.io.Serializable {
 
   /**
-	* Converts the contents of the key into a readable String.
-	* @return The string representation of this object
-	*/
-	public String toString() {
-		return "(pk = " + getPK() + ", name = " + getName() + 
-            ", type = " + getAxisType() + ", order = " + getAxisOrder() +", creationDate = " + getCreationDate()+
-			", creatorId = "+getCreatorId()+", rootId = "+getRootId()+", description = "+getDescription()+")";
-	}
+   * The name of the axe
+   */
+  private String name = null;
 
+  /**
+   * The type of the axe
+   */
+  private String type = null;
 
-	/**
-	 * determine the connection type to the database
-	 */
-	public int _getConnectionType()
-	{
-		return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-	}
+  /**
+   * The date of creation of the axe
+   */
+  private String creationDate = null;
 
-	/**
-	 * define the table name
-	 */
-	public String _getTableName()
-	{
-		return "SB_Pdc_Axis";
-	}
+  /**
+   * The id of the owner of the axe
+   */
+  private String creatorId = null;
 
-	public boolean equals(Object other) {
-		if (!(other instanceof AxisHeaderPersistence)) return false;
-		return (getPK().getId().equals(((AxisHeaderPersistence) other).getPK().getId()));
-	}
+  /**
+   * The order of the axe
+   */
+  private int order = -1;
+
+  /**
+   * The rootId of the axe
+   */
+  private int rootId = -1;
+
+  /**
+   * The description of the axe
+   */
+  private String description = null;
+
+  private String lang = null;
+
+  public AxisHeaderPersistence() {
+  }
+
+  public AxisHeaderPersistence(AxisHeader axis) {
+    setPK(axis.getPK());
+    this.name = axis.getName();
+    this.description = axis.getDescription();
+    this.creationDate = axis.getCreationDate();
+    this.creatorId = axis.getCreatorId();
+    this.order = axis.getAxisOrder();
+    this.rootId = axis.getRootId();
+    this.type = axis.getAxisType();
+    this.lang = axis.getLanguage();
+  }
+
+  /**
+   * Returns the name of the axe.
+   * 
+   * @return the name
+   */
+  public String getName() {
+    return this.name;
+  }
+
+  /**
+   * set a name for an axe
+   * 
+   * @param name
+   *          - the name of the axe
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * Returns the type of the axe.
+   * 
+   * @return the type
+   */
+  public String getAxisType() {
+    return this.type;
+  }
+
+  /**
+   * set a type for an axe
+   * 
+   * @param type
+   *          - the type of the axe
+   */
+  public void setAxisType(String type) {
+    this.type = type;
+  }
+
+  /**
+   * Returns the order of the axe.
+   * 
+   * @return the order
+   */
+  public int getAxisOrder() {
+    return this.order;
+  }
+
+  /**
+   * set an order for an axe
+   * 
+   * @param order
+   *          - the order of the axe
+   */
+  public void setAxisOrder(int order) {
+    this.order = order;
+  }
+
+  /**
+   * Returns the id of the axe root.
+   * 
+   * @return the root id
+   */
+  public int getRootId() {
+    return this.rootId;
+  }
+
+  /**
+   * set a root id for an axe
+   * 
+   * @param rootId
+   *          - the id of the axe root
+   */
+  public void setRootId(int rootId) {
+    this.rootId = rootId;
+  }
+
+  /**
+   * Returns the date of creation of the axe.
+   * 
+   * @return the creationDate
+   */
+  public String getCreationDate() {
+    return this.creationDate;
+  }
+
+  /**
+   * set a date of creation for an axe
+   * 
+   * @param creationDate
+   *          - the date of creation of the axe
+   */
+  public void setCreationDate(String creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  /**
+   * Returns the id of the axe owner.
+   * 
+   * @return the creatorId
+   */
+  public String getCreatorId() {
+    return this.creatorId;
+  }
+
+  /**
+   * set the id of the axe owner.
+   * 
+   * @param creatorId
+   *          - the id of the axe owner.
+   */
+  public void setCreatorId(String creatorId) {
+    this.creatorId = creatorId;
+  }
+
+  /**
+   * Returns the description of the axe.
+   * 
+   * @return the description
+   */
+  public String getDescription() {
+    return this.description;
+  }
+
+  /**
+   * set a description for an axe
+   * 
+   * @param description
+   *          - the description of the axe
+   */
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getLang() {
+    return this.lang;
+  }
+
+  public void setLang(String lang) {
+    this.lang = lang;
+  }
+
+  /**
+   * Converts the contents of the key into a readable String.
+   * 
+   * @return The string representation of this object
+   */
+  public String toString() {
+    return "(pk = " + getPK() + ", name = " + getName() + ", type = "
+        + getAxisType() + ", order = " + getAxisOrder() + ", creationDate = "
+        + getCreationDate() + ", creatorId = " + getCreatorId() + ", rootId = "
+        + getRootId() + ", description = " + getDescription() + ")";
+  }
+
+  /**
+   * determine the connection type to the database
+   */
+  public int _getConnectionType() {
+    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
+  }
+
+  /**
+   * define the table name
+   */
+  public String _getTableName() {
+    return "SB_Pdc_Axis";
+  }
+
+  public boolean equals(Object other) {
+    if (!(other instanceof AxisHeaderPersistence))
+      return false;
+    return (getPK().getId().equals(((AxisHeaderPersistence) other).getPK()
+        .getId()));
+  }
 
 }

@@ -172,10 +172,10 @@ public class SilverpeasAccessManager implements AccessManager {
       session = repository.login(new SilverpeasSystemCredentials());
       NodeId nodeId = (NodeId) id;
       Node node = session.getNodeByUUID(nodeId.getUUID().toString());
-      if(JcrConstants.NT_FILE.equals(node.getPrimaryNodeType().getName())) {
+      if (JcrConstants.NT_FILE.equals(node.getPrimaryNodeType().getName())) {
         NodeType[] mixins = node.getMixinNodeTypes();
-        for(int i = 0; i < mixins.length; i++) {
-          if(JcrConstants.SLV_OWNABLE_MIXIN.equals(mixins[i].getName())){
+        for (int i = 0; i < mixins.length; i++) {
+          if (JcrConstants.SLV_OWNABLE_MIXIN.equals(mixins[i].getName())) {
             return true;
           }
         }

@@ -13,819 +13,743 @@ import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * The class Store and manage all the Admin's cache 
+ * The class Store and manage all the Admin's cache
  */
-public class AdminCache extends Object
-{
-	// Cache management
-    static private boolean m_bUseCache = true;
+public class AdminCache extends Object {
+  // Cache management
+  static private boolean m_bUseCache = true;
 
-    static private boolean m_bUseSpaceInstCache = true;
-    static private Hashtable m_hSpaceInstCache = new Hashtable();
-    
-    static private boolean m_bUseSpaceInstLightCache = true;
-    static private Hashtable m_hSpaceInstLightCache = new Hashtable();
+  static private boolean m_bUseSpaceInstCache = true;
+  static private Hashtable m_hSpaceInstCache = new Hashtable();
 
-    static private boolean m_bUseComponentInstCache = true;
-    static private Hashtable m_hComponentInstCache = new Hashtable();
+  static private boolean m_bUseSpaceInstLightCache = true;
+  static private Hashtable m_hSpaceInstLightCache = new Hashtable();
 
-    static private boolean m_bUseProfileInstCache = true;
-    static private Hashtable m_hProfileInstCache = new Hashtable();
+  static private boolean m_bUseComponentInstCache = true;
+  static private Hashtable m_hComponentInstCache = new Hashtable();
 
-    static private boolean m_bUseUserDetailCache = true;
-    static private Hashtable m_hUserDetailCache = new Hashtable();
+  static private boolean m_bUseProfileInstCache = true;
+  static private Hashtable m_hProfileInstCache = new Hashtable();
 
-    static private boolean m_bUseManageableSpaceIdsCache = true;
-    static private Hashtable m_hManageableSpaceIdsCache = new Hashtable();
+  static private boolean m_bUseUserDetailCache = true;
+  static private Hashtable m_hUserDetailCache = new Hashtable();
 
-    static private boolean m_bUseAvailCompoIdsCache = true;
-    static private Hashtable m_hAvailCompoIdsCache = new Hashtable();
+  static private boolean m_bUseManageableSpaceIdsCache = true;
+  static private Hashtable m_hManageableSpaceIdsCache = new Hashtable();
 
-    static private boolean m_bUseProfileIdsCache = true;
-    static private Hashtable m_hProfileIdsCache = new Hashtable();
+  static private boolean m_bUseAvailCompoIdsCache = true;
+  static private Hashtable m_hAvailCompoIdsCache = new Hashtable();
 
-	/**
-	 * Admin Constructor
-	 */
-	public AdminCache()
-   	{
-	}
+  static private boolean m_bUseProfileIdsCache = true;
+  static private Hashtable m_hProfileIdsCache = new Hashtable();
 
-    public void setCacheAvailable(boolean useCache)
-   	{
-		// Cache management
-        m_bUseCache = useCache;
-	}
+  /**
+   * Admin Constructor
+   */
+  public AdminCache() {
+  }
 
-	/**
-	 * Get the number of spaces loaded in cache
-	 * @return int representing the number of spaces stored in cache
-	 */
-    public int getNbSpacesInCache()
-    {
-		return m_hSpaceInstCache.size();
-	}
+  public void setCacheAvailable(boolean useCache) {
+    // Cache management
+    m_bUseCache = useCache;
+  }
 
-	/**
-	 * Get the number of components loaded in cache
-	 * @return int representing the number of components stored in cache
-	 */
-    public int getNbComponentsInCache()
-    {
-		return m_hComponentInstCache.size();
-	}
+  /**
+   * Get the number of spaces loaded in cache
+   * 
+   * @return int representing the number of spaces stored in cache
+   */
+  public int getNbSpacesInCache() {
+    return m_hSpaceInstCache.size();
+  }
 
-	/**
-	 * Get the number of profiles loaded in cache
-	 * @return int representing the number of profiles stored in cache
-	 */
-    public int getNbProfilesInCache()
-    {
-		return m_hProfileInstCache.size();
-	}
+  /**
+   * Get the number of components loaded in cache
+   * 
+   * @return int representing the number of components stored in cache
+   */
+  public int getNbComponentsInCache() {
+    return m_hComponentInstCache.size();
+  }
 
-	/**
-	 * Reset data stored in cache
-	 */
-    public void resetCache()
-    {
-        SilverTrace.debug("admin", "AdminCache.resetCache", "root.MSG_GEN_ENTER_METHOD");
-		m_hSpaceInstCache.clear();
-		m_hSpaceInstLightCache.clear();
-		m_hComponentInstCache.clear();
-		m_hProfileInstCache.clear();
-		m_hUserDetailCache.clear();
-		m_hManageableSpaceIdsCache.clear();
-		m_hAvailCompoIdsCache.clear();
-		m_hProfileIdsCache.clear();
-	}
+  /**
+   * Get the number of profiles loaded in cache
+   * 
+   * @return int representing the number of profiles stored in cache
+   */
+  public int getNbProfilesInCache() {
+    return m_hProfileInstCache.size();
+  }
 
+  /**
+   * Reset data stored in cache
+   */
+  public void resetCache() {
+    SilverTrace.debug("admin", "AdminCache.resetCache",
+        "root.MSG_GEN_ENTER_METHOD");
+    m_hSpaceInstCache.clear();
+    m_hSpaceInstLightCache.clear();
+    m_hComponentInstCache.clear();
+    m_hProfileInstCache.clear();
+    m_hUserDetailCache.clear();
+    m_hManageableSpaceIdsCache.clear();
+    m_hAvailCompoIdsCache.clear();
+    m_hProfileIdsCache.clear();
+  }
 
-	/*
-	 * Store the spaceInst in cache
-	 */
-    public void resetSpaceInst()
-    {
-        if (m_bUseCache && m_bUseSpaceInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.resetSpaceInst", "root.MSG_GEN_ENTER_METHOD");
-    		m_hSpaceInstCache.clear();
-        }
+  /*
+   * Store the spaceInst in cache
+   */
+  public void resetSpaceInst() {
+    if (m_bUseCache && m_bUseSpaceInstCache) {
+      SilverTrace.debug("admin", "AdminCache.resetSpaceInst",
+          "root.MSG_GEN_ENTER_METHOD");
+      m_hSpaceInstCache.clear();
     }
-	public void putSpaceInst(SpaceInst spaceInst) 
-	{
-        if (m_bUseCache && m_bUseSpaceInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putSpaceInst", "root.MSG_GEN_ENTER_METHOD", "spaceId = "+spaceInst.getId());
-            m_hSpaceInstCache.put(spaceInst.getId(), spaceInst);
-        }
-	}
+  }
 
-   public void removeSpaceInst(String spaceId)
-   {
-	   if (m_bUseCache && m_bUseSpaceInstCache)
-	   {
-		   m_hSpaceInstCache.remove(spaceId);
-	   }
-   }
+  public void putSpaceInst(SpaceInst spaceInst) {
+    if (m_bUseCache && m_bUseSpaceInstCache) {
+      SilverTrace.debug("admin", "AdminCache.putSpaceInst",
+          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceInst.getId());
+      m_hSpaceInstCache.put(spaceInst.getId(), spaceInst);
+    }
+  }
 
-    public SpaceInst getSpaceInst(String spaceId)
-    {
-        if (m_bUseCache && m_bUseSpaceInstCache)
-        {
-            return (SpaceInst)m_hSpaceInstCache.get(spaceId);
-        }
-        else
-        {
-            return null;
-        }
+  public void removeSpaceInst(String spaceId) {
+    if (m_bUseCache && m_bUseSpaceInstCache) {
+      m_hSpaceInstCache.remove(spaceId);
     }
-    
-    /*
-	 * Store the spaceInst in cache
-	 */
-    public void resetSpaceInstLight()
-    {
-        if (m_bUseCache && m_bUseSpaceInstLightCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.resetSpaceInstLight", "root.MSG_GEN_ENTER_METHOD");
-    		m_hSpaceInstLightCache.clear();
-        }
-    }
-	public void putSpaceInstLight(SpaceInstLight spaceInst)
-	{
-        if (m_bUseCache && m_bUseSpaceInstLightCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putSpaceInstLight", "root.MSG_GEN_ENTER_METHOD", "spaceId = "+spaceInst.getShortId());
-            m_hSpaceInstLightCache.put(spaceInst.getShortId(), spaceInst);
-        }
-	}
+  }
 
-   public void removeSpaceInstLight(String spaceId)
-   {
-	   if (m_bUseCache && m_bUseSpaceInstLightCache)
-	   {
-		   m_hSpaceInstLightCache.remove(spaceId);
-	   }
-   }
+  public SpaceInst getSpaceInst(String spaceId) {
+    if (m_bUseCache && m_bUseSpaceInstCache) {
+      return (SpaceInst) m_hSpaceInstCache.get(spaceId);
+    } else {
+      return null;
+    }
+  }
 
-    public SpaceInstLight getSpaceInstLight(String spaceId)
-    {
-        if (m_bUseCache && m_bUseSpaceInstLightCache)
-        {
-            return (SpaceInstLight)m_hSpaceInstLightCache.get(spaceId);
-        }
-        else
-        {
-            return null;
-        }
+  /*
+   * Store the spaceInst in cache
+   */
+  public void resetSpaceInstLight() {
+    if (m_bUseCache && m_bUseSpaceInstLightCache) {
+      SilverTrace.debug("admin", "AdminCache.resetSpaceInstLight",
+          "root.MSG_GEN_ENTER_METHOD");
+      m_hSpaceInstLightCache.clear();
     }
-    
-    protected void removeUserInSpaceInst(String userId)
-    {
-        removeTokenInSpaceInst(userId, false);
-    }
-    protected void removeGroupInSpaceInst(String groupId)
-    {
-        removeTokenInSpaceInst(groupId, true);
-    }
-    protected void removeTokenInSpaceInst(String tokenId, boolean isGroup)
-    {
-        SpaceInst   theSpace;
-        Iterator    itSpace = m_hSpaceInstCache.values().iterator();
-        Iterator    itComponent;
-        Iterator    itProfile;
-        ComponentInst   theComponent;
+  }
 
-        while (itSpace.hasNext())
-        {
-            theSpace = (SpaceInst)itSpace.next();
-            // First remove it from the SpaceProfileInst
-            itProfile = theSpace.getAllSpaceProfilesInst().iterator();
-            while (itProfile.hasNext())
-            {
-                if (isGroup)
-                {
-                    ((SpaceProfileInst)itProfile.next()).removeGroup(tokenId);
-                }
-                else
-                {
-                    ((SpaceProfileInst)itProfile.next()).removeUser(tokenId);
-                }
+  public void putSpaceInstLight(SpaceInstLight spaceInst) {
+    if (m_bUseCache && m_bUseSpaceInstLightCache) {
+      SilverTrace.debug("admin", "AdminCache.putSpaceInstLight",
+          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceInst.getShortId());
+      m_hSpaceInstLightCache.put(spaceInst.getShortId(), spaceInst);
+    }
+  }
+
+  public void removeSpaceInstLight(String spaceId) {
+    if (m_bUseCache && m_bUseSpaceInstLightCache) {
+      m_hSpaceInstLightCache.remove(spaceId);
+    }
+  }
+
+  public SpaceInstLight getSpaceInstLight(String spaceId) {
+    if (m_bUseCache && m_bUseSpaceInstLightCache) {
+      return (SpaceInstLight) m_hSpaceInstLightCache.get(spaceId);
+    } else {
+      return null;
+    }
+  }
+
+  protected void removeUserInSpaceInst(String userId) {
+    removeTokenInSpaceInst(userId, false);
+  }
+
+  protected void removeGroupInSpaceInst(String groupId) {
+    removeTokenInSpaceInst(groupId, true);
+  }
+
+  protected void removeTokenInSpaceInst(String tokenId, boolean isGroup) {
+    SpaceInst theSpace;
+    Iterator itSpace = m_hSpaceInstCache.values().iterator();
+    Iterator itComponent;
+    Iterator itProfile;
+    ComponentInst theComponent;
+
+    while (itSpace.hasNext()) {
+      theSpace = (SpaceInst) itSpace.next();
+      // First remove it from the SpaceProfileInst
+      itProfile = theSpace.getAllSpaceProfilesInst().iterator();
+      while (itProfile.hasNext()) {
+        if (isGroup) {
+          ((SpaceProfileInst) itProfile.next()).removeGroup(tokenId);
+        } else {
+          ((SpaceProfileInst) itProfile.next()).removeUser(tokenId);
+        }
+      }
+      // Second remove it from the ProfileInst of all ComponentInst
+      itComponent = theSpace.getAllComponentsInst().iterator();
+      while (itComponent.hasNext()) {
+        theComponent = (ComponentInst) itComponent.next();
+        itProfile = theComponent.getAllProfilesInst().iterator();
+        while (itProfile.hasNext()) {
+          if (isGroup) {
+            ((ProfileInst) itProfile.next()).removeGroup(tokenId);
+          } else {
+            ((ProfileInst) itProfile.next()).removeUser(tokenId);
+          }
+        }
+      }
+    }
+  }
+
+  /*
+   * Store the componentInst in cache
+   */
+  public void resetComponentInst() {
+    if (m_bUseCache && m_bUseComponentInstCache) {
+      SilverTrace.debug("admin", "AdminCache.resetComponentInst",
+          "root.MSG_GEN_ENTER_METHOD");
+      m_hComponentInstCache.clear();
+    }
+  }
+
+  public void putComponentInst(ComponentInst componentInst) {
+    if (m_bUseCache && m_bUseComponentInstCache) {
+      SilverTrace
+          .debug("admin", "AdminCache.putComponentInst",
+              "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
+                  + componentInst.getId());
+      m_hComponentInstCache.put(componentInst.getId(), componentInst);
+    }
+  }
+
+  public void removeComponentInst(ComponentInst componentInst) {
+    if (m_bUseCache && m_bUseComponentInstCache) {
+      SilverTrace
+          .debug("admin", "AdminCache.removeComponentInst",
+              "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
+                  + componentInst.getId());
+      m_hComponentInstCache.remove(componentInst.getId());
+    }
+  }
+
+  public ComponentInst getComponentInst(String componentId) {
+    if (m_bUseCache && m_bUseComponentInstCache) {
+      return (ComponentInst) m_hComponentInstCache.get(componentId);
+    } else {
+      return null;
+    }
+  }
+
+  protected void removeUserInComponentInst(String userId) {
+    removeTokenInComponentInst(userId, false);
+  }
+
+  protected void removeGroupInComponentInst(String groupId) {
+    removeTokenInComponentInst(groupId, true);
+  }
+
+  protected void removeTokenInComponentInst(String tokenId, boolean isGroup) {
+    Iterator itComponent = m_hComponentInstCache.values().iterator();
+    ComponentInst theComponent;
+    Iterator itProfile;
+
+    while (itComponent.hasNext()) {
+      theComponent = (ComponentInst) itComponent.next();
+      itProfile = theComponent.getAllProfilesInst().iterator();
+      while (itProfile.hasNext()) {
+        if (isGroup) {
+          ((ProfileInst) itProfile.next()).removeGroup(tokenId);
+        } else {
+          ((ProfileInst) itProfile.next()).removeUser(tokenId);
+        }
+      }
+    }
+  }
+
+  protected void removeSpaceComponentsInst(String spaceId) {
+    ComponentInst[] theComponents = (ComponentInst[]) m_hComponentInstCache
+        .values().toArray(new ComponentInst[0]);
+
+    for (int i = 0; i < theComponents.length; i++) {
+      if (spaceId.equals(getShortSpaceId(theComponents[i].getDomainFatherId()))) {
+        removeComponentsProfilesInst(theComponents[i].getId());
+        removeComponentInst(theComponents[i]);
+      }
+    }
+  }
+
+  /*
+   * Store the profileInst in cache
+   */
+  public void resetProfileInst() {
+    if (m_bUseCache && m_bUseProfileInstCache) {
+      SilverTrace.debug("admin", "AdminCache.resetProfileInst",
+          "root.MSG_GEN_ENTER_METHOD");
+      m_hProfileInstCache.clear();
+    }
+  }
+
+  public void putProfileInst(ProfileInst profileInst) {
+    if (m_bUseCache && m_bUseProfileInstCache) {
+      SilverTrace.debug("admin", "AdminCache.putProfileInst",
+          "root.MSG_GEN_ENTER_METHOD", "ProfileId = " + profileInst.getId());
+      m_hProfileInstCache.put(profileInst.getId(), profileInst);
+    }
+  }
+
+  public void removeProfileInst(ProfileInst profileInst) {
+    if (m_bUseCache && m_bUseProfileInstCache) {
+      SilverTrace.debug("admin", "AdminCache.removeProfileInst",
+          "root.MSG_GEN_ENTER_METHOD", "ProfileId = " + profileInst.getId());
+      m_hProfileInstCache.remove(profileInst.getId());
+    }
+  }
+
+  public ProfileInst getProfileInst(String profileId) {
+    if (m_bUseCache && m_bUseProfileInstCache) {
+      return (ProfileInst) m_hProfileInstCache.get(profileId);
+    } else {
+      return null;
+    }
+  }
+
+  protected void removeUserInProfileInst(String userId) {
+    removeTokenInProfileInst(userId, false);
+  }
+
+  protected void removeGroupInProfileInst(String groupId) {
+    removeTokenInProfileInst(groupId, true);
+  }
+
+  protected void removeTokenInProfileInst(String tokenId, boolean isGroup) {
+    Iterator itProfile = m_hProfileInstCache.values().iterator();
+
+    while (itProfile.hasNext()) {
+      if (isGroup) {
+        ((ProfileInst) itProfile.next()).removeGroup(tokenId);
+      } else {
+        ((ProfileInst) itProfile.next()).removeUser(tokenId);
+      }
+    }
+  }
+
+  protected void removeComponentsProfilesInst(String componentId) {
+    ProfileInst[] theProfiles = (ProfileInst[]) m_hProfileInstCache.values()
+        .toArray(new ProfileInst[0]);
+
+    for (int i = 0; i < theProfiles.length; i++) {
+      if (componentId.equals(theProfiles[i].getComponentFatherId())) {
+        removeProfileInst(theProfiles[i]);
+      }
+    }
+  }
+
+  /*
+   * Store the UserDetail by user
+   */
+  public void resetUserDetail() {
+    SilverTrace.debug("admin", "AdminCache.resetUserDetail",
+        "root.MSG_GEN_ENTER_METHOD");
+    m_hUserDetailCache.clear();
+  }
+
+  public void putUserDetail(String userId, UserDetail userDetail) {
+    if (m_bUseCache && m_bUseUserDetailCache) {
+      SilverTrace.debug("admin", "AdminCache.putUserDetail",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hUserDetailCache.put(userId, userDetail);
+    }
+  }
+
+  public void removeUserDetail(String userId) {
+    if (m_bUseCache && m_bUseUserDetailCache) {
+      SilverTrace.debug("admin", "AdminCache.removeUserDetail",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hUserDetailCache.remove(userId);
+    }
+  }
+
+  public UserDetail getUserDetail(String userId) {
+    if (m_bUseCache && m_bUseUserDetailCache) {
+      return (UserDetail) m_hUserDetailCache.get(userId);
+    } else {
+      return null;
+    }
+  }
+
+  /*
+   * Store the ManageableSpaceIds by user
+   */
+  public void resetManageableSpaceIds() {
+    SilverTrace.debug("admin", "AdminCache.resetManageableSpaceIds",
+        "root.MSG_GEN_ENTER_METHOD");
+    m_hManageableSpaceIdsCache.clear();
+  }
+
+  public void putManageableSpaceIds(String userId, String[] spaceIds) {
+    if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.putManageableSpaceIds",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hManageableSpaceIdsCache.put(userId, spaceIds);
+    }
+  }
+
+  public void removeManageableSpaceIds(String userId) {
+    if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.removeManageableSpaceIds",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hManageableSpaceIdsCache.remove(userId);
+    }
+  }
+
+  public String[] getManageableSpaceIds(String userId) {
+    if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
+      return (String[]) m_hManageableSpaceIdsCache.get(userId);
+    } else {
+      return null;
+    }
+  }
+
+  /*
+   * Store the AvailCompoIds by space and user
+   */
+  public void resetAvailCompoIds() {
+    SilverTrace.debug("admin", "AdminCache.resetAvailCompoIds",
+        "root.MSG_GEN_ENTER_METHOD");
+    m_hAvailCompoIdsCache.clear();
+  }
+
+  public void putAvailCompoIds(String spaceId, String userId, String[] compoIds) {
+    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.putAvailCompoIds",
+          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
+              + userId);
+      Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
+      if (spaceTable == null) {
+        spaceTable = new Hashtable();
+        m_hAvailCompoIdsCache.put(spaceId, spaceTable);
+      }
+      spaceTable.put(userId, compoIds);
+    }
+  }
+
+  public void removeAvailCompoIds(String spaceId, String userId) {
+    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.removeAvailCompoIds",
+          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
+              + userId);
+      Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
+      if (spaceTable != null) {
+        spaceTable.remove(userId);
+      }
+    }
+  }
+
+  public void removeAvailCompoIdsForUser(String userId) {
+    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForUser",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      Hashtable spaceTable;
+      Iterator itHm = m_hAvailCompoIdsCache.values().iterator();
+      while (itHm.hasNext()) {
+        spaceTable = (Hashtable) itHm.next();
+        spaceTable.remove(userId);
+      }
+    }
+  }
+
+  public void removeAvailCompoIdsForSpace(String spaceId) {
+    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForSpace",
+          "root.MSG_GEN_ENTER_METHOD", "spaceUserId = " + spaceId);
+      m_hAvailCompoIdsCache.remove(spaceId);
+    }
+  }
+
+  public String[] getAvailCompoIds(String spaceId, String userId) {
+    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
+      Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
+      if (spaceTable != null) {
+        return (String[]) spaceTable.get(userId);
+      }
+    }
+    return null;
+  }
+
+  /*
+   * Store the ProfileIds by space and user
+   */
+  public void resetProfileIds() {
+    SilverTrace.debug("admin", "AdminCache.resetProfileIds",
+        "root.MSG_GEN_ENTER_METHOD");
+    m_hProfileIdsCache.clear();
+  }
+
+  public void putProfileIds(String userId, String[] profileIds) {
+    if (m_bUseCache && m_bUseProfileIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.putProfileIds",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hProfileIdsCache.put(userId, profileIds);
+    }
+  }
+
+  public void removeProfileIds(String userId) {
+    if (m_bUseCache && m_bUseProfileIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.removeProfileIds",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hProfileIdsCache.remove(userId);
+    }
+  }
+
+  public String[] getProfileIds(String userId) {
+    if (m_bUseCache && m_bUseProfileIdsCache) {
+      return (String[]) m_hProfileIdsCache.get(userId);
+    } else {
+      return null;
+    }
+  }
+
+  /*
+   * ----------------------------------------------------------------------------
+   * --------------------------------------------------- Operations
+   * --------------
+   * --------------------------------------------------------------
+   * ---------------------------------------------------
+   */
+
+  // ----- Spaces -----
+  public void opAddSpace(SpaceInst theSpace) {
+    if ((theSpace.getDomainFatherId() != null)
+        && (theSpace.getDomainFatherId().length() > 0)
+        && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
+      // -> Reset the Parent
+      // space
+      SpaceInst theFather = getSpaceInst(getShortSpaceId(theSpace
+          .getDomainFatherId()));
+      if (theFather != null) {
+        String[] allChilds = theFather.getSubSpaceIds();
+        String[] newChilds;
+        if (allChilds == null) {
+          allChilds = new String[0];
+        }
+        newChilds = new String[allChilds.length + 1];
+        for (int i = 0; i < allChilds.length; i++) {
+          newChilds[i] = allChilds[i];
+        }
+        newChilds[allChilds.length] = getShortSpaceId(theSpace.getId());
+        theFather.setSubSpaceIds(newChilds);
+      }
+    }
+  }
+
+  public void opUpdateSpace(SpaceInst theSpace) {
+    opResetSpace(theSpace);
+  }
+
+  public void opRemoveSpace(SpaceInst theSpace) {
+    if ((theSpace.getDomainFatherId() != null)
+        && (theSpace.getDomainFatherId().length() > 0)
+        && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
+      // -> Reset the Parent
+      // space
+      SpaceInst theFather = getSpaceInst(getShortSpaceId(theSpace
+          .getDomainFatherId()));
+      if (theFather != null) {
+        String[] allChilds = theFather.getSubSpaceIds();
+        String[] newChilds;
+        String theSpaceId = getShortSpaceId(theSpace.getId());
+        int j = 0;
+        newChilds = new String[allChilds.length - 1];
+        for (int i = 0; i < allChilds.length; i++) {
+          if (!theSpaceId.equals(allChilds[i])) {
+            if (j < allChilds.length - 1) {
+              newChilds[j++] = allChilds[i];
+            } else { // oups, the child did not exist
+              newChilds = allChilds;
             }
-            // Second remove it from the ProfileInst of all ComponentInst
-            itComponent = theSpace.getAllComponentsInst().iterator();
-            while (itComponent.hasNext())
-            {
-                theComponent = (ComponentInst)itComponent.next();
-                itProfile = theComponent.getAllProfilesInst().iterator();
-                while (itProfile.hasNext())
-                {
-                    if (isGroup)
-                    {
-                        ((ProfileInst)itProfile.next()).removeGroup(tokenId);
-                    }
-                    else
-                    {
-                        ((ProfileInst)itProfile.next()).removeUser(tokenId);
-                    }
-                }
-            }
+          }
         }
+        theFather.setSubSpaceIds(newChilds);
+      }
     }
+    opResetSpace(theSpace);
+  }
 
-	/*
-	 * Store the componentInst in cache
-	 */
-    public void resetComponentInst()
-    {
-        if (m_bUseCache && m_bUseComponentInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.resetComponentInst", "root.MSG_GEN_ENTER_METHOD");
-    		m_hComponentInstCache.clear();
-        }
-    }
-	public void putComponentInst(ComponentInst componentInst) 
-	{
-        if (m_bUseCache && m_bUseComponentInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putComponentInst", "root.MSG_GEN_ENTER_METHOD", "ComponentId = "+componentInst.getId());
-            m_hComponentInstCache.put(componentInst.getId(), componentInst);
-        }
-	}
-	public void removeComponentInst(ComponentInst componentInst)
-	{
-        if (m_bUseCache && m_bUseComponentInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeComponentInst", "root.MSG_GEN_ENTER_METHOD", "ComponentId = "+componentInst.getId());
-            m_hComponentInstCache.remove(componentInst.getId());
-        }
-	}
-    public ComponentInst getComponentInst(String componentId)
-    {
-        if (m_bUseCache && m_bUseComponentInstCache)
-        {
-            return (ComponentInst) m_hComponentInstCache.get(componentId);
-        }
-        else
-        {
-            return null;
-        }
-    }
+  protected void opResetSpace(SpaceInst theSpace) {
+    // First level cache reset : it's not the best but it's simple : remove all
+    // structs from cache that includes the component and all the child's
+    // structs
+    removeSpaceComponentsInst(theSpace.getId());
+    removeSpaceInst(theSpace.getId());
+    removeSpaceInstLight(theSpace.getId());
+    resetProfileIds();
+    resetAvailCompoIds();
+    resetManageableSpaceIds();
+  }
 
-    protected void removeUserInComponentInst(String userId)
-    {
-        removeTokenInComponentInst(userId, false);
-    }
-    protected void removeGroupInComponentInst(String groupId)
-    {
-        removeTokenInComponentInst(groupId, true);
-    }
-    protected void removeTokenInComponentInst(String tokenId, boolean isGroup)
-    {
-        Iterator    itComponent = m_hComponentInstCache.values().iterator();
-        ComponentInst   theComponent;
-        Iterator    itProfile;
+  // ----- Components -----
+  public void opAddComponent(ComponentInst component) {
+    opResetComponent(component);
+  }
 
-        while (itComponent.hasNext())
-        {
-            theComponent = (ComponentInst)itComponent.next();
-            itProfile = theComponent.getAllProfilesInst().iterator();
-            while (itProfile.hasNext())
-            {
-                if (isGroup)
-                {
-                    ((ProfileInst)itProfile.next()).removeGroup(tokenId);
-                }
-                else
-                {
-                    ((ProfileInst)itProfile.next()).removeUser(tokenId);
-                }
-            }
-        }
-    }
-	protected void removeSpaceComponentsInst(String spaceId)
-	{
-        ComponentInst[] theComponents = (ComponentInst[])m_hComponentInstCache.values().toArray(new ComponentInst[0]);
+  public void opUpdateComponent(ComponentInst component) {
+    opResetComponent(component);
+  }
 
-        for (int i = 0; i < theComponents.length ; i++)
-        {
-            if (spaceId.equals(getShortSpaceId(theComponents[i].getDomainFatherId())))
-            {
-                removeComponentsProfilesInst(theComponents[i].getId());
-                removeComponentInst(theComponents[i]);
-            }
-        }
-	}
+  public void opRemoveComponent(ComponentInst component) {
+    opResetComponent(component);
+  }
 
-    /*
-	 * Store the profileInst in cache
-	 */
-    public void resetProfileInst()
-    {
-        if (m_bUseCache && m_bUseProfileInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.resetProfileInst", "root.MSG_GEN_ENTER_METHOD");
-    		m_hProfileInstCache.clear();
-        }
+  protected void opResetComponent(ComponentInst component) {
+    // First level cache reset : it's not the best but it's simple : remove all
+    // structs from cache that includes the component and all the child's
+    // structs
+    removeComponentsProfilesInst(component.getId());
+    SpaceInst theSpace = getSpaceInst(getShortSpaceId(component
+        .getDomainFatherId()));
+    if (theSpace != null) {
+      removeSpaceInst(theSpace.getId());
     }
-	public void putProfileInst(ProfileInst profileInst) 
-	{
-        if (m_bUseCache && m_bUseProfileInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putProfileInst", "root.MSG_GEN_ENTER_METHOD", "ProfileId = "+profileInst.getId());
-            m_hProfileInstCache.put(profileInst.getId(), profileInst);
-        }
-	}
-	public void removeProfileInst(ProfileInst profileInst)
-	{
-        if (m_bUseCache && m_bUseProfileInstCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeProfileInst", "root.MSG_GEN_ENTER_METHOD", "ProfileId = "+profileInst.getId());
-            m_hProfileInstCache.remove(profileInst.getId());
-        }
-	}
-    public ProfileInst getProfileInst(String profileId)
-    {
-        if (m_bUseCache && m_bUseProfileInstCache)
-        {
-            return (ProfileInst) m_hProfileInstCache.get(profileId);
-        }
-        else
-        {
-            return null;
-        }
-    }
-    protected void removeUserInProfileInst(String userId)
-    {
-        removeTokenInProfileInst(userId, false);
-    }
-    protected void removeGroupInProfileInst(String groupId)
-    {
-        removeTokenInProfileInst(groupId, true);
-    }
-    protected void removeTokenInProfileInst(String tokenId, boolean isGroup)
-    {
-        Iterator    itProfile = m_hProfileInstCache.values().iterator();
+    removeComponentInst(component);
+    resetProfileIds();
+    resetAvailCompoIds();
+  }
 
-        while (itProfile.hasNext())
-        {
-            if (isGroup)
-            {
-                ((ProfileInst)itProfile.next()).removeGroup(tokenId);
-            }
-            else
-            {
-                ((ProfileInst)itProfile.next()).removeUser(tokenId);
-            }
-        }
-    }
-	protected void removeComponentsProfilesInst(String componentId)
-	{
-        ProfileInst[] theProfiles = (ProfileInst[])m_hProfileInstCache.values().toArray(new ProfileInst[0]);
+  // ----- Profiles -----
+  public void opAddProfile(ProfileInst profile) {
+    opResetProfile(profile);
+  }
 
-        for (int i = 0; i < theProfiles.length ; i++ )
-        {
-            if (componentId.equals(theProfiles[i].getComponentFatherId()))
-            {
-                removeProfileInst(theProfiles[i]);
-            }
-        }
-	}
+  public void opUpdateProfile(ProfileInst profile) {
+    opResetProfile(profile);
+  }
 
-    /*
-	 * Store the UserDetail by user
-	 */
-    public void resetUserDetail()
-    {
-        SilverTrace.debug("admin", "AdminCache.resetUserDetail", "root.MSG_GEN_ENTER_METHOD");
-		m_hUserDetailCache.clear();
-    }
-	public void putUserDetail(String userId, UserDetail userDetail) 
-	{
-        if (m_bUseCache && m_bUseUserDetailCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putUserDetail", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            m_hUserDetailCache.put(userId, userDetail);
-        }
-	}
-	public void removeUserDetail(String userId)
-	{
-        if (m_bUseCache && m_bUseUserDetailCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeUserDetail", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            m_hUserDetailCache.remove(userId);
-        }
-	}
-    public UserDetail getUserDetail(String userId)
-    {
-        if (m_bUseCache && m_bUseUserDetailCache)
-        {
-            return (UserDetail) m_hUserDetailCache.get(userId);
-        }
-        else
-        {
-            return null;
-        }
-    }
+  public void opRemoveProfile(ProfileInst profile) {
+    opResetProfile(profile);
+  }
 
-    /*
-	 * Store the ManageableSpaceIds by user
-	 */
-    public void resetManageableSpaceIds()
-    {
-        SilverTrace.debug("admin", "AdminCache.resetManageableSpaceIds", "root.MSG_GEN_ENTER_METHOD");
-		m_hManageableSpaceIdsCache.clear();
-    }
-	public void putManageableSpaceIds(String userId, String[] spaceIds) 
-	{
-        if (m_bUseCache && m_bUseManageableSpaceIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putManageableSpaceIds", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            m_hManageableSpaceIdsCache.put(userId, spaceIds);
-        }
-	}
-	public void removeManageableSpaceIds(String userId)
-	{
-        if (m_bUseCache && m_bUseManageableSpaceIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeManageableSpaceIds", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            m_hManageableSpaceIdsCache.remove(userId);
-        }
-	}
-    public String[] getManageableSpaceIds(String userId)
-    {
-        if (m_bUseCache && m_bUseManageableSpaceIdsCache)
-        {
-            return (String[]) m_hManageableSpaceIdsCache.get(userId);
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /*
-	 * Store the AvailCompoIds by space and user
-	 */
-    public void resetAvailCompoIds()
-    {
-        SilverTrace.debug("admin", "AdminCache.resetAvailCompoIds", "root.MSG_GEN_ENTER_METHOD");
-		m_hAvailCompoIdsCache.clear();
-    }
-	public void putAvailCompoIds(String spaceId, String userId, String[] compoIds) 
-	{
-        if (m_bUseCache && m_bUseAvailCompoIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putAvailCompoIds", "root.MSG_GEN_ENTER_METHOD", "spaceId = "+spaceId+" userId = "+userId);
-            Hashtable spaceTable = (Hashtable)m_hAvailCompoIdsCache.get(spaceId);
-            if (spaceTable == null)
-            {
-                spaceTable = new Hashtable();
-                m_hAvailCompoIdsCache.put(spaceId, spaceTable);
-            }
-            spaceTable.put(userId, compoIds);
-        }
-	}
-	public void removeAvailCompoIds(String spaceId, String userId)
-	{
-        if (m_bUseCache && m_bUseAvailCompoIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeAvailCompoIds", "root.MSG_GEN_ENTER_METHOD", "spaceId = "+spaceId+" userId = "+userId);
-            Hashtable spaceTable = (Hashtable)m_hAvailCompoIdsCache.get(spaceId);
-            if (spaceTable != null)
-            {
-                spaceTable.remove(userId);
-            }
-        }
-	}
-	public void removeAvailCompoIdsForUser(String userId)
-	{
-        if (m_bUseCache && m_bUseAvailCompoIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForUser", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            Hashtable spaceTable;
-            Iterator itHm = m_hAvailCompoIdsCache.values().iterator();
-            while (itHm.hasNext())
-            {
-                spaceTable = (Hashtable)itHm.next();
-                spaceTable.remove(userId);
-            }
-        }
-	}
-	public void removeAvailCompoIdsForSpace(String spaceId)
-	{
-        if (m_bUseCache && m_bUseAvailCompoIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForSpace", "root.MSG_GEN_ENTER_METHOD", "spaceUserId = "+spaceId);
-            m_hAvailCompoIdsCache.remove(spaceId);
-        }
-	}
-    public String[] getAvailCompoIds(String spaceId, String userId)
-    {
-        if (m_bUseCache && m_bUseAvailCompoIdsCache)
-        {
-            Hashtable spaceTable = (Hashtable)m_hAvailCompoIdsCache.get(spaceId);
-            if (spaceTable != null)
-            {
-                return (String[]) spaceTable.get(userId);
-            }
-        }
-        return null;
-    }
-
-    /*
-	 * Store the ProfileIds by space and user
-	 */
-    public void resetProfileIds()
-    {
-        SilverTrace.debug("admin", "AdminCache.resetProfileIds", "root.MSG_GEN_ENTER_METHOD");
-		m_hProfileIdsCache.clear();
-    }
-	public void putProfileIds(String userId, String[] profileIds) 
-	{
-        if (m_bUseCache && m_bUseProfileIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.putProfileIds", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            m_hProfileIdsCache.put(userId, profileIds);
-        }
-	}
-	public void removeProfileIds(String userId)
-	{
-        if (m_bUseCache && m_bUseProfileIdsCache)
-        {
-            SilverTrace.debug("admin", "AdminCache.removeProfileIds", "root.MSG_GEN_ENTER_METHOD", "userId = "+userId);
-            m_hProfileIdsCache.remove(userId);
-        }
-	}
-    public String[] getProfileIds(String userId)
-    {
-        if (m_bUseCache && m_bUseProfileIdsCache)
-        {
-            return (String[]) m_hProfileIdsCache.get(userId);
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /*
-	 * -------------------------------------------------------------------------------------------------------------------------------
-	 * Operations
-	 * -------------------------------------------------------------------------------------------------------------------------------
-	 */
-
-    // ----- Spaces -----
-    public void opAddSpace(SpaceInst theSpace)
-    {
-        if ((theSpace.getDomainFatherId() != null) && (theSpace.getDomainFatherId().length() > 0) && (!theSpace.getDomainFatherId().equals("0")))
-        { // This is a subSpace -> Reset the Parent space
-            SpaceInst theFather = getSpaceInst(getShortSpaceId(theSpace.getDomainFatherId()));
-            if (theFather != null)
-            {
-                String[] allChilds = theFather.getSubSpaceIds();
-                String[] newChilds;
-                if (allChilds == null)
-                {
-                    allChilds = new String[0];
-                }
-                newChilds = new String[allChilds.length + 1];
-                for (int i = 0; i < allChilds.length; i++ )
-                {
-                    newChilds[i] = allChilds[i];
-                }
-                newChilds[allChilds.length] = getShortSpaceId(theSpace.getId());
-                theFather.setSubSpaceIds(newChilds);
-            }
-        }
-    }
-
-    public void opUpdateSpace(SpaceInst theSpace)
-    {
-        opResetSpace(theSpace);
-    }
-
-    public void opRemoveSpace(SpaceInst theSpace)
-    {
-        if ((theSpace.getDomainFatherId() != null) && (theSpace.getDomainFatherId().length() > 0) && (!theSpace.getDomainFatherId().equals("0")))
-        { // This is a subSpace -> Reset the Parent space
-            SpaceInst theFather = getSpaceInst(getShortSpaceId(theSpace.getDomainFatherId()));
-            if (theFather != null)
-            {
-                String[] allChilds = theFather.getSubSpaceIds();
-                String[] newChilds;
-                String theSpaceId = getShortSpaceId(theSpace.getId());
-                int j = 0;
-                newChilds = new String[allChilds.length - 1];
-                for (int i = 0; i < allChilds.length; i++ )
-                {
-                    if (!theSpaceId.equals(allChilds[i]))
-                    {
-                        if (j < allChilds.length - 1)
-                        {
-                            newChilds[j++] = allChilds[i];
-                        }
-                        else
-                        { // oups, the child did not exist
-                            newChilds = allChilds;
-                        }
-                    }
-                }
-                theFather.setSubSpaceIds(newChilds);
-            }
-        }
-        opResetSpace(theSpace);
-    }
-
-    protected void opResetSpace(SpaceInst theSpace)
-    {
-        // First level cache reset : it's not the best but it's simple : remove all structs from cache that includes the component and all the child's structs
-        removeSpaceComponentsInst(theSpace.getId());
+  protected void opResetProfile(ProfileInst profile) {
+    // First level cache reset : it's not the best but it's simple : remove all
+    // structs from cache that includes the profile
+    ComponentInst theComponent = getComponentInst(profile
+        .getComponentFatherId());
+    if (theComponent != null) {
+      SpaceInst theSpace = getSpaceInst(getShortSpaceId(theComponent
+          .getDomainFatherId()));
+      if (theSpace != null) {
         removeSpaceInst(theSpace.getId());
-        removeSpaceInstLight(theSpace.getId());
-        resetProfileIds();
-        resetAvailCompoIds();
-        resetManageableSpaceIds();
+      }
+      removeComponentInst(theComponent);
     }
+    removeProfileInst(profile);
+    resetProfileIds();
+    resetAvailCompoIds();
+  }
 
-    // ----- Components -----
-    public void opAddComponent(ComponentInst component)
-    {
-        opResetComponent(component);
+  // ----- Space Profiles -----
+  public void opAddSpaceProfile(SpaceProfileInst profile) {
+    SpaceInst theSpace = getSpaceInst(getShortSpaceId(profile
+        .getSpaceFatherId()));
+    if (theSpace != null) {
+      theSpace.addSpaceProfileInst(profile);
     }
+    resetManageableSpaceIds();
+  }
 
-    public void opUpdateComponent(ComponentInst component)
-    {
-        opResetComponent(component);
+  public void opUpdateSpaceProfile(SpaceProfileInst profile) {
+    SpaceInst theSpace = getSpaceInst(getShortSpaceId(profile
+        .getSpaceFatherId()));
+    if (theSpace != null) {
+      theSpace.deleteSpaceProfileInst(profile);
+      theSpace.addSpaceProfileInst(profile);
     }
+    resetManageableSpaceIds();
+  }
 
-    public void opRemoveComponent(ComponentInst component)
-    {
-        opResetComponent(component);
+  public void opRemoveSpaceProfile(SpaceProfileInst profile) {
+    SpaceInst theSpace = getSpaceInst(getShortSpaceId(profile
+        .getSpaceFatherId()));
+    if (theSpace != null) {
+      theSpace.deleteSpaceProfileInst(profile);
     }
+    resetManageableSpaceIds();
+  }
 
-    protected void opResetComponent(ComponentInst component)
-    {
-        // First level cache reset : it's not the best but it's simple : remove all structs from cache that includes the component and all the child's structs
-        removeComponentsProfilesInst(component.getId());
-        SpaceInst theSpace = getSpaceInst(getShortSpaceId(component.getDomainFatherId()));
-        if (theSpace != null)
-        {
-            removeSpaceInst(theSpace.getId());
-        }
-        removeComponentInst(component);
-        resetProfileIds();
-        resetAvailCompoIds();
+  // ----- Groups -----
+  public void opAddGroup(Group group) {
+    if ((group.getSuperGroupId() != null)
+        && (group.getSuperGroupId().length() > 0)) { // The group inherits of
+      // the permissions of the
+      // parent -> too
+      // complicated -> reset the
+      // permissions of all users
+      String[] uids = group.getUserIds();
+      for (int i = 0; i < uids.length; i++) {
+        opResetUserRights(uids[i]);
+      }
     }
+  }
 
-    // ----- Profiles -----
-    public void opAddProfile(ProfileInst profile)
-    {
-        opResetProfile(profile);
+  public void opUpdateGroup(Group group) {
+    resetProfileIds();
+    resetAvailCompoIds();
+    resetManageableSpaceIds();
+  }
+
+  public void opRemoveGroup(Group group) {
+    String groupId = group.getId();
+
+    removeGroupInSpaceInst(groupId);
+    removeGroupInComponentInst(groupId);
+    removeGroupInProfileInst(groupId);
+    resetProfileIds();
+    resetAvailCompoIds();
+    resetManageableSpaceIds();
+  }
+
+  public void opAddUserInGroup(String userId, String groupId) {
+    opResetUserRights(userId);
+  }
+
+  public void opRemoveUserFromGroup(String userId, String groupId) {
+    opResetUserRights(userId);
+  }
+
+  // ----- Users -----
+  public void opAddUser(UserDetail user) {
+  }
+
+  public void opUpdateUser(UserDetail user) {
+    removeUserDetail(user.getId());
+  }
+
+  public void opRemoveUser(UserDetail user) {
+    String userId = user.getId();
+
+    removeUserDetail(userId);
+    removeProfileIds(userId);
+    removeManageableSpaceIds(userId);
+    removeAvailCompoIdsForUser(userId);
+    removeUserInSpaceInst(userId);
+    removeUserInComponentInst(userId);
+    removeUserInProfileInst(userId);
+  }
+
+  protected void opResetUserRights(String userId) {
+    removeProfileIds(userId);
+    removeManageableSpaceIds(userId);
+    removeAvailCompoIdsForUser(userId);
+  }
+
+  protected String getShortSpaceId(String spaceId) {
+    if ((spaceId != null) && (spaceId.startsWith("WA"))) {
+      return spaceId.substring(2);
+    } else {
+      return (spaceId == null) ? "" : spaceId;
     }
-
-    public void opUpdateProfile(ProfileInst profile)
-    {
-        opResetProfile(profile);
-    }
-
-    public void opRemoveProfile(ProfileInst profile)
-    {
-        opResetProfile(profile);
-    }
-
-    protected void opResetProfile(ProfileInst profile)
-    {
-        // First level cache reset : it's not the best but it's simple : remove all structs from cache that includes the profile
-        ComponentInst theComponent = getComponentInst(profile.getComponentFatherId());
-        if (theComponent != null)
-        {
-            SpaceInst theSpace = getSpaceInst(getShortSpaceId(theComponent.getDomainFatherId()));
-            if (theSpace != null)
-            {
-                removeSpaceInst(theSpace.getId());
-            }
-            removeComponentInst(theComponent);
-        }
-        removeProfileInst(profile);
-        resetProfileIds();
-        resetAvailCompoIds();
-    }
-
-    // ----- Space Profiles -----
-    public void opAddSpaceProfile(SpaceProfileInst profile)
-    {
-        SpaceInst theSpace = getSpaceInst(getShortSpaceId(profile.getSpaceFatherId()));
-        if (theSpace != null)
-        {
-            theSpace.addSpaceProfileInst(profile);
-        }
-        resetManageableSpaceIds();
-    }
-
-    public void opUpdateSpaceProfile(SpaceProfileInst profile)
-    {
-        SpaceInst theSpace = getSpaceInst(getShortSpaceId(profile.getSpaceFatherId()));
-        if (theSpace != null)
-        {
-            theSpace.deleteSpaceProfileInst(profile);
-            theSpace.addSpaceProfileInst(profile);
-        }
-        resetManageableSpaceIds();
-    }
-
-    public void opRemoveSpaceProfile(SpaceProfileInst profile)
-    {
-        SpaceInst theSpace = getSpaceInst(getShortSpaceId(profile.getSpaceFatherId()));
-        if (theSpace != null)
-        {
-            theSpace.deleteSpaceProfileInst(profile);
-        }
-        resetManageableSpaceIds();
-    }
-
-    // ----- Groups -----
-    public void opAddGroup(Group group)
-    {
-        if ((group.getSuperGroupId() != null) && (group.getSuperGroupId().length() > 0))
-        { // The group inherits of the permissions of the parent -> too complicated -> reset the permissions of all users
-            String[] uids = group.getUserIds();
-            for (int i = 0; i < uids.length ; i++)
-            {
-                opResetUserRights(uids[i]);
-            }
-        }
-    }
-
-    public void opUpdateGroup(Group group)
-    {
-        resetProfileIds();
-        resetAvailCompoIds();
-        resetManageableSpaceIds();
-    }
-
-    public void opRemoveGroup(Group group)
-    {
-        String groupId = group.getId();
-
-        removeGroupInSpaceInst(groupId);
-        removeGroupInComponentInst(groupId);
-        removeGroupInProfileInst(groupId);
-        resetProfileIds();
-        resetAvailCompoIds();
-        resetManageableSpaceIds();
-    }
-
-    public void opAddUserInGroup(String userId, String groupId)
-    {
-        opResetUserRights(userId);
-    }
-
-    public void opRemoveUserFromGroup(String userId, String groupId)
-    {
-        opResetUserRights(userId);
-    }
-
-    // ----- Users -----
-    public void opAddUser(UserDetail user)
-    {
-    }
-
-    public void opUpdateUser(UserDetail user)
-    {
-        removeUserDetail(user.getId());
-    }
-
-    public void opRemoveUser(UserDetail user)
-    {
-        String userId = user.getId();
-
-        removeUserDetail(userId);
-        removeProfileIds(userId);
-        removeManageableSpaceIds(userId);
-        removeAvailCompoIdsForUser(userId);
-        removeUserInSpaceInst(userId);
-        removeUserInComponentInst(userId);
-        removeUserInProfileInst(userId);
-    }
-
-    protected void opResetUserRights(String userId)
-    {
-        removeProfileIds(userId);
-        removeManageableSpaceIds(userId);
-        removeAvailCompoIdsForUser(userId);
-    }
-
-    protected String getShortSpaceId(String spaceId)
-    {
-        if ((spaceId != null) && (spaceId.startsWith("WA")))
-        {
-            return spaceId.substring(2);
-        }
-        else
-        {
-            return (spaceId == null) ? "" : spaceId;
-        }
-    }
+  }
 }

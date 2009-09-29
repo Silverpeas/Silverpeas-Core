@@ -5,24 +5,25 @@ package com.silverpeas.node.importexport;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
+ * 
  * @author sdevolder
  */
 public class NodePositionType {
 
-	private int id;
-	/**
-	 * @return
-	 */
-	public int getId() {
-		return id;
-	}
+  private int id;
 
-	/**
-	 * @param i
-	 */
-	public void setId(int i) {
-		id = i;
-	}
+  /**
+   * @return
+   */
+  public int getId() {
+    return id;
+  }
+
+  /**
+   * @param i
+   */
+  public void setId(int i) {
+    id = i;
+  }
 
 }
-

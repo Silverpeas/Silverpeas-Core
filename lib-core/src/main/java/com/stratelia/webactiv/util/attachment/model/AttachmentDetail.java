@@ -1128,32 +1128,31 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
       type = AttachmentController.getMimeType(logicalName);
   }
 
-	public String getXmlForm() {
-		return xmlForm;
-	}
-	
-	public String getXmlForm(String language)
-	{
-		if (language == null || !I18NHelper.isI18N) {
-			return getXmlForm();
-		}
-	    AttachmentDetailI18N detail = getAttachment(language);
-	    if (detail == null) {
-	    	return getXmlForm();
-	    }
-	    return detail.getXmlForm();
-	}
-	
-	public void setXmlForm(String xmlForm) {
-		this.xmlForm = xmlForm;
-	}
-	
-	public XMLModelContentType getXMLModelContentType() {
-		return xmlModelContentType;
-	}
+  public String getXmlForm() {
+    return xmlForm;
+  }
 
-	public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
-		this.xmlModelContentType = xmlModelContentType;
-	}
-   
+  public String getXmlForm(String language) {
+    if (language == null || !I18NHelper.isI18N) {
+      return getXmlForm();
+    }
+    AttachmentDetailI18N detail = getAttachment(language);
+    if (detail == null) {
+      return getXmlForm();
+    }
+    return detail.getXmlForm();
+  }
+
+  public void setXmlForm(String xmlForm) {
+    this.xmlForm = xmlForm;
+  }
+
+  public XMLModelContentType getXMLModelContentType() {
+    return xmlModelContentType;
+  }
+
+  public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
+    this.xmlModelContentType = xmlModelContentType;
+  }
+
 }

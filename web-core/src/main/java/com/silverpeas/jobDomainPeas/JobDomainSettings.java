@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * JobDomainSettings.java
@@ -50,65 +51,60 @@ import com.stratelia.webactiv.util.ResourceLocator;
  *
  *
  */
- 
+
 /**
  * This class manage the informations needed for groups navigation and browse
- *
- * PRE-REQUIRED : the Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
- *
+ * 
+ * PRE-REQUIRED : the Group passed in the constructor MUST BE A VALID GROUP
+ * (with Id, etc...)
+ * 
  * @t.leroi
  */
-public class JobDomainSettings extends SilverpeasSettings
-{
-    public static int   	m_UsersByPage = 10;
-    public static int   	m_GroupsByPage = 10;
+public class JobDomainSettings extends SilverpeasSettings {
+  public static int m_UsersByPage = 10;
+  public static int m_GroupsByPage = 10;
 
-    public static int  		m_MinLengthLogin = 5;
-    public static int   	m_MinLengthPwd = 4;
-    public static boolean  	m_BlanksAllowedInPwd = true;
-    public static boolean	m_UserAddingAllowedForGroupManagers = false;
+  public static int m_MinLengthLogin = 5;
+  public static int m_MinLengthPwd = 4;
+  public static boolean m_BlanksAllowedInPwd = true;
+  public static boolean m_UserAddingAllowedForGroupManagers = false;
 
-    static
-    {
-        ResourceLocator rs = new ResourceLocator("com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
+  static {
+    ResourceLocator rs = new ResourceLocator(
+        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
 
-        m_UsersByPage = readInt(rs, "UsersByPage", 10);
-        m_GroupsByPage = readInt(rs, "GroupsByPage", 10);
-        m_MinLengthLogin = readInt(rs, "MinLengthLogin", 5);
-        m_MinLengthPwd = readInt(rs, "MinLengthPwd", 4);
-        m_BlanksAllowedInPwd = readBoolean(rs, "BlanksAllowedInPwd", true);
-        m_UserAddingAllowedForGroupManagers = readBoolean(rs, "UserAddingAllowedForGroupManagers", false);
-    }
+    m_UsersByPage = readInt(rs, "UsersByPage", 10);
+    m_GroupsByPage = readInt(rs, "GroupsByPage", 10);
+    m_MinLengthLogin = readInt(rs, "MinLengthLogin", 5);
+    m_MinLengthPwd = readInt(rs, "MinLengthPwd", 4);
+    m_BlanksAllowedInPwd = readBoolean(rs, "BlanksAllowedInPwd", true);
+    m_UserAddingAllowedForGroupManagers = readBoolean(rs,
+        "UserAddingAllowedForGroupManagers", false);
+  }
 
-    static public void sortGroups(Group[] toSort)
-    {
-        Arrays.sort(toSort, new Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return ((Group)o1).compareTo((Group)o2);
-            }
-            public boolean equals(Object o)
-            {
-                return false;
-            }
+  static public void sortGroups(Group[] toSort) {
+    Arrays.sort(toSort, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return ((Group) o1).compareTo((Group) o2);
+      }
 
-        });
-    }
+      public boolean equals(Object o) {
+        return false;
+      }
 
-    static public void sortUsers(UserDetail[] toSort)
-    {
-        Arrays.sort(toSort, new Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return ((UserDetail)o1).compareTo((UserDetail)o2);
-            }
-            public boolean equals(Object o)
-            {
-                return false;
-            }
+    });
+  }
 
-        });
-    }
+  static public void sortUsers(UserDetail[] toSort) {
+    Arrays.sort(toSort, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return ((UserDetail) o1).compareTo((UserDetail) o2);
+      }
+
+      public boolean equals(Object o) {
+        return false;
+      }
+
+    });
+  }
 }

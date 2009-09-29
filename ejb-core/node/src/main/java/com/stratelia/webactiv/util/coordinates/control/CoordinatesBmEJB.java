@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.coordinates.control;
 
@@ -21,353 +22,352 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  * @version %I%, %G%
  */
-public class CoordinatesBmEJB implements javax.ejb.SessionBean, CoordinatesBmBusinessSkeleton
-{
+public class CoordinatesBmEJB implements javax.ejb.SessionBean,
+    CoordinatesBmBusinessSkeleton {
 
-	private String dbName = JNDINames.PUBLICATION_DATASOURCE;
+  private String dbName = JNDINames.PUBLICATION_DATASOURCE;
 
-	/**
-	 * Constructor declaration
-	 *
-	 *
-	 * @see
-	 */
-	public CoordinatesBmEJB() {}
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public CoordinatesBmEJB() {
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @return
-	 *
-	 * @see
-	 */
-	private Connection getConnection()
-	{
-		try
-		{
-			return DBUtil.makeConnection(dbName);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.getConnection()", SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param con
-	 *
-	 * @see
-	 */
-	private void freeConnection(Connection con)
-	{
-		if (con != null)
-		{
-			try
-			{
-				con.close();
-			}
-			catch (Exception e)
-			{
-				SilverTrace.error("coordinates", "CoordinatesBmEJB.freeConnection()", "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-			}
-		}
-	}
-
-	/**
-	 * Used only by the specific job'peas SmallAds
-	 * This method must not be used by an another Job'peas
-	 * Instead, you must use getCoordinatesByFatherPaths() 
-	 *
-	 * @param fatherIds
-	 * @param pk
-	 *
-	 * @return
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public Collection getCoordinatesByFatherIds(ArrayList fatherIds, CoordinatePK pk) throws RemoteException
-	{
-		Connection con = getConnection();
-		Collection coordinates = null;
-
-		try
-		{
-			SilverTrace.info("coordinates", "CoordinatesBmEJB.getCoordinatesByFatherIds()", "root.MSG_GEN_PARAM_VALUE", "fatherIds BEFORE sorting : " + fatherIds.toString());
-			Collections.sort(fatherIds);
-			SilverTrace.info("coordinates", "CoordinatesBmEJB.getCoordinatesByFatherIds()", "root.MSG_GEN_PARAM_VALUE", "fatherIds AFTER sorting : " + fatherIds.toString());
-			coordinates = CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByFatherIds()", SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-		return coordinates;
-	}
-
-	public Collection getCoordinatesByFatherPaths(ArrayList fatherPaths, CoordinatePK pk) throws RemoteException
-	{
-        Connection con = getConnection();
-        Collection coordinates = null;
-
-        try
-		{
-            coordinates = CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk);
-        }
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByFatherPaths()", SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-		return coordinates;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private Connection getConnection() {
+    try {
+      return DBUtil.makeConnection(dbName);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException("CoordinatesBmEJB.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param pk
-	 * @param coordinatePoints
-	 *
-	 * @return
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public int addCoordinate(CoordinatePK pk, ArrayList coordinatePoints) throws RemoteException
-	{
-		SilverTrace.info("coordinates", "CoordinatesBmEJB.addCoordinate()", "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = " + coordinatePoints.toString());
-		Connection con = getConnection();
-		int		   coordinateId;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * 
+   * @see
+   */
+  private void freeConnection(Connection con) {
+    if (con != null) {
+      try {
+        con.close();
+      } catch (Exception e) {
+        SilverTrace.error("coordinates", "CoordinatesBmEJB.freeConnection()",
+            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      }
+    }
+  }
 
-		try
-		{
-			coordinateId = CoordinatesDAO.addCoordinate(con, pk, coordinatePoints);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.addCoordinate()", SilverpeasRuntimeException.ERROR, "coordinates.ADDING_COORDINATE_FAILED", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-		return coordinateId;
-	}
+  /**
+   * Used only by the specific job'peas SmallAds This method must not be used by
+   * an another Job'peas Instead, you must use getCoordinatesByFatherPaths()
+   * 
+   * @param fatherIds
+   * @param pk
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getCoordinatesByFatherIds(ArrayList fatherIds,
+      CoordinatePK pk) throws RemoteException {
+    Connection con = getConnection();
+    Collection coordinates = null;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param pk
-	 * @param coordinates
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public void deleteCoordinates(CoordinatePK pk, ArrayList coordinates) throws RemoteException
-	{
-		SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinates()", "root.MSG_GEN_PARAM_VALUE", "coordinates = " + coordinates.toString());
-		Connection con = getConnection();
+    try {
+      SilverTrace.info("coordinates",
+          "CoordinatesBmEJB.getCoordinatesByFatherIds()",
+          "root.MSG_GEN_PARAM_VALUE", "fatherIds BEFORE sorting : "
+              + fatherIds.toString());
+      Collections.sort(fatherIds);
+      SilverTrace.info("coordinates",
+          "CoordinatesBmEJB.getCoordinatesByFatherIds()",
+          "root.MSG_GEN_PARAM_VALUE", "fatherIds AFTER sorting : "
+              + fatherIds.toString());
+      coordinates = CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.getCoordinatesByFatherIds()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
+    } finally {
+      freeConnection(con);
+    }
+    return coordinates;
+  }
 
-		try
-		{
-			CoordinatesDAO.removeCoordinates(con, pk, coordinates);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.deleteCoordinates()", SilverpeasRuntimeException.ERROR, "coordinates.DELETING_COORDINATES_FAILED", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-	}
+  public Collection getCoordinatesByFatherPaths(ArrayList fatherPaths,
+      CoordinatePK pk) throws RemoteException {
+    Connection con = getConnection();
+    Collection coordinates = null;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param pk
-	 * @param coordinatePoints
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public void deleteCoordinatesByPoints(CoordinatePK pk, ArrayList coordinatePoints) throws RemoteException
-	{
-		SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinatesByPoints()", "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = " + coordinatePoints.toString());
-		Connection con = getConnection();
+    try {
+      coordinates = CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.getCoordinatesByFatherPaths()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
+    } finally {
+      freeConnection(con);
+    }
+    return coordinates;
+  }
 
-		try
-		{
-			CoordinatesDAO.removeCoordinatesByPoints(con, pk, coordinatePoints);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.deleteCoordinatesByPoints()", SilverpeasRuntimeException.ERROR, "coordinates.DELETING_COORDINATES_BY_POINTS_FAILED", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param coordinatePoints
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public int addCoordinate(CoordinatePK pk, ArrayList coordinatePoints)
+      throws RemoteException {
+    SilverTrace.info("coordinates", "CoordinatesBmEJB.addCoordinate()",
+        "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = "
+            + coordinatePoints.toString());
+    Connection con = getConnection();
+    int coordinateId;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param coordinateIds
-	 * @param pk
-	 *
-	 * @return
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public ArrayList getCoordinatesByCoordinateIds(ArrayList coordinateIds, CoordinatePK pk) throws RemoteException
-	{
-		SilverTrace.info("coordinates", "CoordinatesBmEJB.getCoordinatesByCoordinateIds()", "root.MSG_GEN_PARAM_VALUE", "coordinateIds = " + coordinateIds.toString());
-		Connection con = getConnection();
+    try {
+      coordinateId = CoordinatesDAO.addCoordinate(con, pk, coordinatePoints);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException("CoordinatesBmEJB.addCoordinate()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.ADDING_COORDINATE_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+    return coordinateId;
+  }
 
-		try
-		{
-			return CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByCoordinateIds()", SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param coordinates
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void deleteCoordinates(CoordinatePK pk, ArrayList coordinates)
+      throws RemoteException {
+    SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinates()",
+        "root.MSG_GEN_PARAM_VALUE", "coordinates = " + coordinates.toString());
+    Connection con = getConnection();
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param pk
-	 * @param point
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point) throws RemoteException
-	{
-		SilverTrace.info("coordinates", "CoordinatesBmEJB.addPointToAllCoordinates()", "root.MSG_GEN_PARAM_VALUE", "point = " + point.toString());
-		Connection con = getConnection();
+    try {
+      CoordinatesDAO.removeCoordinates(con, pk, coordinates);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.deleteCoordinates()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.DELETING_COORDINATES_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
 
-		try
-		{
-			CoordinatesDAO.addPointToAllCoordinates(con, pk, point);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.addPointToAllCoordinates()", SilverpeasRuntimeException.ERROR, "coordinates.ADDING_A_POINT_TO_COORDINATES_FAILED", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param coordinatePoints
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void deleteCoordinatesByPoints(CoordinatePK pk,
+      ArrayList coordinatePoints) throws RemoteException {
+    SilverTrace.info("coordinates",
+        "CoordinatesBmEJB.deleteCoordinatesByPoints()",
+        "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = "
+            + coordinatePoints.toString());
+    Connection con = getConnection();
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param pk
-	 * @param nodeId
-	 *
-	 * @return
-	 *
-	 * @throws RemoteException
-	 *
-	 * @see
-	 */
-	public Collection getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId) throws RemoteException
-	{
-		Connection con = getConnection();
-		Collection coordinateIds = null;
+    try {
+      CoordinatesDAO.removeCoordinatesByPoints(con, pk, coordinatePoints);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.deleteCoordinatesByPoints()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.DELETING_COORDINATES_BY_POINTS_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
 
-		try
-		{
-			coordinateIds = CoordinatesDAO.getCoordinateIdsByNodeId(con, pk, nodeId);
-		}
-		catch (Exception e)
-		{
-			throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinateIdsByNodeId()", SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_BY_POINTS_NOT_AVAILABLE", e);
-		}
-		finally
-		{
-			freeConnection(con);
-		}
-		return coordinateIds;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param coordinateIds
+   * @param pk
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public ArrayList getCoordinatesByCoordinateIds(ArrayList coordinateIds,
+      CoordinatePK pk) throws RemoteException {
+    SilverTrace.info("coordinates",
+        "CoordinatesBmEJB.getCoordinatesByCoordinateIds()",
+        "root.MSG_GEN_PARAM_VALUE", "coordinateIds = "
+            + coordinateIds.toString());
+    Connection con = getConnection();
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @see
-	 */
-	public void ejbCreate() {}
+    try {
+      return CoordinatesDAO.selectCoordinatesByCoordinateIds(con,
+          coordinateIds, pk);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.getCoordinatesByCoordinateIds()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @see
-	 */
-	public void ejbRemove() {}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param point
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point)
+      throws RemoteException {
+    SilverTrace.info("coordinates",
+        "CoordinatesBmEJB.addPointToAllCoordinates()",
+        "root.MSG_GEN_PARAM_VALUE", "point = " + point.toString());
+    Connection con = getConnection();
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @see
-	 */
-	public void ejbActivate() {}
+    try {
+      CoordinatesDAO.addPointToAllCoordinates(con, pk, point);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.addPointToAllCoordinates()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.ADDING_A_POINT_TO_COORDINATES_FAILED", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @see
-	 */
-	public void ejbPassivate() {}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * @param nodeId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId)
+      throws RemoteException {
+    Connection con = getConnection();
+    Collection coordinateIds = null;
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param sc
-	 *
-	 * @see
-	 */
-	public void setSessionContext(SessionContext sc) {}
+    try {
+      coordinateIds = CoordinatesDAO.getCoordinateIdsByNodeId(con, pk, nodeId);
+    } catch (Exception e) {
+      throw new CoordinateRuntimeException(
+          "CoordinatesBmEJB.getCoordinateIdsByNodeId()",
+          SilverpeasRuntimeException.ERROR,
+          "coordinates.COORDINATES_LIST_BY_POINTS_NOT_AVAILABLE", e);
+    } finally {
+      freeConnection(con);
+    }
+    return coordinateIds;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @see
+   */
+  public void ejbCreate() {
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @see
+   */
+  public void ejbRemove() {
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @see
+   */
+  public void ejbActivate() {
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @see
+   */
+  public void ejbPassivate() {
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param sc
+   * 
+   * @see
+   */
+  public void setSessionContext(SessionContext sc) {
+  }
 
 }

@@ -48,30 +48,29 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 
 /**
- * AdminServlet is a router for admin related requests like deploying/undeploying of portlets
- * and creating of portlet windows.
+ * AdminServlet is a router for admin related requests like
+ * deploying/undeploying of portlets and creating of portlet windows.
  */
 public class AdminServlet extends HttpServlet {
-       
-    private ServletContext context;
-    
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        context = config.getServletContext();
-    }
-    
-    
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        doGetPost(request, response);
-    }
-    
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        doGetPost(request, response);
-    }
-    
-    public void doGetPost(HttpServletRequest request, HttpServletResponse response)
+
+  private ServletContext context;
+
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    context = config.getServletContext();
+  }
+
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doGetPost(request, response);
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doGetPost(request, response);
+  }
+
+  public void doGetPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         
     	String elementId 	= getUserIdOrSpaceId(request, false);
@@ -298,131 +297,134 @@ public class AdminServlet extends HttpServlet {
         RequestDispatcher reqd = context.getRequestDispatcher("/portlet/jsp/jsr/admin.jsp");
         reqd.forward(request,response);
     }
-        
-    private void movePortletWindow(String portletWindowName, String width, String row, boolean visible, HttpSession session, PortletAdminData portletAdminData)
-    {
-        if(portletWindowName == null){
-            String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
-            session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);
-        } else {
-            StringBuffer messageBuffer = new StringBuffer(DesktopMessages.getLocalizedString(AdminConstants.MODIFY_FAILED));
-            boolean success = false;
-            try {
-                success = portletAdminData.modifyPortletWindow(portletWindowName, width, visible, row);
-                AdminUtils.setPortletWindowAttributes(session, portletAdminData, portletWindowName);
-            } catch (Exception ex) {
-                messageBuffer.append(".");
-                messageBuffer.append(ex.getMessage());
-            }
-            if(success) {
-                String message = DesktopMessages.getLocalizedString(AdminConstants.MODIFY_SUCCEEDED);
-                session.setAttribute(AdminConstants.MODIFY_SUCCEEDED_ATTRIBUTE, message);
-            } else {
-                session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, messageBuffer.toString());
-            }
-        }
+
+  private void movePortletWindow(String portletWindowName, String width,
+      String row, boolean visible, HttpSession session,
+      PortletAdminData portletAdminData) {
+    if (portletWindowName == null) {
+      String message = DesktopMessages
+          .getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
+      session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);
+    } else {
+      StringBuffer messageBuffer = new StringBuffer(DesktopMessages
+          .getLocalizedString(AdminConstants.MODIFY_FAILED));
+      boolean success = false;
+      try {
+        success = portletAdminData.modifyPortletWindow(portletWindowName,
+            width, visible, row);
+        AdminUtils.setPortletWindowAttributes(session, portletAdminData,
+            portletWindowName);
+      } catch (Exception ex) {
+        messageBuffer.append(".");
+        messageBuffer.append(ex.getMessage());
+      }
+      if (success) {
+        String message = DesktopMessages
+            .getLocalizedString(AdminConstants.MODIFY_SUCCEEDED);
+        session
+            .setAttribute(AdminConstants.MODIFY_SUCCEEDED_ATTRIBUTE, message);
+      } else {
+        session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE,
+            messageBuffer.toString());
+      }
     }
-    
-    private boolean validateString(String name, boolean allowSpaces) {
-        if(name == null || name.trim().length() == 0){
-            return false;
-        }
-        
-        /*String value = name.trim();
-        for(int i=0; i<value.length(); i++) {
-            char c = value.charAt(i);
-            if(!Character.isLetterOrDigit(c) && !((c == '_') || (allowSpaces && c == ' '))){
-                return false;
-            }
-        }*/
-        return true;
+  }
+
+  private boolean validateString(String name, boolean allowSpaces) {
+    if (name == null || name.trim().length() == 0) {
+      return false;
     }
-    
-    private boolean isParameterPresent(HttpServletRequest request, String parameter) {
-        String name = request.getParameter(parameter);
-        return (name == null ? false : true);
+
+    /*
+     * String value = name.trim(); for(int i=0; i<value.length(); i++) { char c
+     * = value.charAt(i); if(!Character.isLetterOrDigit(c) && !((c == '_') ||
+     * (allowSpaces && c == ' '))){ return false; } }
+     */
+    return true;
+  }
+
+  private boolean isParameterPresent(HttpServletRequest request,
+      String parameter) {
+    String name = request.getParameter(parameter);
+    return (name == null ? false : true);
+  }
+
+  private void setSelectedPortletWindow(HttpSession session,
+      String portletWindowName) {
+    session.removeAttribute(AdminConstants.SELECTED_PORTLET_WINDOW_ATTRIBUTE);
+    session.setAttribute(AdminConstants.SELECTED_PORTLET_WINDOW_ATTRIBUTE,
+        portletWindowName);
+  }
+
+  protected String getPresentationURI(HttpServletRequest request) {
+    String spaceId = getSpaceId(request);
+
+    if (!StringUtil.isDefined(spaceId) || isSpaceBackOffice(request)) {
+      return "/portlet/jsp/jsr/desktop.jsp";
+    } else {
+      request.setAttribute("DisableMove", Boolean.TRUE);
+      return "/portlet/jsp/jsr/spaceDesktop.jsp";
     }
-    
-    private void setSelectedPortletWindow(HttpSession session, String portletWindowName) {
-        session.removeAttribute(AdminConstants.SELECTED_PORTLET_WINDOW_ATTRIBUTE);
-        session.setAttribute(AdminConstants.SELECTED_PORTLET_WINDOW_ATTRIBUTE, portletWindowName);
+  }
+
+  private String getUserIdOrSpaceId(HttpServletRequest request,
+      boolean getSpaceIdOnly) {
+    String userId = null;
+    String spaceId = getSpaceId(request);
+
+    if (getSpaceIdOnly)
+      return spaceId;
+
+    if (!StringUtil.isDefined(spaceId)) {
+      return getUserId(request);
     }
-    
-    protected String getPresentationURI(HttpServletRequest request)
-    {
-    	String spaceId = getSpaceId(request);
-    	
-    	if (!StringUtil.isDefined(spaceId) || isSpaceBackOffice(request))
-    	{
-    		return "/portlet/jsp/jsr/desktop.jsp";
-    	}
-    	else
-    	{
-    		request.setAttribute("DisableMove", Boolean.TRUE);
-    		return "/portlet/jsp/jsr/spaceDesktop.jsp";
-    	}
+    return spaceId;
+  }
+
+  private String getUserId(HttpServletRequest request) {
+    // Display the private user homepage
+    // retrieve userId from session
+    HttpSession session = request.getSession();
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session
+        .getAttribute("SilverSessionController");
+
+    String userId = m_MainSessionCtrl.getUserId();
+
+    return userId;
+
+  }
+
+  private String getLanguage(HttpServletRequest request) {
+    // Display the private user homepage
+    // retrieve userId from session
+    HttpSession session = request.getSession();
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session
+        .getAttribute("SilverSessionController");
+
+    return m_MainSessionCtrl.getFavoriteLanguage();
+  }
+
+  private String getSpaceId(HttpServletRequest request) {
+    String spaceId = request.getParameter("SpaceId");
+    if (!StringUtil.isDefined(spaceId))
+      spaceId = request.getParameter(WindowInvokerConstants.DRIVER_SPACEID);
+
+    if (StringUtil.isDefined(spaceId)) {
+      // Display the space homepage
+      if (!spaceId.startsWith("space"))
+        spaceId = "space" + spaceId;
     }
-    
-    private String getUserIdOrSpaceId(HttpServletRequest request, boolean getSpaceIdOnly)
-    {
-    	String userId 	= null;
-    	String spaceId 	= getSpaceId(request);
-    	
-    	if (getSpaceIdOnly)
-    		return spaceId;
-    	
-    	if (!StringUtil.isDefined(spaceId))
-    	{
-    		return getUserId(request);
-    	}    	
-    	return spaceId;
-    }
-    
-    private String getUserId(HttpServletRequest request)
-    {
-		//Display the private user homepage
-		//retrieve userId from session
-        HttpSession 			session 			= request.getSession();
-        MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
-        
-        String userId = m_MainSessionCtrl.getUserId();
-        
-        return userId;
-    	
-    }
-    
-    private String getLanguage(HttpServletRequest request)
-    {
-		//Display the private user homepage
-		//retrieve userId from session
-        HttpSession 			session 			= request.getSession();
-        MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
-        
-        return m_MainSessionCtrl.getFavoriteLanguage();
-    }
-    
-    private String getSpaceId(HttpServletRequest request)
-    {
-    	String spaceId = request.getParameter("SpaceId");
-    	if (!StringUtil.isDefined(spaceId))
-    		spaceId = request.getParameter(WindowInvokerConstants.DRIVER_SPACEID);
-    	
-    	if (StringUtil.isDefined(spaceId))
-    	{
-    		//Display the space homepage
-    		if (!spaceId.startsWith("space"))
-    			spaceId = "space"+spaceId;
-    	}
-    	return spaceId;
-    }
-    
-    private boolean isSpaceBackOffice(HttpServletRequest request)
-    {
-    	return (StringUtil.isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
-    }
-    
-    private boolean isSpaceFrontOffice(HttpServletRequest request)
-    {
-    	return (StringUtil.isDefined(getSpaceId(request)) && !StringUtil.isDefined(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
-    }
+    return spaceId;
+  }
+
+  private boolean isSpaceBackOffice(HttpServletRequest request) {
+    return (StringUtil.isDefined(getSpaceId(request)) && "admin"
+        .equalsIgnoreCase(request
+            .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+  }
+
+  private boolean isSpaceFrontOffice(HttpServletRequest request) {
+    return (StringUtil.isDefined(getSpaceId(request)) && !StringUtil
+        .isDefined(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+  }
 }

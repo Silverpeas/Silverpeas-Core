@@ -11,18 +11,20 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 
 /**
  * @author neysseri
- *
+ * 
  */
 public class AttachmentCallBack extends CallBack {
-	
-	public AttachmentCallBack()
-	{
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int, java.lang.String, java.lang.Object)
-	 */
-	public void doInvoke(int action, int iParam, String componentId, Object extraParam) { 
+
+  public AttachmentCallBack() {
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
+   * int, java.lang.String, java.lang.Object)
+   */
+  public void doInvoke(int action, int iParam, String componentId, Object extraParam) { 
 		SilverTrace.info("attachment", "AttachmentCallBack.doInvoke()", "root.MSG_GEN_ENTER_METHOD", "action = "+action+", iParam = "+iParam+", componentId = "+componentId+", extraParam = "+extraParam.toString());
 		
 		if (iParam == -1)
@@ -58,13 +60,18 @@ public class AttachmentCallBack extends CallBack {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
-	 */
-	public void subscribe() {
-		CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_CREATE, this);
-		CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_UPDATE, this);
-		CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_DELETE, this);
-	}	
-	
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
+   */
+  public void subscribe() {
+    CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_CREATE,
+        this);
+    CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_UPDATE,
+        this);
+    CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_DELETE,
+        this);
+  }
+
 }

@@ -36,29 +36,25 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
  * 
  * @author
  */
-public class DragAndDrop extends HttpServlet
-{
-    HttpSession session;
-    PrintWriter out;
+public class DragAndDrop extends HttpServlet {
+  HttpSession session;
+  PrintWriter out;
 
-    public void init(ServletConfig config)
-    {
-        try
-        {
-            super.init(config);
-        }
-        catch (ServletException se)
-        {
-            SilverTrace.fatal("versioningPeas", "DragAndDrop.init", "attachment.CANNOT_ACCESS_SUPERCLASS");
-        }
+  public void init(ServletConfig config) {
+    try {
+      super.init(config);
+    } catch (ServletException se) {
+      SilverTrace.fatal("versioningPeas", "DragAndDrop.init",
+          "attachment.CANNOT_ACCESS_SUPERCLASS");
     }
+  }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-    {
-        doPost(req, res);
-    }
-	
-    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
+  public void doGet(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException {
+    doPost(req, res);
+  }
+
+  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
         SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
         

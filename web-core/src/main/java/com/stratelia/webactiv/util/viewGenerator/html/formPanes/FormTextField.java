@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * FormTextField.java
@@ -11,7 +12,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- *
+ * 
  * @author frageade
  * @version
  */
@@ -34,8 +35,8 @@ public class FormTextField extends FormLine {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public FormTextField() {
@@ -49,11 +50,11 @@ public class FormTextField extends FormLine {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param nam
    * @param val
-   *
+   * 
    * @see
    */
   public FormTextField(String nam, String val) {
@@ -66,12 +67,12 @@ public class FormTextField extends FormLine {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param nam
    * @param val
    * @param lab
-   *
+   * 
    * @see
    */
   public FormTextField(String nam, String val, String lab) {
@@ -84,10 +85,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param nb
-   *
+   * 
    * @see
    */
   public void setNbCharMax(int nb) {
@@ -96,10 +97,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {
@@ -114,14 +115,14 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param nam
    * @param url
    * @param pc
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -142,10 +143,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param req
-   *
+   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -155,10 +156,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String printDemo() {
@@ -174,10 +175,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String toXML() {
@@ -194,10 +195,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getDBColumnCreationRequest() {

@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.agenda;
 
@@ -29,30 +30,30 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class AgendaIndexer implements ComponentIndexerInterface
-{
+public class AgendaIndexer implements ComponentIndexerInterface {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param mainSessionCtrl
-     * @param context
-     *
-     * @throws Exception
-     *
-     * @see
-     */
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws Exception
-    {
-        AgendaSessionController agenda = new AgendaSessionController(mainSessionCtrl, context);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * @param context
+   * 
+   * @throws Exception
+   * 
+   * @see
+   */
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws Exception {
+    AgendaSessionController agenda = new AgendaSessionController(
+        mainSessionCtrl, context);
 
-        agenda.indexAll();
+    agenda.indexAll();
 
-    }
+  }
 
 }

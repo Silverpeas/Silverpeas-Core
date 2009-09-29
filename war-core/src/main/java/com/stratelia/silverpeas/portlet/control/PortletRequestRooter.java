@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /**
  * Title:        portlets
@@ -70,667 +71,609 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * stabilisation lot2
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class PortletRequestRooter extends HttpServlet
-{
-
-    /**
-     * <init>
-     * 
-     */
-    public PortletRequestRooter() {}
-
-    /**
-     * doPost Controleur in the MVC paradigm
-     * 
-     * @param request parameter for doPost
-     * 
-     * @throws ServletException -
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
-    {
-        String                destination;
-        SpaceModel            space;
-        MainSessionController msc;
-
-        try
-        {
-            HttpSession session = request.getSession();
-
-
-            msc = (MainSessionController) session.getAttribute("SilverSessionController");
-            // String function = request.getParameter("function") ;
-            String function = request.getPathInfo().substring(1);  // , request.getPathInfo().length()-4) ;
-            String spaceId = request.getParameter("spaceId");
-            // Requested portlet state : min, max or empty (empty means normal)
-            String portletState = request.getParameter("portletState");
-
-            if (portletState == null)
-            {
-                portletState = "";
-
-            }
-            SilverTrace.info("portlet", "PortletRequestRooter.doPost", "root.MSG_GEN_ENTER_METHOD", "function=" + function + ", spaceId=" + spaceId + ", portletState=" + portletState);
-            // Compute the destination page
-     
-            if (msc == null)
-            {
-                SilverTrace.error("portlet", "PortletRequestRooter.doPost", "portlet.MSG_NOT_MSC");
-                destination = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-
-            }
-            else if (function == null)
-            {
-                function = "null";
-                destination = "/portlet/jsp/unknown.jsp?function='" + function + "'";
-
-            }
-            else if (function.equalsIgnoreCase("main"))
-            {
-                // Get the required space model from the Factory (from database)
-                space = SpaceModelFactory.getSpaceModel(msc, spaceId, false);
-                // Cache it in the current session for later use
-                session.setAttribute("spaceModel", space);
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-                destination = "/portlet/jsp/main.jsp";
-            }
-            else if (function.equalsIgnoreCase("column"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                if (space == null)
-                {
-                    throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                    // get the column number to display
-                }
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-
-                // set the "column" objet in the request for use by the JSP page
-                request.setAttribute("column", space.getColumn(col));
-                // prepare the forward to the JSP column
-                destination = "/portlet/jsp/column.jsp";  // ?col=" + sCol ;
-
-            }
-            else if (function.equalsIgnoreCase("portlet"))
-            {
-                // get the portlet index
-                String sIndex = request.getParameter("id");
-                int    index = Integer.parseInt(sIndex);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // set the "portlet" object in the request for use by the JSP page
-                request.setAttribute("portlet", portlet);
-                destination = "/portlet/jsp/portlet" + portletState + ".jsp";
-
-            }
-            else if (function.equalsIgnoreCase("portletTitle"))
-            {
-                // get the portlet index
-                String sIndex = request.getParameter("id");
-                int    index = Integer.parseInt(sIndex);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // set the "portlet" object in the request for use by the JSP page
-                request.setAttribute("portlet", portlet);
-                destination = "/portlet/jsp/portletTitle" + portletState + ".jsp";
-
-            }
-            else if (function.equalsIgnoreCase("portletContent"))
-            {
-                // get the portlet index
-                String sIndex = request.getParameter("id");
-                int    index = Integer.parseInt(sIndex);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // set the "portlet" object in the request for use by the JSP page
-                request.setAttribute("portlet", portlet);
-                // destination ex : "/Rquickinfo/jsp/Main.jsp?Space=WA8&Component=quickinfo24"
-                destination = portlet.getRequestRooter() + portlet.getContentUrl() + "?Space=WA" + spaceId + "&Component=" + portlet.getComponentName() + portlet.getComponentInstanceId() + "&portletState=" + portletState;
-            }
-            else if (function.equalsIgnoreCase("portletFooter"))
-            {
-                destination = "/portlet/jsp/portletFooter" + portletState + ".jsp";
-
-            }
-            else if (function.equalsIgnoreCase("state"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                if (space == null)
-                {
-                   throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                    // get the portlet index
-                }
-                String  sIndex = request.getParameter("id");
-                int     index = Integer.parseInt(sIndex);
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // Set the new state for this portlet (min, max or normal)
-                portlet.setState(portletState);
-                // Save the current portlet State for next session
-               
-                SpaceModelFactory.portletSaveState(space, portlet);
-                // set the "column" objet in the request for use by the JSP page
-                request.setAttribute("column", space.getColumn(portlet.getColumnNumber()));
-                destination = "/portlet/jsp/column.jsp";  // ?col=" + portlet.getColumnNumber();
-
-            }
-            else if (function.equalsIgnoreCase("standard"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                if (space == null)
-                {
-                    throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                    // get the portlet index
-                }
-                String  sIndex = request.getParameter("id");
-                int     index = Integer.parseInt(sIndex);
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // Set the new state for this portlet (min, max or normal)
-                portlet.setState(Portlet.NORMAL);
-                // Save the current portlet State for next session
-                
-                SpaceModelFactory.portletSaveState(space, portlet);
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-                destination = "/portlet/jsp/main.jsp";
-
-
-
-                // *******************************************
-                // Administration specific actions
-                // *******************************************
-
-
-                // main action for administration
-            }
-            else if (function.equalsIgnoreCase("admin"))
-            {
-                // Retrieve the current space from the database
-                space = SpaceModelFactory.getSpaceModel(msc, spaceId, true);
-                // Cache it in the current session for later use
-                session.setAttribute("spaceModel", space);
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-
-                destination = "/portlet/jsp/admin/adminPortlet.jsp";
-
-
-            }
-		
-	    else if (function.equalsIgnoreCase("admin1"))
-            {
-                // Retrieve the current space from the database
-                space = SpaceModelFactory.getSpaceModel(msc, spaceId, true);
-                // Cache it in the current session for later use
-                session.setAttribute("spaceModel", space);
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-				request.setAttribute("fullURL", GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="+ space.getSpaceId()); 
-				destination = "/jobStartPagePeas/jsp/goBack.jsp";
-				
-            }
-            else if (function.equalsIgnoreCase("portletAdminBarre"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                if (space == null)
-                {
-                    throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                    // Put the required space model in the request for the JSP page.
-                }
-                request.setAttribute("spaceModel", space);
-                destination = "/portlet/jsp/admin/portletAdminBarre.jsp";
-
-
-            }
-            else if (function.equalsIgnoreCase("adminMain"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                if (space == null)
-                {
-                    //throw new ServletException("no spaceModel in session");
-                    throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                    // Put the required space model in the request for the JSP page.
-                }
-                request.setAttribute("spaceModel", space);
-                destination = "/portlet/jsp/admin/main.jsp";
-		
-
-
-            }
-            else if (function.equalsIgnoreCase("columnSet"))
-            {
-                destination = "/portlet/jsp/admin/columnSet.jsp";
-
-
-            }
-            else if (function.equalsIgnoreCase("colHeader"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // get the column number to display
-                String      sCol = request.getParameter("col");
-                int         col = Integer.parseInt(sCol);
-                // Retrieve the current SpaceColumn
-                SpaceColumn sc = space.getColumn(col);
-
-                // set the "column" objet in the request for use by the JSP page
-                request.setAttribute("column", sc);
-                // prepare the forward to the JSP column
-                destination = "/portlet/jsp/admin/colHeader.jsp";
-
-            }
-            else if (function.equalsIgnoreCase("adminColumn"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                if (space == null)
-                {
-                    //throw new ServletException("no spaceModel in session");
-                    throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                    // get the column number to display
-                }
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-
-                // set the "column" objet in the request for use by the JSP page
-                request.setAttribute("column", space.getColumn(col));
-                // prepare the forward to the JSP column
-                destination = "/portlet/jsp/admin/column.jsp";
-
-            }
-            else if (function.equalsIgnoreCase("adminPortletDummy"))
-            {
-                // get the portlet index
-                String sIndex = request.getParameter("id");
-                int    index = Integer.parseInt(sIndex);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // set the "portlet" object in the request for use by the JSP page
-                request.setAttribute("portlet", portlet);
-                destination = "/portlet/jsp/admin/portletDummyComponent.jsp";
-            }
-            else if (function.equalsIgnoreCase("adminPortlet"))
-            {
-                // get the portlet index
-                String sIndex = request.getParameter("id");
-                int    index = Integer.parseInt(sIndex);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Extract the required portlet from the space
-                Portlet portlet = space.getPortlets(index);
-
-                // set the "portlet" object in the request for use by the JSP page
-                request.setAttribute("portlet", portlet);
-                destination = "/portlet/jsp/admin/portlet" + portletState + ".jsp";
-
-            }
-            else if (function.equalsIgnoreCase("adminPortletTitle"))
-            {
-                String sRow = request.getParameter("row");
-                int    row = Integer.parseInt(sRow);
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Retrieve the required portlet from the space
-                Portlet portlet = space.getPortlet(col, row);
-
-                // set the "portlet" object in the request for use by the JSP page
-                request.setAttribute("portlet", portlet);
-                destination = "/portlet/jsp/admin/portletTitle.jsp";
-
-                // Liste des composants portlétisés
-            }
-            else if (function.equalsIgnoreCase("componentList"))
-            {
-                destination = "/portlet/jsp/admin/componentList.jsp";
-
-            }
-            else if (function.equalsIgnoreCase("portletList"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                request.setAttribute("portletList", SpaceModelFactory.getPortletList(space));
-                destination = "/portlet/jsp/admin/portletList.jsp";
-
-            }
-            else if (function.equalsIgnoreCase("addColumnList"))
-            {
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                request.setAttribute("portletList", SpaceModelFactory.getPortletList(space));
-                destination = "/portlet/jsp/admin/addColumnList.jsp";
-
-
-                // Add a portlet to the specified column
-            }
-            else if (function.equalsIgnoreCase("addPortlet"))
-            {
-                String sInstanceId = request.getParameter("instanceId");
-                int    instanceId = Integer.parseInt(sInstanceId);
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                
-                 Portlet portlet = SpaceModelFactory.getPortlet(instanceId);
-                 // add the portlet to the current user space
-                 space.addPortlet(col, portlet);
-                 // set the "column" objet in the request for use by the JSP page
-                 request.setAttribute("column", space.getColumn(col));               
-                
-                destination = "/portlet/jsp/admin/column.jsp";
-
-                // Add a portlet to a new column
-            }
-            else if (function.equalsIgnoreCase("addColumn"))
-            {
-                String sInstanceId = request.getParameter("instanceId");
-                int    instanceId = Integer.parseInt(sInstanceId);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-                if (space == null)
-                {
-                    throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-                }
-
-                Portlet portlet = SpaceModelFactory.getPortlet(instanceId);
-                // add the portlet to the current user space
-                space.addPortlet(-1, portlet);
-                destination = "/portlet/jsp/admin/main.jsp";
-
-            }
-            else if (function.equalsIgnoreCase("removePortlet"))
-            {
-                String sRow = request.getParameter("row");
-                int    row = Integer.parseInt(sRow);
-
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                space.removePortlet(col, row);
-                if (request.getParameter("lastPortlet").equalsIgnoreCase("yes"))
-                {
-                    // Put the required space model in the request for the JSP page.
-                    request.setAttribute("spaceModel", space);
-                    destination = "/portlet/jsp/admin/main.jsp";
-                }
-                else
-                {
-                    // set the "column" objet in the request for use by the JSP page
-                    request.setAttribute("column", space.getColumn(col));
-                    destination = "/portlet/jsp/admin/column.jsp";
-                }
-
-            }
-            else if (function.equalsIgnoreCase("save"))
-            {
-                // Retrieve the current space from the session
-				space = (SpaceModel) session.getAttribute("spaceModel");
-				SpaceModelFactory.saveSpaceModel(space);
-             
-			  // Retrieve the current space from the database
-                space = SpaceModelFactory.getSpaceModel(msc, spaceId, true);
-                // Cache it in the current session for later use
-                session.setAttribute("spaceModel", space);
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-				request.setAttribute("fullURL", GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="+ space.getSpaceId()); 
-				destination = "/jobStartPagePeas/jsp/goBack.jsp";
-	         
-            }
-            else if ((function.equalsIgnoreCase("down")) || (function.equalsIgnoreCase("up")))
-            {
-                // move the portlet one step up or down
-                // Retrieve the parameters
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-                String sRow = request.getParameter("row");
-                int    row = Integer.parseInt(sRow);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Retrieve the portlet
-                Portlet portlet = space.getPortlet(col, row);
-
-                // move the portlet
-                if (function.equalsIgnoreCase("down"))
-                {
-                    space.addPortlet(col, row + 2, portlet);
-                    space.removePortlet(col, row);
-                }
-                else
-                {
-                    if (row > 0)
-                    {
-                        space.addPortlet(col, row - 1, portlet);
-                        space.removePortlet(col, row + 1);
-                    }
-                }
-                // set the "column" objet in the request for use by the JSP page
-                request.setAttribute("column", space.getColumn(col));
-                destination = "/portlet/jsp/admin/column.jsp";
-
-            }
-            else if ((function.equalsIgnoreCase("left")) || (function.equalsIgnoreCase("right")))
-            {
-                // move the portlet one step left or right
-                // Retrieve the parameters
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-                String sRow = request.getParameter("row");
-                int    row = Integer.parseInt(sRow);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Retrieve the portlet
-                Portlet portlet = space.getPortlet(col, row);
-
-                // move the portlet
-                if (function.equalsIgnoreCase("right"))
-                {
-                    space.addPortlet(col + 1, row, portlet);
-                }
-                else
-                {
-                    space.addPortlet(col - 1, row, portlet);
-                }
-                space.removePortlet(col, row);
-                // Put the required space model in the request for the JSP page.
-                request.setAttribute("spaceModel", space);
-                destination = "/portlet/jsp/admin/main.jsp";
-
-            }
-            else if (function.equalsIgnoreCase("setColSize"))
-            {
-                // Retrieve the parameters
-                String sCol = request.getParameter("col");
-                int    col = Integer.parseInt(sCol);
-
-                // Retrieve the current space from the session
-                space = (SpaceModel) session.getAttribute("spaceModel");
-                // Retrieve the current column
-                SpaceColumn sc = space.getColumn(col);
-
-                // Retrieve the parameters to set to column with
-                String      sWidth = request.getParameter("textWidth");
-
-                // set the column width
-                sc.setColumnWidth(sWidth);
-
-                // set the "column" objet in the request for use by the JSP page
-                request.setAttribute("column", sc);
-
-                destination = "/portlet/jsp/admin/colHeader.jsp";
-
-                // **********************************
-                // Debug Code : to be moved elsewhere
-                // **********************************
-
-            }
-            else if (function.equalsIgnoreCase("debug"))
-            {
-                destination = null;
-                try
-                {
-                    ServletOutputStream out = response.getOutputStream();
-
-                    out.println("Objets in the request<p>");
-                    out.println("<table>");
-                    out.println("  <tr>");
-                    out.println("    <td>Name</td><td>type</td><td>Content</td>");
-                    out.println("  </tr>");
-                    out.println("");
-                    Enumeration enume = request.getAttributeNames();
-
-                    while (enume.hasMoreElements())
-                    {
-                        String name = (String) enume.nextElement();
-                        Object obj = request.getAttribute(name);
-
-                        out.println("  <tr>");
-                        out.print("    <td>" + name + "</td>");
-                        out.print("<td>" + obj.getClass().getName() + "</td>");
-                        out.println("<td>" + obj.toString() + "</td>");
-                        out.println("  </tr>");
-                    }
-                    out.println("</table>");
-
-                    out.println("Objets in the session<p>");
-                    out.println("<table>");
-                    out.println("  <tr>");
-                    out.println("    <td>Name</td><td>type</td><td>Content</td>");
-                    out.println("  </tr>");
-                    out.println("");
-                    enume = session.getAttributeNames();
-                    while (enume.hasMoreElements())
-                    {
-                        String name = (String) enume.nextElement();
-                        Object obj = session.getAttribute(name);
-
-                        out.println("  <tr>");
-                        out.print("    <td>" + name + "</td>");
-                        out.print("<td>" + obj.getClass().getName() + "</td>");
-                        out.println("<td>" + obj.toString() + "</td>");
-                        out.println("  </tr>");
-                    }
-                    out.println("</table>");
-
-                }
-                catch (IOException e)
-                {
-                    SilverTrace.error("portlet", "PortletRequestRooter.doPost", "portlet.MSG_IO_ERROR");    
-                }
-
-            }
-            else if (function.endsWith(".htm"))
-            {
-                destination = "/portlet/jsp/" + function;
-
-            }
-            else
-            {
-                destination = "/portlet/jsp/unknown.jsp?function='" + function + "'";
-            }
-
-            // forward the request to the destination page
-            try
-            {
-                if (destination != null)
-                {
-                    getServletConfig().getServletContext().getRequestDispatcher(destination).forward(request, response);
-                }
-            }
-            
-            catch (IOException e)
-            {
-                throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_IO_ERROR_DESTINATION", "Destination=" + destination, e);
-            }
-            catch (ServletException e)
-            {
-                throw new PortletException("PortletRequestRooter.doPost", SilverpeasException.ERROR, "portlet.EX_S_ERROR_DESTINATION", "Destination=" + destination, e);
-            }
+public class PortletRequestRooter extends HttpServlet {
+
+  /**
+   * <init>
+   * 
+   */
+  public PortletRequestRooter() {
+  }
+
+  /**
+   * doPost Controleur in the MVC paradigm
+   * 
+   * @param request
+   *          parameter for doPost
+   * 
+   * @throws ServletException
+   *           -
+   */
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException {
+    String destination;
+    SpaceModel space;
+    MainSessionController msc;
+
+    try {
+      HttpSession session = request.getSession();
+
+      msc = (MainSessionController) session
+          .getAttribute("SilverSessionController");
+      // String function = request.getParameter("function") ;
+      String function = request.getPathInfo().substring(1); // ,
+      // request.getPathInfo().length()-4)
+      // ;
+      String spaceId = request.getParameter("spaceId");
+      // Requested portlet state : min, max or empty (empty means normal)
+      String portletState = request.getParameter("portletState");
+
+      if (portletState == null) {
+        portletState = "";
+
+      }
+      SilverTrace.info("portlet", "PortletRequestRooter.doPost",
+          "root.MSG_GEN_ENTER_METHOD", "function=" + function + ", spaceId="
+              + spaceId + ", portletState=" + portletState);
+      // Compute the destination page
+
+      if (msc == null) {
+        SilverTrace.error("portlet", "PortletRequestRooter.doPost",
+            "portlet.MSG_NOT_MSC");
+        destination = GeneralPropertiesManager.getGeneralResourceLocator()
+            .getString("sessionTimeout");
+
+      } else if (function == null) {
+        function = "null";
+        destination = "/portlet/jsp/unknown.jsp?function='" + function + "'";
+
+      } else if (function.equalsIgnoreCase("main")) {
+        // Get the required space model from the Factory (from database)
+        space = SpaceModelFactory.getSpaceModel(msc, spaceId, false);
+        // Cache it in the current session for later use
+        session.setAttribute("spaceModel", space);
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+        destination = "/portlet/jsp/main.jsp";
+      } else if (function.equalsIgnoreCase("column")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        if (space == null) {
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+          // get the column number to display
         }
-        
-        catch(PortletException e){
-          request.setAttribute("javax.servlet.jsp.jspException", e);
-          try{
-             getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpagePopup.jsp").forward(request, response);
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", space.getColumn(col));
+        // prepare the forward to the JSP column
+        destination = "/portlet/jsp/column.jsp"; // ?col=" + sCol ;
+
+      } else if (function.equalsIgnoreCase("portlet")) {
+        // get the portlet index
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // set the "portlet" object in the request for use by the JSP page
+        request.setAttribute("portlet", portlet);
+        destination = "/portlet/jsp/portlet" + portletState + ".jsp";
+
+      } else if (function.equalsIgnoreCase("portletTitle")) {
+        // get the portlet index
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // set the "portlet" object in the request for use by the JSP page
+        request.setAttribute("portlet", portlet);
+        destination = "/portlet/jsp/portletTitle" + portletState + ".jsp";
+
+      } else if (function.equalsIgnoreCase("portletContent")) {
+        // get the portlet index
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // set the "portlet" object in the request for use by the JSP page
+        request.setAttribute("portlet", portlet);
+        // destination ex :
+        // "/Rquickinfo/jsp/Main.jsp?Space=WA8&Component=quickinfo24"
+        destination = portlet.getRequestRooter() + portlet.getContentUrl()
+            + "?Space=WA" + spaceId + "&Component="
+            + portlet.getComponentName() + portlet.getComponentInstanceId()
+            + "&portletState=" + portletState;
+      } else if (function.equalsIgnoreCase("portletFooter")) {
+        destination = "/portlet/jsp/portletFooter" + portletState + ".jsp";
+
+      } else if (function.equalsIgnoreCase("state")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        if (space == null) {
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+          // get the portlet index
+        }
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // Set the new state for this portlet (min, max or normal)
+        portlet.setState(portletState);
+        // Save the current portlet State for next session
+
+        SpaceModelFactory.portletSaveState(space, portlet);
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", space.getColumn(portlet
+            .getColumnNumber()));
+        destination = "/portlet/jsp/column.jsp"; // ?col=" +
+        // portlet.getColumnNumber();
+
+      } else if (function.equalsIgnoreCase("standard")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        if (space == null) {
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+          // get the portlet index
+        }
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // Set the new state for this portlet (min, max or normal)
+        portlet.setState(Portlet.NORMAL);
+        // Save the current portlet State for next session
+
+        SpaceModelFactory.portletSaveState(space, portlet);
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+        destination = "/portlet/jsp/main.jsp";
+
+        // *******************************************
+        // Administration specific actions
+        // *******************************************
+
+        // main action for administration
+      } else if (function.equalsIgnoreCase("admin")) {
+        // Retrieve the current space from the database
+        space = SpaceModelFactory.getSpaceModel(msc, spaceId, true);
+        // Cache it in the current session for later use
+        session.setAttribute("spaceModel", space);
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+
+        destination = "/portlet/jsp/admin/adminPortlet.jsp";
+
+      }
+
+      else if (function.equalsIgnoreCase("admin1")) {
+        // Retrieve the current space from the database
+        space = SpaceModelFactory.getSpaceModel(msc, spaceId, true);
+        // Cache it in the current session for later use
+        session.setAttribute("spaceModel", space);
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+        request
+            .setAttribute("fullURL", GeneralPropertiesManager
+                .getGeneralResourceLocator().getString("ApplicationURL")
+                + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="
+                + space.getSpaceId());
+        destination = "/jobStartPagePeas/jsp/goBack.jsp";
+
+      } else if (function.equalsIgnoreCase("portletAdminBarre")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        if (space == null) {
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+          // Put the required space model in the request for the JSP page.
+        }
+        request.setAttribute("spaceModel", space);
+        destination = "/portlet/jsp/admin/portletAdminBarre.jsp";
+
+      } else if (function.equalsIgnoreCase("adminMain")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        if (space == null) {
+          // throw new ServletException("no spaceModel in session");
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+          // Put the required space model in the request for the JSP page.
+        }
+        request.setAttribute("spaceModel", space);
+        destination = "/portlet/jsp/admin/main.jsp";
+
+      } else if (function.equalsIgnoreCase("columnSet")) {
+        destination = "/portlet/jsp/admin/columnSet.jsp";
+
+      } else if (function.equalsIgnoreCase("colHeader")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // get the column number to display
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+        // Retrieve the current SpaceColumn
+        SpaceColumn sc = space.getColumn(col);
+
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", sc);
+        // prepare the forward to the JSP column
+        destination = "/portlet/jsp/admin/colHeader.jsp";
+
+      } else if (function.equalsIgnoreCase("adminColumn")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        if (space == null) {
+          // throw new ServletException("no spaceModel in session");
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+          // get the column number to display
+        }
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", space.getColumn(col));
+        // prepare the forward to the JSP column
+        destination = "/portlet/jsp/admin/column.jsp";
+
+      } else if (function.equalsIgnoreCase("adminPortletDummy")) {
+        // get the portlet index
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // set the "portlet" object in the request for use by the JSP page
+        request.setAttribute("portlet", portlet);
+        destination = "/portlet/jsp/admin/portletDummyComponent.jsp";
+      } else if (function.equalsIgnoreCase("adminPortlet")) {
+        // get the portlet index
+        String sIndex = request.getParameter("id");
+        int index = Integer.parseInt(sIndex);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Extract the required portlet from the space
+        Portlet portlet = space.getPortlets(index);
+
+        // set the "portlet" object in the request for use by the JSP page
+        request.setAttribute("portlet", portlet);
+        destination = "/portlet/jsp/admin/portlet" + portletState + ".jsp";
+
+      } else if (function.equalsIgnoreCase("adminPortletTitle")) {
+        String sRow = request.getParameter("row");
+        int row = Integer.parseInt(sRow);
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Retrieve the required portlet from the space
+        Portlet portlet = space.getPortlet(col, row);
+
+        // set the "portlet" object in the request for use by the JSP page
+        request.setAttribute("portlet", portlet);
+        destination = "/portlet/jsp/admin/portletTitle.jsp";
+
+        // Liste des composants portlétisés
+      } else if (function.equalsIgnoreCase("componentList")) {
+        destination = "/portlet/jsp/admin/componentList.jsp";
+
+      } else if (function.equalsIgnoreCase("portletList")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        request.setAttribute("portletList", SpaceModelFactory
+            .getPortletList(space));
+        destination = "/portlet/jsp/admin/portletList.jsp";
+
+      } else if (function.equalsIgnoreCase("addColumnList")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        request.setAttribute("portletList", SpaceModelFactory
+            .getPortletList(space));
+        destination = "/portlet/jsp/admin/addColumnList.jsp";
+
+        // Add a portlet to the specified column
+      } else if (function.equalsIgnoreCase("addPortlet")) {
+        String sInstanceId = request.getParameter("instanceId");
+        int instanceId = Integer.parseInt(sInstanceId);
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+
+        Portlet portlet = SpaceModelFactory.getPortlet(instanceId);
+        // add the portlet to the current user space
+        space.addPortlet(col, portlet);
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", space.getColumn(col));
+
+        destination = "/portlet/jsp/admin/column.jsp";
+
+        // Add a portlet to a new column
+      } else if (function.equalsIgnoreCase("addColumn")) {
+        String sInstanceId = request.getParameter("instanceId");
+        int instanceId = Integer.parseInt(sInstanceId);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+        if (space == null) {
+          throw new PortletException("PortletRequestRooter.doPost",
+              SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
+        }
+
+        Portlet portlet = SpaceModelFactory.getPortlet(instanceId);
+        // add the portlet to the current user space
+        space.addPortlet(-1, portlet);
+        destination = "/portlet/jsp/admin/main.jsp";
+
+      } else if (function.equalsIgnoreCase("removePortlet")) {
+        String sRow = request.getParameter("row");
+        int row = Integer.parseInt(sRow);
+
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        space.removePortlet(col, row);
+        if (request.getParameter("lastPortlet").equalsIgnoreCase("yes")) {
+          // Put the required space model in the request for the JSP page.
+          request.setAttribute("spaceModel", space);
+          destination = "/portlet/jsp/admin/main.jsp";
+        } else {
+          // set the "column" objet in the request for use by the JSP page
+          request.setAttribute("column", space.getColumn(col));
+          destination = "/portlet/jsp/admin/column.jsp";
+        }
+
+      } else if (function.equalsIgnoreCase("save")) {
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        SpaceModelFactory.saveSpaceModel(space);
+
+        // Retrieve the current space from the database
+        space = SpaceModelFactory.getSpaceModel(msc, spaceId, true);
+        // Cache it in the current session for later use
+        session.setAttribute("spaceModel", space);
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+        request
+            .setAttribute("fullURL", GeneralPropertiesManager
+                .getGeneralResourceLocator().getString("ApplicationURL")
+                + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="
+                + space.getSpaceId());
+        destination = "/jobStartPagePeas/jsp/goBack.jsp";
+
+      } else if ((function.equalsIgnoreCase("down"))
+          || (function.equalsIgnoreCase("up"))) {
+        // move the portlet one step up or down
+        // Retrieve the parameters
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+        String sRow = request.getParameter("row");
+        int row = Integer.parseInt(sRow);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Retrieve the portlet
+        Portlet portlet = space.getPortlet(col, row);
+
+        // move the portlet
+        if (function.equalsIgnoreCase("down")) {
+          space.addPortlet(col, row + 2, portlet);
+          space.removePortlet(col, row);
+        } else {
+          if (row > 0) {
+            space.addPortlet(col, row - 1, portlet);
+            space.removePortlet(col, row + 1);
           }
-          catch(IOException ioe){
-            SilverTrace.error("portlet", "PortletRequestRooter.doPost", "portlet.MSG_CANT_GET_DESTINATION", e); 
-            SilverTrace.fatal("portlet", "PortletRequestRooter.doPost", "portlet.MSG_CANT_GET_ERRORPAGE", ioe);
-            destination = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-            try{
-              getServletConfig().getServletContext().getRequestDispatcher(destination).forward(request, response);
-            }
-            catch(IOException ioe2){
-              SilverTrace.fatal("portlet", "PortletRequestRooter.doPost", "portlet.MSG_CANT_GET_LOGINPAGE", ioe2);
-            }
-         }
-       }
+        }
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", space.getColumn(col));
+        destination = "/portlet/jsp/admin/column.jsp";
+
+      } else if ((function.equalsIgnoreCase("left"))
+          || (function.equalsIgnoreCase("right"))) {
+        // move the portlet one step left or right
+        // Retrieve the parameters
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+        String sRow = request.getParameter("row");
+        int row = Integer.parseInt(sRow);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Retrieve the portlet
+        Portlet portlet = space.getPortlet(col, row);
+
+        // move the portlet
+        if (function.equalsIgnoreCase("right")) {
+          space.addPortlet(col + 1, row, portlet);
+        } else {
+          space.addPortlet(col - 1, row, portlet);
+        }
+        space.removePortlet(col, row);
+        // Put the required space model in the request for the JSP page.
+        request.setAttribute("spaceModel", space);
+        destination = "/portlet/jsp/admin/main.jsp";
+
+      } else if (function.equalsIgnoreCase("setColSize")) {
+        // Retrieve the parameters
+        String sCol = request.getParameter("col");
+        int col = Integer.parseInt(sCol);
+
+        // Retrieve the current space from the session
+        space = (SpaceModel) session.getAttribute("spaceModel");
+        // Retrieve the current column
+        SpaceColumn sc = space.getColumn(col);
+
+        // Retrieve the parameters to set to column with
+        String sWidth = request.getParameter("textWidth");
+
+        // set the column width
+        sc.setColumnWidth(sWidth);
+
+        // set the "column" objet in the request for use by the JSP page
+        request.setAttribute("column", sc);
+
+        destination = "/portlet/jsp/admin/colHeader.jsp";
+
+        // **********************************
+        // Debug Code : to be moved elsewhere
+        // **********************************
+
+      } else if (function.equalsIgnoreCase("debug")) {
+        destination = null;
+        try {
+          ServletOutputStream out = response.getOutputStream();
+
+          out.println("Objets in the request<p>");
+          out.println("<table>");
+          out.println("  <tr>");
+          out.println("    <td>Name</td><td>type</td><td>Content</td>");
+          out.println("  </tr>");
+          out.println("");
+          Enumeration enume = request.getAttributeNames();
+
+          while (enume.hasMoreElements()) {
+            String name = (String) enume.nextElement();
+            Object obj = request.getAttribute(name);
+
+            out.println("  <tr>");
+            out.print("    <td>" + name + "</td>");
+            out.print("<td>" + obj.getClass().getName() + "</td>");
+            out.println("<td>" + obj.toString() + "</td>");
+            out.println("  </tr>");
+          }
+          out.println("</table>");
+
+          out.println("Objets in the session<p>");
+          out.println("<table>");
+          out.println("  <tr>");
+          out.println("    <td>Name</td><td>type</td><td>Content</td>");
+          out.println("  </tr>");
+          out.println("");
+          enume = session.getAttributeNames();
+          while (enume.hasMoreElements()) {
+            String name = (String) enume.nextElement();
+            Object obj = session.getAttribute(name);
+
+            out.println("  <tr>");
+            out.print("    <td>" + name + "</td>");
+            out.print("<td>" + obj.getClass().getName() + "</td>");
+            out.println("<td>" + obj.toString() + "</td>");
+            out.println("  </tr>");
+          }
+          out.println("</table>");
+
+        } catch (IOException e) {
+          SilverTrace.error("portlet", "PortletRequestRooter.doPost",
+              "portlet.MSG_IO_ERROR");
+        }
+
+      } else if (function.endsWith(".htm")) {
+        destination = "/portlet/jsp/" + function;
+
+      } else {
+        destination = "/portlet/jsp/unknown.jsp?function='" + function + "'";
+      }
+
+      // forward the request to the destination page
+      try {
+        if (destination != null) {
+          getServletConfig().getServletContext().getRequestDispatcher(
+              destination).forward(request, response);
+        }
+      }
+
+      catch (IOException e) {
+        throw new PortletException("PortletRequestRooter.doPost",
+            SilverpeasException.ERROR, "portlet.EX_IO_ERROR_DESTINATION",
+            "Destination=" + destination, e);
+      } catch (ServletException e) {
+        throw new PortletException("PortletRequestRooter.doPost",
+            SilverpeasException.ERROR, "portlet.EX_S_ERROR_DESTINATION",
+            "Destination=" + destination, e);
+      }
     }
 
-    /**
-     * doGet
-     * 
-     * @param request parameter for doGet
-     * 
-     * @throws ServletException -
-     * 
-     */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        doPost(request, response);
+    catch (PortletException e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      try {
+        getServletConfig().getServletContext().getRequestDispatcher(
+            "/admin/jsp/errorpagePopup.jsp").forward(request, response);
+      } catch (IOException ioe) {
+        SilverTrace.error("portlet", "PortletRequestRooter.doPost",
+            "portlet.MSG_CANT_GET_DESTINATION", e);
+        SilverTrace.fatal("portlet", "PortletRequestRooter.doPost",
+            "portlet.MSG_CANT_GET_ERRORPAGE", ioe);
+        destination = GeneralPropertiesManager.getGeneralResourceLocator()
+            .getString("sessionTimeout");
+        try {
+          getServletConfig().getServletContext().getRequestDispatcher(
+              destination).forward(request, response);
+        } catch (IOException ioe2) {
+          SilverTrace.fatal("portlet", "PortletRequestRooter.doPost",
+              "portlet.MSG_CANT_GET_LOGINPAGE", ioe2);
+        }
+      }
     }
+  }
 
-    /**
-     * getSessionControlBeanName
-     * 
-     * @return the returned String
-     */
-    public String getSessionControlBeanName()
-    {
-        return "portlet";
-    }
+  /**
+   * doGet
+   * 
+   * @param request
+   *          parameter for doGet
+   * 
+   * @throws ServletException
+   *           -
+   * 
+   */
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doPost(request, response);
+  }
+
+  /**
+   * getSessionControlBeanName
+   * 
+   * @return the returned String
+   */
+  public String getSessionControlBeanName() {
+    return "portlet";
+  }
 
 }

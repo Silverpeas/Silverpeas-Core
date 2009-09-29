@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
@@ -10,31 +11,30 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  * @version %I%, %G%
  */
-public class Main implements SILVERMAILRequestHandler
-{
+public class Main implements SILVERMAILRequestHandler {
 
-	/**
-	 * Method declaration
-	 *
-	 *
-	 * @param componentSC
-	 * @param request
-	 *
-	 * @return
-	 *
-	 * @throws SILVERMAILException
-	 *
-	 * @see
-	 */
-	public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request) throws SILVERMAILException
-	{
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param componentSC
+   * @param request
+   * 
+   * @return
+   * 
+   * @throws SILVERMAILException
+   * 
+   * @see
+   */
+  public String handleRequest(ComponentSessionController componentSC,
+      HttpServletRequest request) throws SILVERMAILException {
 
-		return "/SILVERMAIL/jsp/main.jsp";
-	}
+    return "/SILVERMAIL/jsp/main.jsp";
+  }
 
 }

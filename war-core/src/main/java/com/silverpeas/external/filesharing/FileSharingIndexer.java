@@ -6,6 +6,7 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
 
 public class FileSharingIndexer implements ComponentIndexerInterface {
 
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws Exception {
-    }
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws Exception {
+  }
 }

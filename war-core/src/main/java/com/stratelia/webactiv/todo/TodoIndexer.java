@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.todo;
 
@@ -27,32 +28,31 @@ import com.stratelia.webactiv.todo.control.TodoException;
  * Stabilisation Lot 2
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class TodoIndexer implements ComponentIndexerInterface
-{
+public class TodoIndexer implements ComponentIndexerInterface {
 
-    private ToDoSessionController todo = null;
+  private ToDoSessionController todo = null;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param mainSessionCtrl
-     *
-     * @throws TodoException
-     *
-     * @see
-     */
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws TodoException
-    {
-        todo = new ToDoSessionController(mainSessionCtrl, context);
-        todo.indexAll();
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * 
+   * @throws TodoException
+   * 
+   * @see
+   */
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws TodoException {
+    todo = new ToDoSessionController(mainSessionCtrl, context);
+    todo.indexAll();
+  }
 
 }

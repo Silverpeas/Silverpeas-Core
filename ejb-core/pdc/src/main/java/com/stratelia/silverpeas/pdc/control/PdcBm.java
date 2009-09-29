@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.pdc.control;
 
@@ -140,487 +141,542 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
  * jindent + javadoc
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface PdcBm
-{
+public interface PdcBm {
 
-    /**
-     * *********************************************************
-     */
-    /* Methods used by the use case 'definition of the taxinomy' */
+  /**
+   * *********************************************************
+   */
+  /* Methods used by the use case 'definition of the taxinomy' */
 
-    /**
-     * *********************************************************
-     */
+  /**
+   * *********************************************************
+   */
 
-    public List getAxisByType(String type) throws PdcException;
+  public List getAxisByType(String type) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public List getAxis() throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public List getAxis() throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param type
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int getNbAxisByType(String type) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param type
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int getNbAxisByType(String type) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int getNbAxis() throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int getNbAxis() throws PdcException;
 
-	
-	public int getNbMaxAxis() throws PdcException;
+  public int getNbMaxAxis() throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param axisHeader
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int createAxis(AxisHeader axisHeader) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param axisHeader
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int createAxis(AxisHeader axisHeader) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param axisHeader
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int updateAxis(AxisHeader axisHeader) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param axisHeader
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int updateAxis(AxisHeader axisHeader) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param axisId
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public void deleteAxis(Connection con, String axisId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param axisId
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public void deleteAxis(Connection con, String axisId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param axisId
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public Axis getAxisDetail(String axisId) throws PdcException;
-	public Axis getAxisDetail(String axisId, AxisFilter filter) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param axisId
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public Axis getAxisDetail(String axisId) throws PdcException;
 
-	/**
-     * Method declaration
-     *
-     *
-     * @param axisId
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public AxisHeader getAxisHeader(String axisId) throws PdcException;
+  public Axis getAxisDetail(String axisId, AxisFilter filter)
+      throws PdcException;
 
-	public Value getValue(String axisId, String valueId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param axisId
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public AxisHeader getAxisHeader(String axisId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param valueId
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public Value getAxisValue(String valueId, String treeId) throws PdcException;
-    
-     /**
-     * Return a list of axis values having the value name in parameter
-     *
-     *
-     * @param valueName
-     *
-     * @return List
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public List getAxisValuesByName(String valueName) throws PdcException;
-    
-     /**
-     * Return a list of String corresponding to the valueId of the value in parameter
-     *
-     *
-     * @param axisId
-     * @param valueId
-     *
-     * @return List
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public List getDaughterValues(String axisId, String valueId) throws PdcException;
+  public Value getValue(String axisId, String valueId) throws PdcException;
 
-	/**
-     * Return a list of String corresponding to the valueId of the value in parameter
-     *
-     *
-     * @param axisId
-     * @param valueId
-     *
-     * @return List
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public List getFilteredAxisValues(String rootId, AxisFilter filter) throws PdcException;    
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param valueId
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public Value getAxisValue(String valueId, String treeId) throws PdcException;
 
-    
-     /**
-     * Return the Value corresponding to the axis done
-     *
-     *
-     * @param axisId
-     *
-     * @return Value
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public Value getRoot(String axisId) throws PdcException;
+  /**
+   * Return a list of axis values having the value name in parameter
+   * 
+   * 
+   * @param valueName
+   * 
+   * @return List
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public List getAxisValuesByName(String valueName) throws PdcException;
 
+  /**
+   * Return a list of String corresponding to the valueId of the value in
+   * parameter
+   * 
+   * 
+   * @param axisId
+   * @param valueId
+   * 
+   * @return List
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public List getDaughterValues(String axisId, String valueId)
+      throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param valueToInsert
-     * @param refValue
-     * @param axisId
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int insertMotherValue(Value valueToInsert, String refValue, String axisId) throws PdcException;
+  /**
+   * Return a list of String corresponding to the valueId of the value in
+   * parameter
+   * 
+   * 
+   * @param axisId
+   * @param valueId
+   * 
+   * @return List
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public List getFilteredAxisValues(String rootId, AxisFilter filter)
+      throws PdcException;
 
-    
-    /**
-     *
-     * Déplace une valeur et ses sous-valeurs sous un nouveau père
-     *
-     * @param axis
-     * @param valueToMove
-     * @param newFatherId
-     * @return 1 si valeur soeur de même nom
-     * @throws PdcException
-     */
-    public int moveValueToNewFatherId(Axis axis, Value valueToMove, String newFatherId, int orderNumber) throws PdcException;
+  /**
+   * Return the Value corresponding to the axis done
+   * 
+   * 
+   * @param axisId
+   * 
+   * @return Value
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public Value getRoot(String axisId) throws PdcException;
 
-    
-    /**
-    *
-    * retourne les droits sur la valeur
-    *
-    * @param current value
-    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
-    * @throws PdcException
-    */
-    public List getManagers(String axisId, String valueId)throws PdcException;
-    
-    public boolean isUserManager(String userId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param valueToInsert
+   * @param refValue
+   * @param axisId
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int insertMotherValue(Value valueToInsert, String refValue,
+      String axisId) throws PdcException;
 
-    /**
-   *
+  /**
+   * 
+   * Déplace une valeur et ses sous-valeurs sous un nouveau père
+   * 
+   * @param axis
+   * @param valueToMove
+   * @param newFatherId
+   * @return 1 si valeur soeur de même nom
+   * @throws PdcException
+   */
+  public int moveValueToNewFatherId(Axis axis, Value valueToMove,
+      String newFatherId, int orderNumber) throws PdcException;
+
+  /**
+   * 
+   * retourne les droits sur la valeur
+   * 
+   * @param current
+   *          value
+   * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
+   * @throws PdcException
+   */
+  public List getManagers(String axisId, String valueId) throws PdcException;
+
+  public boolean isUserManager(String userId) throws PdcException;
+
+  /**
+   * 
    * retourne les droits hérités sur la valeur
-   *
-   * @param current value
+   * 
+   * @param current
+   *          value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
   public List getInheritedManagers(Value value) throws PdcException;
-  
-   /**
-   *
+
+  /**
+   * 
    * met à jour les droits sur la valeur
-   *
-   * @param ArrayList( ArrayList UsersId, ArrayList GroupsId), current value
-   * @return 
+   * 
+   * @param ArrayList
+   *          ( ArrayList UsersId, ArrayList GroupsId), current value
+   * @return
    * @throws PdcException
    */
-  public void setManagers(List userIds, List groupIds, String axisId, String valueId)throws PdcException;     
- 
+  public void setManagers(List userIds, List groupIds, String axisId,
+      String valueId) throws PdcException;
+
   /**
-  *
-  * supprime tous les droits sur la valeur
-  *
-  * @param current value
-  * @return 
-  * @throws PdcException
-  */
+   * 
+   * supprime tous les droits sur la valeur
+   * 
+   * @param current
+   *          value
+   * @return
+   * @throws PdcException
+   */
   public void razManagers(String axisId, String valueId) throws PdcException;
-  
+
   public void deleteManager(String userId) throws PdcException;
-  
-  public void deleteGroupManager(String groupId) throws PdcException; 
-  
-  
-    /**
-     * Method declaration
-     *
-     *
-     * @param valueToInsert
-     * @param refValue
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int createDaughterValue(Value valueToInsert, String refValue, String treeId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param value
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int updateValue(Value value, String treeId) throws PdcException;
+  public void deleteGroupManager(String groupId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param valueId
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public void deleteValueAndSubtree(Connection con, String valueId, String axisId, String treeId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param valueToInsert
+   * @param refValue
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int createDaughterValue(Value valueToInsert, String refValue,
+      String treeId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param valueId
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public String deleteValue(Connection con, String valueId, String axisId, String treeId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param value
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int updateValue(Value value, String treeId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param valueId
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public List getFullPath(String valueId, String treeId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param valueId
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public void deleteValueAndSubtree(Connection con, String valueId,
+      String axisId, String treeId) throws PdcException;
 
-    /**
-     * ****************************************************************
-     */
-    /* Methods used by the use case 'settings of using of the taxinomy' */
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param valueId
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public String deleteValue(Connection con, String valueId, String axisId,
+      String treeId) throws PdcException;
 
-    /**
-     * ****************************************************************
-     */
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param valueId
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public List getFullPath(String valueId, String treeId) throws PdcException;
 
-    public UsedAxis getUsedAxis(String usedAxisId) throws PdcException;
+  /**
+   * ****************************************************************
+   */
+  /* Methods used by the use case 'settings of using of the taxinomy' */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param instanceId
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public List getUsedAxisByInstanceId(String instanceId) throws PdcException;
+  /**
+   * ****************************************************************
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param usedAxis
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int addUsedAxis(UsedAxis usedAxis) throws PdcException;
+  public UsedAxis getUsedAxis(String usedAxisId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param usedAxis
-     *
-     * @return
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public int updateUsedAxis(UsedAxis usedAxis) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param instanceId
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public List getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param usedAxisId
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public void deleteUsedAxis(String usedAxisId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param usedAxis
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int addUsedAxis(UsedAxis usedAxis) throws PdcException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param usedAxisIds
-     *
-     * @throws PdcException
-     *
-     * @see
-     */
-    public void deleteUsedAxis(Collection usedAxisIds) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param usedAxis
+   * 
+   * @return
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public int updateUsedAxis(UsedAxis usedAxis) throws PdcException;
 
-	public List getUsedAxisToClassify(String instanceId, int silverObjectId) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param usedAxisId
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public void deleteUsedAxis(String usedAxisId) throws PdcException;
 
-	public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId) throws PdcException;
-	
-	public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId, boolean alertSubscribers) throws PdcException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param usedAxisIds
+   * 
+   * @throws PdcException
+   * 
+   * @see
+   */
+  public void deleteUsedAxis(Collection usedAxisIds) throws PdcException;
 
-    public int updatePosition(ClassifyPosition position,String instanceId, int silverObjectId) throws PdcException;
-    
-    public int updatePosition(ClassifyPosition position,String instanceId, int silverObjectId, boolean alertSubscribers) throws PdcException;
+  public List getUsedAxisToClassify(String instanceId, int silverObjectId)
+      throws PdcException;
 
-	public void deletePosition(int positionId, String sComponentId) throws PdcException;
-	
-	public void copyPositions(int fromObjectId, String fromInstanceId, int toObjectId, String toInstanceId) throws PdcException;
+  public int addPosition(int silverObjectId, ClassifyPosition position,
+      String sComponentId) throws PdcException;
 
-    public List getPositions(int silverObjectId, String sComponentId) throws PdcException;
-    
-	public boolean isClassifyingMandatory(String componentId) throws PdcException;
+  public int addPosition(int silverObjectId, ClassifyPosition position,
+      String sComponentId, boolean alertSubscribers) throws PdcException;
 
-	/** Search methods */
-	public List getPertinentAxis(SearchContext searchContext, String axisType) throws PdcException;
+  public int updatePosition(ClassifyPosition position, String instanceId,
+      int silverObjectId) throws PdcException;
 
-	public List getPertinentAxisByInstanceId(SearchContext searchContext, String axisType, String instanceId) throws PdcException;
-	public List getPertinentAxisByInstanceId(SearchContext searchContext, String axisType, String instanceId, AxisFilter filter) throws PdcException;
+  public int updatePosition(ClassifyPosition position, String instanceId,
+      int silverObjectId, boolean alertSubscribers) throws PdcException;
 
-	public List getPertinentAxisByInstanceIds(SearchContext searchContext, String axisType, List instanceIds) throws PdcException ;
-	public List getPertinentAxisByInstanceIds(SearchContext searchContext, String axisType, List instanceIds, AxisFilter filter) throws PdcException ;
+  public void deletePosition(int positionId, String sComponentId)
+      throws PdcException;
 
-	//public List getFirstLevelAxisValues(SearchContext searchContext, String axisId) throws PdcException;
+  public void copyPositions(int fromObjectId, String fromInstanceId,
+      int toObjectId, String toInstanceId) throws PdcException;
 
-	public List getFirstLevelAxisValuesByInstanceId(SearchContext searchContext, String axisId, String instanceId) throws PdcException;
-	public List getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext, String axisId, List instanceIds) throws PdcException;
+  public List getPositions(int silverObjectId, String sComponentId)
+      throws PdcException;
 
-	//recherche globale
-	//public List getPertinentDaughterValues(SearchContext searchContext, String axisId, String valueId) throws PdcException;
+  public boolean isClassifyingMandatory(String componentId) throws PdcException;
 
-	//recherche à l'intérieur d'une instance
-	public List getPertinentDaughterValuesByInstanceId(SearchContext searchContext, String axisId, String valueId, String instanceId) throws PdcException;		
-	public List getPertinentDaughterValuesByInstanceId(SearchContext searchContext, String axisId, String valueId, String instanceId, AxisFilter filter) throws PdcException;
-	public List getPertinentDaughterValuesByInstanceIds(SearchContext searchContext, String axisId, String valueId, List instanceIds) throws PdcException ;
-	public List getPertinentDaughterValuesByInstanceIds(SearchContext searchContext, String axisId, String valueId, List instanceIds, AxisFilter filter) throws PdcException ;
+  /** Search methods */
+  public List getPertinentAxis(SearchContext searchContext, String axisType)
+      throws PdcException;
 
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId, String authorId, String afterDate, String beforeDate) throws ContainerManagerException;
-	/** Find all the SilverContentId with the given position */
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId, String authorId, String afterDate, String beforeDate, boolean recursiveSearch, boolean visibilitySensitive) throws ContainerManagerException;
+  public List getPertinentAxisByInstanceId(SearchContext searchContext,
+      String axisType, String instanceId) throws PdcException;
 
-	/** Find all the SilverContentId with the given position */
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId) throws ContainerManagerException;
-	public List findSilverContentIdByPosition(ContainerPositionInterface containerPosition, List alComponentId, boolean recursiveSearch, boolean visibilitySensitive) throws ContainerManagerException;
+  public List getPertinentAxisByInstanceId(SearchContext searchContext,
+      String axisType, String instanceId, AxisFilter filter)
+      throws PdcException;
 
-	public List getDaughters(String refValue, String treeId);
+  public List getPertinentAxisByInstanceIds(SearchContext searchContext,
+      String axisType, List instanceIds) throws PdcException;
 
-	public List getSubAxisValues(String axisId, String valueId);
-	
-	public void indexAllAxis() throws PdcException;
+  public List getPertinentAxisByInstanceIds(SearchContext searchContext,
+      String axisType, List instanceIds, AxisFilter filter) throws PdcException;
+
+  // public List getFirstLevelAxisValues(SearchContext searchContext, String
+  // axisId) throws PdcException;
+
+  public List getFirstLevelAxisValuesByInstanceId(SearchContext searchContext,
+      String axisId, String instanceId) throws PdcException;
+
+  public List getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
+      String axisId, List instanceIds) throws PdcException;
+
+  // recherche globale
+  // public List getPertinentDaughterValues(SearchContext searchContext, String
+  // axisId, String valueId) throws PdcException;
+
+  // recherche à l'intérieur d'une instance
+  public List getPertinentDaughterValuesByInstanceId(
+      SearchContext searchContext, String axisId, String valueId,
+      String instanceId) throws PdcException;
+
+  public List getPertinentDaughterValuesByInstanceId(
+      SearchContext searchContext, String axisId, String valueId,
+      String instanceId, AxisFilter filter) throws PdcException;
+
+  public List getPertinentDaughterValuesByInstanceIds(
+      SearchContext searchContext, String axisId, String valueId,
+      List instanceIds) throws PdcException;
+
+  public List getPertinentDaughterValuesByInstanceIds(
+      SearchContext searchContext, String axisId, String valueId,
+      List instanceIds, AxisFilter filter) throws PdcException;
+
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId,
+      String authorId, String afterDate, String beforeDate)
+      throws ContainerManagerException;
+
+  /** Find all the SilverContentId with the given position */
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId,
+      String authorId, String afterDate, String beforeDate,
+      boolean recursiveSearch, boolean visibilitySensitive)
+      throws ContainerManagerException;
+
+  /** Find all the SilverContentId with the given position */
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId)
+      throws ContainerManagerException;
+
+  public List findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List alComponentId,
+      boolean recursiveSearch, boolean visibilitySensitive)
+      throws ContainerManagerException;
+
+  public List getDaughters(String refValue, String treeId);
+
+  public List getSubAxisValues(String axisId, String valueId);
+
+  public void indexAllAxis() throws PdcException;
 
 }

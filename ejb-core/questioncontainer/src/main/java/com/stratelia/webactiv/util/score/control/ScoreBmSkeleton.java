@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 //
 // -- Java Code Generation Process --
@@ -31,263 +32,273 @@ import com.stratelia.webactiv.util.score.model.ScorePK;
 
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface ScoreBmSkeleton
-{
+public interface ScoreBmSkeleton {
 
-    /*
-     * Method:  addScore
-     */
+  /*
+   * Method: addScore
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scoreDetail
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void addScore(ScoreDetail scoreDetail) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scoreDetail
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void addScore(ScoreDetail scoreDetail) throws RemoteException;
 
-    /*
-     * Method:  deleteScore
-     */
+  /*
+   * Method: deleteScore
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void deleteScore(ScorePK scorePK) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void deleteScore(ScorePK scorePK) throws RemoteException;
 
-    /*
-     * Methode: deleteScoreByFatherPK
-     */
+  /*
+   * Methode: deleteScoreByFatherPK
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void deleteScoreByFatherPK(ScorePK scorePK, String fatherId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void deleteScoreByFatherPK(ScorePK scorePK, String fatherId)
+      throws RemoteException;
 
-    /*
-     * Method:  getAllScores
-     */
+  /*
+   * Method: getAllScores
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getAllScores(ScorePK scorePK) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getAllScores(ScorePK scorePK) throws RemoteException;
 
-    /*
-     * Method:  getUserScores
-     */
+  /*
+   * Method: getUserScores
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param userId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getUserScores(ScorePK scorePK, String userId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param userId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getUserScores(ScorePK scorePK, String userId)
+      throws RemoteException;
 
-    /*
-     * Method:  getUserScoresByFatherId
-     */
+  /*
+   * Method: getUserScoresByFatherId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     * @param userId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getUserScoresByFatherId(ScorePK scorePK, String fatherId, String userId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * @param userId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getUserScoresByFatherId(ScorePK scorePK, String fatherId,
+      String userId) throws RemoteException;
 
-    /*
-     * Method:  getBestScoresByFatherId
-     */
+  /*
+   * Method: getBestScoresByFatherId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param nbBestScores
-     * @param fatherId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getBestScoresByFatherId(ScorePK scorePK, int nbBestScores, String fatherId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param nbBestScores
+   * @param fatherId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
+      String fatherId) throws RemoteException;
 
-    /*
-     * Method:  getWorstScoresByFatherId
-     */
+  /*
+   * Method: getWorstScoresByFatherId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param nbWorstScores
-     * @param fatherId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getWorstScoresByFatherId(ScorePK scorePK, int nbWorstScores, String fatherId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param nbWorstScores
+   * @param fatherId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getWorstScoresByFatherId(ScorePK scorePK,
+      int nbWorstScores, String fatherId) throws RemoteException;
 
-    /*
-     * Method:  getNbVotersByFatherId
-     */
+  /*
+   * Method: getNbVotersByFatherId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public int getNbVotersByFatherId(ScorePK scorePK, String fatherId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public int getNbVotersByFatherId(ScorePK scorePK, String fatherId)
+      throws RemoteException;
 
-    /*
-     * Method:  getAverageScoreByFatherId
-     */
+  /*
+   * Method: getAverageScoreByFatherId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public float getAverageScoreByFatherId(ScorePK scorePK, String fatherId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public float getAverageScoreByFatherId(ScorePK scorePK, String fatherId)
+      throws RemoteException;
 
-    /*
-     * Method:  getUserScoresByFatherIdAndParticipationId
-     */
+  /*
+   * Method: getUserScoresByFatherIdAndParticipationId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     * @param userId
-     * @param participationId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public ScoreDetail getUserScoreByFatherIdAndParticipationId(ScorePK scorePK, String fatherId, String userId, int participationId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * @param userId
+   * @param participationId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public ScoreDetail getUserScoreByFatherIdAndParticipationId(ScorePK scorePK,
+      String fatherId, String userId, int participationId)
+      throws RemoteException;
 
-    /*
-     * Method:  getScoresByFatherId
-     */
+  /*
+   * Method: getScoresByFatherId
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getScoresByFatherId(ScorePK scorePK, String fatherId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getScoresByFatherId(ScorePK scorePK, String fatherId)
+      throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scorePK
-     * @param fatherId
-     * @param userId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public int getUserNbParticipationsByFatherId(ScorePK scorePK, String fatherId, String userId) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scorePK
+   * @param fatherId
+   * @param userId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public int getUserNbParticipationsByFatherId(ScorePK scorePK,
+      String fatherId, String userId) throws RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param scoreDetail
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public void updateScore(ScoreDetail scoreDetail) throws RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param scoreDetail
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public void updateScore(ScoreDetail scoreDetail) throws RemoteException;
 
 }

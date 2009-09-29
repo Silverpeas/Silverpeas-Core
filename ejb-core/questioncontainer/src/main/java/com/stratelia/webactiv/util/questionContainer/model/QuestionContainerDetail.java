@@ -9,19 +9,20 @@ public class QuestionContainerDetail implements java.io.Serializable {
 
   private QuestionContainerHeader header = null;
   private Collection questions = null;
-  private Collection comments = null;   //Comments Collection
-  private Collection votes = null;      //QuestionResult Collection of Current user
-
+  private Collection comments = null; // Comments Collection
+  private Collection votes = null; // QuestionResult Collection of Current user
 
   public QuestionContainerDetail() {
     init(null, null, null, null);
   }
 
-  public QuestionContainerDetail(QuestionContainerHeader header,Collection questions,Collection comments,Collection votes) {
-      init(header, questions, comments, votes);
+  public QuestionContainerDetail(QuestionContainerHeader header,
+      Collection questions, Collection comments, Collection votes) {
+    init(header, questions, comments, votes);
   }
 
-  private void init(QuestionContainerHeader header,Collection questions,Collection comments,Collection votes) {
+  private void init(QuestionContainerHeader header, Collection questions,
+      Collection comments, Collection votes) {
     setHeader(header);
     setQuestions(questions);
     setComments(comments);
@@ -51,13 +52,13 @@ public class QuestionContainerDetail implements java.io.Serializable {
   public Collection getQuestions() {
     return this.questions;
   }
-  
+
   public Question getFirstQuestion() {
     Question question = null;
     Collection questions = getQuestions();
     Iterator it = questions.iterator();
     if (it.hasNext()) {
-        question = (Question) it.next();
+      question = (Question) it.next();
     }
     return question;
   }

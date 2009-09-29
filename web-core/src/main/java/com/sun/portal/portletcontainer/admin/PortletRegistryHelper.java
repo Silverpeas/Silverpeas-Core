@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin;
 
 import java.io.File;
@@ -53,184 +52,193 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 
 /**
- * PortletRegistryHelper is a Helper class to write to and read from the
- * portlet registry xml files.
+ * PortletRegistryHelper is a Helper class to write to and read from the portlet
+ * registry xml files.
  */
 public class PortletRegistryHelper implements PortletRegistryTags {
-    
-    //private static final String PORTLET_CONTAINER_DIR_PROPERTY = "com.sun.portal.portletcontainer.dir";
-	private static final String PORTLET_CONTAINER_DIR_PROPERTY = "portlets.configDir";
-    private static final String PORTLET_CONTAINER_DEFAULT_DIR_NAME = ".portlet-container";
-    private static final String PORTLET_CONTAINER_DEFAULT_DATA_DIR_NAME = "data";
-    private static final String PORTLET_CONTAINER_DEFAULT_LOG_DIR_NAME = "logs";
-    private static final String PORTLET_CONTAINER_DEFAULT_WAR_DIR_NAME = "war";
-    private static final String PORTLET_CONTAINER_DEFAULT_AUTODEPLOY_DIR_NAME = "autodeploy";
-    private static final String PORTLET_CONTAINER_DEFAULT_CONFIG_DIR_NAME = "config";
-    private static final String PORTLET_CONTAINER_HOME_TOKEN = "@portlet-container-home@";
-    
-    private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
-            "com.silverpeas.portlets.PALogMessages");
-    
-    private static String CONFIG_FILE = "ContainerConfig.properties";
-    private static Properties configProperties = null;
-            
-    private PortletRegistryHelper() {
+
+  // private static final String PORTLET_CONTAINER_DIR_PROPERTY =
+  // "com.sun.portal.portletcontainer.dir";
+  private static final String PORTLET_CONTAINER_DIR_PROPERTY = "portlets.configDir";
+  private static final String PORTLET_CONTAINER_DEFAULT_DIR_NAME = ".portlet-container";
+  private static final String PORTLET_CONTAINER_DEFAULT_DATA_DIR_NAME = "data";
+  private static final String PORTLET_CONTAINER_DEFAULT_LOG_DIR_NAME = "logs";
+  private static final String PORTLET_CONTAINER_DEFAULT_WAR_DIR_NAME = "war";
+  private static final String PORTLET_CONTAINER_DEFAULT_AUTODEPLOY_DIR_NAME = "autodeploy";
+  private static final String PORTLET_CONTAINER_DEFAULT_CONFIG_DIR_NAME = "config";
+  private static final String PORTLET_CONTAINER_HOME_TOKEN = "@portlet-container-home@";
+
+  private static Logger logger = Logger.getLogger(
+      "com.sun.portal.portletcontainer.admin",
+      "com.silverpeas.portlets.PALogMessages");
+
+  private static String CONFIG_FILE = "ContainerConfig.properties";
+  private static Properties configProperties = null;
+
+  private PortletRegistryHelper() {
+  }
+
+  public static DocumentBuilder getDocumentBuilder()
+      throws PortletRegistryException {
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder docBuilder = null;
+    try {
+      docBuilder = dbf.newDocumentBuilder();
+      docBuilder.setEntityResolver(new NoOpEntityResolver());
+    } catch (ParserConfigurationException pce) {
+      throw new PortletRegistryException(pce);
     }
-    
-    public static DocumentBuilder getDocumentBuilder() throws PortletRegistryException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = null;
+    return docBuilder;
+  }
+
+  public static Document readFile(File file) throws PortletRegistryException {
+    try {
+      return getDocumentBuilder().parse(file);
+    } catch (SAXException saxe) {
+      throw new PortletRegistryException(saxe);
+    } catch (IOException ioe) {
+      throw new PortletRegistryException(ioe);
+    }
+  }
+
+  public static Element getRootElement(Document document) {
+    if (document != null)
+      return document.getDocumentElement();
+    return null;
+  }
+
+  public static synchronized void writeFile(Document document, File file)
+      throws PortletRegistryException {
+    try {
+      // Use a Transformer for output
+      TransformerFactory tFactory = TransformerFactory.newInstance();
+      Transformer transformer = tFactory.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(
+          "{http://xml.apache.org/xslt}indent-amount", "5");
+
+      DOMSource source = new DOMSource(document);
+      // StreamResult result = new StreamResult(System.out);
+      StreamResult result = new StreamResult(file);
+      transformer.transform(source, result);
+    } catch (TransformerConfigurationException tce) {
+      throw new PortletRegistryException(tce);
+    } catch (TransformerException te) {
+      throw new PortletRegistryException(te);
+    } catch (Exception e) {
+      throw new PortletRegistryException(e);
+    }
+  }
+
+  private static void loadConfigFile() {
+    // If the config file is already loaded don't load it again
+    InputStream is = null;
+    if (configProperties == null) {
+      try {
+        // is =
+        // Thread.currentThread().getContextClassLoader().getResourceAsStream(CONFIG_FILE);
+        // configProperties = new Properties();
+        // configProperties.load(is);
+        ResourceLocator rl = new ResourceLocator(
+            "com.silverpeas.portlets.portletsSettings", "");
+        configProperties = rl.getProperties();
+      } catch (Exception e) {
+        logger.log(Level.SEVERE, "PSPL_CSPPAM0016", e);
+      } finally {
         try {
-            docBuilder = dbf.newDocumentBuilder();
-            docBuilder.setEntityResolver(new NoOpEntityResolver());
-        } catch (ParserConfigurationException pce){
-            throw new PortletRegistryException(pce);
+          if (is != null) {
+            is.close();
+          }
+        } catch (Exception ignored) {
         }
-        return docBuilder;
+      }
     }
-    
-    public static Document readFile(File file) throws PortletRegistryException {
-        try {
-            return getDocumentBuilder().parse(file);
-        }catch(SAXException saxe){
-            throw new PortletRegistryException(saxe);
-        }catch(IOException ioe){
-            throw new PortletRegistryException(ioe);
-        }
+  }
+
+  private static String getPortletContainerDir() {
+    String registryLocation = null;
+    loadConfigFile();
+    // In case loadConfigFile throws an exception configProperties will be null
+    if (configProperties != null) {
+      registryLocation = configProperties
+          .getProperty(PORTLET_CONTAINER_DIR_PROPERTY);
     }
-    
-    public static Element getRootElement(Document document) {
-        if(document != null)
-            return document.getDocumentElement();
-        return null;
+    if (registryLocation == null
+        || PORTLET_CONTAINER_HOME_TOKEN.equals(registryLocation)) {
+      registryLocation = System.getProperty("user.home") + File.separator
+          + PORTLET_CONTAINER_DEFAULT_DIR_NAME;
+      if (logger.isLoggable(Level.WARNING)) {
+        logger.log(Level.WARNING, "PSPL_CSPPAM0003", new String[] {
+            PORTLET_CONTAINER_DIR_PROPERTY, registryLocation });
+      }
     }
-    
-    
-    public static synchronized void writeFile(Document document, File file) throws PortletRegistryException {
-        try {
-            // Use a Transformer for output
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "5");
-            
-            DOMSource source = new DOMSource(document);
-            //StreamResult result = new StreamResult(System.out);
-            StreamResult result = new StreamResult(file);
-            transformer.transform(source, result);
-        } catch(TransformerConfigurationException tce){
-            throw new PortletRegistryException(tce);
-        } catch(TransformerException te){
-            throw new PortletRegistryException(te);
-        } catch(Exception e) {
-            throw new PortletRegistryException(e);
-        } 
+    return registryLocation;
+  }
+
+  public static String getAutoDeployLocation() {
+    String autoDeployLocation = getPortletContainerDir() + File.separator
+        + PORTLET_CONTAINER_DEFAULT_AUTODEPLOY_DIR_NAME;
+    if (!makeDir(autoDeployLocation)) {
+      throw new RuntimeException("cannotCreateDirectory");
+    }
+    return autoDeployLocation;
+  }
+
+  public static String getRegistryLocation() throws PortletRegistryException {
+    String registryLocation = getPortletContainerDir() + File.separator
+        + PORTLET_CONTAINER_DEFAULT_DATA_DIR_NAME;
+    if (!makeDir(registryLocation)) {
+      throw new PortletRegistryException("cannotCreateDirectory");
+    }
+    return registryLocation;
+  }
+
+  public static String getLogLocation() throws PortletRegistryException {
+    String logDirLocation = getPortletContainerDir() + File.separator
+        + PORTLET_CONTAINER_DEFAULT_LOG_DIR_NAME;
+    if (!makeDir(logDirLocation)) {
+      throw new PortletRegistryException("cannotCreateDirectory");
+    }
+    return logDirLocation;
+  }
+
+  public static String getWarFileLocation() throws PortletRegistryException {
+    String warFileLocation = getPortletContainerDir() + File.separator
+        + PORTLET_CONTAINER_DEFAULT_WAR_DIR_NAME;
+    if (!makeDir(warFileLocation)) {
+      throw new PortletRegistryException("cannotCreateDirectory");
+    }
+    return warFileLocation;
+  }
+
+  public static String getUpdatedAbsoluteWarFileName(String warFileName) {
+    StringBuffer warFileLocation = new StringBuffer();
+    try {
+      warFileLocation.append(PortletRegistryHelper.getWarFileLocation());
+    } catch (PortletRegistryException pre) {
+      warFileLocation.append("");
     }
 
-    private static void loadConfigFile() {
-        // If the config file is already loaded don't load it again
-        InputStream is = null;
-        if(configProperties == null) {
-            try {
-                //is = Thread.currentThread().getContextClassLoader().getResourceAsStream(CONFIG_FILE);
-                //configProperties = new Properties();
-                //configProperties.load(is);
-            	ResourceLocator rl = new ResourceLocator("com.silverpeas.portlets.portletsSettings", "");
-            	configProperties = rl.getProperties();
-            } catch(Exception e){
-                logger.log(Level.SEVERE,"PSPL_CSPPAM0016", e);
-            } finally {
-                try {
-                    if(is != null) {
-                        is.close();
-                    }
-                } catch (Exception ignored) {}
-            }
-        }
+    String warName = PortletWarUpdaterUtil.getWarName(warFileName);
+    warFileLocation.append(File.separator);
+    warFileLocation.append(warName);
+    return warFileLocation.toString();
+  }
+
+  public static String getConfigFileLocation() {
+    String configFileLocation = getPortletContainerDir() + File.separator
+        + PORTLET_CONTAINER_DEFAULT_CONFIG_DIR_NAME;
+    return configFileLocation;
+  }
+
+  private static boolean makeDir(String dirName) {
+    File dir = new File(dirName);
+    if (dir.exists()) {
+      return true;
+    } else {
+      return dir.mkdirs();
     }
-    
-    private static String getPortletContainerDir() {
-        String registryLocation = null;
-        loadConfigFile();
-        // In case loadConfigFile throws an exception configProperties will be null
-        if(configProperties != null) {
-            registryLocation = configProperties.getProperty(PORTLET_CONTAINER_DIR_PROPERTY);
-        }
-        if(registryLocation == null || PORTLET_CONTAINER_HOME_TOKEN.equals(registryLocation)){
-            registryLocation = System.getProperty("user.home") + File.separator
-                    + PORTLET_CONTAINER_DEFAULT_DIR_NAME;
-            if(logger.isLoggable(Level.WARNING)){
-                logger.log(Level.WARNING, "PSPL_CSPPAM0003",
-                        new String[] {PORTLET_CONTAINER_DIR_PROPERTY, registryLocation} );
-            }
-        }
-        return registryLocation;
-    }
-    
-    public static String getAutoDeployLocation()  {
-        String autoDeployLocation = getPortletContainerDir() + File.separator
-                + PORTLET_CONTAINER_DEFAULT_AUTODEPLOY_DIR_NAME;
-        if(!makeDir(autoDeployLocation)) {
-            throw new RuntimeException("cannotCreateDirectory");
-        }
-        return autoDeployLocation;
-    }
-    
-    public static String getRegistryLocation() throws PortletRegistryException {
-        String registryLocation = getPortletContainerDir() + File.separator
-                + PORTLET_CONTAINER_DEFAULT_DATA_DIR_NAME;
-        if(!makeDir(registryLocation)) {
-            throw new PortletRegistryException("cannotCreateDirectory");
-        }
-        return registryLocation;
-    }
-    
-    public static String getLogLocation() throws PortletRegistryException {
-        String logDirLocation = getPortletContainerDir() + File.separator
-                + PORTLET_CONTAINER_DEFAULT_LOG_DIR_NAME;
-        if(!makeDir(logDirLocation)) {
-            throw new PortletRegistryException("cannotCreateDirectory");
-        }
-        return logDirLocation;
-    }
-    
-    public static String getWarFileLocation() throws PortletRegistryException {
-        String warFileLocation = getPortletContainerDir() + File.separator
-                + PORTLET_CONTAINER_DEFAULT_WAR_DIR_NAME;
-        if(!makeDir(warFileLocation)) {
-            throw new PortletRegistryException("cannotCreateDirectory");
-        }
-        return warFileLocation;
-    }
-    
-    public static String getUpdatedAbsoluteWarFileName(String warFileName) {
-        StringBuffer warFileLocation = new StringBuffer();
-        try {
-            warFileLocation.append(PortletRegistryHelper.getWarFileLocation());
-        } catch (PortletRegistryException pre){
-            warFileLocation.append("");
-        }
-        
-        String warName = PortletWarUpdaterUtil.getWarName(warFileName);
-        warFileLocation.append(File.separator);
-        warFileLocation.append(warName);
-        return warFileLocation.toString();
-    }
-    
-    public static String getConfigFileLocation() {
-        String configFileLocation = getPortletContainerDir() + File.separator
-                + PORTLET_CONTAINER_DEFAULT_CONFIG_DIR_NAME;
-        return configFileLocation;
-    }
-    
-    private static boolean makeDir(String dirName) {
-        File dir = new File(dirName);
-        if (dir.exists()) {
-            return true;
-        } else {
-            return dir.mkdirs();
-        }
-    }
+  }
 }

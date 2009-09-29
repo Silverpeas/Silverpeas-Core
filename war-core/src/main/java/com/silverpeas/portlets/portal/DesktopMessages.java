@@ -31,35 +31,36 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * DesktopMessages is used to get the localized messages from DesktopMessages.properties
+ * DesktopMessages is used to get the localized messages from
+ * DesktopMessages.properties
  */
 public class DesktopMessages {
-    
-    public DesktopMessages() {
-    }
-    
-    private static final String RESOURCE_BASE = "com.silverpeas.portlets.multilang.portletsBundle";
 
-    private static ResourceBundle rb;
-    
-    public static void init(HttpServletRequest request) {
-         rb = PropertyResourceBundle.getBundle(RESOURCE_BASE, request.getLocale());
+  public DesktopMessages() {
+  }
+
+  private static final String RESOURCE_BASE = "com.silverpeas.portlets.multilang.portletsBundle";
+
+  private static ResourceBundle rb;
+
+  public static void init(HttpServletRequest request) {
+    rb = PropertyResourceBundle.getBundle(RESOURCE_BASE, request.getLocale());
+  }
+
+  public static String getLocalizedString(String key) {
+    return rb.getString(key);
+  }
+
+  public static String getLocalizedString(String key, Object[] tokens) {
+    String msg = getLocalizedString(key);
+
+    if (tokens != null && tokens.length > 0) {
+      MessageFormat mf = new MessageFormat("");
+      mf.setLocale(rb.getLocale());
+      mf.applyPattern(msg);
+      return mf.format(tokens);
+    } else {
+      return msg;
     }
-    
-    public static String getLocalizedString(String key) {
-        return rb.getString(key);
-    }
-    
-    public static String getLocalizedString(String key, Object[] tokens) {
-        String msg = getLocalizedString(key);
-        
-        if (tokens != null && tokens.length > 0) {
-            MessageFormat mf = new MessageFormat("");
-            mf.setLocale(rb.getLocale());
-            mf.applyPattern(msg);
-            return mf.format(tokens);
-        } else {
-            return msg;
-        }
-    }
+  }
 }

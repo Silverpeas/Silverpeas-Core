@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin;
 
 import java.io.File;
@@ -33,54 +32,55 @@ import com.silverpeas.util.StringUtil;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletRegistryReader reads the specified registry xml file into a
- * DOM Document. The registry xml files can be
- * portlet-app-registry.xml
- * portlet-window-registry.xml
- * portlet-window-preference-registry.xml.
- *
+ * PortletRegistryReader reads the specified registry xml file into a DOM
+ * Document. The registry xml files can be portlet-app-registry.xml
+ * portlet-window-registry.xml portlet-window-preference-registry.xml.
+ * 
  */
 public abstract class PortletRegistryReader {
-    
-    private File file;
-    
-    public PortletRegistryReader(String registryLocation, String filename, String context) {
-    	if (!StringUtil.isDefined(context))
-    		context = "";
-    	else
-    		context = context+"-";
-        file = new File(registryLocation + File.separator + context + filename);
-        
-        if (!file.exists())
-        	file = new File(registryLocation + File.separator + filename);
+
+  private File file;
+
+  public PortletRegistryReader(String registryLocation, String filename,
+      String context) {
+    if (!StringUtil.isDefined(context))
+      context = "";
+    else
+      context = context + "-";
+    file = new File(registryLocation + File.separator + context + filename);
+
+    if (!file.exists())
+      file = new File(registryLocation + File.separator + filename);
+  }
+
+  public PortletRegistryReader(String registryLocation, String filename) {
+    file = new File(registryLocation + File.separator + filename);
+  }
+
+  private Document getDocument() throws PortletRegistryException {
+    if (file.exists()) {
+      return PortletRegistryHelper.readFile(file);
     }
-    
-    public PortletRegistryReader(String registryLocation, String filename) {
-        file = new File(registryLocation + File.separator + filename);
-    }
-    
-    private Document getDocument() throws PortletRegistryException {
-        if(file.exists()) {
-            return PortletRegistryHelper.readFile(file);
-        }
-        return null;
-    }
-    
-    /**
-     * Reads the specified registry xml file in to the appropriate Portlet Registry Object.
-     *
-     * @return a <code>PortletRegistryObject</code>, that represents the registry xml file.
-     */
-    public PortletRegistryObject readDocument() throws PortletRegistryException {
-        PortletRegistryObject portletRegistryObject = create();
-        portletRegistryObject.read(getDocument());
-        return portletRegistryObject;
-    }
-    
-    /**
-     * Creates specific Portlet Registry Object.
-     *
-     * @return a specific <code>PortletRegistryObject</code>.
-     */
-    public abstract PortletRegistryObject create();
+    return null;
+  }
+
+  /**
+   * Reads the specified registry xml file in to the appropriate Portlet
+   * Registry Object.
+   * 
+   * @return a <code>PortletRegistryObject</code>, that represents the registry
+   *         xml file.
+   */
+  public PortletRegistryObject readDocument() throws PortletRegistryException {
+    PortletRegistryObject portletRegistryObject = create();
+    portletRegistryObject.read(getDocument());
+    return portletRegistryObject;
+  }
+
+  /**
+   * Creates specific Portlet Registry Object.
+   * 
+   * @return a specific <code>PortletRegistryObject</code>.
+   */
+  public abstract PortletRegistryObject create();
 }

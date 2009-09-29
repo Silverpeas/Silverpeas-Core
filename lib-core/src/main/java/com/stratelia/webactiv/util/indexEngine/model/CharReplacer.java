@@ -4,116 +4,103 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A CharReplacer replace all the occurences of a given chars' set
- * in a String with replacement chars.
- *
+ * A CharReplacer replace all the occurences of a given chars' set in a String
+ * with replacement chars.
+ * 
  * <PRE>
- *   CharReplacer r = new CharReplacer();
- *   r.setReplacement("éèê", "e");
- *   r.setReplacement("àâ", "a");
- *   r.setReplacement("!,.;", null);
- *
- *   // print "evenement a Grenoble"
- *   System.out.println(r.replace("événement à Grenoble!"));
+ * CharReplacer r = new CharReplacer();
+ * r.setReplacement(&quot;éèê&quot;, &quot;e&quot;);
+ * r.setReplacement(&quot;àâ&quot;, &quot;a&quot;);
+ * r.setReplacement(&quot;!,.;&quot;, null);
+ * 
+ * // print &quot;evenement a Grenoble&quot;
+ * System.out.println(r.replace(&quot;événement à Grenoble!&quot;));
  * </PRE>
  */
-public class CharReplacer
-{
+public class CharReplacer {
   /**
-   * When built with no parameters a CharReplacer is initialized
-   * with an empty replacement map.
-   *
+   * When built with no parameters a CharReplacer is initialized with an empty
+   * replacement map.
+   * 
    * Replacements should be added with calls to the setReplacement method,
    * before the new CharReplacer is used.
    */
-  public CharReplacer()
-  {
+  public CharReplacer() {
   }
 
   /**
    * Builds a new CharReplacer from a (toBeReplaced, replacement) character
    * pairs list.
    */
-  public CharReplacer(String toBeReplaced,
-                      String replacement)
-  {
+  public CharReplacer(String toBeReplaced, String replacement) {
     setReplacement(toBeReplaced, replacement);
   }
 
   /**
    * Set a list of (toBeReplaced, replacement) character pairs.
-   *
-   * The (toBeReplaced, replacement) pairs are given with two
-   * strings where the replacement char of each char in the
-   * toBeReplaced string is given by the char at the same index in
-   * the replacement string.
-   *
-   * If the replacement string is longer then the toBeReplaced string
-   * all the extra characters are ignored.
-   *
-   * If the replacement string is shorter then the toBeReplaced string
-   * all the missing characters are assumed equal to the last.
-   *
+   * 
+   * The (toBeReplaced, replacement) pairs are given with two strings where the
+   * replacement char of each char in the toBeReplaced string is given by the
+   * char at the same index in the replacement string.
+   * 
+   * If the replacement string is longer then the toBeReplaced string all the
+   * extra characters are ignored.
+   * 
+   * If the replacement string is shorter then the toBeReplaced string all the
+   * missing characters are assumed equal to the last.
+   * 
    * If the replacement string is empty all occurences of the toBeReplaced
    * characters will be pruned.
-   *
+   * 
    * This statements are equivalent :
+   * 
    * <PRE>
-   *   setReplacement("éèê", "e");
-   *   setReplacement("éèê", "eee");
-   *   setReplacement("éèê", "eeeeeeeee");
+   * setReplacement(&quot;éèê&quot;, &quot;e&quot;);
+   * setReplacement(&quot;éèê&quot;, &quot;eee&quot;);
+   * setReplacement(&quot;éèê&quot;, &quot;eeeeeeeee&quot;);
    * </PRE>
    */
-  public void setReplacement(String toBeReplaced,
-                             String replacement)
-  {
-    for (int i=0 ; i<toBeReplaced.length() ; i++)
-    {
+  public void setReplacement(String toBeReplaced, String replacement) {
+    for (int i = 0; i < toBeReplaced.length(); i++) {
       char replacementChar;
-      if (replacement == null || replacement.length() == 0)
-      {
+      if (replacement == null || replacement.length() == 0) {
         // pruned character
         replacementChar = '\u0000';
-      }
-      else if (i<replacement.length())
-      {
+      } else if (i < replacement.length()) {
         replacementChar = replacement.charAt(i);
-      }
-      else
-      {
-        replacementChar = replacement.charAt(replacement.length()-1);
+      } else {
+        replacementChar = replacement.charAt(replacement.length() - 1);
       }
 
-      replacementMap.put(new Character(toBeReplaced.charAt(i)),
-                         new Character(replacementChar));
+      replacementMap.put(new Character(toBeReplaced.charAt(i)), new Character(
+          replacementChar));
     }
   }
-  
+
   /**
-   * Return a new string resulting from replacing
-   * all occurences of the to be replaced chars in the given string s
-   * with the corresponding replacement char.
+   * Return a new string resulting from replacing all occurences of the to be
+   * replaced chars in the given string s with the corresponding replacement
+   * char.
    */
-  public String replace(String s)
-  {
+  public String replace(String s) {
     final int length = s.length();
     StringBuffer result = new StringBuffer(length);
 
-    int       getPos;
-    char      oldChar;
-    char      newChar;
+    int getPos;
+    char oldChar;
+    char newChar;
     Character c;
-    
-    for(getPos=0; getPos<length; getPos++)
-    {
+
+    for (getPos = 0; getPos < length; getPos++) {
       oldChar = s.charAt(getPos);
 
       c = (Character) replacementMap.get(new Character(oldChar));
-      if (c != null) newChar = c.charValue();
-      else           newChar = oldChar;
+      if (c != null)
+        newChar = c.charValue();
+      else
+        newChar = oldChar;
 
-      if ( newChar != '\u0000' ) 
-      {
+      if (newChar != '\u0000') {
         result.append(newChar);
       }
     }
@@ -122,9 +109,9 @@ public class CharReplacer
   }
 
   /**
-   * The characters to be replaced and their corresponding replacement
-   * chars are saved in a Map (Character -> Character).
-   *
+   * The characters to be replaced and their corresponding replacement chars are
+   * saved in a Map (Character -> Character).
+   * 
    * If a character has to be pruned, it's mapped to \u0000.
    */
   private final Map replacementMap = new HashMap();

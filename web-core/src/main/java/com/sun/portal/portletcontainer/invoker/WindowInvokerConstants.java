@@ -25,48 +25,58 @@
 package com.sun.portal.portletcontainer.invoker;
 
 /**
- * WindowInvokerConstants has the contants used by the WindowInvoker and the Driver
+ * WindowInvokerConstants has the contants used by the WindowInvoker and the
+ * Driver
  */
 
 public interface WindowInvokerConstants {
-    
-    public static final String ACTION = "ACTION"; // Possible value for DRIVER_ACTION
-    
-    public static final String RENDER = "RENDER"; // Possible value for DRIVER_ACTION
-    
-    public static final String RESOURCE = "RESOURCE"; //Possible value for DRIVER_ACTION
-    
-    public static final String KEYWORD_PREFIX = "pc.";
-    
-    public static final String DRIVER_PARAM_PREFIX = "dt.";
-    
-    public static final String PORTLET_WINDOW_MODE_KEY = KEYWORD_PREFIX + "portletMode";
-    
-    public static final String PORTLET_WINDOW_STATE_KEY = KEYWORD_PREFIX + "windowState";
-    
-    public static final String PORTLET_REMOVE_KEY = KEYWORD_PREFIX + "remove";
-    
-    public static final String PORTLET_WINDOW_KEY = KEYWORD_PREFIX + "portletId";
-    
-    public final static String NEW_PORTLET_WINDOW_MODE_KEY = KEYWORD_PREFIX + "newPortletMode";
 
-    public final static String NEW_PORTLET_WINDOW_STATE_KEY = KEYWORD_PREFIX + "newWindowState";
-    
-    public final static String PORTLET_ACTION = KEYWORD_PREFIX + "portletAction";
+  public static final String ACTION = "ACTION"; // Possible value for
+  // DRIVER_ACTION
 
-    public final static String DRIVER_ACTION = DRIVER_PARAM_PREFIX + "driverAction";
-    
-    public final static String RESOURCE_ID_KEY = KEYWORD_PREFIX + "resourceID";
-    
-    public final static String RESOURCE_URL_CACHE_LEVEL_KEY = KEYWORD_PREFIX + "cacheLevel";
-    
-    public final static String DRIVER_SPACEID = DRIVER_PARAM_PREFIX + "SpaceId";
-    public final static String DRIVER_ROLE = DRIVER_PARAM_PREFIX + "Role";
-    
-    //--------------------------------------------------------
-    // Static String used for storing render parameters
-    //-------------------------------------------------------
-    
-    public static final String PORTLET_PARAM_MAP = "PortletParameterMap";
-    
+  public static final String RENDER = "RENDER"; // Possible value for
+  // DRIVER_ACTION
+
+  public static final String RESOURCE = "RESOURCE"; // Possible value for
+  // DRIVER_ACTION
+
+  public static final String KEYWORD_PREFIX = "pc.";
+
+  public static final String DRIVER_PARAM_PREFIX = "dt.";
+
+  public static final String PORTLET_WINDOW_MODE_KEY = KEYWORD_PREFIX
+      + "portletMode";
+
+  public static final String PORTLET_WINDOW_STATE_KEY = KEYWORD_PREFIX
+      + "windowState";
+
+  public static final String PORTLET_REMOVE_KEY = KEYWORD_PREFIX + "remove";
+
+  public static final String PORTLET_WINDOW_KEY = KEYWORD_PREFIX + "portletId";
+
+  public final static String NEW_PORTLET_WINDOW_MODE_KEY = KEYWORD_PREFIX
+      + "newPortletMode";
+
+  public final static String NEW_PORTLET_WINDOW_STATE_KEY = KEYWORD_PREFIX
+      + "newWindowState";
+
+  public final static String PORTLET_ACTION = KEYWORD_PREFIX + "portletAction";
+
+  public final static String DRIVER_ACTION = DRIVER_PARAM_PREFIX
+      + "driverAction";
+
+  public final static String RESOURCE_ID_KEY = KEYWORD_PREFIX + "resourceID";
+
+  public final static String RESOURCE_URL_CACHE_LEVEL_KEY = KEYWORD_PREFIX
+      + "cacheLevel";
+
+  public final static String DRIVER_SPACEID = DRIVER_PARAM_PREFIX + "SpaceId";
+  public final static String DRIVER_ROLE = DRIVER_PARAM_PREFIX + "Role";
+
+  // --------------------------------------------------------
+  // Static String used for storing render parameters
+  // -------------------------------------------------------
+
+  public static final String PORTLET_PARAM_MAP = "PortletParameterMap";
+
 }

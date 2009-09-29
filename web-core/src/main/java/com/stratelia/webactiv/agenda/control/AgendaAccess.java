@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.agenda.control;
 
@@ -48,122 +49,115 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class AgendaAccess
-{
-    static private CalendarBm calendarBm = null;
-    static private Calendar   currentCalendar = null;
+public class AgendaAccess {
+  static private CalendarBm calendarBm = null;
+  static private Calendar currentCalendar = null;
 
-    /**
-     * getEJB
-     *
-     * @return instance of CalendarBmHome
-     */
-    static private CalendarBm getEJB() throws AgendaException
-    {
-        if (calendarBm == null)
-        {
-            try
-            {
-                calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
-            }
-            catch (Exception e)
-            {
-                throw new AgendaException("AgendaAccess.getEJB()", SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-            }
-        }
-        return calendarBm;
+  /**
+   * getEJB
+   * 
+   * @return instance of CalendarBmHome
+   */
+  static private CalendarBm getEJB() throws AgendaException {
+    if (calendarBm == null) {
+      try {
+        calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+      } catch (Exception e) {
+        throw new AgendaException("AgendaAccess.getEJB()",
+            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
     }
+    return calendarBm;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param userId
-     *
-     * @return
-     *
-     * @throws AgendaException
-     *
-     * @see
-     */
-    static public boolean hasTentativeSchedulables(String userId) throws AgendaException
-    {
-        try
-        {
-            return getEJB().hasTentativeSchedulablesForUser(userId);
-        }
-        catch (Exception e)
-        {
-            throw new AgendaException("AgendaAccess.hasTentativeSchedulables()", SilverpeasException.ERROR, "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
-        }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param userId
+   * 
+   * @return
+   * 
+   * @throws AgendaException
+   * 
+   * @see
+   */
+  static public boolean hasTentativeSchedulables(String userId)
+      throws AgendaException {
+    try {
+      return getEJB().hasTentativeSchedulablesForUser(userId);
+    } catch (Exception e) {
+      throw new AgendaException("AgendaAccess.hasTentativeSchedulables()",
+          SilverpeasException.ERROR,
+          "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
     }
+  }
 
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param date
+   * 
+   * @see
+   */
+  static public void setCurrentDay(Date date) {
+    if (currentCalendar == null) {
+      currentCalendar = Calendar.getInstance();
+    }
+    currentCalendar.setTime(date);
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param date
-     *
-     * @see
-     */
-    static public void setCurrentDay(Date date)
-    {
-        if (currentCalendar == null)
-        {
-            currentCalendar = Calendar.getInstance();
-        }
-        currentCalendar.setTime(date);
+  static public Date getCurrentDay() {
+    if (currentCalendar == null) {
+      currentCalendar = Calendar.getInstance();
     }
+    return currentCalendar.getTime();
+  }
 
-    static public Date getCurrentDay()
-    {
-        if (currentCalendar == null)
-        {
-            currentCalendar = Calendar.getInstance();
-        }
-        return currentCalendar.getTime();
+  static public Collection getDaySchedulables(String userId)
+      throws AgendaException {
+    try {
+      return getEJB().getDaySchedulablesForUser(
+          DateUtil.date2SQLDate(getCurrentDay()), userId, null,
+          ParticipationStatus.ACCEPTED);
+    } catch (Exception e) {
+      throw new AgendaException("AgendaAccess.getDaySchedulables()",
+          SilverpeasException.ERROR,
+          "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
     }
+  }
 
+  static public Collection getNextDaySchedulables(String userId)
+      throws AgendaException {
+    try {
+      return getEJB().getNextDaySchedulablesForUser(
+          DateUtil.date2SQLDate(getCurrentDay()), userId, null,
+          ParticipationStatus.ACCEPTED);
+    } catch (Exception e) {
+      throw new AgendaException("AgendaAccess.getDaySchedulables()",
+          SilverpeasException.ERROR,
+          "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
+    }
+  }
 
-    static public Collection getDaySchedulables(String userId) throws AgendaException
-    {
-        try
-        {
-            return getEJB().getDaySchedulablesForUser(DateUtil.date2SQLDate(getCurrentDay()), userId, null, ParticipationStatus.ACCEPTED);
-        }
-        catch (Exception e)
-        {
-            throw new AgendaException("AgendaAccess.getDaySchedulables()", SilverpeasException.ERROR, "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
-        }
+  static public Collection getJournalHeadersForUserAfterDate(
+      String userIdAgenda, java.util.Date startDate, int nbReturned)
+      throws AgendaException {
+    try {
+      Collection events = getEJB().getJournalHeadersForUserAfterDate(
+          userIdAgenda, startDate, nbReturned);
+      return events;
+    } catch (Exception e) {
+      throw new AgendaException(
+          "AgendaAccess.getJournalHeadersForUserAfterDate()",
+          SilverpeasException.ERROR, "agenda.EX_CANT_GET_JOURNAL", "userId="
+              + userIdAgenda, e);
     }
-    
-    static public Collection getNextDaySchedulables(String userId) throws AgendaException
-    {
-        try
-        {
-            return getEJB().getNextDaySchedulablesForUser(DateUtil.date2SQLDate(getCurrentDay()), userId, null, ParticipationStatus.ACCEPTED);
-        }
-        catch (Exception e)
-        {
-            throw new AgendaException("AgendaAccess.getDaySchedulables()", SilverpeasException.ERROR, "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
-        }
-    }
-    
-    static public Collection getJournalHeadersForUserAfterDate(String userIdAgenda, java.util.Date startDate, int nbReturned) throws AgendaException
-    {
-    	 try
-         {
-	    	Collection events = getEJB().getJournalHeadersForUserAfterDate(userIdAgenda, startDate, nbReturned);
-	    	return events;
-         }
-         catch (Exception e)
-         {
-             throw new AgendaException("AgendaAccess.getJournalHeadersForUserAfterDate()", SilverpeasException.ERROR, "agenda.EX_CANT_GET_JOURNAL", "userId=" + userIdAgenda, e);
-         }
-    }
+  }
 }

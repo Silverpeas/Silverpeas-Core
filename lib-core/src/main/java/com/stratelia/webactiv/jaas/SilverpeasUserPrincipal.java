@@ -4,7 +4,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SilverpeasUserPrincipal implements Principal{
+public class SilverpeasUserPrincipal implements Principal {
 
   private String userId;
   private Map entries;
@@ -14,7 +14,7 @@ public class SilverpeasUserPrincipal implements Principal{
     this.entries = new HashMap(100);
   }
 
-  public void addUserProfile(SilverpeasUserProfileEntry entry){
+  public void addUserProfile(SilverpeasUserProfileEntry entry) {
     entries.put(entry.getComponentId(), entry);
   }
 

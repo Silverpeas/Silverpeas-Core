@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * Row.java
@@ -13,7 +14,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
 import java.util.Vector;
-
 
 /*
  * CVS Informations
@@ -30,62 +30,57 @@ import java.util.Vector;
  * Exception
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-class Row extends Object
-{
+class Row extends Object {
 
-    private Vector listEventRow = null;
+  private Vector listEventRow = null;
 
-    /**
-     * Creates the new row
-     */
-    public Row(Event evt)
-    {
-        listEventRow = new Vector();
-        listEventRow.addElement(evt);
-    }
+  /**
+   * Creates the new row
+   */
+  public Row(Event evt) {
+    listEventRow = new Vector();
+    listEventRow.addElement(evt);
+  }
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @see
-     */
-    public Row()
-    {
-        listEventRow = new Vector();
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @see
+   */
+  public Row() {
+    listEventRow = new Vector();
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public Vector getListEvent()
-    {
-        return listEventRow;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public Vector getListEvent() {
+    return listEventRow;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param evt
-     *
-     * @see
-     */
-    public void addEventIntRow(Event evt)
-    {
-        listEventRow.addElement(evt);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param evt
+   * 
+   * @see
+   */
+  public void addEventIntRow(Event evt) {
+    listEventRow.addElement(evt);
+  }
 
 }

@@ -5,7 +5,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 public interface SilverpeasBeanIntf {
 
   public WAPrimaryKey getPK();
-  
+
   public void setPK(WAPrimaryKey value);
 
   public int _getConnectionType();

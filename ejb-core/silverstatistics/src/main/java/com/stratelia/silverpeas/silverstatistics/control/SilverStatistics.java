@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
@@ -30,13 +31,16 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface SilverStatistics extends javax.ejb.EJBObject
-{
-        public void putStats(String typeOfStats, String data) throws java.rmi.RemoteException;
-        public void makeStatAllCumul()  throws java.rmi.RemoteException;
-        public void makeVolumeAlimentationForAllComponents() throws java.rmi.RemoteException;
+public interface SilverStatistics extends javax.ejb.EJBObject {
+  public void putStats(String typeOfStats, String data)
+      throws java.rmi.RemoteException;
+
+  public void makeStatAllCumul() throws java.rmi.RemoteException;
+
+  public void makeVolumeAlimentationForAllComponents()
+      throws java.rmi.RemoteException;
 }

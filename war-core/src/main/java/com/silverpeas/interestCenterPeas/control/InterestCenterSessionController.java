@@ -17,151 +17,136 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
-public class InterestCenterSessionController extends AbstractComponentSessionController
-{
+public class InterestCenterSessionController extends
+    AbstractComponentSessionController {
 
-	private InterestCenterBm icEjb = null;
+  private InterestCenterBm icEjb = null;
 
-	/** Constructor
-	 * Creates new InterestCenter Session Controller
-	 */
+  /**
+   * Constructor Creates new InterestCenter Session Controller
+   */
 
-	public InterestCenterSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-	{
-		super(
-			mainSessionCtrl,
-			componentContext,
-			"com.silverpeas.interestCenterPeas.multilang.interestCenterBundle",
-			"com.silverpeas.interestCenterPeas.settings.interestCenterPeasIcons");
-	}
+  public InterestCenterSessionController(MainSessionController mainSessionCtrl,
+      ComponentContext componentContext) {
+    super(mainSessionCtrl, componentContext,
+        "com.silverpeas.interestCenterPeas.multilang.interestCenterBundle",
+        "com.silverpeas.interestCenterPeas.settings.interestCenterPeasIcons");
+  }
 
-	/** Method initEJB
-	 * initializes EJB
-	 */
-	private void initEJB()
-	{
-		if (icEjb == null)
-		{
-			try
-			{
-				InterestCenterBmHome icEjbHome =
-					(InterestCenterBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME, InterestCenterBmHome.class);
-				icEjb = icEjbHome.create();
-			}
-			catch (Exception e)
-			{
-				throw new InterestCenterRuntimeException(
-					"InterestCenterSessionController.initEJB()",
-					"",
-					"root.EX_CANT_GET_REMOTE_OBJECT",
-					e);
-			}
-		}
-	}
+  /**
+   * Method initEJB initializes EJB
+   */
+  private void initEJB() {
+    if (icEjb == null) {
+      try {
+        InterestCenterBmHome icEjbHome = (InterestCenterBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
+                InterestCenterBmHome.class);
+        icEjb = icEjbHome.create();
+      } catch (Exception e) {
+        throw new InterestCenterRuntimeException(
+            "InterestCenterSessionController.initEJB()", "",
+            "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
+    }
+  }
 
-	/**    Method getICByUserId
-	 *
-	 *      returns ArrayList of all InterestCenter objects for user given by userId
-	 *
-	 */
-	public ArrayList getICByUserId() throws RemoteException
-	{
-		initEJB();
-		return icEjb.getICByUserID(Integer.parseInt(getUserId()));
-	}
+  /**
+   * Method getICByUserId
+   * 
+   * returns ArrayList of all InterestCenter objects for user given by userId
+   * 
+   */
+  public ArrayList getICByUserId() throws RemoteException {
+    initEJB();
+    return icEjb.getICByUserID(Integer.parseInt(getUserId()));
+  }
 
-	/**     Method   getICByPK
-	 *
-	 *      returns InterestCenter object by pk
-	 *
-	 */
-	public InterestCenter getICByPK(int pk) throws RemoteException
-	{
-		initEJB();
-		return icEjb.getICByID(pk);
-	}
+  /**
+   * Method getICByPK
+   * 
+   * returns InterestCenter object by pk
+   * 
+   */
+  public InterestCenter getICByPK(int pk) throws RemoteException {
+    initEJB();
+    return icEjb.getICByID(pk);
+  }
 
-	/**    Method createIC
-	 *
-	 *     creates new InterestCenter
-	 *
-	 */
-	public void createIC(InterestCenter icToCreate) throws RemoteException
-	{
-		initEJB();
-		icEjb.createIC(icToCreate);
-	}
+  /**
+   * Method createIC
+   * 
+   * creates new InterestCenter
+   * 
+   */
+  public void createIC(InterestCenter icToCreate) throws RemoteException {
+    initEJB();
+    icEjb.createIC(icToCreate);
+  }
 
-	/**    Method updateIC
-	 *
-	 *     updates existing InterestCenter
-	 *
-	 */
-	public void updateIC(InterestCenter icToUpdate) throws RemoteException
-	{
-		initEJB();
-		icEjb.updateIC(icToUpdate);
-	}
+  /**
+   * Method updateIC
+   * 
+   * updates existing InterestCenter
+   * 
+   */
+  public void updateIC(InterestCenter icToUpdate) throws RemoteException {
+    initEJB();
+    icEjb.updateIC(icToUpdate);
+  }
 
-	/**    Method removeICByPKs
-	 *
-	 *     removes InterestCenter objects corresponding to PKs from given ArrayList
-	 *
-	 */
-	public void removeICByPKs(String[] iDs) throws RemoteException
-	{
-		initEJB();
-		ArrayList pkToRemove = new ArrayList();
-		for (int i = 0; i < iDs.length; i++)
-		{
-			pkToRemove.add(new Integer(iDs[i]));
-		}
-		icEjb.removeICByPK(pkToRemove);
-	}
+  /**
+   * Method removeICByPKs
+   * 
+   * removes InterestCenter objects corresponding to PKs from given ArrayList
+   * 
+   */
+  public void removeICByPKs(String[] iDs) throws RemoteException {
+    initEJB();
+    ArrayList pkToRemove = new ArrayList();
+    for (int i = 0; i < iDs.length; i++) {
+      pkToRemove.add(new Integer(iDs[i]));
+    }
+    icEjb.removeICByPK(pkToRemove);
+  }
 
-	/**    Method removeICByPK
-	 *
-	 *     removes InterestCenter object corresponding to given PK
-	 *
-	 */
-	public void removeICByPK(int pk) throws RemoteException
-	{
-		initEJB();
-		icEjb.removeICByPK(pk);
-	}
+  /**
+   * Method removeICByPK
+   * 
+   * removes InterestCenter object corresponding to given PK
+   * 
+   */
+  public void removeICByPK(int pk) throws RemoteException {
+    initEJB();
+    icEjb.removeICByPK(pk);
+  }
 
-	public boolean isICExists(String nameIC) throws RemoteException
-	{
-		ArrayList icList;
-		InterestCenter ic;
-		icList = getICByUserId();
-		Iterator it = icList.iterator();
-		while (it.hasNext())
-		{
-			ic = (InterestCenter) it.next();
-			if (nameIC.equals(ic.getName()))
-			{
-				return true;
-			}
-		}
+  public boolean isICExists(String nameIC) throws RemoteException {
+    ArrayList icList;
+    InterestCenter ic;
+    icList = getICByUserId();
+    Iterator it = icList.iterator();
+    while (it.hasNext()) {
+      ic = (InterestCenter) it.next();
+      if (nameIC.equals(ic.getName())) {
+        return true;
+      }
+    }
 
-		return false;
+    return false;
 
-	}
-	
-	public void close()
-	{
-		try
-		{
-			if (icEjb != null) icEjb.remove();
-		}
-		catch (RemoteException e)
-		{
-			SilverTrace.error("interestCenter", "InterestCenterSessionController.close", "", e);			
-		}
-		catch (RemoveException e)
-		{
-			SilverTrace.error("interestCenter", "InterestCenterSessionController.close", "", e);
-		}
-	}
+  }
+
+  public void close() {
+    try {
+      if (icEjb != null)
+        icEjb.remove();
+    } catch (RemoteException e) {
+      SilverTrace.error("interestCenter",
+          "InterestCenterSessionController.close", "", e);
+    } catch (RemoveException e) {
+      SilverTrace.error("interestCenter",
+          "InterestCenterSessionController.close", "", e);
+    }
+  }
 }

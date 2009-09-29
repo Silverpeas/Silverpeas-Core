@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * SilverpeasCalendar.java
@@ -15,50 +16,49 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * 
- * @author  groccia
+ * @author groccia
  * @version
  */
-public interface MonthCalendar extends SimpleGraphicElement
-{
+public interface MonthCalendar extends SimpleGraphicElement {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param currentDate
-     *
-     * @see
-     */
-    public void setCurrentMonth(Date currentDate);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param currentDate
+   * 
+   * @see
+   */
+  public void setCurrentMonth(Date currentDate);
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param listEventMonth
-     *
-     * @see
-     */
-    public void addEvent(Vector listEventMonth);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param listEventMonth
+   * 
+   * @see
+   */
+  public void addEvent(Vector listEventMonth);
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param eventMonth
-     *
-     * @see
-     */
-    public void addEvent(Event eventMonth);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param eventMonth
+   * 
+   * @see
+   */
+  public void addEvent(Event eventMonth);
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String print();
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String print();
 
 }

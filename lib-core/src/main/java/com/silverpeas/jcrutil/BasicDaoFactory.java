@@ -90,8 +90,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Create a system JCR session
-   * @param login the user's login.
-   * @param password the user's password.
+   * 
+   * @param login
+   *          the user's login.
+   * @param password
+   *          the user's password.
    * @return a jcrSession with user's rights.
    * @throws LoginException
    * @throws RepositoryException

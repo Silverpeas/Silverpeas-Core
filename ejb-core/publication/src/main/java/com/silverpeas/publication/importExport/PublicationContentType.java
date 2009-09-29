@@ -10,48 +10,50 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 
 /**
  * @author tleroi
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * 
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class PublicationContentType {
-	
-	private DBModelContentType dBModelContentType;
-	private WysiwygContentType wysiwygContentType;
-	private XMLModelContentType xmlModelContentType;
 
-	public XMLModelContentType getXMLModelContentType() {
-		return xmlModelContentType;
-	}
+  private DBModelContentType dBModelContentType;
+  private WysiwygContentType wysiwygContentType;
+  private XMLModelContentType xmlModelContentType;
 
-	public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
-		this.xmlModelContentType = xmlModelContentType;
-	}
+  public XMLModelContentType getXMLModelContentType() {
+    return xmlModelContentType;
+  }
 
-	/**
-	 * @return
-	 */
-	public DBModelContentType getDBModelContentType() {
-		return dBModelContentType;
-	}
+  public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
+    this.xmlModelContentType = xmlModelContentType;
+  }
 
-	/**
-	 * @param type
-	 */
-	public void setDBModelContentType(DBModelContentType type) {
-		dBModelContentType = type;
-	}
+  /**
+   * @return
+   */
+  public DBModelContentType getDBModelContentType() {
+    return dBModelContentType;
+  }
 
-	/**
-	 * @return Returns the wysiwygContentType.
-	 */
-	public WysiwygContentType getWysiwygContentType() {
-		return wysiwygContentType;
-	}
-	/**
-	 * @param wysiwygContentType The wysiwygContentType to set.
-	 */
-	public void setWysiwygContentType(WysiwygContentType wysiwygContentType) {
-		this.wysiwygContentType = wysiwygContentType;
-	}
+  /**
+   * @param type
+   */
+  public void setDBModelContentType(DBModelContentType type) {
+    dBModelContentType = type;
+  }
+
+  /**
+   * @return Returns the wysiwygContentType.
+   */
+  public WysiwygContentType getWysiwygContentType() {
+    return wysiwygContentType;
+  }
+
+  /**
+   * @param wysiwygContentType
+   *          The wysiwygContentType to set.
+   */
+  public void setWysiwygContentType(WysiwygContentType wysiwygContentType) {
+    this.wysiwygContentType = wysiwygContentType;
+  }
 }

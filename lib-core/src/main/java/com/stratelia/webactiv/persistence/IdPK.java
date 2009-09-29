@@ -2,11 +2,10 @@ package com.stratelia.webactiv.persistence;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-public class IdPK extends WAPrimaryKey
-{
+public class IdPK extends WAPrimaryKey {
 
   /**
-   IdPK()
+   * IdPK()
    */
   public IdPK() {
     super("");
@@ -21,37 +20,34 @@ public class IdPK extends WAPrimaryKey
   }
 
   /**
-   IdPK(String id, WAPrimaryKey value)
+   * IdPK(String id, WAPrimaryKey value)
    */
   public IdPK(String id, WAPrimaryKey value) {
     super(id, value);
   }
 
   /**
-   equals
+   * equals
    */
   public boolean equals(Object other) {
-    if (!(other instanceof IdPK))
-    {
+    if (!(other instanceof IdPK)) {
       return false;
-    } else{
-      return (getId() == ((IdPK)other).getId());
+    } else {
+      return (getId() == ((IdPK) other).getId());
     }
   }
 
   /**
-   setIdAsLong( long value )
+   * setIdAsLong( long value )
    */
-  public void setIdAsLong( long value )
-  {
-    setId( new Long( value ).toString() );
+  public void setIdAsLong(long value) {
+    setId(new Long(value).toString());
   }
 
   /**
-   getIdAsLong()
+   * getIdAsLong()
    */
-  public long getIdAsLong()
-  {
-    return new Integer( getId() ).longValue();
+  public long getIdAsLong() {
+    return new Integer(getId()).longValue();
   }
 }

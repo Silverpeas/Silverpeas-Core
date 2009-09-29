@@ -16,131 +16,129 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
  * 
  * @author
  */
-public abstract class ClipboardSelection implements Serializable, ClipboardOwner, Transferable
-{
-    static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index", "Silverpeas index");
-    static public DataFlavor SilverpeasKeyDataFlavor = new DataFlavor("silverpeas/keydata", "Silverpeas keydata");
-    protected ArrayList      supportedFlavorsList = new ArrayList();
-    protected boolean        selected = true;
-    private boolean				isCutted = false;
+public abstract class ClipboardSelection implements Serializable,
+    ClipboardOwner, Transferable {
+  static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index",
+      "Silverpeas index");
+  static public DataFlavor SilverpeasKeyDataFlavor = new DataFlavor(
+      "silverpeas/keydata", "Silverpeas keydata");
+  protected ArrayList supportedFlavorsList = new ArrayList();
+  protected boolean selected = true;
+  private boolean isCutted = false;
 
-	/**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public ClipboardSelection()
-    {
-        supportedFlavorsList.add(IndexFlavor);
-        supportedFlavorsList.add(SilverpeasKeyDataFlavor);
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public ClipboardSelection() {
+    supportedFlavorsList.add(IndexFlavor);
+    supportedFlavorsList.add(SilverpeasKeyDataFlavor);
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    protected void addFlavor(DataFlavor parFlavor)
-    {
-        supportedFlavorsList.add(parFlavor);
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  protected void addFlavor(DataFlavor parFlavor) {
+    supportedFlavorsList.add(parFlavor);
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public boolean isDataFlavorSupported(DataFlavor parFlavor)
-    {
-        // return parFlavor.equals (IndexFlavor);
-        boolean supported = true;
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public boolean isDataFlavorSupported(DataFlavor parFlavor) {
+    // return parFlavor.equals (IndexFlavor);
+    boolean supported = true;
 
-        try
-        {
-            int index = 0;
+    try {
+      int index = 0;
 
-            while (!parFlavor.equals((DataFlavor) (supportedFlavorsList.get(index++))));
-        }
-        catch (IndexOutOfBoundsException e)
-        {
-            supported = false;
-        }
+      while (!parFlavor
+          .equals((DataFlavor) (supportedFlavorsList.get(index++))))
         ;
-        return supported;
+    } catch (IndexOutOfBoundsException e) {
+      supported = false;
     }
+    ;
+    return supported;
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public synchronized DataFlavor[] getTransferDataFlavors()
-    {
-        return ((DataFlavor[]) (supportedFlavorsList.toArray()));
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public synchronized DataFlavor[] getTransferDataFlavors() {
+    return ((DataFlavor[]) (supportedFlavorsList.toArray()));
+  }
+
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public synchronized Object getTransferData(DataFlavor parFlavor)
+      throws UnsupportedFlavorException {
+    if (parFlavor.equals(IndexFlavor)) {
+      return getIndexEntry();
+    } else if (parFlavor.equals(SilverpeasKeyDataFlavor)) {
+      return getKeyData();
+    } else {
+      throw new UnsupportedFlavorException(IndexFlavor);
     }
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public synchronized Object getTransferData(DataFlavor parFlavor) throws UnsupportedFlavorException
-    {
-        if (parFlavor.equals(IndexFlavor))
-        {
-            return getIndexEntry();
-        }
-        else if (parFlavor.equals(SilverpeasKeyDataFlavor))
-        {
-            return getKeyData();
-        }
-        else
-        {
-            throw new UnsupportedFlavorException(IndexFlavor);
-        }
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public boolean isSelected() {
+    return selected;
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public boolean isSelected()
-    {
-        return selected;
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public void setSelected(boolean setIt) {
+    selected = setIt;
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public void setSelected(boolean setIt)
-    {
-        selected = setIt;
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  public void lostOwnership(Clipboard parClipboard, Transferable parTransferable) {
+    // System.out.println ("Lost ownership");
+  }
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    public void lostOwnership(Clipboard parClipboard, Transferable parTransferable)
-    {
-        // System.out.println ("Lost ownership");
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  abstract protected IndexEntry getIndexEntry();
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    abstract protected IndexEntry getIndexEntry();
+  /**
+   * --------------------------------------------------------------------------
+   * ------------------------------
+   * 
+   */
+  abstract protected SilverpeasKeyData getKeyData();
 
-    /**
-     * --------------------------------------------------------------------------------------------------------
-     * 
-     */
-    abstract protected SilverpeasKeyData getKeyData();
-    
-    public boolean isCutted() {
-		return isCutted;
-	}
+  public boolean isCutted() {
+    return isCutted;
+  }
 
-	public void setCutted(boolean isCutted) {
-		this.isCutted = isCutted;
-	}
+  public void setCutted(boolean isCutted) {
+    this.isCutted = isCutted;
+  }
 
 }
-

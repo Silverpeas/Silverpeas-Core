@@ -6,262 +6,265 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 
-
 /**
- * This class allows the result jsp page of the global search to show 
- * all features (name, description, location)
+ * This class allows the result jsp page of the global search to show all
+ * features (name, description, location)
  */
-public class GlobalSilverContent extends AbstractI18NBean implements java.io.Serializable
-{
-	private String name				= "";
-	private String description		= "";
-	private String url				= "";
-	private String location			= "";
-	private String id				= "";
-	private String instanceId		= "";
-    private String date				= ""; //this is the updateDate
-    private String creationDate		= "";
-    private String icon_url			= "";
-    
-    private String thumbnailURL		= "";
-    private String thumbnailMimeType= "";
-    private String thumbnailWidth	= "";
-    private String thumbnailHeight	= "";
+public class GlobalSilverContent extends AbstractI18NBean implements
+    java.io.Serializable {
+  private String name = "";
+  private String description = "";
+  private String url = "";
+  private String location = "";
+  private String id = "";
+  private String instanceId = "";
+  private String date = ""; // this is the updateDate
+  private String creationDate = "";
+  private String icon_url = "";
 
-	private	String userId			= "";
-	private String creatorFirstName	= "";
-	private String creatorLastName	= "";
+  private String thumbnailURL = "";
+  private String thumbnailMimeType = "";
+  private String thumbnailWidth = "";
+  private String thumbnailHeight = "";
 
-	/* following attributes are exclusively used by taglibs */
-	private String spaceId			= "";
-	private float  score			= 0;
-	private String type				= "";
+  private String userId = "";
+  private String creatorFirstName = "";
+  private String creatorLastName = "";
 
-	public void init(String name, String desc, String url, String location, String id, String instanceId, String date, String icon, String userId) {
-		this.name			= name;
-		this.description	= desc;
-		this.url			= url;
-		this.location		= location;
-		this.id				= id;
-		this.instanceId		= instanceId;
-		this.date			= date;
-        this.icon_url		= icon;
-		this.userId			= userId;
-		
-		GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(I18NHelper.defaultLanguage, name, description);
-		addTranslation(gscI18N);
-	}
+  /* following attributes are exclusively used by taglibs */
+  private String spaceId = "";
+  private float score = 0;
+  private String type = "";
 
-	// constructor
-	public GlobalSilverContent(String name, String desc, String id, String spaceId, String instanceId, String date, String userId){
-		init(name, desc, null, null, id, instanceId, date, null, userId);
-		this.spaceId = spaceId;
-	}
-	
-	public GlobalSilverContent(MatchingIndexEntry mie)
-	{
-		init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie.getComponent(), mie.getCreationDate(), null, mie.getCreationUser());
-			
-		Iterator languages = mie.getLanguages();
-		while (languages.hasNext())
-		{
-			String language = (String) languages.next();
-			GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language, mie.getTitle(language), mie.getPreview(language));
-			addTranslation(gscI18N);
-		}
-	}
+  public void init(String name, String desc, String url, String location,
+      String id, String instanceId, String date, String icon, String userId) {
+    this.name = name;
+    this.description = desc;
+    this.url = url;
+    this.location = location;
+    this.id = id;
+    this.instanceId = instanceId;
+    this.date = date;
+    this.icon_url = icon;
+    this.userId = userId;
 
-	// constructor
-	public GlobalSilverContent(SilverContentInterface sci, String location){
-		init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci.getId(), sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci.getCreatorId());
-		this.creationDate = sci.getSilverCreationDate();
-			
-		Iterator languages = sci.getLanguages();
-		while (languages != null && languages.hasNext())
-		{
-			String language = (String) languages.next();
-			GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language, sci.getName(language), sci.getDescription(language));
-			addTranslation(gscI18N);
-		}
-	}
+    GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(
+        I18NHelper.defaultLanguage, name, description);
+    addTranslation(gscI18N);
+  }
 
-	// constructor
-	public GlobalSilverContent(SilverContentInterface sci, String location, String creatorFirstName, String creatorLastName){
-		init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci.getId(), sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci.getCreatorId());
-		this.creationDate = sci.getSilverCreationDate();
-		this.creatorFirstName = creatorFirstName;
-		this.creatorLastName = creatorLastName;
-		
-		Iterator languages = sci.getLanguages();
-		while (languages != null && languages.hasNext())
-		{
-			String language = (String) languages.next();
-			GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language, sci.getName(language), sci.getDescription(language));
-			addTranslation(gscI18N);
-		}
-	}
-	
-	//
-	// public methods
-	//
-	public String getName(){
-		return name;
-	}
-	
-	public String getName(String language)
-	{
-		if (!I18NHelper.isI18N)
-    		return getName();
-    	
-    	GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations().get(language);
-    	if (s == null)
-    		s = (GlobalSilverContentI18N) getNextTranslation();
-    	
-    	return s.getName();
-	}
+  // constructor
+  public GlobalSilverContent(String name, String desc, String id,
+      String spaceId, String instanceId, String date, String userId) {
+    init(name, desc, null, null, id, instanceId, date, null, userId);
+    this.spaceId = spaceId;
+  }
 
-	public String getDescription(){
-		return description;
-	}
-	
-	public String getDescription(String language)
-	{
-		if (!I18NHelper.isI18N)
-    		return getDescription();
-    	
-    	GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations().get(language);
-    	if (s == null)
-    		s = (GlobalSilverContentI18N) getNextTranslation();
-    	
-    	return s.getDescription();
-	}
+  public GlobalSilverContent(MatchingIndexEntry mie) {
+    init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie
+        .getComponent(), mie.getCreationDate(), null, mie.getCreationUser());
 
-	public String getURL(){
-		return url;
-	}
-
-	public String getLocation(){
-		return location;
-	}
-
-	public String getId(){
-		return id;
-	}
-
-	public String getInstanceId(){
-		return instanceId;
-	}
-
-	public String getSpaceId(){
-		return spaceId;
-	}
-
-	public void setSpaceId(String spaceId) {
-		this.spaceId = spaceId;
-	}
-
-    public String getTitle()
-    {
-        return getName();
+    Iterator languages = mie.getLanguages();
+    while (languages.hasNext()) {
+      String language = (String) languages.next();
+      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
+          mie.getTitle(language), mie.getPreview(language));
+      addTranslation(gscI18N);
     }
+  }
 
-    public String getDate()
-    {
-        return this.date;
+  // constructor
+  public GlobalSilverContent(SilverContentInterface sci, String location) {
+    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci
+        .getId(), sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci
+        .getCreatorId());
+    this.creationDate = sci.getSilverCreationDate();
+
+    Iterator languages = sci.getLanguages();
+    while (languages != null && languages.hasNext()) {
+      String language = (String) languages.next();
+      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
+          sci.getName(language), sci.getDescription(language));
+      addTranslation(gscI18N);
     }
+  }
 
-    public String getIconUrl()
-    {
-        return this.icon_url;
+  // constructor
+  public GlobalSilverContent(SilverContentInterface sci, String location,
+      String creatorFirstName, String creatorLastName) {
+    init(sci.getName(), sci.getDescription(), sci.getURL(), location, sci
+        .getId(), sci.getInstanceId(), sci.getDate(), sci.getIconUrl(), sci
+        .getCreatorId());
+    this.creationDate = sci.getSilverCreationDate();
+    this.creatorFirstName = creatorFirstName;
+    this.creatorLastName = creatorLastName;
+
+    Iterator languages = sci.getLanguages();
+    while (languages != null && languages.hasNext()) {
+      String language = (String) languages.next();
+      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
+          sci.getName(language), sci.getDescription(language));
+      addTranslation(gscI18N);
     }
-    
-    public void setIconUrl(String iconURL)
-    {
-    	this.icon_url = iconURL;
-    }
+  }
 
-	public String getUserId() {
-		return this.userId;
-	}
+  //
+  // public methods
+  //
+  public String getName() {
+    return name;
+  }
 
-	public String getCreatorFirstName() {
-		return this.creatorFirstName;
-	}
+  public String getName(String language) {
+    if (!I18NHelper.isI18N)
+      return getName();
 
-	public String getCreatorLastName() {
-		return this.creatorLastName;
-	}
+    GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations()
+        .get(language);
+    if (s == null)
+      s = (GlobalSilverContentI18N) getNextTranslation();
 
-	public void setScore(float score) {
-		this.score = score;
-	}
+    return s.getName();
+  }
 
-	public float getRawScore() {
-		return this.score;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getScore() {
-		return new Float(this.score*100).toString();
-	}
+  public String getDescription(String language) {
+    if (!I18NHelper.isI18N)
+      return getDescription();
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations()
+        .get(language);
+    if (s == null)
+      s = (GlobalSilverContentI18N) getNextTranslation();
 
-	public String getType() {
-		return this.type;
-	}
+    return s.getDescription();
+  }
 
-	public void setURL(String url) {
-		this.url = url;
-	}
+  public String getURL() {
+    return url;
+  }
 
-	public void setLocation(String location){
-		this.location = location;
-	}
-	
-	public String getCreationDate() {
-		return creationDate;
-	}
+  public String getLocation() {
+    return location;
+  }
 
-	public void setCreationDate(String creationDate) {
-		this.creationDate = creationDate;
-	}
-	
-	public void setTitle(String title) {
-		this.name = title;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getThumbnailHeight() {
-		return thumbnailHeight;
-	}
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-	public void setThumbnailHeight(String iconHeight) {
-		this.thumbnailHeight = iconHeight;
-	}
+  public String getSpaceId() {
+    return spaceId;
+  }
 
-	public String getThumbnailWidth() {
-		return thumbnailWidth;
-	}
+  public void setSpaceId(String spaceId) {
+    this.spaceId = spaceId;
+  }
 
-	public void setThumbnailWidth(String iconWidth) {
-		this.thumbnailWidth = iconWidth;
-	}
+  public String getTitle() {
+    return getName();
+  }
 
-	public String getThumbnailURL() {
-		return thumbnailURL;
-	}
+  public String getDate() {
+    return this.date;
+  }
 
-	public void setThumbnailURL(String thumbnailURL) {
-		this.thumbnailURL = thumbnailURL;
-	}
+  public String getIconUrl() {
+    return this.icon_url;
+  }
 
-	public String getThumbnailMimeType() {
-		return thumbnailMimeType;
-	}
+  public void setIconUrl(String iconURL) {
+    this.icon_url = iconURL;
+  }
 
-	public void setThumbnailMimeType(String thumbnailMimeType) {
-		this.thumbnailMimeType = thumbnailMimeType;
-	}
+  public String getUserId() {
+    return this.userId;
+  }
+
+  public String getCreatorFirstName() {
+    return this.creatorFirstName;
+  }
+
+  public String getCreatorLastName() {
+    return this.creatorLastName;
+  }
+
+  public void setScore(float score) {
+    this.score = score;
+  }
+
+  public float getRawScore() {
+    return this.score;
+  }
+
+  public String getScore() {
+    return new Float(this.score * 100).toString();
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public String getType() {
+    return this.type;
+  }
+
+  public void setURL(String url) {
+    this.url = url;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
+  }
+
+  public String getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(String creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public void setTitle(String title) {
+    this.name = title;
+  }
+
+  public String getThumbnailHeight() {
+    return thumbnailHeight;
+  }
+
+  public void setThumbnailHeight(String iconHeight) {
+    this.thumbnailHeight = iconHeight;
+  }
+
+  public String getThumbnailWidth() {
+    return thumbnailWidth;
+  }
+
+  public void setThumbnailWidth(String iconWidth) {
+    this.thumbnailWidth = iconWidth;
+  }
+
+  public String getThumbnailURL() {
+    return thumbnailURL;
+  }
+
+  public void setThumbnailURL(String thumbnailURL) {
+    this.thumbnailURL = thumbnailURL;
+  }
+
+  public String getThumbnailMimeType() {
+    return thumbnailMimeType;
+  }
+
+  public void setThumbnailMimeType(String thumbnailMimeType) {
+    this.thumbnailMimeType = thumbnailMimeType;
+  }
 
 }

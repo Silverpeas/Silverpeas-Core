@@ -3,39 +3,41 @@ package com.stratelia.webactiv.calendar.model;
 import java.util.Vector;
 
 public class SchedulableList {
-  
+
   protected Vector content = new Vector();
   private String day;
-  
+
   public SchedulableList() {
   }
-  
+
   public SchedulableList(String day) {
     this.day = day;
   }
-  
+
   public SchedulableList(String day, Vector elements) {
     this(day);
     for (int i = 0; i < elements.size(); i++)
-      add((Schedulable)elements.elementAt(i));
+      add((Schedulable) elements.elementAt(i));
   }
-  
+
   public Vector getContent() {
     return content;
   }
-  
+
   public void add(Schedulable schedule) {
-    if (schedule.getStartDay() == null) return;
-    if (schedule.getStartDay().compareTo(day) != 0) return;
-    
-    for (int i=0; i< content.size(); i++) {
+    if (schedule.getStartDay() == null)
+      return;
+    if (schedule.getStartDay().compareTo(day) != 0)
+      return;
+
+    for (int i = 0; i < content.size(); i++) {
       Object obj = content.elementAt(i);
       if (obj instanceof Schedulable) {
         if (schedule.isOver((Schedulable) obj)) {
           content.remove(obj);
           SchedulableGroup group = new SchedulableGroup();
           group.add(schedule);
-          group.add((Schedulable)obj);
+          group.add((Schedulable) obj);
           add(group);
           return;
         }
@@ -54,7 +56,7 @@ public class SchedulableList {
   }
 
   public void add(SchedulableGroup group) {
-    for (int i=0; i< content.size(); i++) {
+    for (int i = 0; i < content.size(); i++) {
       Object obj = content.elementAt(i);
       if (obj instanceof Schedulable) {
         if (group.isOver((Schedulable) obj)) {
@@ -74,74 +76,81 @@ public class SchedulableList {
     }
     content.add(group);
   }
-  
+
   public Vector getStartingSchedules(String startHour, String endHour) {
     Vector result = new Vector();
-    
-    for (int i=0; i < content.size(); i++) {
+
+    for (int i = 0; i < content.size(); i++) {
       Object obj = content.elementAt(i);
       if (obj instanceof Schedulable) {
         Schedulable schedule = (Schedulable) obj;
-        //if (day.equals(schedule.getStartDay()))
-        if ((schedule.getStartHour() != null) && (schedule.getEndHour() != null))
-        if ( (startHour.compareTo(schedule.getStartHour()) <= 0 ) &&
-              (endHour.compareTo(schedule.getStartHour()) > 0 ) )
-          result.add(schedule);
-      }
-      else
-      if (obj instanceof SchedulableGroup) {
+        // if (day.equals(schedule.getStartDay()))
+        if ((schedule.getStartHour() != null)
+            && (schedule.getEndHour() != null))
+          if ((startHour.compareTo(schedule.getStartHour()) <= 0)
+              && (endHour.compareTo(schedule.getStartHour()) > 0))
+            result.add(schedule);
+      } else if (obj instanceof SchedulableGroup) {
         SchedulableGroup group = (SchedulableGroup) obj;
-        //if (day.equals(group.getStartDay()))
+        // if (day.equals(group.getStartDay()))
         if ((group.getStartHour() != null) && (group.getEndHour() != null))
-        if ( (startHour.compareTo(group.getStartHour()) <= 0 ) &&
-              (endHour.compareTo(group.getStartHour()) > 0 ) )
-          result.add(group);
+          if ((startHour.compareTo(group.getStartHour()) <= 0)
+              && (endHour.compareTo(group.getStartHour()) > 0))
+            result.add(group);
       }
     }
     return result;
   }
-  
-  public Vector getWithoutHourSchedules()
-  {
+
+  public Vector getWithoutHourSchedules() {
     Vector result = new Vector();
-    for (int i = 0; i < content.size() ; i++) {
+    for (int i = 0; i < content.size(); i++) {
       if (content.elementAt(i) instanceof Schedulable) {
         Schedulable schedule = (Schedulable) content.elementAt(i);
-        if ((schedule.getStartHour() == null) && 
-            (schedule.getEndHour() == null))
+        if ((schedule.getStartHour() == null)
+            && (schedule.getEndHour() == null))
           result.addElement(schedule);
       }
     }
     return result;
   }
-  
+
   public Vector getGoOnSchedules(String startHour, String endHour) {
     Vector result = new Vector();
 
-    for (int i = 0; i < getContent().size() ; i++) {
+    for (int i = 0; i < getContent().size(); i++) {
       Object obj = getContent().elementAt(i);
       if (obj instanceof Schedulable) {
         Schedulable schedule = (Schedulable) obj;
-        if ((schedule.getStartHour() != null) && (schedule.getEndHour() != null))
-          //if ((hour.compareTo(schedule.getStartHour()) >= 0) && 
-          //    (hour.compareTo(schedule.getEndHour()) < 0))
-          if ( ((startHour.compareTo(schedule.getStartHour()) >= 0) && (startHour.compareTo(schedule.getEndHour()) < 0)) ||
-               ((endHour.compareTo(schedule.getStartHour()) > 0) && (endHour.compareTo(schedule.getEndHour()) <= 0)) ||
-               ((startHour.compareTo(schedule.getStartHour()) <= 0) && (endHour.compareTo(schedule.getStartHour()) > 0)) ||
-               ((startHour.compareTo(schedule.getEndHour()) < 0) && (endHour.compareTo(schedule.getEndHour()) >= 0)) )
+        if ((schedule.getStartHour() != null)
+            && (schedule.getEndHour() != null))
+          // if ((hour.compareTo(schedule.getStartHour()) >= 0) &&
+          // (hour.compareTo(schedule.getEndHour()) < 0))
+          if (((startHour.compareTo(schedule.getStartHour()) >= 0) && (startHour
+              .compareTo(schedule.getEndHour()) < 0))
+              || ((endHour.compareTo(schedule.getStartHour()) > 0) && (endHour
+                  .compareTo(schedule.getEndHour()) <= 0))
+              || ((startHour.compareTo(schedule.getStartHour()) <= 0) && (endHour
+                  .compareTo(schedule.getStartHour()) > 0))
+              || ((startHour.compareTo(schedule.getEndHour()) < 0) && (endHour
+                  .compareTo(schedule.getEndHour()) >= 0)))
             result.add(schedule);
-      }
-      else if (obj instanceof SchedulableGroup) {
+      } else if (obj instanceof SchedulableGroup) {
         SchedulableGroup schedule = (SchedulableGroup) obj;
-        if ((schedule.getStartHour() != null) && (schedule.getEndHour() != null))
-          if ( ((startHour.compareTo(schedule.getStartHour()) >= 0) && (startHour.compareTo(schedule.getEndHour()) < 0)) ||
-               ((endHour.compareTo(schedule.getStartHour()) > 0) && (endHour.compareTo(schedule.getEndHour()) <= 0)) ||
-               ((startHour.compareTo(schedule.getStartHour()) <= 0) && (endHour.compareTo(schedule.getStartHour()) > 0)) ||
-               ((startHour.compareTo(schedule.getEndHour()) < 0) && (endHour.compareTo(schedule.getEndHour()) >= 0)) )
+        if ((schedule.getStartHour() != null)
+            && (schedule.getEndHour() != null))
+          if (((startHour.compareTo(schedule.getStartHour()) >= 0) && (startHour
+              .compareTo(schedule.getEndHour()) < 0))
+              || ((endHour.compareTo(schedule.getStartHour()) > 0) && (endHour
+                  .compareTo(schedule.getEndHour()) <= 0))
+              || ((startHour.compareTo(schedule.getStartHour()) <= 0) && (endHour
+                  .compareTo(schedule.getStartHour()) > 0))
+              || ((startHour.compareTo(schedule.getEndHour()) < 0) && (endHour
+                  .compareTo(schedule.getEndHour()) >= 0)))
             result.add(schedule);
       }
     }
     return result;
   }
-  
+
 }

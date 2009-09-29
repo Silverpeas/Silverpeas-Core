@@ -7,7 +7,8 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.*;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
-public class QuestionContainerHeader extends AbstractI18NBean implements java.io.Serializable, SilverContentInterface {
+public class QuestionContainerHeader extends AbstractI18NBean implements
+    java.io.Serializable, SilverContentInterface {
 
   private QuestionContainerPK pk = null;
   private String title = null;
@@ -30,7 +31,11 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
 
   private String iconUrl;
 
-  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String comment,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage,int nbMaxParticipations,int nbParticipationsBeforeSolution,int maxTime) {
+  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
+      String title, String description, String comment, String creatorId,
+      String creationDate, String beginDate, String endDate, boolean isClosed,
+      int nbVoters, int nbQuestionsPerPage, int nbMaxParticipations,
+      int nbParticipationsBeforeSolution, int maxTime) {
     setPK(questionContainerPK);
     setTitle(title);
     setDescription(description);
@@ -47,253 +52,260 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setMaxTime(maxTime);
   }
 
-  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String comment,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage,int nbMaxParticipations,int nbParticipationsBeforeSolution,int maxTime, boolean anonymous) {
-	    setPK(questionContainerPK);
-	    setTitle(title);
-	    setDescription(description);
-	    setComment(comment);
-	    setCreatorId(creatorId);
-	    setCreationDate(creationDate);
-	    setBeginDate(beginDate);
-	    setEndDate(endDate);
-	    close(isClosed);
-	    setNbVoters(nbVoters);
-	    setNbQuestionsPerPage(nbQuestionsPerPage);
-	    setNbMaxParticipations(nbMaxParticipations);
-	    setNbParticipationsBeforeSolution(nbParticipationsBeforeSolution);
-	    setMaxTime(maxTime);
-	    setAnonymous(anonymous);
-  }
-  
-  // @deprecated
-  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage) {
-	  setPK(questionContainerPK);
-	  setTitle(title);
-	  setDescription(description);
-	  setComment(comment);
-	  setCreatorId(creatorId);
-	  setCreationDate(creationDate);
-	  setBeginDate(beginDate);
-	setEndDate(endDate);
-	close(isClosed);
-	setNbVoters(nbVoters);
-	setNbQuestionsPerPage(nbQuestionsPerPage);
-  }
-  
-  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,String title,String description,String creatorId,String creationDate,String beginDate,String endDate,boolean isClosed,int nbVoters,int nbQuestionsPerPage, boolean anonymous) {
-	  setPK(questionContainerPK);
-	  setTitle(title);
-	  setDescription(description);
-	  setComment(comment);
-	  setCreatorId(creatorId);
-	  setCreationDate(creationDate);
-	  setBeginDate(beginDate);
-	setEndDate(endDate);
-	close(isClosed);
-	setNbVoters(nbVoters);
-	setNbQuestionsPerPage(nbQuestionsPerPage);
-	setAnonymous(anonymous);
+  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
+      String title, String description, String comment, String creatorId,
+      String creationDate, String beginDate, String endDate, boolean isClosed,
+      int nbVoters, int nbQuestionsPerPage, int nbMaxParticipations,
+      int nbParticipationsBeforeSolution, int maxTime, boolean anonymous) {
+    setPK(questionContainerPK);
+    setTitle(title);
+    setDescription(description);
+    setComment(comment);
+    setCreatorId(creatorId);
+    setCreationDate(creationDate);
+    setBeginDate(beginDate);
+    setEndDate(endDate);
+    close(isClosed);
+    setNbVoters(nbVoters);
+    setNbQuestionsPerPage(nbQuestionsPerPage);
+    setNbMaxParticipations(nbMaxParticipations);
+    setNbParticipationsBeforeSolution(nbParticipationsBeforeSolution);
+    setMaxTime(maxTime);
+    setAnonymous(anonymous);
   }
 
+  // @deprecated
+  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
+      String title, String description, String creatorId, String creationDate,
+      String beginDate, String endDate, boolean isClosed, int nbVoters,
+      int nbQuestionsPerPage) {
+    setPK(questionContainerPK);
+    setTitle(title);
+    setDescription(description);
+    setComment(comment);
+    setCreatorId(creatorId);
+    setCreationDate(creationDate);
+    setBeginDate(beginDate);
+    setEndDate(endDate);
+    close(isClosed);
+    setNbVoters(nbVoters);
+    setNbQuestionsPerPage(nbQuestionsPerPage);
+  }
+
+  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
+      String title, String description, String creatorId, String creationDate,
+      String beginDate, String endDate, boolean isClosed, int nbVoters,
+      int nbQuestionsPerPage, boolean anonymous) {
+    setPK(questionContainerPK);
+    setTitle(title);
+    setDescription(description);
+    setComment(comment);
+    setCreatorId(creatorId);
+    setCreationDate(creationDate);
+    setBeginDate(beginDate);
+    setEndDate(endDate);
+    close(isClosed);
+    setNbVoters(nbVoters);
+    setNbQuestionsPerPage(nbQuestionsPerPage);
+    setAnonymous(anonymous);
+  }
 
   public QuestionContainerPK getPK() {
-      return pk;
+    return pk;
   }
 
   public String getTitle() {
-      return title;
+    return title;
   }
 
   public String getDescription() {
-      return description;
+    return description;
   }
 
   public String getComment() {
-      return comment;
+    return comment;
   }
 
   public String getCreatorId() {
-      return creatorId;
+    return creatorId;
   }
 
   public String getCreationDate() {
-      return creationDate;
+    return creationDate;
   }
 
   public String getBeginDate() {
-      return beginDate;
+    return beginDate;
   }
 
   public String getEndDate() {
-      return endDate;
+    return endDate;
   }
 
   public boolean isClosed() {
-      return this.isClosed;
+    return this.isClosed;
   }
 
   public int getNbVoters() {
-      return this.nbVoters;
+    return this.nbVoters;
   }
 
   public int getNbRegistered() {
-      return this.nbRegistered;
+    return this.nbRegistered;
   }
 
   public int getNbQuestionsPerPage() {
-      return this.nbQuestionsPerPage;
+    return this.nbQuestionsPerPage;
   }
 
   public int getNbMaxParticipations() {
-      return this.nbMaxParticipations;
+    return this.nbMaxParticipations;
   }
 
   public int getNbParticipationsBeforeSolution() {
-      return this.nbParticipationsBeforeSolution;
+    return this.nbParticipationsBeforeSolution;
   }
 
   public int getMaxTime() {
-      return this.maxTime;
+    return this.maxTime;
   }
 
   public int getNbMaxPoints() {
-      return this.nbMaxPoints;
+    return this.nbMaxPoints;
   }
 
   public Collection getScores() {
-	  return this.scores;
+    return this.scores;
   }
 
   public void setPK(QuestionContainerPK pk) {
-      this.pk = pk;
+    this.pk = pk;
   }
 
   public void setTitle(String title) {
-      this.title = title;
+    this.title = title;
   }
 
   public void setDescription(String description) {
-        this.description = description;
+    this.description = description;
   }
 
   public void setComment(String comment) {
-        this.comment = comment;
+    this.comment = comment;
   }
 
   public void setCreatorId(String creatorId) {
-      this.creatorId = creatorId;
+    this.creatorId = creatorId;
   }
 
   public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
+    this.creationDate = creationDate;
   }
 
   public void setBeginDate(String beginDate) {
-          this.beginDate = beginDate;
+    this.beginDate = beginDate;
   }
 
   public void setEndDate(String endDate) {
-            this.endDate = endDate;
+    this.endDate = endDate;
   }
 
   public void close(boolean isClosed) {
-      this.isClosed = isClosed;
+    this.isClosed = isClosed;
   }
 
   public void setNbVoters(int nb) {
-      this.nbVoters = nb;
+    this.nbVoters = nb;
   }
 
   public void setNbQuestionsPerPage(int nb) {
-      this.nbQuestionsPerPage = nb;
+    this.nbQuestionsPerPage = nb;
   }
 
   public void setNbRegistered(int nb) {
-      this.nbRegistered = nb;
+    this.nbRegistered = nb;
   }
 
   public void setNbMaxParticipations(int nb) {
-      this.nbMaxParticipations = nb;
+    this.nbMaxParticipations = nb;
   }
 
   public void setNbParticipationsBeforeSolution(int nb) {
-      this.nbParticipationsBeforeSolution = nb;
+    this.nbParticipationsBeforeSolution = nb;
   }
 
   public void setMaxTime(int nb) {
-      this.maxTime = nb;
+    this.maxTime = nb;
   }
 
   public void setNbMaxPoints(int nb) {
-      this.nbMaxPoints = nb;
+    this.nbMaxPoints = nb;
   }
 
   public void setScores(Collection scores) {
-          this.scores = scores;
+    this.scores = scores;
   }
 
-  //methods to be implemented by SilverContentInterface
-	
-		public String getName() {
-			return getTitle();
-		}
+  // methods to be implemented by SilverContentInterface
 
-		public String getURL() {
-			return "searchResult?Type=QuestionContainer&Id="+getId();
-		}
+  public String getName() {
+    return getTitle();
+  }
 
-		public String getId() {
-			return getPK().getId();
-		}
+  public String getURL() {
+    return "searchResult?Type=QuestionContainer&Id=" + getId();
+  }
 
-		public String getInstanceId() {
-			return getPK().getComponentName();
-		}
+  public String getId() {
+    return getPK().getId();
+  }
 
-        public String getDate() {
-			return getCreationDate();
-		}
-		
-		public String getSilverCreationDate()
-		{
-			return getCreationDate();
-		}
+  public String getInstanceId() {
+    return getPK().getComponentName();
+  }
 
-		public void setIconUrl(String iconUrl) {
-			this.iconUrl = iconUrl;
-		}
+  public String getDate() {
+    return getCreationDate();
+  }
 
-        public String getIconUrl() {
-			return this.iconUrl;
-		}
-        
-        public String getPermalink()
-    	{
-    		if (URLManager.displayUniversalLinks())
-    			return URLManager.getSimpleURL(URLManager.URL_SURVEY, getId(), getInstanceId());
-    		
-    		return null;
-    	}
-        
-        public String getDescription(String language) {
-    		return getDescription();
-    	}
+  public String getSilverCreationDate() {
+    return getCreationDate();
+  }
 
-    	public String getName(String language) {
-    		return getName();
-    	}
-    	
-    	public Iterator getLanguages()
-    	{
-    		return null;
-    	}
+  public void setIconUrl(String iconUrl) {
+    this.iconUrl = iconUrl;
+  }
 
-		public boolean isAnonymous() {
-			return anonymous;
-		}
+  public String getIconUrl() {
+    return this.iconUrl;
+  }
 
-		public void setAnonymous(boolean anonymous) {
-			this.anonymous = anonymous;
-		}
+  public String getPermalink() {
+    if (URLManager.displayUniversalLinks())
+      return URLManager.getSimpleURL(URLManager.URL_SURVEY, getId(),
+          getInstanceId());
+
+    return null;
+  }
+
+  public String getDescription(String language) {
+    return getDescription();
+  }
+
+  public String getName(String language) {
+    return getName();
+  }
+
+  public Iterator getLanguages() {
+    return null;
+  }
+
+  public boolean isAnonymous() {
+    return anonymous;
+  }
+
+  public void setAnonymous(boolean anonymous) {
+    this.anonymous = anonymous;
+  }
 
 }

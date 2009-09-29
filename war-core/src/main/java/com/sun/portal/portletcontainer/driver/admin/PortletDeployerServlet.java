@@ -47,158 +47,176 @@ import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * AdminServlet is a router for admin related requests like deploying/undeploying of portlets
- * and creating of portlet windows.
+ * AdminServlet is a router for admin related requests like
+ * deploying/undeploying of portlets and creating of portlet windows.
  */
 public class PortletDeployerServlet extends HttpServlet {
-    
-    private static Logger logger = Logger.getLogger(PortletDeployerServlet.class.getPackage().getName(),
-            "com.silverpeas.portlets.PCDLogMessages");
-    private static final String PORTLET_DRIVER_AUTODEPLOY_DIR = PortletRegistryHelper.getAutoDeployLocation();
-    
-    private ServletContext context;
-    
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        context = config.getServletContext();
-        // Do not invoke autodeploy is not enabled
-        if(PropertiesContext.enableAutodeploy()) {
-            DirectoryWatcherTask watcher = new DirectoryWatcherTask(PORTLET_DRIVER_AUTODEPLOY_DIR,
-                    new WarFileFilter(), new DirectoryChangedListener() {
-                
-                public void fileAdded(File file) {
-                    if ( file.getName().endsWith(WarFileFilter.WAR_EXTENSION)) {
-                        PortletWar portlet = new PortletWar(file);
-                        checkAndDeploy(portlet);
-                    } else if (file.getName().endsWith(WarFileFilter.WAR_DEPLOYED_EXTENSION)) {
-                        String markerFileName = file.getAbsolutePath();
-                        String portletWarFileName = markerFileName.replaceFirst(WarFileFilter.WAR_DEPLOYED_EXTENSION+"$", "");
-                        PortletWar portlet = new PortletWar(portletWarFileName);
-                        
-                        if ( !portlet.warFileExists() ) {
-                            try {
-                                portlet.undeploy();
-                            } catch (Exception e) {
-                                if(logger.isLoggable(Level.INFO)) {
-                                    logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet.getWarName());
-                                }
-                            }
-                        }
+
+  private static Logger logger = Logger.getLogger(PortletDeployerServlet.class
+      .getPackage().getName(), "com.silverpeas.portlets.PCDLogMessages");
+  private static final String PORTLET_DRIVER_AUTODEPLOY_DIR = PortletRegistryHelper
+      .getAutoDeployLocation();
+
+  private ServletContext context;
+
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+    context = config.getServletContext();
+    // Do not invoke autodeploy is not enabled
+    if (PropertiesContext.enableAutodeploy()) {
+      DirectoryWatcherTask watcher = new DirectoryWatcherTask(
+          PORTLET_DRIVER_AUTODEPLOY_DIR, new WarFileFilter(),
+          new DirectoryChangedListener() {
+
+            public void fileAdded(File file) {
+              if (file.getName().endsWith(WarFileFilter.WAR_EXTENSION)) {
+                PortletWar portlet = new PortletWar(file);
+                checkAndDeploy(portlet);
+              } else if (file.getName().endsWith(
+                  WarFileFilter.WAR_DEPLOYED_EXTENSION)) {
+                String markerFileName = file.getAbsolutePath();
+                String portletWarFileName = markerFileName.replaceFirst(
+                    WarFileFilter.WAR_DEPLOYED_EXTENSION + "$", "");
+                PortletWar portlet = new PortletWar(portletWarFileName);
+
+                if (!portlet.warFileExists()) {
+                  try {
+                    portlet.undeploy();
+                  } catch (Exception e) {
+                    if (logger.isLoggable(Level.INFO)) {
+                      logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet
+                          .getWarName());
                     }
+                  }
                 }
-                
-                private void checkAndDeploy(PortletWar portlet) {
-                    if (!portlet.isDeployed())
-                        portlet.deploy();
-                    else if (portlet.needsRedeploy()) {
-                        try {
-                            portlet.redeploy();
-                        } catch (Exception e) {
-                            if(logger.isLoggable(Level.INFO)) {
-                                logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet.getWarName());
-                            }
-                        }
-                    }
+              }
+            }
+
+            private void checkAndDeploy(PortletWar portlet) {
+              if (!portlet.isDeployed())
+                portlet.deploy();
+              else if (portlet.needsRedeploy()) {
+                try {
+                  portlet.redeploy();
+                } catch (Exception e) {
+                  if (logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet
+                        .getWarName());
+                  }
                 }
-                
-            });
-            
-            Timer timer = new Timer();
-            long watchInterval = PropertiesContext.getAutodeployDirWatchInterval();
-            timer.schedule(watcher, watchInterval, watchInterval);
-        }
+              }
+            }
+
+          });
+
+      Timer timer = new Timer();
+      long watchInterval = PropertiesContext.getAutodeployDirWatchInterval();
+      timer.schedule(watcher, watchInterval, watchInterval);
     }
-    
-    
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        doGetPost(request, response);
+  }
+
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doGetPost(request, response);
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doGetPost(request, response);
+  }
+
+  public void doGetPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+
+    String language = getLanguage(request);
+
+    DesktopMessages.init(request);
+    response.setContentType("text/html;charset=ISO-8859-1");
+    HttpSession session = AdminUtils.getClearedSession(request);
+    PortletAdminData portletAdminData = null;
+    try {
+      portletAdminData = PortletAdminDataFactory.getPortletAdminData(null);
+    } catch (PortletRegistryException pre) {
+      throw new IOException(pre.getMessage());
     }
-    
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        doGetPost(request, response);
-    }
-    
-    public void doGetPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        
-    	String language = getLanguage(request);
-    	
-        DesktopMessages.init(request);
-        response.setContentType("text/html;charset=ISO-8859-1");
-        HttpSession session = AdminUtils.getClearedSession(request);
-        PortletAdminData portletAdminData = null;
-        try {
-            portletAdminData = PortletAdminDataFactory.getPortletAdminData(null);
-        } catch (PortletRegistryException pre) {
-            throw new IOException(pre.getMessage());
-        }
-        AdminUtils.setAttributes(session, portletAdminData, "useless", "useless", "useless", language);
-        
-        if (isParameterPresent(request, AdminConstants.UNDEPLOY_PORTLET_SUBMIT)) {
-            String[] portletsToUndeploy = request.getParameterValues(AdminConstants.PORTLETS_TO_UNDEPLOY);
-            if(portletsToUndeploy == null){
-                String message = DesktopMessages.getLocalizedString(AdminConstants.NO_PORTLET_APP);
-                session.setAttribute(AdminConstants.UNDEPLOYMENT_FAILED_ATTRIBUTE, message);
+    AdminUtils.setAttributes(session, portletAdminData, "useless", "useless",
+        "useless", language);
+
+    if (isParameterPresent(request, AdminConstants.UNDEPLOY_PORTLET_SUBMIT)) {
+      String[] portletsToUndeploy = request
+          .getParameterValues(AdminConstants.PORTLETS_TO_UNDEPLOY);
+      if (portletsToUndeploy == null) {
+        String message = DesktopMessages
+            .getLocalizedString(AdminConstants.NO_PORTLET_APP);
+        session.setAttribute(AdminConstants.UNDEPLOYMENT_FAILED_ATTRIBUTE,
+            message);
+      } else {
+        StringBuffer messageBuffer = new StringBuffer();
+        boolean success = false;
+        for (int i = 0; i < portletsToUndeploy.length; i++) {
+          String warName = portletsToUndeploy[i];
+          try {
+            success = portletAdminData.undeploy(warName, true);
+          } catch (Exception ex) {
+            success = false;
+            if (ex instanceof WebAppDeployerException) {
+              Object[] tokens = { warName + ".war" };
+              messageBuffer.append(DesktopMessages.getLocalizedString(
+                  AdminConstants.WAR_NOT_UNDEPLOYED, tokens));
             } else {
-                StringBuffer messageBuffer = new StringBuffer();
-                boolean success = false;
-                for (int i = 0; i < portletsToUndeploy.length; i++) {
-                    String warName = portletsToUndeploy[i];
-                    try {
-                        success = portletAdminData.undeploy(warName, true);
-                    } catch (Exception ex) {
-                        success = false;
-                        if(ex instanceof WebAppDeployerException){
-                            Object[] tokens = {warName+".war"};
-                            messageBuffer.append(DesktopMessages.getLocalizedString(AdminConstants.WAR_NOT_UNDEPLOYED, tokens));
-                        } else {
-                            messageBuffer.append(DesktopMessages.getLocalizedString(AdminConstants.UNDEPLOYMENT_FAILED));
-                            messageBuffer.append(".");
-                            messageBuffer.append(ex.getMessage());
-                        }
-                        // If undeploy throws exception, stop undeploying remaining portlets
-                        break;
-                    }
-                }
-                
-                if (success) {
-                    messageBuffer.append(DesktopMessages.getLocalizedString(AdminConstants.UNDEPLOYMENT_SUCCEEDED));
-                    session.setAttribute(AdminConstants.UNDEPLOYMENT_SUCCEEDED_ATTRIBUTE, messageBuffer.toString());
-                    // refresh portlet list
-                    AdminUtils.refreshList(request, language);
-                } else {
-                    session.setAttribute(AdminConstants.UNDEPLOYMENT_FAILED_ATTRIBUTE, messageBuffer.toString());
-                }
+              messageBuffer.append(DesktopMessages
+                  .getLocalizedString(AdminConstants.UNDEPLOYMENT_FAILED));
+              messageBuffer.append(".");
+              messageBuffer.append(ex.getMessage());
             }
-        } else {
-            try {
-                AdminUtils.setPortletWindowAttributes(session, portletAdminData, null);
-            } catch(Exception ex) {
-                StringBuffer messageBuffer = new StringBuffer(DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA));
-                messageBuffer.append(".");
-                messageBuffer.append(ex.getMessage());
-                session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuffer.toString());
-            }
+            // If undeploy throws exception, stop undeploying remaining portlets
+            break;
+          }
         }
-        
-        RequestDispatcher reqd = context.getRequestDispatcher("/portlet/jsp/jsr/deployer.jsp");
-        reqd.forward(request,response);
+
+        if (success) {
+          messageBuffer.append(DesktopMessages
+              .getLocalizedString(AdminConstants.UNDEPLOYMENT_SUCCEEDED));
+          session.setAttribute(AdminConstants.UNDEPLOYMENT_SUCCEEDED_ATTRIBUTE,
+              messageBuffer.toString());
+          // refresh portlet list
+          AdminUtils.refreshList(request, language);
+        } else {
+          session.setAttribute(AdminConstants.UNDEPLOYMENT_FAILED_ATTRIBUTE,
+              messageBuffer.toString());
+        }
+      }
+    } else {
+      try {
+        AdminUtils.setPortletWindowAttributes(session, portletAdminData, null);
+      } catch (Exception ex) {
+        StringBuffer messageBuffer = new StringBuffer(DesktopMessages
+            .getLocalizedString(AdminConstants.NO_WINDOW_DATA));
+        messageBuffer.append(".");
+        messageBuffer.append(ex.getMessage());
+        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE,
+            messageBuffer.toString());
+      }
     }
-       
-    private boolean isParameterPresent(HttpServletRequest request, String parameter) {
-        String name = request.getParameter(parameter);
-        return (name == null ? false : true);
-    }
-    
-    private String getLanguage(HttpServletRequest request)
-    {
-		//Display the private user homepage
-		//retrieve userId from session
-        HttpSession 			session 			= request.getSession();
-        MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
-        
-        return m_MainSessionCtrl.getFavoriteLanguage();
-    }
+
+    RequestDispatcher reqd = context
+        .getRequestDispatcher("/portlet/jsp/jsr/deployer.jsp");
+    reqd.forward(request, response);
+  }
+
+  private boolean isParameterPresent(HttpServletRequest request,
+      String parameter) {
+    String name = request.getParameter(parameter);
+    return (name == null ? false : true);
+  }
+
+  private String getLanguage(HttpServletRequest request) {
+    // Display the private user homepage
+    // retrieve userId from session
+    HttpSession session = request.getSession();
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session
+        .getAttribute("SilverSessionController");
+
+    return m_MainSessionCtrl.getFavoriteLanguage();
+  }
 }

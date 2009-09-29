@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /**
  * Titre : Silverpeas<p>
@@ -60,77 +61,71 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * 
  * @author
  */
-public class CommentRuntimeException extends SilverpeasRuntimeException
-{
+public class CommentRuntimeException extends SilverpeasRuntimeException {
 
-    /**
-     * method of interface FromModule
-     */
-    public String getModule()
-    {
-        return "comment";
-    }
+  /**
+   * method of interface FromModule
+   */
+  public String getModule() {
+    return "comment";
+  }
 
-    /**
-     * constructors
-     */
+  /**
+   * constructors
+   */
 
-    public CommentRuntimeException(String callingClass, int errorLevel, String message)
-    {
-        super(callingClass, errorLevel, message);
-    }
+  public CommentRuntimeException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * 
-     * @see
-     */
-    public CommentRuntimeException(String callingClass, int errorLevel, String message, String extraParams)
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * 
+   * @see
+   */
+  public CommentRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param nested
-     * 
-     * @see
-     */
-    public CommentRuntimeException(String callingClass, int errorLevel, String message, Exception nested)
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param nested
+   * 
+   * @see
+   */
+  public CommentRuntimeException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * @param nested
-     * 
-     * @see
-     */
-    public CommentRuntimeException(String callingClass, int errorLevel, String message, String extraParams, Exception nested)
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * @param nested
+   * 
+   * @see
+   */
+  public CommentRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 
 }
-
-
-
-

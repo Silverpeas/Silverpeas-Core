@@ -1,4 +1,5 @@
 package com.stratelia.webactiv.util.indexEngine.parser.ooParser;
+
 /**
  * 
  * Parser for Open Office
@@ -28,184 +29,199 @@ import org.jdom.input.SAXBuilder;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
+
 public class OOParser implements Parser {
-    /**
-     * Constructor declaration
-     */
-	
-	public OOParser() {
+  /**
+   * Constructor declaration
+   */
+
+  public OOParser() {
+  }
+
+  private String tempFolder = null;
+  private final String TMP_UNZIP_DIR = "tmpUnzipOpenOffice";
+  private final Namespace NS_OO = Namespace.getNamespace("office",
+      "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
+  public final Namespace NS_DC = Namespace.getNamespace("dc",
+      "http://purl.org/dc/elements/1.1/");
+  private final Namespace NS_OOMETA = Namespace.getNamespace("meta",
+      "urn:oasis:names:tc:opendocument:xmlns:meta:1.0");
+  private final Namespace NS_OOTEXT = Namespace.getNamespace("text",
+      "urn:oasis:names:tc:opendocument:xmlns:text:1.0");
+  // Meta data tags
+  private final String TITLE = "title";
+  private final String SUBJECT = "subject";
+  private final String DESCRIPTION = "description";
+  private final String INITIAL_CREATOR = "initial-creator";
+  private final String KEYWORD = "keyword";
+
+  // Open Office files needed for indexing
+  private final String contentFile = "content.xml";
+  private final String metaFile = "meta.xml";
+
+  public Reader getReader(String path, String encoding) {
+    Reader reader = null;
+    tempFolder = new Long(new Date().getTime()).toString();
+    try {
+      List toIndex = getFilesToIndex(path);
+      String ooContents = this.parse(toIndex);
+      deleteDir(new File(FileRepositoryManager.getTemporaryPath()
+          + TMP_UNZIP_DIR + File.separator + tempFolder));
+      reader = new StringReader(ooContents);
+    } catch (Exception e) {
+      SilverTrace.error("indexEngine", "OOParser.getReader()",
+          "indexEngine.MSG_IO_ERROR_WHILE_READING", path, e);
     }
-	private String tempFolder = null;
-	private final String TMP_UNZIP_DIR = "tmpUnzipOpenOffice";
-	private final Namespace NS_OO = Namespace.getNamespace("office","urn:oasis:names:tc:opendocument:xmlns:office:1.0");
-	public final Namespace NS_DC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
-	private final Namespace NS_OOMETA = Namespace.getNamespace("meta","urn:oasis:names:tc:opendocument:xmlns:meta:1.0");
-	private final Namespace NS_OOTEXT = Namespace.getNamespace("text","urn:oasis:names:tc:opendocument:xmlns:text:1.0");
-	//Meta data tags
-	private final String TITLE = "title";
-	private final String SUBJECT = "subject";
-	private final String DESCRIPTION = "description";
-	private final String INITIAL_CREATOR = "initial-creator";
-	private final String KEYWORD = "keyword";
-	
-	//Open Office files needed for indexing
-	private final String contentFile = "content.xml";
-	private final String metaFile = "meta.xml";
-	
-    public Reader getReader(String path, String encoding)
-    {
-        Reader reader = null;
-        tempFolder = new Long(new Date().getTime()).toString(); 
-        try
-        {
-    		List toIndex = getFilesToIndex(path);
-    		String ooContents = this.parse(toIndex);
-    		deleteDir(new File(FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR + File.separator + tempFolder));
-        	reader = new StringReader(ooContents);
+    return reader;
+  }
+
+  public String parse(Object file) {
+    SilverTrace.debug("indexEngine", "OOParser.parse()",
+        "root.MSG_PARAM_VALUE", "file=" + file.toString());
+    org.jdom.Document xmlDocContent = new org.jdom.Document();
+    org.jdom.Document xmlMeta = new org.jdom.Document();
+    StringBuffer parsingResult = new StringBuffer();
+
+    try {
+      List files = (List) file;
+      SAXBuilder builder = new SAXBuilder();
+      builder.setValidation(false);
+      SilverTrace.debug("indexEngine", "OOParser.parse()()",
+          "root.MSG_PARAM_VALUE", "file0 = " + files.get(0));
+      SilverTrace.debug("indexEngine", "OOParser.parse()()",
+          "root.MSG_PARAM_VALUE", "file1 = " + files.get(1));
+      xmlDocContent = builder.build(new File((String) files.get(0)));
+      xmlMeta = builder.build(new File((String) files.get(1)));
+      // Process Content file
+      // Get only elements in <text: > tag
+      Element body = xmlDocContent.getRootElement().getChild("body", NS_OO);
+      if (body != null) {
+        Iterator childrenElements = body.getDescendants(new ElementFilter(
+            NS_OOTEXT));
+        while (childrenElements.hasNext()) {
+          Element currentElement = (Element) childrenElements.next();
+          SilverTrace.debug("indexEngine", "OOParser.parse()",
+              "Current Element = " + currentElement.getName() + " - "
+                  + currentElement.getText());
+          parsingResult.append(" ").append(currentElement.getText());
         }
-        catch (Exception e)
-        {
-	        SilverTrace.error("indexEngine", "OOParser.getReader()",
-		                      "indexEngine.MSG_IO_ERROR_WHILE_READING",
-							  path, e);
+      }
+
+      // Process Meta data file
+      List children = xmlMeta.getRootElement().getChildren();
+      if (children != null) {
+        Iterator i = children.iterator();
+        while (i.hasNext()) {
+          Element currentElement = (Element) i.next();
+          if (currentElement.getChild(TITLE, NS_DC) != null)
+            parsingResult.append(" ").append(
+                currentElement.getChild(TITLE, NS_DC).getText());
+          if (currentElement.getChild(SUBJECT, NS_DC) != null)
+            parsingResult.append(" ").append(
+                currentElement.getChild(SUBJECT, NS_DC).getText());
+          if (currentElement.getChild(DESCRIPTION, NS_DC) != null)
+            parsingResult.append(" ").append(
+                currentElement.getChild(DESCRIPTION, NS_DC).getText());
+          if (currentElement.getChild(INITIAL_CREATOR, NS_OOMETA) != null)
+            parsingResult.append(" ").append(
+                currentElement.getChild(INITIAL_CREATOR, NS_OOMETA).getText());
+          if (currentElement.getChild(KEYWORD, NS_OOMETA) != null)
+            parsingResult.append(" ").append(
+                currentElement.getChild(KEYWORD, NS_OOMETA).getText());
         }
-        return reader;
+      }
+    } catch (JDOMException e) {
+      SilverTrace.error("indexEngine", "OOParser.parse",
+          "indexEngine.MSG_IO_ERROR_WHILE_PARSING", e);
+      deleteTmp((File) file);
+    } catch (IOException e) {
+      SilverTrace.error("indexEngine", "OOParser.parse",
+          "indexEngine.MSG_IO_ERROR_WHILE_PARSING", e);
+      deleteTmp((File) file);
     }
-    
-	public String parse(Object file) {
-		  SilverTrace.debug("indexEngine", "OOParser.parse()",
-	              "root.MSG_PARAM_VALUE","file="+file.toString());
-		org.jdom.Document xmlDocContent = new org.jdom.Document();
-		org.jdom.Document xmlMeta = new org.jdom.Document();
-		StringBuffer parsingResult = new StringBuffer();
-		
-		try {
-			List files = (List) file;
-			SAXBuilder builder = new SAXBuilder();
-			builder.setValidation(false);
-			SilverTrace.debug("indexEngine", "OOParser.parse()()","root.MSG_PARAM_VALUE","file0 = "+files.get(0));
-			SilverTrace.debug("indexEngine", "OOParser.parse()()","root.MSG_PARAM_VALUE","file1 = "+files.get(1));
-			xmlDocContent = builder.build(new File((String) files.get(0)));
-			xmlMeta = builder.build(new File((String) files.get(1)));
-			//Process Content file
-			//Get only elements in <text: > tag
-			Element body = xmlDocContent.getRootElement().getChild("body",NS_OO);
-			if (body != null)
-			{
-				Iterator childrenElements = body.getDescendants(new ElementFilter(NS_OOTEXT));
-				while (childrenElements.hasNext()) {
-                    Element currentElement = (Element) childrenElements.next();
-					SilverTrace.debug("indexEngine", "OOParser.parse()","Current Element = "+currentElement.getName()+" - "+currentElement.getText());
-					parsingResult.append(" ").append(currentElement.getText());
-				}
-			}
-			
-			//Process Meta data file
-			List children = xmlMeta.getRootElement().getChildren();
-			if (children != null)
-			{
-			   Iterator i = children.iterator();
-			   while(i.hasNext())
-			   {
-			      Element currentElement = (Element)i.next();
-			      if (currentElement.getChild(TITLE, NS_DC) != null)
-			    	  parsingResult.append(" ").append(currentElement.getChild(TITLE, NS_DC).getText());
-			      if (currentElement.getChild(SUBJECT, NS_DC) != null)
-			    	  parsingResult.append(" ").append(currentElement.getChild(SUBJECT, NS_DC).getText());
-			      if (currentElement.getChild(DESCRIPTION, NS_DC) != null)
-			    	  parsingResult.append(" ").append(currentElement.getChild(DESCRIPTION, NS_DC).getText());
-			      if (currentElement.getChild(INITIAL_CREATOR, NS_OOMETA) != null)
-			    	  parsingResult.append(" ").append(currentElement.getChild(INITIAL_CREATOR, NS_OOMETA).getText());
-			      if (currentElement.getChild(KEYWORD, NS_OOMETA) != null)
-			    	  parsingResult.append(" ").append(currentElement.getChild(KEYWORD, NS_OOMETA).getText());
-			   }
-			} 
-		} catch (JDOMException e) {
-	        SilverTrace.error("indexEngine", "OOParser.parse",
-                    "indexEngine.MSG_IO_ERROR_WHILE_PARSING", e);
-			deleteTmp((File) file);
-		} catch (IOException e) {
-	        SilverTrace.error("indexEngine", "OOParser.parse",
-                    "indexEngine.MSG_IO_ERROR_WHILE_PARSING", e);
-			deleteTmp((File) file);
-		}
-		  SilverTrace.debug("indexEngine", "OOParser.parse()","parsingResult = "+parsingResult.toString());
-		return parsingResult.toString();
-	}
-	private List getFilesToIndex(String file) {
-		String dest = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR + File.separator + tempFolder;
-		unzip(file,  dest);
-		List ls = new ArrayList();
-		ls.add(0, dest + File.separator + contentFile);
-		ls.add(1, dest + File.separator + metaFile);
-		return ls;
-	}
-	private List unzip(String zip, String destination) {
-		SilverTrace.debug("indexEngine", "OOParser.unzip()()","root.MSG_PARAM_VALUE","zip = "+zip+" destination="+destination);
-		List destLs = new ArrayList();
-		Enumeration entries;
-		ZipFile zipFile;
-		File dest = new File(destination);
-		try {
-			SilverTrace.debug("indexEngine", "OOParser.unzip()()","root.MSG_PARAM_VALUE","tempFolder = "+tempFolder);
-			dest.mkdirs();
-			if (dest.isDirectory())
-			{
-				zipFile = new ZipFile(zip);
-				entries = zipFile.entries();
-				while (entries.hasMoreElements()) {
-					ZipEntry entry = (ZipEntry) entries.nextElement();
-					if (entry.getName().equals("meta.xml") || entry.getName().equals("content.xml"))
-					{
-						copyInputStream(zipFile.getInputStream(entry),
-								new BufferedOutputStream(new FileOutputStream(dest + File.separator + entry.getName())));
-						destLs.add(dest.getAbsolutePath()+ File.separator + entry.getName());
-					}
-				}
-				zipFile.close();
-			} else {
-		        SilverTrace.error("indexEngine", "OOParser.unzip",
-		                "indexEngine.MSG_IO_ERROR_WHILE_READING",
-						  dest.getAbsolutePath());
-			}
-		}
-		catch (IOException e) {
-			deleteDir(new File(destination));
-		       SilverTrace.error("indexEngine", "OOParser.unzip",
-	                   "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING",
-						  zip, e);
-		}
-		catch (Exception e) {
-			deleteDir(new File(destination));
-		       SilverTrace.error("indexEngine", "OOParser.unzip",
-	                   "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING",
-						  zip, e);
-		}
-		return destLs;
-	}
-	private void copyInputStream(InputStream in, OutputStream out)
-			throws IOException {
-		byte[] buffer = new byte[1024];
-		int len;
-		while ((len = in.read(buffer)) >= 0)
-			out.write(buffer, 0, len);
-		in.close();
-		out.close();
-	}
-	public boolean deleteDir(File dir) {
-		if (dir.isDirectory()) {
-			String[] children = dir.list();
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteDir(new File(dir, children[i]));
-				if (!success) {
-					return false;
-				}
-			}
-		}
-		return dir.delete();
-	}
-	protected void deleteTmp(File file) {
-		String dir = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR + File.separator + tempFolder + File.separator + file;
-		deleteDir(new File(dir));
-	}
+    SilverTrace.debug("indexEngine", "OOParser.parse()", "parsingResult = "
+        + parsingResult.toString());
+    return parsingResult.toString();
+  }
+
+  private List getFilesToIndex(String file) {
+    String dest = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR
+        + File.separator + tempFolder;
+    unzip(file, dest);
+    List ls = new ArrayList();
+    ls.add(0, dest + File.separator + contentFile);
+    ls.add(1, dest + File.separator + metaFile);
+    return ls;
+  }
+
+  private List unzip(String zip, String destination) {
+    SilverTrace.debug("indexEngine", "OOParser.unzip()()",
+        "root.MSG_PARAM_VALUE", "zip = " + zip + " destination=" + destination);
+    List destLs = new ArrayList();
+    Enumeration entries;
+    ZipFile zipFile;
+    File dest = new File(destination);
+    try {
+      SilverTrace.debug("indexEngine", "OOParser.unzip()()",
+          "root.MSG_PARAM_VALUE", "tempFolder = " + tempFolder);
+      dest.mkdirs();
+      if (dest.isDirectory()) {
+        zipFile = new ZipFile(zip);
+        entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+          ZipEntry entry = (ZipEntry) entries.nextElement();
+          if (entry.getName().equals("meta.xml")
+              || entry.getName().equals("content.xml")) {
+            copyInputStream(zipFile.getInputStream(entry),
+                new BufferedOutputStream(new FileOutputStream(dest
+                    + File.separator + entry.getName())));
+            destLs.add(dest.getAbsolutePath() + File.separator
+                + entry.getName());
+          }
+        }
+        zipFile.close();
+      } else {
+        SilverTrace.error("indexEngine", "OOParser.unzip",
+            "indexEngine.MSG_IO_ERROR_WHILE_READING", dest.getAbsolutePath());
+      }
+    } catch (IOException e) {
+      deleteDir(new File(destination));
+      SilverTrace.error("indexEngine", "OOParser.unzip",
+          "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING", zip, e);
+    } catch (Exception e) {
+      deleteDir(new File(destination));
+      SilverTrace.error("indexEngine", "OOParser.unzip",
+          "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING", zip, e);
+    }
+    return destLs;
+  }
+
+  private void copyInputStream(InputStream in, OutputStream out)
+      throws IOException {
+    byte[] buffer = new byte[1024];
+    int len;
+    while ((len = in.read(buffer)) >= 0)
+      out.write(buffer, 0, len);
+    in.close();
+    out.close();
+  }
+
+  public boolean deleteDir(File dir) {
+    if (dir.isDirectory()) {
+      String[] children = dir.list();
+      for (int i = 0; i < children.length; i++) {
+        boolean success = deleteDir(new File(dir, children[i]));
+        if (!success) {
+          return false;
+        }
+      }
+    }
+    return dir.delete();
+  }
+
+  protected void deleteTmp(File file) {
+    String dir = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR
+        + File.separator + tempFolder + File.separator + file;
+    deleteDir(new File(dir));
+  }
 }

@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 //
 // -- Java Code Generation Process --
@@ -27,8 +28,9 @@ import javax.ejb.EJBObject;
 
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface ScoreBm extends ScoreBmSkeleton, EJBObject {}
+public interface ScoreBm extends ScoreBmSkeleton, EJBObject {
+}

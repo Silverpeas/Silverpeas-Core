@@ -14,30 +14,35 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * @author sv
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * 
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class SilverListener implements HttpSessionListener, ServletContextListener
-{		
-	// HttpSessionListener methods
-	public void sessionCreated(HttpSessionEvent event) {}
-	public void sessionDestroyed(HttpSessionEvent event) { remove(event); }
+public class SilverListener implements HttpSessionListener,
+    ServletContextListener {
+  // HttpSessionListener methods
+  public void sessionCreated(HttpSessionEvent event) {
+  }
 
-	// ServletContextListener methods
-	public void contextDestroyed(ServletContextEvent event)
-	{
-		SilverTrace.info("peasCore", "SilverListener.contextDestroyed", "peasCore.MSG_END_OF_HTTPSESSION");
-		SessionManager.getInstance().shutdown();
-	}
-	
-	public void contextInitialized(ServletContextEvent event) {}
-			
-	// Clear session informations
-	private void remove(HttpSessionEvent event)
-	{
-		SessionManager mgr = SessionManager.getInstance();
-		mgr.removeSession(event.getSession());			
-		SilverTrace.info("peasCore", "SilverListener.sessionDestroyed", "peasCore.MSG_END_OF_HTTPSESSION", "ID=" + event.getSession().getId());
-	}
+  public void sessionDestroyed(HttpSessionEvent event) {
+    remove(event);
+  }
+
+  // ServletContextListener methods
+  public void contextDestroyed(ServletContextEvent event) {
+    SilverTrace.info("peasCore", "SilverListener.contextDestroyed",
+        "peasCore.MSG_END_OF_HTTPSESSION");
+    SessionManager.getInstance().shutdown();
+  }
+
+  public void contextInitialized(ServletContextEvent event) {
+  }
+
+  // Clear session informations
+  private void remove(HttpSessionEvent event) {
+    SessionManager mgr = SessionManager.getInstance();
+    mgr.removeSession(event.getSession());
+    SilverTrace.info("peasCore", "SilverListener.sessionDestroyed",
+        "peasCore.MSG_END_OF_HTTPSESSION", "ID=" + event.getSession().getId());
+  }
 }

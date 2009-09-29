@@ -113,10 +113,9 @@ public class VersioningUtil {
 
     return m_AdminCtrl;
   }
-  
-  public Document getDocument(DocumentPK pk) throws RemoteException
-  {
-	  return getVersioningBm().getDocument(pk);
+
+  public Document getDocument(DocumentPK pk) throws RemoteException {
+    return getVersioningBm().getDocument(pk);
   }
 
   public ArrayList getDocuments(ForeignPK foreignID) throws RemoteException {

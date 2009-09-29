@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * ArrayPaneWA.java
@@ -10,7 +11,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 /**
  * The default implementation of ArrayPane interface
- *
+ * 
  * @author squere
  * @version 1.0
  */
@@ -18,8 +19,8 @@ public class BrowseBarSilverpeasV5 extends AbstractBrowseBar {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public BrowseBarSilverpeasV5() {
@@ -28,10 +29,10 @@ public class BrowseBarSilverpeasV5 extends AbstractBrowseBar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String displayLine() {
@@ -56,10 +57,10 @@ public class BrowseBarSilverpeasV5 extends AbstractBrowseBar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {

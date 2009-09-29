@@ -24,55 +24,45 @@ import com.stratelia.webactiv.util.indexEngine.parser.Parser;
  * mise en place des silvertrace
  *
  */
- 
+
 /**
  * A TextParser parse a text file without any processing.
- *
+ * 
  * @author $Author: neysseri $
  */
-public class TextParser implements Parser
-{
+public class TextParser implements Parser {
 
-    /**
-     * Constructor declaration
-     */
-    public TextParser() {}
+  /**
+   * Constructor declaration
+   */
+  public TextParser() {
+  }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param path
-     * @param encoding
-     * 
-     * @return
-     */
-    public Reader getReader(String path, String encoding)
-    {
-        Reader reader = null;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param path
+   * @param encoding
+   * 
+   * @return
+   */
+  public Reader getReader(String path, String encoding) {
+    Reader reader = null;
 
-        try
-        {
-            InputStream file = new FileInputStream(path);
+    try {
+      InputStream file = new FileInputStream(path);
 
-            if (encoding == null)
-            {
-                reader = new InputStreamReader(file);
-            }
-            else
-            {
-                reader = new InputStreamReader(file, encoding);
-            }
-        }
-        catch (Exception e)
-        {
-	        SilverTrace.error("indexEngine", "TextParser",
-		                      "indexEngine.MSG_IO_ERROR_WHILE_READING",
-							  path, e);
-        }
-        return reader;
+      if (encoding == null) {
+        reader = new InputStreamReader(file);
+      } else {
+        reader = new InputStreamReader(file, encoding);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("indexEngine", "TextParser",
+          "indexEngine.MSG_IO_ERROR_WHILE_READING", path, e);
     }
+    return reader;
+  }
 
 }
-
-

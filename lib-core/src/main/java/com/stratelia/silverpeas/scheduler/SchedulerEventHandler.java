@@ -16,15 +16,14 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 	Thomas Breitkreuz (tb@cdoc.de)
-*/
+ */
 
 package com.stratelia.silverpeas.scheduler;
 
 /**
- * If a class creates scheduling jobs, it gets scheduler events automaticaly,
- * so it has to implement this interface
+ * If a class creates scheduling jobs, it gets scheduler events automaticaly, so
+ * it has to implement this interface
  */
-public interface SchedulerEventHandler
-{
-	public void handleSchedulerEvent (SchedulerEvent aEvent);
+public interface SchedulerEventHandler {
+  public void handleSchedulerEvent(SchedulerEvent aEvent);
 }

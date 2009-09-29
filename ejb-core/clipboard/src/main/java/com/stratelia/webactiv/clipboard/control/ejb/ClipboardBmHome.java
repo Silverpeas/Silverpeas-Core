@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.clipboard.control.ejb;
 
@@ -9,11 +10,10 @@ import java.rmi.RemoteException;
 /**
  * The home interface for the state-full EJB session ClipboardBm.
  */
-public interface ClipboardBmHome extends EJBHome
-{
+public interface ClipboardBmHome extends EJBHome {
 
-    /**
-     * Create a ClipboardBm.
-     */
-    ClipboardBm create(String name) throws CreateException, RemoteException;
+  /**
+   * Create a ClipboardBm.
+   */
+  ClipboardBm create(String name) throws CreateException, RemoteException;
 }

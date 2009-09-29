@@ -17,260 +17,238 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class AttachmentDetailI18N extends Translation implements Serializable
-{    
-    private String			physicalName	= null;
-    private String			logicalName		= null;
-    private String			type			= null;
-	private Date			creationDate;
-    private long			size;
-    private String			author			= null;
-	private String			title			= null;
-	private String			info			= null;
-	private String			instanceId		= null;
-	private String			xmlForm			= null;
-	
-	public AttachmentDetailI18N()
-	{
-		
-	}
-	
-	public AttachmentDetailI18N(AttachmentDetail attachmentDetail)
-    {
-		super.setLanguage(attachmentDetail.getLanguage());
-		super.setObjectId(attachmentDetail.getPK().getId());
-		if (attachmentDetail.getTranslationId() != null)
-			super.setId(Integer.parseInt(attachmentDetail.getTranslationId()));
-		
-		this.physicalName = attachmentDetail.getPhysicalName();
-    	this.logicalName = attachmentDetail.getLogicalName();
-    	this.type = attachmentDetail.getType();
-    	this.creationDate = attachmentDetail.getCreationDate();
-    	this.size = attachmentDetail.getSize();
-    	this.author = attachmentDetail.getAuthor();
-    	this.title = attachmentDetail.getTitle();
-    	this.info = attachmentDetail.getInfo();
-    	this.instanceId = attachmentDetail.getPK().getInstanceId();
-    	this.xmlForm = attachmentDetail.getXmlForm();
-    }
-	
-    /**
-     * Constructor
-     * @author Nicolas EYSSERIC
-     * @version
-     */
-    public AttachmentDetailI18N(String lang, String physicalName, String logicalName, String type, Date creationDate, long size, String author, String title, String info, String instanceId)
-    {
-    	if (lang != null)
-			super.setLanguage(lang);
-    	
-    	this.physicalName = physicalName;
-    	this.logicalName = logicalName;
-    	this.type = type;
-    	this.creationDate = creationDate;
-    	this.size = size;
-    	this.author = author;
-    	this.title = title;
-    	this.info = info;
-    	this.instanceId = instanceId;
-    }
+public class AttachmentDetailI18N extends Translation implements Serializable {
+  private String physicalName = null;
+  private String logicalName = null;
+  private String type = null;
+  private Date creationDate;
+  private long size;
+  private String author = null;
+  private String title = null;
+  private String info = null;
+  private String instanceId = null;
+  private String xmlForm = null;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getPhysicalName()
-    {
-        return physicalName;
-    }
+  public AttachmentDetailI18N() {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param physicalName
-     *
-     * @see
-     */
-    public void setPhysicalName(String physicalName)
-    {
-        this.physicalName = physicalName;
-    }
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getLogicalName()
-    {
-        return logicalName;
-    }
+  public AttachmentDetailI18N(AttachmentDetail attachmentDetail) {
+    super.setLanguage(attachmentDetail.getLanguage());
+    super.setObjectId(attachmentDetail.getPK().getId());
+    if (attachmentDetail.getTranslationId() != null)
+      super.setId(Integer.parseInt(attachmentDetail.getTranslationId()));
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param logicalName
-     *
-     * @see
-     */
-    public void setLogicalName(String logicalName)
-    {
-		SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()", "root.MSG_GEN_PARAM_VALUE", "logicalName = "+logicalName);
-        this.logicalName = logicalName;
-    }
+    this.physicalName = attachmentDetail.getPhysicalName();
+    this.logicalName = attachmentDetail.getLogicalName();
+    this.type = attachmentDetail.getType();
+    this.creationDate = attachmentDetail.getCreationDate();
+    this.size = attachmentDetail.getSize();
+    this.author = attachmentDetail.getAuthor();
+    this.title = attachmentDetail.getTitle();
+    this.info = attachmentDetail.getInfo();
+    this.instanceId = attachmentDetail.getPK().getInstanceId();
+    this.xmlForm = attachmentDetail.getXmlForm();
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getType()
-    {
-        return type;
-    }
+  /**
+   * Constructor
+   * 
+   * @author Nicolas EYSSERIC
+   * @version
+   */
+  public AttachmentDetailI18N(String lang, String physicalName,
+      String logicalName, String type, Date creationDate, long size,
+      String author, String title, String info, String instanceId) {
+    if (lang != null)
+      super.setLanguage(lang);
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param type
-     *
-     * @see
-     */
-    public void setType(String type)
-    {
-        this.type = type;
-    }
+    this.physicalName = physicalName;
+    this.logicalName = logicalName;
+    this.type = type;
+    this.creationDate = creationDate;
+    this.size = size;
+    this.author = author;
+    this.title = title;
+    this.info = info;
+    this.instanceId = instanceId;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public long getSize()
-    {
-        return size;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getPhysicalName() {
+    return physicalName;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param size
-     *
-     * @see
-     */
-    public void setSize(long size)
-    {
-        this.size = size;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param physicalName
+   * 
+   * @see
+   */
+  public void setPhysicalName(String physicalName) {
+    this.physicalName = physicalName;
+  }
 
-	/**
-	 * Methode declaration
-	 *
-	 *
-	 * @see
-	 */
-	public Date getCreationDate()
-	{
-		return creationDate;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getLogicalName() {
+    return logicalName;
+  }
 
-	/**
-	 * Methode declaration
-	 *
-	 *
-	 * @param fileDate
-	 *
-	 * @see
-	 */
-	public void setCreationDate(Date creationDate)
-	{
-		this.creationDate = creationDate;
-	}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param logicalName
+   * 
+   * @see
+   */
+  public void setLogicalName(String logicalName) {
+    SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()",
+        "root.MSG_GEN_PARAM_VALUE", "logicalName = " + logicalName);
+    this.logicalName = logicalName;
+  }
 
-    public void setAuthor( String author )
-    {
-        this.author = author;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getType() {
+    return type;
+  }
 
-    public String getAuthor()
-    {
-        return this.author;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param type
+   * 
+   * @see
+   */
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setTitle(String title)
-    {
-        this.title = title;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public long getSize() {
+    return size;
+  }
 
-    public String getTitle()
-    {
-        return this.title;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param size
+   * 
+   * @see
+   */
+  public void setSize(long size) {
+    this.size = size;
+  }
 
-	public void setInfo(String info)
-    {
-        this.info = info;
-    }
+  /**
+   * Methode declaration
+   * 
+   * 
+   * @see
+   */
+  public Date getCreationDate() {
+    return creationDate;
+  }
 
-    public String getInfo()
-    {
-        return this.info;
-    }
+  /**
+   * Methode declaration
+   * 
+   * 
+   * @param fileDate
+   * 
+   * @see
+   */
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate;
+  }
 
-    public void setInstanceId(String instanceId)
-    {
-    	this.instanceId = instanceId;
-    }
-    
-    public String getInstanceId()
-    {
-    	return instanceId;
-    }
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-	public String getExtension()
-	{
-		return FileRepositoryManager.getFileExtension(logicalName);
-	}
-	
-	public String getXmlForm() {
-		return xmlForm;
-	}
+  public String getAuthor() {
+    return this.author;
+  }
 
-	public void setXmlForm(String xmlForm) {
-		this.xmlForm = xmlForm;
-	}
-	
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public boolean equals(Object arg0) {
-		if (arg0 == null)
-			return false;
-		if (arg0 instanceof AttachmentDetailI18N)
-		{
-			AttachmentDetailI18N a = (AttachmentDetailI18N) arg0;
-			return a.getId() == getId();
-		}
-		else
-			return false;
-	}
+  public String getTitle() {
+    return this.title;
+  }
+
+  public void setInfo(String info) {
+    this.info = info;
+  }
+
+  public String getInfo() {
+    return this.info;
+  }
+
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  public String getExtension() {
+    return FileRepositoryManager.getFileExtension(logicalName);
+  }
+
+  public String getXmlForm() {
+    return xmlForm;
+  }
+
+  public void setXmlForm(String xmlForm) {
+    this.xmlForm = xmlForm;
+  }
+
+  public boolean equals(Object arg0) {
+    if (arg0 == null)
+      return false;
+    if (arg0 instanceof AttachmentDetailI18N) {
+      AttachmentDetailI18N a = (AttachmentDetailI18N) arg0;
+      return a.getId() == getId();
+    } else
+      return false;
+  }
 }

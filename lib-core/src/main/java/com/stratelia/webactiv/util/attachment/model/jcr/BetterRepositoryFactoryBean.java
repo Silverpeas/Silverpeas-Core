@@ -34,9 +34,8 @@ import org.xml.sax.InputSource;
  * configuration files. Use this factory bean when you have to manually
  * configure the repository; for retrieving the repository from JNDI use the
  * JndiObjectFactoryBean {@link org.springframework.jndi.JndiObjectFactoryBean}.
- * Sample configuration :
- * <code>
- *&lt;bean id="repository" class="BetterRepositoryFactoryBean"&gt;
+ * Sample configuration : <code>
+ * &lt;bean id="repository" class="BetterRepositoryFactoryBean"&gt;
  * &lt;!-- normal factory beans params --&gt;
  *   &lt;property name="configuration" value="classpath:repository.xml" /&gt;
  *   &lt;property name="homeDir" value="file:///c:/tmp/jackrabbit" /&gt;
@@ -48,11 +47,11 @@ import org.xml.sax.InputSource;
  *   &lt;/property&gt;
  * &lt;/bean&gt;
  *</code>
- *
+ * 
  * @see org.springframework.jndi.JndiObjectFactoryBean
  * @author Costin Leau
  * @author Emmanuel Hugonnet
- *
+ * 
  */
 public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
@@ -124,9 +123,9 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
    * <code>${...}</code> sequence within the given value is replaced with the
    * value of the named parser variable. If a variable is not found in the
    * properties an IllegalArgumentException is thrown unless
-   * <code>ignoreMissing</code> is <code>true</code>. In the later case,
-   * the missing variable is not replaced.
-   *
+   * <code>ignoreMissing</code> is <code>true</code>. In the later case, the
+   * missing variable is not replaced.
+   * 
    * @param value
    *          the original value
    * @param ignoreMissing
@@ -170,7 +169,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
   /**
    * Shutdown method.
-   *
+   * 
    */
   public void destroy() throws Exception {
     // force cast (but use only the interface)
@@ -225,7 +224,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
   /**
    * Load all the configuration properties
-   *
+   * 
    * @return
    */
   protected Properties loadConfigurationKeys() {
@@ -247,7 +246,9 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
   /**
    * Load a Resource as a String.
-   * @param config the resource
+   * 
+   * @param config
+   *          the resource
    * @return the String filled with the content of the Resource
    * @throws IOException
    */

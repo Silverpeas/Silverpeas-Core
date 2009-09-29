@@ -7,7 +7,6 @@
 
 package com.silverpeas.util.clipboard;
 
-
 /*
  * CVS Informations
  * 
@@ -30,74 +29,71 @@ package com.silverpeas.util.clipboard;
  * 
  * @author
  */
-public class SKDException extends ClipboardException
-{
+public class SKDException extends ClipboardException {
 
-    /**
-     * --------------------------------------------------------------------------constructor
-     * constructor
-     */
-    public SKDException(String callingClass, int errorLevel, String message)
-    {
-        super(callingClass, errorLevel, message);
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * constructor constructor
+   */
+  public SKDException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * 
-     * @see
-     */
-    public SKDException(String callingClass, int errorLevel, String message, String extraParams)
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * 
+   * @see
+   */
+  public SKDException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param nested
-     * 
-     * @see
-     */
-    public SKDException(String callingClass, int errorLevel, String message, Exception nested)
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param nested
+   * 
+   * @see
+   */
+  public SKDException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param callingClass
-     * @param errorLevel
-     * @param message
-     * @param extraParams
-     * @param nested
-     * 
-     * @see
-     */
-    public SKDException(String callingClass, int errorLevel, String message, String extraParams, Exception nested)
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message
+   * @param extraParams
+   * @param nested
+   * 
+   * @see
+   */
+  public SKDException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 
-    /**
-     * --------------------------------------------------------------------------getModule
-     * getModule
-     */
-    public String getModule()
-    {
-        return "clipboard";
-    }
+  /**
+   * --------------------------------------------------------------------------
+   * getModule getModule
+   */
+  public String getModule() {
+    return "clipboard";
+  }
 
 }

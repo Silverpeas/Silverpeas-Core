@@ -5,8 +5,7 @@ import java.io.Reader;
 /**
  * A parser is used to retrieve the text content of a file.
  */
-public interface Parser
-{
+public interface Parser {
   /**
    * Returns a Reader giving only the text content of the file.
    */

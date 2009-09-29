@@ -26,7 +26,7 @@ public class BasicLoginModule implements LoginModule {
   }
 
   public boolean commit() throws LoginException {
-    if(isRoot) {
+    if (isRoot) {
       subject.getPrincipals().add(new SilverpeasSystemPrincipal());
     }
     return this.module.commit();
@@ -60,4 +60,3 @@ public class BasicLoginModule implements LoginModule {
   }
 
 }
-

@@ -7,39 +7,40 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
+ * 
  * @author sdevolder
  */
 public class NodeTreeType {
 
-	private String componentId;
-	private NodeDetail nodeDetail;
-	
-	/**
-	 * @return
-	 */
-	public String getComponentId() {
-		return componentId;
-	}
+  private String componentId;
+  private NodeDetail nodeDetail;
 
-	/**
-	 * @return
-	 */
-	public NodeDetail getNodeDetail() {
-		return nodeDetail;
-	}
+  /**
+   * @return
+   */
+  public String getComponentId() {
+    return componentId;
+  }
 
-	/**
-	 * @param string
-	 */
-	public void setComponentId(String string) {
-		componentId = string;
-	}
+  /**
+   * @return
+   */
+  public NodeDetail getNodeDetail() {
+    return nodeDetail;
+  }
 
-	/**
-	 * @param detail
-	 */
-	public void setNodeDetail(NodeDetail detail) {
-		nodeDetail = detail;
-	}
+  /**
+   * @param string
+   */
+  public void setComponentId(String string) {
+    componentId = string;
+  }
+
+  /**
+   * @param detail
+   */
+  public void setNodeDetail(NodeDetail detail) {
+    nodeDetail = detail;
+  }
 
 }

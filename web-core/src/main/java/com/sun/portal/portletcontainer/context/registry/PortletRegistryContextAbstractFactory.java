@@ -27,26 +27,30 @@ package com.sun.portal.portletcontainer.context.registry;
 import com.sun.portal.container.service.ServiceFinder;
 
 /**
- * PortletRegistryContextAbstractFactory is responsible to creating the PortletRegistryContextFactory
- * object.
+ * PortletRegistryContextAbstractFactory is responsible to creating the
+ * PortletRegistryContextFactory object.
  */
 public class PortletRegistryContextAbstractFactory {
-    
-    private PortletRegistryContextFactory portletRegistryContextFactory;
-    public PortletRegistryContextAbstractFactory() {
+
+  private PortletRegistryContextFactory portletRegistryContextFactory;
+
+  public PortletRegistryContextAbstractFactory() {
+  }
+
+  public PortletRegistryContextFactory getPortletRegistryContextFactory()
+      throws PortletRegistryException {
+    if (portletRegistryContextFactory == null) {
+      Object instance = null;
+      try {
+        instance = ServiceFinder
+            .getServiceImplementationInstance(PortletRegistryContextAbstractFactory.class
+                .getName());
+      } catch (Exception ex) {
+        throw new PortletRegistryException(ex);
+      }
+      portletRegistryContextFactory = (PortletRegistryContextFactory) instance;
     }
-    
-    public PortletRegistryContextFactory getPortletRegistryContextFactory() throws PortletRegistryException {
-        if(portletRegistryContextFactory == null) {
-            Object instance = null;
-            try {
-                instance = ServiceFinder.getServiceImplementationInstance(PortletRegistryContextAbstractFactory.class.getName());
-            } catch (Exception ex) {
-                throw new PortletRegistryException(ex);
-            }
-            portletRegistryContextFactory = (PortletRegistryContextFactory)instance;
-        }
-        return portletRegistryContextFactory;
-    }
-    
+    return portletRegistryContextFactory;
+  }
+
 }

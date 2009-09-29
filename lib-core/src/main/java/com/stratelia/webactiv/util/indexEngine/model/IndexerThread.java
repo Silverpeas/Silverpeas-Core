@@ -8,258 +8,234 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 /**
  * A thread IndexerThread index in the background a batch of index requests.
  * 
- * All the public methods are static, so only one thread runs and processes
- * the requests.
+ * All the public methods are static, so only one thread runs and processes the
+ * requests.
  */
-public class IndexerThread extends Thread
-{
+public class IndexerThread extends Thread {
 
-    /**
-     * Builds and starts the thread which will process all the requests.
-     * 
-     * This method is synchonized on the requests queue in order to guarantee
-     * that only one IndexerThread is running.
-     */
-    static public void start(IndexManager indexManager)
-    {
-        synchronized (requestList)
-        {
-            if (indexerThread == null)
-            {
-                SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_STARTS_INDEXER_THREAD");
-                indexerThread = new IndexerThread(indexManager);
-                indexerThread.start();
-            }
+  /**
+   * Builds and starts the thread which will process all the requests.
+   * 
+   * This method is synchonized on the requests queue in order to guarantee that
+   * only one IndexerThread is running.
+   */
+  static public void start(IndexManager indexManager) {
+    synchronized (requestList) {
+      if (indexerThread == null) {
+        SilverTrace.debug("indexEngine", "IndexerThread",
+            "indexEngine.INFO_STARTS_INDEXER_THREAD");
+        indexerThread = new IndexerThread(indexManager);
+        indexerThread.start();
+      }
+    }
+  }
+
+  /**
+   * Add a request 'add entry index'
+   */
+  static public void addIndexEntry(FullIndexEntry indexEntry) {
+    synchronized (requestList) {
+      SilverTrace.debug("indexEngine", "IndexerThread",
+          "indexEngine.INFO_ADDS_ADD_REQUEST", indexEntry.toString());
+      requestList.add(new AddIndexEntryRequest(indexEntry));
+      requestList.notify();
+    }
+  }
+
+  /**
+   * Add a request 'remove entry index'
+   */
+  static public void removeIndexEntry(IndexEntryPK indexEntry) {
+    synchronized (requestList) {
+      SilverTrace.debug("indexEngine", "IndexerThread",
+          "indexEngine.INFO_ADDS_REMOVE_REQUEST", indexEntry.toString());
+      requestList.add(new RemoveIndexEntryRequest(indexEntry));
+      requestList.notify();
+    }
+  }
+
+  /**
+   * Process all the requests.
+   * 
+   * When the queue is empty : sends an optimize query to the indexManager.
+   * 
+   * This method should be private but is already declared public in the base
+   * class Thread.
+   */
+  public void run() {
+    Request request = null;
+
+    while (true) {
+      /*
+       * First, all the requests are processed until the queue becomes empty.
+       */
+      do {
+        request = null;
+
+        synchronized (requestList) {
+          SilverTrace.debug("indexEngine", "IndexerThread",
+              "root.MSG_GEN_PARAM_VALUE", "# of items to index = "
+                  + requestList.size());
+          if (!requestList.isEmpty()) {
+            request = (Request) requestList.remove(0);
+          }
         }
-    }
 
-    /**
-     * Add a request 'add entry index'
-     */
-    static public void addIndexEntry(FullIndexEntry indexEntry)
-    {
-        synchronized (requestList)
-        {
-            SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_ADD_REQUEST", indexEntry.toString());
-            requestList.add(new AddIndexEntryRequest(indexEntry));
-            requestList.notify();
+        /*
+         * Each request is processed out of the synchronized block so the others
+         * threads (which put the requests) will not be blocked.
+         */
+        if (request != null) {
+          request.process(indexManager);
         }
-    }
 
-    /**
-     * Add a request 'remove entry index'
-     */
-    static public void removeIndexEntry(IndexEntryPK indexEntry)
-    {
-        synchronized (requestList)
-        {
-            SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_REMOVE_REQUEST", indexEntry.toString());
-            requestList.add(new RemoveIndexEntryRequest(indexEntry));
-            requestList.notify();
+      } while (request != null);
+
+      /**
+       * Then we optimize all the modified index.
+       */
+      indexManager.optimize();
+
+      /*
+       * Finally, unless a new request has been made while optimisation, we wait
+       * the notification of a new request to be processed.
+       */
+      try {
+        synchronized (requestList) {
+          if (requestList.isEmpty()) {
+            requestList.wait();
+          }
         }
+      } catch (InterruptedException e) {
+        SilverTrace.debug("indexEngine", "IndexerThread",
+            "indexEngine.INFO_INTERRUPTED_WHILE_WAITING");
+      }
     }
+  }
 
-    /**
-     * Process all the requests.
-     * 
-     * When the queue is empty : sends an optimize query to the indexManager.
-     * 
-     * This method should be private but is already declared public
-     * in the base class Thread.
-     */
-    public void run()
-    {
-        Request request = null;
+  /**
+   * The requests are stored in a shared list of Requests.
+   * 
+   * In order to guarantee serial access, all access will be synchronized on
+   * this list. Futhermore this list is used to synchronize the providers and
+   * the consumers of the list :
+   * 
+   * <PRE>
+   * // provider
+   * synchronized(requestList)
+   * {
+   * requestList.add(...);
+   * requestList.notify();
+   * }
+   * 
+   * // consumer
+   * synchronized(requestList)
+   * {
+   * requestList.wait();
+   * ... = requestList.remove(...);
+   * }
+   * </PRE>
+   */
+  static private final List requestList = new ArrayList();
 
-        while (true)
-        {
-            /*
-             * First, all the requests are processed
-             * until the queue becomes empty.
-             */
-            do
-            {
-                request = null;
+  /**
+   * All the requests are processed by a single background thread.
+   * 
+   * This thread is built and started by the start method.
+   */
+  static private IndexerThread indexerThread = null;
 
-                synchronized (requestList)
-                {
-                	SilverTrace.debug("indexEngine", "IndexerThread", "root.MSG_GEN_PARAM_VALUE", "# of items to index = "+requestList.size());
-                	if (!requestList.isEmpty())
-                    {
-                        request = (Request) requestList.remove(0);
-                    }
-                }
+  /**
+   * All the requests will be sent to the IndexManager indexManager.
+   */
+  private final IndexManager indexManager;
 
-                /*
-                 * Each request is processed out of the synchronized block
-                 * so the others threads (which put the requests) will not be blocked.
-                 */
-                if (request != null)
-                {
-                    request.process(indexManager);
-                }
-
-            }
-            while (request != null);
-
-            /**
-             * Then we optimize all the modified index.
-             */
-            indexManager.optimize();
-
-            /*
-             * Finally, unless a new request has been made while optimisation,
-             * we wait the notification of a new request to be processed.
-             */
-            try
-            {
-                synchronized (requestList)
-                {
-                    if (requestList.isEmpty())
-                    {
-                        requestList.wait();
-                    }
-                }
-            }
-            catch (InterruptedException e)
-            {
-                SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_INTERRUPTED_WHILE_WAITING");
-            }
-        }
-    }
-
-    /**
-     * The requests are stored in a shared list of Requests.
-     * 
-     * In order to guarantee serial access, all
-     * access will be synchronized on this list.
-     * Futhermore this list is used to synchronize
-     * the providers and the consumers of the list :
-     * 
-     * <PRE>
-     * // provider
-     * synchronized(requestList)
-     * {
-     * requestList.add(...);
-     * requestList.notify();
-     * }
-     * 
-     * // consumer
-     * synchronized(requestList)
-     * {
-     * requestList.wait();
-     * ... = requestList.remove(...);
-     * }
-     * </PRE>
-     */
-    static private final List    requestList = new ArrayList();
-
-    /**
-     * All the requests are processed by a single background thread.
-     * 
-     * This thread is built and started by the start method.
-     */
-    static private IndexerThread indexerThread = null;
-
-    /**
-     * All the requests will be sent to the IndexManager indexManager.
-     */
-    private final IndexManager   indexManager;
-
-    /**
-     * The constructor is private : only one IndexerThread will
-     * be created to process all the request.
-     */
-    private IndexerThread(IndexManager indexManager)
-    {
-        this.indexManager = indexManager;
-    }
+  /**
+   * The constructor is private : only one IndexerThread will be created to
+   * process all the request.
+   */
+  private IndexerThread(IndexManager indexManager) {
+    this.indexManager = indexManager;
+  }
 
 }
-
 
 /**
- * Each request must define a method called process which will
- * process the request with a given IndexManager.
+ * Each request must define a method called process which will process the
+ * request with a given IndexManager.
  */
-interface Request
-{
+interface Request {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param indexManager
-     *
-     */
-    public void process(IndexManager indexManager);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param indexManager
+   * 
+   */
+  public void process(IndexManager indexManager);
 }
-
 
 /**
  * An AddEntryIndex add an entry index.
  */
-class AddIndexEntryRequest implements Request
-{
+class AddIndexEntryRequest implements Request {
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param indexEntry
-     *
-     */
-    public AddIndexEntryRequest(FullIndexEntry indexEntry)
-    {
-        this.indexEntry = indexEntry;
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param indexEntry
+   * 
+   */
+  public AddIndexEntryRequest(FullIndexEntry indexEntry) {
+    this.indexEntry = indexEntry;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param indexManager
-     *
-     */
-    public void process(IndexManager indexManager)
-    {
-        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_PROCESS_ADD_REQUEST", indexEntry.toString());
-        indexManager.addIndexEntry(indexEntry);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param indexManager
+   * 
+   */
+  public void process(IndexManager indexManager) {
+    SilverTrace.debug("indexEngine", "IndexerThread",
+        "indexEngine.INFO_PROCESS_ADD_REQUEST", indexEntry.toString());
+    indexManager.addIndexEntry(indexEntry);
+  }
 
-    private final FullIndexEntry indexEntry;
+  private final FullIndexEntry indexEntry;
 }
 
 /**
  * A RemoveEntryIndex remove an entry index.
  */
-class RemoveIndexEntryRequest implements Request
-{
+class RemoveIndexEntryRequest implements Request {
 
-    /**
-     * Constructor declaration
-     *
-     *
-     * @param indexEntry
-     *
-     */
-    public RemoveIndexEntryRequest(IndexEntryPK indexEntry)
-    {
-        this.indexEntry = indexEntry;
-    }
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param indexEntry
+   * 
+   */
+  public RemoveIndexEntryRequest(IndexEntryPK indexEntry) {
+    this.indexEntry = indexEntry;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param indexManager
-     *
-     */
-    public void process(IndexManager indexManager)
-    {
-        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_PROCESS_REMOVE_REQUEST", indexEntry.toString());
-        indexManager.removeIndexEntry(indexEntry);
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param indexManager
+   * 
+   */
+  public void process(IndexManager indexManager) {
+    SilverTrace.debug("indexEngine", "IndexerThread",
+        "indexEngine.INFO_PROCESS_REMOVE_REQUEST", indexEntry.toString());
+    indexManager.removeIndexEntry(indexEntry);
+  }
 
-    private final IndexEntryPK indexEntry;
+  private final IndexEntryPK indexEntry;
 }

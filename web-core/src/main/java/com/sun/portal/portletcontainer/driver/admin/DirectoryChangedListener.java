@@ -4,5 +4,5 @@ import java.io.File;
 import java.util.EventListener;
 
 public interface DirectoryChangedListener extends EventListener {
-    public void fileAdded(File file);
+  public void fileAdded(File file);
 }

@@ -18,73 +18,72 @@ import org.xml.sax.SAXException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class WADOMUtil {
-	public static Document readDocument(String filename) throws IOException,
-			SAXException, ParserConfigurationException {
+  public static Document readDocument(String filename) throws IOException,
+      SAXException, ParserConfigurationException {
 
-		// if you are using the IBM parser, use the commented lines
+    // if you are using the IBM parser, use the commented lines
 
-		// Parser parser = new Parser(filename);
-		// InputStream input = new FileInputStream(filename);
-		// Document doc = parser.readStream(input);
-		// input.close();
-		// return doc;
+    // Parser parser = new Parser(filename);
+    // InputStream input = new FileInputStream(filename);
+    // Document doc = parser.readStream(input);
+    // input.close();
+    // return doc;
 
-		// if you are using the Sun parser, use these lines
-		DocumentBuilder domParser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		Document doc = domParser.parse(new FileInputStream(filename));
-		doc.getDocumentElement().normalize();
-		return doc;
+    // if you are using the Sun parser, use these lines
+    DocumentBuilder domParser = DocumentBuilderFactory.newInstance()
+        .newDocumentBuilder();
+    Document doc = domParser.parse(new FileInputStream(filename));
+    doc.getDocumentElement().normalize();
+    return doc;
 
-	}
+  }
 
-	public static Node findNode(Node node, String name) {
-		if (node.getNodeName().equals(name))
-			return node;
-		if (node.hasChildNodes()) {
-			NodeList list = node.getChildNodes();
-			int size = list.getLength();
-			for (int i = 0; i < size; i++) {
-				Node found = findNode(list.item(i), name);
-				if (found != null)
-					return found;
-			}
-		}
-		return null;
-	}
+  public static Node findNode(Node node, String name) {
+    if (node.getNodeName().equals(name))
+      return node;
+    if (node.hasChildNodes()) {
+      NodeList list = node.getChildNodes();
+      int size = list.getLength();
+      for (int i = 0; i < size; i++) {
+        Node found = findNode(list.item(i), name);
+        if (found != null)
+          return found;
+      }
+    }
+    return null;
+  }
 
-	public static String getNodeAttribute(Node node, String name) {
-		if (node instanceof Element) {
-			Element element = (Element) node;
-			return element.getAttribute(name);
-		}
-		return null;
-	}
+  public static String getNodeAttribute(Node node, String name) {
+    if (node instanceof Element) {
+      Element element = (Element) node;
+      return element.getAttribute(name);
+    }
+    return null;
+  }
 
-	public static void printSubtree(PrintWriter writer, Node root, Node node) {
-		if (node instanceof Element) {
-			if (node != root) {
-				writer.print("\n<" + node.getNodeName() + ">");
-				SilverTrace.info("admin", "WADOMUtil.printSubtree",
-						"msg.MSG_INFO_PRINT_SUBTREE", "<" + node.getNodeName()
-								+ ">");
-			}
-			if (node.hasChildNodes()) {
-				NodeList list = node.getChildNodes();
-				int size = list.getLength();
-				for (int i = 0; i < size; i++) {
-					printSubtree(writer, root, list.item(i));
-				}
-			}
-			if (node != root) {
-				writer.print("</" + node.getNodeName() + ">");
-				SilverTrace.info("admin", "WADOMUtil.printSubtree",
-						"msg.MSG_INFO_PRINT_SUBTREE", "<" + node.getNodeName()
-								+ ">");
-			}
-		} else if (node instanceof Text) {
-			writer.print(node.getNodeValue().trim());
-			SilverTrace.info("admin", "WADOMUtil.printSubtree",
-					"msg.MSG_INFO_PRINT_SUBTREE", node.getNodeValue().trim());
-		}
-	}
+  public static void printSubtree(PrintWriter writer, Node root, Node node) {
+    if (node instanceof Element) {
+      if (node != root) {
+        writer.print("\n<" + node.getNodeName() + ">");
+        SilverTrace.info("admin", "WADOMUtil.printSubtree",
+            "msg.MSG_INFO_PRINT_SUBTREE", "<" + node.getNodeName() + ">");
+      }
+      if (node.hasChildNodes()) {
+        NodeList list = node.getChildNodes();
+        int size = list.getLength();
+        for (int i = 0; i < size; i++) {
+          printSubtree(writer, root, list.item(i));
+        }
+      }
+      if (node != root) {
+        writer.print("</" + node.getNodeName() + ">");
+        SilverTrace.info("admin", "WADOMUtil.printSubtree",
+            "msg.MSG_INFO_PRINT_SUBTREE", "<" + node.getNodeName() + ">");
+      }
+    } else if (node instanceof Text) {
+      writer.print(node.getNodeValue().trim());
+      SilverTrace.info("admin", "WADOMUtil.printSubtree",
+          "msg.MSG_INFO_PRINT_SUBTREE", node.getNodeValue().trim());
+    }
+  }
 }

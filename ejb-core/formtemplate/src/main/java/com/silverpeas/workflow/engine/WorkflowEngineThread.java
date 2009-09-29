@@ -43,1202 +43,1174 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.external.ExternalAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-
 /**
- * A thread WorkflowEngineThread process in the background a batch of events sent to workflow
+ * A thread WorkflowEngineThread process in the background a batch of events
+ * sent to workflow
  * 
- * All the public methods are static, so only one thread runs and processes
- * the requests.
+ * All the public methods are static, so only one thread runs and processes the
+ * requests.
  */
-public class WorkflowEngineThread extends Thread
-{
+public class WorkflowEngineThread extends Thread {
 
-    /**
-     * Builds and starts the thread which will process all the requests.
-     * 
-     * This method is synchonized on the requests queue in order to guarantee
-     * that only one WorkflowEngineThread is running.
-     */
-    static public void starts()
-    {
-        synchronized (requestList)
-        {
-            if (wfEngineThread == null)
-            {
-                SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_STARTS_WORKFLOWENGINE_THREAD");
-                wfEngineThread = new WorkflowEngineThread();
-                wfEngineThread.start();
-            }
+  /**
+   * Builds and starts the thread which will process all the requests.
+   * 
+   * This method is synchonized on the requests queue in order to guarantee that
+   * only one WorkflowEngineThread is running.
+   */
+  static public void starts() {
+    synchronized (requestList) {
+      if (wfEngineThread == null) {
+        SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+            "workflowEngine.INFO_STARTS_WORKFLOWENGINE_THREAD");
+        wfEngineThread = new WorkflowEngineThread();
+        wfEngineThread.start();
+      }
+    }
+  }
+
+  /**
+   * Add a request 'TaskDoneEvent'
+   */
+  static public void addTaskDoneRequest(TaskDoneEvent event) {
+    synchronized (requestList) {
+      TaskDoneRequest request = new TaskDoneRequest(event);
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
+      requestList.add(request);
+      requestList.notify();
+    }
+  }
+
+  /**
+   * Add a request 'QuestionEvent'
+   */
+  static public void addQuestionRequest(QuestionEvent event) {
+    synchronized (requestList) {
+      QuestionRequest request = new QuestionRequest(event);
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
+      requestList.add(request);
+      requestList.notify();
+    }
+  }
+
+  /**
+   * Add a request 'ResponseEvent'
+   */
+  static public void addResponseRequest(ResponseEvent event) {
+    synchronized (requestList) {
+      ResponseRequest request = new ResponseRequest(event);
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
+      requestList.add(request);
+      requestList.notify();
+    }
+  }
+
+  /**
+   * Add a request 'TimeoutEvent'
+   */
+  static public void addTimeoutRequest(TimeoutEvent event) {
+    synchronized (requestList) {
+      TimeoutRequest request = new TimeoutRequest(event);
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
+      requestList.add(request);
+      requestList.notify();
+    }
+  }
+
+  /**
+   * Process all the requests.
+   * 
+   * This method should be private but is already declared public in the base
+   * class Thread.
+   */
+  public void run() {
+    Request request = null;
+
+    while (true) {
+
+      /*
+       * First, all the requests are processed until the queue becomes empty.
+       */
+      do {
+        request = null;
+
+        synchronized (requestList) {
+          if (!requestList.isEmpty()) {
+            request = (Request) requestList.remove(0);
+          }
         }
-    }
 
-    /**
-     * Add a request 'TaskDoneEvent'
-     */
-    static public void addTaskDoneRequest(TaskDoneEvent	event)
-    {
-        synchronized (requestList)
-        {
-			TaskDoneRequest request = new TaskDoneRequest(event);
-            SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-            requestList.add(request);
-            requestList.notify();
+        /*
+         * Each request is processed out of the synchronized block so the others
+         * threads (which put the requests) will not be blocked.
+         */
+        if (request != null) {
+          try {
+            request.process();
+          } catch (WorkflowException we) {
+            SilverTrace.error("workflowEngine", "WorkflowEngineThread",
+                "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request
+                    .toString(), we);
+          }
         }
-    }
 
-    /**
-     * Add a request 'QuestionEvent'
-     */
-    static public void addQuestionRequest(QuestionEvent	event)
-    {
-        synchronized (requestList)
-        {
-			QuestionRequest request = new QuestionRequest(event);
-            SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-            requestList.add(request);
-            requestList.notify();
+      } while (request != null);
+
+      /*
+       * Finally, we wait the notification of a new request to be processed.
+       */
+      try {
+        synchronized (requestList) {
+          if (requestList.isEmpty()) {
+            requestList.wait();
+          }
         }
+      } catch (InterruptedException e) {
+        SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+            "workflowEngine.INFO_INTERRUPTED_WHILE_WAITING");
+      }
     }
+  }
 
-    /**
-     * Add a request 'ResponseEvent'
-     */
-    static public void addResponseRequest(ResponseEvent	event)
-    {
-        synchronized (requestList)
-        {
-			ResponseRequest request = new ResponseRequest(event);
-            SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-            requestList.add(request);
-            requestList.notify();
-        }
-    }
+  /**
+   * The requests are stored in a shared list of Requests.
+   * 
+   * In order to guarantee serial access, all access will be synchronized on
+   * this list. Futhermore this list is used to synchronize the providers and
+   * the consumers of the list :
+   * 
+   * <PRE>
+   * // provider
+   * synchronized(requestList)
+   * {
+   * requestList.add(...);
+   * requestList.notify();
+   * }
+   * 
+   * // consumer
+   * synchronized(requestList)
+   * {
+   * requestList.wait();
+   * ... = requestList.remove(...);
+   * }
+   * </PRE>
+   */
+  static private final List requestList = new ArrayList();
 
-    /**
-     * Add a request 'TimeoutEvent'
-     */
-    static public void addTimeoutRequest(TimeoutEvent event)
-    {
-        synchronized (requestList)
-        {
-			TimeoutRequest request = new TimeoutRequest(event);
-            SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-            requestList.add(request);
-            requestList.notify();
-        }
-    }
+  /**
+   * All the requests are processed by a single background thread.
+   * 
+   * This thread is built and started by the start method.
+   */
+  static private WorkflowEngineThread wfEngineThread = null;
 
-	/**
-     * Process all the requests.
-     * 
-     * This method should be private but is already declared public
-     * in the base class Thread.
-     */
-    public void run()
-    {
-        Request request = null;
-
-        while (true)
-        {
-
-            /*
-             * First, all the requests are processed
-             * until the queue becomes empty.
-             */
-            do
-            {
-                request = null;
-
-                synchronized (requestList)
-                {
-                    if (!requestList.isEmpty())
-                    {
-                        request = (Request) requestList.remove(0);
-                    }
-                }
-
-                /*
-                 * Each request is processed out of the synchronized block
-                 * so the others threads (which put the requests) will not be blocked.
-                 */
-                if (request != null)
-                {
-					try
-					{
-	                    request.process();
-					}
-					catch (WorkflowException we)
-					{
-						SilverTrace.error("workflowEngine", "WorkflowEngineThread", "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request.toString(), we);
-					}
-                }
-
-            }
-            while (request != null);
-
-            /*
-             * Finally, we wait the notification of a new request to be processed.
-             */
-            try
-            {
-                synchronized (requestList)
-                {
-                    if (requestList.isEmpty())
-                    {
-                        requestList.wait();
-                    }
-                }
-            }
-            catch (InterruptedException e)
-            {
-                SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_INTERRUPTED_WHILE_WAITING");
-            }
-        }
-    }
-
-    /**
-     * The requests are stored in a shared list of Requests.
-     * 
-     * In order to guarantee serial access, all
-     * access will be synchronized on this list.
-     * Futhermore this list is used to synchronize
-     * the providers and the consumers of the list :
-     * 
-     * <PRE>
-     * // provider
-     * synchronized(requestList)
-     * {
-     * requestList.add(...);
-     * requestList.notify();
-     * }
-     * 
-     * // consumer
-     * synchronized(requestList)
-     * {
-     * requestList.wait();
-     * ... = requestList.remove(...);
-     * }
-     * </PRE>
-     */
-    static private final List    requestList = new ArrayList();
-
-    /**
-     * All the requests are processed by a single background thread.
-     * 
-     * This thread is built and started by the start method.
-     */
-    static private WorkflowEngineThread wfEngineThread = null;
-
-    /**
-     * The constructor is private : only one WorkflowEngineThread will
-     * be created to process all the request.
-     */
-    private WorkflowEngineThread()
-    {
-    }
+  /**
+   * The constructor is private : only one WorkflowEngineThread will be created
+   * to process all the request.
+   */
+  private WorkflowEngineThread() {
+  }
 }
 
 /**
- * Each request must define a method called process which will
- * process the request with a given WorkflowEngine.
+ * Each request must define a method called process which will process the
+ * request with a given WorkflowEngine.
  */
-interface Request
-{
+interface Request {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param wfEngine
-     *
-     */
-    public void process() throws WorkflowException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param wfEngine
+   * 
+   */
+  public void process() throws WorkflowException;
 }
-
 
 /**
  * A TaskDone indicates the workflow engine that a task has been done
  */
-class TaskDoneRequest implements Request
-{
+class TaskDoneRequest implements Request {
 
-    /**
-     * Constructor declaration
-     */
-    public TaskDoneRequest(TaskDoneEvent event)
-    {
-        this.event = event;
+  /**
+   * Constructor declaration
+   */
+  public TaskDoneRequest(TaskDoneEvent event) {
+    this.event = event;
+  }
+
+  /**
+   * Method declaration
+   */
+  public void process() throws WorkflowException {
+    SilverTrace.info("workflowEngine", "workflowEngineThread",
+        "workflowEngine.INFO_PROCESS_ADD_TASKDONE_REQUEST", event.toString());
+
+    // Get the process instance
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
+        .getProcessInstance();
+    ProcessInstanceManager instanceManager = WorkflowHub
+        .getProcessInstanceManager();
+    Database db = null;
+    UpdatableHistoryStep step = null;
+
+    try {
+      // Get database connection
+      db = WorkflowJDOManager.getDatabase();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // first create the history step
+      try {
+        step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+        step.setUserId(event.getUser().getUserId());
+        step.setAction(event.getActionName());
+        step.setActionDate(event.getActionDate());
+        step.setUserRoleName(event.getUserRoleName());
+        if (event.getResolvedState() != null)
+          step.setResolvedState(event.getResolvedState().getName());
+        step.setActionStatus(0); // To be processed
+
+        // add the new step to the processInstance
+        instance.addHistoryStep(step);
+      } catch (WorkflowException we) {
+        db.rollback();
+        WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // Do workflow stuff
+      try {
+        boolean removeInstance = processEvent(instance, step.getId());
+        if (removeInstance) {
+          // remove data associated to forms and tasks
+          ((ProcessInstanceManagerImpl) instanceManager)
+              .removeProcessInstanceData(instance);
+
+          // remove instance itself
+          db.remove(instance);
+
+          // remove errors
+          WorkflowHub.getErrorManager().removeErrorsOfInstance(
+              instance.getInstanceId());
+        }
+      } catch (WorkflowException we) {
+        db.rollback();
+        WorkflowHub.getErrorManager().saveError(instance, event,
+            (HistoryStep) step, we);
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+    } catch (PersistenceException pe) {
+      WorkflowHub.getErrorManager().saveError(instance, event,
+          (HistoryStep) step, pe);
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
+    } finally {
+      WorkflowJDOManager.closeDatabase(db);
+    }
+  }
+
+  /**
+   * Method declaration
+   */
+  private boolean processEvent(UpdatableProcessInstance instance, String stepId)
+      throws WorkflowException {
+    // Get the process instance and process model associated to this event
+    event.getProcessModel();
+    WorkflowHub.getProcessInstanceManager();
+
+    UpdatableHistoryStep step = (UpdatableHistoryStep) instance
+        .getHistoryStep(stepId);
+    instance.updateHistoryStep(step); // only to set the current step of
+    // instance to that step
+
+    // Remove user from locking users
+    if (event.getResolvedState() != null) {
+      instance.unLock(event.getResolvedState(), event.getUser());
     }
 
-    /**
-     * Method declaration
-     */
-    public void process() throws WorkflowException
-    {
-		SilverTrace.info("workflowEngine", "workflowEngineThread", "workflowEngine.INFO_PROCESS_ADD_TASKDONE_REQUEST", event.toString());
+    if (WorkflowTools.processAction(instance, event, step, true))
+      return true;
 
-		// Get the process instance
-		UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
-		ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-		Database db = null;
-		UpdatableHistoryStep step = null;
+    // unlock process instance
+    instance.unLock();
 
-		try
-		{
-			// Get database connection
-			db = WorkflowJDOManager.getDatabase();
+    return false;
+  }
 
-			// begin transaction
-			db.begin();
-
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-			// first create the history step
-			try
-			{
-				step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-				step.setUserId(event.getUser().getUserId());
-				step.setAction(event.getActionName());
-				step.setActionDate(event.getActionDate());
-				step.setUserRoleName(event.getUserRoleName());
-				if (event.getResolvedState() != null)
-					step.setResolvedState(event.getResolvedState().getName());
-				step.setActionStatus(0); // To be processed
-
-				// add the new step to the processInstance
-				instance.addHistoryStep(step);
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-				WorkflowHub.getErrorManager().saveError(instance, event, null, we);
-
-				// begin transaction
-				db.begin();
-
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-				// set errorStatus to true
-				instance.setErrorStatus(true);
-
-				// begin transaction
-				db.commit();
-
-				throw new WorkflowException("WorkflowEngineThread.process", "EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-			
-			// begin transaction
-			db.begin();
-
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-			// Do workflow stuff
-			try
-			{
-				boolean removeInstance = processEvent(instance, step.getId());
-				if (removeInstance)
-				{
-					//remove data associated to forms and tasks
-					((ProcessInstanceManagerImpl) instanceManager).removeProcessInstanceData(instance);
-					
-					//remove instance itself
-					db.remove(instance);
-					
-					//remove errors
-					WorkflowHub.getErrorManager().removeErrorsOfInstance(instance.getInstanceId());
-				}
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-				WorkflowHub.getErrorManager().saveError(instance, event, (HistoryStep) step, we);
-
-				// begin transaction
-				db.begin();
-
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-				// set errorStatus to true
-				instance.setErrorStatus(true);
-
-				// begin transaction
-				db.commit();
-				
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-		}
-		catch (PersistenceException pe)
-		{
-			WorkflowHub.getErrorManager().saveError(instance, event, (HistoryStep) step, pe);
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
-		}
-		finally
-		{
-			WorkflowJDOManager.closeDatabase(db);
-		}
-	}
-
-    /**
-     * Method declaration
-     */
-	private boolean processEvent(UpdatableProcessInstance instance, String stepId) throws WorkflowException
-	{
-		// Get the process instance and process model associated to this event
-		event.getProcessModel();
-		WorkflowHub.getProcessInstanceManager();
-
-		UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
-		instance.updateHistoryStep(step); // only to set the current step of instance to that step
-
-		// Remove user from locking users
-		if (event.getResolvedState() != null)
-		{
-			instance.unLock(event.getResolvedState(), event.getUser());
-		}
-
-		if ( WorkflowTools.processAction(instance, event, step, true) )
-			return true;
-
-		// unlock process instance
-		instance.unLock();
-
-		return false;
-	}
-
-	private final TaskDoneEvent event;
+  private final TaskDoneEvent event;
 }
 
 /**
- * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent actor/activity
+ * A QuestionRequest indicates the workflow engine that a user ask a back to a
+ * precedent actor/activity
  */
-class QuestionRequest implements Request
-{
+class QuestionRequest implements Request {
 
-    /**
-     * Constructor declaration
-     */
-    public QuestionRequest(QuestionEvent event)
-    {
-        this.event = event;
+  /**
+   * Constructor declaration
+   */
+  public QuestionRequest(QuestionEvent event) {
+    this.event = event;
+  }
+
+  /**
+   * Method declaration
+   */
+  public void process() throws WorkflowException {
+    SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+        "workflowEngine.INFO_PROCESS_QUESTION_REQUEST");
+
+    // Get the process instance
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
+        .getProcessInstance();
+    ProcessInstanceManager instanceManager = WorkflowHub
+        .getProcessInstanceManager();
+    Database db = null;
+    UpdatableHistoryStep step = null;
+
+    try {
+      // Get database connection
+      db = WorkflowJDOManager.getDatabase();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // first create the history step
+      try {
+        step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+        step.setUserId(event.getUser().getUserId());
+        step.setAction("#question#");
+        step.setActionDate(event.getActionDate());
+        step.setUserRoleName(event.getUserRoleName());
+        step.setResolvedState(event.getResolvedState().getName());
+        step.setActionStatus(0); // To be processed
+
+        // add the new step to the processInstance
+        instance.addHistoryStep(step);
+      } catch (WorkflowException we) {
+        db.rollback();
+        WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // Do workflow stuff
+      try {
+        processEvent(instance, step.getId());
+      } catch (WorkflowException we) {
+        db.rollback();
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+    } catch (PersistenceException pe) {
+      WorkflowHub.getErrorManager().saveError(instance, event,
+          (HistoryStep) step, pe);
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
+    } finally {
+      WorkflowJDOManager.closeDatabase(db);
     }
+  }
 
-    /**
-     * Method declaration
-     */
-    public void process() throws WorkflowException
-    {
-		SilverTrace.info("workflowEngine", "WorkflowEngineThread", "workflowEngine.INFO_PROCESS_QUESTION_REQUEST");
+  /**
+   * Method declaration
+   */
+  private void processEvent(UpdatableProcessInstance instance, String stepId)
+      throws WorkflowException {
+    // Get the process instance manager
+    WorkflowHub.getProcessInstanceManager();
 
-		// Get the process instance
-		UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
-		ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-		Database db = null;
-		UpdatableHistoryStep step = null;
+    // Create a history step for the question
+    UpdatableHistoryStep step = (UpdatableHistoryStep) instance
+        .getHistoryStep(stepId);
+    instance.updateHistoryStep(step); // only to set the current step of
+    // instance to that step
 
-		try
-		{
-			// Get database connection
-			db = WorkflowJDOManager.getDatabase();
+    // add the question
+    String question = null;
+    try {
+      question = (String) event.getDataRecord().getField("Content")
+          .getObjectValue();
+    } catch (FormException fe) {
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EXP_UNKNOWN_ITEM", fe);
+    }
+    State state = instance.addQuestion(question, event.getStepId(), event
+        .getResolvedState(), event.getUser());
 
-			// begin transaction
-			db.begin();
+    // add the state that is discussed in the list of active states
+    instance.addActiveState(state);
 
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
+    // change the action status of the step
+    step.setActionStatus(1); // Processed
+    instance.updateHistoryStep(step);
 
-			// first create the history step
-			try
-			{
-				step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-				step.setUserId(event.getUser().getUserId());
-				step.setAction("#question#");
-				step.setActionDate(event.getActionDate());
-				step.setUserRoleName(event.getUserRoleName());
-				step.setResolvedState(event.getResolvedState().getName());
-				step.setActionStatus(0); // To be processed
+    // get the last participant for the discussed state
+    Participant participant = instance.getParticipant(state.getName());
 
-				// add the new step to the processInstance
-				instance.addHistoryStep(step);
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-				WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+    // Get the task manager
+    TaskManager taskManager = WorkflowHub.getTaskManager();
 
-				// begin transaction
-				db.begin();
+    // Assign task to this participant
+    Task task = taskManager.createTask((Actor) participant, instance);
+    taskManager.assignTask(task);
 
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
+    // Declare this user as a working user in instance
+    instance.addWorkingUser(participant.getUser(), state, participant
+        .getUserRoleName());
 
-				// set errorStatus to true
-				instance.setErrorStatus(true);
+    // change the action status of the step
+    step.setActionStatus(2); // Affectations done
+    instance.updateHistoryStep(step);
 
-				// begin transaction
-				db.commit();
+    // unlock process instance
+    instance.unLock();
+  }
 
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-			
-			// begin transaction
-			db.begin();
-
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-			// Do workflow stuff
-			try
-			{
-				processEvent(instance, step.getId());
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-
-				// begin transaction
-				db.begin();
-
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-				// set errorStatus to true
-				instance.setErrorStatus(true);
-
-				// begin transaction
-				db.commit();
-
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-		}
-		catch (PersistenceException pe)
-		{
-			WorkflowHub.getErrorManager().saveError(instance, event, (HistoryStep) step, pe);
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
-		}
-		finally
-		{
-			WorkflowJDOManager.closeDatabase(db);
-		}
-	}
-		
-    /**
-     * Method declaration
-     */
-    private void processEvent(UpdatableProcessInstance instance, String stepId) throws WorkflowException
-	{		
-		// Get the process instance manager
-		WorkflowHub.getProcessInstanceManager();
-
-		// Create a history step for the question
-		UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
-		instance.updateHistoryStep(step); // only to set the current step of instance to that step
-
-		// add the question
-		String question = null;
-		try
-		{
-			question = (String) event.getDataRecord().getField("Content").getObjectValue();
-		}
-		catch (FormException fe)
-		{
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EXP_UNKNOWN_ITEM", fe);
-		}
-		State state = instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.getUser());
-
-		// add the state that is discussed in the list of active states
-		instance.addActiveState( state );
-
-		// change the action status of the step
-		step.setActionStatus(1); // Processed
-		instance.updateHistoryStep(step);
-
-		// get the last participant for the discussed state
-		Participant participant = instance.getParticipant(state.getName());
-
-		// Get the task manager
-		TaskManager taskManager = WorkflowHub.getTaskManager();
-
-		// Assign task to this participant
-		Task task = taskManager.createTask((Actor) participant, instance);
-		taskManager.assignTask(task);
-
-		// Declare this user as a working user in instance
-		instance.addWorkingUser(participant.getUser(), state, participant.getUserRoleName());
-
-		// change the action status of the step
-		step.setActionStatus(2); // Affectations done
-		instance.updateHistoryStep(step);
-
-		// unlock process instance
-		instance.unLock();
-	}
-
-	private final QuestionEvent event;
+  private final QuestionEvent event;
 }
 
 /**
- * A ResponseRequest indicates the workflow engine that a user answer a question to an user who had requested a back to a precedent actor/activity
+ * A ResponseRequest indicates the workflow engine that a user answer a question
+ * to an user who had requested a back to a precedent actor/activity
  */
-class ResponseRequest implements Request
-{
-    /**
-     * Constructor declaration
-     */
-    public ResponseRequest(ResponseEvent event)
-    {
-        this.event = event;
+class ResponseRequest implements Request {
+  /**
+   * Constructor declaration
+   */
+  public ResponseRequest(ResponseEvent event) {
+    this.event = event;
+  }
+
+  /**
+   * Method declaration
+   */
+  public void process() throws WorkflowException {
+    SilverTrace.info("indexEngine", "IndexerThread",
+        "workflowEngine.INFO_PROCESS_RESPONSE_REQUEST", event.toString());
+
+    // Get the process instance
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
+        .getProcessInstance();
+    ProcessInstanceManager instanceManager = WorkflowHub
+        .getProcessInstanceManager();
+    Database db = null;
+    UpdatableHistoryStep step = null;
+
+    try {
+      // Get database connection
+      db = WorkflowJDOManager.getDatabase();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // first create the history step
+      try {
+        step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+        step.setUserId(event.getUser().getUserId());
+        step.setAction("#response#");
+        step.setActionDate(event.getActionDate());
+        step.setUserRoleName(event.getUserRoleName());
+        step.setResolvedState(event.getResolvedState().getName());
+        step.setActionStatus(0); // To be processed
+
+        // add the new step to the processInstance
+        instance.addHistoryStep(step);
+      } catch (WorkflowException we) {
+        db.rollback();
+        WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // Do workflow stuff
+      try {
+        processEvent(instance, step.getId());
+      } catch (WorkflowException we) {
+        db.rollback();
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+    } catch (PersistenceException pe) {
+      WorkflowHub.getErrorManager().saveError(instance, event,
+          (HistoryStep) step, pe);
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
+    } finally {
+      WorkflowJDOManager.closeDatabase(db);
     }
+  }
 
-    /**
-     * Method declaration
-     */
-    public void process() throws WorkflowException
-    {
-		SilverTrace.info("indexEngine", "IndexerThread", "workflowEngine.INFO_PROCESS_RESPONSE_REQUEST", event.toString());
+  /**
+   * Method declaration
+   */
+  private void processEvent(UpdatableProcessInstance instance, String stepId)
+      throws WorkflowException {
+    // Get the process instance and process model associated to this event
+    WorkflowHub.getProcessInstanceManager();
 
-		// Get the process instance
-		UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
-		ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-		Database db = null;
-		UpdatableHistoryStep step = null;
+    // get the history step
+    UpdatableHistoryStep step = (UpdatableHistoryStep) instance
+        .getHistoryStep(stepId);
+    instance.updateHistoryStep(step); // only to set the current step of
+    // instance to that step
 
-		try
-		{
-			// Get database connection
-			db = WorkflowJDOManager.getDatabase();
+    // add the answer
+    String answer = null;
+    try {
+      answer = (String) event.getDataRecord().getField("Content")
+          .getObjectValue();
+    } catch (FormException fe) {
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EXP_UNKNOWN_ITEM", fe);
+    }
+    State state = instance.answerQuestion(answer, event.getQuestionId());
 
-			// begin transaction
-			db.begin();
+    // remove the state that was discussed from the list of active states
+    instance.removeActiveState(event.getResolvedState());
 
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
+    // change the action status of the step
+    step.setActionStatus(1); // Processed
+    instance.updateHistoryStep(step);
 
-			// first create the history step
-			try
-			{
-				step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-				step.setUserId(event.getUser().getUserId());
-				step.setAction("#response#");
-				step.setActionDate(event.getActionDate());
-				step.setUserRoleName(event.getUserRoleName());
-				step.setResolvedState(event.getResolvedState().getName());
-				step.setActionStatus(0); // To be processed
+    // get the last participant for the discussed state
+    Participant participant = instance.getParticipant(state.getName());
 
+    // Get the task manager
+    TaskManager taskManager = WorkflowHub.getTaskManager();
 
-				// add the new step to the processInstance
-				instance.addHistoryStep(step);
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-				WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+    // Unassign task to this participant
+    Task task = taskManager.createTask((Actor) participant, instance);
+    taskManager.unAssignTask(task);
 
-				// begin transaction
-				db.begin();
+    // Remove this user of working user list
+    instance.removeWorkingUser(participant.getUser(), state, participant
+        .getUserRoleName());
 
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
+    // change the action status of the step
+    step.setActionStatus(2); // Affectations done
+    instance.updateHistoryStep(step);
 
-				// set errorStatus to true
-				instance.setErrorStatus(true);
+    // unlock process instance
+    instance.unLock();
+  }
 
-				// begin transaction
-				db.commit();
-
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-			
-			// begin transaction
-			db.begin();
-
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-			// Do workflow stuff
-			try
-			{
-				processEvent(instance, step.getId());
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-
-				// begin transaction
-				db.begin();
-
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-				// set errorStatus to true
-				instance.setErrorStatus(true);
-
-				// begin transaction
-				db.commit();
-
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-		}
-		catch (PersistenceException pe)
-		{
-			WorkflowHub.getErrorManager().saveError(instance, event, (HistoryStep) step, pe);
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", pe);
-		}
-		finally
-		{
-			WorkflowJDOManager.closeDatabase(db);
-		}
-	}
-		
-    /**
-     * Method declaration
-     */
-    private void processEvent(UpdatableProcessInstance instance, String stepId) throws WorkflowException
-	{		
-		// Get the process instance and process model associated to this event
-		WorkflowHub.getProcessInstanceManager();
-
-		// get the history step
-		UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
-		instance.updateHistoryStep(step); // only to set the current step of instance to that step
-
-		// add the answer
-		String answer = null;
-		try
-		{
-			answer = (String) event.getDataRecord().getField("Content").getObjectValue();
-		}
-		catch (FormException fe)
-		{
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EXP_UNKNOWN_ITEM", fe);
-		}
-		State state = instance.answerQuestion(answer, event.getQuestionId());
-
-		// remove the state that was discussed from the list of active states
-		instance.removeActiveState( event.getResolvedState() );
-
-		// change the action status of the step
-		step.setActionStatus(1); // Processed
-		instance.updateHistoryStep(step);
-
-		// get the last participant for the discussed state
-		Participant participant = instance.getParticipant(state.getName());
-
-		// Get the task manager
-		TaskManager taskManager = WorkflowHub.getTaskManager();
-
-		// Unassign task to this participant
-		Task task = taskManager.createTask((Actor) participant, instance);
-		taskManager.unAssignTask(task);
-
-		// Remove this user of working user list
-		instance.removeWorkingUser(participant.getUser(), state, participant.getUserRoleName());
-
-		// change the action status of the step
-		step.setActionStatus(2); // Affectations done
-		instance.updateHistoryStep(step);
-
-		// unlock process instance
-		instance.unLock();
-	}
-
-	private final ResponseEvent event;
+  private final ResponseEvent event;
 }
 
 /**
- * A TimeoutRequest indicates the workflow engine 
- * that an instance is in an active state since a too long period
+ * A TimeoutRequest indicates the workflow engine that an instance is in an
+ * active state since a too long period
  */
-class TimeoutRequest implements Request
-{
-    /**
-     * Constructor declaration
-     */
-    public TimeoutRequest(TimeoutEvent event)
-    {
-        this.event = event;
+class TimeoutRequest implements Request {
+  /**
+   * Constructor declaration
+   */
+  public TimeoutRequest(TimeoutEvent event) {
+    this.event = event;
+  }
+
+  /**
+   * Method declaration
+   */
+  public void process() throws WorkflowException {
+    SilverTrace.info("indexEngine", "IndexerThread",
+        "workflowEngine.INFO_PROCESS_TIMEOUT_REQUEST", event.toString());
+
+    // Get the process instance
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
+        .getProcessInstance();
+    ProcessInstanceManager instanceManager = WorkflowHub
+        .getProcessInstanceManager();
+    Database db = null;
+    UpdatableHistoryStep step = null;
+
+    try {
+      // Get database connection
+      db = WorkflowJDOManager.getDatabase();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // first create the history step
+      try {
+        step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+        step.setAction(event.getActionName());
+        step.setActionDate(new Date());
+        step.setUserRoleName("supervisor");
+        step.setResolvedState(event.getResolvedState().getName());
+        step.setActionStatus(0); // To be processed
+
+        // add the new step to the processInstance
+        instance.addHistoryStep(step);
+      } catch (WorkflowException we) {
+        db.rollback();
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // Do workflow stuff
+      try {
+        boolean removeInstance = processEvent(instance, step.getId());
+        if (removeInstance)
+          db.remove(instance);
+      } catch (WorkflowException we) {
+        db.rollback();
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TIMEOUT_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+    } catch (PersistenceException pe) {
+      WorkflowHub.getErrorManager().saveError(instance, event,
+          (HistoryStep) step, pe);
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EX_ERR_PROCESS_ADD_TIMEOUT_REQUEST", pe);
+    } finally {
+      WorkflowJDOManager.closeDatabase(db);
     }
+  }
 
-    /**
-     * Method declaration
-     */
-    public void process() throws WorkflowException
-    {
-		SilverTrace.info("indexEngine", "IndexerThread", "workflowEngine.INFO_PROCESS_TIMEOUT_REQUEST", event.toString());
+  /**
+   * Method declaration
+   */
+  private boolean processEvent(UpdatableProcessInstance instance, String stepId)
+      throws WorkflowException {
+    // Get the process instance and process model associated to this event
+    WorkflowHub.getProcessInstanceManager();
 
-		// Get the process instance
-		UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
-		ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-		Database db = null;
-		UpdatableHistoryStep step = null;
+    // get the history step
+    UpdatableHistoryStep step = (UpdatableHistoryStep) instance
+        .getHistoryStep(stepId);
+    instance.updateHistoryStep(step); // only to set the current step of
+    // instance to that step
 
-		try
-		{
-			// Get database connection
-			db = WorkflowJDOManager.getDatabase();
+    // set timeout status on given state
+    instance.addTimeout(event.getResolvedState());
 
-			// begin transaction
-			db.begin();
+    // process Action
+    return WorkflowTools.processAction(instance, event, step, false);
+  }
 
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-			// first create the history step
-			try
-			{
-				step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-				step.setAction(event.getActionName());
-				step.setActionDate(new Date());
-				step.setUserRoleName("supervisor");
-				step.setResolvedState(event.getResolvedState().getName());
-				step.setActionStatus(0); // To be processed
-
-				// add the new step to the processInstance
-				instance.addHistoryStep(step);
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-			
-			// begin transaction
-			db.begin();
-
-			// Re-load process instance 
-			instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-			// Do workflow stuff
-			try
-			{
-				boolean removeInstance = processEvent(instance, step.getId());
-				if (removeInstance)
-					db.remove(instance);
-			}
-			catch (WorkflowException we)
-			{
-				db.rollback();
-
-				// begin transaction
-				db.begin();
-
-				// Re-load process instance 
-				instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-				// set errorStatus to true
-				instance.setErrorStatus(true);
-
-				// begin transaction
-				db.commit();
-
-				throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TIMEOUT_REQUEST", we);
-			}
-
-			// commit
-			db.commit();
-		}
-		catch (PersistenceException pe)
-		{
-			WorkflowHub.getErrorManager().saveError(instance, event, (HistoryStep) step, pe);
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_ADD_TIMEOUT_REQUEST", pe);
-		}
-		finally
-		{
-			WorkflowJDOManager.closeDatabase(db);
-		}
-	}
-		
-    /**
-     * Method declaration
-     */
-    private boolean processEvent(UpdatableProcessInstance instance, String stepId) throws WorkflowException
-	{		
-		// Get the process instance and process model associated to this event
-		WorkflowHub.getProcessInstanceManager();
-
-		// get the history step
-		UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
-		instance.updateHistoryStep(step); // only to set the current step of instance to that step
-
-		// set timeout status on given state
-		instance.addTimeout(event.getResolvedState());
-
-		// process Action
-		return WorkflowTools.processAction(instance, event, step, false);		
-	}
-
-	private final TimeoutEvent event;
+  private final TimeoutEvent event;
 }
 
 /**
- * A TimeoutRequest indicates the workflow engine 
- * that an instance is in an active state since a too long period
+ * A TimeoutRequest indicates the workflow engine that an instance is in an
+ * active state since a too long period
  */
-class WorkflowTools
-{
+class WorkflowTools {
 
-	/**
-	 * Compute the new active states and updates affections
-	 * @param	event	the task done event
-	 */
-	public static boolean processAction(UpdatableProcessInstance instance, GenericEvent event, UpdatableHistoryStep step, boolean unactivateResolvedState) throws WorkflowException
-	{
-		// Get the process model
-		ProcessModel model = instance.getProcessModel();
+  /**
+   * Compute the new active states and updates affections
+   * 
+   * @param event
+   *          the task done event
+   */
+  public static boolean processAction(UpdatableProcessInstance instance,
+      GenericEvent event, UpdatableHistoryStep step,
+      boolean unactivateResolvedState) throws WorkflowException {
+    // Get the process model
+    ProcessModel model = instance.getProcessModel();
 
-		// Get the task manager
-		TaskManager taskManager = WorkflowHub.getTaskManager();
+    // Get the task manager
+    TaskManager taskManager = WorkflowHub.getTaskManager();
 
-		// Get the user manager
-		UserManager userManager = WorkflowHub.getUserManager();
-		
-		// All active states must be eligible
-		String[] states = instance.getActiveStates();
-		String resolvedStateName = (event.getResolvedState()==null) ? "" : event.getResolvedState().getName();
-		boolean backStatus = (event.getResolvedState()==null) ? false : instance.isStateInBackStatus(resolvedStateName);
-		Hashtable oldActiveStates = new Hashtable();
-		Hashtable eligibleStates = new Hashtable();
+    // Get the user manager
+    UserManager userManager = WorkflowHub.getUserManager();
 
-		// Check for actions "redone"
-		for (int i=0; backStatus && i<states.length; i++)
-		{
-			if (states[i].equals(resolvedStateName))
-				instance.reDoState(resolvedStateName, event.getActionDate());
-		}		
+    // All active states must be eligible
+    String[] states = instance.getActiveStates();
+    String resolvedStateName = (event.getResolvedState() == null) ? "" : event
+        .getResolvedState().getName();
+    boolean backStatus = (event.getResolvedState() == null) ? false : instance
+        .isStateInBackStatus(resolvedStateName);
+    Hashtable oldActiveStates = new Hashtable();
+    Hashtable eligibleStates = new Hashtable();
 
-		// Check for questions with no response sent from the resolved state
-		checkQuestions(instance, resolvedStateName);
+    // Check for actions "redone"
+    for (int i = 0; backStatus && i < states.length; i++) {
+      if (states[i].equals(resolvedStateName))
+        instance.reDoState(resolvedStateName, event.getActionDate());
+    }
 
-		// Compute eligibility for states
-		states = instance.getActiveStates();
-		for (int i=0; i<states.length; i++)
-		{
-			eligibleStates.put(states[i], states[i]);
-			oldActiveStates.put(states[i], states[i]);
-		}
+    // Check for questions with no response sent from the resolved state
+    checkQuestions(instance, resolvedStateName);
 
-		Consequence consequence = null;
-		try
-		{
-			// Saving data of step and process instance
-			if (event.getDataRecord() != null)
-				instance.saveActionRecord(step, event.getDataRecord());
+    // Compute eligibility for states
+    states = instance.getActiveStates();
+    for (int i = 0; i < states.length; i++) {
+      eligibleStates.put(states[i], states[i]);
+      oldActiveStates.put(states[i], states[i]);
+    }
 
- 			// removes eligibility of resolved state 
-			// and removes the resolved state from active state list
-			if (unactivateResolvedState && event.getResolvedState() != null)
-			{
-				eligibleStates.remove(event.getResolvedState().getName());
-			}
-			
-			//remove eventual timeOut flag
-			/*if (event.getResolvedState() != null)
-			{
-				instance.removeTimeout(event.getResolvedState());
-			}*/
-		
-			// Retrieves action's consequences
-			Action 			action 			= model.getAction(event.getActionName());
-			Consequences 	consequences 	= action.getConsequences();
-			
-			//Find first consequence according to comparisons
-			Vector 		vConsequences = consequences.getConsequenceList();
-			Iterator 	iConsequences = vConsequences.iterator();
-			
-			boolean verified = false;
-			while (!verified && iConsequences.hasNext())
-			{
-				consequence = (Consequence) iConsequences.next();
-				if (consequence.getItem() != null)
-				{
-					Field fieldToCompare = instance.getFolder().getField(consequence.getItem());
-					if (fieldToCompare != null)
-						verified = consequence.isVerified(fieldToCompare.getStringValue());
-				}
-				else
-				{
-					verified = true;
-				}
-			}
-			
-			SilverTrace.info("workflowEngine", "WorkflowEngineThread.processAction("+event.getActionName()+")", "root.MSG_GEN_PARAM_VALUE", "item = "+consequence.getItem()+", operator = "+consequence.getOperator()+", value = "+consequence.getValue());
+    Consequence consequence = null;
+    try {
+      // Saving data of step and process instance
+      if (event.getDataRecord() != null)
+        instance.saveActionRecord(step, event.getDataRecord());
 
-			//if no consequence is verified, then last one will be used			
-			if (consequence.getKill())
-			{
-				for (int i=0; i<states.length; i++)
-				{
-					removeAffectations(instance, event, model.getState(states[i]));
-				}
-				
-				//process external actions
-				processTriggers(consequence, instance, event);
-				
-				return true;
-			}
-			State[] targetStates = consequence.getTargetStates();
-			State[] unsetStates = consequence.getUnsetStates();
-	
-			// for each target state, set eligibility to true
-			for (int i=0; i<targetStates.length; i++)
-			{
-				if (targetStates[i] != null)
-				{
-					String name = targetStates[i].getName();
-					eligibleStates.put(name, name);
-				}
-			}
+      // removes eligibility of resolved state
+      // and removes the resolved state from active state list
+      if (unactivateResolvedState && event.getResolvedState() != null) {
+        eligibleStates.remove(event.getResolvedState().getName());
+      }
 
-			// for each unset state, set eligibility to false
-			for (int i=0; i<unsetStates.length; i++)
-			{
-				if (unsetStates[i] != null)
-				{
-					String name = unsetStates[i].getName();
-					eligibleStates.remove(name);
-				}
-			}
+      // remove eventual timeOut flag
+      /*
+       * if (event.getResolvedState() != null) {
+       * instance.removeTimeout(event.getResolvedState()); }
+       */
 
-			// notify user
-			QualifiedUsers notifiedUsers = consequence.getNotifiedUsers();
-			Actor[] actors = instance.getActors(notifiedUsers, null);
-			Task[] tasks = taskManager.createTasks(actors, instance);
-			String message = "";
-			
-			for (int i=0; i<actors.length; i++)
-			{
-				message = notifiedUsers.getMessage();
-				if (message==null || message.length()==0)
-					message = action.getDescription("", "");
-				
-				// check if sender has been hardcoded in the model
-				String senderId = notifiedUsers.getSenderId();
-				User forcedUser = null;
-				if ( senderId != null ) {
-					try {
-						forcedUser = userManager.getUser( senderId );
-					} catch (WorkflowException we) {
-						SilverTrace.info("workflowEngine", "WorkflowEngineThread.processAction("+event.getActionName()+")", "root.EX_ERR_PROCESS_EVENT", "Impossible de trouver l'expediteur avec le user id : " + senderId);
-					}
-				}
+      // Retrieves action's consequences
+      Action action = model.getAction(event.getActionName());
+      Consequences consequences = action.getConsequences();
 
-				User sender = (forcedUser == null) ? event.getUser() : forcedUser;
-				taskManager.notifyUser(tasks[i], sender, actors[i].getUser(), message);
-			}
-		}
-		catch (Exception e)
-		{
-			// change the action status of the step
-			step.setActionStatus(-1); // Process Failed
-			instance.updateHistoryStep(step);
-			throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EX_ERR_PROCESS_EVENT", e);
-		}
+      // Find first consequence according to comparisons
+      Vector vConsequences = consequences.getConsequenceList();
+      Iterator iConsequences = vConsequences.iterator();
 
-		// change the action status of the step
-		step.setActionStatus(1); // Processed
-		instance.updateHistoryStep(step);
+      boolean verified = false;
+      while (!verified && iConsequences.hasNext()) {
+        consequence = (Consequence) iConsequences.next();
+        if (consequence.getItem() != null) {
+          Field fieldToCompare = instance.getFolder().getField(
+              consequence.getItem());
+          if (fieldToCompare != null)
+            verified = consequence.isVerified(fieldToCompare.getStringValue());
+        } else {
+          verified = true;
+        }
+      }
 
-		// Compute states and affectations
-		computeStates(instance, event, eligibleStates, oldActiveStates);
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread.processAction("
+          + event.getActionName() + ")", "root.MSG_GEN_PARAM_VALUE", "item = "
+          + consequence.getItem() + ", operator = " + consequence.getOperator()
+          + ", value = " + consequence.getValue());
 
-		// change the action status of the step
-		step.setActionStatus(2); // Affectations done
-		instance.updateHistoryStep(step);
-		
-		//Process external actions
-		processTriggers(consequence, instance, event);
+      // if no consequence is verified, then last one will be used
+      if (consequence.getKill()) {
+        for (int i = 0; i < states.length; i++) {
+          removeAffectations(instance, event, model.getState(states[i]));
+        }
 
-		return false;
-	}
-	
-	private static void processTriggers(Consequence consequence, UpdatableProcessInstance instance, GenericEvent event)
-	{
-		if (consequence != null)
-		{
-			Iterator triggers = consequence.getTriggers().iterateTrigger();
-			ExternalAction externalAction;
-			while (triggers.hasNext())
-			{
-				Trigger trigger = (Trigger) triggers.next();
-				if (trigger != null)
-				{						
-					try {
-						externalAction = (ExternalAction) Class.forName(trigger.getClassName()).newInstance();
-						externalAction.setProcessInstance(instance);
-						externalAction.setEvent(event);
-						externalAction.setTrigger(trigger);
-						externalAction.execute();
-					} catch (Exception e) {
-						SilverTrace.error("workflowEngine", "WorkflowEngineThread.processTriggers()", "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "+event.getActionName()+", trigger = "+trigger.getName(), e);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Compute the new active states and updates affections
-	 * @param	event	the task done event
-	 */
-	public static void computeStates(UpdatableProcessInstance instance, GenericEvent event, Hashtable eligibleStates, Hashtable oldActiveStates) throws WorkflowException
-	{
-		// Get the process model associated to this event
-		ProcessModel model = instance.getProcessModel();
+        // process external actions
+        processTriggers(consequence, instance, event);
 
-		// Get all the states defined in the abstract model
-		State[] states = model.getStates();
+        return true;
+      }
+      State[] targetStates = consequence.getTargetStates();
+      State[] unsetStates = consequence.getUnsetStates();
 
-		// Test if each state must be activated or not
-		State state = null;
-		for (int i=0; i<states.length ; i++)
-		{
-			state = states[i];
-			boolean eligible = ( eligibleStates.containsKey( state.getName() ) );
-			// xoxox a compléter : gestion de la liste des pré-requis
+      // for each target state, set eligibility to true
+      for (int i = 0; i < targetStates.length; i++) {
+        if (targetStates[i] != null) {
+          String name = targetStates[i].getName();
+          eligibleStates.put(name, name);
+        }
+      }
 
-			if (eligible)
-			{
-				instance.addActiveState(state);
-				if (!oldActiveStates.contains(state.getName()))
-				{
-					//State wasn't already affected ==> assign new tasks
-					//Do nothing more
-				}
-				else
-				{
-					//State is already affected (it's a loop) ==> remove old tasks and add new ones
-					removeAffectations(instance, event, state);
-				}
-				computeAffectations(instance, event, state);
-			}
-			else
-			{
-				if ( oldActiveStates.contains( state.getName() ) )
-				{
-					//State was affected ==> unassign tasks and remove Active state
-					instance.removeActiveState(state);
-					removeAffectations(instance, event, state);
-				}
-			}
-		}
-	}
+      // for each unset state, set eligibility to false
+      for (int i = 0; i < unsetStates.length; i++) {
+        if (unsetStates[i] != null) {
+          String name = unsetStates[i].getName();
+          eligibleStates.remove(name);
+        }
+      }
 
-	/**
-	 * Compute the new affectations for a given state
-	 * @param	event	the event
-	 */
-	public static void computeAffectations(UpdatableProcessInstance instance, GenericEvent event, State state) throws WorkflowException
-	{
-		// Get the process model associated to this event
-		instance.getProcessModel();
+      // notify user
+      QualifiedUsers notifiedUsers = consequence.getNotifiedUsers();
+      Actor[] actors = instance.getActors(notifiedUsers, null);
+      Task[] tasks = taskManager.createTasks(actors, instance);
+      String message = "";
 
-		// Get the task manager
-		TaskManager taskManager = WorkflowHub.getTaskManager();
+      for (int i = 0; i < actors.length; i++) {
+        message = notifiedUsers.getMessage();
+        if (message == null || message.length() == 0)
+          message = action.getDescription("", "");
 
-		// Get the working users
-		QualifiedUsers wkUsers = state.getWorkingUsers();
-		Actor[] actors = instance.getActors(wkUsers, state);
+        // check if sender has been hardcoded in the model
+        String senderId = notifiedUsers.getSenderId();
+        User forcedUser = null;
+        if (senderId != null) {
+          try {
+            forcedUser = userManager.getUser(senderId);
+          } catch (WorkflowException we) {
+            SilverTrace.info("workflowEngine",
+                "WorkflowEngineThread.processAction(" + event.getActionName()
+                    + ")", "root.EX_ERR_PROCESS_EVENT",
+                "Impossible de trouver l'expediteur avec le user id : "
+                    + senderId);
+          }
+        }
 
-		// Assign tasks to these working users
-		Task[] tasks = taskManager.createTasks(actors, instance);
-		for (int i=0; i<tasks.length; i++)
-		{
-			taskManager.assignTask(tasks[i]);
-		}
+        User sender = (forcedUser == null) ? event.getUser() : forcedUser;
+        taskManager.notifyUser(tasks[i], sender, actors[i].getUser(), message);
+      }
+    } catch (Exception e) {
+      // change the action status of the step
+      step.setActionStatus(-1); // Process Failed
+      instance.updateHistoryStep(step);
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EX_ERR_PROCESS_EVENT", e);
+    }
 
-		// Declare these working users in instance
-		for (int i=0; i<actors.length; i++)
-		{
-			instance.addWorkingUser(actors[i].getUser(), state, actors[i].getUserRoleName());
-		}
+    // change the action status of the step
+    step.setActionStatus(1); // Processed
+    instance.updateHistoryStep(step);
 
-		// Get the interested users
-		QualifiedUsers intUsers = state.getInterestedUsers();
-		actors = instance.getActors(intUsers, state);
+    // Compute states and affectations
+    computeStates(instance, event, eligibleStates, oldActiveStates);
 
-		// Declare these interested users in instance
-		for (int i=0; i<actors.length; i++)
-		{
-			instance.addInterestedUser(actors[i].getUser(), state, actors[i].getUserRoleName());
-		}
-	}
+    // change the action status of the step
+    step.setActionStatus(2); // Affectations done
+    instance.updateHistoryStep(step);
 
-	/**
-	 * Remove the old affectations for this state and unassign tasks
-	 * @param	event	the event
-	 */
-	public static void removeAffectations(UpdatableProcessInstance instance, GenericEvent event, State state) throws WorkflowException
-	{
-		// Get process model associated to this event
-		instance.getProcessModel();
+    // Process external actions
+    processTriggers(consequence, instance, event);
 
-		// Get the task manager
-		TaskManager taskManager = WorkflowHub.getTaskManager();
+    return false;
+  }
 
-		// Get the working users
-		Actor[] actors = instance.getWorkingUsers(state.getName());
+  private static void processTriggers(Consequence consequence,
+      UpdatableProcessInstance instance, GenericEvent event) {
+    if (consequence != null) {
+      Iterator triggers = consequence.getTriggers().iterateTrigger();
+      ExternalAction externalAction;
+      while (triggers.hasNext()) {
+        Trigger trigger = (Trigger) triggers.next();
+        if (trigger != null) {
+          try {
+            externalAction = (ExternalAction) Class.forName(
+                trigger.getClassName()).newInstance();
+            externalAction.setProcessInstance(instance);
+            externalAction.setEvent(event);
+            externalAction.setTrigger(trigger);
+            externalAction.execute();
+          } catch (Exception e) {
+            SilverTrace.error("workflowEngine",
+                "WorkflowEngineThread.processTriggers()",
+                "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "
+                    + event.getActionName() + ", trigger = "
+                    + trigger.getName(), e);
+          }
+        }
+      }
+    }
+  }
 
-		// Unassign tasks to these working users
-		Task[] tasks = taskManager.createTasks(actors, instance);
-		for (int i=0; i<tasks.length; i++)
-		{
-			taskManager.unAssignTask(tasks[i]);
-		}
+  /**
+   * Compute the new active states and updates affections
+   * 
+   * @param event
+   *          the task done event
+   */
+  public static void computeStates(UpdatableProcessInstance instance,
+      GenericEvent event, Hashtable eligibleStates, Hashtable oldActiveStates)
+      throws WorkflowException {
+    // Get the process model associated to this event
+    ProcessModel model = instance.getProcessModel();
 
-		// Remove these working users from instance
-		for (int i=0; i<actors.length; i++)
-		{
-			instance.removeWorkingUser(actors[i].getUser(), state, actors[i].getUserRoleName());
-		}
+    // Get all the states defined in the abstract model
+    State[] states = model.getStates();
 
-		// Get the interested users
-		QualifiedUsers intUsers = state.getInterestedUsers();
-		actors = instance.getActors(intUsers, state);
+    // Test if each state must be activated or not
+    State state = null;
+    for (int i = 0; i < states.length; i++) {
+      state = states[i];
+      boolean eligible = (eligibleStates.containsKey(state.getName()));
+      // xoxox a compléter : gestion de la liste des pré-requis
 
-		// Remove these interested users from instance
-		for (int i=0; i<actors.length; i++)
-		{
-			instance.removeInterestedUser(actors[i].getUser(), state, actors[i].getUserRoleName());
-		}
-	}
+      if (eligible) {
+        instance.addActiveState(state);
+        if (!oldActiveStates.contains(state.getName())) {
+          // State wasn't already affected ==> assign new tasks
+          // Do nothing more
+        } else {
+          // State is already affected (it's a loop) ==> remove old tasks and
+          // add new ones
+          removeAffectations(instance, event, state);
+        }
+        computeAffectations(instance, event, state);
+      } else {
+        if (oldActiveStates.contains(state.getName())) {
+          // State was affected ==> unassign tasks and remove Active state
+          instance.removeActiveState(state);
+          removeAffectations(instance, event, state);
+        }
+      }
+    }
+  }
 
-	/**
-	 * Cancel pending questions sent from the given state 
-	 * (cascading is done to the questions from questions and so...)
-	 * @param	instance			Process instance
-	 * @param	resolvedStateName	state name
-	 */
-	static public void checkQuestions(UpdatableProcessInstance instance, String resolvedStateName) throws WorkflowException
-	{
-		Question[] questions = instance.getSentQuestions(resolvedStateName);
+  /**
+   * Compute the new affectations for a given state
+   * 
+   * @param event
+   *          the event
+   */
+  public static void computeAffectations(UpdatableProcessInstance instance,
+      GenericEvent event, State state) throws WorkflowException {
+    // Get the process model associated to this event
+    instance.getProcessModel();
 
-		for (int i=0; questions!=null && i<questions.length; i++)
-		{
-			instance.cancelQuestion(questions[i]);
-		}
-	}
+    // Get the task manager
+    TaskManager taskManager = WorkflowHub.getTaskManager();
+
+    // Get the working users
+    QualifiedUsers wkUsers = state.getWorkingUsers();
+    Actor[] actors = instance.getActors(wkUsers, state);
+
+    // Assign tasks to these working users
+    Task[] tasks = taskManager.createTasks(actors, instance);
+    for (int i = 0; i < tasks.length; i++) {
+      taskManager.assignTask(tasks[i]);
+    }
+
+    // Declare these working users in instance
+    for (int i = 0; i < actors.length; i++) {
+      instance.addWorkingUser(actors[i].getUser(), state, actors[i]
+          .getUserRoleName());
+    }
+
+    // Get the interested users
+    QualifiedUsers intUsers = state.getInterestedUsers();
+    actors = instance.getActors(intUsers, state);
+
+    // Declare these interested users in instance
+    for (int i = 0; i < actors.length; i++) {
+      instance.addInterestedUser(actors[i].getUser(), state, actors[i]
+          .getUserRoleName());
+    }
+  }
+
+  /**
+   * Remove the old affectations for this state and unassign tasks
+   * 
+   * @param event
+   *          the event
+   */
+  public static void removeAffectations(UpdatableProcessInstance instance,
+      GenericEvent event, State state) throws WorkflowException {
+    // Get process model associated to this event
+    instance.getProcessModel();
+
+    // Get the task manager
+    TaskManager taskManager = WorkflowHub.getTaskManager();
+
+    // Get the working users
+    Actor[] actors = instance.getWorkingUsers(state.getName());
+
+    // Unassign tasks to these working users
+    Task[] tasks = taskManager.createTasks(actors, instance);
+    for (int i = 0; i < tasks.length; i++) {
+      taskManager.unAssignTask(tasks[i]);
+    }
+
+    // Remove these working users from instance
+    for (int i = 0; i < actors.length; i++) {
+      instance.removeWorkingUser(actors[i].getUser(), state, actors[i]
+          .getUserRoleName());
+    }
+
+    // Get the interested users
+    QualifiedUsers intUsers = state.getInterestedUsers();
+    actors = instance.getActors(intUsers, state);
+
+    // Remove these interested users from instance
+    for (int i = 0; i < actors.length; i++) {
+      instance.removeInterestedUser(actors[i].getUser(), state, actors[i]
+          .getUserRoleName());
+    }
+  }
+
+  /**
+   * Cancel pending questions sent from the given state (cascading is done to
+   * the questions from questions and so...)
+   * 
+   * @param instance
+   *          Process instance
+   * @param resolvedStateName
+   *          state name
+   */
+  static public void checkQuestions(UpdatableProcessInstance instance,
+      String resolvedStateName) throws WorkflowException {
+    Question[] questions = instance.getSentQuestions(resolvedStateName);
+
+    for (int i = 0; questions != null && i < questions.length; i++) {
+      instance.cancelQuestion(questions[i]);
+    }
+  }
 }

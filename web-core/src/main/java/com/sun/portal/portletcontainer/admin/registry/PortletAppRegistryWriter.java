@@ -22,9 +22,7 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin.registry;
-
 
 import java.util.List;
 
@@ -36,37 +34,43 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryReader;
 import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
-
 /**
- * PortletAppRegistryWriter is responsible for updating the portlet-app-registry.xml file
+ * PortletAppRegistryWriter is responsible for updating the
+ * portlet-app-registry.xml file
  */
 public class PortletAppRegistryWriter extends PortletRegistryWriter {
- 
-    public PortletAppRegistryWriter(String registryLocation) {
-        super(registryLocation, PortletRegistryFile.PORTLET_APP_REGISTRY_FILE, null);
+
+  public PortletAppRegistryWriter(String registryLocation) {
+    super(registryLocation, PortletRegistryFile.PORTLET_APP_REGISTRY_FILE, null);
+  }
+
+  public void appendDocument(List portletAppElementList)
+      throws PortletRegistryException {
+    PortletRegistryReader portletAppRegistryReader = new PortletAppRegistryReader(
+        registryLocation);
+    PortletRegistryObject portletAppRegistry = portletAppRegistryReader
+        .readDocument();
+    write(portletAppElementList, portletAppRegistry);
+  }
+
+  public void writeDocument(List portletAppElementList)
+      throws PortletRegistryException {
+    // TODO: Not in use. Should be removed?
+    // PortletRegistryReader portletAppRegistryReader = new
+    // PortletAppRegistryReader(registryLocation);
+    PortletRegistryObject portletAppRegistry = new PortletAppRegistry();
+    write(portletAppElementList, portletAppRegistry);
+  }
+
+  private void write(List portletAppElementList,
+      PortletRegistryObject portletAppRegistry) throws PortletRegistryException {
+    int size = portletAppElementList.size();
+    PortletRegistryElement portletApp;
+    for (int i = 0; i < size; i++) {
+      portletApp = (PortletRegistryElement) portletAppElementList.get(i);
+      portletAppRegistry.addRegistryElement(portletApp);
     }
-    
-    public void appendDocument(List portletAppElementList) throws PortletRegistryException {
-        PortletRegistryReader portletAppRegistryReader = new PortletAppRegistryReader(registryLocation);
-        PortletRegistryObject portletAppRegistry = portletAppRegistryReader.readDocument();
-        write(portletAppElementList, portletAppRegistry);
-    }
-    
-    public void writeDocument(List portletAppElementList) throws PortletRegistryException {
-       //TODO: Not in use. Should be removed? 
-      //PortletRegistryReader portletAppRegistryReader = new PortletAppRegistryReader(registryLocation);
-        PortletRegistryObject portletAppRegistry = new PortletAppRegistry();
-        write(portletAppElementList, portletAppRegistry);
-    }
-    
-    private void write(List portletAppElementList, PortletRegistryObject portletAppRegistry) throws PortletRegistryException {
-        int size = portletAppElementList.size();
-        PortletRegistryElement portletApp;
-        for(int i=0; i<size; i++){
-            portletApp = (PortletRegistryElement)portletAppElementList.get(i);
-            portletAppRegistry.addRegistryElement(portletApp);
-        }
-        write(portletAppRegistry);
-        PortletRegistryCache.refreshPortletAppRegistryCache(true);
-    }
+    write(portletAppRegistry);
+    PortletRegistryCache.refreshPortletAppRegistryCache(true);
+  }
 }

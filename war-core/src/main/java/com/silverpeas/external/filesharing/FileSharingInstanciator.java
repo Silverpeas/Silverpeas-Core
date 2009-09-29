@@ -10,21 +10,28 @@ public class FileSharingInstanciator implements ComponentsInstanciatorIntf {
 
   public FileSharingInstanciator() {
   }
-  
-  public void create(Connection con, String spaceId, String componentId, String userId) throws InstanciationException {
-	SilverTrace.info("fileSharing","FileSharingInstanciator.create()","root.MSG_GEN_ENTER_METHOD", "space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
 
-	//insert your code here !
-	
-	SilverTrace.info("fileSharing","FileSharingInstanciator.create()","root.MSG_GEN_EXIT_METHOD");
+  public void create(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("fileSharing", "FileSharingInstanciator.create()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
+
+    // insert your code here !
+
+    SilverTrace.info("fileSharing", "FileSharingInstanciator.create()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws InstanciationException 
-  {
-	SilverTrace.info("fileSharing","FileSharingInstanciator.delete()","root.MSG_GEN_ENTER_METHOD","space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
+  public void delete(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("fileSharing", "FileSharingInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
 
-	//insert your code here !
+    // insert your code here !
 
-	SilverTrace.info("fileSharing","FileSharingInstanciator.delete()","root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("fileSharing", "FileSharingInstanciator.delete()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 }

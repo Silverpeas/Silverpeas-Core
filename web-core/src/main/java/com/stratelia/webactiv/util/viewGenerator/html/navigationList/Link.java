@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 /*
  * Link.java
@@ -10,83 +11,76 @@ package com.stratelia.webactiv.util.viewGenerator.html.navigationList;
 
 /**
  * 
- * @author  lloiseau
+ * @author lloiseau
  * @version 1.0
  */
-public class Link extends Object
-{
+public class Link extends Object {
 
-    private String label;
-    private String URL;
+  private String label;
+  private String URL;
 
+  /**
+   * Creates new Link
+   */
+  public Link(String label, String URL) {
+    this.URL = URL;
+    this.label = label;
+  }
 
-    /**
-     * Creates new Link
-     */
-    public Link(String label, String URL)
-    {
-        this.URL = URL;
-        this.label = label;
-    }
+  // Return the label
 
-    // Return the label
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getLabel() {
+    return label;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getLabel()
-    {
-        return label;
-    }
+  // To set a new label
 
-    // To set a new label
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param label
+   * 
+   * @see
+   */
+  public void setLabel(String label) {
+    this.label = label;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param label
-     *
-     * @see
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
+  // Return the URL
 
-    // Return the URL
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String getURL() {
+    return URL;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    public String getURL()
-    {
-        return URL;
-    }
+  // To set a new URL
 
-    // To set a new URL
-
-    /**
-     * Method declaration
-     *
-     *
-     * @param URL
-     *
-     * @see
-     */
-    public void setURL(String URL)
-    {
-        this.URL = URL;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param URL
+   * 
+   * @see
+   */
+  public void setURL(String URL) {
+    this.URL = URL;
+  }
 
 }

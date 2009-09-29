@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.answer.control;
 
@@ -8,11 +9,10 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- *
+ * 
  * @author neysseri
  */
-public interface AnswerBmHome extends EJBHome
-{
+public interface AnswerBmHome extends EJBHome {
 
-	AnswerBm create() throws RemoteException, CreateException;
+  AnswerBm create() throws RemoteException, CreateException;
 }

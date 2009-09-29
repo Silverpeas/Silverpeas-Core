@@ -38,165 +38,168 @@ import com.sun.syndication.io.XmlReader;
  */
 public final class FeedUtilities {
 
-	// --- CONSTANTS ---
+  // --- CONSTANTS ---
 
-	private static final String USER_AGENT = "Mozilla/5.0 (Windows; U;"
-			+ " Windows NT 5.1; hu; rv:1.8.0.8) Gecko/20061025 Thunderbird/1.5.0.8";
+  private static final String USER_AGENT = "Mozilla/5.0 (Windows; U;"
+      + " Windows NT 5.1; hu; rv:1.8.0.8) Gecko/20061025 Thunderbird/1.5.0.8";
 
-	private static final long REMOTE_CALENDAR_RETURNCODE_OK = 200;
-	private static final long FEED_RETRY_MILLIS = 1000L;
+  private static final long REMOTE_CALENDAR_RETURNCODE_OK = 200;
+  private static final long FEED_RETRY_MILLIS = 1000L;
 
-	// --- HTTP CONNECTION HANDLER ---
-	private static final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-	private static final HttpClient httpClient = new HttpClient(
-			connectionManager);
+  // --- HTTP CONNECTION HANDLER ---
+  private static final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+  private static final HttpClient httpClient = new HttpClient(connectionManager);
 
-	private FeedUtilities() {
-	}
+  private FeedUtilities() {
+  }
 
-	public static final byte[] loadFeed(String feedURL) throws Exception
-	{
-		return loadFeed(feedURL, null, null);
-	}
+  public static final byte[] loadFeed(String feedURL) throws Exception {
+    return loadFeed(feedURL, null, null);
+  }
 
-	public static final byte[] loadFeed(String feedURL, String username, String password) throws Exception
-	{
-		// Load feed
-		GetMethod get = new GetMethod(feedURL);
-		get.addRequestHeader("User-Agent", USER_AGENT);
-		get.setFollowRedirects(true);
-		SilverTrace.info("agenda", "FeedUtilities.loadFeed()","root.MSG_GEN_PARAM_VALUE", "username="+username + " - pwd="+password);
-		if (StringUtil.isDefined(username)) {
-			// Set username/password
-			byte[] auth = StringUtils.encodeString(username + ':' + StringUtils.decodePassword(password),
-					StringUtils.UTF_8);
-			get.addRequestHeader("Authorization", "Basic " 	+ StringUtils.encodeBASE64(auth));
+  public static final byte[] loadFeed(String feedURL, String username,
+      String password) throws Exception {
+    // Load feed
+    GetMethod get = new GetMethod(feedURL);
+    get.addRequestHeader("User-Agent", USER_AGENT);
+    get.setFollowRedirects(true);
+    SilverTrace.info("agenda", "FeedUtilities.loadFeed()",
+        "root.MSG_GEN_PARAM_VALUE", "username=" + username + " - pwd="
+            + password);
+    if (StringUtil.isDefined(username)) {
+      // Set username/password
+      byte[] auth = StringUtils.encodeString(username + ':'
+          + StringUtils.decodePassword(password), StringUtils.UTF_8);
+      get.addRequestHeader("Authorization", "Basic "
+          + StringUtils.encodeBASE64(auth));
 
-		}
-		byte[] bytes = null;
-		for (int tries = 0; tries<5; tries++) {
-			try {
-				int status = httpClient.executeMethod(get);
-				SilverTrace.warn("agenda","FeedUtilities.loadFeed()","Http connection status : "+status);
-				if (status == REMOTE_CALENDAR_RETURNCODE_OK)
-				{
-					bytes = get.getResponseBody();
-					SilverTrace.info("agenda", "FeedUtilities.loadFeed()","agenda.FEED_LOADING_SUCCESSFULLY",bytes.length +" bytes.");
-				}
-				else
-				{
-					SilverTrace.warn("agenda", "FeedUtilities.loadFeed()","agenda.FEED_LOADING_FAILED","Status Http Client="+status+" Content="+bytes.toString());
-					bytes = null;
-				}
-			} catch (Exception loadError) {
-				SilverTrace.warn("agenda","FeedUtilities.loadFeed()","Attempt #"+tries+" Status=",loadError.getMessage());
-				if (tries == 5) {
-					bytes = null;
-					SilverTrace.warn("agenda","FeedUtilities.loadFeed()","agenda.CONNECTIONS_REFUSED",loadError.getMessage());
-				}
-				Thread.sleep(FEED_RETRY_MILLIS);
-			} finally {
-				get.releaseConnection();
-			}
-		}
-		return bytes;
-	}
-	
-	public static Calendar convertFeedToCalendar(SyndFeed feed,
-			long eventLength) throws Exception {
+    }
+    byte[] bytes = null;
+    for (int tries = 0; tries < 5; tries++) {
+      try {
+        int status = httpClient.executeMethod(get);
+        SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
+            "Http connection status : " + status);
+        if (status == REMOTE_CALENDAR_RETURNCODE_OK) {
+          bytes = get.getResponseBody();
+          SilverTrace.info("agenda", "FeedUtilities.loadFeed()",
+              "agenda.FEED_LOADING_SUCCESSFULLY", bytes.length + " bytes.");
+        } else {
+          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
+              "agenda.FEED_LOADING_FAILED", "Status Http Client=" + status
+                  + " Content=" + bytes.toString());
+          bytes = null;
+        }
+      } catch (Exception loadError) {
+        SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "Attempt #"
+            + tries + " Status=", loadError.getMessage());
+        if (tries == 5) {
+          bytes = null;
+          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
+              "agenda.CONNECTIONS_REFUSED", loadError.getMessage());
+        }
+        Thread.sleep(FEED_RETRY_MILLIS);
+      } finally {
+        get.releaseConnection();
+      }
+    }
+    return bytes;
+  }
 
-		// Create new calendar
-		Calendar calendar = new Calendar();
-		PropertyList props = calendar.getProperties();
-		props.add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
-		props.add(Version.VERSION_2_0);
-		props.add(CalScale.GREGORIAN);
+  public static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength)
+      throws Exception {
 
-		// Convert events
-		SyndEntry[] entries = getFeedEntries(feed);
-		ComponentList events = calendar.getComponents();
-		java.util.Date now = new java.util.Date();
-		SyndEntry entry;
-		for (int i = 0; i < entries.length; i++) {
-			entry = entries[i];
+    // Create new calendar
+    Calendar calendar = new Calendar();
+    PropertyList props = calendar.getProperties();
+    props.add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
+    props.add(Version.VERSION_2_0);
+    props.add(CalScale.GREGORIAN);
 
-			// Convert feed link to iCal URL
-			String url = entry.getLink();
-			if (url == null || url.length() == 0) {
-				continue;
-			}
+    // Convert events
+    SyndEntry[] entries = getFeedEntries(feed);
+    ComponentList events = calendar.getComponents();
+    java.util.Date now = new java.util.Date();
+    SyndEntry entry;
+    for (int i = 0; i < entries.length; i++) {
+      entry = entries[i];
 
-			// Convert feed published date to iCal dates
-			java.util.Date date = entry.getPublishedDate();
-			if (date == null) {
-				date = now;
-			}
-			DateTime startDate = new DateTime(date);
+      // Convert feed link to iCal URL
+      String url = entry.getLink();
+      if (url == null || url.length() == 0) {
+        continue;
+      }
 
-			// Calculate iCal end date
-			DateTime endDate = new DateTime(date.getTime() + eventLength);
+      // Convert feed published date to iCal dates
+      java.util.Date date = entry.getPublishedDate();
+      if (date == null) {
+        date = now;
+      }
+      DateTime startDate = new DateTime(date);
 
-			// Convert feed title to iCal summary
-			String title = entry.getTitle();
-			if (title == null || title.length() == 0) {
-				title = url;
-			} else {
-				title = title.trim();
-			}
-			VEvent event = new VEvent(startDate, endDate, title);
+      // Calculate iCal end date
+      DateTime endDate = new DateTime(date.getTime() + eventLength);
 
-			// Set event URL
-			PropertyList args = event.getProperties();
-			URI uri = new URI(url);
-			args.add(new Url(uri));
+      // Convert feed title to iCal summary
+      String title = entry.getTitle();
+      if (title == null || title.length() == 0) {
+        title = url;
+      } else {
+        title = title.trim();
+      }
+      VEvent event = new VEvent(startDate, endDate, title);
 
-			// Generate location by URL
-			Location location = new Location(uri.getHost());
-			args.add(location);
+      // Set event URL
+      PropertyList args = event.getProperties();
+      URI uri = new URI(url);
+      args.add(new Url(uri));
 
-			// Generate UID by URL
-			Uid uid = new Uid(url);
-			args.add(uid);
+      // Generate location by URL
+      Location location = new Location(uri.getHost());
+      args.add(location);
 
-			// Convert feed description to iCal description
-			SyndContent syndContent = entry.getDescription();
-			String content = null;
-			if (syndContent != null) {
-				content = syndContent.getValue();
-			}
-			if (content == null) {
-				content = url;
-			}
-			Description desc = new Description(content);
-			args.add(desc);
+      // Generate UID by URL
+      Uid uid = new Uid(url);
+      args.add(uid);
 
-			// Add converted event
-			events.add(event);
-		}
+      // Convert feed description to iCal description
+      SyndContent syndContent = entry.getDescription();
+      String content = null;
+      if (syndContent != null) {
+        content = syndContent.getValue();
+      }
+      if (content == null) {
+        content = url;
+      }
+      Description desc = new Description(content);
+      args.add(desc);
 
-		return calendar;
-	}
+      // Add converted event
+      events.add(event);
+    }
 
-	private static final SyndEntry[] getFeedEntries(SyndFeed feed) throws Exception {
-		List list = feed.getEntries();
-		SyndEntry[] entries = new SyndEntry[list.size()];
-		list.toArray(entries);
-		return entries;
-	}
+    return calendar;
+  }
 
-	public static final SyndFeed parseFeed(byte[] feedBytes) throws Exception {
-		SyndFeed synFeed = null;
-		try
-		{
-			SyndFeedInput input = new SyndFeedInput();
-			XmlReader xmlReader = new XmlReader(new ByteArrayInputStream(feedBytes));
-			synFeed = input.build(xmlReader);
-		}
-		catch (Exception e)
-		{
-			SilverTrace.warn("agenda","FeedUtilities.parseFeed()","agenda.EX_CANT_PARSE_FEED", e);
-		}
-		return synFeed;
-	}
+  private static final SyndEntry[] getFeedEntries(SyndFeed feed)
+      throws Exception {
+    List list = feed.getEntries();
+    SyndEntry[] entries = new SyndEntry[list.size()];
+    list.toArray(entries);
+    return entries;
+  }
+
+  public static final SyndFeed parseFeed(byte[] feedBytes) throws Exception {
+    SyndFeed synFeed = null;
+    try {
+      SyndFeedInput input = new SyndFeedInput();
+      XmlReader xmlReader = new XmlReader(new ByteArrayInputStream(feedBytes));
+      synFeed = input.build(xmlReader);
+    } catch (Exception e) {
+      SilverTrace.warn("agenda", "FeedUtilities.parseFeed()",
+          "agenda.EX_CANT_PARSE_FEED", e);
+    }
+    return synFeed;
+  }
 
 }

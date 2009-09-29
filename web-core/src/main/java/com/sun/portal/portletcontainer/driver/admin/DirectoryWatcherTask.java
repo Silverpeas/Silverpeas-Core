@@ -9,46 +9,48 @@ import java.util.TimerTask;
 
 public class DirectoryWatcherTask extends TimerTask {
 
-    private String directoryToWatch;
+  private String directoryToWatch;
 
-    private FileFilter filter;
+  private FileFilter filter;
 
-    private DirectoryChangedListener listener;
+  private DirectoryChangedListener listener;
 
-    public DirectoryWatcherTask(String directoryToWatch, DirectoryChangedListener listener) {
-	this(directoryToWatch, null, listener);
+  public DirectoryWatcherTask(String directoryToWatch,
+      DirectoryChangedListener listener) {
+    this(directoryToWatch, null, listener);
+  }
+
+  // Currently only notifies if files matching the filter are added to the
+  // directory being watched.
+
+  public DirectoryWatcherTask(String dirToWatch, FileFilter fileFilter,
+      DirectoryChangedListener dirChangeListener) {
+    directoryToWatch = dirToWatch;
+    listener = dirChangeListener;
+
+    if (fileFilter == null) {
+      filter = new FileFilter() {
+        // Default FileFilter accepts all files.
+        public boolean accept(File pathname) {
+          return true;
+        }
+      };
+    } else {
+      filter = fileFilter;
     }
+  }
 
-    // Currently only notifies if files matching the filter are added to the
-    // directory being watched.
+  public void run() {
+    File[] fileArray = new File(directoryToWatch).listFiles(filter);
+    if (fileArray != null) {
+      List currentFileList = Arrays.asList(fileArray);
 
-    public DirectoryWatcherTask(String dirToWatch, FileFilter fileFilter, DirectoryChangedListener dirChangeListener) {
-	directoryToWatch = dirToWatch;
-	listener = dirChangeListener;
+      Iterator iterator = currentFileList.iterator();
 
-	if (fileFilter == null) {
-	    filter = new FileFilter() {
-		// Default FileFilter accepts all files.
-		public boolean accept(File pathname) {
-		    return true;
-		}
-	    };
-	} else {
-	    filter = fileFilter;
-	}
+      while (iterator.hasNext()) {
+        File currentFile = (File) iterator.next();
+        listener.fileAdded(currentFile);
+      }
     }
-
-    public void run() {
-	File[] fileArray = new File(directoryToWatch).listFiles(filter);
-	if (fileArray != null) {
-	    List currentFileList = Arrays.asList(fileArray);
-
-	    Iterator iterator = currentFileList.iterator();
-
-	    while (iterator.hasNext()) {
-		File currentFile = (File) iterator.next();
-		listener.fileAdded(currentFile);
-	    }
-	}
-    }
+  }
 }

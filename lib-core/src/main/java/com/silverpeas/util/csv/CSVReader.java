@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.silverpeas.util.csv;
 
@@ -15,376 +16,395 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
+public class CSVReader extends SilverpeasSettings {
+  protected int m_nbCols = 0;
+  protected String[] m_colNames;
+  protected String[] m_colTypes;
+  protected String[] m_colDefaultValues;
+  protected String m_separator;
+  protected ResourceLocator m_utilMessages;
 
-public class CSVReader extends SilverpeasSettings
-{
-    protected int       m_nbCols = 0;
-    protected String[]  m_colNames;
-    protected String[]  m_colTypes;
-    protected String[]  m_colDefaultValues;
-    protected String    m_separator;
-    protected ResourceLocator m_utilMessages;
-    
-    //properties spécifiques éventuellement en plus
-    protected int       m_specificNbCols = 0;
-    protected String[]  m_specificColNames;    
-    protected String[]  m_specificColTypes;
-    protected String[]  m_specificParameterNames;
-    
-    
-    /**
-     * Constructeur
-     */
-    public CSVReader(String language) {
-        m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", language);
+  // properties spécifiques éventuellement en plus
+  protected int m_specificNbCols = 0;
+  protected String[] m_specificColNames;
+  protected String[] m_specificColTypes;
+  protected String[] m_specificParameterNames;
+
+  /**
+   * Constructeur
+   */
+  public CSVReader(String language) {
+    m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util",
+        language);
+  }
+
+  public void initCSVFormat(String propertiesFile, String rootPropertyName,
+      String separator) {
+    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+
+    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
+    m_nbCols = m_colNames.length;
+    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
+    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+        m_nbCols);
+    m_separator = separator;
+  }
+
+  public void initCSVFormat(String propertiesFile, String rootPropertyName,
+      String separator, String specificPropertiesFile,
+      String specificRootPropertyName) {
+    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+
+    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
+    m_nbCols = m_colNames.length;
+    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
+    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+        m_nbCols);
+    m_separator = separator;
+
+    ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
+    m_specificColNames = readStringArray(specificRs, specificRootPropertyName,
+        ".Name", -1);
+    m_specificNbCols = m_specificColNames.length;
+
+    m_specificColTypes = readStringArray(specificRs, specificRootPropertyName,
+        ".Type", m_specificNbCols);
+    for (int i = 0; i < m_specificNbCols; i++) {
+      if (!Variant.TYPE_STRING.equals(m_specificColTypes[i])
+          && !Variant.TYPE_INT.equals(m_specificColTypes[i])
+          && !Variant.TYPE_BOOLEAN.equals(m_specificColTypes[i])
+          && !Variant.TYPE_FLOAT.equals(m_specificColTypes[i])
+          && !Variant.TYPE_DATEFR.equals(m_specificColTypes[i])
+          && !Variant.TYPE_DATEUS.equals(m_specificColTypes[i])
+          && !Variant.TYPE_STRING_ARRAY.equals(m_specificColTypes[i])
+          && !Variant.TYPE_LONG.equals(m_specificColTypes[i])) {
+
+        m_specificColTypes[i] = Variant.TYPE_STRING;
+      }
     }
-    
-    public void initCSVFormat(String propertiesFile, String rootPropertyName, String separator)
-    {
-        ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+    m_specificParameterNames = m_specificColNames;
+  }
 
-        m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
-        m_nbCols = m_colNames.length;
-        m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
-        m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default", m_nbCols);
-        m_separator = separator;
-    }
-    
-    public void initCSVFormat(String propertiesFile, String rootPropertyName, String separator, 
-    						String specificPropertiesFile, String specificRootPropertyName)
-    {
-        ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+  public Variant[][] parseStream(InputStream is) throws UtilTrappedException {
+    BufferedReader rb = null;
+    String theLine = null;
+    ArrayList valret = new ArrayList();
+    int lineNumber = 1;
+    StringBuffer listErrors = new StringBuffer("");
 
-        m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
-        m_nbCols = m_colNames.length;
-        m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
-        m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default", m_nbCols);
-        m_separator = separator;
-        
-        ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
-        m_specificColNames = readStringArray(specificRs, specificRootPropertyName, ".Name", -1);
-        m_specificNbCols = m_specificColNames.length;
-        
-        m_specificColTypes = readStringArray(specificRs, specificRootPropertyName, ".Type", m_specificNbCols);
-        for(int i=0; i<m_specificNbCols; i++) {
-        	if(! Variant.TYPE_STRING.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_INT.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_BOOLEAN.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_FLOAT.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_DATEFR.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_DATEUS.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_STRING_ARRAY.equals(m_specificColTypes[i]) &&
-        	   ! Variant.TYPE_LONG.equals(m_specificColTypes[i])) {
-        		
-        		m_specificColTypes[i] = Variant.TYPE_STRING;	
-        	}
+    try {
+      rb = new BufferedReader(new InputStreamReader(is));
+      theLine = rb.readLine();
+      while (theLine != null) {
+        SilverTrace.info("util", "CSVReader.parseStream()",
+            "root.MSG_PARAM_VALUE", "Line=" + lineNumber);
+        if (theLine.trim().length() > 0) {
+          try {
+            valret.add(parseLine(theLine, lineNumber));
+          } catch (UtilTrappedException u) {
+            listErrors.append(u.getExtraInfos() + "\n");
+          }
         }
-        m_specificParameterNames = m_specificColNames;
+        lineNumber++;
+        theLine = rb.readLine();
+      }
+
+      if (listErrors.length() > 0) {
+        throw new UtilTrappedException("CSVReader.parseStream",
+            SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors
+                .toString());
+      }
+
+      return (Variant[][]) valret.toArray(new Variant[0][0]);
+    } catch (IOException e) {
+      throw new UtilTrappedException("CSVReader.parseStream",
+          SilverpeasException.ERROR, "util.EX_TRANSMITING_CSV", m_utilMessages
+              .getString("util.ligne")
+              + " = "
+              + Integer.toString(lineNumber)
+              + "\n"
+              + listErrors.toString(), e);
     }
-    
-    public Variant[][] parseStream(InputStream is) throws UtilTrappedException
-    {
-        BufferedReader rb = null;
-        String         theLine = null;
-        ArrayList      valret = new ArrayList();
-        int            lineNumber = 1;
-        StringBuffer	listErrors = new StringBuffer("");
+  }
 
-        try
-        {
-            rb = new BufferedReader(new InputStreamReader(is));
-            theLine = rb.readLine();
-            while (theLine != null)
-            {
-                SilverTrace.info("util", "CSVReader.parseStream()", "root.MSG_PARAM_VALUE", "Line="+lineNumber);
-                if (theLine.trim().length() > 0)
-                {
-                	try {
-                		valret.add(parseLine(theLine,lineNumber));
-                	} catch (UtilTrappedException u) {
-                		listErrors.append(u.getExtraInfos()+"\n");
-                	}
-                }
-                lineNumber++;
-                theLine = rb.readLine();
-            }
-            
-            if(listErrors.length()>0) {
-            	throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors.toString());        	
-            }
-            
-            return (Variant[][])valret.toArray(new Variant[0][0]);
+  public Variant[] parseLine(String theLine, int lineNumber)
+      throws UtilTrappedException {
+    int nbColsTotal = m_nbCols + m_specificNbCols;
+    Variant[] valret = new Variant[nbColsTotal];
+    int i, j;
+    int start, end;
+    String theValue;
+
+    StringBuffer listErrors = new StringBuffer("");
+
+    start = 0;
+    end = theLine.indexOf(m_separator, start);
+
+    for (i = 0; i < m_nbCols; i++) {
+      if (end == -1) {
+        theValue = theLine.substring(start).trim();
+      } else {
+        theValue = theLine.substring(start, end).trim();
+      }
+      try {
+        if ((theValue == null) || (theValue.length() <= 0)) {
+          theValue = m_colDefaultValues[i];
         }
-        catch (IOException e)
-        {
-            throw new UtilTrappedException("CSVReader.parseStream",SilverpeasException.ERROR,"util.EX_TRANSMITING_CSV", m_utilMessages.getString("util.ligne")+" = "+Integer.toString(lineNumber)+"\n"+listErrors.toString(), e);
+        if (Variant.isArrayType(m_colTypes[i])) {
+          valret[i] = new Variant(parseArrayValue(theValue), m_colTypes[i]);
+        } else {
+          valret[i] = new Variant(theValue, m_colTypes[i]);
         }
-    }
+        SilverTrace.info("util", "CSVReader.parseLine()",
+            "root.MSG_PARAM_VALUE", "Token=" + theValue);
+      } catch (UtilException e) {
+        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+            + Integer.toString(lineNumber) + ", ");
+        listErrors.append(m_utilMessages.getString("util.colonne") + " = "
+            + Integer.toString(i + 1) + ", ");
+        listErrors
+            .append(m_utilMessages.getString("util.errorType")
+                + m_utilMessages.getString("util.valeur") + " = " + theValue
+                + ", ");
+        listErrors.append(m_utilMessages.getString("util.type") + " = "
+            + m_colTypes[i] + "<BR>");
+      }
 
-    public Variant[] parseLine(String theLine, int lineNumber) throws UtilTrappedException
-    {
-    	int nbColsTotal = m_nbCols + m_specificNbCols;
-        Variant[]       valret = new Variant[nbColsTotal];
-        int             i, j;
-        int             start, end;
-        String          theValue;
-    
-        StringBuffer	listErrors = new StringBuffer("");
+      start = end + 1;
+      if (start == 0)
+        start = -1;
 
-        start = 0;
+      if ((i < m_nbCols - 1) && (Variant.isArrayType(m_colTypes[i + 1]))) { // End
+        // the
+        // parse
+        // putting
+        // the
+        // rest
+        // of
+        // the
+        // line
+        // into
+        // an
+        // array
+        end = -1;
+      } else {
         end = theLine.indexOf(m_separator, start);
-        
-        for (i = 0; i < m_nbCols; i++)
-        {
-            if (end == -1)
-            {
-                theValue = theLine.substring(start).trim();
-            }
-            else
-            {
-                theValue = theLine.substring(start,end).trim();
-            }
-            try
-            {
-                if ((theValue == null) || (theValue.length() <= 0))
-                {
-                    theValue = m_colDefaultValues[i];
-                }
-                if (Variant.isArrayType(m_colTypes[i]))
-                {
-                    valret[i] = new Variant(parseArrayValue(theValue),m_colTypes[i]);
-                }
-                else
-                {
-                    valret[i] = new Variant(theValue,m_colTypes[i]);
-                }
-                SilverTrace.info("util", "CSVReader.parseLine()", "root.MSG_PARAM_VALUE", "Token="+theValue);
-            }
-            catch (UtilException e)
-            {
-            	listErrors.append(m_utilMessages.getString("util.ligne")+ " = "+Integer.toString(lineNumber)+", ");
-            	listErrors.append(m_utilMessages.getString("util.colonne")+" = "+Integer.toString(i+1)+", ");
-            	listErrors.append(m_utilMessages.getString("util.errorType")+m_utilMessages.getString("util.valeur")+" = "+theValue+", ");
-            	listErrors.append(m_utilMessages.getString("util.type")+" = "+m_colTypes[i]+"<BR>");
-            }
-            
-            start = end + 1;
-            if(start == 0)
-            	start = -1;
-            
-            if ((i < m_nbCols-1) && (Variant.isArrayType(m_colTypes[i+1])))
-            { // End the parse putting the rest of the line into an array
-                end = -1;
-            }
-            else
-            {
-                end = theLine.indexOf(m_separator, start);
-            }
-            if ((i < m_nbCols-2) && (end == -1))
-            { // Not enough columns
-            	listErrors.append(m_utilMessages.getString("util.ligne")+ " = "+Integer.toString(lineNumber)+", ");
-            	listErrors.append(Integer.toString(i+2)+" "+m_utilMessages.getString("util.colonnesAttendues")+" "+Integer.toString(m_nbCols)+" "+m_utilMessages.getString("util.attendues")+"<BR>");
-            }
-        }
-        
-        //traitement des données spécifiques
-        j = m_nbCols;
-        for (i = 0; i < m_specificNbCols; i++)
-        {
-        	if (start == -1) {
-        		theValue = ""; //remplace la donnée spécifique manquante par une valeur vide
-        		end = -2;
-        	}
-        	else if (end == -1)
-            {
-                theValue = theLine.substring(start).trim();
-            }
-            else
-            {
-                theValue = theLine.substring(start,end).trim();
-            }
-            try
-            {
-                valret[j] = new Variant(theValue, m_specificColTypes[i]);
-             
-                SilverTrace.info("util", "CSVReader.parseLine()", "root.MSG_PARAM_VALUE", "Token="+theValue);
-            }
-            catch (UtilException e)
-            {
-            	listErrors.append(m_utilMessages.getString("util.ligne")+ " = "+Integer.toString(lineNumber)+", ");
-            	listErrors.append(m_utilMessages.getString("util.colonne")+" = "+Integer.toString(j+1)+", ");
-            	listErrors.append(m_utilMessages.getString("util.errorType")+m_utilMessages.getString("util.valeur")+" = "+theValue+", ");
-            	listErrors.append(m_utilMessages.getString("util.type")+" = "+m_specificColTypes[i]+"<BR>");
-            }
-            start = end + 1;
-            if(start == 0)
-        		start = -1;
-            if ((i < m_specificNbCols-1) && (Variant.isArrayType(m_specificColTypes[i+1])))
-            { // End the parse putting the rest of the line into an array
-                end = -1;
-            }
-            else
-            {
-                end = theLine.indexOf(m_separator, start);
-            }
-            if ((i < m_specificNbCols-2) && (end == -1))
-            { // Not enough columns
-            	listErrors.append(m_utilMessages.getString("util.ligne")+ " = "+Integer.toString(lineNumber)+", ");
-            	listErrors.append(Integer.toString(i+2+m_nbCols)+" "+m_utilMessages.getString("util.colonnesAttendues")+" "+Integer.toString(nbColsTotal)+" "+m_utilMessages.getString("util.attendues")+"<BR>");
-            }
-            
-            j++;
-        }
-        
-        //compte le nbre de colonnes en trop
-        int nbColonnes = nbColsTotal;
-        while(start > -1) {
-        	nbColonnes++;
-        	start = end + 1;
-        	if(start == 0)
-        		start = -1;
-        	end = theLine.indexOf(m_separator, start);
-        }
-        
-        if(nbColonnes > nbColsTotal) {
-        	listErrors.append(m_utilMessages.getString("util.ligne")+ " = "+Integer.toString(lineNumber)+", ");
-        	listErrors.append(nbColonnes+" "+m_utilMessages.getString("util.colonnesAttendues")+" "+Integer.toString(nbColsTotal)+" "+m_utilMessages.getString("util.attendues")+"<BR>");
-        }
-        
-        if(listErrors.length()>0) {
-        	throw new UtilTrappedException("CSVReader.parseLine", SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors.toString());        	
-        }
-        return valret;
+      }
+      if ((i < m_nbCols - 2) && (end == -1)) { // Not enough columns
+        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+            + Integer.toString(lineNumber) + ", ");
+        listErrors.append(Integer.toString(i + 2) + " "
+            + m_utilMessages.getString("util.colonnesAttendues") + " "
+            + Integer.toString(m_nbCols) + " "
+            + m_utilMessages.getString("util.attendues") + "<BR>");
+      }
     }
 
-    protected String[] parseArrayValue(String arrayValue)
-    {
-        int     start, end;
-        String  theValue;
-        ArrayList ar = new ArrayList();
-        boolean haveToContinue = true;
+    // traitement des données spécifiques
+    j = m_nbCols;
+    for (i = 0; i < m_specificNbCols; i++) {
+      if (start == -1) {
+        theValue = ""; // remplace la donnée spécifique manquante par une valeur
+        // vide
+        end = -2;
+      } else if (end == -1) {
+        theValue = theLine.substring(start).trim();
+      } else {
+        theValue = theLine.substring(start, end).trim();
+      }
+      try {
+        valret[j] = new Variant(theValue, m_specificColTypes[i]);
 
-        start = 0;
-        while (haveToContinue)
-        {
-            end = arrayValue.indexOf(m_separator, start);
+        SilverTrace.info("util", "CSVReader.parseLine()",
+            "root.MSG_PARAM_VALUE", "Token=" + theValue);
+      } catch (UtilException e) {
+        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+            + Integer.toString(lineNumber) + ", ");
+        listErrors.append(m_utilMessages.getString("util.colonne") + " = "
+            + Integer.toString(j + 1) + ", ");
+        listErrors
+            .append(m_utilMessages.getString("util.errorType")
+                + m_utilMessages.getString("util.valeur") + " = " + theValue
+                + ", ");
+        listErrors.append(m_utilMessages.getString("util.type") + " = "
+            + m_specificColTypes[i] + "<BR>");
+      }
+      start = end + 1;
+      if (start == 0)
+        start = -1;
+      if ((i < m_specificNbCols - 1)
+          && (Variant.isArrayType(m_specificColTypes[i + 1]))) { // End the
+        // parse
+        // putting the
+        // rest of the
+        // line into an
+        // array
+        end = -1;
+      } else {
+        end = theLine.indexOf(m_separator, start);
+      }
+      if ((i < m_specificNbCols - 2) && (end == -1)) { // Not enough columns
+        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+            + Integer.toString(lineNumber) + ", ");
+        listErrors.append(Integer.toString(i + 2 + m_nbCols) + " "
+            + m_utilMessages.getString("util.colonnesAttendues") + " "
+            + Integer.toString(nbColsTotal) + " "
+            + m_utilMessages.getString("util.attendues") + "<BR>");
+      }
 
-            if (end == -1)
-            {
-                theValue = arrayValue.substring(start).trim();
-                haveToContinue = false;
-            }
-            else
-            {
-                theValue = arrayValue.substring(start,end).trim();
-            }
-            if ((theValue == null) || (theValue.length() <= 0))
-            {
-                theValue = "";
-            }
-            
-            ar.add(theValue);
-    
-            start = end + 1;
-        }
-        return (String[])ar.toArray(new String[0]);
+      j++;
     }
-    
-    /**
-     * @return Returns the m_nbCols.
-     */
-    public int getM_nbCols() {
-        return m_nbCols;
+
+    // compte le nbre de colonnes en trop
+    int nbColonnes = nbColsTotal;
+    while (start > -1) {
+      nbColonnes++;
+      start = end + 1;
+      if (start == 0)
+        start = -1;
+      end = theLine.indexOf(m_separator, start);
     }
-    
-    /**
-     * @return Returns the m_separator.
-     */
-    public String getM_separator() {
-        return m_separator;
+
+    if (nbColonnes > nbColsTotal) {
+      listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+          + Integer.toString(lineNumber) + ", ");
+      listErrors.append(nbColonnes + " "
+          + m_utilMessages.getString("util.colonnesAttendues") + " "
+          + Integer.toString(nbColsTotal) + " "
+          + m_utilMessages.getString("util.attendues") + "<BR>");
     }
-    
-    /**
-     * @return Returns the m_colDefaultValues.
-     */
-    public String[] getM_colDefaultValues() {
-        return m_colDefaultValues;
+
+    if (listErrors.length() > 0) {
+      throw new UtilTrappedException("CSVReader.parseLine",
+          SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors
+              .toString());
     }
-    
-    /**
-     * @return Returns the m_colDefaultValues[i]
-     */
-    public String getM_colDefaultValues(int i) {
-        return m_colDefaultValues[i];
+    return valret;
+  }
+
+  protected String[] parseArrayValue(String arrayValue) {
+    int start, end;
+    String theValue;
+    ArrayList ar = new ArrayList();
+    boolean haveToContinue = true;
+
+    start = 0;
+    while (haveToContinue) {
+      end = arrayValue.indexOf(m_separator, start);
+
+      if (end == -1) {
+        theValue = arrayValue.substring(start).trim();
+        haveToContinue = false;
+      } else {
+        theValue = arrayValue.substring(start, end).trim();
+      }
+      if ((theValue == null) || (theValue.length() <= 0)) {
+        theValue = "";
+      }
+
+      ar.add(theValue);
+
+      start = end + 1;
     }
-    
-    /**
-     * @return Returns the m_colTypes.
-     */
-    public String[] getM_colTypes() {
-        return m_colTypes;
-    }
-    
-    /**
-     * @return Returns the m_colTypes[i]
-     */
-    public String getM_colTypes(int i) {
-        return m_colTypes[i];
-    }
-    
-    /**
-     * @return Returns the m_specificNbCols.
-     */
-    public int getM_specificNbCols() {
-        return m_specificNbCols;
-    }
-    
-    /**
-     * @param cols The m_specificNbCols to set.
-     */
-    public void setM_specificNbCols(int cols) {
-    	m_specificNbCols = cols;
-    }
-    
-    /**
-     * @return Returns the m_specificColNames.
-     */
-    public String[] getM_specificColNames() {
-        return m_specificColNames;
-    }
-    
-    /**
-     * @return Returns the m_specificColName index i.
-     */
-    public String getM_specificColName(int i) {
-        return m_specificColNames[i];
-    }
-    
-    /**
-     * @return Returns the m_specificColTypes.
-     */
-    public String[] getM_specificColTypes() {
-        return m_specificColTypes;
-    }
-    
-    /**
-     * @return Returns the m_specificColName index i.
-     */
-    public String getM_specificColType(int i) {
-        return m_specificColTypes[i];
-    }
-    
-    /**
-     * @return Returns the m_specificParameterNames.
-     */
-    public String[] getM_specificParameterNames() {
-        return m_specificParameterNames;
-    }
-    
-    /**
-     * @return Returns the m_specificParameterNames.
-     */
-    public String getM_specificParameterName(int i) {
-        return m_specificParameterNames[i];
-    }
+    return (String[]) ar.toArray(new String[0]);
+  }
+
+  /**
+   * @return Returns the m_nbCols.
+   */
+  public int getM_nbCols() {
+    return m_nbCols;
+  }
+
+  /**
+   * @return Returns the m_separator.
+   */
+  public String getM_separator() {
+    return m_separator;
+  }
+
+  /**
+   * @return Returns the m_colDefaultValues.
+   */
+  public String[] getM_colDefaultValues() {
+    return m_colDefaultValues;
+  }
+
+  /**
+   * @return Returns the m_colDefaultValues[i]
+   */
+  public String getM_colDefaultValues(int i) {
+    return m_colDefaultValues[i];
+  }
+
+  /**
+   * @return Returns the m_colTypes.
+   */
+  public String[] getM_colTypes() {
+    return m_colTypes;
+  }
+
+  /**
+   * @return Returns the m_colTypes[i]
+   */
+  public String getM_colTypes(int i) {
+    return m_colTypes[i];
+  }
+
+  /**
+   * @return Returns the m_specificNbCols.
+   */
+  public int getM_specificNbCols() {
+    return m_specificNbCols;
+  }
+
+  /**
+   * @param cols
+   *          The m_specificNbCols to set.
+   */
+  public void setM_specificNbCols(int cols) {
+    m_specificNbCols = cols;
+  }
+
+  /**
+   * @return Returns the m_specificColNames.
+   */
+  public String[] getM_specificColNames() {
+    return m_specificColNames;
+  }
+
+  /**
+   * @return Returns the m_specificColName index i.
+   */
+  public String getM_specificColName(int i) {
+    return m_specificColNames[i];
+  }
+
+  /**
+   * @return Returns the m_specificColTypes.
+   */
+  public String[] getM_specificColTypes() {
+    return m_specificColTypes;
+  }
+
+  /**
+   * @return Returns the m_specificColName index i.
+   */
+  public String getM_specificColType(int i) {
+    return m_specificColTypes[i];
+  }
+
+  /**
+   * @return Returns the m_specificParameterNames.
+   */
+  public String[] getM_specificParameterNames() {
+    return m_specificParameterNames;
+  }
+
+  /**
+   * @return Returns the m_specificParameterNames.
+   */
+  public String getM_specificParameterName(int i) {
+    return m_specificParameterNames[i];
+  }
 }

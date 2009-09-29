@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
@@ -27,80 +28,74 @@ import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
  * 
  * @author
  */
-public class ArrayCellIconPane extends ArrayCell implements SimpleGraphicElement
-{
+public class ArrayCellIconPane extends ArrayCell implements
+    SimpleGraphicElement {
 
-    private IconPane iconPane;
-    private String   alignement;
+  private IconPane iconPane;
+  private String alignement;
 
-    /**
-     * Constructor declaration
-     * 
-     * 
-     * @param iconPane
-     * @param line
-     * 
-     * @see
-     */
-    public ArrayCellIconPane(IconPane iconPane, ArrayLine line)
-    {
-        super(line);
-        this.iconPane = iconPane;
+  /**
+   * Constructor declaration
+   * 
+   * 
+   * @param iconPane
+   * @param line
+   * 
+   * @see
+   */
+  public ArrayCellIconPane(IconPane iconPane, ArrayLine line) {
+    super(line);
+    this.iconPane = iconPane;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public IconPane getIconPane() {
+    return iconPane;
+  }
+
+  /**
+   * @return
+   */
+  public String getAlignement() {
+    return alignement;
+  }
+
+  /**
+   * @param textAlign
+   */
+  public void setAlignement(String alignement) {
+    this.alignement = alignement;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public String print() {
+    String result = "<td";
+
+    if (getAlignement() != null) {
+      if (getAlignement().equalsIgnoreCase("center")
+          || getAlignement().equalsIgnoreCase("right")) {
+        result += " align=\"" + getAlignement() + "\"";
+      }
     }
 
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public IconPane getIconPane()
-    {
-        return iconPane;
-    }
-
-    /**
-     * @return
-     */
-    public String getAlignement()
-    {
-        return alignement;
-    }
-
-    /**
-     * @param textAlign
-     */
-    public void setAlignement(String alignement)
-    {
-        this.alignement = alignement;
-    }
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public String print()
-    {
-        String result = "<td";
-
-        if (getAlignement() != null)
-        {
-            if (getAlignement().equalsIgnoreCase("center") || getAlignement().equalsIgnoreCase("right"))
-            {
-                result += " align=\"" + getAlignement() + "\"";
-            }
-        }
-
-        result += ">";
-        result += getIconPane().print();
-        result += "</td>";
-        return result;
-    }
+    result += ">";
+    result += getIconPane().print();
+    result += "</td>";
+    return result;
+  }
 
 }

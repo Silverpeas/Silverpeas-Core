@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.webactiv.util.publication.ejb;
 
@@ -38,47 +39,50 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * Stabilisation Lot 2 : Exceptions et Silvertrace
  *
  */
- 
+
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public interface PublicationHome extends EJBHome
-{
+public interface PublicationHome extends EJBHome {
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param pubDetail
-     *
-     * @return
-     *
-     * @throws CreateException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Publication create(PublicationDetail pubDetail) throws CreateException, RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pubDetail
+   * 
+   * @return
+   * 
+   * @throws CreateException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Publication create(PublicationDetail pubDetail)
+      throws CreateException, RemoteException;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param pk
-     *
-     * @return
-     *
-     * @throws FinderException
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Publication findByPrimaryKey(PublicationPK pk) throws FinderException, RemoteException;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param pk
+   * 
+   * @return
+   * 
+   * @throws FinderException
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Publication findByPrimaryKey(PublicationPK pk) throws FinderException,
+      RemoteException;
 
-	public Publication findByName(PublicationPK pk, String name) throws FinderException, RemoteException;
-	
-	public Publication findByNameAndNodeId(PublicationPK pk, String name, int nodeId) throws FinderException, RemoteException;
+  public Publication findByName(PublicationPK pk, String name)
+      throws FinderException, RemoteException;
+
+  public Publication findByNameAndNodeId(PublicationPK pk, String name,
+      int nodeId) throws FinderException, RemoteException;
 }

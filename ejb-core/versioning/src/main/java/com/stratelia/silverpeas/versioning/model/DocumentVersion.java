@@ -48,7 +48,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   private int size;
   private String instanceId;
   private String xmlForm = null;
-  private String creatorName; //used by import/export XML
+  private String creatorName; // used by import/export XML
   private XMLModelContentType xmlModelContentType = null;
 
   public DocumentVersion() {
@@ -182,10 +182,9 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
   public int getSize() {
     return size;
   }
-  
-  public String getDisplaySize()
-  {
-	  return FileRepositoryManager.formatFileSize(getSize());
+
+  public String getDisplaySize() {
+    return FileRepositoryManager.formatFileSize(getSize());
   }
 
   public void setSize(int size) {
@@ -202,7 +201,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * Return if a document is an Office file
-   *
+   * 
    * @return true or false
    */
   public boolean isOfficeDocument() {
@@ -220,10 +219,9 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
     StringBuffer jcrPath = new StringBuffer(500);
     jcrPath.append(getInstanceId()).append('/');
     jcrPath.append(CONTEXT).append('/');
-    if (getDocumentPK().getId() != null)
-	{
-		jcrPath.append(getDocumentPK().getId()).append('/');
-	}
+    if (getDocumentPK().getId() != null) {
+      jcrPath.append(getDocumentPK().getId()).append('/');
+    }
     jcrPath.append(majorNumber + "." + minorNumber).append('/');
     jcrPath.append(StringUtil.escapeQuote(getLogicalName()));
     return jcrPath.toString();
@@ -231,7 +229,8 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   public String getWebdavUrl() {
     StringBuffer url = new StringBuffer(500);
-    ResourceLocator messages =  GeneralPropertiesManager.getGeneralResourceLocator();
+    ResourceLocator messages = GeneralPropertiesManager
+        .getGeneralResourceLocator();
     String webAppContext = messages.getString("ApplicationURL");
     if (!webAppContext.endsWith("/")) {
       webAppContext = webAppContext + '/';
@@ -244,7 +243,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * If 3d document
-   *
+   * 
    * @return true or false
    */
   public boolean isSpinfireDocument() {
@@ -260,13 +259,14 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * If 3d document
-   *
+   * 
    * @return true or false
    */
   public boolean isOpenOfficeCompatibleDocument() {
     boolean isOpenOfficeCompatibleDocument = false;
     if (getMimeType() != null) {
-      isOpenOfficeCompatibleDocument = OPEN_OFFICE_MIME_TYPES.contains(getMimeType());
+      isOpenOfficeCompatibleDocument = OPEN_OFFICE_MIME_TYPES
+          .contains(getMimeType());
       SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
           "root.MSG_GEN_PARAM_VALUE", "isOpenOfficeCompatibleDocument = "
               + isOpenOfficeCompatibleDocument);
@@ -300,38 +300,39 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * Return the path to the document file.
+   * 
    * @return the path to the document file.
    */
   public String getDocumentPath() {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
-        new String[]{CONTEXT});
+        new String[] { CONTEXT });
     if (!directory.endsWith(File.separator)) {
       directory = directory + File.separator;
     }
     return directory + getPhysicalName();
   }
-  
+
   public String getCreatorName() {
-		return creatorName;
-	}
+    return creatorName;
+  }
 
-	public void setCreatorName(String creatorName) {
-		this.creatorName = creatorName;
-	}
-	
-	public String getXmlForm() {
-		return xmlForm;
-	}
+  public void setCreatorName(String creatorName) {
+    this.creatorName = creatorName;
+  }
 
-	public void setXmlForm(String xmlForm) {
-		this.xmlForm = xmlForm;
-	}
-	
-	public XMLModelContentType getXMLModelContentType() {
-		return xmlModelContentType;
-	}
+  public String getXmlForm() {
+    return xmlForm;
+  }
 
-	public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
-		this.xmlModelContentType = xmlModelContentType;
-	}
+  public void setXmlForm(String xmlForm) {
+    this.xmlForm = xmlForm;
+  }
+
+  public XMLModelContentType getXMLModelContentType() {
+    return xmlModelContentType;
+  }
+
+  public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
+    this.xmlModelContentType = xmlModelContentType;
+  }
 }

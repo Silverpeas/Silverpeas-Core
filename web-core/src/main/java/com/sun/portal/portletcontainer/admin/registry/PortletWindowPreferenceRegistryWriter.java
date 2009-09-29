@@ -22,7 +22,6 @@
  * CDDL HEADER END
  */
 
-
 package com.sun.portal.portletcontainer.admin.registry;
 
 import java.util.List;
@@ -36,36 +35,48 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowPreferenceRegistryWriter is responsible for
- * updating the portlet-window-preferences.xml file
+ * PortletWindowPreferenceRegistryWriter is responsible for updating the
+ * portlet-window-preferences.xml file
  */
-public class PortletWindowPreferenceRegistryWriter extends PortletRegistryWriter {
- 
-    public PortletWindowPreferenceRegistryWriter(String registryLocation, String context) {
-        super(registryLocation, PortletRegistryFile.PORTLET_WINDOW_PREFERENCE_REGISTRY_FILE, context);
+public class PortletWindowPreferenceRegistryWriter extends
+    PortletRegistryWriter {
+
+  public PortletWindowPreferenceRegistryWriter(String registryLocation,
+      String context) {
+    super(registryLocation,
+        PortletRegistryFile.PORTLET_WINDOW_PREFERENCE_REGISTRY_FILE, context);
+  }
+
+  public void appendDocument(List portletWindowPreferenceElementList)
+      throws PortletRegistryException {
+    PortletRegistryReader portletWindowPreferenceRegistryReader = new PortletWindowPreferenceRegistryReader(
+        registryLocation, context);
+    PortletRegistryObject portletWindowPreferenceRegistry = portletWindowPreferenceRegistryReader
+        .readDocument();
+    write(portletWindowPreferenceElementList, portletWindowPreferenceRegistry);
+  }
+
+  public void writeDocument(List portletWindowPreferenceElementList)
+      throws PortletRegistryException {
+    // TODO: Not in use. Should be removed?
+    // PortletRegistryReader portletWindowPreferenceRegistryReader = new
+    // PortletWindowPreferenceRegistryReader(registryLocation);
+    PortletRegistryObject portletWindowPreferenceRegistry = new PortletWindowPreferenceRegistry();
+    write(portletWindowPreferenceElementList, portletWindowPreferenceRegistry);
+  }
+
+  private void write(List portletWindowPreferenceElementList,
+      PortletRegistryObject portletWindowPreferenceRegistry)
+      throws PortletRegistryException {
+    int size = portletWindowPreferenceElementList.size();
+    PortletRegistryElement portletWindowPreference;
+    for (int i = 0; i < size; i++) {
+      portletWindowPreference = (PortletRegistryElement) portletWindowPreferenceElementList
+          .get(i);
+      portletWindowPreferenceRegistry
+          .addRegistryElement(portletWindowPreference);
     }
-    
-    public void appendDocument(List portletWindowPreferenceElementList) throws PortletRegistryException {
-        PortletRegistryReader portletWindowPreferenceRegistryReader = new PortletWindowPreferenceRegistryReader(registryLocation, context);
-        PortletRegistryObject portletWindowPreferenceRegistry = portletWindowPreferenceRegistryReader.readDocument();
-        write(portletWindowPreferenceElementList, portletWindowPreferenceRegistry);
-    }
-    
-    public void writeDocument(List portletWindowPreferenceElementList) throws PortletRegistryException {
-      //TODO: Not in use. Should be removed? 
-      //PortletRegistryReader portletWindowPreferenceRegistryReader = new PortletWindowPreferenceRegistryReader(registryLocation);
-        PortletRegistryObject portletWindowPreferenceRegistry = new PortletWindowPreferenceRegistry();
-        write(portletWindowPreferenceElementList, portletWindowPreferenceRegistry);
-    }
-    
-    private void write(List portletWindowPreferenceElementList, PortletRegistryObject portletWindowPreferenceRegistry) throws PortletRegistryException {
-        int size = portletWindowPreferenceElementList.size();
-        PortletRegistryElement portletWindowPreference;
-        for(int i=0; i<size; i++){
-            portletWindowPreference = (PortletRegistryElement)portletWindowPreferenceElementList.get(i);
-            portletWindowPreferenceRegistry.addRegistryElement(portletWindowPreference);
-        }
-        write(portletWindowPreferenceRegistry);
-        PortletRegistryCache.refreshPortletWindowPreferenceRegistryCache(true);
-    }
+    write(portletWindowPreferenceRegistry);
+    PortletRegistryCache.refreshPortletWindowPreferenceRegistryCache(true);
+  }
 }

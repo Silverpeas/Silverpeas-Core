@@ -17,78 +17,96 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author BERTINL
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ *         TODO To change the template for this generated type comment go to
+ *         Window - Preferences - Java - Code Style - Code Templates
  */
-public class UserPieChartBuilder extends AbstractPieChartBuilder 
-{
-	private String dateStat;
-	private String dateFormate;
-	private String currentUserId;
-	private String filterIdGroup;
-	private String filterIdUser;
-	private String spaceId;
-	private OrganizationController organizationController;
-	private ResourceLocator message;
+public class UserPieChartBuilder extends AbstractPieChartBuilder {
+  private String dateStat;
+  private String dateFormate;
+  private String currentUserId;
+  private String filterIdGroup;
+  private String filterIdUser;
+  private String spaceId;
+  private OrganizationController organizationController;
+  private ResourceLocator message;
 
-	public UserPieChartBuilder(String dateStat, String dateFormate, String currentUserId, String filterIdGroup, String filterIdUser, String spaceId, ResourceLocator message, OrganizationController organizationController)
-	{
-		this.dateStat = dateStat;
-		this.dateFormate = dateFormate;
-		this.currentUserId = currentUserId;
-		this.filterIdGroup = filterIdGroup;
-		this.filterIdUser = filterIdUser;
-		this.spaceId = spaceId;
-		this.organizationController = organizationController;
-		this.message = message;
-	}
+  public UserPieChartBuilder(String dateStat, String dateFormate,
+      String currentUserId, String filterIdGroup, String filterIdUser,
+      String spaceId, ResourceLocator message,
+      OrganizationController organizationController) {
+    this.dateStat = dateStat;
+    this.dateFormate = dateFormate;
+    this.currentUserId = currentUserId;
+    this.filterIdGroup = filterIdGroup;
+    this.filterIdUser = filterIdUser;
+    this.spaceId = spaceId;
+    this.organizationController = organizationController;
+    this.message = message;
+  }
 
-	/* (non-Javadoc)
-	 * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder#getChartTitle()
-	 */
-	public String getChartTitle() 
-	{
-		String title = message.getString("silverStatisticsPeas.AccessNumber")+" ";
-		
-		if (!this.filterIdGroup.equals("") && this.filterIdUser.equals("")) {
-			title += " "+message.getString("silverStatisticsPeas.EvolutionAccessGroup")+" "+this.organizationController.getGroup(this.filterIdGroup).getName()+" ";
-		}
-		if (!this.filterIdUser.equals("")) {
-			title += " "+message.getString("silverStatisticsPeas.EvolutionAccessUser")+" "+this.organizationController.getUserDetail(this.filterIdUser).getLastName()+" ";
-		}
-		
-		try {
-			if ( (this.spaceId != null) && (this.spaceId.length()>0) && (! this.spaceId.equals("WA0"))) {
-				SpaceInstLight space = new Admin().getSpaceInstLightById(this.spaceId);
-				title += message.getString("silverStatisticsPeas.ToSpace")+" ["+space.getName()+"] "; 
-			}
-		} catch(Exception e) {
-			SilverTrace.error("silverStatisticsPeas", "UserPieChartBuilder.getChartTitle()", "root.EX_SQL_QUERY_FAILED", e);
-		}
-		
-		title += message.getString("silverStatisticsPeas.In")+ " " + this.dateFormate;
-			
-		return title;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
+   * #getChartTitle()
+   */
+  public String getChartTitle() {
+    String title = message.getString("silverStatisticsPeas.AccessNumber") + " ";
 
-	/* (non-Javadoc)
-	 * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder#getCmpStats()
-	 */
-	Hashtable getCmpStats() 
-	{
-		//Hashtable key=componentId, value=new String[3] {tout, groupe, user}
-		
-		Hashtable cmpStats = new Hashtable();
-		try 
-		{
-			cmpStats.putAll( SilverStatisticsPeasDAOAccesVolume.getStatsUserVentil(dateStat, currentUserId, filterIdGroup, filterIdUser) );
-		} 
-		catch (SQLException e) 
-		{
-			SilverTrace.error("silverStatisticsPeas", "UserPieChartBuilder.getCmpStats()", "root.EX_SQL_QUERY_FAILED", e);
-		}
-		return cmpStats;
-	}
+    if (!this.filterIdGroup.equals("") && this.filterIdUser.equals("")) {
+      title += " "
+          + message.getString("silverStatisticsPeas.EvolutionAccessGroup")
+          + " "
+          + this.organizationController.getGroup(this.filterIdGroup).getName()
+          + " ";
+    }
+    if (!this.filterIdUser.equals("")) {
+      title += " "
+          + message.getString("silverStatisticsPeas.EvolutionAccessUser")
+          + " "
+          + this.organizationController.getUserDetail(this.filterIdUser)
+              .getLastName() + " ";
+    }
+
+    try {
+      if ((this.spaceId != null) && (this.spaceId.length() > 0)
+          && (!this.spaceId.equals("WA0"))) {
+        SpaceInstLight space = new Admin().getSpaceInstLightById(this.spaceId);
+        title += message.getString("silverStatisticsPeas.ToSpace") + " ["
+            + space.getName() + "] ";
+      }
+    } catch (Exception e) {
+      SilverTrace.error("silverStatisticsPeas",
+          "UserPieChartBuilder.getChartTitle()", "root.EX_SQL_QUERY_FAILED", e);
+    }
+
+    title += message.getString("silverStatisticsPeas.In") + " "
+        + this.dateFormate;
+
+    return title;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
+   * #getCmpStats()
+   */
+  Hashtable getCmpStats() {
+    // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
+
+    Hashtable cmpStats = new Hashtable();
+    try {
+      cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume.getStatsUserVentil(
+          dateStat, currentUserId, filterIdGroup, filterIdUser));
+    } catch (SQLException e) {
+      SilverTrace.error("silverStatisticsPeas",
+          "UserPieChartBuilder.getCmpStats()", "root.EX_SQL_QUERY_FAILED", e);
+    }
+    return cmpStats;
+  }
 
 }

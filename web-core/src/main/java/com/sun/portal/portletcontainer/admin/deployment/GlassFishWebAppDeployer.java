@@ -36,103 +36,109 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 
 /**
- * The class which implements the WebAppDeployer interface to provide the deployment
- * and undeployment functionality for Portlets on GlassFish container.
+ * The class which implements the WebAppDeployer interface to provide the
+ * deployment and undeployment functionality for Portlets on GlassFish
+ * container.
  */
 public class GlassFishWebAppDeployer implements WebAppDeployer {
 
-    private static Logger logger = Logger.getLogger(GlassFishWebAppDeployer.class.getPackage().getName(),
-            "com.silverpeas.portlets.PALogMessages");
-    private static final String GLASSFISH_DOMAIN = "DOMAIN_ROOT";
-    private String autoDeployDirectory;
+  private static Logger logger = Logger.getLogger(GlassFishWebAppDeployer.class
+      .getPackage().getName(), "com.silverpeas.portlets.PALogMessages");
+  private static final String GLASSFISH_DOMAIN = "DOMAIN_ROOT";
+  private String autoDeployDirectory;
 
-    /**
-     * Initialize the autoDeployDirectory by reading the configuration data from the config file.
-     */
-    public GlassFishWebAppDeployer() throws Exception {
-        String portletContainerConfigDir = PortletRegistryHelper.getConfigFileLocation();
-        if (portletContainerConfigDir != null) {
-            FileInputStream config = null;
-            String configFileName = portletContainerConfigDir + File.separator + CONFIG_FILE;
-            try {
-                config = new FileInputStream(configFileName);
-                Properties properties = new Properties();
-                properties.load(config);
-                String domainDirectory = properties.getProperty(GLASSFISH_DOMAIN);
-                autoDeployDirectory = domainDirectory + File.separator + "autodeploy";
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "PSPL_CSPPAM0025", e);
-                throw e;
-            } finally {
-                try {
-                    if (config != null) {
-                        config.close();
-                    }
-                } catch (Exception ignored) {
-                }
-            }
+  /**
+   * Initialize the autoDeployDirectory by reading the configuration data from
+   * the config file.
+   */
+  public GlassFishWebAppDeployer() throws Exception {
+    String portletContainerConfigDir = PortletRegistryHelper
+        .getConfigFileLocation();
+    if (portletContainerConfigDir != null) {
+      FileInputStream config = null;
+      String configFileName = portletContainerConfigDir + File.separator
+          + CONFIG_FILE;
+      try {
+        config = new FileInputStream(configFileName);
+        Properties properties = new Properties();
+        properties.load(config);
+        String domainDirectory = properties.getProperty(GLASSFISH_DOMAIN);
+        autoDeployDirectory = domainDirectory + File.separator + "autodeploy";
+      } catch (Exception e) {
+        logger.log(Level.SEVERE, "PSPL_CSPPAM0025", e);
+        throw e;
+      } finally {
+        try {
+          if (config != null) {
+            config.close();
+          }
+        } catch (Exception ignored) {
         }
+      }
     }
+  }
 
-    /**
-     * Provides the implementation of deploying Portlet war on GlassFish.
-     *
-     * @param warFileName The complete path to the Portlet war file.
-     * @return boolean Returns true if the deployment is successful.
-     */
-    public boolean deploy(String warFileName) throws WebAppDeployerException {
-        boolean success = false;
-        String warFileLocation = null;
-        try {
-            warFileLocation = PortletRegistryHelper.getWarFileLocation();
-        } catch (PortletRegistryException pre) {
-        }
-        String warName = PortletWarUpdaterUtil.getWarName(warFileName);
-        // Copy in auto-deploy directory
-        try {
-            if (autoDeployDirectory != null) {
-                String warFile = warFileLocation + File.separator + warName;
-                WebAppDeployerUtil.copyFile(warFile,
-                        autoDeployDirectory + File.separator + warName);
-                if (logger.isLoggable(Level.INFO)) {
-                    logger.log(Level.INFO, "PSPL_CSPPAM0020",
-                            new String[]{warFile, autoDeployDirectory});
-                }
-                success = true;
-            }
-        } catch (IOException ioe) {
-            logger.log(Level.WARNING, "PSPL_CSPPAM0021", ioe);
-            throw new WebAppDeployerException(ioe.getMessage(), ioe);
-        }
-        return success;
+  /**
+   * Provides the implementation of deploying Portlet war on GlassFish.
+   * 
+   * @param warFileName
+   *          The complete path to the Portlet war file.
+   * @return boolean Returns true if the deployment is successful.
+   */
+  public boolean deploy(String warFileName) throws WebAppDeployerException {
+    boolean success = false;
+    String warFileLocation = null;
+    try {
+      warFileLocation = PortletRegistryHelper.getWarFileLocation();
+    } catch (PortletRegistryException pre) {
     }
+    String warName = PortletWarUpdaterUtil.getWarName(warFileName);
+    // Copy in auto-deploy directory
+    try {
+      if (autoDeployDirectory != null) {
+        String warFile = warFileLocation + File.separator + warName;
+        WebAppDeployerUtil.copyFile(warFile, autoDeployDirectory
+            + File.separator + warName);
+        if (logger.isLoggable(Level.INFO)) {
+          logger.log(Level.INFO, "PSPL_CSPPAM0020", new String[] { warFile,
+              autoDeployDirectory });
+        }
+        success = true;
+      }
+    } catch (IOException ioe) {
+      logger.log(Level.WARNING, "PSPL_CSPPAM0021", ioe);
+      throw new WebAppDeployerException(ioe.getMessage(), ioe);
+    }
+    return success;
+  }
 
-    /**
-     * Provides the implementation of undeploying Portlet war from GlassFish.
-     *
-     * @param warFileName The complete path to the Portlet war file.
-     * @return boolean Returns true if the deployment is successful.
-     */
-    public boolean undeploy(String warFileName) throws WebAppDeployerException {
-        boolean success = false;
-        try {
-            if (autoDeployDirectory != null) {
-                int index = warFileName.indexOf(".war");
-                if (index == -1) {
-                    warFileName = warFileName + ".war";
-                }
-                String warFile = autoDeployDirectory + File.separator + warFileName;
-                File file = new File(warFile);
-                success = file.delete();
-                if (logger.isLoggable(Level.INFO)) {
-                    logger.log(Level.INFO, "PSPL_CSPPAM0022",
-                            new String[]{warFile, String.valueOf(success)});
-                }
-            }
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "PSPL_CSPPAM0023", e);
-            throw new WebAppDeployerException(e.getMessage(), e);
+  /**
+   * Provides the implementation of undeploying Portlet war from GlassFish.
+   * 
+   * @param warFileName
+   *          The complete path to the Portlet war file.
+   * @return boolean Returns true if the deployment is successful.
+   */
+  public boolean undeploy(String warFileName) throws WebAppDeployerException {
+    boolean success = false;
+    try {
+      if (autoDeployDirectory != null) {
+        int index = warFileName.indexOf(".war");
+        if (index == -1) {
+          warFileName = warFileName + ".war";
         }
-        return success;
+        String warFile = autoDeployDirectory + File.separator + warFileName;
+        File file = new File(warFile);
+        success = file.delete();
+        if (logger.isLoggable(Level.INFO)) {
+          logger.log(Level.INFO, "PSPL_CSPPAM0022", new String[] { warFile,
+              String.valueOf(success) });
+        }
+      }
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "PSPL_CSPPAM0023", e);
+      throw new WebAppDeployerException(e.getMessage(), e);
     }
+    return success;
+  }
 }

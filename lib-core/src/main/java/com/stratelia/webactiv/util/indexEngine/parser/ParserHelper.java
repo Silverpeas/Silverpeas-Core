@@ -27,73 +27,61 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * mise en place des silvertrace
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author $Author: neysseri $
  */
-public class ParserHelper
-{
+public class ParserHelper {
 
-    /**
-     *
-     * @return the path to the temp directory or null
-     *
-     */
-    static public String getTempDirectory()
-    {
-        ResourceLocator resource = null;
-        String          tempDirectory = null;
+  /**
+   * 
+   * @return the path to the temp directory or null
+   * 
+   */
+  static public String getTempDirectory() {
+    ResourceLocator resource = null;
+    String tempDirectory = null;
 
-        try
-        {
-            resource = new ResourceLocator("com.stratelia.webactiv.general", "");
-            if (resource != null)
-            {
-                tempDirectory = resource.getString("tempPath");
-            }
+    try {
+      resource = new ResourceLocator("com.stratelia.webactiv.general", "");
+      if (resource != null) {
+        tempDirectory = resource.getString("tempPath");
+      }
 
-        }
-        catch (MissingResourceException e)
-		{
-			SilverTrace.warn("indexEngine", "ParserHelper",
-			                 "indexEngine.MSG_MISSING_GENERAL_PROPERTIES", null, e);
-		}
-        return tempDirectory;
+    } catch (MissingResourceException e) {
+      SilverTrace.warn("indexEngine", "ParserHelper",
+          "indexEngine.MSG_MISSING_GENERAL_PROPERTIES", null, e);
     }
+    return tempDirectory;
+  }
 
-	/**
-	 * @get the time out parameter or 30000
-	 */
-	static public int getTimeOutParameter()
-	{
-		ResourceLocator resourceLocator = null;
-		int timeOutParameter = 0;
+  /**
+   * @get the time out parameter or 30000
+   */
+  static public int getTimeOutParameter() {
+    ResourceLocator resourceLocator = null;
+    int timeOutParameter = 0;
 
-		try
-		{ 
-			resourceLocator = new ResourceLocator("com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
+    try {
+      resourceLocator = new ResourceLocator(
+          "com.stratelia.webactiv.util.indexEngine.IndexEngine", "");
 
-    
-			if (resourceLocator != null)
-			{
-				timeOutParameter = Integer.parseInt(resourceLocator.getString("TimeOutParameter"));
-			}
-		}
-		catch (MissingResourceException e) 
-		{
-			SilverTrace.warn("indexEngine", "ParserHelper",
-			                 "indexEngine.MSG_MISSING_INDEXENGINE_PROPERTIES", null, e);
-		}
-		catch (NumberFormatException e) 
-		{
-			SilverTrace.warn("indexEngine", "ParserHelper",
-			                 "indexEngine.MSG_PARSE_STRING_FAIL", resourceLocator.getString("TimeOutParameter"), e);
-		}
-		return timeOutParameter;
-	}
-
+      if (resourceLocator != null) {
+        timeOutParameter = Integer.parseInt(resourceLocator
+            .getString("TimeOutParameter"));
+      }
+    } catch (MissingResourceException e) {
+      SilverTrace.warn("indexEngine", "ParserHelper",
+          "indexEngine.MSG_MISSING_INDEXENGINE_PROPERTIES", null, e);
+    } catch (NumberFormatException e) {
+      SilverTrace.warn("indexEngine", "ParserHelper",
+          "indexEngine.MSG_PARSE_STRING_FAIL", resourceLocator
+              .getString("TimeOutParameter"), e);
+    }
+    return timeOutParameter;
+  }
 
 }

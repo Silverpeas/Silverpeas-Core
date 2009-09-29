@@ -1,4 +1,5 @@
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
@@ -46,135 +47,139 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class SilverStatisticsMessageDriven implements MessageDrivenBean, MessageListener
-{
-    private StatisticsConfig    myStatsConfig;
-    private SilverStatistics    silverStatistics = null;
-    private MessageDrivenContext ctx;
+public class SilverStatisticsMessageDriven implements MessageDrivenBean,
+    MessageListener {
+  private StatisticsConfig myStatsConfig;
+  private SilverStatistics silverStatistics = null;
+  private MessageDrivenContext ctx;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @see
-     */
-    public void ejbCreate() {}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @see
+   */
+  public void ejbCreate() {
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @see
-     */
-    public void ejbRemove() {}
+  /**
+   * Method declaration
+   * 
+   * 
+   * @see
+   */
+  public void ejbRemove() {
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param sc
-     *
-     * @see
-     */
-    public void setMessageDrivenContext(MessageDrivenContext sc)
-    {
-        SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.setMessageDrivenContext", "root.MSG_GEN_PARAM_VALUE", "MessageDrivenContext="+sc);
-        ctx = sc;
-        myStatsConfig = new StatisticsConfig();
-        try
-        {
-            if (myStatsConfig.init() != 0)
-            {
-                SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.setSessionContext", "silverstatistics.MSG_CONFIG_FILE");
-            }
-        }
-        catch (SilverStatisticsConfigException e)
-        {
-            SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.setSessionContext", "silverstatistics.MSG_CONFIG_FILE", e);
-        }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param sc
+   * 
+   * @see
+   */
+  public void setMessageDrivenContext(MessageDrivenContext sc) {
+    SilverTrace.info("silverstatistics",
+        "SilverStatisticsMessageDriven.setMessageDrivenContext",
+        "root.MSG_GEN_PARAM_VALUE", "MessageDrivenContext=" + sc);
+    ctx = sc;
+    myStatsConfig = new StatisticsConfig();
+    try {
+      if (myStatsConfig.init() != 0) {
+        SilverTrace.error("silverstatistics",
+            "SilverStatisticsMessageDriven.setSessionContext",
+            "silverstatistics.MSG_CONFIG_FILE");
+      }
+    } catch (SilverStatisticsConfigException e) {
+      SilverTrace.error("silverstatistics",
+          "SilverStatisticsMessageDriven.setSessionContext",
+          "silverstatistics.MSG_CONFIG_FILE", e);
     }
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param m
-     *
-     * @see ejbjar.xml for transaction management
-     */
-    public void onMessage(Message m)
-    {
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param m
+   * 
+   * @see ejbjar.xml for transaction management
+   */
+  public void onMessage(Message m) {
 
-        TextMessage tm  = (TextMessage) m;
-        String      msg = "";
-        String      typeOfStats = "";
-        String      stat = "";
+    TextMessage tm = (TextMessage) m;
+    String msg = "";
+    String typeOfStats = "";
+    String stat = "";
 
-        try
-        {
-            msg = tm.getText();
-            SilverTrace.debug("silverstatistics", "SilverStatisticsMessageDriven.onMessage", "root.MSG_GEN_PARAM_VALUE", "msg="+msg);
+    try {
+      msg = tm.getText();
+      SilverTrace.debug("silverstatistics",
+          "SilverStatisticsMessageDriven.onMessage",
+          "root.MSG_GEN_PARAM_VALUE", "msg=" + msg);
 
-            StringTokenizer stData = new StringTokenizer(msg, SilverStatisticsConstants.SEPARATOR);
+      StringTokenizer stData = new StringTokenizer(msg,
+          SilverStatisticsConstants.SEPARATOR);
 
-            if (stData.hasMoreTokens())
-            {
-                typeOfStats = stData.nextToken();
-                if (typeOfStats.length() + SilverStatisticsConstants.SEPARATOR.length() < msg.length())
-                {
-                    stat = msg.substring(typeOfStats.length() + SilverStatisticsConstants.SEPARATOR.length(), msg.length());
+      if (stData.hasMoreTokens()) {
+        typeOfStats = stData.nextToken();
+        if (typeOfStats.length() + SilverStatisticsConstants.SEPARATOR.length() < msg
+            .length()) {
+          stat = msg.substring(typeOfStats.length()
+              + SilverStatisticsConstants.SEPARATOR.length(), msg.length());
 
-                    try
-                    {
-                        SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.onMessage", "root.MSG_GEN_PARAM_VALUE", "before putStats stat=" + stat);
-                        getSilverStatistics().putStats(typeOfStats, stat);
-                        SilverTrace.debug("silverstatistics", "SilverStatisticsMessageDriven.onMessage", "after putStats");
-                    }
-                    catch (RemoteException ex)
-                    {
-                        SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage", "impossible de trouver " + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
-                    }
-                }
-                else
-                {
-                    SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage", "Mauvais message", msg);
-                }
-            }
+          try {
+            SilverTrace.info("silverstatistics",
+                "SilverStatisticsMessageDriven.onMessage",
+                "root.MSG_GEN_PARAM_VALUE", "before putStats stat=" + stat);
+            getSilverStatistics().putStats(typeOfStats, stat);
+            SilverTrace.debug("silverstatistics",
+                "SilverStatisticsMessageDriven.onMessage", "after putStats");
+          } catch (RemoteException ex) {
+            SilverTrace.error("silverstatistics",
+                "SilverStatisticsMessageDriven.onMessage",
+                "impossible de trouver " + JNDINames.SILVERSTATISTICS_EJBHOME,
+                ex);
+          }
+        } else {
+          SilverTrace
+              .error("silverstatistics",
+                  "SilverStatisticsMessageDriven.onMessage", "Mauvais message",
+                  msg);
         }
-        catch (Exception e)
-        {
-            SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage", "Probleme jms ", e);
-        }
+      }
+    } catch (Exception e) {
+      SilverTrace.error("silverstatistics",
+          "SilverStatisticsMessageDriven.onMessage", "Probleme jms ", e);
     }
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    private SilverStatistics getSilverStatistics()
-    {
-        if (silverStatistics == null)
-        {
-            try
-            {
-                SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME, SilverStatisticsHome.class);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private SilverStatistics getSilverStatistics() {
+    if (silverStatistics == null) {
+      try {
+        SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME,
+                SilverStatisticsHome.class);
 
-                silverStatistics = silverStatisticsHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new EJBException(e.getMessage());
-            }
-        }
-        return silverStatistics;
+        silverStatistics = silverStatisticsHome.create();
+      } catch (Exception e) {
+        throw new EJBException(e.getMessage());
+      }
     }
+    return silverStatistics;
+  }
 
 }
