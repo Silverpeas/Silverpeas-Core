@@ -24,7 +24,7 @@
 /*
  * @author Norbert CHAIX
  * @version 1.0
-  date 14/09/2000
+ date 14/09/2000
  */
 package com.stratelia.webactiv.beans.admin;
 

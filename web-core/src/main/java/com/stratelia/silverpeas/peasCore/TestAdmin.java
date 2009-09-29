@@ -24,7 +24,7 @@
 /*
  * @author Norbert CHAIX
  * @version 1.0
-date 26/6/2000
+ date 26/6/2000
  */
 package com.stratelia.silverpeas.peasCore;
 
