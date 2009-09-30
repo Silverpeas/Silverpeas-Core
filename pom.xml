@@ -14,11 +14,6 @@
   <packaging>pom</packaging>
   <name>Core</name>
 
-  <properties>
-    <config.version>1.0-SNAPSHOT</config.version>
-  </properties>
-
-
   <build>
     <plugins>
       <plugin>
@@ -51,70 +46,20 @@
         </dependencies>
       </plugin>
       <plugin>
-        <groupId>org.silverpeas.services</groupId>
-        <artifactId>code-formatter-plugin</artifactId>
-        <configuration>
-          <configurationFile>formatter/formatter.prefs</configurationFile>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
-            <id>format</id>
-            <phase>generate-sources</phase>
+            <id>attach-sources</id>
+            <phase>verify</phase>
             <goals>
-              <goal>format</goal>
+              <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.silverpeas</groupId>
-            <artifactId>assembly-configuration</artifactId>
-            <version>${config.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>license</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.google.code.maven-license-plugin</groupId>
-            <artifactId>maven-license-plugin</artifactId>
-            <configuration>
-              <header>license/silverpeas-license.txt</header>
-              <quiet>true</quiet>
-              <excludes>
-                <exclude>**/*.txt</exclude>
-                <exclude>**/*.sql</exclude>
-                <exclude>**/*.js</exclude>
-                <exclude>**/*.html</exclude>
-              </excludes>
-            </configuration>
-            <executions>
-              <execution>
-                <id>header</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>format</goal>
-                </goals>
-              </execution>
-            </executions>
-            <dependencies>
-              <dependency>
-                <groupId>com.silverpeas</groupId>
-                <artifactId>assembly-configuration</artifactId>
-                <version>${config.version}</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <modules>
     <module>lib-core</module>
