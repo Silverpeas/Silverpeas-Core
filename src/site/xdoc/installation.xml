@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Installation</title>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Pre-requisite">
+      <p>In order to install Silverpeas you need some tools installed.<br/>
+         Currently Silverpeas V5 has been tested and can be automatically deployed on a pre-configured version of JBoss 4.0.3.
+         But it has been successfully deployed and run on other Application Servers (such as Websphere, Weblogic, ect.).<br/>
+     </p>
+     <subsection name="Java 6">
+        <p>Silverpeas needs a JDK at least of version 6, which can be downloaded from Sun <a href="http://java.sun.com/javase/downloads/index.jsp">here</a></p>
+      </subsection>
+      <subsection name="Apache Maven">
+        <p>Apache Maven 2.2.x is used in Silverpeas to build its components and to assembly it. So you need to install it on your target platform.<br/>
+          To install it correctly you can follow the instructions from <a href="http://www.sonatype.com/books/maven-book/reference/installation.html">Maven - The Definitive Guide</a></p>
+          <p>For more information about Apache Maven you can go to <a href="http://maven.apache.org">their website</a> or <a href="http://www.sonatype.com/books/maven-book/reference/">download the ebook</a></p>
+      </subsection>
+      <subsection name="Postgresql">
+        <p>Silverpeas can use any JDBC compliant RDBMS but the opensource solution is pre-configured to run on PostgreSQL 8.x.
+        You can download it from their <a href="http://www.postgresql.org/download/">website</a>.</p>
+        <p>You will have to create a database SilverpeasV5 with a user postgres/postgres with administrative rights.
+        You can use <a href="http://www.pgadmin.org/download/"><strong>pgAdmin</strong></a> to hepl you create such a database.</p>
+      </subsection>
+    </section>
+    <Section name="Installation">
+      <subsection name="Installing JBoss">
+        <p>Currently we provide a packaged and pre-configured version of JBoss 4.0.3 for Windows that can be downloaded <a href="http://repository.silverpeas.org/files/jboss403.zip">here.</a></p>
+        <p> You have to set-up the environment variable %JBOSS_HOME% to the directory in which you have unzipped the jboss403.zip</p>
+      </subsection>
+      <subsection name="Preparing Silverpeas">
+        <p>Currently we provide a packaged and pre-configured version that will build Silverpeas and its database: <a href="http://repository.silverpeas.org/files/production.zip">here.</a></p>
+        <p>Unzip it on any directory, then define an environment variable $SILVERPEAS_HOME that points to this directory.</p>
+        <p>Suppose you have unzipped the production.zip into C:\Silverpeas\production then <i>%SILVERPEAS_HOME%</i> should be <b>C:\Silverpeas\production</b>.</p>
+        <p>You have to configure your installation by editing the files %SILVERPEAS_HOME%\setup\settings\A200003Settings.xml and %SILVERPEAS_HOME%\setup\settings\SilverpeasSettings.xml.</p>
+      </subsection>
+      <subsection name="Deploying Silverpeas">
+        <p>This is a 4 step operation in %SILVERPEAS_HOME%\silverpeas\bin:</p>
+        <ul>
+          <li>mvn clean install</li>
+          <li>appBuilder.bat</li>
+          <li>SilverpeasSettings.bat</li>
+          <li>dbBuilder.bat</li>
+        </ul>
+      </subsection>
+      <subsection name="Launching Silverpeas">
+        <p>In %SILVERPEAS_HOME%\silverpeas\bin you can launch Silverpeas with <b>silverpeas_start_jboss.cmd</b>.</p>
+        <p>In %SILVERPEAS_HOME%\silverpeas\bin you can stop Silverpeas with <b>silverpeas_stop_jboss.cmd</b>.</p>
+      </subsection>
+    </Section>
+  </body>
+</document>

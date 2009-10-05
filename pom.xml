@@ -7,6 +7,20 @@
     <artifactId>parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+
+  <scm>
+    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/</connection>
+    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/</developerConnection>
+    <url>https://repository.silverpeas.org/svn/silverpeas/core/trunk</url>
+  </scm>
+
+  <distributionManagement>
+    <site>
+      <id>silverpeas.org</id>
+      <url>scp://repository.silverpeas.org/var/www/docs</url>
+    </site>
+  </distributionManagement>
+
   
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
