@@ -79,6 +79,10 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         <p>In %SILVERPEAS_HOME%\silverpeas\bin you can stop Silverpeas with
           <b>silverpeas_stop_jboss.cmd</b>.
         </p>
+        <p>
+          You can now access Silverpeas through the following url: <a href="http://localhost:8000/silverpeas">http://localhost:8000/silverpeas</a>
+          and using the account: <strong>SilverAdmin/SilverAdmin</strong>.
+        </p>
       </subsection>
     </Section>
   </body>
