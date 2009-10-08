@@ -105,12 +105,13 @@ public class RepositoryAccessServlet extends HttpServlet {
    *           if a same servlet is already registered or of another
    *           initialization error occurs.
    */
+  @Override
   public void init() throws ServletException {
     String infos = this.getServletConfig().getServletContext().getServerInfo();
     boolean needLock = infos != null && infos.startsWith("Orion");
     try {
       if (needLock && checkLock()) {
-        SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+        SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
             "RepositoryAccessServlet.init()",
             "Locking the repository ...........");
         log("Locking the repository ...........");
@@ -118,8 +119,7 @@ public class RepositoryAccessServlet extends HttpServlet {
         return;
       }
       log("Initializing the repository ...........");
-      System.out.println("Initializing the repository ...........");
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()",
           "Initializing the repository ...........");
       // check if servlet is defined twice
@@ -130,7 +130,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       getServletContext().setAttribute(CTX_PARAM_THIS, this);
       String jcrConfigurationFile = getServletConfig().getInitParameter(
           "configuration");
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Configuration file : "
               + jcrConfigurationFile);
       XmlWebApplicationContext context = new XmlWebApplicationContext();
@@ -138,12 +138,12 @@ public class RepositoryAccessServlet extends HttpServlet {
       String[] configLocations = StringUtils.tokenizeToStringArray(
           jcrConfigurationFile,
           ConfigurableWebApplicationContext.CONFIG_LOCATION_DELIMITERS);
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Configuration locations : "
               + String.valueOf(configLocations));
       context.setConfigLocations(configLocations);
       context.refresh();
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Spring context loaded.");
       repository = (Repository) context.getBean("repository");
       config = (RmiConfiguration) context.getBean("rmi-configuration");
@@ -151,10 +151,10 @@ public class RepositoryAccessServlet extends HttpServlet {
           "RepositoryAccessServlet.init()", "About to launch cleaner Thread");
       cleaner = new PeriodicJcrCleaner(repository);
       new Thread(cleaner).start();
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet initialized.", repository.toString());
       registerRMI(config);
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "RMI registred");
       getServletContext().setAttribute(Repository.class.getName(), repository);
       registerSilverpeasNodeTypes();
@@ -203,15 +203,16 @@ public class RepositoryAccessServlet extends HttpServlet {
     return lock.createNewFile();
   }
 
+  @Override
   public void destroy() {
     super.destroy();
     unregisterRMI(config);
     log("Closing the repository ...........");
-    System.out.println("Closing the repository ...........");
-    SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+    SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
         "Closing the repository ...........");
   }
 
+  @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     try {
@@ -219,9 +220,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       try {
         String user = session.getUserID();
         String name = repository.getDescriptor(Repository.REP_NAME_DESC);
-        System.out.println("Logged in as " + user + " to a " + name
-            + " repository.");
-        SilverTrace.error("jcrUtil", "RepositoryAccessServlet.init()",
+        SilverTrace.info("jcrUtil", "RepositoryAccessServlet.init()",
             "Logged in as " + user + " to a " + name + " repository.");
       } finally {
         session.logout();
@@ -435,6 +434,7 @@ public class RepositoryAccessServlet extends HttpServlet {
   protected RMIServerSocketFactory getRMIServerSocketFactory(
       final InetAddress hostAddress) {
     return new RMIServerSocketFactory() {
+      @Override
       public ServerSocket createServerSocket(int port) throws IOException {
         return new ServerSocket(port, -1, hostAddress);
       }
@@ -458,6 +458,7 @@ public class RepositoryAccessServlet extends HttpServlet {
 
     private static final RemoteAdapterFactory FACTORY = new JackrabbitServerAdapterFactory();
 
+    @Override
     public Remote createRemoteRepository(Repository repository)
         throws RemoteException {
       return FACTORY.getRemoteRepository(repository);
