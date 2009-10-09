@@ -1142,8 +1142,11 @@ public class PdcSearchSessionController extends
 
   public List getAxis(String viewType, AxisFilter filter) throws PdcException {
     if (componentList == null || componentList.size() == 0) {
-      return getPdcBm().getPertinentAxisByInstanceId(searchContext, viewType,
-          getCurrentComponentId());
+      if(StringUtil.isDefined(getCurrentComponentId())) {
+        return getPdcBm().getPertinentAxisByInstanceId(searchContext, viewType,
+            getCurrentComponentId());
+      }
+      return new ArrayList();
     } else {
       if (isShowOnlyPertinentAxisAndValues()) {
         return getPdcBm().getPertinentAxisByInstanceIds(searchContext,
