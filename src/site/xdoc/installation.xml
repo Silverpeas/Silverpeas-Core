@@ -50,21 +50,21 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
       <subsection name="Preparing Silverpeas">
         <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download it from </p>
           <ul>
-          <li><a href="http://repository.silverpeas.org/files/production.zip"><img src="images/windows_logo_24X24.png"/> here for Windows</a></li>
-          <li><a href="http://repository.silverpeas.org/files/production.tar.gz"><img src="images/linux_logo_24X24.png"/> here for Linux</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-1.0-SNAPSHOT.zip"><img src="images/windows_logo_24X24.png"/> here for Windows</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-1.0-SNAPSHOT.tar.gz"><img src="images/linux_logo_24X24.png"/> here for Linux</a></li>
         </ul>
         <p>1. Unzip/decompress the contents into any directory,</p>
         <p>2. Define an environment variable %SILVERPEAS_HOME% that points to this directory.</p>
         <p>For example:<br/>
-        unzip the <b>production.zip</b> file into C:\Silverpeas\production.<br/>
-        The <i>%SILVERPEAS_HOME%</i> should be located at C:\Silverpeas\production.
+        unzip the <b>silverpeas-1.0-SNAPSHOT.zip</b> file into <code>C:\Silverpeas</code>.<br/>
+        The <i>%SILVERPEAS_HOME%</i> should be located at C:\Silverpeas.
         </p>
         <p>3. Next, configure your installation by editing the files<br/>
-            %SILVERPEAS_HOME%\setup\settings\A200003Settings.xml and<br/>
+            %SILVERPEAS_HOME%\setup\settings\JBossSettings.xml and<br/>
             %SILVERPEAS_HOME%\setup\settings\SilverpeasSettings.xml.</p>
       </subsection>
       <subsection name="Deploying Silverpeas">
-        <p>This is a 4 step operation in %SILVERPEAS_HOME%\silverpeas\bin:</p>
+        <p>This is a 4 step operation in %SILVERPEAS_HOME%\bin:</p>
         <ol>
           <li>mvn clean install</li>
           <li>appBuilder.bat</li>
@@ -73,10 +73,10 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </ol>
       </subsection>
       <subsection name="Launching Silverpeas">
-        <p>In %SILVERPEAS_HOME%\silverpeas\bin you can launch Silverpeas with
+        <p>In %SILVERPEAS_HOME%\bin you can launch Silverpeas with
           <b>silverpeas_start_jboss.cmd</b>.
         </p>
-        <p>In %SILVERPEAS_HOME%\silverpeas\bin you can stop Silverpeas with
+        <p>In %SILVERPEAS_HOME%\bin you can stop Silverpeas with
           <b>silverpeas_stop_jboss.cmd</b>.
         </p>
         <p>

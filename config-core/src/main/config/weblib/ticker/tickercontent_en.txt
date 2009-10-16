@@ -1,0 +1,17 @@
+<!--Wrap each ticker content inside <div class="message"> tag -->
+
+<div class="message">
+<a href="http://www.javascriptkit.com" target="_new"><b><font color="red">JavaScript Kit :</font></b></a> Comprehensive JavaScript tutorials and over 400+ free scripts!
+</div>
+
+<div class="message">
+<a href="http://www.codingforums.com">Coding Forums</a> Web coding and development forums.
+</div>
+
+<div class="message">
+<a href="http://www.cssdrive.com">CSS Drive</a> Categorized CSS gallery and examples.
+</div>
+
+<div class="message">
+<a href="http://www.javascriptkit.com/domref/">DOM Reference</a> This is a no-nonsense, easy to follow DOM reference for JavaScript.
+</div>

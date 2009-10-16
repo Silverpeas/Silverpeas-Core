@@ -1,0 +1,13 @@
+<!--Wrap each ticker content inside <div class="message"> tag -->
+
+<div class="message">
+<font color="red">Attention ! </font> Indisponibilit&eacute; de l'extranet le 4 novembre entre 10h et 12h
+</div>
+
+<div class="message">
+Cause de l'interruption : Installation de Silverpeas v4.10
+</div>
+
+<div class="message">
+sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec. sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec.
+</div>

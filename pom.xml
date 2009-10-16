@@ -11,7 +11,7 @@
   <scm>
     <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/</connection>
     <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/</developerConnection>
-    <url>https://repository.silverpeas.org/svn/silverpeas/core/trunk</url>
+    <url>https://repository.silverpeas.org/redmine/repositories/show/silverpeas-core</url>
   </scm>
 
   <distributionManagement>
