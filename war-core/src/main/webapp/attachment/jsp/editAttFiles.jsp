@@ -214,10 +214,12 @@ function handleError() {
 	    document.attachmentForm.submit();;
 	}
 
-	function EditXmlForm(id, lang)
-	{
-		SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm)%>&Url=<%=URLEncoder.encode(url)%>", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
-	}
+	<% if (StringUtil.isDefined(xmlForm)) { %>
+		function EditXmlForm(id, lang)
+		{
+			SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm)%>&Url=<%=URLEncoder.encode(url)%>", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
+		}
+	<% } %>
 
 	function updateAttachment(id)
 	{
