@@ -15,6 +15,18 @@
   </scm>
 
   <distributionManagement>
+    <repository>
+      <id>silverpeas</id>
+      <name>Repository Silverpeas</name>
+      <layout>default</layout>
+      <url>dav:http://repository.silverpeas.org/nexus/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>silverpeas-snapshots</id>
+      <name>Snapshots Repository Silverpeas</name>
+      <layout>default</layout>
+      <url>dav:http://repository.silverpeas.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
     <site>
       <id>silverpeas.org</id>
       <url>scp://repository.silverpeas.org/var/www/docs</url>
@@ -74,6 +86,20 @@
       </plugin>
     </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <modules>
     <module>lib-core</module>
