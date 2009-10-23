@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * CompoSpace.java
- *
- * Created on 28 décembre 2000, 15:14
- * author: norbert CHAIX
- */
-
 package com.stratelia.webactiv.beans.admin;
 
 public class CompoSpace {

@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.contentManager;
 
-import java.text.SimpleDateFormat;
+import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;
 
 public class SilverContentVisibility extends Object {
@@ -31,8 +31,6 @@ public class SilverContentVisibility extends Object {
   private String endDate = "9999/99/99";
   private boolean isVisible = true;
 
-  // the date format used in database to represent a date
-  static private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   public SilverContentVisibility(String beginDate, String endDate,
       boolean isVisible) {
@@ -75,10 +73,10 @@ public class SilverContentVisibility extends Object {
 
   public void setVisibilityAttributes(Date beginDate, Date endDate) {
     if (beginDate != null)
-      this.beginDate = formatter.format(beginDate);
+      this.beginDate = DateUtil.date2SQLDate(beginDate);
 
     if (endDate != null)
-      this.endDate = formatter.format(endDate);
+      this.endDate = DateUtil.date2SQLDate(endDate);
   }
 
   public void setVisibilityAttributes(boolean isVisible) {

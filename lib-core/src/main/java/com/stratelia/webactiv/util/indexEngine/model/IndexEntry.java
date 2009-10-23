@@ -24,12 +24,12 @@
 package com.stratelia.webactiv.util.indexEngine.model;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -50,7 +50,6 @@ public class IndexEntry implements Serializable {
    * of entities and then doesn't need to tag them with a type.
    */
   public IndexEntry(WAPrimaryKey key) {
-    // this(new IndexEntryPK(key.space, key.componentName, "", key.id));
     this(new IndexEntryPK(key.componentName, "", key.id));
   }
 
@@ -63,7 +62,6 @@ public class IndexEntry implements Serializable {
    * kind.
    */
   public IndexEntry(WAPrimaryKey key, String type) {
-    // this(new IndexEntryPK(key.space, key.componentName, type, key.id));
     this(new IndexEntryPK(key.componentName, type, key.id));
   }
 
@@ -92,6 +90,7 @@ public class IndexEntry implements Serializable {
    * Returns as a string the key part of the indexEntry. the key part of the
    * IndexEntry
    */
+  @Override
   public String toString() {
     return (pk == null) ? "" : pk.toString();
   }
@@ -140,21 +139,13 @@ public class IndexEntry implements Serializable {
    * indexed document match his query.
    */
   public void setTitle(String title) {
-    /*
-     * if (title != null) this.title = title.toLowerCase(); else this.title =
-     * title;
-     */
     setTitle(title, null);
   }
 
   public void setTitle(String title, String lang) {
-    /*
-     * if (lang == null || I18NHelper.isDefaultLanguage(lang)) this.title =
-     * title; else {
-     */
-    if (title != null)
+    if (title != null) {
       getTitles().put(I18NHelper.checkLanguage(lang), title);
-    // }
+    }
   }
 
   /**
@@ -162,13 +153,10 @@ public class IndexEntry implements Serializable {
    * the indexed document match his query.
    */
   public String getTitle() {
-    /*
-     * if (title != null) return title; else return "";
-     */
-    if (getTitle(null) != null)
+    if (getTitle(null) != null) {
       return getTitle(null);
-    else
-      return "";
+    }
+    return "";
   }
 
   public String getTitle(String lang) {
@@ -179,34 +167,23 @@ public class IndexEntry implements Serializable {
    * Set key words for the index entry.
    */
   public void setKeyWords(String keywords) {
-    /*
-     * if (keyWords != null) this.keyWords = keyWords.toLowerCase(); else
-     * this.keyWords = keyWords;
-     */
     setKeywords(keywords, null);
   }
 
   public void setKeywords(String keywords, String lang) {
-    /*
-     * if (lang == null || I18NHelper.isDefaultLanguage(lang)) this.keyWords =
-     * keywords; else {
-     */
-    if (keywords != null)
+    if (keywords != null) {
       getKeywords().put(I18NHelper.checkLanguage(lang), keywords);
-    // }
+    }
   }
 
   /**
    * Return the key words of the index entry.
    */
   public String getKeyWords() {
-    /*
-     * if (keyWords != null) return keyWords; else return "";
-     */
-    if (getKeywords(null) != null)
+    if (getKeywords(null) != null) {
       return getKeywords(null);
-    else
-      return "";
+    }
+    return "";
   }
 
   public String getKeywords(String lang) {
@@ -218,21 +195,13 @@ public class IndexEntry implements Serializable {
    * when the document will be retrieved.
    */
   public void setPreView(String preview) {
-    /*
-     * if (preView != null) this.preView = preView.toLowerCase(); else
-     * this.preView = preView;
-     */
     setPreview(preview, null);
   }
 
   public void setPreview(String preview, String lang) {
-    /*
-     * if (lang == null || I18NHelper.isDefaultLanguage(lang)) this.preView =
-     * preview; else {
-     */
-    if (preview != null)
+    if (preview != null) {
       getPreviews().put(I18NHelper.checkLanguage(lang), preview);
-    // }
+    }
   }
 
   /**
@@ -240,13 +209,10 @@ public class IndexEntry implements Serializable {
    * user when the document will be retrieved.
    */
   public String getPreView() {
-    /*
-     * if (preView != null) return preView; else return "";
-     */
-    if (getPreview(null) != null)
+    if (getPreview(null) != null) {
       return getPreview(null);
-    else
-      return "";
+    }
+    return "";
   }
 
   public String getPreview(String lang) {
@@ -264,10 +230,10 @@ public class IndexEntry implements Serializable {
    * Return the language of the indexed document.
    */
   public String getLang() {
-    if (lang != null)
+    if (lang != null)  {
       return lang;
-    else
-      return "";
+    }
+    return "";
   }
 
   /**
@@ -281,17 +247,17 @@ public class IndexEntry implements Serializable {
    * Set the creation time of the indexed document.
    */
   public void setCreationDate(Date creationDate) {
-    this.creationDate = new SimpleDateFormat("yyyy/MM/dd").format(creationDate);
+    this.creationDate = DateUtil.date2SQLDate(creationDate);
   }
 
   /**
    * Return the creation time of the indexed document.
    */
   public String getCreationDate() {
-    if (creationDate != null)
+    if (creationDate != null) {
       return creationDate;
-    else
-      return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+    }
+    return DateUtil.date2SQLDate(new Date());
   }
 
   /**
@@ -300,7 +266,6 @@ public class IndexEntry implements Serializable {
    * This is the full name of the user (and not his login or user_id).
    */
   public void setCreationUser(String creationUser) {
-    // this.creationUser = creationUser.toLowerCase();
     this.creationUser = creationUser;
   }
 
@@ -310,10 +275,10 @@ public class IndexEntry implements Serializable {
    * This is the full name of the user (and not his login or user_id).
    */
   public String getCreationUser() {
-    if (creationUser != null)
+    if (creationUser != null) {
       return creationUser;
-    else
-      return "";
+    }
+    return "";
   }
 
   /**
@@ -372,6 +337,7 @@ public class IndexEntry implements Serializable {
    * The equals method is redefined so IndexEntry objects can be put in a Set or
    * used as Map key.
    */
+  @Override
   public boolean equals(Object o) {
     if (o instanceof IndexEntry) {
       IndexEntry e = (IndexEntry) o;
@@ -389,6 +355,7 @@ public class IndexEntry implements Serializable {
    * Only the primary key is used to compute the hash code, as only the primary
    * key is used to compare two entries.
    */
+  @Override
   public int hashCode() {
     return getPK().hashCode();
   }
@@ -443,23 +410,23 @@ public class IndexEntry implements Serializable {
   }
 
   private Hashtable getTitles() {
-    if (titles == null)
+    if (titles == null) {
       titles = new Hashtable();
-
+    }
     return titles;
   }
 
   private Hashtable getPreviews() {
-    if (previews == null)
+    if (previews == null) {
       previews = new Hashtable();
-
+    }
     return previews;
   }
 
   private Hashtable getKeywords() {
-    if (keywordsI18N == null)
+    if (keywordsI18N == null) {
       keywordsI18N = new Hashtable();
-
+    }
     return keywordsI18N;
   }
 

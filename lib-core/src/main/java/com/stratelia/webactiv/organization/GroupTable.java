@@ -282,7 +282,7 @@ public class GroupTable extends Table {
       throws AdminPersistenceException {
     SynchroReport.debug("GroupTable.getAllGroupsOfDomain()",
         "Recherche de l'ensemble des groupes du domaine LDAP dans la base (ID "
-            + domainId + "), requête : " + SELECT_ALL_GROUPS_IN_DOMAIN, null);
+            + domainId + "), requÃªte : " + SELECT_ALL_GROUPS_IN_DOMAIN, null);
     return (GroupRow[]) getRows(SELECT_ALL_GROUPS_IN_DOMAIN, domainId).toArray(
         new GroupRow[0]);
   }
@@ -616,7 +616,7 @@ public class GroupTable extends Table {
     }
 
     SynchroReport.debug("GroupTable.createGroup()", "Ajout de " + group.name
-        + ", requête : " + INSERT_GROUP, null);
+        + ", requÃªte : " + INSERT_GROUP, null);
     insertRow(INSERT_GROUP, group);
     SynchroReport.debug("GroupTable.createGroup()", "Ajout du groupe "
         + group.name + " dans la table ST_UserSet", null);
@@ -624,8 +624,8 @@ public class GroupTable extends Table {
 
     if (superGroup != null) {
       SynchroReport.debug("GroupTable.createGroup()",
-          "Ajout (ou incrément) de relations entre le groupe " + group.name
-              + " d'ID " + group.id + " et son groupe père d'ID "
+          "Ajout (ou incrÃ©ment) de relations entre le groupe " + group.name
+              + " d'ID " + group.id + " et son groupe pÃ¨re d'ID "
               + superGroup.id + " dans la table ST_UserSet_UserSet_Rel", null);
       organization.userSet.addUserSetInUserSet("G", group.id, "G",
           superGroup.id);
@@ -673,14 +673,14 @@ public class GroupTable extends Table {
     oldGroup = getGroup(group.id);
 
     SynchroReport.debug("GroupTable.updateGroup()", "Maj de " + group.name
-        + ", Id=" + group.id + ", requête : " + UPDATE_GROUP, null);
+        + ", Id=" + group.id + ", requÃªte : " + UPDATE_GROUP, null);
     updateRow(UPDATE_GROUP, group);
     if ((oldGroup != null) && (oldGroup.superGroupId != -1)
         && (group.superGroupId != oldGroup.superGroupId)) {
       SynchroReport
           .debug(
               "GroupTable.updateGroup()",
-              "Suppression (ou décrément) des relations liant le groupe "
+              "Suppression (ou dÃ©crÃ©ment) des relations liant le groupe "
                   + group.name
                   + " d'ID "
                   + group.id
@@ -696,7 +696,7 @@ public class GroupTable extends Table {
       SynchroReport
           .debug(
               "GroupTable.updateGroup()",
-              "Ajout (ou incrément) de relations entre le groupe "
+              "Ajout (ou incrÃ©ment) de relations entre le groupe "
                   + group.name
                   + " d'ID "
                   + group.id
@@ -752,7 +752,7 @@ public class GroupTable extends Table {
     // remove the group from each role where it's used.
     UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfGroup(id);
     SynchroReport.info("GroupTable.removeGroup()", "Suppression de "
-        + group.name + " des rôles dans la base", null);
+        + group.name + " des rÃ´les dans la base", null);
     for (int i = 0; i < roles.length; i++) {
       organization.userRole.removeGroupFromUserRole(id, roles[i].id);
     }
@@ -789,7 +789,7 @@ public class GroupTable extends Table {
     // remove the empty group.
     organization.userSet.removeUserSet("G", id);
     SynchroReport.debug("GroupTable.removeGroup()", "Suppression de "
-        + group.name + " (ID=" + id + "), requête : " + DELETE_GROUP, null);
+        + group.name + " (ID=" + id + "), requÃªte : " + DELETE_GROUP, null);
     updateRelation(DELETE_GROUP, id);
   }
 
@@ -854,10 +854,10 @@ public class GroupTable extends Table {
     int[] params = new int[] { groupId, userId };
     SynchroReport.debug("GroupTable.addUserInGroup()",
         "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID "
-            + groupId + ", requête : " + INSERT_A_GROUP_USER_REL, null);
+            + groupId + ", requÃªte : " + INSERT_A_GROUP_USER_REL, null);
     updateRelation(INSERT_A_GROUP_USER_REL, params);
     SynchroReport.debug("GroupTable.addUserInGroup()",
-        "Ajout (ou incrément) de relations entre l'utilisateur d'ID " + userId
+        "Ajout (ou incrÃ©ment) de relations entre l'utilisateur d'ID " + userId
             + " et le groupe d'ID : " + groupId
             + " dans la table ST_UserSet_User_Rel", null);
     organization.userSet.addUserInUserSet(userId, "G", groupId);
@@ -899,10 +899,10 @@ public class GroupTable extends Table {
         int[] params = new int[] { groupId, userId };
         SynchroGroupReport.debug("GroupTable.addUsersInGroup()",
             "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID "
-                + groupId + ", requête : " + INSERT_A_GROUP_USER_REL, null);
+                + groupId + ", requÃªte : " + INSERT_A_GROUP_USER_REL, null);
         updateRelation(INSERT_A_GROUP_USER_REL, params);
         SynchroGroupReport.debug("GroupTable.addUsersInGroup()",
-            "Ajout (ou incrément) de relations entre l'utilisateur d'ID "
+            "Ajout (ou incrÃ©ment) de relations entre l'utilisateur d'ID "
                 + userId + " et le groupe d'ID : " + groupId
                 + " dans la table ST_UserSet_User_Rel", null);
         organization.userSet.addUserInUserSet(userId, "G", groupId);
@@ -923,7 +923,7 @@ public class GroupTable extends Table {
           "group id: '" + groupId + "', user id: '" + userId + "'");
     }
     SynchroReport.debug("GroupTable.removeUserFromGroup()",
-        "Retrait (ou décrément) des relations liant l'utilisateur d'ID "
+        "Retrait (ou dÃ©crÃ©ment) des relations liant l'utilisateur d'ID "
             + userId + " et le groupe d'ID : " + groupId
             + " dans la table ST_UserSet_User_Rel", null);
     organization.userSet.removeUserFromUserSet(userId, "G", groupId);
@@ -931,7 +931,7 @@ public class GroupTable extends Table {
     int[] params = new int[] { groupId, userId };
     SynchroReport.debug("GroupTable.removeUserFromGroup()",
         "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "
-            + groupId + ", requête : " + DELETE_GROUP_USER_REL, null);
+            + groupId + ", requÃªte : " + DELETE_GROUP_USER_REL, null);
     updateRelation(DELETE_GROUP_USER_REL, params);
   }
 
@@ -963,7 +963,7 @@ public class GroupTable extends Table {
 
       if (userInGroup) {
         SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()",
-            "Retrait (ou décrément) des relations liant l'utilisateur d'ID "
+            "Retrait (ou dÃ©crÃ©ment) des relations liant l'utilisateur d'ID "
                 + userId + " et le groupe d'ID : " + groupId
                 + " dans la table ST_UserSet_User_Rel", null);
         organization.userSet.removeUserFromUserSet(userId, "G", groupId);
@@ -971,7 +971,7 @@ public class GroupTable extends Table {
         int[] params = new int[] { groupId, userId };
         SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()",
             "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "
-                + groupId + ", requête : " + DELETE_GROUP_USER_REL, null);
+                + groupId + ", requÃªte : " + DELETE_GROUP_USER_REL, null);
         updateRelation(DELETE_GROUP_USER_REL, params);
       } else {
         throw new AdminPersistenceException(

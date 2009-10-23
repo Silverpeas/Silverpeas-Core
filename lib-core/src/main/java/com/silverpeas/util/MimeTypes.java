@@ -53,7 +53,7 @@ public interface MimeTypes {
   public final String MIME_TYPE_OO_FORMATTED_TEXT = "application/vnd.oasis.opendocument.text";
   // Extension .ods (Tableur)
   public final String MIME_TYPE_OO_SPREADSHEET = "application/vnd.oasis.opendocument.spreadsheet";
-  // Extension .odp (Présentation)
+  // Extension .odp (Presentation)
   public final String MIME_TYPE_OO_PRESENTATION = "application/vnd.oasis.opendocument.presentation";
   // Extension .odg (Dessin)
   public final String MIME_TYPE_OO_GRAPHICS = "application/vnd.oasis.opendocument.graphics";
@@ -61,7 +61,7 @@ public interface MimeTypes {
   public final String MIME_TYPE_OO_DIAGRAM = "application/vnd.oasis.opendocument.chart";
   // Extension .odf (Formule)
   public final String MIME_TYPE_OO_FORMULA = "application/vnd.oasis.opendocument.formula";
-  // Extension .odb (Base de données )
+  // Extension .odb (Base de donnees )
   public final String MIME_TYPE_OO_DB = "application/vnd.oasis.opendocument.database";
   // Extension .odi (Image)
   public final String MIME_TYPE_OO_IMAGE = "application/vnd.oasis.opendocument.image";

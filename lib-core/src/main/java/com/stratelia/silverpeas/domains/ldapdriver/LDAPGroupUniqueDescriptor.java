@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import java.util.Vector;
@@ -39,7 +36,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * contains an attribute that point to each users and sub-groups DN Example
  * (with the attribute 'member') : member cn=user1,ou=people,o=stratelia member
  * cn=user2,ou=people,o=stratelia ....
- * 
+ *
  * @author tleroi
  */
 
@@ -98,15 +95,15 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param groupEntry
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -155,15 +152,15 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param parentId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -241,7 +238,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
             theFilter, driverSettings.getGroupsNameField(), driverSettings
                 .getGroupAttributes());
         SynchroReport.debug("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-            "Récupération de " + theEntries.length
+            "RÃ©cupÃ©ration de " + theEntries.length
                 + " groupes en tout, recherche des groupes racine...", null);
         for (i = 0; i < theEntries.length; i++) {
           // Search for groups that have at least one member attribute that
@@ -281,11 +278,11 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         if (parentId == null)
           SynchroReport.error(
               "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-              "Erreur lors de la récupération des groupes racine", e);
+              "Erreur lors de la rÃ©cupÃ©ration des groupes racine", e);
         else
           SynchroReport.error(
               "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-              "Erreur lors de la récupération des groupes fils du groupe "
+              "Erreur lors de la rÃ©cupÃ©ration des groupes fils du groupe "
                   + parentId, e);
       } else {
         throw e;

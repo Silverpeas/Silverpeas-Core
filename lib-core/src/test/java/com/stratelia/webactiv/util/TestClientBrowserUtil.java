@@ -30,7 +30,7 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 public class TestClientBrowserUtil extends TestCase {
 
   public void testInternetExplorer() {
-    // 1.0 sous Windows 95 — Microsoft Internet Explorer/4.0b1 (Windows 95)
+    // 1.0 sous Windows 95 â€” Microsoft Internet Explorer/4.0b1 (Windows 95)
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Microsoft Internet Explorer/4.0b1 (Windows 95)");
@@ -41,7 +41,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 1.5 sous Windows NT — Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)
+    // 1.5 sous Windows NT â€” Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)");
@@ -52,7 +52,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 2.0 sous Windows 95 — Mozilla/1.22 (compatible; MSIE 2.0; Windows 95)
+    // 2.0 sous Windows 95 â€” Mozilla/1.22 (compatible; MSIE 2.0; Windows 95)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)");
@@ -63,7 +63,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 3.01 sous Windows 98 — Mozilla/2.0 (compatible; MSIE 3.01; Windows 98)
+    // 3.01 sous Windows 98 â€” Mozilla/2.0 (compatible; MSIE 3.01; Windows 98)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/2.0 (compatible; MSIE 3.01; Windows 98)");
@@ -74,7 +74,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 5.0 sous SunOS — Mozilla/4.0 (compatible; MSIE 5.0; SunOS 5.9 sun4u; X11)
+    // 5.0 sous SunOS â€” Mozilla/4.0 (compatible; MSIE 5.0; SunOS 5.9 sun4u; X11)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)");
@@ -85,7 +85,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 5.2 sous Mac OS X — Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)
+    // 5.2 sous Mac OS X â€” Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)");
@@ -96,7 +96,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertFalse(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertTrue(ClientBrowserUtil.isMacintosh(request));
-    // 5.5 sous Windows 2000 — Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)
+    // 5.5 sous Windows 2000 â€” Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)");
@@ -107,7 +107,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 6.0 MSN Explorer sous Windows 98 — Mozilla/4.0 (compatible; MSIE 6.0; MSN 2.5; Windows 98)
+    // 6.0 MSN Explorer sous Windows 98 â€” Mozilla/4.0 (compatible; MSIE 6.0; MSN 2.5; Windows 98)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 6.0; MSN 2.5; Windows 98)");
@@ -118,7 +118,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 6.0 sous Windows XP avec le framework .Net installé — Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)
+    // 6.0 sous Windows XP avec le framework .Net installÃ© â€” Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)");
@@ -129,7 +129,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 6.0 sous Windows Server 2003 — Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322)
+    // 6.0 sous Windows Server 2003 â€” Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322)");
@@ -140,7 +140,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 7.0 tournant sous Windows XP — Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)
+    // 7.0 tournant sous Windows XP â€” Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)");
@@ -151,7 +151,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 7.0 tournant sous Windows Vista — Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)
+    // 7.0 tournant sous Windows Vista â€” Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)");
@@ -162,7 +162,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 7.0 sous Windows Server 2003 — Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2)
+    // 7.0 sous Windows Server 2003 â€” Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2)");
@@ -173,7 +173,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 7.0 sous Windows Vista — Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)
+    // 7.0 sous Windows Vista â€” Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)");
@@ -184,7 +184,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // Mozilla Firebird (avant le renommage en Firefox) —
+    // Mozilla Firebird (avant le renommage en Firefox) â€”
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.5a) Gecko/20030728 Mozilla Firebird/0.6.1");
@@ -195,7 +195,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertFalse(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertTrue(ClientBrowserUtil.isMacintosh(request));
-    // 1.0 (Hollandais) sous Windows XP —
+    // 1.0 (Hollandais) sous Windows XP â€”
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/5.0 (Windows; U; Windows NT 5.1; nl-NL; rv:1.7.5) Gecko/20041202 Firefox/1.0");
@@ -206,7 +206,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertTrue(ClientBrowserUtil.isWindows(request));
     assertFalse(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 1.0.4 sous Ubuntu Linux, avec AMD64 —
+    // 1.0.4 sous Ubuntu Linux, avec AMD64 â€”
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.7.6) Gecko/20050512 Firefox");
@@ -217,7 +217,7 @@ public class TestClientBrowserUtil extends TestCase {
     assertFalse(ClientBrowserUtil.isWindows(request));
     assertTrue(ClientBrowserUtil.isUnix(request));
     assertFalse(ClientBrowserUtil.isMacintosh(request));
-    // 1.0.4 sous FreeBSD 5.4 avec i386 —
+    // 1.0.4 sous FreeBSD 5.4 avec i386 â€”
     request = new MockHttpServletRequest();
     request.setHeader("User-Agent",
         "Mozilla/5.0 (X11; U; FreeBSD i386; en-US; rv:1.7.8) Gecko/20050609 Firefox/1.0.4");

@@ -101,7 +101,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       StringBuffer messageBody = new StringBuffer();
       StringBuffer messageBody_en = new StringBuffer();
 
-      // 1. rechercher la liste des fichiers arrivant à échéance
+      // 1. rechercher la liste des fichiers arrivant a echeance
       Date expiryDate;
       Calendar calendar = Calendar.getInstance(Locale.FRENCH);
       calendar.add(Calendar.DATE, 1);
@@ -127,14 +127,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         SilverTrace.info("attachment",
             "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        // Création du message à envoyer
         createMessage(message, messageBody, message_en, messageBody_en, att,
             false, false);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
       }
 
-      // 2. rechercher la liste des fichiers arrivant à la date intermédiaire
+      // 2. rechercher la liste des fichiers arrivant a la date intermediaire
       Date alertDate;
       calendar = Calendar.getInstance(Locale.FRENCH);
       alertDate = calendar.getTime();
@@ -161,14 +160,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         SilverTrace.info("attachment",
             "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        // Création du message à envoyer
         createMessage(message, messageBody, message_en, messageBody_en, att,
             true, false);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
       }
 
-      // 3. rechercher la liste des fichiers ayant dépassé la date d'expiration
+      // 3. rechercher la liste des fichiers ayant depasse la date d'expiration
       Date libDate;
       calendar = Calendar.getInstance(Locale.FRENCH);
       libDate = calendar.getTime();
@@ -197,13 +195,12 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         SilverTrace.info("attachment",
             "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        // Création du message à envoyer
         createMessage(message, messageBody, message_en, messageBody_en, att,
             false, true);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
 
-        // et pour chaque message, le libérer
+        // et pour chaque message, le liberer
         att.setWorkerId(null);
         att.setAlertDate(null);
         att.setExpiryDate(null);
@@ -236,8 +233,6 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
 
     SilverTrace.info("attachment", "ScheduledReservedFile.createMessage()",
         "root.MSG_GEN_EXIT_METHOD");
-    // 1. création du message
-
     // french notifications
     String subject = "";
     String body = "";

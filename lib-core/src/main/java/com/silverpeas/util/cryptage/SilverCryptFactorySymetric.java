@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SilverCryptFactorySymetric {
-  // Singleton pour gèrer une seule Map de trousseaux de clés
+  // Singleton pour gÃ¨rer une seule Map de trousseaux de clÃ©s
   private static SilverCryptFactorySymetric factory = null;
   private static Cipher cipherEncrypt = null;
   private static Cipher cipherDecrypt = null;
@@ -127,11 +127,11 @@ public class SilverCryptFactorySymetric {
     return uncrypted;
   }
 
-  public SilverCryptKeysSymetric getSymetricKeys() throws CryptageException {// récupération
+  public SilverCryptKeysSymetric getSymetricKeys() throws CryptageException {// rÃ©cupÃ©ration
     // du
     // trousseau
     // de
-    // clé!
+    // clÃ©!
     if (silverCryptKeysSymetric == null) {
       silverCryptKeysSymetric = new SilverCryptKeysSymetric();
     }

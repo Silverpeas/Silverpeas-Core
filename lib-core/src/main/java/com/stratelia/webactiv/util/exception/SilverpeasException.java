@@ -34,13 +34,13 @@ import javax.ejb.EJBException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * SilverpeasException est la racine de la hiérarchie d'exception silverpeas.
- * Toutes les classes d'exception spécifiques aux differents modules doivent
- * dériver (directement ou non) de SilverpeasException. La page d'erreur globale
- * à l'application ne saura traiter correctement que les SilverpeasException.
+ * SilverpeasException est la racine de la hiÃ©rarchie d'exception silverpeas.
+ * Toutes les classes d'exception spÃ©cifiques aux differents modules doivent
+ * dÃ©river (directement ou non) de SilverpeasException. La page d'erreur globale
+ * Ã  l'application ne saura traiter correctement que les SilverpeasException.
  * Les autres exception (ou error ou runtime) provoqueront l'affichage d'une
- * page d'erreur imprévue. Le message que l'on donne à l'exception est très
- * important, il doit etre affiché à l'utilisateur. C'est pourquoi le label est
+ * page d'erreur imprÃ©vue. Le message que l'on donne Ã  l'exception est trÃ¨s
+ * important, il doit etre affichÃ© Ã  l'utilisateur. C'est pourquoi le label est
  * multilangue. Chaque classe heritant de SilverpeasException doit surdefinir la
  * fonction getModule qui retourne le nom du module (le meme nom que celui
  * defini dans Silvertrace)
@@ -61,9 +61,9 @@ abstract public class SilverpeasException extends Exception implements
 
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue. Il n'y
-   * a pas d'exception ayant provoqué celle-ci (getNested() renvera null). Le
+   * a pas d'exception ayant provoquÃ© celle-ci (getNested() renvera null). Le
    * niveau d'importance est ERROR.
-   * 
+   *
    * @param message
    *          Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD".
    *          Le label est traduit dans des fichiers de properties.
@@ -75,13 +75,13 @@ abstract public class SilverpeasException extends Exception implements
 
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue et une
-   * exception à imbriquer. Le niveau d'importance est ERROR.
-   * 
+   * exception Ã  imbriquer. Le niveau d'importance est ERROR.
+   *
    * @param message
    *          Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD".
    *          Le label est traduit dans des fichiers de properties.
    * @param nested
-   *          L'exception qui a provoqué le problème. nested peut etre une
+   *          L'exception qui a provoquÃ© le problÃ¨me. nested peut etre une
    *          SilverpeasException ou une exception technique (SQLException,
    *          RemoteException...)
    * @deprecated
@@ -92,17 +92,17 @@ abstract public class SilverpeasException extends Exception implements
 
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue, une
-   * eception à imbriquer et un niveau d'importance.
-   * 
+   * eception Ã  imbriquer et un niveau d'importance.
+   *
    * @param message
    *          Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD".
    *          Le label est traduit dans des fichiers de properties.
    * @param nested
-   *          L'exception qui a provoqué le problème. nested peut etre une
+   *          L'exception qui a provoquÃ© le problÃ¨me. nested peut etre une
    *          SilverpeasException ou une exception technique (SQLException,
    *          RemoteException...)
    * @param errorLevel
-   *          Le niveau de critissicité de l'erreur (FATAL, ERROR, ou WARNING)
+   *          Le niveau de critissicitÃ© de l'erreur (FATAL, ERROR, ou WARNING)
    * @deprecated
    */
   public SilverpeasException(String message, Exception nested, int errorLevel) {
@@ -143,10 +143,10 @@ abstract public class SilverpeasException extends Exception implements
   // ------------------
 
   /**
-   * retourne l'exception qui a provoqué la creation de celle-ci. Permet
+   * retourne l'exception qui a provoquÃ© la creation de celle-ci. Permet
    * l'encapsulation des exception technique.
-   * 
-   * @return L'exception précédente qui a provoqué celle-ci, null s'il n'y en a
+   *
+   * @return L'exception prÃ©cÃ©dente qui a provoquÃ© celle-ci, null s'il n'y en a
    *         pas.
    */
   public Exception getNested() {
@@ -220,7 +220,7 @@ abstract public class SilverpeasException extends Exception implements
 
   /**
    * This function must be defined by the Classes that herit from this one
-   * 
+   *
    * @return The SilverTrace's module name
    **/
   abstract public String getModule();
@@ -251,8 +251,8 @@ abstract public class SilverpeasException extends Exception implements
   }
 
   /**
-   * retourne le niveau de critissicité de l'exception
-   * 
+   * retourne le niveau de critissicitÃ© de l'exception
+   *
    * @return le niveau d'erreur, FATAL, ERROR, ou WARNING
    */
   public int getErrorLevel() {
@@ -266,11 +266,11 @@ abstract public class SilverpeasException extends Exception implements
   // Specific methods
   // ----------------
   /**
-   * méthode utilitaire dont le role est de représenter les exceptions
-   * encapsulées sous forme d'une collection. L'exception courante se trouvera
-   * en première position de la collection. Les eventuelles imbrications
-   * succéssive suivront dans la liste.
-   * 
+   * mÃ©thode utilitaire dont le role est de reprÃ©senter les exceptions
+   * encapsulÃ©es sous forme d'une collection. L'exception courante se trouvera
+   * en premiÃ¨re position de la collection. Les eventuelles imbrications
+   * succÃ©ssive suivront dans la liste.
+   *
    * @param e
    *          L'exception de plus haut niveau
    * @return une collection de Throwable, qui contiendra au moins l'exception

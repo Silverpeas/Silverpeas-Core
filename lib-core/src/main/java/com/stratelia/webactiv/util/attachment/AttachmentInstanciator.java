@@ -21,17 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/**
- * Titre : Silverpeas<p>
- * Description : This object provides the function of files attached<p>
- * Société : Stratelia<p>
- * @author
- * @version 1.0
- * update by  Sébastien Antonio - Externalisation of the SQL request
- */
 package com.stratelia.webactiv.util.attachment;
 
 import java.io.File;
@@ -47,15 +36,15 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: AttachmentInstanciator.java,v 1.5 2006/01/17 16:04:30 neysseri Exp $
- * 
+ *
  * $Log: AttachmentInstanciator.java,v $
  * Revision 1.5  2006/01/17 16:04:30  neysseri
  * Suppression des warnings
  *
  * Revision 1.4  2004/11/17 19:44:46  neysseri
- * Amélioration + nettoyage sources
+ * AmÃ©lioration + nettoyage sources
  *
  * Revision 1.3  2004/06/22 15:03:13  neysseri
  * renommage des includes + nettoyage source (eclipse)
@@ -76,8 +65,8 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AttachmentInstanciator extends SQLRequest {
@@ -96,10 +85,10 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param fullPathName
-   * 
+   *
    * @see
    */
   public AttachmentInstanciator(String fullPathName) {
@@ -125,7 +114,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Creates an attachment directory for the upload files
-   * 
+   *
    * @param spaceId
    *          (String) the id of the silverpeas space
    * @param componentId
@@ -156,15 +145,15 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   * 
+   *
    * @throws InstanciationException
-   * 
+   *
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,
@@ -177,7 +166,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * deletes the attachment directory
-   * 
+   *
    * @param spaceId
    *          (String) the id of the silverpeas space
    * @param componentId
@@ -207,7 +196,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Delete all data from the attachment table.
-   * 
+   *
    * @param con
    *          (Connection) the connection to the data base
    * @param componentId

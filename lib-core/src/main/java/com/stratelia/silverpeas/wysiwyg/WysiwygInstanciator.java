@@ -21,15 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * NewsInstanciator.java
- *
- * Created on 13 juillet 2000, 09:54
- */
-
 package com.stratelia.silverpeas.wysiwyg;
 
 import java.sql.Connection;
@@ -39,11 +30,6 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 
-/**
- * 
- * @author pchaille
- * @version update by the Sébastien Antonio - Externalisation of the SQL request
- */
 public class WysiwygInstanciator extends SQLRequest {
 
   /**

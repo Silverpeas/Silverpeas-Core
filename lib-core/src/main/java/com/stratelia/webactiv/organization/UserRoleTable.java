@@ -452,7 +452,7 @@ public class UserRoleTable extends Table {
     }
 
     SynchroReport.debug("UserRoleTable.removeUserFromUserRole()",
-        "Retrait (ou décrément) de la relation entre l'utilisateur d'ID "
+        "Retrait (ou dÃ©crÃ©ment) de la relation entre l'utilisateur d'ID "
             + userId + " et le role d'ID " + userRoleId
             + " dans la table ST_UserSet_User_Rel", null);
     organization.userSet.removeUserFromUserSet(userId, UserSetRow.RIGHTS,
@@ -461,7 +461,7 @@ public class UserRoleTable extends Table {
     int[] params = new int[] { userRoleId, userId };
     SynchroReport.debug("UserRoleTable.removeUserFromUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " du role d'ID "
-            + userRoleId + ", requête : " + DELETE_USERROLE_USER_REL, null);
+            + userRoleId + ", requÃªte : " + DELETE_USERROLE_USER_REL, null);
     updateRelation(DELETE_USERROLE_USER_REL, params);
   }
 
@@ -551,14 +551,14 @@ public class UserRoleTable extends Table {
     }
 
     SilverTrace.debug("admin", "UserRoleTable.removeGroupFromUserRole()",
-        "Suppression (ou décrément) des relations liant le groupe d'ID "
+        "Suppression (ou dÃ©crÃ©ment) des relations liant le groupe d'ID "
             + groupId + " et le role d'ID " + userRoleId
             + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         new AdminPersistenceException("UserRoleTable.removeGroupFromUserRole",
             SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_IN_USERROLE",
             "BOB"));
     SynchroReport.debug("UserRoleTable.removeGroupFromUserRole()",
-        "Suppression (ou décrément) des relations liant le groupe d'ID "
+        "Suppression (ou dÃ©crÃ©ment) des relations liant le groupe d'ID "
             + groupId + " et le role d'ID " + userRoleId
             + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         null);
@@ -568,7 +568,7 @@ public class UserRoleTable extends Table {
     int[] params = new int[] { userRoleId, groupId };
     SynchroReport.debug("UserRoleTable.removeGroupFromUserRole()",
         "Retrait du groupe d'ID " + groupId + " du role d'ID " + userRoleId
-            + ", requête : " + DELETE_USERROLE_GROUP_REL, null);
+            + ", requÃªte : " + DELETE_USERROLE_GROUP_REL, null);
     updateRelation(DELETE_USERROLE_GROUP_REL, params);
   }
 

@@ -21,57 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- * 
- * $Id: DomainProperty.java,v 1.5 2008/06/26 04:58:01 neysseri Exp $
- * 
- * $Log: DomainProperty.java,v $
- * Revision 1.5  2008/06/26 04:58:01  neysseri
- * Ajout de la description sur chaque champ personnel du domaine
- *
- * Revision 1.4  2008/03/12 16:37:35  neysseri
- * no message
- *
- * Revision 1.3.4.3  2008/01/15 08:17:30  neysseri
- * no message
- *
- * Revision 1.3.4.2  2007/12/31 14:28:24  neysseri
- * no message
- *
- * Revision 1.3.4.1  2007/12/27 13:05:47  neysseri
- * no message
- *
- * Revision 1.3  2007/04/17 09:36:13  neysseri
- * Dév FNMJ/Ganesha
- *
- * Revision 1.2.20.1  2007/02/28 09:15:54  cbonin
- * Ajout du type BOOLEAN
- *
- * Revision 1.2  2004/11/05 14:32:29  neysseri
- * Nettoyage sources
- *
- * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
- * no message
- *
- * Revision 1.1  2002/04/08 14:09:27  tleroi
- * no message
- *
- */
-
-/**
- * Class declaration
- * 
- * 
- * @author t.leroi
- */
 public class DomainProperty {
   final static public String PROPERTY_TYPE_STRING = "STRING";
   final static public String PROPERTY_TYPE_USERID = "USERID";

@@ -64,7 +64,7 @@ public class Test {
           .setKeyWords("... aller la exemple le simple de marche java les publication test...");
       indexEntry.setCreationUser("... momo ...");
       indexEntry.setCreationDate("...05/06/2000...");
-      indexEntry.addTextContent("...être téléchargé exténué ...");
+      indexEntry.addTextContent("...Ãªtre tÃ©lÃ©chargÃ© extÃ©nuÃ© ...");
       indexEntry.addFileContent(file.getPath(), encoding, format, "none");
       indexEngine.addIndexEntry(indexEntry);
       cpt++;

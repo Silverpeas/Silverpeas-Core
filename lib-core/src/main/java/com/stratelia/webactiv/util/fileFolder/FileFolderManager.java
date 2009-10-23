@@ -29,10 +29,10 @@
 
 package com.stratelia.webactiv.util.fileFolder;
 
-/** 
+/**
  *
  * @author  cbonin
- * @version 
+ * @version
  */
 
 import java.io.BufferedReader;
@@ -357,7 +357,7 @@ public class FileFolderManager {
     File directory = new File(cheminFichier);
     if (directory.isDirectory()) {
       try {
-        /* Création d'un nouveau fichier sous la bonne arborescence */
+        /* CrÃ©ation d'un nouveau fichier sous la bonne arborescence */
         File file = new File(directory, nomFichier);
 
         /* ecriture du contenu du fichier */
@@ -431,7 +431,7 @@ public class FileFolderManager {
   }
 
   /**
-   * getCode : Récupération du contenu d'un fichier Param = cheminFichier =
+   * getCode : RÃ©cupÃ©ration du contenu d'un fichier Param = cheminFichier =
    * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2
    * nomFichier = index.html
    */

@@ -36,12 +36,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class SilverCryptKeysAsymetric {
 
-  // utilisation de bouncycastle
-  // http://www.bouncycastle.org/fr/index.html
-  // tutoriel:
-  // http://nyal.developpez.com/tutoriel/java/bouncycastle/
-
-  // classe trousseau de clé
+  // classe trousseau de cle
   private X509Certificate cert = null;
   private PrivateKey privatekey = null;
   private PublicKey publickey = null;

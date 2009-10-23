@@ -21,17 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
-/**
- * Titre : Silverpeas<p>
- * Description : Exception calls<p>
- * Copyright : Copyright (c) Stratelia<p>
- * Société : Stratelia<p>
- * @author Pascale Chaillet
- * @version 1.0
- */
 package com.stratelia.silverpeas.wysiwyg;
 
 import com.stratelia.webactiv.util.exception.*;

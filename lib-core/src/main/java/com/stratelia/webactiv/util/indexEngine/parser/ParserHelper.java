@@ -38,7 +38,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.2  2004/06/22 15:10:35  neysseri
- * Les titres et descriptions ne sont plus restitués en lowerCase.
+ * Les titres et descriptions ne sont plus restitues en lowerCase.
  *
  * Revision 1.1.1.1  2002/08/06 14:47:48  nchaix
  * no message

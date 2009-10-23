@@ -114,7 +114,7 @@ public class FormTemplateImportExport {
               ad = AttachmentController.createAttachment(ad, true);
               fieldValue = ad.getPK().getId();
             } else {
-              // le fichier à tout de même été créé sur le serveur avec une
+              // le fichier Ã  tout de mÃªme Ã©tÃ© crÃ©Ã© sur le serveur avec une
               // taille 0!, il faut le supprimer
               FileFolderManager.deleteFolder(path + physicalName);
             }

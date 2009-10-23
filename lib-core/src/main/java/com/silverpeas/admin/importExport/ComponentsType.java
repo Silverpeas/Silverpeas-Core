@@ -25,12 +25,9 @@ package com.silverpeas.admin.importExport;
 
 import java.util.List;
 
-/*
- * Created on 17 févr. 2005
- */
 
 /**
- * Classe utilisée pour le (un)marshalling Castor
+ * Classe utilisee pour le (un)marshalling Castor
  * 
  * @author sdevolder
  */

@@ -29,22 +29,22 @@ import java.util.Map;
 /**
  * A CharReplacer replace all the occurences of a given chars' set in a String
  * with replacement chars.
- * 
+ *
  * <PRE>
  * CharReplacer r = new CharReplacer();
- * r.setReplacement(&quot;éèê&quot;, &quot;e&quot;);
- * r.setReplacement(&quot;àâ&quot;, &quot;a&quot;);
+ * r.setReplacement(&quot;Ã©Ã¨Ãª&quot;, &quot;e&quot;);
+ * r.setReplacement(&quot;Ã Ã¢&quot;, &quot;a&quot;);
  * r.setReplacement(&quot;!,.;&quot;, null);
- * 
+ *
  * // print &quot;evenement a Grenoble&quot;
- * System.out.println(r.replace(&quot;événement à Grenoble!&quot;));
+ * System.out.println(r.replace(&quot;Ã©vÃ©nement Ã  Grenoble!&quot;));
  * </PRE>
  */
 public class CharReplacer {
   /**
    * When built with no parameters a CharReplacer is initialized with an empty
    * replacement map.
-   * 
+   *
    * Replacements should be added with calls to the setReplacement method,
    * before the new CharReplacer is used.
    */
@@ -61,26 +61,26 @@ public class CharReplacer {
 
   /**
    * Set a list of (toBeReplaced, replacement) character pairs.
-   * 
+   *
    * The (toBeReplaced, replacement) pairs are given with two strings where the
    * replacement char of each char in the toBeReplaced string is given by the
    * char at the same index in the replacement string.
-   * 
+   *
    * If the replacement string is longer then the toBeReplaced string all the
    * extra characters are ignored.
-   * 
+   *
    * If the replacement string is shorter then the toBeReplaced string all the
    * missing characters are assumed equal to the last.
-   * 
+   *
    * If the replacement string is empty all occurences of the toBeReplaced
    * characters will be pruned.
-   * 
+   *
    * This statements are equivalent :
-   * 
+   *
    * <PRE>
-   * setReplacement(&quot;éèê&quot;, &quot;e&quot;);
-   * setReplacement(&quot;éèê&quot;, &quot;eee&quot;);
-   * setReplacement(&quot;éèê&quot;, &quot;eeeeeeeee&quot;);
+   * setReplacement(&quot;Ã©Ã¨Ãª&quot;, &quot;e&quot;);
+   * setReplacement(&quot;Ã©Ã¨Ãª&quot;, &quot;eee&quot;);
+   * setReplacement(&quot;Ã©Ã¨Ãª&quot;, &quot;eeeeeeeee&quot;);
    * </PRE>
    */
   public void setReplacement(String toBeReplaced, String replacement) {
@@ -134,7 +134,7 @@ public class CharReplacer {
   /**
    * The characters to be replaced and their corresponding replacement chars are
    * saved in a Map (Character -> Character).
-   * 
+   *
    * If a character has to be pruned, it's mapped to \u0000.
    */
   private final Map replacementMap = new HashMap();

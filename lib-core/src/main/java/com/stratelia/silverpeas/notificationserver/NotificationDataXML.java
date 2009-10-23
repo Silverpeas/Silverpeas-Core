@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.notificationserver;
@@ -45,8 +45,8 @@ import com.silverpeas.util.EncodeHelper;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
+ * Titre : Description : Copyright : Copyright (c) 2001 SociÃ©tÃ© :
+ *
  * @author eDurand
  * @version 1.0
  */
@@ -75,10 +75,10 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public NotificationData getNotificationData() {
@@ -92,7 +92,7 @@ public class NotificationDataXML implements DocumentHandler {
   private AttributeList mCurrentAttributeList;
 
   /**
-	 * 
+	 *
 	 */
   public NotificationDataXML() throws NotificationServerException {
     try {
@@ -115,12 +115,12 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pFileName
-   * 
+   *
    * @throws NotificationServerException
-   * 
+   *
    * @see
    */
   public void ParseXML(String pFileName) throws NotificationServerException {
@@ -136,12 +136,12 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pInputSource
-   * 
+   *
    * @throws NotificationServerException
-   * 
+   *
    * @see
    */
   public void ParseXML(InputSource pInputSource)
@@ -158,8 +158,8 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Class declaration
-   * 
-   * 
+   *
+   *
    * @author
    * @version %I%, %G%
    */
@@ -167,12 +167,12 @@ public class NotificationDataXML implements DocumentHandler {
 
     /**
      * Method declaration
-     * 
-     * 
+     *
+     *
      * @param e
-     * 
+     *
      * @throws SAXParseException
-     * 
+     *
      * @see
      */
     public void error(SAXParseException e) throws SAXParseException {
@@ -181,12 +181,12 @@ public class NotificationDataXML implements DocumentHandler {
 
     /**
      * Method declaration
-     * 
-     * 
+     *
+     *
      * @param err
-     * 
+     *
      * @throws SAXParseException
-     * 
+     *
      * @see
      */
     public void warning(SAXParseException err) throws SAXParseException {
@@ -196,10 +196,10 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param l
-   * 
+   *
    * @see
    */
   public void setDocumentLocator(Locator l) {
@@ -207,10 +207,10 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void startDocument() throws SAXException {
@@ -226,10 +226,10 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void endDocument() throws SAXException {
@@ -239,13 +239,13 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param tag
    * @param attrs
-   * 
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void startElement(String tag, AttributeList attrs) throws SAXException {
@@ -337,12 +337,12 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param name
-   * 
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void endElement(String name) throws SAXException {
@@ -406,14 +406,14 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param buf
    * @param offset
    * @param len
-   * 
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void characters(char buf[], int offset, int len) throws SAXException {
@@ -422,14 +422,14 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param buf
    * @param offset
    * @param len
-   * 
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void ignorableWhitespace(char buf[], int offset, int len)
@@ -438,13 +438,13 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param target
    * @param data
-   * 
+   *
    * @throws SAXException
-   * 
+   *
    * @see
    */
   public void processingInstruction(String target, String data)

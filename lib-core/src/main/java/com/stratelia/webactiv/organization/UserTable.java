@@ -146,8 +146,8 @@ public class UserTable extends Table {
         new int[] { domainId }, new String[] { login }).toArray(new UserRow[0]);
 
     SynchroReport.debug("UserTable.getUserByLogin()",
-        "Vérification que le login" + login + " du domaine no " + domainId
-            + " n'est pas présent dans la base, requête : "
+        "VÃ©rification que le login" + login + " du domaine no " + domainId
+            + " n'est pas prÃ©sent dans la base, requÃªte : "
             + SELECT_USER_BY_DOMAINID_AND_LOGIN, null);
     if (users.length == 0)
       return null;
@@ -258,7 +258,7 @@ public class UserTable extends Table {
       throws AdminPersistenceException {
     SynchroReport.debug("UserTable.getDirectUserIdsOfGroup()",
         "Recherche des utilisateurs inclus directement dans le groupe d'ID "
-            + groupId + ", requête : " + SELECT_USER_IDS_IN_GROUP, null);
+            + groupId + ", requÃªte : " + SELECT_USER_IDS_IN_GROUP, null);
     return (String[]) getIds(SELECT_USER_IDS_IN_GROUP, groupId).toArray(
         new String[0]);
   }
@@ -320,7 +320,7 @@ public class UserTable extends Table {
       throws AdminPersistenceException {
     SynchroReport.debug("UserTable.getAllUserOfDomain()",
         "Recherche de l'ensemble des utilisateurs du domaine LDAP dans la base (ID "
-            + domainId + "), requête : " + SELECT_ALL_USERS_IN_DOMAIN, null);
+            + domainId + "), requÃªte : " + SELECT_ALL_USERS_IN_DOMAIN, null);
     return (UserRow[]) getRows(SELECT_ALL_USERS_IN_DOMAIN, domainId).toArray(
         new UserRow[0]);
   }
@@ -692,7 +692,7 @@ public class UserTable extends Table {
    */
   public void createUser(UserRow user) throws AdminPersistenceException {
     SynchroReport.debug("UserTable.createUser()", "Ajout de " + user.login
-        + ", requête : " + INSERT_USER, null);
+        + ", requÃªte : " + INSERT_USER, null);
     insertRow(INSERT_USER, user);
 
     CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_USER, user.id,
@@ -725,7 +725,7 @@ public class UserTable extends Table {
    */
   public void updateUser(UserRow user) throws AdminPersistenceException {
     SynchroReport.debug("UserTable.updateUser()", "Maj de " + user.login
-        + ", Id=" + user.id + ", requête : " + UPDATE_USER, null);
+        + ", Id=" + user.id + ", requÃªte : " + UPDATE_USER, null);
     updateRow(UPDATE_USER, user);
   }
 
@@ -769,7 +769,7 @@ public class UserTable extends Table {
     }
 
     SynchroReport.info("UserTable.removeUser()", "Suppression de " + user.login
-        + " des rôles dans la base", null);
+        + " des rÃ´les dans la base", null);
     UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfUser(id);
     for (int i = 0; i < roles.length; i++) {
       organization.userRole.removeUserFromUserRole(id, roles[i].id);
@@ -785,7 +785,7 @@ public class UserTable extends Table {
     }
 
     SynchroReport.debug("UserTable.removeUser()", "Suppression de "
-        + user.login + " (ID=" + id + "), requête : " + DELETE_USER, null);
+        + user.login + " (ID=" + id + "), requÃªte : " + DELETE_USER, null);
 
     // updateRelation(DELETE_USER, id);
     // Replace the login by a dummy one that must be unique

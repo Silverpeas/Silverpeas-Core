@@ -37,8 +37,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * this class is to read a specific property file (create, delete, update,
  * insert), to extract the specific SQL code with specific tag. And to return
  * the complet rigth SQL code.
- * 
- * @author <a href="mailto:s.antonio@stratelia">Sébastien Antonio</a>
  */
 public class SQLRequest {
 

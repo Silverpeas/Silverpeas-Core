@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Created on 17 févr. 2005
- */
 package com.silverpeas.admin.importExport;
 
 import java.util.ArrayList;
@@ -43,31 +40,24 @@ public class AdminImportExport {
   // Variables
   AdminController ac = null;
 
-  // Méthodes
   /**
-   * Méthode récupérant la liste des componentInsts des composants impliqués
-   * dans une exportation donnée et destinées au marshalling.
+   * MÃ©thode rÃ©cupÃ©rant la liste des componentInsts des composants impliquÃ©s
+   * dans une exportation donnÃ©e et destinÃ©es au marshalling.
    * 
    * @param listComponentId
-   *          = liste des id des composants impliqués dans l'esxport en cours
-   * @return l'objet ComponentsType complété, null si la liste passée en
-   *         paramètre est vide
+   *          = liste des id des composants impliquÃ©s dans l'esxport en cours
+   * @return l'objet ComponentsType complÃ©tÃ©, null si la liste passÃ©e en
+   *         paramÃ¨tre est vide
    */
   public ComponentsType getComponents(List listComponentId) {
-
-    ComponentsType componentsType = null;
-    ComponentInst componentInst = null;
-    ArrayList listComponentInst = null;
+    ComponentsType componentsType =  new ComponentsType();
+    List listComponentInst = new ArrayList();
     Iterator itListComponentId = listComponentId.iterator();
     while (itListComponentId.hasNext()) {
       String componentId = (String) itListComponentId.next();
-      componentInst = getAdminController().getComponentInst(componentId);
-      if (listComponentInst == null)
-        listComponentInst = new ArrayList();
+      ComponentInst componentInst = getAdminController().getComponentInst(componentId);
       listComponentInst.add(componentInst);
     }
-    if (listComponentInst != null)
-      componentsType = new ComponentsType();
     componentsType.setListComponentInst(listComponentInst);
     return componentsType;
   }

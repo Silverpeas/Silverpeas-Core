@@ -27,13 +27,6 @@ import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-/*
- * CVS Informations
- * 
- * Création le 27/02/2003 par Richard THORIN
- * 
- */
-
 public class SynchroReport {
 
   // Niveaux de trace
@@ -57,9 +50,9 @@ public class SynchroReport {
 
   // Initialisation
   static {
-    iTraceLevel = TRACE_LEVEL_WARN; // par défaut
+    iTraceLevel = TRACE_LEVEL_WARN;
     VMessage = new Vector();
-    iState = STATE_NOSYNC;// par défaut
+    iState = STATE_NOSYNC;
   }
 
   static public String getModuleName() {
@@ -74,14 +67,14 @@ public class SynchroReport {
   }
 
   /**
-   * Récupère le niveau de trace
+   * Recupere le niveau de trace
    */
   static public int getTraceLevel() {
     return iTraceLevel;
   }
 
   /**
-   * Récupère le niveau de trace ds une chaine
+   * Recupere le niveau de trace ds une chaine
    */
   static public String getTraceLevelStr() {
     if (iTraceLevel == TRACE_LEVEL_WARN)
@@ -99,7 +92,7 @@ public class SynchroReport {
   }
 
   /**
-   * Fixe l'état
+   * Fixe l'etat
    */
   static synchronized public void setState(int iStateCours) {
     if ((iState < STATE_WAITSTART) || (iStateCours != STATE_WAITSTART)) {
@@ -108,7 +101,7 @@ public class SynchroReport {
   }
 
   /**
-   * Récupère l'état
+   * Recupere l'etat
    */
   static public int getState() {
     return iState;

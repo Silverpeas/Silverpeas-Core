@@ -21,23 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.silverpeas.util.csv;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
 public class CSVWriter extends SilverpeasSettings {
   protected int m_nbCols = 0;
@@ -47,7 +36,7 @@ public class CSVWriter extends SilverpeasSettings {
   protected String m_separator;
   protected ResourceLocator m_utilMessages;
 
-  // properties spécifiques éventuellement en plus
+  // properties spÃ©cifiques Ã©ventuellement en plus
   protected int m_specificNbCols = 0;
   protected String[] m_specificColNames;
   protected String[] m_specificColTypes;

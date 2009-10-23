@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 /**
  * This class reads user infos from the LDAP DB and translate it into the
  * UserDetail format
- * 
+ *
  * @author tleroi
  */
 
@@ -57,7 +57,7 @@ public class LDAPUser extends Object {
 
   /**
    * Initialize the settings from the read ones
-   * 
+   *
    * @param driverSettings
    *          the settings retreived from the property file
    */
@@ -86,7 +86,7 @@ public class LDAPUser extends Object {
 
   /**
    * Return all users found in the baseDN tree
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @return all founded users
@@ -133,14 +133,14 @@ public class LDAPUser extends Object {
       // user courant : ID,
       // domaine, login,
       // e-mail,...
-      SynchroReport.debug("LDAPUser.getAllUsers()", "Utilisateur trouvé no : "
+      SynchroReport.debug("LDAPUser.getAllUsers()", "Utilisateur trouvÃ© no : "
           + Integer.toString(i) + ", login : "
           + ((UserDetail) usersVector.get(i)).getLogin() + ", "
           + ((UserDetail) usersVector.get(i)).getFirstName() + ", "
           + ((UserDetail) usersVector.get(i)).getLastName() + ", "
           + ((UserDetail) usersVector.get(i)).geteMail(), null);
     }
-    SynchroReport.info("LDAPUser.getAllUsers()", "Récupération de "
+    SynchroReport.info("LDAPUser.getAllUsers()", "RÃ©cupÃ©ration de "
         + theEntries.length + " utilisateurs du domaine LDAP distant", null);
     usersReturned = (UserDetail[]) usersVector.toArray(new UserDetail[0]);
     return usersReturned;
@@ -149,7 +149,7 @@ public class LDAPUser extends Object {
   /**
    * Return a UserDetail object filled with the infos of the user having ID = id
    * NOTE : the DomainID and the ID are not set.
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @param id
@@ -162,7 +162,7 @@ public class LDAPUser extends Object {
   public UserFull getUserFull(String lds, String id) throws AdminException
     {
         LDAPEntry   theEntry = null;
-        
+
         List<String> lAttrs = new ArrayList<String>();
         String[] userAttributes = driverSettings.getUserAttributes();
         if (userAttributes != null)
@@ -171,7 +171,7 @@ public class LDAPUser extends Object {
         	if (driverParent.getMapParameters() != null)
         		lAttrs.addAll(Arrays.asList(driverParent.getMapParameters()));
         }
-        
+
         SilverTrace.info("admin","LDAPUser.getUser()","root.MSG_GEN_PARAM_VALUE", "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " + Integer.toString(driverSettings.getScope()) + " filter : " + driverSettings.getUsersIdFilter(id));
         theEntry = LDAPUtility.getFirstEntryFromSearch(lds,driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[0]));
         return translateUserFull(lds,theEntry);
@@ -180,7 +180,7 @@ public class LDAPUser extends Object {
   /**
    * Return a UserDetail object filled with the infos of the user having ID = id
    * NOTE : the DomainID and the ID are not set.
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @param id
@@ -220,7 +220,7 @@ public class LDAPUser extends Object {
   /**
    * Translate a LDAP user entry into a UserDetail structure. NOTE : the
    * DomainID and the ID are not set.
-   * 
+   *
    * @param userEntry
    *          the LDAP user object
    * @return the user object
@@ -306,7 +306,7 @@ public class LDAPUser extends Object {
   /**
    * Translate a LDAP user entry into a UserDetail structure. NOTE : the
    * DomainID and the ID are not set.
-   * 
+   *
    * @param userEntry
    *          the LDAP user object
    * @return the user object

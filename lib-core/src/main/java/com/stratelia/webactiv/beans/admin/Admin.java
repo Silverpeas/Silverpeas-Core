@@ -119,7 +119,7 @@ public class Admin extends Object {
   // DB Connections Scheduled Resets
   static private ScheduledDBReset m_DBResetScheduler = null;
 
-  public static final String basketSuffix = " (Restauré)";
+  public static final String basketSuffix = " (RestaurÃ©)";
   static private SynchroGroupScheduler groupSynchroScheduler = null;
 
   static private ResourceLocator roleMapping = null;
@@ -204,7 +204,7 @@ public class Admin extends Object {
   // -------------------------------------------------------------------------
   /**
    * Get Enterprise space id
-   * 
+   *
    * @return The general space id
    */
   public String getGeneralSpaceId() {
@@ -255,7 +255,7 @@ public class Admin extends Object {
 
   /**
    * add a space instance in database
-   * 
+   *
    * @param userId
    *          Id of user who add the space
    * @param spaceInst
@@ -339,7 +339,7 @@ public class Admin extends Object {
 
   /**
    * Delete the given space The delete is apply recursively to the sub-spaces
-   * 
+   *
    * @param sUserId
    *          Id of user who deletes the space
    * @param sClientSpaceId
@@ -354,7 +354,7 @@ public class Admin extends Object {
   /**
    * Delete the given space if it's not the general space The delete is apply
    * recursively to the sub-spaces
-   * 
+   *
    * @param sUserId
    *          Id of user who deletes the space
    * @param sClientSpaceId
@@ -497,7 +497,7 @@ public class Admin extends Object {
 
   /**
    * Get the space instance with the given space id
-   * 
+   *
    * @param sClientSpaceId
    *          client space id
    * @return Space information as SpaceInst object
@@ -535,7 +535,7 @@ public class Admin extends Object {
 
   /**
    * Get the space instance with the given space id
-   * 
+   *
    * @param sSpaceId
    *          client space id
    * @param bDriverSpaceId
@@ -571,7 +571,7 @@ public class Admin extends Object {
   /**
    * Get all the subspaces Ids available in Silverpeas given a domainFatherId
    * (client id format)
-   * 
+   *
    * @param sDomainFatherId
    *          Id of the father space
    * @return an array of String containing the ids of spaces that are child of
@@ -603,7 +603,7 @@ public class Admin extends Object {
   /**
    * Updates the space (with the given name) with the given space Updates only
    * the node
-   * 
+   *
    * @param spaceInstNew
    *          SpaceInst object containing new information for space to be
    *          updated
@@ -674,7 +674,7 @@ public class Admin extends Object {
    * inheritanceBlocked is true then all inherited space profiles are removed.
    * If inheritanceBlocked is false then all subSpace profiles are removed and
    * space profiles are inherited.
-   * 
+   *
    * @param spaceId
    * @param inheritanceBlocked
    * @throws AdminException
@@ -683,7 +683,7 @@ public class Admin extends Object {
       boolean inheritanceBlocked) throws AdminException {
     try {
       if (inheritanceBlocked) {
-        // suppression des droits hérités de l'espace
+        // suppression des droits hÃ©ritÃ©s de l'espace
         List inheritedProfiles = space.getInheritedProfiles();
 
         SpaceProfileInst profile = null;
@@ -692,9 +692,9 @@ public class Admin extends Object {
           deleteSpaceProfileInst(profile.getId(), false);
         }
       } else {
-        // Héritage des droits de l'espace
+        // HÃ©ritage des droits de l'espace
 
-        // 1 - suppression des droits spécifiques du sous espace
+        // 1 - suppression des droits spÃ©cifiques du sous espace
         List profiles = space.getProfiles();
 
         SpaceProfileInst profile = null;
@@ -726,9 +726,9 @@ public class Admin extends Object {
 
   /*
    * Tests if a space with given space id exists
-   * 
+   *
    * @param sClientSpaceId if of space to be tested
-   * 
+   *
    * @return true if the given space instance name is an existing space
    */
   public boolean isSpaceInstExist(String sClientSpaceId) throws AdminException {
@@ -764,7 +764,7 @@ public class Admin extends Object {
 
   /**
    * Retrieve spaces from root to component
-   * 
+   *
    * @param componentId
    *          the target component
    * @return a List of SpaceInstLight
@@ -782,7 +782,7 @@ public class Admin extends Object {
 
   /**
    * Retrieve spaces from root to space identified by spaceId
-   * 
+   *
    * @param spaceId
    *          the target space
    * @return a List of SpaceInstLight
@@ -827,7 +827,7 @@ public class Admin extends Object {
 
   /**
    * Returns all spaces which has been removed but not definitely deleted
-   * 
+   *
    * @return a List of SpaceInstLight
    */
   public List getRemovedSpaces() throws AdminException {
@@ -843,7 +843,7 @@ public class Admin extends Object {
 
   /**
    * Returns all components which has been removed but not definitely deleted
-   * 
+   *
    * @return a List of ComponentInstLight
    */
   public List getRemovedComponents() throws AdminException {
@@ -1422,7 +1422,7 @@ public class Admin extends Object {
    * inheritanceBlocked is true then all inherited space profiles are removed.
    * If inheritanceBlocked is false then all component profiles are removed and
    * space profiles are inherited.
-   * 
+   *
    * @param componentId
    * @param inheritanceBlocked
    * @throws AdminException
@@ -1431,7 +1431,7 @@ public class Admin extends Object {
       boolean inheritanceBlocked) throws AdminException {
     try {
       if (inheritanceBlocked) {
-        // suppression des droits hérités de l'espace
+        // suppression des droits hÃ©ritÃ©s de l'espace
         List inheritedProfiles = component.getInheritedProfiles();
 
         ProfileInst profile = null;
@@ -1463,7 +1463,7 @@ public class Admin extends Object {
   /**
    * Set space profiles to a subspace. There is no persistance. The subspace
    * object is enriched.
-   * 
+   *
    * @param subSpace
    *          the object to set profiles
    * @param space
@@ -1484,7 +1484,7 @@ public class Admin extends Object {
   /**
    * Set space profile to a subspace. There is no persistance. The subspace
    * object is enriched.
-   * 
+   *
    * @param subSpace
    *          the object to set profiles
    * @param space
@@ -1528,7 +1528,7 @@ public class Admin extends Object {
 
   /**
    * Set space profile to a component. There is persistance.
-   * 
+   *
    * @param component
    *          the object to set profiles
    * @param space
@@ -2350,7 +2350,7 @@ public class Admin extends Object {
 
   /**
    * Tests if group exists in Silverpeas
-   * 
+   *
    * @return true if a group with the given name
    */
   public boolean isGroupExist(String sName) throws AdminException {
@@ -2577,7 +2577,7 @@ public class Admin extends Object {
   // JCC 25/03/2002 BEGIN
   /**
    * Gets the set of Ids denoting the direct subgroups of a given group
-   * 
+   *
    * @param groupId
    *          The ID of the parent group
    * @return the Ids as an array of <code>String</code>.
@@ -2593,7 +2593,7 @@ public class Admin extends Object {
 
   /**
    * Gets the set of Ids denoting the direct subgroups of a given group
-   * 
+   *
    * @param groupId
    *          The ID of the parent group
    * @return the Ids as an array of <code>String</code>.
@@ -2869,7 +2869,7 @@ public class Admin extends Object {
 
   /**
    * Add the given user in Silverpeas and specific domain
-   * 
+   *
    * @param userDetail
    *          user to add
    * @param addOnlyInSilverpeas
@@ -3508,7 +3508,7 @@ public class Admin extends Object {
 
   /**
    * Get subspaces of a given space available to a user.
-   * 
+   *
    * @param userId
    * @param spaceId
    * @return a list of SpaceInstLight
@@ -3532,7 +3532,7 @@ public class Admin extends Object {
 
   /**
    * Get components of a given space (and subspaces) available to a user.
-   * 
+   *
    * @param userId
    * @param spaceId
    * @return a list of ComponentInstLight
@@ -3606,7 +3606,7 @@ public class Admin extends Object {
   /**
    * Get all spaces available to a user. N levels compliant. Infos of each space
    * are in SpaceInstLight object.
-   * 
+   *
    * @param userId
    * @return an ordered list of SpaceInstLight. Built according a depth-first
    *         algorithm.
@@ -3679,7 +3679,7 @@ public class Admin extends Object {
   /**
    * Get the space instance light (only spaceid, fatherId and name) with the
    * given space id
-   * 
+   *
    * @param sClientSpaceId
    *          client space id (as WAxx)
    * @return Space information as SpaceInstLight object
@@ -3698,7 +3698,7 @@ public class Admin extends Object {
 
   /**
    * Return the higher space according to a subspace (N level compliant)
-   * 
+   *
    * @param spaceId
    *          the subspace id
    * @return a SpaceInstLight object
@@ -3919,7 +3919,7 @@ public class Admin extends Object {
   /**
    * Get the componentIds allowed for the given user Id in the given space and
    * the componentNameRoot
-   * 
+   *
    * @author dlesimple
    * @param sClientSpaceId
    * @param sUserId
@@ -4319,7 +4319,7 @@ public class Admin extends Object {
 
   /**
    * Get administrator Email
-   * 
+   *
    * @return String
    */
   public String getAdministratorEmail() {
@@ -4472,7 +4472,7 @@ public class Admin extends Object {
    * Return all the components Id recursively in (Space+subspaces, or only
    * subspaces or in Silverpeas) available in silverpeas given a userId and a
    * componentNameRoot
-   * 
+   *
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -4502,7 +4502,7 @@ public class Admin extends Object {
   /**
    * Return all the components Id recursively in (Space+subspaces, or only
    * subspaces) available in webactiv given a userId and a componentNameRoot
-   * 
+   *
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -4695,7 +4695,7 @@ public class Admin extends Object {
               "root.EX_ERR_ROLLBACK", e1);
         }
         SynchroGroupReport.error("admin.synchronizeGroup",
-            "Problème lors de la synchronisation : " + e.getMessage(), null);
+            "ProblÃ¨me lors de la synchronisation : " + e.getMessage(), null);
         throw new AdminException("Admin.synchronizeGroup",
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_GROUP",
             "groupId : '" + groupId + "'", e);
@@ -4724,11 +4724,11 @@ public class Admin extends Object {
             propertyValue);
         if (users == null)
           SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
-              "La propriété '" + propertyName
-                  + "' n'est pas définie dans le domaine " + iDomainId, null);
+              "La propriÃ©tÃ© '" + propertyName
+                  + "' n'est pas dÃ©finie dans le domaine " + iDomainId, null);
       } catch (Exception e) {
         SynchroGroupReport.info("admin.getUserIdsBySpecificProperty", "Domain "
-            + domainId + " ne supporte pas les groupes synchronisés", null);
+            + domainId + " ne supporte pas les groupes synchronisÃ©s", null);
       }
     }
 
@@ -4933,7 +4933,7 @@ public class Admin extends Object {
       }
     } catch (Exception e) {
       SynchroReport.error("admin.difSynchro",
-          "Problème lors de la synchronisation des utilisateurs : "
+          "ProblÃ¨me lors de la synchronisation des utilisateurs : "
               + e.getMessage(), null);
       throw new AdminException("admin.difSynchro", SilverpeasException.ERROR,
           "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS", "domain id : '" + domainId
@@ -5311,10 +5311,10 @@ public class Admin extends Object {
     synchronized (m_diffSynchroExmut) {
       SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
           "root.MSG_GEN_ENTER_METHOD", "domainID=" + sDomainId);
-      // Démarrage de la synchro avec la Popup d'affichage
+      // DÃ©marrage de la synchro avec la Popup d'affichage
       SynchroReport.startSynchro();
       // SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
-      // "Début de synchronisation...",null);
+      // "DÃ©but de synchronisation...",null);
       try {
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
             "Domaine : " + m_DDManager.getDomain(sDomainId).getName()
@@ -5372,7 +5372,7 @@ public class Admin extends Object {
               "root.EX_ERR_ROLLBACK", e1);
         }
         SynchroReport.error("admin.synchronizeSilverpeasWithDomain",
-            "Problème lors de la synchronisation : " + e.getMessage(), null);
+            "ProblÃ¨me lors de la synchronisation : " + e.getMessage(), null);
         throw new AdminException("Admin.synchronizeSilverpeasWithDomain",
             SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN",
             "domain id : '" + sDomainId + "'\nReport:" + sReport, e);
@@ -5413,7 +5413,7 @@ public class Admin extends Object {
       SynchroReport.info("admin.synchronizeUsers",
           "AJOUT ou MISE A JOUR des utilisateurs dans la base...", null);
       SynchroReport.info("admin.synchronizeUsers",
-          "Valeur du paramètre 'm_bFallbackUserLogins' = "
+          "Valeur du paramÃ¨tre 'm_bFallbackUserLogins' = "
               + m_bFallbackUserLogins, null);
 
       // Add new users or update existing ones from distant datasource
@@ -5503,7 +5503,7 @@ public class Admin extends Object {
 
       // Delete obsolete users from Silverpeas
       SynchroReport.info("admin.synchronizeUsers",
-          "SUPPRESSION des éventuels utilisateurs obsolètes de la base...",
+          "SUPPRESSION des Ã©ventuels utilisateurs obsolÃ¨tes de la base...",
           null);
       for (int nI = 0; nI < silverpeasUDs.length; nI++) {
         bFound = false;
@@ -5551,14 +5551,14 @@ public class Admin extends Object {
 
       sReport += "User synchronization terminated\n";
       SynchroReport.info("admin.synchronizeUsers",
-          "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : "
-              + iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
+          "Nombre d'utilisateurs mis Ã  jour : " + iNbUsersMaj + ", ajoutÃ©s : "
+              + iNbUsersAdded + ", supprimÃ©s : " + iNbUsersDeleted, null);
       SynchroReport.warn("admin.synchronizeUsers",
-          "Synchronisation utilisateurs terminée", null);
+          "Synchronisation utilisateurs terminÃ©e", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport.error("admin.synchronizeUsers",
-          "Problème lors de la synchronisation des utilisateurs : "
+          "ProblÃ¨me lors de la synchronisation des utilisateurs : "
               + e.getMessage(), null);
       throw new AdminException("admin.synchronizeUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
@@ -5595,7 +5595,7 @@ public class Admin extends Object {
       SynchroReport.info("admin.synchronizeOnlyExistingUsers",
           "MISE A JOUR ou SUPPRESSION des utilisateurs dans la base...", null);
       SynchroReport.info("admin.synchronizeOnlyExistingUsers",
-          "Valeur du paramètre 'm_bFallbackUserLogins' = "
+          "Valeur du paramÃ¨tre 'm_bFallbackUserLogins' = "
               + m_bFallbackUserLogins, null);
 
       UserDetail userSP = null;
@@ -5674,14 +5674,14 @@ public class Admin extends Object {
 
       sReport += "User synchronization terminated\n";
       SynchroReport.info("admin.synchronizeOnlyExistingUsers",
-          "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : "
-              + iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
+          "Nombre d'utilisateurs mis Ã  jour : " + iNbUsersMaj + ", ajoutÃ©s : "
+              + iNbUsersAdded + ", supprimÃ©s : " + iNbUsersDeleted, null);
       SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
-          "Synchronisation utilisateurs terminée", null);
+          "Synchronisation utilisateurs terminÃ©e", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport.error("admin.synchronizeOnlyExistingUsers",
-          "Problème lors de la synchronisation des utilisateurs : "
+          "ProblÃ¨me lors de la synchronisation des utilisateurs : "
               + e.getMessage(), null);
       throw new AdminException("admin.synchronizeOnlyExistingUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
@@ -5721,7 +5721,7 @@ public class Admin extends Object {
 
       // Delete obsolete groups
       SynchroReport.info("admin.synchronizeGroups",
-          "SUPPRESSION des éventuels groupes obsolètes de la base...", null);
+          "SUPPRESSION des Ã©ventuels groupes obsolÃ¨tes de la base...", null);
       Group[] distantGroups = (Group[]) allDistantGroups.values().toArray(
           new Group[0]);
       for (int nI = 0; nI < silverpeasGroups.length; nI++) {
@@ -5766,15 +5766,15 @@ public class Admin extends Object {
       }
       sReport += "Group synchronization terminated\n";
       SynchroReport.info("admin.synchronizeGroups",
-          "Nombre de groupes mis à jour : " + iNbGroupsMaj + ", ajoutés : "
-              + iNbGroupsAdded + ", supprimés : " + iNbGroupsDeleted, null);
+          "Nombre de groupes mis Ã  jour : " + iNbGroupsMaj + ", ajoutÃ©s : "
+              + iNbGroupsAdded + ", supprimÃ©s : " + iNbGroupsDeleted, null);
       SynchroReport.warn("admin.synchronizeGroups",
-          "Synchronisation groupes terminée", null);
+          "Synchronisation groupes terminÃ©e", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport
           .error("admin.synchronizeGroups",
-              "Problème lors de la synchronisation des groupes : "
+              "ProblÃ¨me lors de la synchronisation des groupes : "
                   + e.getMessage(), null);
       throw new AdminException("admin.synchronizeGroups",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_GROUPS",
@@ -5840,12 +5840,12 @@ public class Admin extends Object {
       if ((groupParentsIds == null) || (groupParentsIds.length == 0)) {
         testedGroups[nI].setSuperGroupId(null);
         SynchroReport.debug("admin.checkOutGroups", "le groupe " + specificId
-            + " n'a pas de père", null);
+            + " n'a pas de pÃ¨re", null);
       } else {
         testedGroups[nI].setSuperGroupId(superGroupId);
-        if (superGroupId != null)// sécurité
+        if (superGroupId != null)// sÃ©curitÃ©
           SynchroReport.debug("admin.checkOutGroups", "le groupe " + specificId
-              + " a pour père le groupe "
+              + " a pour pÃ¨re le groupe "
               + m_DDManager.getGroup(superGroupId).getSpecificId()
               + " d'Id base " + superGroupId, null);
       }
@@ -5858,7 +5858,7 @@ public class Admin extends Object {
         }
       }
       // Le groupe contiendra une liste d'IDs de users existant ds la base et
-      // non + une liste de logins récupérés via LDAP
+      // non + une liste de logins rÃ©cupÃ©rÃ©s via LDAP
       testedGroups[nI].setUserIds((String[]) convertedUserIds
           .toArray(new String[0]));
 
@@ -5879,7 +5879,7 @@ public class Admin extends Object {
             SynchroReport.warn("admin.checkOutGroups", "maj groupe "
                 + testedGroups[nI].getName() + " (id:" + silverpeasId + ") OK",
                 null);
-          } else// le name groupe non renseigné
+          } else// le name groupe non renseignÃ©
           {
             SilverTrace.info("admin", "admin.checkOutGroups",
                 "root.MSG_GEN_PARAM_VALUE",
@@ -5909,7 +5909,7 @@ public class Admin extends Object {
             SynchroReport.warn("admin.checkOutGroups", "ajout groupe "
                 + testedGroups[nI].getName() + " (id:" + silverpeasId + ") OK",
                 null);
-          } else// le name groupe non renseigné
+          } else// le name groupe non renseignÃ©
           {
             SilverTrace.info("admin", "admin.checkOutGroups",
                 "root.MSG_GEN_PARAM_VALUE",
@@ -5933,7 +5933,7 @@ public class Admin extends Object {
               allIncluededGroups, specificId);
           if (cleanSubGroups != null && cleanSubGroups.length > 0) {
             SynchroReport.info("admin.checkOutGroups",
-                "Ajout ou mise à jour de " + cleanSubGroups.length
+                "Ajout ou mise Ã  jour de " + cleanSubGroups.length
                     + " groupes fils du groupe " + specificId + "...", null);
             sReport += checkOutGroups(domainId, existingGroups, cleanSubGroups,
                 allIncluededGroups, userIds, silverpeasId, iNbGroupsAdded,
@@ -6237,7 +6237,7 @@ public class Admin extends Object {
   // -------------------------------------------------------------------------
   /**
    * Use when a node or subnode is created
-   * 
+   *
    * @param object
    */
   public void registerProfiledObject(ProfiledObject object) {
@@ -6246,7 +6246,7 @@ public class Admin extends Object {
 
   /**
    * Use when a node is deleted
-   * 
+   *
    * @param object
    */
   public void unregisterProfiledObject(ProfiledObject object) {

@@ -44,17 +44,7 @@ import javax.naming.NamingException;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
-
 public class NotificationServer {
-  // private String m_JmsFactory = NotificationServerConstant.JMS_FACTORY;
-  // private String m_JmsQueue = NotificationServerConstant.JMS_QUEUE;
-
   private String m_JmsFactory = JNDINames.JMS_FACTORY;
   private String m_JmsQueue = JNDINames.JMS_QUEUE;
   private String m_JmsHeaderChannel = JNDINames.JMS_HEADER_CHANNEL;
@@ -90,7 +80,7 @@ public class NotificationServer {
    */
   public long addNotification(NotificationData pData)
       throws NotificationServerException {
-    long notificationid = 0; // a gérer plus tard (nécessite une database)
+    long notificationid = 0; // a gerer plus tard (necessite une database)
     String notificationAsXML;
 
     m_JmsHeaders.clear();

@@ -24,13 +24,13 @@
 package com.stratelia.webactiv.util.exception;
 
 /**
- * SilverpeasException est la racine de la hiérarchie d'exception silverpeas.
- * Toutes les classes d'exception spécifiques aux differents modules doivent
- * dériver (directement ou non) de SilverpeasException. La page d'erreur globale
- * à l'application ne saura traiter correctement que les SilverpeasException.
+ * SilverpeasException est la racine de la hiÃ©rarchie d'exception silverpeas.
+ * Toutes les classes d'exception spÃ©cifiques aux differents modules doivent
+ * dÃ©river (directement ou non) de SilverpeasException. La page d'erreur globale
+ * Ã  l'application ne saura traiter correctement que les SilverpeasException.
  * Les autres exception (ou error ou runtime) provoqueront l'affichage d'une
- * page d'erreur imprévue. Le message que l'on donne à l'exception est très
- * important, il doit etre affiché à l'utilisateur. C'est pourquoi le label est
+ * page d'erreur imprÃ©vue. Le message que l'on donne Ã  l'exception est trÃ¨s
+ * important, il doit etre affichÃ© Ã  l'utilisateur. C'est pourquoi le label est
  * multilangue. Chaque classe heritant de SilverpeasException doit surdefinir la
  * fonction getModule qui retourne le nom du module (le meme nom que celui
  * defini dans Silvertrace)

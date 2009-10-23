@@ -38,7 +38,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * This class manage one particular group. It is a base class to derive from.
  * The child classes manages the particular method to retreive the groups'
  * elements(groups or users)
- * 
+ *
  * @author tleroi
  */
 
@@ -50,7 +50,7 @@ abstract public class AbstractLDAPGroup extends Object {
 
   /**
    * Initialize the settings from the read ones
-   * 
+   *
    * @param driverSettings
    *          the settings retreived from the property file
    */
@@ -82,7 +82,7 @@ abstract public class AbstractLDAPGroup extends Object {
 
   /**
    * Return all groups
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @return all groups
@@ -126,7 +126,7 @@ abstract public class AbstractLDAPGroup extends Object {
   /**
    * Return all groups found in the tree that are childs of parentId group or
    * return root groups if parentId is null or empty
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @param parentId
@@ -199,11 +199,11 @@ abstract public class AbstractLDAPGroup extends Object {
         StrTypeGroup = "Groupe fils";
       if (groupsProcessed[i].getUserIds().length != 0) {
         SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
-            + " trouvé no : " + Integer.toString(i) + ", nom du groupe : "
+            + " trouvÃ© no : " + Integer.toString(i) + ", nom du groupe : "
             + groupsProcessed[i].getSpecificId() + ", desc. : "
             + groupsProcessed[i].getDescription() + ". "
             + groupsProcessed[i].getUserIds().length
-            + " utilisateur(s) membre(s) associé(s)", null);
+            + " utilisateur(s) membre(s) associÃ©(s)", null);
         // Only for DEBUG :
         // String StrListUser="";
         // for (int j=0; j<groupsReturned[i].getUserIds().length; j++)
@@ -212,7 +212,7 @@ abstract public class AbstractLDAPGroup extends Object {
         // "Liste des logins user : " + StrListUser, null );
       } else
         SynchroReport.debug("AbstractLDAPGroup.getGroups()", StrTypeGroup
-            + " trouvé no : " + Integer.toString(i) + ", nom du groupe : "
+            + " trouvÃ© no : " + Integer.toString(i) + ", nom du groupe : "
             + groupsProcessed[i].getSpecificId() + ", desc. : "
             + groupsProcessed[i].getDescription(), null);
 
@@ -223,11 +223,11 @@ abstract public class AbstractLDAPGroup extends Object {
     }
 
     if (parentId == null)
-      SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
+      SynchroReport.info("AbstractLDAPGroup.getGroups()", "RÃ©cupÃ©ration de "
           + groupsFounded.length + " groupes racine du domaine LDAP distant",
           null);
     else
-      SynchroReport.info("AbstractLDAPGroup.getGroups()", "Récupération de "
+      SynchroReport.info("AbstractLDAPGroup.getGroups()", "RÃ©cupÃ©ration de "
           + groupsFounded.length + " groupes fils du groupe " + parentId, null);
 
     return (Group[]) groupsReturned.toArray(new Group[0]);
@@ -237,7 +237,7 @@ abstract public class AbstractLDAPGroup extends Object {
    * Return a Group object filled with the infos of the group having ID = id
    * NOTE : the DomainID and the ID are not set. THIS FUNCTION THROW EXCEPTION
    * ONLY WHEN NO SYNCHRO IS RUNNING
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @param id
@@ -301,7 +301,7 @@ abstract public class AbstractLDAPGroup extends Object {
    * Translate a group LDAPEntry into a Group object NOTE : the GroupParentId,
    * the DomainID and the ID are not set. THIS FUNCTION THROW EXCEPTION ONLY
    * WHEN NO SYNCHRO IS RUNNING
-   * 
+   *
    * @param groupEntry
    *          the LDAP group object
    * @return the group object
@@ -335,7 +335,7 @@ abstract public class AbstractLDAPGroup extends Object {
         synchroReport.append("PB getting Group's childs : "
             + groupInfos.getName() + "\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
-            "Pb de récupération des membres utilisateurs du groupe "
+            "Pb de rÃ©cupÃ©ration des membres utilisateurs du groupe "
                 + groupInfos.getSpecificId(), e);
       } else {
         throw e;
@@ -345,11 +345,11 @@ abstract public class AbstractLDAPGroup extends Object {
   }
 
   /**
-   * 
+   *
    * Translate several groups LDAPEntry into a Group object NOTE : the
    * GroupParentId, the DomainID and the ID are not set. THIS FUNCTION THROW
    * EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-   * 
+   *
    * @param lds
    * @param groupEntries
    * @return
@@ -392,7 +392,7 @@ abstract public class AbstractLDAPGroup extends Object {
           synchroReport.append("PB getting Group's childs : "
               + groupInfos.getName() + "\n");
           SynchroReport.error("AbstractLDAPGroup.translateGroups()",
-              "Pb de récupération des membres utilisateurs du groupe "
+              "Pb de rÃ©cupÃ©ration des membres utilisateurs du groupe "
                   + groupInfos.getSpecificId(), e);
         } else {
           throw e;
@@ -408,7 +408,7 @@ abstract public class AbstractLDAPGroup extends Object {
   /**
    * return the group's parent groups IDs THIS FUNCTION ALWAYS THROW EXCEPTION
    * (EVEN IF A SYNCHRO IS RUNNING)
-   * 
+   *
    * @param groupId
    *          the group's Id
    * @return the groups that contain the group
@@ -420,7 +420,7 @@ abstract public class AbstractLDAPGroup extends Object {
   /**
    * return the users groups IDs THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A
    * SYNCHRO IS RUNNING)
-   * 
+   *
    * @param userId
    *          the user's Id
    * @return the groups that contain the user
@@ -432,7 +432,7 @@ abstract public class AbstractLDAPGroup extends Object {
   /**
    * return the users ID that are directly in the group discribes by groupEntry
    * THIS FUNCTION ALWAYS THROW EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
-   * 
+   *
    * @param groupEntry
    *          the group that contains users
    * @return the father's group ID or empty string if the group is at the root
@@ -445,7 +445,7 @@ abstract public class AbstractLDAPGroup extends Object {
   /**
    * Return a set of LDAP entries that are the child groups of a parent one THIS
    * FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @param parentId
@@ -461,7 +461,7 @@ abstract public class AbstractLDAPGroup extends Object {
   /**
    * Return the LDAP entry of the specified group Id THIS FUNCTION ALWAYS THROW
    * EXCEPTION (EVEN IF A SYNCHRO IS RUNNING)
-   * 
+   *
    * @param ld
    *          the LDAP connection
    * @param groupId

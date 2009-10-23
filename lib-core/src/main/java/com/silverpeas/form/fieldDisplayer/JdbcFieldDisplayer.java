@@ -157,7 +157,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer
 		String login = null;
 		String password = null;
 		String query = null;
-		String valueFieldType = "1"; //valeurs possibles 1 = choix restreint à la liste ou 2 = saisie libre, par défaut 1
+		String valueFieldType = "1"; //valeurs possibles 1 = choix restreint a la liste ou 2 = saisie libre, par defaut 1
 		if (parameters.containsKey("driverName")) {
 			driverName = (String) parameters.get("driverName");
 		}
@@ -174,18 +174,14 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer
 			query = (String) parameters.get("query");
 		}
 		if (parameters.containsKey("valueFieldType")) {
-			valueFieldType = (String) parameters.get("valueFieldType"); //valeurs possibles 1 = choix restreint à la liste ou 2 = saisie libre, par défaut 1
+			valueFieldType = (String) parameters.get("valueFieldType"); //valeurs possibles 1 = choix restreint a la liste ou 2 = saisie libre, par defaut 1
 		}
 		
-		if(jdbcField != null) {
-			//Connexion JDBC
-			Connection jdbcConnection = null;
-			
+		if(jdbcField != null) {			
+			Connection jdbcConnection = null;			
 			try
 			{
 				jdbcConnection = jdbcField.connectJdbc(driverName, url, login, password);
-							
-				//Requête SQL
 				listRes = jdbcField.selectSql(jdbcConnection, query, currentUserId);
 			}
 			finally
@@ -252,7 +248,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer
 				
 			}
 			
-			//supprime dernière virgule inutile
+			//supprime derniere virgule inutile
 			html = html.substring(0, html.length() - 1);
 		
 			html += "];\n";
@@ -266,7 +262,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer
 			html += "	this.oAutoComp"+fieldName+".useShadow = true;\n";
 			html += "	this.oAutoComp"+fieldName+".minQueryLength = 0;\n";
 			
-			if("1".equals(valueFieldType)) {//valeurs possibles 1 = choix restreint à la liste ou 2 = saisie libre, par défaut 1
+			if("1".equals(valueFieldType)) {//valeurs possibles 1 = choix restreint a la liste ou 2 = saisie libre, par defaut 1
 				html += "	this.oAutoComp"+fieldName+".forceSelection = true;\n";
 			}
 			
@@ -281,7 +277,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer
 
 		} else {
 			
-			if("1".equals(valueFieldType)) {//valeurs possibles 1 = choix restreint à la liste ou 2 = saisie libre, par défaut 1
+			if("1".equals(valueFieldType)) {//valeurs possibles 1 = choix restreint a la liste ou 2 = saisie libre, par defaut 1
 			
 				html += "<SELECT name=\""+fieldName+"\"";
 				

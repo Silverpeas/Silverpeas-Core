@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.peasCore;
 
@@ -34,8 +32,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author t.leroi
  */
 public class URLManager {
@@ -156,7 +154,7 @@ public class URLManager {
 
   /**
    * Retourne l'URL pour les nouveaux composants lors de la recherche globale
-   * 
+   *
    * @param spaceId
    *          - l'id de l'espace (WA151)
    * @param componentId
@@ -169,13 +167,13 @@ public class URLManager {
   }
 
   /**
-   * Construit une chaine que l'on concatène à la fin de la nouvelle URL
-   * 
+   * Construit une chaine que l'on concatÃ¨ne Ã  la fin de la nouvelle URL
+   *
    * @param spaceId
    *          - l'id de l'espace (WA151)
    * @param componentId
    *          - l'id de l'instance de composant (trucsAstuces1042)
-   * @return la chaine de caractères à concaténer
+   * @return la chaine de caractÃ¨res Ã  concatÃ©ner
    */
   public static String getEndURL(String spaceId, String componentId) {
     // return
@@ -184,8 +182,8 @@ public class URLManager {
   }
 
   /**
-   * Construit l'URL standard afin d'acceder à un composant
-   * 
+   * Construit l'URL standard afin d'acceder Ã  un composant
+   *
    * @param componentName
    *          - le nom du jobPeas
    * @param sSpace

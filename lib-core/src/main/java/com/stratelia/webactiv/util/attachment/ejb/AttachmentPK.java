@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 /**
  * Titre : Silverpeas<p>
  * Description : This object provides the function of files attached<p>
  * Copyright : Copyright (c) Jean-Claude Groccia<p>
- * Société : Stratelia<p>
+ * SociÃ©tÃ© : Stratelia<p>
  * @author author Publication and Jean-Claude Groccia
  * @version 1.0
  */
@@ -40,9 +40,9 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: AttachmentPK.java,v 1.3 2008/05/20 13:19:47 neysseri Exp $
- * 
+ *
  * $Log: AttachmentPK.java,v $
  * Revision 1.3  2008/05/20 13:19:47  neysseri
  * no message
@@ -66,17 +66,17 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AttachmentPK extends WAPrimaryKey implements Serializable {
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param id
-   * 
+   *
    * @see
    */
   public AttachmentPK(String id) {
@@ -85,12 +85,12 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param id
    * @param spaceId
    * @param componentId
-   * 
+   *
    * @see
    */
   public AttachmentPK(String id, String spaceId, String componentId) {
@@ -103,11 +103,11 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param id
    * @param pk
-   * 
+   *
    * @see
    */
   public AttachmentPK(String id, WAPrimaryKey pk) {
@@ -124,10 +124,10 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getTableName() {
@@ -136,12 +136,12 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param other
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public boolean equals(Object other) {
@@ -154,10 +154,10 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String toString() {
@@ -165,9 +165,9 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * 
+   *
    * Returns a hash code for the key
-   * 
+   *
    * @return A hash code for this object
    */
   public int hashCode() {

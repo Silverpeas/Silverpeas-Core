@@ -43,7 +43,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * Cette classe est utilisée par les composants pour envoyer une notification à
+ * Cette classe est utilisee par les composants pour envoyer une notification a
  * un (ou des) utilisateur(s) (ou groupes) Elle package les appels et appelle la
  * fonction du NotificationManager pour reellement envoyer les notifications
  * 

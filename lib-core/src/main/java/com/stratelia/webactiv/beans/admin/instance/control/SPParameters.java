@@ -275,7 +275,7 @@ public class SPParameters implements Serializable {
       parameterToMerge = (SPParameter) parametersToMerge.get(p);
       parameter = getParameter(parameterToMerge.getName().toLowerCase());
       if (parameter == null) {
-        // Le paramètre existe en base mais plus dans le xmlComponent
+        // Le parametre existe en base mais plus dans le xmlComponent
         SilverTrace.info("admin", "SPParameters.mergeWith",
             "root.MSG_GEN_PARAM_VALUE", "dbParameter '"
                 + parameterToMerge.getName() + "' is no more use !");

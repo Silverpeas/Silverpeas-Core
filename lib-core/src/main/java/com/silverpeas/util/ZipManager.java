@@ -21,12 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Created on 16 févr. 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+
 package com.silverpeas.util;
 
 import java.io.File;
@@ -49,53 +44,53 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * Classe contenant des méthodes statiques de gestion des fichiers zip
- * 
+ * Classe contenant des mÃ©thodes statiques de gestion des fichiers zip
+ *
  * @author sdevolder
  */
 public class ZipManager {
 
   /**
-   * Méthode nécéssaire car l api ne gère pas les accents. Elle est publique car
-   * utilisée dans les classes utilisant ZipManager.
-   * 
+   * MÃ©thode nÃ©cÃ©ssaire car l api ne gÃ¨re pas les accents. Elle est publique car
+   * utilisÃ©e dans les classes utilisant ZipManager.
+   *
    * @param text
    * @return
    */
   public static String transformStringToAsciiString(String text) {
-    String newText = text.replace('é', 'e');
-    newText = newText.replace('è', 'e');
-    newText = newText.replace('ë', 'e');
-    newText = newText.replace('ê', 'e');
-    newText = newText.replace('ö', 'o');
-    newText = newText.replace('ô', 'o');
-    newText = newText.replace('õ', 'o');
-    newText = newText.replace('ò', 'o');
-    newText = newText.replace('ï', 'i');
-    newText = newText.replace('î', 'i');
-    newText = newText.replace('ì', 'i');
-    newText = newText.replace('ñ', 'n');
-    newText = newText.replace('ü', 'u');
-    newText = newText.replace('û', 'u');
-    newText = newText.replace('ù', 'u');
-    newText = newText.replace('ç', 'c');
-    newText = newText.replace('à', 'a');
-    newText = newText.replace('ä', 'a');
-    newText = newText.replace('ã', 'a');
-    newText = newText.replace('â', 'a');
-    newText = newText.replace('°', '_');
+    String newText = text.replace('Ã©', 'e');
+    newText = newText.replace('Ã¨', 'e');
+    newText = newText.replace('Ã«', 'e');
+    newText = newText.replace('Ãª', 'e');
+    newText = newText.replace('Ã¶', 'o');
+    newText = newText.replace('Ã´', 'o');
+    newText = newText.replace('Ãµ', 'o');
+    newText = newText.replace('Ã²', 'o');
+    newText = newText.replace('Ã¯', 'i');
+    newText = newText.replace('Ã®', 'i');
+    newText = newText.replace('Ã¬', 'i');
+    newText = newText.replace('Ã±', 'n');
+    newText = newText.replace('Ã¼', 'u');
+    newText = newText.replace('Ã»', 'u');
+    newText = newText.replace('Ã¹', 'u');
+    newText = newText.replace('Ã§', 'c');
+    newText = newText.replace('Ã ', 'a');
+    newText = newText.replace('Ã¤', 'a');
+    newText = newText.replace('Ã£', 'a');
+    newText = newText.replace('Ã¢', 'a');
+    newText = newText.replace('Â°', '_');
     return newText;
   }
 
   /**
-   * Méthode compressant au format zip un fichier ou un dossier de façon
-   * récursive au format zip
-   * 
+   * MÃ©thode compressant au format zip un fichier ou un dossier de faÃ§on
+   * rÃ©cursive au format zip
+   *
    * @param filename
-   *          - fichier ou dossier à compresser
+   *          - fichier ou dossier Ã  compresser
    * @param outfilename
-   *          - fichier zip à creer
-   * @return la taille du fichier zip généré en octets
+   *          - fichier zip Ã  creer
+   * @return la taille du fichier zip gÃ©nÃ©rÃ© en octets
    * @throws FileNotFoundException
    * @throws IOException
    */
@@ -104,9 +99,9 @@ public class ZipManager {
     ZipOutputStream zos = null;
     File file = new File(filename);
     try {
-      // Création du flux de sortie du fichier zip
+      // CrÃ©ation du flux de sortie du fichier zip
       FileOutputStream os = new FileOutputStream(outfilename);
-      // création du flux zip
+      // crÃ©ation du flux zip
       zos = new ZipOutputStream(os);
       // zos.setEncoding("Cp437");
 
@@ -114,13 +109,13 @@ public class ZipManager {
                                                     // dossier vide
       {
         byte[] buf = new byte[4096]; // read buffer
-        // Création du flux d'entrée du fichier à compresser
+        // CrÃ©ation du flux d'entrÃ©e du fichier Ã  compresser
         FileInputStream is = new FileInputStream(filename);
-        // Création d'un champs ZipEntry pour le fichier à compresser dans le
-        // fichier zip à creer
+        // CrÃ©ation d'un champs ZipEntry pour le fichier Ã  compresser dans le
+        // fichier zip Ã  creer
         //
         zos.putNextEntry(new ZipEntry(filename));
-        // Lecture du fichier et écriture dans le fichier zip
+        // Lecture du fichier et Ã©criture dans le fichier zip
         int len = 0;
         while ((len = is.read(buf)) > 0) {
           zos.write(buf, 0, len);
@@ -128,8 +123,8 @@ public class ZipManager {
         zos.closeEntry();
         is.close();
       } else {// file.isDirectory() == true
-        // Récupération du contenu du dossier
-        // le cas dossier vide est traité plus haut
+        // RÃ©cupÃ©ration du contenu du dossier
+        // le cas dossier vide est traitÃ© plus haut
         String[] listContenuStringPath = file.list();
         List<File> listcontenuPath = ZipManager.convertListStringToListFile(
             listContenuStringPath, file.getPath());
@@ -153,17 +148,17 @@ public class ZipManager {
   }
 
   /**
-   * Méthode récursive utilisée par compress_path pour la création de fichiers
+   * MÃ©thode rÃ©cursive utilisÃ©e par compress_path pour la crÃ©ation de fichiers
    * zip
-   * 
+   *
    * @param filename
-   *          - path du fichier ou du sous répertoire à compresser
+   *          - path du fichier ou du sous rÃ©pertoire Ã  compresser
    * @param fileToCreate
-   *          - path de l'éventuel fichier tel qu on le retrouvera dans le zip
+   *          - path de l'Ã©ventuel fichier tel qu on le retrouvera dans le zip
    * @param outfilename
-   *          - fichier de sortie zip passée par la méthode publique
+   *          - fichier de sortie zip passÃ©e par la mÃ©thode publique
    * @param zos
-   *          - ZipOutputStream passée par la méthode publique
+   *          - ZipOutputStream passÃ©e par la mÃ©thode publique
    * @throws FileNotFoundException
    * @throws IOException
    */
@@ -172,20 +167,20 @@ public class ZipManager {
       IOException {
     File file = new File(filename);
     // if ((file.isFile()) || (file.list().length == 0)) //cas fichier ou cas
-    // dossier vide: ! zip ne crée les dossiers vides
+    // dossier vide: ! zip ne crÃ©e les dossiers vides
     if (file.isFile()) // cas fichier
     {
       byte[] buf = new byte[4096]; // read buffer
-      // Création du flux d'entrée du fichier à compresser
+      // CrÃ©ation du flux d'entrÃ©e du fichier Ã  compresser
       FileInputStream is = new FileInputStream(filename);
-      // Création d'un champs ZipEntry pour le fichier à compresser dans le
-      // fichier zip à creer
-      // Utilisation de FileServerUtils.replaceAccentChars car l api ne gère pas
+      // CrÃ©ation d'un champs ZipEntry pour le fichier Ã  compresser dans le
+      // fichier zip Ã  creer
+      // Utilisation de FileServerUtils.replaceAccentChars car l api ne gÃ¨re pas
       // les accents
       String name = transformStringToAsciiString(fileToCreate);
       // zos.putNextEntry(new ZipEntry(fileToCreate));
       zos.putNextEntry(new ZipEntry(name));
-      // Lecture du fichier et écriture dans le fichier zip
+      // Lecture du fichier et Ã©criture dans le fichier zip
       int len = 0;
       while ((len = is.read(buf)) > 0) {
         zos.write(buf, 0, len);
@@ -193,8 +188,8 @@ public class ZipManager {
       zos.closeEntry();
       is.close();
     } else {// file.isDirectory() == true
-      // Récupération du contenu du dossier
-      // le cas dossier vide est traité plus haut
+      // RÃ©cupÃ©ration du contenu du dossier
+      // le cas dossier vide est traitÃ© plus haut
       String[] listContenuStringPath = file.list();
       List<File> listcontenuPath = ZipManager.convertListStringToListFile(
           listContenuStringPath, file.getPath());
@@ -207,15 +202,15 @@ public class ZipManager {
   }
 
   /**
-   * Transforme la table des chaines de caractères de nom de fichier en une
-   * liste de fichiers pour le chemin passé en paramètre
-   * 
+   * Transforme la table des chaines de caractÃ¨res de nom de fichier en une
+   * liste de fichiers pour le chemin passÃ© en paramÃ¨tre
+   *
    * @param listFileName
-   *          - table des nom de fichier sous forme de chaine de caractères.
+   *          - table des nom de fichier sous forme de chaine de caractÃ¨res.
    * @param path
-   *          - chemin des fichiers contenu dans les chaines de caractères.
-   * @return renvoie une liste d'objets File pour les noms de fichiers passés en
-   *         paramètres
+   *          - chemin des fichiers contenu dans les chaines de caractÃ¨res.
+   * @return renvoie une liste d'objets File pour les noms de fichiers passÃ©s en
+   *         paramÃ¨tres
    */
   private static List<File> convertListStringToListFile(String[] listFileName,
       String path) {
@@ -230,16 +225,16 @@ public class ZipManager {
   }
 
   /**
-   * Méthode permettant la création et l'organisation d'un fichier zip en lui
-   * passant directement un flux d'entrée TODO: A TESTER!!
-   * 
+   * MÃ©thode permettant la crÃ©ation et l'organisation d'un fichier zip en lui
+   * passant directement un flux d'entrÃ©e TODO: A TESTER!!
+   *
    * @param inputStream
-   *          - flux de données à enregistrer dans le zip
+   *          - flux de donnÃ©es Ã  enregistrer dans le zip
    * @param filePathNameToCreate
-   *          - chemin et nom du fichier porté par les données du flux dans le
+   *          - chemin et nom du fichier portÃ© par les donnÃ©es du flux dans le
    *          zip
    * @param outfilename
-   *          - chemin et nom du fichier zip à creer ou compléter
+   *          - chemin et nom du fichier zip Ã  creer ou complÃ©ter
    * @throws FileNotFoundException
    * @throws IOException
    */
@@ -252,24 +247,24 @@ public class ZipManager {
     try {
       byte[] buf = new byte[4096]; // read buffer
 
-      // Création du flux de sortie du fichier zip
+      // CrÃ©ation du flux de sortie du fichier zip
       os = new FileOutputStream(outfilename);
-      // création du flux zip
+      // crÃ©ation du flux zip
       zos = new ZipOutputStream(os);
 
-      // Création d'un champs ZipEntry pour le fichier à compresser dans le
-      // fichier zip à creer
+      // CrÃ©ation d'un champs ZipEntry pour le fichier Ã  compresser dans le
+      // fichier zip Ã  creer
       zos.putNextEntry(new ZipEntry(filePathNameToCreate));
 
-      // Lecture du fichier et écriture dans le fichier zip
+      // Lecture du fichier et Ã©criture dans le fichier zip
       int len = 0;
       while ((len = inputStream.read(buf)) > 0) {
         zos.write(buf, 0, len);
       }
       zos.closeEntry();
 
-      // inputStream.close();//Ce nest pas dans cette méthode que l'on doit
-      // fermer le flux d'entrée
+      // inputStream.close();//Ce nest pas dans cette mÃ©thode que l'on doit
+      // fermer le flux d'entrÃ©e
       zos.close();
     } finally {
       try {
@@ -281,7 +276,7 @@ public class ZipManager {
 
   /**
    * Do the work.
-   * 
+   *
    * @exception IOException
    *              Thrown in unrecoverable error.
    */
@@ -299,7 +294,7 @@ public class ZipManager {
 
   /**
    * Extracting a zip format file
-   * 
+   *
    * @param File
    *          - File to extract
    * @param File

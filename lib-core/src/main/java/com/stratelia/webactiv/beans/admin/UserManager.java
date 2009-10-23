@@ -140,11 +140,11 @@ public class UserManager extends Object {
       for (int nI = 0; nI < urs.length; nI++) {
         aus[nI] = userRow2UserDetail(urs[nI]);
         SynchroReport.debug("UserManager.getUsersOfDomain()",
-            "Utilisateur trouvé no : " + Integer.toString(nI) + ", login : "
+            "Utilisateur trouvÃ© no : " + Integer.toString(nI) + ", login : "
                 + aus[nI].getLogin() + ", " + aus[nI].getFirstName() + ", "
                 + aus[nI].getLastName() + ", " + aus[nI].geteMail(), null);
       }
-      SynchroReport.info("UserManager.getUsersOfDomain()", "Récupération de "
+      SynchroReport.info("UserManager.getUsersOfDomain()", "RÃ©cupÃ©ration de "
           + urs.length + " utilisateurs du domaine LDAP dans la base", null);
       return aus;
     } catch (Exception e) {
@@ -516,22 +516,22 @@ public class UserManager extends Object {
               + "domainID, login or lastName is not set");
       if (userDetail.getLastName().length() == 0)
         SynchroReport.error("UserManager.addUser()",
-            "Problème lors de l'ajout de l'utilisateur "
+            "ProblÃ¨me lors de l'ajout de l'utilisateur "
                 + userDetail.getSpecificId()
                 + " dans la base, cet utilisateur n'a pas de nom", null);
       else if (userDetail.getLogin().length() == 0)
         SynchroReport.error("UserManager.addUser()",
-            "Problème lors de l'ajout de l'utilisateur "
+            "ProblÃ¨me lors de l'ajout de l'utilisateur "
                 + userDetail.getSpecificId()
-                + " dans la base, login non spécifié", null);
+                + " dans la base, login non spÃ©cifiÃ©", null);
       else if (userDetail.getDomainId().length() == 0)
         SynchroReport.error("UserManager.addUser()",
-            "Problème lors de l'ajout de l'utilisateur "
+            "ProblÃ¨me lors de l'ajout de l'utilisateur "
                 + userDetail.getSpecificId()
-                + " dans la base, domaine non spécifié", null);
+                + " dans la base, domaine non spÃ©cifiÃ©", null);
 
       // SynchroReport.error("UserManager.addUser()", "Utilisateur " +
-      // userDetail.getSpecificId() + " non rajouté", null);
+      // userDetail.getSpecificId() + " non rajoutÃ©", null);
 
       return "";
     }
@@ -549,7 +549,7 @@ public class UserManager extends Object {
                 "UserManager.addUser()",
                 "Utilisateur "
                     + userDetail.getLogin()
-                    + " déjà présent dans la base avec ce login. Il n'a pas été rajouté",
+                    + " dÃ©jÃ  prÃ©sent dans la base avec ce login. Il n'a pas Ã©tÃ© rajoutÃ©",
                 null);
         throw new AdminException("UserManager.addUser",
             SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_ALREADY_USED",
@@ -579,7 +579,7 @@ public class UserManager extends Object {
       return sUserId;
     } catch (Exception e) {
       SynchroReport.error("UserManager.addUser()",
-          "problème à l'ajout de l'utilisateur " + userDetail.getFirstName()
+          "problÃ¨me Ã  l'ajout de l'utilisateur " + userDetail.getFirstName()
               + " " + userDetail.getLastName() + "(specificId:"
               + userDetail.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.addUser",
@@ -617,7 +617,7 @@ public class UserManager extends Object {
       return user.getId();
     } catch (Exception e) {
       SynchroReport.error("UserManager.deleteUser()",
-          "problème à la suppression de l'utilisateur " + user.getFirstName()
+          "problÃ¨me Ã  la suppression de l'utilisateur " + user.getFirstName()
               + " " + user.getLastName() + "(specificId:"
               + user.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.deleteUser",
@@ -646,7 +646,7 @@ public class UserManager extends Object {
       return user.getId();
     } catch (Exception e) {
       SynchroReport.error("UserManager.updateUser()",
-          "problème lors de la maj de l'utilisateur " + user.getFirstName()
+          "problÃ¨me lors de la maj de l'utilisateur " + user.getFirstName()
               + " " + user.getLastName() + "(specificId:"
               + user.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.updateUser",

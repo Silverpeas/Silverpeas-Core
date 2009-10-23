@@ -74,9 +74,9 @@ public class DBUtil {
 
   /**
    * fabrique une nouvelle connection
-   * 
+   *
    * @param dbName
-   *          le nom de la base de donnée
+   *          le nom de la base de donnÃ©e
    */
   public static Connection makeConnection(String dbName) throws UtilException {
     SilverTrace.debug("util", "DBUtil makeConnection",
@@ -130,7 +130,7 @@ public class DBUtil {
     Connection privateConnection = null;
     try {
       // On ne peux pas utiliser une simple connection du pool
-      // on utilise une connection extérieure au contexte transactionnel des ejb
+      // on utilise une connection extÃ©rieure au contexte transactionnel des ejb
       privateConnection = ConnectionPool.getConnection();
 
       privateConnection.setAutoCommit(false);
@@ -171,7 +171,7 @@ public class DBUtil {
       return max;
     } catch (Exception exe) {
       SilverTrace.debug("util", "DBUtil.getNextId",
-          "impossible de recupérer le prochain id", exe);
+          "impossible de recupÃ©rer le prochain id", exe);
       if (privateConnection != null) {
         try {
           privateConnection.rollback();

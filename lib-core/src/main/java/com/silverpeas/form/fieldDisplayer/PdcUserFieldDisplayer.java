@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * A PdcUserFieldDisplayer is an object which can display a UserFiel in HTML
  * and can retrieve via HTTP any updated value.
- * 
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -65,11 +65,11 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
    /**
     * Prints the javascripts which will be used to control
     * the new value given to the named field.
-    * 
+    *
     * The error messages may be adapted to a local language.
     * The FieldTemplate gives the field type and constraints.
     * The FieldTemplate gives the local labeld too.
-    * 
+    *
     * Never throws an Exception
     * but log a silvertrace and writes an empty string when :
     * <UL>
@@ -77,7 +77,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
     * <LI> the field type is not a managed type.
     * </UL>
     */
-   public void displayScripts(PrintWriter out, FieldTemplate template, 
+   public void displayScripts(PrintWriter out, FieldTemplate template,
                               PagesContext PagesContext) throws java.io.IOException
    {
       String language = PagesContext.getLanguage();
@@ -86,40 +86,40 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 
       if (!template.getTypeName().equals(PdcUserField.TYPE))
       {
-         SilverTrace.info("form", "PdcUserFieldDisplayer.displayScripts", 
+         SilverTrace.info("form", "PdcUserFieldDisplayer.displayScripts",
                           "form.INFO_NOT_CORRECT_TYPE", PdcUserField.TYPE);
 
       }
       if (template.isMandatory() && PagesContext.useMandatory())
       {
-         out.println("   if (isWhitespace(stripInitialWhitespace(document.forms['" 
-                     + PagesContext.getFormName() + "'].elements['" 
+         out.println("   if (isWhitespace(stripInitialWhitespace(document.forms['"
+                     + PagesContext.getFormName() + "'].elements['"
                      + fieldName + "$$id'].value))) {");
-         out.println("      errorMsg+=\"  - '" 
-                     + EncodeHelper.javaStringToJsString(template.getLabel(language)) 
-                     + "' " + Util.getString("GML.MustBeFilled", language) 
+         out.println("      errorMsg+=\"  - '"
+                     + EncodeHelper.javaStringToJsString(template.getLabel(language))
+                     + "' " + Util.getString("GML.MustBeFilled", language)
                      + "\\n \";");
          out.println("      errorNb++;");
          out.println("   }");
       }
-      
+
       Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
    }
 
    /**
     * Prints the HTML value of the field.
     * The displayed value must be updatable by the end user.
-    * 
+    *
     * The value format may be adapted to a local language.
     * The fieldName must be used to name the html form input.
-    * 
+    *
     * Never throws an Exception
     * but log a silvertrace and writes an empty string when :
     * <UL>
     * <LI> the field type is not a managed type.
     * </UL>
     */
-   public void display(PrintWriter out, Field field, FieldTemplate template, 
+   public void display(PrintWriter out, Field field, FieldTemplate template,
                        PagesContext PagesContext) throws FormException
    {
 
@@ -128,7 +128,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
       String selectUserImg = Util.getIcon("userPanel");
       String selectUserLab = Util.getString("userPanel", language);
 
-      String userNames = ""; //prénom nom,prénom nom,prénom nom, ...
+      String userNames = ""; //prÃ©nom nom,prÃ©nom nom,prÃ©nom nom, ...
       String userCardIds = ""; //userCardId,userCardId,userCardId, ...
       String html = "";
 
@@ -137,21 +137,21 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 
       if (!field.getTypeName().equals(PdcUserField.TYPE))
       {
-         SilverTrace.info("form", "PdcUserFieldDisplayer.display", 
+         SilverTrace.info("form", "PdcUserFieldDisplayer.display",
                           "form.INFO_NOT_CORRECT_TYPE", PdcUserField.TYPE +", type courant="+field.getTypeName());
-                          
+
       }
 	  else
 	  {
 		userCardIds = ((PdcUserField) field).getUserCardIds();
 	  }
-	  
-	  
+
+
       if (!field.isNull())
       {
          userNames = field.getValue();
       }
-      
+
       html += "<INPUT type=hidden"
            +  " name=\"" + fieldName + "$$id\" value=\"" +  EncodeHelper.javaStringToHtmlString(userCardIds) + "\" >";
 
@@ -161,28 +161,28 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
               +  " id=\""+fieldName+"$$name\" name=\""+fieldName+"$$name\" value=\"" +  EncodeHelper.javaStringToHtmlString(userNames) + "\" >";
 	  }
 
-      if (!template.isHidden() &&!template.isDisabled() 
+      if (!template.isHidden() &&!template.isDisabled()
           &&!template.isReadOnly())
       {
          html += "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"+URLManager.getApplicationURL()+"/RpdcSearchUserWrapper/jsp/Open"
          		/*+  "?ComponentName=whitePages"
          		+  "&ReturnURL="*/
-         		
+
          		// /RvsicMain/WA5_vsicMain47/SelectFromPDC
-         		
+
 			      +  "?formName="+PagesContext.getFormName()
 				  +  "&elementId="+fieldName+"$$id"
 				  +  "&elementName="+fieldName+"$$name"
 				  +  "&selectedUsers="+((userCardIds==null)?"":userCardIds)
-				  +  "','selectUsers',800,600,'');\" ><img src=\"" 
-              + selectUserImg 
-              + "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" 
-              + selectUserLab + "\" align=\"absmiddle\" title=\"" 
+				  +  "','selectUsers',800,600,'');\" ><img src=\""
+              + selectUserImg
+              + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
+              + selectUserLab + "\" align=\"absmiddle\" title=\""
               + selectUserLab + "\"></a>";
 
          if (template.isMandatory() && PagesContext.useMandatory())
          {
-            html += "&nbsp;<img src=\"" + mandatoryImg 
+            html += "&nbsp;<img src=\"" + mandatoryImg
                     + "\" width=\"5\" height=\"5\" border=\"0\"/>";
          }
       }
@@ -193,14 +193,14 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 
    /**
     * Updates the value of the field.
-    * 
+    *
     * The fieldName must be used to retrieve the HTTP parameter from the request.
-    * 
+    *
     * @throw FormException if the field type is not a managed type.
     * @throw FormException if the field doesn't accept the new value.
     */
-   /*public void update(HttpServletRequest request, Field field, 
-                      FieldTemplate template, 
+   /*public void update(HttpServletRequest request, Field field,
+                      FieldTemplate template,
                       PagesContext pagesContext) throws FormException
    {
 
@@ -219,14 +219,14 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
       }
       else
       {
-         throw new FormException("PdcUserFieldDisplayer.update", 
-                                 "form.EX_NOT_CORRECT_VALUE", 
+         throw new FormException("PdcUserFieldDisplayer.update",
+                                 "form.EX_NOT_CORRECT_VALUE",
                                  PdcUserField.TYPE);
       }
    }*/
-   
+
    public List<String> update(String newId, Field field,
-						 FieldTemplate template, 
+						 FieldTemplate template,
 						 PagesContext pagesContext) throws FormException
 	  {
 
@@ -245,8 +245,8 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 		 }
 		 else
 		 {
-			throw new FormException("PdcUserFieldDisplayer.update", 
-									"form.EX_NOT_CORRECT_VALUE", 
+			throw new FormException("PdcUserFieldDisplayer.update",
+									"form.EX_NOT_CORRECT_VALUE",
 									PdcUserField.TYPE);
 		 }
      return new ArrayList<String>();
@@ -254,10 +254,10 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 
    /**
     * Method declaration
-    * 
-    * 
+    *
+    *
     * @return
-    * 
+    *
     */
    public boolean isDisplayedMandatory()
    {
@@ -266,10 +266,10 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer
 
    /**
     * Method declaration
-    * 
-    * 
+    *
+    *
     * @return
-    * 
+    *
     */
    public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext)
    {

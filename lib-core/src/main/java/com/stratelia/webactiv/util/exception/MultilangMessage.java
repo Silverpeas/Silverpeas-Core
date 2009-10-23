@@ -29,12 +29,12 @@ public class MultilangMessage {
   private String[] params;
 
   /**
-   * fabrication d'un message multilangue avec un paramètre. Le message est un
-   * label multilangue qui correspond, une fois traduit à une chaine contenant
-   * un paramètre. Exemple : message = "util.MSG_EJB_INTROUVABLE", param1 =
+   * fabrication d'un message multilangue avec un paramÃ¨tre. Le message est un
+   * label multilangue qui correspond, une fois traduit Ã  une chaine contenant
+   * un paramÃ¨tre. Exemple : message = "util.MSG_EJB_INTROUVABLE", param1 =
    * "ejb/NodeHome". Traduction dans fichier properties francais
-   * "util.MSG_EJB_INTROUVABLE = L'ejb nommé %1 est introuvable". %1 est le
-   * premier paramètre. On imprimera "L'ejb nommé ejb/NodeHome est introuvable".
+   * "util.MSG_EJB_INTROUVABLE = L'ejb nommÃ© %1 est introuvable". %1 est le
+   * premier paramÃ¨tre. On imprimera "L'ejb nommÃ© ejb/NodeHome est introuvable".
    */
   public MultilangMessage(String message, String param1) {
     this.message = message;
@@ -43,7 +43,7 @@ public class MultilangMessage {
   }
 
   /**
-   * meme chose avec deux paramètres. (%1 et %2)
+   * meme chose avec deux paramÃ¨tres. (%1 et %2)
    */
   public MultilangMessage(String message, String param1, String param2) {
     this.message = message;
@@ -52,7 +52,7 @@ public class MultilangMessage {
     params[1] = param2;
   }
 
-  // remarque : on pourrait continuer avec trois paramètres. Dans ce cas, voir
+  // remarque : on pourrait continuer avec trois paramÃ¨tres. Dans ce cas, voir
   // aussi la methode fromString()
 
   public String getMessage() {
@@ -64,9 +64,9 @@ public class MultilangMessage {
   }
 
   /**
-   * codage du message multilangue et de ses paramètre sous forme d'une String
-   * 
-   * @return la chaine encodée, qq chose comme [message,param1,param2]
+   * codage du message multilangue et de ses paramÃ¨tre sous forme d'une String
+   *
+   * @return la chaine encodÃ©e, qq chose comme [message,param1,param2]
    */
   public String toString() {
     String result = "[" + message;

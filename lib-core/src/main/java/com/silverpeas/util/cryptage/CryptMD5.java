@@ -36,18 +36,18 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class CryptMD5 {
 
   /*
-   * 
-   * Encode la chaine passée en paramètre avec l’algorithme MD5
-   * 
-   * @param original : la chaine à encoder
-   * 
-   * @return la valeur (string) hexadécimale sur 32 bits
+   *
+   * Encode la chaine passÃ©e en paramÃ¨tre avec lâ€™algorithme MD5
+   *
+   * @param original : la chaine Ã  encoder
+   *
+   * @return la valeur (string) hexadÃ©cimale sur 32 bits
    */
   public static String crypt(String original) throws UtilException {
 
     byte[] uniqueKey = original.getBytes();
 
-    // on récupère un objet qui permettra de crypter la chaine
+    // on rÃ©cupÃ¨re un objet qui permettra de crypter la chaine
     byte[] hash;
     try {
       hash = MessageDigest.getInstance("MD5").digest(uniqueKey);
@@ -75,11 +75,11 @@ public class CryptMD5 {
   }
 
   /*
-   * 
+   *
    * Compute the MD5 hash of a file.
-   * 
+   *
    * @param file: the file to be MD5 hashed.
-   * 
+   *
    * @return the MD5 hash as a String.
    */
   public static String hash(File file) throws UtilException {

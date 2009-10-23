@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.util;
@@ -48,7 +48,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * Revision 1.8.2.1 2008/04/09 06:05:18
  * ehugonnet Gestion des Resources comme des ResourceBundle plutot que des
  * properties afin de les rendre disponible pour JSTL Revision 1.8 2008/03/21
- * 12:03:14 neysseri Ajout de la méthode boolean getSetting(String key, boolean
+ * 12:03:14 neysseri Ajout de la mÃ©thode boolean getSetting(String key, boolean
  * defaultValue)
  *
  * Revision 1.7 2007/12/03 15:02:17 neysseri no message
@@ -66,13 +66,13 @@ import com.stratelia.webactiv.util.ResourceLocator;
  *
  * Revision 1.3 2005/08/18 11:14:50 neysseri no message
  *
- * Revision 1.2.8.1 2005/08/10 17:26:23 neysseri Ajout méthode getSetting()
+ * Revision 1.2.8.1 2005/08/10 17:26:23 neysseri Ajout mÃ©thode getSetting()
  *
  * Revision 1.2 2003/02/10 14:09:58 neysseri no message
  *
  * Revision 1.1.1.1 2002/08/06 14:48:19 nchaix no message
  *
- * Revision 1.3 2002/02/25 17:10:04 neysseri Maintenant, la méthode getIcon()
+ * Revision 1.3 2002/02/25 17:10:04 neysseri Maintenant, la mÃ©thode getIcon()
  * renvoie le contexte+le contenu du properties
  *
  * Revision 1.2 2002/02/07 10:55:15 tleroi no message
@@ -81,8 +81,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class ResourcesWrapper {
@@ -146,7 +146,7 @@ public class ResourcesWrapper {
 
   /**
    * Return the ResourceBundle for usage in JSTL.
-   * 
+   *
    * @return the ResourceBundle under the ResourceLocator.
    */
   public ResourceBundle getMultilangBundle() {
@@ -155,7 +155,7 @@ public class ResourcesWrapper {
 
   /**
    * Return the icons ResourceBundle for usage in JSTL.
-   * 
+   *
    * @return the icons ResourceBundle under the ResourceLocator.
    */
   public ResourceBundle getIconsBundle() {
@@ -228,7 +228,7 @@ public class ResourcesWrapper {
 
   /**
    * We look at the key in the specific settings file.
-   * 
+   *
    * @param key
    *          - key in the settings file
    * @return the value of the key if the key exists and if a value is specified.

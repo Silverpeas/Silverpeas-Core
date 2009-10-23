@@ -24,43 +24,48 @@
 package com.stratelia.webactiv.persistence;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
 
   private WAPrimaryKey pk;
-  public static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   public SilverpeasBean() {
     setPK(new IdPK());
   }
 
+  @Override
   public WAPrimaryKey getPK() {
     return pk;
   }
 
+  @Override
   public void setPK(WAPrimaryKey value) {
     pk = value;
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS;
   }
 
+  @Override
   public String _getDatasourceName() {
     return null;
   }
 
+  @Override
   public JdbcData _getJdbcData() {
     return null;
   }
 
+  @Override
   public String _getTableName() {
     return null;
   }
 
+  @Override
   public String getSureString(String theString) {
     return (theString == null) ? "" : theString;
   }

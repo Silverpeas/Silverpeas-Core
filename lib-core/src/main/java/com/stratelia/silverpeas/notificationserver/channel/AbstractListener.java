@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel;
@@ -42,8 +42,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
+ * Titre : Description : Copyright : Copyright (c) 2001 SociÃ©tÃ© :
+ *
  * @author eDurand
  * @version 1.0
  */
@@ -56,8 +56,8 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public AbstractListener() {
@@ -65,8 +65,8 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbActivate() {
@@ -74,8 +74,8 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbRemove() {
@@ -83,8 +83,8 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbPassivate() {
@@ -92,10 +92,10 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param ctx
-   * 
+   *
    * @see
    */
   public void setMessageDrivenContext(MessageDrivenContext ctx) {
@@ -104,10 +104,10 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @throws CreateException
-   * 
+   *
    * @see
    */
   public void ejbCreate() throws CreateException {

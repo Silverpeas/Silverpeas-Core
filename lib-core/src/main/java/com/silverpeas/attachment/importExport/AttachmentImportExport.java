@@ -63,20 +63,20 @@ public class AttachmentImportExport {
   private static int BUFFER_SIZE = 1024;
   private static String CONTEXT_ATTACHMENTS = "Images";
 
-  // Méthodes
+  // Methodes
   /**
-   * Méthode utilisée par l'import massive du moteur d'importExport de
+   * Methode utilisee par l'import massive du moteur d'importExport de
    * silverpeaseffectuant la copie de fichier ainsi que sa liaison avec une
    * publication cible.
    * 
    * @param pubId
    *          - publication dans laquelle creer l'attachement
    * @param componentId
-   *          - id du composant contenant la publication (nécéssaire pour
-   *          déterminer le chemin physique du fichier importé)
+   *          - id du composant contenant la publication (necessaire pour
+   *          determiner le chemin physique du fichier importe)
    * @param attachmentDetail
-   *          - objet contenant les détails nécéssaires à la création du fichier
-   *          importé et à sa liaison avec la publication
+   *          - objet contenant les details necessaires a la creation du fichier
+   *          importe et a sa liaison avec la publication
    * @throws AttachmentException
    */
   public void importAttachment(String pubId, String componentId,
@@ -169,18 +169,18 @@ public class AttachmentImportExport {
   }
 
   /**
-   * Méthode de copie de fichier utilisée par la méthode
+   * Mï¿½thode de copie de fichier utilisï¿½e par la mï¿½thode
    * importAttachement(String,String,AttachmentDetail)
    * 
    * @param componentId
-   *          - id du composant contenant la publication à laquelle est destiné
+   *          - id du composant contenant la publication ï¿½ laquelle est destinï¿½
    *          l'attachement
    * @param a_Detail
-   *          - objet contenant les informations sur le fichier à copier
+   *          - objet contenant les informations sur le fichier ï¿½ copier
    * @param path
-   *          - chemin où doit être copié le fichier
-   * @return renvoie l'objet des informations sur le fichier à copier complété
-   *         par les nouvelles données issues de la copie
+   *          - chemin oï¿½ doit ï¿½tre copiï¿½ le fichier
+   * @return renvoie l'objet des informations sur le fichier ï¿½ copier complï¿½tï¿½
+   *         par les nouvelles donnï¿½es issues de la copie
    * @throws AttachmentException
    */
   public AttachmentDetail copyFile(String componentId,
@@ -188,15 +188,13 @@ public class AttachmentImportExport {
 
     String fileToUpload = a_Detail.getPhysicalName();
 
-    // Préparation des paramètres du fichier à creer
+    // Prï¿½paration des paramï¿½tres du fichier ï¿½ creer
     String logicalName = fileToUpload.substring(fileToUpload
         .lastIndexOf(File.separator) + 1);
     String type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
         logicalName.length());
     String mimeType = AttachmentController.getMimeType(logicalName);
-    String physicalName = new Long(new Date().getTime()).toString() + "."
-        + type;
-
+    String physicalName = System.currentTimeMillis() + "." + type;
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {
       SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
@@ -219,7 +217,7 @@ public class AttachmentImportExport {
           "attachment.EX_FILE_COPY_ERROR", e);
     }
 
-    // Compléments sur les attachmentDetail
+    // Complï¿½ments sur les attachmentDetail
     a_Detail.setSize(size);
     a_Detail.setType(mimeType);
     a_Detail.setPhysicalName(physicalName);
@@ -263,18 +261,18 @@ public class AttachmentImportExport {
   }
 
   /**
-   * Méthode utilisée par la méthode
+   * Mï¿½thode utilisï¿½e par la mï¿½thode
    * importAttachement(String,String,AttachmentDetail) pour creer un attachement
-   * sur la publication créée dans la méthode citée.
+   * sur la publication crï¿½ï¿½e dans la mï¿½thode citï¿½e.
    * 
    * @param pubId
-   *          - id de la publication dans laquelle créer l'attachment
+   *          - id de la publication dans laquelle crï¿½er l'attachment
    * @param componentId
    *          - id du composant contenant la publication
    * @param a_Detail
-   *          - obejt contenant les informations nécéssaire à la création de
+   *          - obejt contenant les informations nï¿½cï¿½ssaire ï¿½ la crï¿½ation de
    *          l'attachment
-   * @return AttachmentDetail créé
+   * @return AttachmentDetail crï¿½ï¿½
    */
   private AttachmentDetail addAttachmentToPublication(String pubId,
       String componentId, AttachmentDetail a_Detail, String context,
@@ -299,12 +297,12 @@ public class AttachmentImportExport {
         "AttachmentImportExport.addAttachmentToPublication()",
         "root.MSG_GEN_PARAM_VALUE", "updateRule=" + updateRule);
 
-    // Vérification s'il existe un attachment de même nom, si oui, ajout d'un
+    // Vï¿½rification s'il existe un attachment de mï¿½me nom, si oui, ajout d'un
     // suffixe au nouveau fichier
     while (i < attachments.size()) {
       ad_toCreate = (AttachmentDetail) attachments.get(i);
       if (ad_toCreate.getLogicalName().equals(logicalName))// si les tailles
-      // sont différentes,
+      // sont diffï¿½rentes,
       // on
       {
         if ((ad_toCreate.getSize() != a_Detail.getSize())
@@ -318,7 +316,7 @@ public class AttachmentImportExport {
                 + logicalName.substring(Extposition, logicalName.length());
           else
             logicalName += "_" + (++incrementSuffixe);
-          // On reprend la boucle au début pour vérifier que le nom généré n est
+          // On reprend la boucle au dï¿½but pour vï¿½rifier que le nom gï¿½nï¿½rï¿½ n est
           // pas lui meme un autre nom d'attachment de la publication
           i = 0;
         } else {// on efface l'ancien fichier joint et on stoppe la boucle
@@ -330,7 +328,7 @@ public class AttachmentImportExport {
     }
     a_Detail.setLogicalName(logicalName);
 
-    // On instancie l'objet attachment à creer
+    // On instancie l'objet attachment ï¿½ creer
     ad_toCreate = new AttachmentDetail(atPK, a_Detail.getPhysicalName(),
         a_Detail.getLogicalName(), null, a_Detail.getType(),
         a_Detail.getSize(), context, new Date(), foreignKey, userId);
@@ -343,25 +341,25 @@ public class AttachmentImportExport {
   }
 
   /**
-   * Méthode de récupération des attachements et de copie des fichiers dans le
+   * Mï¿½thode de rï¿½cupï¿½ration des attachements et de copie des fichiers dans le
    * dossier d'exportation
    * 
    * @param pk
    *          - PrimaryKey de l'obijet dont on veut les attachments?
    * @param exportPath
-   *          - Répertoire dans lequel copier les fichiers
+   *          - Rï¿½pertoire dans lequel copier les fichiers
    * @param relativeExportPath
-   *          chemin relatif du fichier copié
-   * @return une liste des attachmentDetail trouvés
+   *          chemin relatif du fichier copiï¿½
+   * @return une liste des attachmentDetail trouvï¿½s
    */
   public Vector getAttachments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) {
 
-    // Récupération des attachments
+    // Rï¿½cupï¿½ration des attachments
     Vector listAttachment = AttachmentController
         .searchAttachmentByCustomerPK(pk);
     Vector listToReturn = new Vector();
-    if ((listAttachment != null) && (listAttachment.size() == 0))// Si on reçoit
+    if ((listAttachment != null) && (listAttachment.size() == 0))// Si on reï¿½oit
       // une liste
       // vide, on
       // retourne
@@ -369,7 +367,7 @@ public class AttachmentImportExport {
       listAttachment = null;
     if (listAttachment != null) {
       Iterator itListAttachment = listAttachment.iterator();
-      // Pour chaque attachment trouvé, on copie le fichier dans le dossier
+      // Pour chaque attachment trouvï¿½, on copie le fichier dans le dossier
       // d'exportation
       while (itListAttachment.hasNext()) {
         AttachmentDetail attDetail = (AttachmentDetail) itListAttachment.next();
@@ -384,7 +382,7 @@ public class AttachmentImportExport {
           try {
             copyAttachment(attDetail, pk, exportPath);
 
-            // Le nom physique correspond maintenant au fichier copié
+            // Le nom physique correspond maintenant au fichier copiï¿½
             attDetail.setPhysicalName(relativeExportPath
                 + File.separator
                 + ZipManager.transformStringToAsciiString(attDetail
@@ -400,7 +398,7 @@ public class AttachmentImportExport {
         } else if (attDetail.getExtension().equalsIgnoreCase(extensionFilter)) {
           try {
             copyAttachment(attDetail, pk, exportPath);
-            // Le nom physique correspond maintenant au fichier copié
+            // Le nom physique correspond maintenant au fichier copiï¿½
             attDetail.setLogicalName(ZipManager
                 .transformStringToAsciiString(attDetail.getLogicalName()));
 
@@ -430,13 +428,13 @@ public class AttachmentImportExport {
   }
 
   /**
-   * Méthode récupérant le chemin d'accès au dossier de stockage des fichiers
-   * importés dans un composant.
+   * Mï¿½thode rï¿½cupï¿½rant le chemin d'accï¿½s au dossier de stockage des fichiers
+   * importï¿½s dans un composant.
    * 
    * @param componentId
-   *          - id du composant dont on veut récuperer le chemin de stockage de
-   *          ses fichiers importés
-   * @return le chemin recherché
+   *          - id du composant dont on veut rï¿½cuperer le chemin de stockage de
+   *          ses fichiers importï¿½s
+   * @return le chemin recherchï¿½
    */
   private String getPath(String componentId) {
     String path = AttachmentController.createPath(componentId,

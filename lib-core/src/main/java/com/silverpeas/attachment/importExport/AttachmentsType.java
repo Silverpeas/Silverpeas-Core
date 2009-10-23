@@ -29,8 +29,8 @@ package com.silverpeas.attachment.importExport;
 import java.util.List;
 
 /**
- * Classe utilisée pour le (un)marshalling Castor
- * 
+ * Classe utilisÃ©e pour le (un)marshalling Castor
+ *
  * @author sdevolder
  */
 public class AttachmentsType {

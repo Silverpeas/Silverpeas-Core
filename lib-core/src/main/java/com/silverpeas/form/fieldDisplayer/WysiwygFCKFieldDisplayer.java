@@ -260,8 +260,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
   private String getContent(String componentId, String objectId, String fieldName, String code, String language) throws
       FormException {
     if (!code.startsWith(dbKey)) {
-      //Reprise de données
-      //Création d'un fichier contenant le texte
       setContentIntoFile(componentId, objectId, fieldName, code, language);
     } else {
       try {
@@ -274,11 +272,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   private String setContentIntoFile(String componentId, String objectId, String fieldName, String code, String language) {
-    //Création d'un fichier contenant le texte
     try {
       FileRepositoryManager.createAbsolutePath(componentId, dir);
     } catch (Exception e) {
-      //do nothing
     }
 
     String[] dirs = new String[1];
@@ -311,7 +307,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   private static String getFileName(String fieldName, String objectId) {
-    //return objectId+"_"+fieldName;
     return getFileName(fieldName, objectId, null);
   }
 
@@ -332,14 +327,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
 
     File from = new File(fromPath);
     if (from != null && from.exists()) {
-      //Verifie si le repertoire de destination existe
       try {
         FileRepositoryManager.createAbsolutePath(componentIdTo, dir);
       } catch (Exception e) {
         throw new IOException(e.getMessage());
       }
-
-      //Copier/coller de tous les fichiers wysiwyg de objectIdFrom vers objectIdTo
       List files = (List) FileFolderManager.getAllFile(fromPath);
       for (int f = 0; f < files.size(); f++) {
         File file = (File) files.get(f);
@@ -347,8 +339,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         if (fileName.startsWith(objectIdFrom + "_")) {
           String fieldName = fileName.substring(objectIdFrom.length() + 1);
           FileRepositoryManager.copyFile(fromPath + file.getName(), toPath + getFileName(fieldName, objectIdTo));
-
-          //paste translations
           Iterator languages = I18NHelper.getLanguages();
           while (languages.hasNext()) {
             String language = (String) languages.next();

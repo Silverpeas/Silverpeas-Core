@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.domains.ldapdriver;
@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * (with the attribute 'memberUid') : memberUid 003478 memberUid 004512 ....
  * THOSE GROUPS ARE ALL CONSIDERED AS ROOT GROUPS ALL DESCENDENT USERS ARE PUT
  * IN FIRST LEVEL USERS
- * 
+ *
  * @author neysseri
  */
 
@@ -124,15 +124,15 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param groupEntry
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -214,15 +214,15 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param parentId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -247,7 +247,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
             theFilter, driverSettings.getGroupsNameField(), driverSettings
                 .getGroupAttributes());
         SynchroReport.debug("LDAPGroupSamse.getChildGroupsEntry()",
-            "Récupération de " + theEntries.length + " groupes racine", null);
+            "RÃ©cupÃ©ration de " + theEntries.length + " groupes racine", null);
       } catch (AdminException e) {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupSamse.getChildGroupsEntry()",
@@ -255,7 +255,7 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
           synchroReport.append("PB getting Group's subgroups : " + parentId
               + "\n");
           SynchroReport.error("LDAPGroupSamse.getChildGroupsEntry()",
-              "Erreur lors de la récupération des groupes racine (parentId = "
+              "Erreur lors de la rÃ©cupÃ©ration des groupes racine (parentId = "
                   + parentId + ")", e);
         } else {
           throw e;
@@ -268,15 +268,15 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param parentId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected Vector getTRUEChildGroupsEntry(String lds, String parentId,

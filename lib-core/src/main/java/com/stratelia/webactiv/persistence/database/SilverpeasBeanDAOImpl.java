@@ -35,8 +35,6 @@ import com.stratelia.webactiv.persistence.*;
 public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
   private PropertyDescriptor[] properties = null;
   private Class silverpeasBeanClass = null;
-  private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd");
 
   // how to make connection with the database
   private int m_ConnectionType = SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
@@ -585,9 +583,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
         if (value != null) {
           java.util.Date[] parameters = new java.util.Date[1];
           try {
-            synchronized (dateFormat) {
-              parameters[0] = dateFormat.parse(value);
-            }
+            parameters[0] = DateUtil.parse(value);
           } catch (Exception e) {
             SilverTrace
                 .error(
@@ -725,9 +721,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
         if (date == null) {
           prepStmt.setNull(count, Types.VARCHAR);
         } else {
-          synchronized (dateFormat) {
-            prepStmt.setString(count, dateFormat.format(date));
-          }
+          prepStmt.setString(count, DateUtil.date2SQLDate(date));
         }
         count++;
       } else if ((type.equals("float")) || (type.equals("java.lang.Float"))) {

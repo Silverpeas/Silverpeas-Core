@@ -50,7 +50,7 @@ import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 
 /**
  * An IndexManager manage all the web'activ's index.
- * 
+ *
  * An IndexManager is NOT thread safe : to share an IndexManager between several
  * threads use an IndexerThread.
  */
@@ -104,14 +104,9 @@ public class IndexManager {
    */
   public void addIndexEntry(FullIndexEntry indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
-
     IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
-
     removeIndexEntry(writer, indexEntry.getPK());
     indexDocs(writer, indexEntry);
-
-    // modifiedIndex.add(indexPath);
-
     SilverTrace.debug("applicationIndexer", "IndexManager().addIndexEntry()",
         "applicationIndexer.MSG_INDEXING_COMPONENT_ITEM", "componentId = "
             + indexEntry.getComponent());
@@ -165,34 +160,19 @@ public class IndexManager {
                 "Can't Close index " + writerPath, e);
           }
         }
-
-        // Remove writer from list
         writerPaths.remove();
       }
-
     }
-
-    /*
-     * Iterator i = modifiedIndex.iterator(); while (i.hasNext()) {
-     * optimize((String) i.next()); i.remove(); }
-     */
   }
 
   private void removeIndexEntry(IndexWriter writer, IndexEntryPK indexEntry) {
     Term term = new Term(KEY, indexEntry.toString());
-
-    // int nbDeleted = reader.deleteDocuments(term);
-    // reader.close();
     try {
       writer.deleteDocuments(term);
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "IndexManager",
           "indexEngine.MSG_REMOVE_REQUEST_FAILED", indexEntry.toString(), e);
     }
-
-    // SilverTrace.debug("indexEngine", "IndexManager",
-    // "indexEngine.INFO_REMOVE_REQUEST_SUCCEED", indexEntry.toString()
-    // +", nb entries removed = "+nbDeleted);
     SilverTrace.debug("indexEngine", "IndexManager",
         "indexEngine.INFO_REMOVE_REQUEST_SUCCEED", indexEntry.toString());
   }
@@ -202,17 +182,9 @@ public class IndexManager {
    */
   public void removeIndexEntry(IndexEntryPK indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
-
-    IndexWriter writer = getIndexWriter(indexPath, "");
-
-    // File directory = new File(indexPath);
-    // if (directory.exists() && IndexReader.indexExists(directory))
-    // {
-    // IndexReader reader = IndexReader.open(directory);
+    IndexWriter writer = getIndexWriter(indexPath, "");;
     if (writer != null) {
       removeIndexEntry(writer, indexEntry);
-
-      // modifiedIndex.add(indexPath);
     } else {
       SilverTrace.debug("indexEngine", "IndexManager",
           "indexEngine.MSG_UNKNOWN_INDEX_FILE", indexPath);
@@ -256,10 +228,10 @@ public class IndexManager {
   /**
    * Return the analyzer used to parse indexed texts and queries in the given
    * language.
-   * 
+   *
    * @param language
    *          the language used in a document or a query.
-   * 
+   *
    * @return the analyzer for the required language or a default analyzer.
    */
   public Analyzer getAnalyzer(String language) {
@@ -333,14 +305,14 @@ public class IndexManager {
 
   /**
    * Returns an IndexWriter to the index stored at the given path.
-   * 
+   *
    * The index directory and files are created if not found.
-   * 
+   *
    * @param path
    *          the path to the index root directory
    * @param language
    *          the language of the indexed documents.
-   * 
+   *
    * @return an IndexWriter or null if the index can't be found or create or
    *         read.
    */
@@ -352,13 +324,9 @@ public class IndexManager {
 
         File file = new File(path);
         if (!file.exists()) {
-          // Le répertoire n'existe pas encore
           file.mkdirs();
           createIndex = true;
         } else {
-          // Le répertoire existe. Contient-il déjà un index ?
-          // Si oui, alors pas besoin de créer un nouvel index
-          // Si non, alors il faut créer un index
           createIndex = !IndexReader.indexExists(file);
         }
 
@@ -389,7 +357,7 @@ public class IndexManager {
 
   /**
    * Method declaration
-   * 
+   *
    * @param writer
    * @param indexEntry
    */
@@ -402,12 +370,6 @@ public class IndexManager {
       SilverTrace.error("indexEngine", "IndexManager.indexDocs",
           "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.getTitle(), e);
     }
-    /*
-     * finally { try { writer.close(); } catch (Exception e) {
-     * SilverTrace.error("indexEngine", "IndexManager.indexDocs",
-     * "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close Index Writer",
-     * e); } }
-     */
   }
 
   /**
@@ -415,37 +377,16 @@ public class IndexManager {
    */
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
-
     // fields creation
     doc.add(new Field(KEY, indexEntry.getPK().toString(), Field.Store.YES,
         Field.Index.UN_TOKENIZED));
-
-    // if (indexEntry.isIndexId())
-    // doc.add(new Field(ID, indexEntry.getPK().getObjectId(), Field.Store.NO,
-    // Field.Index.UN_TOKENIZED));
-
-    // For your information
-    // Field.Index.TOKENIZED - Index the field's value so it can be searched.
-    // Field.Index.UN_TOKENIZED - Index the field's value without using an
-    // Analyzer, so it can be searched.
-    // Field.Store.NO - Do not store the field value in the index.
-    // Field.Store.YES - Store the original field value in the index.
-
     Iterator languages = indexEntry.getLanguages();
-
-    // index title
     if (indexEntry.getObjectType() != null
         && indexEntry.getObjectType().startsWith("Attachment")) {
-      // In case of Attachment, TITLE is the filename so no need to tokenize it
-      // !
-      // doc.add(new Field(TITLE, indexEntry.getTitle(), Field.Store.YES,
-      // Field.Index.UN_TOKENIZED));
       doc.add(new Field(getFieldName(TITLE, indexEntry.getLang()), indexEntry
           .getTitle(indexEntry.getLang()), Field.Store.YES,
           Field.Index.UN_TOKENIZED));
     } else {
-      // doc.add(new Field(TITLE, indexEntry.getTitle(), Field.Store.YES,
-      // Field.Index.TOKENIZED));
       while (languages.hasNext()) {
         String language = (String) languages.next();
         if (indexEntry.getTitle(language) != null) {
@@ -519,9 +460,6 @@ public class IndexManager {
             indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
             Field.Store.NO, Field.Index.UN_TOKENIZED));
       } else {
-        // doc.add(new Field(HEADER, indexEntry.getTitle().toLowerCase(),
-        // Field.Store.NO, Field.Index.TOKENIZED));
-
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
           String language = (String) languages.next();
@@ -535,9 +473,6 @@ public class IndexManager {
           }
         }
       }
-
-      // doc.add(new Field(HEADER, indexEntry.getPreView().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
         String language = (String) languages.next();
@@ -550,10 +485,6 @@ public class IndexManager {
               .getKeywords(language).toLowerCase(), Field.Store.NO,
               Field.Index.TOKENIZED));
       }
-
-      // doc.add(new Field(HEADER, indexEntry.getKeyWords().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
-
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment"))
         doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
@@ -562,13 +493,6 @@ public class IndexManager {
       else
         doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(),
             Field.Store.NO, Field.Index.TOKENIZED));
-
-      // doc.add(new Field(CONTENT, indexEntry.getTitle(), Field.Store.NO,
-      // Field.Index.UN_TOKENIZED));
-      // doc.add(new Field(CONTENT, indexEntry.getPreView().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
-      // doc.add(new Field(CONTENT, indexEntry.getKeyWords().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
         String language = (String) languages.next();
@@ -623,10 +547,6 @@ public class IndexManager {
       // at the beginning of the field CONTENT and at the end of this field.
       // (In the current implementation of lucene and without this trick;
       // some key words are not indexed !!!)
-      // doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
-      // doc.add(new Field(CONTENT, indexEntry.getPreView().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
         String language = (String) languages.next();
@@ -643,16 +563,8 @@ public class IndexManager {
               .getKeywords(language).toLowerCase(), Field.Store.NO,
               Field.Index.TOKENIZED));
       }
-
-      // doc.add(new Field(CONTENT, indexEntry.getKeyWords().toLowerCase(),
-      // Field.Store.NO, Field.Index.TOKENIZED));
     }
-
-    // SilverTrace.debug("indexEngine", "IndexManager.makeDocument",
-    // "root.MSG_GEN_EXIT_METHOD", "doc = "+doc.toString());
-
     indexEntry = null;
-
     return doc;
   }
 
@@ -690,30 +602,7 @@ public class IndexManager {
       SilverTrace.error("indexEngine", "IndexManager",
           "indexEngine.MSG_FILE_PARSING_FAILED", f.getPath(), e);
     }
-    /*
-     * finally { try { if (reader != null) reader.close(); } catch (IOException
-     * ioe) { SilverTrace.warn("indexEngine", "IndexManager.addFile()",
-     * "indexEngine.MSG_READER_CLOSING_FAILED", f.getPath(), ioe); } }
-     */
   }
-
-  /**
-   * Optimize the given index.
-   */
-  /*
-   * private void optimize(String indexPath) { // We don't add any entry, // so
-   * the lang argument is useless and taken null IndexWriter writer =
-   * getIndexWriter(indexPath, null);
-   * 
-   * if (writer != null) { try { writer.optimize();
-   * SilverTrace.debug("indexEngine", "IndexManager.optimize",
-   * "indexEngine.INFO_INDEX_OPTIMIZATION_SUCCEED", indexPath); } catch
-   * (Exception e) { SilverTrace.debug("indexEngine", "IndexManager.optimize",
-   * "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", indexPath, e); } finally { try
-   * { writer.close(); } catch (Exception e) { SilverTrace.error("indexEngine",
-   * "IndexManager.optimize", "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED",
-   * "Can't Close Index Writer" + indexPath, e); } } } }
-   */
 
   /*
    * The lucene index engine parameters.
@@ -723,10 +612,4 @@ public class IndexManager {
   private int maxMergeDocs = Integer.MAX_VALUE;
   private double RAMBufferSizeMB = IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB;
 
-  /*
-   * The set of the modified index which need to be optimized.
-   * 
-   * This is a set of String (the path to each modified index).
-   */
-  // private final Set modifiedIndex = new HashSet();
 }

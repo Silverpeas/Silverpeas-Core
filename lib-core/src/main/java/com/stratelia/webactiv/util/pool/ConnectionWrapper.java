@@ -36,10 +36,10 @@ import java.util.Properties;
 
 /**
  * Cette classe est un wrapper de connection, qui delegue systematique toute ses
- * méthodes a une autre connection. La connection est passée en parametre dans
- * le constructeur. La connection est alors encapsulée. Cette classe est
- * nécessaire pour l'implementation du pattern du decorateur. Voir aussi
- * PooledConnectionWrapper, qui est un veritable exemple de décoration.
+ * mÃ©thodes a une autre connection. La connection est passÃ©e en parametre dans
+ * le constructeur. La connection est alors encapsulÃ©e. Cette classe est
+ * nÃ©cessaire pour l'implementation du pattern du decorateur. Voir aussi
+ * PooledConnectionWrapper, qui est un veritable exemple de dÃ©coration.
  */
 public class ConnectionWrapper implements Connection {
   protected Connection connection;

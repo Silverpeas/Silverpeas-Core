@@ -24,10 +24,8 @@
 package com.stratelia.webactiv.searchEngine.model;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -52,6 +50,7 @@ import org.apache.lucene.search.Searcher;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
@@ -366,7 +365,7 @@ public class WAIndexSearcher {
    */
   private List makeList(Hits hits, QueryDescription query) throws IOException {
     List results = new ArrayList();
-    String today = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+    String today = DateUtil.today2SQLDate();
     String user = query.getSearchingUser();
     String beforeDate = query.getRequestedCreatedBefore();
     String afterDate = query.getRequestedCreatedAfter();
@@ -379,8 +378,6 @@ public class WAIndexSearcher {
 
     if (hits != null) {
       for (int i = 0; i < hits.length(); i++) {
-        // try
-        // {
         MatchingIndexEntry indexEntry;
         Document doc = hits.doc(i);
 
@@ -474,10 +471,6 @@ public class WAIndexSearcher {
             results.add(indexEntry);
           }
         }
-        /*
-         * } catch (IOException e) { SilverTrace.fatal("searchEngine",
-         * "WAIndexSearcher", "searchEngine.MSG_CORRUPTED_INDEX_FILE", e); }
-         */
       }
     }
     return results;

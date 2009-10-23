@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 package com.stratelia.silverpeas.domains.ldapdriver;
 
@@ -44,9 +44,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * (with the attribute 'member') : member cn=user1,ou=people,o=stratelia member
  * cn=user2,ou=people,o=stratelia .... THOSE GROUPS ARE ALL CONSIDERED AS ROOT
  * GROUPS ALL DESCENDENT USERS ARE PUT IN FIRST LEVEL USERS
- * 
+ *
  * For CTI : Add new functionality : - Build Name from path (dn) - Use dn as key
- * 
+ *
  * @author tleroi
  */
 
@@ -126,15 +126,15 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param groupEntry
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -233,15 +233,15 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param parentId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -266,7 +266,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
             theFilter, driverSettings.getGroupsNameField(), driverSettings
                 .getGroupAttributes());
         SynchroReport.debug("LDAPGroupAllRoot.getChildGroupsEntry()",
-            "Récupération de " + theEntries.length + " groupes racine", null);
+            "RÃ©cupÃ©ration de " + theEntries.length + " groupes racine", null);
       } catch (AdminException e) {
         if (synchroInProcess) {
           SilverTrace.warn("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
@@ -274,7 +274,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
           synchroReport.append("PB getting Group's subgroups : " + parentId
               + "\n");
           SynchroReport.error("LDAPGroupAllRoot.getChildGroupsEntry()",
-              "Erreur lors de la récupération des groupes racine", e);
+              "Erreur lors de la rÃ©cupÃ©ration des groupes racine", e);
         } else {
           throw e;
         }
@@ -286,15 +286,15 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   * 
-   * 
+   *
+   *
    * @param lds
    * @param parentId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AdminException
-   * 
+   *
    * @see
    */
   protected Vector getTRUEChildGroupsEntry(String lds, String parentId,
@@ -426,7 +426,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         synchroReport.append("PB getting Group's childs : "
             + groupInfos.getName() + "\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
-            "Pb de récupération des membres utilisateurs du groupe "
+            "Pb de rÃ©cupÃ©ration des membres utilisateurs du groupe "
                 + groupInfos.getSpecificId(), e);
       } else {
         throw e;

@@ -33,6 +33,7 @@ import java.util.MissingResourceException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Set;
 
 /**
  * The TypeManager gives all the known field and displayer type
@@ -46,7 +47,8 @@ public class TypeManager {
    * Returns all the type names.
    */
   static public String[] getTypeNames() {
-    return (String[]) implementations.keySet().toArray(new String[0]);
+    Set keys = implementations.keySet();
+    return (String[]) keys.toArray(new String[keys.size()]);
   }
 
   /**
@@ -97,7 +99,7 @@ public class TypeManager {
       throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
     }
 
-    return (String[]) displayerNames.toArray(new String[0]);
+    return (String[]) displayerNames.toArray(new String[displayerNames.size()]);
   }
 
   /**

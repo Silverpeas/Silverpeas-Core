@@ -28,12 +28,6 @@ package com.stratelia.silverpeas.notificationserver.channel;
 
 import com.stratelia.silverpeas.notificationserver.*;
 
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
 
 public interface INotificationServerChannel {
 

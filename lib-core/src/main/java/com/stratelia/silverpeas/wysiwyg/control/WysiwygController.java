@@ -67,13 +67,13 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  *
  * $Log: WysiwygController.java,v $
  * Revision 1.22  2009/03/26 14:16:24  neysseri
- * Le copier/coller de contenu Wysiwyg n'était pas correct.
- * Problème de réécriture d'URL des images.
+ * Le copier/coller de contenu Wysiwyg n'Ã©tait pas correct.
+ * ProblÃ¨me de rÃ©Ã©criture d'URL des images.
  *
  * Revision 1.21  2009/02/20 07:51:23  neysseri
- * Ajout d'un paramètre IndexIt permettant de spécifier si l'indexation autonome doit être effectué lors de la création/modification
- * Par défaut = true
- * Sinon passez False et utiliser le mécanisme de Callback
+ * Ajout d'un paramÃ¨tre IndexIt permettant de spÃ©cifier si l'indexation autonome doit Ãªtre effectuÃ© lors de la crÃ©ation/modification
+ * Par dÃ©faut = true
+ * Sinon passez False et utiliser le mÃ©canisme de Callback
  *
  * Revision 1.20  2008/05/21 14:01:25  neysseri
  * no message
@@ -118,8 +118,8 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * no message
  *
  * Revision 1.14  2006/09/18 07:10:02  neysseri
- * Suppression des méthodes d'indexation.
- * Ce sont les modules utilisants le wysiwyg qui doivent indexer le contenu et pas le wysiwyg lui-même !
+ * Suppression des mÃ©thodes d'indexation.
+ * Ce sont les modules utilisants le wysiwyg qui doivent indexer le contenu et pas le wysiwyg lui-mÃªme !
  *
  * Revision 1.13  2005/10/20 10:53:30  neysseri
  * no message
@@ -141,7 +141,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * - updateFileAndAttachment() --> synchronized
  *
  * Revision 1.8  2005/04/21 11:01:31  neysseri
- * Ajout du créateur du Wysiwyg (transmis à attachment)
+ * Ajout du crÃ©ateur du Wysiwyg (transmis Ã  attachment)
  *
  * Revision 1.7  2005/04/07 18:15:11  neysseri
  * no message
@@ -602,7 +602,7 @@ public class WysiwygController
 	{
 		createFileAndAttachment(textHtml, fileName, spaceId, componentId, context, id, userId, true);
 	}
-	
+
 	public static void createFileAndAttachment(String textHtml, String fileName, String spaceId, String componentId, String context, String id, String userId, boolean indexIt) throws WysiwygException
     {
         try
@@ -704,14 +704,14 @@ public class WysiwygController
 	{
 		updateFileAndAttachment(textHtml, spaceId, componentId, objectId, userId, true);
 	}
-	
+
     public static void updateFileAndAttachment(String textHtml, String spaceId, String componentId, String objectId, String userId, boolean indexIt) throws WysiwygException
     {
         String fileName = WysiwygController.getWysiwygFileName(objectId);
 
         WysiwygController.updateFileAndAttachment(textHtml, fileName, spaceId, componentId, WYSIWYG_CONTEXT, objectId, userId, indexIt);
     }
-    
+
     public static void save(String textHtml, String spaceId, String componentId, String objectId, String userId, String language, boolean indexIt) throws WysiwygException
     {
     	if (I18NHelper.isDefaultLanguage(language))
@@ -762,8 +762,8 @@ public class WysiwygController
     }
 
     /**
-     * La méthode deleteWysiwygAttachments efface tous les attachments de la publication donc pour éviter une éventuelle
-     * régression, je crée une nouvelle méthode
+     * La mÃ©thode deleteWysiwygAttachments efface tous les attachments de la publication donc pour Ã©viter une Ã©ventuelle
+     * rÃ©gression, je crÃ©e une nouvelle mÃ©thode
      * @param spaceId
      * @param componentId
      * @param objectId
@@ -1187,10 +1187,10 @@ public class WysiwygController
 				AttachmentDetail newAttd = new AttachmentDetail(new AttachmentPK("unknown", spaceId, componentId), attD.getPhysicalName(), attD.getLogicalName(), attD.getDescription(), attD.getType(), attD.getSize(), getImagesFileName(objectId), new java.util.Date(), new AttachmentPK(objectId, spaceId, componentId));
 				newAttd.setAuthor(attD.getAuthor());
 				AttachmentController.createAttachment(newAttd);
-				
+
 				imageIds.put(attD.getPK().getId(), newAttd.getPK().getId());
 			}
-			
+
 			Iterator<String> languages = I18NHelper.getLanguages();
             while (languages.hasNext())
             {
@@ -1220,7 +1220,7 @@ public class WysiwygController
         }
         catch (Exception e) {}
     }
-    
+
     private static String replaceInternalImageIds(String wysiwygContent, Hashtable<String, String> imageIds)
     {
     	String tmp = wysiwygContent;
@@ -1229,17 +1229,17 @@ public class WysiwygController
     	{
     		String oldImageId = oldImageIds.nextElement();
     		String newImageId = imageIds.get(oldImageId);
-    		
+
     		tmp = replaceInternalImageId(tmp, oldImageId, newImageId);
     	}
     	return tmp;
     }
-    
+
     private static String replaceInternalImageId(String wysiwygContent, String oldAttachmentId, String newAttachmentId)
     {
     	return wysiwygContent.replaceAll("attachmentId="+oldAttachmentId+"\"", "attachmentId="+newAttachmentId+"\"");
     }
-    
+
     /**
      * Usefull to maintain forward compatibility (old URLs to images)
      * @param wysiwygContent

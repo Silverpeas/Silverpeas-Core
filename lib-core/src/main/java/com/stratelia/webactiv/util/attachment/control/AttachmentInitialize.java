@@ -34,8 +34,6 @@ public class AttachmentInitialize implements IInitialize {
     try {
       AttachmentSchedulerImpl asi = new AttachmentSchedulerImpl();
       asi.initialize();
-
-      // pour les réservations de fichiers
       ScheduledReservedFile rf = new ScheduledReservedFile();
       rf.initialize();
     } catch (Exception e) {

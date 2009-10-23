@@ -66,7 +66,7 @@ public interface AttachmentBm {
   public void updateForeignKey(AttachmentPK pk, String foreignKey)
       throws AttachmentException;
 
-  // pour la gestion des retards sur les réservations de fichiers
+  // pour la gestion des retards sur les reservations de fichiers
   public Collection getAllAttachmentByDate(Date date, boolean alert)
       throws AttachmentException;
 

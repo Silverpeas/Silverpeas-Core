@@ -193,7 +193,7 @@ public class UserSetTable extends Table {
       us.userSetId = id;
       SynchroReport.debug("UserSetTable.createUserSet()",
           "Ajout de l'objet d'Id " + id + " et de type " + type
-              + ", requête : " + INSERT_USERSET, null);
+              + ", requÃªte : " + INSERT_USERSET, null);
       insertRow(INSERT_USERSET, us);
     }
   }
@@ -270,7 +270,7 @@ public class UserSetTable extends Table {
       SynchroReport.debug("UserSetTable.linkUserSetUser()",
           "Ajout d'une relation entre l'utilisateur d'ID " + userId
               + " et l'objet de type " + userSetType + " et d'ID " + userSetId
-              + ", requête : " + INSERT_USERSET_USER_REL, null);
+              + ", requÃªte : " + INSERT_USERSET_USER_REL, null);
 
       if (StringUtil.isDefined(userSetType)
           && userSetType.equalsIgnoreCase("R"))
@@ -280,7 +280,7 @@ public class UserSetTable extends Table {
       SynchroReport.debug("UserSetTable.linkUserSetUser()",
           "Maj de la relation entre l'utilisateur d'ID " + userId
               + " et l'objet de type " + userSetType + " et d'ID " + userSetId
-              + ", requête : " + INCREMENT_USERSET_USER_REL, null);
+              + ", requÃªte : " + INCREMENT_USERSET_USER_REL, null);
       updateRelation(INCREMENT_USERSET_USER_REL, types, ids, weight);
     }
   }
@@ -326,13 +326,13 @@ public class UserSetTable extends Table {
       SynchroReport.debug("UserSetTable.unlinkUserSetUser()",
           "Suppression de la relation entre l'utilisateur d'ID " + userId
               + " et l'objet de type " + userSetType + " et d'ID " + userSetId
-              + ", requête : " + DELETE_A_USERSET_USER_REL, null);
+              + ", requÃªte : " + DELETE_A_USERSET_USER_REL, null);
       updateRelation(DELETE_A_USERSET_USER_REL, types, ids);
     } else {
       SynchroReport.debug("UserSetTable.unlinkUserSetUser()",
           "Maj de la relation entre l'utilisateur d'ID " + userId
               + " et l'objet de type " + userSetType + " et d'ID " + userSetId
-              + ", requête : " + DECREMENT_USERSET_USER_REL, null);
+              + ", requÃªte : " + DECREMENT_USERSET_USER_REL, null);
       updateRelation(DECREMENT_USERSET_USER_REL, types, ids, weight);
     }
   }
@@ -347,7 +347,7 @@ public class UserSetTable extends Table {
 
   /**
    * Adds a userSet in a userSet.
-   * 
+   *
    * <P>
    * To insert a SUBSET in a SUPERSET, we must :
    * <UL>
@@ -441,7 +441,7 @@ public class UserSetTable extends Table {
         SynchroReport.debug("UserSetTable.linkUserSetUserSet()",
             "Ajout d'une relation entre l'objet d'ID " + superSetId
                 + " et de type " + superSetType + " et l'objet d'ID "
-                + subSetId + " et de type " + subSetType + ", requête : "
+                + subSetId + " et de type " + subSetType + ", requÃªte : "
                 + INSERT_USERSET_USERSET_REL, null);
         if (StringUtil.isDefined(superSetType)
             && superSetType.equalsIgnoreCase("R"))
@@ -451,7 +451,7 @@ public class UserSetTable extends Table {
         SynchroReport.debug("UserSetTable.linkUserSetUserSet()",
             "Maj de la relation entre l'objet d'ID " + superSetId
                 + " et de type " + superSetType + " et l'objet d'ID "
-                + subSetId + " et de type " + subSetType + ", requête : "
+                + subSetId + " et de type " + subSetType + ", requÃªte : "
                 + INCREMENT_USERSET_USERSET_REL, null);
         updateRelation(INCREMENT_USERSET_USERSET_REL, types, ids, weight);
       }
@@ -471,7 +471,7 @@ public class UserSetTable extends Table {
 
   /**
    * Removes a userSet from a userSet.
-   * 
+   *
    * <P>
    * To remove a SUBSET from a SUPERSET, we must :
    * <UL>
@@ -553,14 +553,14 @@ public class UserSetTable extends Table {
       SynchroReport.debug("UserSetTable.unlinkUserSetUserSet()",
           "Suppression de la relation entre l'objet d'ID " + superSetId
               + " et de type " + superSetType + " et l'objet d'ID " + subSetId
-              + " et de type " + subSetType + ", requête : "
+              + " et de type " + subSetType + ", requÃªte : "
               + DELETE_A_USERSET_USERSET_REL, null);
       updateRelation(DELETE_A_USERSET_USERSET_REL, types, ids);
     } else {
       SynchroReport.debug("UserSetTable.unlinkUserSetUserSet()",
           "Maj de la relation entre l'objet d'ID " + superSetId
               + " et de type " + superSetType + " et l'objet d'ID " + subSetId
-              + " et de type " + subSetType + ", requête : "
+              + " et de type " + subSetType + ", requÃªte : "
               + DECREMENT_USERSET_USERSET_REL, null);
       updateRelation(DECREMENT_USERSET_USERSET_REL, types, ids, weight);
     }
@@ -694,7 +694,7 @@ public class UserSetTable extends Table {
   /**
    * Returns the integer of the single row, single column resultset returned by
    * the given query with (type,id) parameters.
-   * 
+   *
    * Returns null if the result set was empty.
    */
   protected Integer getInteger(String query, String[] types, int[] ids)

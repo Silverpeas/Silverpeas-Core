@@ -55,11 +55,11 @@ public class ConnectionPool {
   }
 
   /**
-   * permet de récupérer une connection depuis un pool de connection libre. On
-   * libère la connection en la fermant (connection.close()), elle revient alors
+   * permet de recuperer une connection depuis un pool de connection libre. On
+   * libere la connection en la fermant (connection.close()), elle revient alors
    * toute seule dans le pool.
    * 
-   * @return Une connection BDD vers la base de donnée silverpeas.
+   * @return Une connection BDD vers la base de donnï¿½e silverpeas.
    */
   public static Connection getConnection() throws SQLException {
     SilverTrace.debug("util", "ConnectionPool.getConnection", "start");

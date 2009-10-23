@@ -217,7 +217,7 @@ public class GroupUserRoleTable extends Table {
    * sampleGroupUserRole) throws AdminPersistenceException { String[] columns =
    * new String[] { "name", "description"}; String[] values = new String[] {
    * sampleGroupUserRole.name, sampleGroupUserRole.description};
-   * 
+   *
    * return (GroupUserRoleRow[]) getMatchingRows(GROUPUSERROLE_COLUMNS, columns,
    * values) .toArray(new GroupUserRoleRow[0]); }
    */
@@ -264,7 +264,7 @@ public class GroupUserRoleTable extends Table {
    * public void updateGroupUserRole(GroupUserRoleRow groupUserRole) throws
    * AdminPersistenceException { updateRow(UPDATE_GROUPUSERROLE, groupUserRole);
    * }
-   * 
+   *
    * static final private String UPDATE_GROUPUSERROLE =
    * "update ST_GroupUserRole set" + " name = ?," + " description = ?" +
    * " where id = ?";
@@ -274,7 +274,7 @@ public class GroupUserRoleTable extends Table {
       Object row) throws SQLException {
     /*
      * GroupUserRoleRow s = (GroupUserRoleRow) row;
-     * 
+     *
      * update.setString(1, truncate(s.name,100)); update.setString(2,
      * truncate(s.description,500)); update.setInt(3, s.id);
      */
@@ -383,7 +383,7 @@ public class GroupUserRoleTable extends Table {
     }
 
     SynchroReport.debug("GroupUserRoleTable.removeUserFromGroupUserRole()",
-        "Retrait (ou décrément) de la relation entre l'utilisateur d'ID "
+        "Retrait (ou dÃ©crÃ©ment) de la relation entre l'utilisateur d'ID "
             + userId + " et l'egroup d'ID " + groupUserRoleId
             + " dans la table ST_UserSet_User_Rel", null);
     organization.userSet.removeUserFromUserSet(userId, "H", groupUserRoleId);
@@ -391,7 +391,7 @@ public class GroupUserRoleTable extends Table {
     int[] params = new int[] { groupUserRoleId, userId };
     SynchroReport.debug("GroupUserRoleTable.removeUserFromGroupUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " de role d'egroup d'ID "
-            + groupUserRoleId + ", requête : " + DELETE_GROUPUSERROLE_USER_REL,
+            + groupUserRoleId + ", requÃªte : " + DELETE_GROUPUSERROLE_USER_REL,
         null);
     updateRelation(DELETE_GROUPUSERROLE_USER_REL, params);
   }
@@ -480,7 +480,7 @@ public class GroupUserRoleTable extends Table {
     }
 
     SynchroReport.debug("GroupUserRoleTable.removeGroupFromGroupUserRole()",
-        "Suppression (ou décrément) des relations liant le groupe d'ID "
+        "Suppression (ou dÃ©crÃ©ment) des relations liant le groupe d'ID "
             + groupId + " et l'egroup d'ID " + groupUserRoleId
             + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         null);
@@ -491,7 +491,7 @@ public class GroupUserRoleTable extends Table {
     SynchroReport
         .debug("GroupUserRoleTable.removeGroupFromGroupUserRole()",
             "Retrait du groupe d'ID " + groupId + " de l'espace d'ID "
-                + groupUserRoleId + ", requête : "
+                + groupUserRoleId + ", requÃªte : "
                 + DELETE_GROUPUSERROLE_GROUP_REL, null);
     updateRelation(DELETE_GROUPUSERROLE_GROUP_REL, params);
   }

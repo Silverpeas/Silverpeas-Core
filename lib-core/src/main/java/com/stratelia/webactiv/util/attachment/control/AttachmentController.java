@@ -99,17 +99,17 @@ public class AttachmentController {
    * to create file attached to an object who is identified by "PK"
    * AttachmentDetail object contains a attribute who identifie the link by a
    * foreign key.
-   * 
+   *
    * @param attchdetail
    *          - an AttachmentDetail to create
    * @param indexIt
    *          - indicates if attachment must be indexed or not
-   * 
+   *
    * @return AttachmentDetail just created
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when can't created the Attachment
-   * 
+   *
    * @author Nicolas EYSSERIC
    * @version 1.0
    */
@@ -148,12 +148,12 @@ public class AttachmentController {
   /**
    * to update file information (title and description) AttachmentDetail object
    * to update.
-   * 
+   *
    * @param attchdetail
    *          :AttachmentDetail.
    * @param indexIt
    *          - indicates if attachment must be indexed or not
-   * 
+   *
    * @author Nicolas EYSSERIC
    * @version 3.0
    */
@@ -204,7 +204,7 @@ public class AttachmentController {
 
       if (attachDetail.isOpenOfficeCompatible() && attachDetail.isReadOnly()) {
 
-        // le fichier est renommé
+        // le fichier est renommÃ©
         if (oldAttachment.getLogicalName(language).equals(
             attachDetail.getLogicalName(language))) {
           RepositoryHelper.getJcrAttachmentService().deleteAttachment(
@@ -296,16 +296,16 @@ public class AttachmentController {
 
   /**
    * to search all file attached to an object who is identified by "PK"
-   * 
+   *
    * @param pk
    *          : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of
    *          customer object but this key must be transformed to AttachmentPK
-   * 
+   *
    * @return java.util.Vector: a collection of AttachmentDetail
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to search
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -440,17 +440,17 @@ public class AttachmentController {
 
   /**
    * to search all file attached
-   * 
+   *
    * @param pk
    *          : AttachmentPK: the primary key of object AttachmentDetail
-   * 
+   *
    * @return java.util.Vector: a collection of AttachmentDetail
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to search
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -468,20 +468,20 @@ public class AttachmentController {
   /**
    * to search all file attached by primary key of customer object and mime type
    * of file attached
-   * 
+   *
    * @param pk
    *          : com.stratelia.webactiv.util.WAPrimaryKey:the primary key of
    *          customer object but this key must be transformed to AttachmentPK
    * @param String
    *          : the mime type of file attached
-   * 
+   *
    * @return java.util.Vector, a vector of AttachmentDetail
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to search
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -507,24 +507,24 @@ public class AttachmentController {
   /**
    * to search all file attached by primary key of customer object and context
    * of file attached
-   * 
+   *
    * @param pk
    *          : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of
    *          customer object but this key must be transformed to AttachmentPK
    * @param context
    *          : String: the context attribute of file attached
-   * 
+   *
    * @return java.util.Vector, a vector of AttachmentDetail
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to search
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
-  // méthode pour wysiwig pb de gestion d'exception
+  // mÃ©thode pour wysiwig pb de gestion d'exception
   public static Vector searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
       String context, Connection con) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
@@ -541,13 +541,13 @@ public class AttachmentController {
 
   /**
    * to provide applicationIndexer service
-   * 
+   *
    * @param pk
    *          : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of
    *          customer object
-   * 
+   *
    * @return void
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    * @author Jean-Claude Groccia
    * @version 1.0
@@ -570,18 +570,18 @@ public class AttachmentController {
 
   /**
    * to delete all file attached to an customer object
-   * 
+   *
    * @param pk
    *          : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of
    *          customer object but this key must be transformed to AttachmentPK
-   * 
+   *
    * @return void
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to delete
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -616,7 +616,7 @@ public class AttachmentController {
         .getSpace(), foreignKey.getComponentName());
     Vector attachmentDetails = searchAttachmentByCustomerPK(fk);
 
-    // Astuce pour que seuls les attachements wysiwyg soit effacés
+    // Astuce pour que seuls les attachements wysiwyg soit effacÃ©s
     int i = 0;
 
     while (i < attachmentDetails.size()) {
@@ -635,17 +635,17 @@ public class AttachmentController {
 
   /**
    * to delete one file attached.
-   * 
+   *
    * @param attachDetail
    *          : the attachmentDetail object to deleted
-   * 
+   *
    * @return void
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to delete
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -726,18 +726,18 @@ public class AttachmentController {
 
   /**
    * to delete a list of file attached.
-   * 
+   *
    * @param java
    *          .util.Vector attachDetail: the vector of attachmentDetail object
    *          to deleted
-   * 
+   *
    * @return void
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to delete
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -752,17 +752,17 @@ public class AttachmentController {
 
   /**
    * to delete one file attached.
-   * 
+   *
    * @param attachDetail
    *          : the attachmentDetail object to deleted
-   * 
+   *
    * @return void
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to delete
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -797,15 +797,15 @@ public class AttachmentController {
    * to create file attached to an object who is identified by "PK"
    * AttachmentDetail object contains a attribute who identifie the father by a
    * foreign key.
-   * 
+   *
    * @param vectorAttchdetail
    *          : java.util.Vector contains a list of AttachmentDetail object.
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * 
+   *
    * @exception AttachmentRuntimeException
    *              when is impossible to create
-   * 
+   *
    * @author Jean-Claude Groccia
    * @version 1.0
    */
@@ -820,12 +820,12 @@ public class AttachmentController {
 
   /**
    * Method to build the attachment Context
-   * 
+   *
    * @param str
    *          : String: the string of repertories
    * @param token
-   *          : String: the token séparating the repertories
-   * 
+   *          : String: the token sÃ©parating the repertories
+   *
    * @return: String : the string separating by token of
    *          attachmentDetail.context.
    */
@@ -835,9 +835,9 @@ public class AttachmentController {
 
   /**
    * to create path
-   * 
+   *
    * @deprecated Warning: the token separing the repertories is ","
-   * 
+   *
    * @param spaceId
    *          : type String: the name of space
    * @param componentId
@@ -853,7 +853,7 @@ public class AttachmentController {
 
   /**
    * To create path Warning: the token separing the repertories is ","
-   * 
+   *
    * @param spaceId
    *          : type String: the name of space
    * @param componentId
@@ -911,7 +911,7 @@ public class AttachmentController {
 
   /**
    * to get mime type of the file param extensionFile : type String
-   * 
+   *
    * @author Mohammed Hguig
    * @varsion 1.0
    */
@@ -971,7 +971,7 @@ public class AttachmentController {
   /**
    * to delete file on server param atDetail: type AttachmentDetail: the object
    * AttachmentDetail to deleted
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    * @author Jean-Claude Groccia
    * @version 1.0
@@ -1010,9 +1010,9 @@ public class AttachmentController {
 
   /**
    * Method declaration
-   * 
+   *
    * @param detail
-   * 
+   *
    * @see
    */
   public static void createIndex(AttachmentDetail detail) {
@@ -1062,7 +1062,7 @@ public class AttachmentController {
           }
 
           /*
-           * le champs description est utilisé pour savoir si c'est un lien ou
+           * le champs description est utilisÃ© pour savoir si c'est un lien ou
            * une copie sur le fichier
            */
           String path = new String();
@@ -1120,9 +1120,9 @@ public class AttachmentController {
 
   /**
    * Method declaration
-   * 
+   *
    * @param detail
-   * 
+   *
    * @see
    */
   private static void deleteIndex(AttachmentDetail detail) {
@@ -1151,16 +1151,16 @@ public class AttachmentController {
   /**
    * to copy all files attached to an object who is identified by "PK" to an
    * other object
-   * 
+   *
    * @param foreignKeyFrom
    *          : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of
    *          customer object source
    * @param foreignKeyTo
    *          : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of
    *          customer object destination
-   * 
+   *
    * @exception AttachmentRuntimeException
-   * 
+   *
    * @author SCO
    * @version 1.0
    */
@@ -1271,7 +1271,7 @@ public class AttachmentController {
    * to copy one file to another on server param attDetailFrom: type
    * AttachmentDetail: the object AttachmentDetail to copy param attDetailTo:
    * type AttachmentDetail: the object AttachmentDetail to create
-   * 
+   *
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    * @author SCO
    * @version 1.0
@@ -1309,16 +1309,16 @@ public class AttachmentController {
 
   /**
    * Checkin a file
-   * 
+   *
    * @param String
    *          attachmentId
    * @param String
    *          componentId
    * @param String
    *          updateMode
-   * 
+   *
    * @return false
-   * 
+   *
    * @throws AttachmentException
    */
   public static boolean checkinFile(String attachmentId, boolean upload,
@@ -1417,12 +1417,12 @@ public class AttachmentController {
 
   /**
    * Checkout a file for update by user
-   * 
+   *
    * @param String
    *          attachmentId
    * @param String
    *          userId
-   * 
+   *
    * @throws AttachmentException
    */
   public static boolean checkoutFile(String attachmentId, String userId)
@@ -1432,14 +1432,14 @@ public class AttachmentController {
 
   /**
    * Checkout a file for update by user
-   * 
+   *
    * @param String
    *          attachmentId
    * @param String
    *          userId
    * @param String
    *          fileLanguage
-   * 
+   *
    * @throws AttachmentException
    */
   public static boolean checkoutFile(String attachmentId, String userId,
@@ -1474,7 +1474,7 @@ public class AttachmentController {
             attachmentDetail, language);
       }
 
-      // mise à jour de la date d'expiration
+      // mise Ã  jour de la date d'expiration
       Calendar cal = Calendar.getInstance(Locale.FRENCH);
       attachmentDetail.setReservationDate(cal.getTime());
 
@@ -1493,7 +1493,7 @@ public class AttachmentController {
             "root.MSG_GEN_PARAM_VALUE", "nbDay = " + nbDay);
 
         // 2. calcul la date d'expiration en fonction de la date d'aujourd'hui
-        // et de la durée de réservation
+        // et de la durÃ©e de rÃ©servation
         Calendar calendar = Calendar.getInstance(Locale.FRENCH);
 
         // calendar.add(Calendar.DATE, nbDay);
@@ -1501,7 +1501,7 @@ public class AttachmentController {
         attachmentDetail.setExpiryDate(calendar.getTime());
       }
 
-      // mise à jour de la date d'alerte
+      // mise Ã  jour de la date d'alerte
 
       // 1. rechercher le % dans le properties
       int delayReservedFile = Integer.parseInt(resources
@@ -1541,10 +1541,10 @@ public class AttachmentController {
 
   /**
    * Get a UserDetail
-   * 
+   *
    * @param String
    *          userId
-   * 
+   *
    * @throws AttachmentException
    */
   public static UserDetail getUserDetail(String userId)
@@ -1613,7 +1613,7 @@ public class AttachmentController {
         clones.remove(clone);
       } else {
 
-        // le fichier a été supprimé
+        // le fichier a Ã©tÃ© supprimÃ©
         // Suppression du fichier d'origine
         deleteAttachment(attachmentDetail);
       }
@@ -1660,7 +1660,7 @@ public class AttachmentController {
   private static void mergeAttachment(AttachmentDetail attachmentDetail,
       AttachmentDetail clone) throws AttachmentException {
 
-    // Màj du fichier d'origine
+    // MÃ j du fichier d'origine
     attachmentDetail.setAuthor(clone.getAuthor());
     attachmentDetail.setInfo(clone.getInfo());
     attachmentDetail.setLogicalName(clone.getLogicalName());

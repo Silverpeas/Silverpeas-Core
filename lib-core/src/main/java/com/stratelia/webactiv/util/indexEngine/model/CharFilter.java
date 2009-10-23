@@ -31,7 +31,7 @@ import org.apache.lucene.analysis.TokenStream;
 
 /**
  * Extends lucene TokenFilter : replaces from each token all the special
- * characters like é or ç.
+ * characters like Ã© or Ã§.
  */
 public final class CharFilter extends TokenFilter {
   /**
@@ -56,6 +56,7 @@ public final class CharFilter extends TokenFilter {
   /**
    * Returns the next input token which is termText
    */
+  @Override
   public Token next() throws IOException {
     Token token = input.next();
     if (token != null) {

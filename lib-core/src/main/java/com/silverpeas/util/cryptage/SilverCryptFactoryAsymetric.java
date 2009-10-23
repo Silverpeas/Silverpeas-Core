@@ -36,7 +36,7 @@ import org.bouncycastle.cms.KeyTransRecipientInformation;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SilverCryptFactoryAsymetric {
-  // Singleton pour gèrer une seule Map de trousseaux de clés
+  // Singleton pour gÃ¨rer une seule Map de trousseaux de clÃ©s
   private static SilverCryptFactoryAsymetric factory = null;
 
   private SilverCryptFactoryAsymetric() {
@@ -54,20 +54,20 @@ public class SilverCryptFactoryAsymetric {
   public byte[] goCrypting(String stringUnCrypted, String fileName)
       throws CryptageException {
     try {
-      // Chargement de la chaine à crypter
+      // Chargement de la chaine Ã  crypter
       byte[] buffer = stringToByteArray(stringUnCrypted);
 
       // Chiffrement du document
       CMSEnvelopedDataGenerator gen = new CMSEnvelopedDataGenerator();
       // La variable cert correspond au certificat du destinataire
-      // La clé publique de ce certificat servira à chiffrer la clé symétrique
+      // La clÃ© publique de ce certificat servira Ã  chiffrer la clÃ© symÃ©trique
       gen.addKeyTransRecipient((java.security.cert.X509Certificate) this
           .getKeys(fileName).getCert());
 
-      // Choix de l'algorithme à clé symétrique pour chiffrer le document.
+      // Choix de l'algorithme Ã  clÃ© symÃ©trique pour chiffrer le document.
       // AES est un standard. Vous pouvez donc l'utiliser sans crainte.
-      // Il faut savoir qu'en france la taille maximum autorisée est de 128
-      // bits pour les clés symétriques (ou clés secrètes)
+      // Il faut savoir qu'en france la taille maximum autorisÃ©e est de 128
+      // bits pour les clÃ©s symÃ©triques (ou clÃ©s secrÃ¨tes)
       String algorithm = CMSEnvelopedDataGenerator.AES128_CBC;
       CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(
           buffer), algorithm, "BC");
@@ -90,17 +90,17 @@ public class SilverCryptFactoryAsymetric {
   public String goUnCrypting(byte[] stringCrypted, String fileName)
       throws CryptageException {
     try {
-      // Chargement de la chaine à déchiffrer
+      // Chargement de la chaine Ã  dÃ©chiffrer
       byte[] pkcs7envelopedData = stringCrypted;
 
-      // Déchiffrement de la chaine
+      // DÃ©chiffrement de la chaine
       CMSEnvelopedData ced = new CMSEnvelopedData(pkcs7envelopedData);
       Collection recip = ced.getRecipientInfos().getRecipients();
 
       KeyTransRecipientInformation rinfo = (KeyTransRecipientInformation) recip
           .iterator().next();
-      // privatekey est la clé privée permettant de déchiffrer la clé secrète
-      // (symétrique)
+      // privatekey est la clÃ© privÃ©e permettant de dÃ©chiffrer la clÃ© secrÃ¨te
+      // (symÃ©trique)
       byte[] contents = rinfo.getContent(
           this.getKeys(fileName).getPrivatekey(), "BC");
 
@@ -115,7 +115,7 @@ public class SilverCryptFactoryAsymetric {
   }
 
   public void addKeys(String filename, String password)
-      throws CryptageException {// ajout d'une trousseau de clé à partir d'un
+      throws CryptageException {// ajout d'une trousseau de clÃ© Ã  partir d'un
     // chemin d'un fichier p12 + password
     synchronized (keyMap) {
       if (this.keyMap.containsKey(filename)) {
@@ -137,7 +137,7 @@ public class SilverCryptFactoryAsymetric {
   }
 
   private SilverCryptKeysAsymetric getKeys(String filename)
-      throws CryptageException {// récupération du trousseau de clé!
+      throws CryptageException {// rÃ©cupÃ©ration du trousseau de clÃ©!
     if (this.keyMap.containsKey(filename)) {
       return (SilverCryptKeysAsymetric) this.keyMap.get(filename);
     } else {
@@ -147,7 +147,7 @@ public class SilverCryptFactoryAsymetric {
   }
 
   private String byteArrayToString(byte[] bArray) {// A n'utiliser qu'avec des
-    // Strings décryptés!!!
+    // Strings dÃ©cryptÃ©s!!!
     return new String(bArray);
   }
 

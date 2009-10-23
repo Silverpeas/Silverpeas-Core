@@ -44,9 +44,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class AttachmentDAO {
-  // the date format used in database to represent a date
-  // private static java.text.SimpleDateFormat formatter = new
-  // java.text.SimpleDateFormat("yyyy/MM/dd");
+
   private static String attachmentTableName = "SB_Attachment_Attachment";
   private static String attachmentTableColumns = " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
       + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
@@ -110,7 +108,7 @@ public class AttachmentDAO {
     } else
       attachDetail.setReservationDate(null);
 
-    // récupération de la date d'alerte
+    // recuperation de la date d'alerte
     String ad = rs.getString("alertDate");
     if (ad != null) {
       try {
@@ -123,7 +121,7 @@ public class AttachmentDAO {
     } else
       attachDetail.setAlertDate(null);
 
-    // récupération de la date d'expiration
+    // recuperation de la date d'expiration
     String ed = rs.getString("expiryDate");
     if (ed != null) {
       try {

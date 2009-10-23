@@ -110,12 +110,12 @@ public interface FieldDisplayer {
       throws FormException;
 
   /*
-   * Indique si le champ affiché autorise l'affichage de la notion d'obligation de saisie du champs
+   * Indique si le champ affiche autorise l'affichage de la notion d'obligation de saisie du champs
    */
   public boolean isDisplayedMandatory();
 
   /**
-   * retourne le nombre d'objets html affiché par le displayer
+   * retourne le nombre d'objets html affichï¿½ par le displayer
    */
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext);
 

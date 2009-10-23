@@ -47,7 +47,7 @@ public class CSVReader extends SilverpeasSettings {
   protected String m_separator;
   protected ResourceLocator m_utilMessages;
 
-  // properties spécifiques éventuellement en plus
+  // properties specifiques eventuellement en plus
   protected int m_specificNbCols = 0;
   protected String[] m_specificColNames;
   protected String[] m_specificColTypes;
@@ -223,11 +223,11 @@ public class CSVReader extends SilverpeasSettings {
       }
     }
 
-    // traitement des données spécifiques
+    // traitement des donnees specifiques
     j = m_nbCols;
     for (i = 0; i < m_specificNbCols; i++) {
       if (start == -1) {
-        theValue = ""; // remplace la donnée spécifique manquante par une valeur
+        theValue = ""; // remplace la donnee specifique manquante par une valeur
         // vide
         end = -2;
       } else if (end == -1) {

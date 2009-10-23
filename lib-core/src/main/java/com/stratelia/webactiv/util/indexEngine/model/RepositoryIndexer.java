@@ -35,7 +35,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 /**
  * An RepositoryIndexer allow to index files in a whole repository except the
  * directories
- * 
+ *
  */
 public class RepositoryIndexer {
   private String spaceId = null;
@@ -93,14 +93,14 @@ public class RepositoryIndexer {
     dir = null;
 
     SilverTrace.info("indexEngine", "RepositoryIndexer.pathIndexer()",
-        "root.MSG_GEN_PARAM_VALUE", "Fichiers à indexer="
+        "root.MSG_GEN_PARAM_VALUE", "Fichiers Ã  indexer="
             + new Integer(count).toString());
   }
 
   /**
    * Recursive function which covers directories. For each file, the file is
    * indexed.
-   * 
+   *
    * @param fileList
    *          an array which contains directories and files
    * @param path
@@ -157,7 +157,7 @@ public class RepositoryIndexer {
 
     /*
      * File[] fileList = dir.listFiles();
-     * 
+     *
      * File currentFile = null; //String fileName = null; for (int i=0; fileList
      * != null && i<fileList.length; i++) { //SilverTrace.debug("indexEngine",
      * "RepositoryIndexer.processFileList()", "root.MSG_GEN_PARAM_VALUE",
@@ -165,7 +165,7 @@ public class RepositoryIndexer {
      * = new File(path + separator + fileName); currentFile = fileList[i];
      * //SilverTrace.debug("indexEngine", "RepositoryIndexer.processFileList()",
      * "root.MSG_GEN_PARAM_VALUE", "currentFile="+currentFile.getPath());
-     * 
+     *
      * if (!currentFile.isDirectory()) { //SilverTrace.debug("indexEngine",
      * "RepositoryIndexer.processFileList()", "root.MSG_GEN_PARAM_VALUE",
      * "(IsDirectory false) path+fileName="
@@ -173,13 +173,13 @@ public class RepositoryIndexer {
      * +currentFile.getPath()); //It's a document, index or remove it !
      * indexFile(action, creationDate, creatorId, currentFile, false); } else {
      * indexDirectory(action, creationDate, creatorId, currentFile);
-     * 
+     *
      * // recursive call to get the current object
      * //SilverTrace.debug("indexEngine", "RepositoryIndexer.processFileList()",
      * "root.MSG_GEN_PARAM_VALUE",
      * "RecursiveCall: (IsDirectory true): path+fileName"+path+fileName);
      * processFileList(currentFile, creationDate, creatorId, action); }
-     * 
+     *
      * currentFile = null; } fileList = null;
      */
   }
@@ -187,7 +187,7 @@ public class RepositoryIndexer {
   private void indexDirectory(String action, String creationDate,
       String creatorId, File directory) {
     if (action.equals("add")) {
-      // indexer le répertoire
+      // indexer le rÃ©pertoire
       FullIndexEntry fullIndexEntry = new FullIndexEntry(getComponentId(),
           "LinkedDir", directory.getPath());
       fullIndexEntry.setTitle(directory.getName());
@@ -199,7 +199,7 @@ public class RepositoryIndexer {
 
       // SilverTrace.debug("indexEngine", "RepositoryIndexer.indexDirectory()",
       // "root.MSG_GEN_PARAM_VALUE",
-      // "Add index Répository : name = "+directory.getName());
+      // "Add index RÃ©pository : name = "+directory.getName());
       count++;
     } else if (action.equals("remove")) {
       IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedDir",

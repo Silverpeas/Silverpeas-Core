@@ -395,7 +395,7 @@ public class SpaceUserRoleTable extends Table {
     }
 
     SynchroReport.debug("SpaceUserRoleTable.removeUserFromSpaceUserRole()",
-        "Retrait (ou décrément) de la relation entre l'utilisateur d'ID "
+        "Retrait (ou dÃ©crÃ©ment) de la relation entre l'utilisateur d'ID "
             + userId + " et l'espace d'ID " + spaceUserRoleId
             + " dans la table ST_UserSet_User_Rel", null);
 
@@ -412,7 +412,7 @@ public class SpaceUserRoleTable extends Table {
     int[] params = new int[] { spaceUserRoleId, userId };
     SynchroReport.debug("SpaceUserRoleTable.removeUserFromSpaceUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " de role d'espace d'ID "
-            + spaceUserRoleId + ", requête : " + DELETE_SPACEUSERROLE_USER_REL,
+            + spaceUserRoleId + ", requÃªte : " + DELETE_SPACEUSERROLE_USER_REL,
         null);
     updateRelation(DELETE_SPACEUSERROLE_USER_REL, params);
   }
@@ -506,7 +506,7 @@ public class SpaceUserRoleTable extends Table {
     }
 
     SynchroReport.debug("SpaceUserRoleTable.removeGroupFromSpaceUserRole()",
-        "Suppression (ou décrément) des relations liant le groupe d'ID "
+        "Suppression (ou dÃ©crÃ©ment) des relations liant le groupe d'ID "
             + groupId + " et l'espace d'ID " + spaceUserRoleId
             + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         null);
@@ -526,7 +526,7 @@ public class SpaceUserRoleTable extends Table {
     SynchroReport
         .debug("SpaceUserRoleTable.removeGroupFromSpaceUserRole()",
             "Retrait du groupe d'ID " + groupId + " de l'espace d'ID "
-                + spaceUserRoleId + ", requête : "
+                + spaceUserRoleId + ", requÃªte : "
                 + DELETE_SPACEUSERROLE_GROUP_REL, null);
     updateRelation(DELETE_SPACEUSERROLE_GROUP_REL, params);
   }
@@ -536,6 +536,7 @@ public class SpaceUserRoleTable extends Table {
   /**
    * Fetch the current spaceUserRole row from a resultSet.
    */
+  @Override
   protected Object fetchRow(ResultSet rs) throws SQLException {
     return fetchSpaceUserRole(rs);
   }

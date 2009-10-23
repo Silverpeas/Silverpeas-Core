@@ -180,7 +180,7 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   /**
-   * Rustine pour bloquer l'accès au fichier webdav. Attention
+   * Rustine pour bloquer l'acces au fichier webdav. Attention
    * 
    * @param id
    * @return

@@ -27,8 +27,8 @@ package com.silverpeas.form;
  * The page context where a form is displayed.
  */
 public class PagesContext {
-  public static int ON_UPDATE_REPLACE_EMPTY_VALUES = 0;
-  public static int ON_UPDATE_IGNORE_EMPTY_VALUES = 1;
+  public static final int ON_UPDATE_REPLACE_EMPTY_VALUES = 0;
+  public static final int ON_UPDATE_IGNORE_EMPTY_VALUES = 1;
 
   String formName = "";
   String formIndex = "0";
@@ -171,10 +171,11 @@ public class PagesContext {
 
   public void incCurrentFieldIndex(int increment) {
     int currentFieldIndexInt = 0;
-    if (currentFieldIndex != null)
-      currentFieldIndexInt = new Integer(currentFieldIndex).intValue();
+    if (currentFieldIndex != null) {
+      currentFieldIndexInt = Integer.parseInt(currentFieldIndex);
+    }
     currentFieldIndexInt = currentFieldIndexInt + increment;
-    this.currentFieldIndex = new Integer(currentFieldIndexInt).toString();
+    this.currentFieldIndex = Integer.toString(currentFieldIndexInt);
   }
 
   public String getComponentId() {

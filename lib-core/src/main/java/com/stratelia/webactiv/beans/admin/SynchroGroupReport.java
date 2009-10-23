@@ -50,9 +50,9 @@ public class SynchroGroupReport {
 
   // Initialisation
   static {
-    iTraceLevel = TRACE_LEVEL_WARN; // par défaut
+    iTraceLevel = TRACE_LEVEL_WARN;
     VMessage = new Vector();
-    iState = STATE_NOSYNC;// par défaut
+    iState = STATE_NOSYNC;
   }
 
   static public String getModuleName() {
@@ -67,14 +67,14 @@ public class SynchroGroupReport {
   }
 
   /**
-   * Récupère le niveau de trace
+   * Recupere le niveau de trace
    */
   static public int getTraceLevel() {
     return iTraceLevel;
   }
 
   /**
-   * Récupère le niveau de trace ds une chaine
+   * Recupere le niveau de trace ds une chaine
    */
   static public String getTraceLevelStr() {
     if (iTraceLevel == TRACE_LEVEL_WARN)
@@ -92,16 +92,16 @@ public class SynchroGroupReport {
   }
 
   /**
-   * Fixe l'état
+   * Fixe l'etat
    */
   static synchronized public void setState(int iStateCours) {
     if ((iState < STATE_WAITSTART) || (iStateCours != STATE_WAITSTART)) {
       iState = iStateCours;
-    } // Else, do nothing
+    } 
   }
 
   /**
-   * Récupère l'état
+   * Recupere l'etat
    */
   static public int getState() {
     return iState;
