@@ -45,9 +45,9 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: HistoryNodePublicationActorDAO.java,v 1.4 2007/06/14 08:37:55 neysseri Exp $
- * 
+ *
  * $Log: HistoryNodePublicationActorDAO.java,v $
  * Revision 1.4  2007/06/14 08:37:55  neysseri
  * no message
@@ -66,7 +66,7 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
  *
  * Revision 1.10  2002/01/22 09:25:48  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.9  2001/12/26 12:01:47  nchaix
@@ -76,8 +76,8 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class HistoryNodePublicationActorDAO {
@@ -85,16 +85,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param rs
    * @param space
    * @param componentName
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getHistoryDetails(ResultSet rs, String space,
@@ -130,8 +130,8 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public HistoryNodePublicationActorDAO() {
@@ -139,7 +139,7 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Get descendant node PKs of a node
-   * 
+   *
    * @return A collection of NodePK
    * @param con
    *          A connection to the database
@@ -189,7 +189,7 @@ public class HistoryNodePublicationActorDAO {
           nodeId = new Integer(rs.getInt(1)).toString();
           NodePK n = new NodePK(nodeId, nodePK);
 
-          a.add(n); /* Stockage du sous thème */
+          a.add(n); /* Stockage du sous thÃ¨me */
         }
       } finally {
         DBUtil.close(rs, prepStmt);
@@ -201,16 +201,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param fatherPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getNodesUsage(Connection con, String tableName,
@@ -260,16 +260,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
    * @param nodePK
    * @param pubPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void add(Connection con, String tableName, String userId,
@@ -295,16 +295,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getHistoryDetailByPublication(Connection con,

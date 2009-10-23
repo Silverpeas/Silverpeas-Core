@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
@@ -58,13 +56,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
-
 public class SMTPListener extends AbstractListener {
   private String m_Host;
   private String m_User;
@@ -73,23 +64,9 @@ public class SMTPListener extends AbstractListener {
   private boolean m_SmtpAuthentication;
   private boolean m_SmtpDebug;
 
-  /**
-   * Constructor declaration
-   * 
-   * 
-   * @see
-   */
   public SMTPListener() {
   }
 
-  /**
-   * Method declaration
-   * 
-   * 
-   * @throws CreateException
-   * 
-   * @see
-   */
   public void ejbCreate() {
     ResourceLocator mailerSettings = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings",
@@ -121,9 +98,6 @@ public class SMTPListener extends AbstractListener {
     }
   }
 
-  /**
-	 * 
-	 */
   public void send(NotificationData p_Message)
       throws NotificationServerException {
     String tmpFromString = null;
@@ -132,7 +106,6 @@ public class SMTPListener extends AbstractListener {
     String tmpLanguageString = null;
     String tmpAttachmentIdString = null;
     String tmpSourceString = null;
-
     // process the target param string, containing the FROM and the SUBJECT
     // email fields.
     try {
@@ -168,15 +141,11 @@ public class SMTPListener extends AbstractListener {
     ResourceLocator messages = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.smtp.multilang.smtpBundle",
         tmpLanguageString);
-
     // if no FROM field was entered, then add an error. If not, send the email.
     if (tmpFromString == null) {
       throw new NotificationServerException("SMTPListner.send()",
           SilverpeasException.ERROR, "smtp.EX_MISSING_FROM");
     } else {
-      // String body = (tmpUrlString==null) ? p_Message.getMessage() :
-      // p_Message.getMessage() + "\n\n" + messages.getString("clickBelow") +
-      // "\n" + tmpUrlString;
       String body = p_Message.getMessage();
       if (tmpUrlString != null) {
         // Transform text to html format
@@ -193,19 +162,14 @@ public class SMTPListener extends AbstractListener {
         // For the moment, send the email without attachment
         sendEmail(tmpFromString, p_Message.getTargetReceipt(),
             tmpSubjectString, body, false);
-        /*
-         * sendEmailWithAttachment( tmpFromString, p_Message.getTargetReceipt(),
-         * tmpSubjectString, p_Message.getMessage(), tmpAttachmentIdString,
-         * tmpAttachmentNameString );
-         */
-      }
+        }
     }
   }
 
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API
    * (compliant with MIME format).
-   * 
+   *
    * @param pFrom
    *          : from field that will appear in the email header.
    * @param pTo
@@ -231,19 +195,12 @@ public class SMTPListener extends AbstractListener {
     properties.put("mail.smtp.host", m_Host);
     properties.put("mail.smtp.auth", new Boolean(m_SmtpAuthentication)
         .toString());
-    // properties.put("mail.smtp.dsn.notify", "SUCCESS,FAILURE ORCPT=rfc822;" +
-    // NSADM );
-    // properties.put("mail.smtp.dsn.notify", "SUCCESS,FAILURE");
-    // properties.put("mail.smtp.dsn.ret", "FULL");
-    // properties.put("mail.smtp.dsn.ret", "HDRS");//"hdrs envid="+200);
-
     session = javax.mail.Session.getInstance(properties, null);
     session.setDebug(m_SmtpDebug); // print on the console all SMTP messages.
     try {
       fromAddress = new InternetAddress(pFrom); // use InternetAddress
       // structure.
       toAddress = null;
-
       // parsing destination address for compliance with RFC822
       try {
         toAddress = InternetAddress.parse(pTo, false);
@@ -279,41 +236,17 @@ public class SMTPListener extends AbstractListener {
       // redefine the TransportListener interface.
       TransportListener transportListener = new TransportListener() {
 
-        /**
-         * Method declaration
-         * 
-         * 
-         * @param e
-         * 
-         * @see
-         */
         public void messageDelivered(TransportEvent e) { // catch all messages
           // delivered to the
           // SMTP server.
         }
 
-        /**
-         * Method declaration
-         * 
-         * 
-         * @param e
-         * 
-         * @see
-         */
         public void messageNotDelivered(TransportEvent e) { // catch all
           // messages NOT
           // delivered to the
           // SMTP server.
         }
 
-        /**
-         * Method declaration
-         * 
-         * 
-         * @param e
-         * 
-         * @see
-         */
         public void messagePartiallyDelivered(TransportEvent e) {
         }
 
@@ -348,7 +281,7 @@ public class SMTPListener extends AbstractListener {
 
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API.
-   * 
+   *
    * @param pFrom
    *          : from field that will appear in the email header.
    * @param pTo
@@ -369,39 +302,39 @@ public class SMTPListener extends AbstractListener {
    * String pMessage, String pAttachmentId, String pAttachmentName) throws
    * NotificationServerException { //retrieves system properties and set up
    * Delivery Status Notification //@see RFC1891
-   * 
+   *
    * Properties properties; javax.mail.Session session; InternetAddress
    * fromAddress; InternetAddress[] toAddress; MimeMessage email; Transport
    * transport = null;
-   * 
+   *
    * properties = System.getProperties(); properties.put("mail.smtp.host",
    * m_Host); session = javax.mail.Session.getInstance(properties, null); try{
    * fromAddress = new InternetAddress(pFrom); //use InternetAddress structure.
    * toAddress = null;
-   * 
+   *
    * //parsing destination address for compliance with RFC822 try { toAddress =
    * InternetAddress.parse(pTo, false); } catch (AddressException e) { throw new
    * NotificationServerException(e, "Invalid Address"); }
-   * 
+   *
    * email = new MimeMessage( session ); email.setFrom( fromAddress );
    * email.setRecipients( javax.mail.Message.RecipientType.TO, toAddress );
    * email.setSubject( pSubject ); email.setText( pMessage );
-   * 
+   *
    * // create the message part MimeBodyPart messageBodyPart = new
    * MimeBodyPart(); Multipart multipart = new MimeMultipart();
    * multipart.addBodyPart(messageBodyPart);
-   * 
+   *
    * // Part two is attachment messageBodyPart = new MimeBodyPart(); DataSource
    * source = new
    * FileDataSource("C:\\Dev\\web\\Upload\\D"+pAttachmentId+"\\"+pAttachmentName
    * ); messageBodyPart.setDataHandler( new DataHandler(source));
    * messageBodyPart.setFileName(pAttachmentName);
    * multipart.addBodyPart(messageBodyPart);
-   * 
+   *
    * // Put parts in message email.setContent(multipart);
-   * 
+   *
    * // set the Date: header email.setSentDate(new Date());
-   * 
+   *
    * //create a Transport connection (TCP) transport =
    * session.getTransport("smtp"); //redefine the TransportListener interface.
    * TransportListener transportListener = new TransportListener() { public void
@@ -409,7 +342,7 @@ public class SMTPListener extends AbstractListener {
    * SMTP server. } public void messageNotDelivered(TransportEvent e) { //catch
    * all messages NOT delivered to the SMTP server. } public void
    * messagePartiallyDelivered(TransportEvent e) { } };
-   * 
+   *
    * //add Transport Listener to the transport connection.
    * transport.addTransportListener(transportListener); transport.connect();
    * transport.sendMessage(email,toAddress); } catch (Exception e) { throw new

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.util.question.control;
@@ -53,9 +53,9 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: QuestionBmEJB.java,v 1.2 2006/08/16 11:56:33 neysseri Exp $
- * 
+ *
  * $Log: QuestionBmEJB.java,v $
  * Revision 1.2  2006/08/16 11:56:33  neysseri
  * no message
@@ -64,7 +64,7 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
  * no message
  *
  * Revision 1.14  2002/04/16 10:03:06  santonio
- * ajout d'une methode pour transformer les carecteres speciaux comme € et ’
+ * ajout d'une methode pour transformer les carecteres speciaux comme â‚¬ et â€™
  *
  * Revision 1.13  2001/12/20 15:46:04  neysseri
  * Stabilisation Lot 2 :
@@ -75,7 +75,7 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 /**
  * Question Business Manager See QuestionBmBusinessSkeleton for methods
  * documentation
- * 
+ *
  * @author neysseri
  */
 public class QuestionBmEJB implements javax.ejb.SessionBean,

@@ -34,18 +34,18 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: QuestionContainerDAO.java,v 1.6 2006/11/15 14:09:19 sfariello Exp $
- * 
+ *
  * $Log: QuestionContainerDAO.java,v $
  * Revision 1.6.4.3  2009/07/10 13:08:48  sfariello
- * Modification de la mise à jour des question pour la modification à tout moment des enquêtes
+ * Modification de la mise Ã  jour des question pour la modification Ã  tout moment des enquÃªtes
  *
  * Revision 1.6.4.2  2009/06/26 09:32:19  sfariello
  * no message
  *
  * Revision 1.6.4.1  2009/06/22 08:08:15  sfariello
- * Ajout modification de l'enquête à tout moment
+ * Ajout modification de l'enquÃªte Ã  tout moment
  *
  * Revision 1.6  2006/11/15 14:09:19  sfariello
  * no message
@@ -76,7 +76,7 @@ import com.stratelia.silverpeas.silvertrace.*;
 /**
  * This class is made to access database only (table SB_QuestionContainer_QC et
  * SB_QuestionContainer_Comment)
- * 
+ *
  * @author neysseri
  */
 public class QuestionContainerDAO {
@@ -95,15 +95,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param rs
    * @param questionContainerPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static QuestionContainerHeader getQuestionContainerHeaderFromResultSet(
@@ -151,15 +151,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getQuestionContainers(Connection con,
@@ -245,15 +245,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getOpenedQuestionContainers(Connection con,
@@ -293,15 +293,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getNotClosedQuestionContainers(Connection con,
@@ -339,15 +339,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getClosedQuestionContainers(Connection con,
@@ -386,15 +386,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param qcPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getInWaitQuestionContainers(Connection con,
@@ -430,15 +430,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static QuestionContainerHeader getQuestionContainerHeader(
@@ -473,13 +473,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void closeQuestionContainer(Connection con,
@@ -506,13 +506,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void openQuestionContainer(Connection con,
@@ -539,15 +539,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerHeader
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static QuestionContainerPK createQuestionContainerHeader(
@@ -622,13 +622,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerHeader
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void updateQuestionContainerHeader(Connection con,
@@ -686,13 +686,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void deleteQuestionContainerHeader(Connection con,
@@ -718,13 +718,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param questionContainerPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void addAVoter(Connection con,
@@ -749,15 +749,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param rs
    * @param qcPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   private static Comment getCommentFromResultSet(ResultSet rs,
@@ -777,13 +777,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param comment
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void addComment(Connection con, Comment comment)
@@ -829,15 +829,15 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param qcPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getComments(Connection con, QuestionContainerPK qcPK)
@@ -872,13 +872,13 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param qcPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void deleteComments(Connection con, QuestionContainerPK qcPK)

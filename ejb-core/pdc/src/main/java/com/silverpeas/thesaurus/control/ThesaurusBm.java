@@ -44,9 +44,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * ThesaurusBm
- * 
- * Classe servant ‡ gÈrer le mÈtier du thesuaurus
- * 
+ *
+ * Classe servant √† g√©rer le m√©tier du thesuaurus
+ *
  */
 public class ThesaurusBm {
 
@@ -87,14 +87,14 @@ public class ThesaurusBm {
 
   /**
    * Retourne la liste des vocabulaires (Collection de Vocabulary)
-   * 
-   * 
+   *
+   *
    * @param
-   * 
+   *
    * @return Collection
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getListVocabulary() throws ThesaurusException {
@@ -112,15 +112,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne le dÈtail du vocabulaire ‡ partir d'un idVoca
-   * 
-   * 
+   * Retourne le d√©tail du vocabulaire √† partir d'un idVoca
+   *
+   *
    * @param idVoca
-   * 
+   *
    * @return Vocabulary
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Vocabulary getVocabulary(long idVoca) throws ThesaurusException {
@@ -138,15 +138,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe un nouveau vocabulaire et retourne l'id de celui-ci
-   * 
-   * 
+   * Cr√©e un nouveau vocabulaire et retourne l'id de celui-ci
+   *
+   *
    * @param voca
-   * 
+   *
    * @return long
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public long createVocabulary(Vocabulary voca) throws ThesaurusException {
@@ -164,15 +164,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne vrai si le vocabulaire passÈ en paramËtre existe dÈj‡
-   * 
-   * 
+   * Retourne vrai si le vocabulaire pass√© en param√®tre existe d√©j√†
+   *
+   *
    * @param name
-   * 
+   *
    * @return boolean
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public boolean existVocabulary(String name) throws ThesaurusException {
@@ -182,7 +182,7 @@ public class ThesaurusBm {
       Collection vocabs = (Collection) daoV.findByWhereClause(pk, " name= '"
           + encode(name) + "'");
 
-      if (vocabs.size() > 0) { // le vocabulaire existe dÈj‡
+      if (vocabs.size() > 0) { // le vocabulaire existe d√©j√†
         return true;
       } else
         return false;
@@ -195,15 +195,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne une chaine qui a encodÈ les ' par des ''
-   * 
-   * 
+   * Retourne une chaine qui a encod√© les ' par des ''
+   *
+   *
    * @param name
-   * 
+   *
    * @return String
-   * 
+   *
    * @throws
-   * 
+   *
    * @see
    */
   private String encode(String name) {
@@ -222,15 +222,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Met ‡ jour le vocabulaire passÈ en paramËtre
-   * 
-   * 
+   * Met √† jour le vocabulaire pass√© en param√®tre
+   *
+   *
    * @param voca
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public void updateVocabulary(Vocabulary voca) throws ThesaurusException {
@@ -245,15 +245,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime le vocabulaire passÈ en paramËtre
-   * 
-   * 
+   * Supprime le vocabulaire pass√© en param√®tre
+   *
+   *
    * @param idVoca
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see deleteVocaSynonyms, deleteVocaJargons
    */
   public void deleteVocabulary(long idVoca) throws ThesaurusException {
@@ -301,15 +301,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime tous les synonymes associÈs au vocabulaire passÈ en paramËtre
-   * 
-   * 
+   * Supprime tous les synonymes associ√©s au vocabulaire pass√© en param√®tre
+   *
+   *
    * @param idVoca
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void deleteVocaSynonyms(Connection con, long idVoca)
@@ -326,15 +326,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime tous les jargons associÈs au vocabulaire passÈ en paramËtre
-   * 
-   * 
+   * Supprime tous les jargons associ√©s au vocabulaire pass√© en param√®tre
+   *
+   *
    * @param idVoca
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void deleteVocaJargons(Connection con, long idVoca)
@@ -351,15 +351,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime tous les jargons passÈs en paramËtre
-   * 
-   * 
+   * Supprime tous les jargons pass√©s en param√®tre
+   *
+   *
    * @param jargons
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see deleteJargon
    */
   public void deleteJargons(Collection jargons) throws ThesaurusException {
@@ -380,15 +380,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime le jargon passÈ en paramËtre
-   * 
-   * 
+   * Supprime le jargon pass√© en param√®tre
+   *
+   *
    * @param idJargon
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void deleteJargon(String idJargon) throws ThesaurusException {
@@ -404,15 +404,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe de nouveaux synonymes ‡ un terme
-   * 
-   * 
+   * Cr√©e de nouveaux synonymes √† un terme
+   *
+   *
    * @param synonyms
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see createSynonym
    */
   private void createSynonyms(Connection con, Collection synonyms)
@@ -431,15 +431,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe un nouveau synonyme ‡ un terme
-   * 
-   * 
+   * Cr√©e un nouveau synonyme √† un terme
+   *
+   *
    * @param synonym
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void createSynonym(Connection con, Synonym synonym)
@@ -456,16 +456,16 @@ public class ThesaurusBm {
 
   /**
    * Retourne la liste des synonymes d'un vocabulaire, pour un terme
-   * 
-   * 
+   *
+   *
    * @param idVoca
    * @param idTree
    * @param idTerm
-   * 
+   *
    * @return Collection
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getSynonyms(long idVoca, long idTree, long idTerm)
@@ -485,15 +485,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Met ‡ jour une liste de synonymes
-   * 
-   * 
+   * Met √† jour une liste de synonymes
+   *
+   *
    * @param synonyms
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see deleteSynonyms, createSynonyms
    */
   public void updateSynonyms(Collection synonyms) throws ThesaurusException {
@@ -504,7 +504,7 @@ public class ThesaurusBm {
       con.setAutoCommit(false);
 
       Iterator i = synonyms.iterator();
-      // premier ÈlÈment de la liste
+      // premier √©l√©ment de la liste
       if (i.hasNext()) {
         Synonym synonyme = (Synonym) i.next();
         long idVoca = synonyme.getIdVoca();
@@ -514,7 +514,7 @@ public class ThesaurusBm {
         deleteSynonyms(con, idVoca, idTree, idTerm);
       }
 
-      // crÈe les synonymes du terme
+      // cr√©e les synonymes du terme
       createSynonyms(con, synonyms);
 
       con.commit();
@@ -544,16 +544,16 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes d'un terme dans un vocabulaire
-   * 
-   * 
+   *
+   *
    * @param idVoca
    * @param idTree
    * @param idTerm
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public void deleteSynonyms(String idVoca, String idTree, String idTerm)
@@ -597,15 +597,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime les synonymes passÈs en paramËtre
-   * 
-   * 
+   * Supprime les synonymes pass√©s en param√®tre
+   *
+   *
    * @param idSynonyms
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see deleteSynonym
    */
   public void deleteSynonyms(Collection idSynonyms) throws ThesaurusException {
@@ -626,15 +626,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime le synonyme passÈs en paramËtre
-   * 
-   * 
+   * Supprime le synonyme pass√©s en param√®tre
+   *
+   *
    * @param idSynonym
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void deleteSynonym(long idSynonym) throws ThesaurusException {
@@ -651,16 +651,16 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime les synonymes de tous les termes associÈs ‡ l'axe passÈ en
-   * paramËtre
-   * 
-   * 
+   * Supprime les synonymes de tous les termes associ√©s √† l'axe pass√© en
+   * param√®tre
+   *
+   *
    * @param idTree
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
@@ -677,17 +677,17 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime les synonymes de tous les termes passÈs en paramËtre
-   * 
-   * 
+   * Supprime les synonymes de tous les termes pass√©s en param√®tre
+   *
+   *
    * @param idTree
    * @param idTerms
    *          : List de String
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see deleteSynonymsTerm
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List idTerms)
@@ -706,16 +706,16 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime les synonymes du terme passÈ en paramËtre
-   * 
-   * 
+   * Supprime les synonymes du terme pass√© en param√®tre
+   *
+   *
    * @param idTree
    * @param idTerm
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void deleteSynonymsTerm(Connection con, long idTree, long idTerm)
@@ -732,16 +732,16 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des utilisateurs utilisant le vocabulaire passÈ en
-   * paramËtre retourne une Collection de Jargon
-   * 
-   * 
+   * Retourne la liste des utilisateurs utilisant le vocabulaire pass√© en
+   * param√®tre retourne une Collection de Jargon
+   *
+   *
    * @param idVoca
-   * 
+   *
    * @return Collection
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getJargons(long idVoca) throws ThesaurusException {
@@ -758,18 +758,18 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des jargons untilisÈs pas la liste des utilisateurs
-   * passÈs en paramËtre Retoune une Collection de Jargon
-   * 
-   * 
+   * Retourne la liste des jargons untilis√©s pas la liste des utilisateurs
+   * pass√©s en param√®tre Retoune une Collection de Jargon
+   *
+   *
    * @param idUsers
    * @param type
    *          (0=UserDetail ou 1=Group)
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getJargons(Collection idUsers, int type)
@@ -799,18 +799,18 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des jargons untilisÈs pas la liste des utilisateurs
-   * passÈs en paramËtre Retoune une Collection de Jargon
-   * 
-   * 
+   * Retourne la liste des jargons untilis√©s pas la liste des utilisateurs
+   * pass√©s en param√®tre Retoune une Collection de Jargon
+   *
+   *
    * @param idUsers
    * @param type
    *          (0=UserDetail ou 1=Group)
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getJargons(Connection con, Collection idUsers, int type)
@@ -840,15 +840,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe une liste de jargons
-   * 
-   * 
+   * Cr√©e une liste de jargons
+   *
+   *
    * @param jargons
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see getJargons, createJargon, updateJargon
    */
   public void createJargons(Collection jargons) throws ThesaurusException {
@@ -860,7 +860,7 @@ public class ThesaurusBm {
         String idUser = jargon.getIdUser();
         int type = jargon.getType();
 
-        // recupere le jargon actuel utilisÈ par l'utilisateur
+        // recupere le jargon actuel utilis√© par l'utilisateur
         ArrayList user = new ArrayList();
         user.add(idUser);
         ArrayList actualJargon = new ArrayList(getJargons(user, type));
@@ -887,15 +887,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe une liste de jargons
-   * 
-   * 
+   * Cr√©e une liste de jargons
+   *
+   *
    * @param jargons
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see getJargons, createJargon, updateJargon
    */
   public void createJargons(Connection con, Collection jargons)
@@ -908,7 +908,7 @@ public class ThesaurusBm {
         String idUser = jargon.getIdUser();
         int type = jargon.getType();
 
-        // recupere le jargon actuel utilisÈ par l'utilisateur
+        // recupere le jargon actuel utilis√© par l'utilisateur
         ArrayList user = new ArrayList();
         user.add(idUser);
         ArrayList actualJargon = new ArrayList(getJargons(con, user, type));
@@ -935,16 +935,16 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe la liste des jargons d'un vocabulaire (suppression tous les jargons du
-   * voca puis crÈation)
-   * 
-   * 
+   * Cr√©e la liste des jargons d'un vocabulaire (suppression tous les jargons du
+   * voca puis cr√©ation)
+   *
+   *
    * @param jargons
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see deleteVocaJargons, createJargon
    */
   public void createVocaJargons(Collection jargons, long idVoca)
@@ -984,15 +984,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe un nouveau jargon
-   * 
-   * 
+   * Cr√©e un nouveau jargon
+   *
+   *
    * @param jargon
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void createJargon(Jargon jargon) throws ThesaurusException {
@@ -1006,15 +1006,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Met ‡ jour le jargon du user
-   * 
-   * 
+   * Met √† jour le jargon du user
+   *
+   *
    * @param jargon
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void updateJargon(Jargon jargon) throws ThesaurusException {
@@ -1034,15 +1034,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * CrÈe un nouveau jargon
-   * 
-   * 
+   * Cr√©e un nouveau jargon
+   *
+   *
    * @param jargon
-   * 
+   *
    * @return
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   private void createJargon(Connection con, Jargon jargon)
@@ -1057,15 +1057,15 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne le jargon de l'utilisateur (type 0) passÈ en paramËtre
-   * 
-   * 
+   * Retourne le jargon de l'utilisateur (type 0) pass√© en param√®tre
+   *
+   *
    * @param idUser
-   * 
+   *
    * @return Jargon
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
@@ -1090,14 +1090,14 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire
    * retourne une Collection de Synonym
-   * 
+   *
    * @param idVoca
    * @param name
-   * 
+   *
    * @return Collection
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getSynonyms(long idVoca, String name)
@@ -1120,14 +1120,14 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire
    * retourne une Collection de Synonym
-   * 
+   *
    * @param idVoca
    * @param name
-   * 
+   *
    * @return Collection
-   * 
+   *
    * @throws ThesaurusException
-   * 
+   *
    * @see
    */
   public Collection getSynonymsByTree(long idVoca, long idTree)

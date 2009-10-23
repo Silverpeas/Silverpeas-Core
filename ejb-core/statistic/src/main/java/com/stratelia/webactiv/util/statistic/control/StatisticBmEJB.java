@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.util.statistic.control;
@@ -56,21 +56,21 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: StatisticBmEJB.java,v 1.9 2008/03/13 07:53:55 sfariello Exp $
- * 
+ *
  * $Log: StatisticBmEJB.java,v $
  * Revision 1.9  2008/03/13 07:53:55  sfariello
  * no message
  *
  * Revision 1.8  2008/03/12 14:30:07  sfariello
- * ordonner la liste des utilisateurs par date de derniËre consultation dans le contrÙle de lecture
+ * ordonner la liste des utilisateurs par date de derni√®re consultation dans le contr√¥le de lecture
  *
  * Revision 1.7  2007/08/09 14:28:50  neysseri
  * no message
  *
  * Revision 1.6  2007/06/27 15:02:56  sfariello
- * Ajout dÈtail des lectures par utilisateur
+ * Ajout d√©tail des lectures par utilisateur
  *
  * Revision 1.5  2007/06/25 09:11:46  sfariello
  * no message
@@ -85,14 +85,14 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
  * no message
  *
  * Revision 1.2  2007/01/11 13:40:05  sfariello
- * GÈnÈralisation des statistiques aux foreignPK
+ * G√©n√©ralisation des statistiques aux foreignPK
  *
  * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
  * no message
  *
  * Revision 1.9  2002/01/22 09:25:48  mguillem
  * Stabilisation Lot2
- * RÈorganisation des Router et SessionController
+ * R√©organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.8  2001/12/26 12:01:47  nchaix
@@ -102,8 +102,8 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class StatisticBmEJB implements SessionBean {
@@ -116,7 +116,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   * 
+   *
    * @see
    */
   public StatisticBmEJB() {
@@ -124,9 +124,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private Connection getConnection() {
@@ -142,9 +142,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private void freeConnection(Connection con) {
@@ -160,11 +160,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param fatherPK
    * @deprecated : A SUPPRIMER APRES TESTS
    * @return
-   * 
+   *
    * @see
    */
   public Collection getNodesUsage(NodePK fatherPK) {
@@ -189,7 +189,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param userId
    * @param nodePK
    * @param pubPK
@@ -217,10 +217,10 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param userId
    * @param foreignPK
-   * 
+   *
    * @see
    */
   public void addStat(String userId, ForeignPK foreignPK, int actionType,
@@ -245,11 +245,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getReadingHistoryByPublication(PublicationPK pubPK) {
@@ -263,7 +263,7 @@ public class StatisticBmEJB implements SessionBean {
       // Collection result =
       // HistoryNodePublicationActorDAO.getHistoryDetailByPublication(con,
       // historyRootTableName, pubPK);
-      // ne plus rÈcupÈrer dans la table historyRootTableName, mais rÈcupÈrer
+      // ne plus r√©cup√©rer dans la table historyRootTableName, mais r√©cup√©rer
       // dans la nouvelle historyTableName
       ForeignPK foreignPK = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
       Collection result = HistoryObjectDAO.getHistoryDetailByPublication(con,
@@ -320,11 +320,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPK
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getHistoryByAction(ForeignPK foreignPK, int action,
@@ -398,7 +398,7 @@ public class StatisticBmEJB implements SessionBean {
     UserDetail[] allUsers = orga.getAllUsers(foreignPK.getInstanceId());
     UserDetail[] controlledUsers = orga.getUserDetails(userIds);
 
-    // crÈation de la liste de tous les utilisateur ayant le droit de lecture
+    // cr√©ation de la liste de tous les utilisateur ayant le droit de lecture
     Collection statByUser = new ArrayList();
     for (int k = 0; k < allUsers.length; k++) {
       if (allUsers[k] != null) {
@@ -407,12 +407,12 @@ public class StatisticBmEJB implements SessionBean {
       }
     }
 
-    // crÈation d'une liste des accËs par utilisateur
+    // cr√©ation d'une liste des acc√®s par utilisateur
     Hashtable byUser = new Hashtable();
     Hashtable nbAccessbyUser = new Hashtable();
     for (int j = 0; j < controlledUsers.length; j++) {
       if (controlledUsers[j] != null) {
-        // regarder si la date en cours est > ‡ la date enregistrÈe...
+        // regarder si la date en cours est > √† la date enregistr√©e...
         Object obj = byUser.get(controlledUsers[j]);
         if (obj != null && !obj.toString().equals("Never")) {
           Date dateTab = (Date) obj;
@@ -434,23 +434,23 @@ public class StatisticBmEJB implements SessionBean {
       }
     }
 
-    // mise ‡ jour de la date de dernier accËs et du nombre d'accËs pour les
+    // mise √† jour de la date de dernier acc√®s et du nombre d'acc√®s pour les
     // utilisateurs ayant lu
     Iterator itStat = statByUser.iterator();
     while (itStat.hasNext()) {
       HistoryByUser historyByUser = (HistoryByUser) itStat.next();
       UserDetail user = historyByUser.getUser();
-      // recherche de la date de dernier accËs
+      // recherche de la date de dernier acc√®s
       Date lastAccess = (Date) byUser.get(user);
       if (lastAccess != null)
         historyByUser.setLastAccess(lastAccess);
-      // recherche du nombre d'accËs
+      // recherche du nombre d'acc√®s
       Integer nbAccess = (Integer) nbAccessbyUser.get(user);
       if (nbAccess != null)
         historyByUser.setNbAccess(nbAccess.intValue());
     }
 
-    // tri de la liste pour mettre en premier les users ayant consultÈ
+    // tri de la liste pour mettre en premier les users ayant consult√©
     LastAccessComparatorDesc comparateur = new LastAccessComparatorDesc();
 
     Collections.sort((List) statByUser, comparateur);
@@ -462,11 +462,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPK
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
@@ -491,9 +491,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @throws CreateException
-   * 
+   *
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -501,7 +501,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @see
    */
   public void ejbRemove() {
@@ -509,7 +509,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @see
    */
   public void ejbActivate() {
@@ -517,7 +517,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @see
    */
   public void ejbPassivate() {
@@ -525,9 +525,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
+   *
    * @param sc
-   * 
+   *
    * @see
    */
   public void setSessionContext(SessionContext sc) {

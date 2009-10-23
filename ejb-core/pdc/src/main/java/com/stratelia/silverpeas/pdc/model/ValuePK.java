@@ -28,8 +28,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It's the Value PrimaryKey object It identify values of the an axe
- * 
- * @author Sébastien Antonio
  */
 public class ValuePK extends WAPrimaryKey implements Serializable {
 

@@ -53,7 +53,7 @@ import org.apache.commons.fileupload.FileItem;
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML
  * and can retrieve via HTTP any file.
- * 
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -216,12 +216,12 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
           String attachmentId = param.substring("remove_".length());
           deleteAttachment(attachmentId, pageContext);
         } else if (value != null && StringUtil.isInteger(param)) {
-          //Y'avait-il un déjà un fichier ?
+          //Y'avait-il un dÃ©jÃ  un fichier ?
           //Il faut remplacer le fichier donc supprimer l'ancien
           deleteAttachment(param, pageContext);
         } else if (value == null) {
           //pas de nouveau fichier, ni de suppression
-          //le champ ne doit pas être mis à jour
+          //le champ ne doit pas Ãªtre mis Ã  jour
           return attachmentIds;
         }
       }
@@ -297,7 +297,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
           ad = AttachmentController.createAttachment(ad, true);
           attachmentId = ad.getPK().getId();
         } else {
-          //le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le supprimer
+          //le fichier Ã  tout de mÃªme Ã©tÃ© crÃ©Ã© sur le serveur avec une taille 0!, il faut le supprimer
           if (dir != null) {
             FileFolderManager.deleteFolder(dir.getPath());
           }

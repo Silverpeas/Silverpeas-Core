@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.util.statistic.control;
 
@@ -38,12 +36,12 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: StatisticBm.java,v 1.5 2007/06/27 15:02:56 sfariello Exp $
- * 
+ *
  * $Log: StatisticBm.java,v $
  * Revision 1.5  2007/06/27 15:02:56  sfariello
- * Ajout détail des lectures par utilisateur
+ * Ajout dÃ©tail des lectures par utilisateur
  *
  * Revision 1.4  2007/06/22 16:29:48  sfariello
  * no message
@@ -55,7 +53,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * no message
  *
  * Revision 1.2  2007/01/11 13:40:05  sfariello
- * Généralisation des statistiques aux foreignPK
+ * GÃ©nÃ©ralisation des statistiques aux foreignPK
  *
  * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
  * no message
@@ -67,22 +65,22 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Interface declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param userId
    * @param node
    * @param pub
    * @deprecated : utiliser la fonction addStat(String userId, ForeignPK
    *             foreignPK, int action, String objectType)
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void addReading(String userId, NodePK node, PublicationPK pub)
@@ -90,11 +88,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param userId
    * @param foreignPK
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void addStat(String userId, ForeignPK foreignPK, int action,
@@ -102,12 +100,12 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param pub
    * @deprecated : utiliser la fonction getHistoryByAction(ForeignPK foreignPK)
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getReadingHistoryByPublication(PublicationPK pub)
@@ -115,11 +113,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPK
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getHistoryByAction(ForeignPK foreignPK, int action,
@@ -133,11 +131,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPK
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
@@ -145,24 +143,24 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param fatherPK
    * @deprecated : A SUPPRIMER APRES TESTS
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getNodesUsage(NodePK fatherPK) throws RemoteException;
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPKs
    * @param action
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public int getCount(List foreignPKs, int action, String objectType)
@@ -170,12 +168,12 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPK
    * @param action
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public int getCount(ForeignPK foreignPK, int action, String objectType)
@@ -183,11 +181,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
+   *
    * @param foreignPK
    * @return
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public int getCount(ForeignPK foreignPK, String objectType)

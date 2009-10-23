@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.silverstatistics.control;
@@ -47,9 +47,9 @@ import com.stratelia.webactiv.util.JNDINames;
 /**
  * SilverStatisticsManager is the tool used in silverpeas to compute statistics
  * for connexions, files size and components access. This is a singleton class.
- * 
+ *
  * @author Marc Guillemin
- * 
+ *
  */
 public class SilverStatisticsManager implements SchedulerEventHandler {
   // Global constants
@@ -140,14 +140,14 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param aCronString
    * @param jobName
    * @param methodeName
-   * 
+   *
    * @throws SchedulerException
-   * 
+   *
    * @see
    */
   public void initSchedulerStatistics(String aCronString, String jobName,
@@ -172,10 +172,10 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param currentDate
-   * 
+   *
    * @see
    */
   public void doGetStatVolume(Date currentDate) {
@@ -193,17 +193,17 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param currentDate
-   * 
+   *
    * @see
    */
   public void doGetStatSize(Date currentDate) {
     try {
-      // Pour chaque repertoire racine à parcourir
-      // Calculer récursivement la taille des fichiers
-      // Ajouter la taille du répertoire en base
+      // Pour chaque repertoire racine Ã  parcourir
+      // Calculer rÃ©cursivement la taille des fichiers
+      // Ajouter la taille du rÃ©pertoire en base
 
       for (int i = 0; i < directoryToScan.size(); i++) {
         // Notify statistics
@@ -218,10 +218,10 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param currentDate
-   * 
+   *
    * @see
    */
   public void doCumulStat(Date currentDate) {
@@ -237,10 +237,10 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param resources
-   * 
+   *
    * @see
    */
   private void initDirectoryToScan(java.util.ResourceBundle resource) {
@@ -285,7 +285,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Scheduler Event handler
-   * 
+   *
    */
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
 
@@ -318,15 +318,15 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param volume
    * @param dateAccess
    * @param peasType
    * @param spaceId
    * @param componentId
-   * 
+   *
    * @see
    */
   public void addStatVolume(String userId, int volume, Date dateAccess,
@@ -390,14 +390,14 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param dateAccess
    * @param peasType
    * @param spaceId
    * @param componentId
-   * 
+   *
    * @see
    */
   public void addStatAccess(String userId, Date dateAccess, String peasType,
@@ -461,13 +461,13 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param dateConnection
    * @param count
    * @param duration
-   * 
+   *
    * @see
    */
   public void addStatConnection(String userId, Date dateConnection, int count,
@@ -531,12 +531,12 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
    * @param dirName
    * @param dirSize
-   * 
+   *
    * @see
    */
   public void addStatSize(Date date, String dirName, long dirSize) {
@@ -635,12 +635,12 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param directoryName
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private long directorySize(String directoryName) {
@@ -658,12 +658,12 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param file
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private long returnSize(File file) {

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.util.subscribe.control;
@@ -40,9 +40,9 @@ import com.stratelia.webactiv.util.subscribe.model.*;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: SubscribeBmEJB.java,v 1.2 2004/10/05 13:21:18 dlesimple Exp $
- * 
+ *
  * $Log: SubscribeBmEJB.java,v $
  * Revision 1.2  2004/10/05 13:21:18  dlesimple
  * Couper/Coller composant
@@ -52,16 +52,16 @@ import com.stratelia.webactiv.util.subscribe.model.*;
  *
  * Revision 1.11  2002/01/22 13:39:51  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.10  2002/01/22 10:26:32  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.9  2002/01/21 15:16:12  neysseri
- * Ajout d'une fonctionnalité permettant d'avoir les abonnés à un ensemble de noeuds
+ * Ajout d'une fonctionnalitÃ© permettant d'avoir les abonnÃ©s Ã  un ensemble de noeuds
  *
  * Revision 1.8  2001/12/26 14:27:42  nchaix
  * no message
@@ -70,8 +70,8 @@ import com.stratelia.webactiv.util.subscribe.model.*;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class SubscribeBmEJB implements SessionBean {
@@ -81,8 +81,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public SubscribeBmEJB() {
@@ -90,10 +90,10 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private Connection getConnection() {
@@ -109,10 +109,10 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private void freeConnection(Connection con) {
@@ -128,11 +128,11 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param node
-   * 
+   *
    * @see
    */
   public void addSubscribe(String userId, NodePK node) {
@@ -153,11 +153,11 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param node
-   * 
+   *
    * @see
    */
   public void removeSubscribe(String userId, NodePK node) {
@@ -179,10 +179,10 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
-   * 
+   *
    * @see
    */
   public void removeUserSubscribes(String userId) {
@@ -205,11 +205,11 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param node
    * @param path
-   * 
+   *
    * @see
    */
   public void removeNodeSubscribes(NodePK node, String path) {
@@ -232,12 +232,12 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getUserSubscribePKs(String userId) {
@@ -264,14 +264,14 @@ public class SubscribeBmEJB implements SessionBean {
   // NEWD DLE
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param space
    * @param componentName
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   /*
@@ -279,11 +279,11 @@ public class SubscribeBmEJB implements SessionBean {
    * String space, String componentName) { SilverTrace.info("subscribe",
    * "SubscribeBmEJB.getUserSubscribePKsBySpaceAndComponent",
    * "root.MSG_GEN_ENTER_METHOD"); Connection con = null;
-   * 
+   *
    * try { con = getConnection(); Collection result =
    * NodeActorLinkDAO.getNodePKsByActorSpaceAndComponent(con, rootTableName,
    * userId, space, componentName);
-   * 
+   *
    * return result; } catch (Exception e) { throw newSubscribeRuntimeException(
    * "SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
    * SilverpeasRuntimeException.ERROR,
@@ -292,13 +292,13 @@ public class SubscribeBmEJB implements SessionBean {
    */
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param componentName
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getUserSubscribePKsByComponent(String userId,
@@ -327,12 +327,12 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param node
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getNodeSubscriberDetails(NodePK node) {
@@ -378,10 +378,10 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @throws CreateException
-   * 
+   *
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -389,8 +389,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbRemove() {
@@ -398,8 +398,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbActivate() {
@@ -407,8 +407,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbPassivate() {
@@ -416,10 +416,10 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param sc
-   * 
+   *
    * @see
    */
   public void setSessionContext(SessionContext sc) {

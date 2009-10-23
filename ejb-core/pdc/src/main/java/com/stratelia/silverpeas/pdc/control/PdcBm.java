@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.pdc.control;
 
@@ -43,9 +41,9 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: PdcBm.java,v 1.11 2008/09/01 07:36:57 neysseri Exp $
- * 
+ *
  * $Log: PdcBm.java,v $
  * Revision 1.11  2008/09/01 07:36:57  neysseri
  * no message
@@ -54,7 +52,7 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
  * no message
  *
  * Revision 1.10.2.2  2008/06/23 15:11:47  schevance
- * v0.4 debut gestion manager axe mais buggé
+ * v0.4 debut gestion manager axe mais buggÃ©
  *
  * Revision 1.10.2.1  2008/06/12 15:33:16  schevance
  * V0.2 mais sans les droits : bug sur la barre de progression
@@ -94,7 +92,7 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
  * MEC02
  *
  * Revision 1.28.16.1  2002/05/31 08:33:29  neysseri
- * Ajout de la méthode getAxisHeader()
+ * Ajout de la mÃ©thode getAxisHeader()
  *
  * Revision 1.28  2002/04/18 14:29:36  neysseri
  * Prise en compte des transactions depuis le pdcPeas sur les fonctions de suppression
@@ -104,7 +102,7 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
  *
  * Revision 1.26  2002/04/04 13:10:06  santonio
  * Tient compte de la recherche global (PDC + Classique)
- * Généralisation de certaines méthodes
+ * GÃ©nÃ©ralisation de certaines mÃ©thodes
  *
  * Revision 1.25  2002/03/29 09:41:07  cbonin
  * Ajout de la methode :
@@ -125,7 +123,7 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
  * no message
  *
  * Revision 1.20  2002/03/08 11:52:38  santonio
- * fonctionnalités sur les invariances dans le metier
+ * fonctionnalitÃ©s sur les invariances dans le metier
  *
  * Revision 1.19  2002/03/05 14:58:01  neysseri
  * no message
@@ -167,8 +165,8 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 
 /**
  * Interface declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public interface PdcBm {
@@ -186,38 +184,38 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public List getAxis() throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param type
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int getNbAxisByType(String type) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int getNbAxis() throws PdcException;
@@ -226,54 +224,54 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param axisHeader
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int createAxis(AxisHeader axisHeader) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param axisHeader
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int updateAxis(AxisHeader axisHeader) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param axisId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public void deleteAxis(Connection con, String axisId) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param axisId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public Axis getAxisDetail(String axisId) throws PdcException;
@@ -283,14 +281,14 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param axisId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public AxisHeader getAxisHeader(String axisId) throws PdcException;
@@ -299,28 +297,28 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public Value getAxisValue(String valueId, String treeId) throws PdcException;
 
   /**
    * Return a list of axis values having the value name in parameter
-   * 
-   * 
+   *
+   *
    * @param valueName
-   * 
+   *
    * @return List
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public List getAxisValuesByName(String valueName) throws PdcException;
@@ -328,15 +326,15 @@ public interface PdcBm {
   /**
    * Return a list of String corresponding to the valueId of the value in
    * parameter
-   * 
-   * 
+   *
+   *
    * @param axisId
    * @param valueId
-   * 
+   *
    * @return List
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public List getDaughterValues(String axisId, String valueId)
@@ -345,15 +343,15 @@ public interface PdcBm {
   /**
    * Return a list of String corresponding to the valueId of the value in
    * parameter
-   * 
-   * 
+   *
+   *
    * @param axisId
    * @param valueId
-   * 
+   *
    * @return List
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public List getFilteredAxisValues(String rootId, AxisFilter filter)
@@ -361,52 +359,52 @@ public interface PdcBm {
 
   /**
    * Return the Value corresponding to the axis done
-   * 
-   * 
+   *
+   *
    * @param axisId
-   * 
+   *
    * @return Value
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public Value getRoot(String axisId) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueToInsert
    * @param refValue
    * @param axisId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int insertMotherValue(Value valueToInsert, String refValue,
       String axisId) throws PdcException;
 
   /**
-   * 
-   * Déplace une valeur et ses sous-valeurs sous un nouveau père
-   * 
+   *
+   * DÃ©place une valeur et ses sous-valeurs sous un nouveau pÃ¨re
+   *
    * @param axis
    * @param valueToMove
    * @param newFatherId
-   * @return 1 si valeur soeur de même nom
+   * @return 1 si valeur soeur de mÃªme nom
    * @throws PdcException
    */
   public int moveValueToNewFatherId(Axis axis, Value valueToMove,
       String newFatherId, int orderNumber) throws PdcException;
 
   /**
-   * 
+   *
    * retourne les droits sur la valeur
-   * 
+   *
    * @param current
    *          value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
@@ -417,9 +415,9 @@ public interface PdcBm {
   public boolean isUserManager(String userId) throws PdcException;
 
   /**
-   * 
-   * retourne les droits hérités sur la valeur
-   * 
+   *
+   * retourne les droits hÃ©ritÃ©s sur la valeur
+   *
    * @param current
    *          value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
@@ -428,9 +426,9 @@ public interface PdcBm {
   public List getInheritedManagers(Value value) throws PdcException;
 
   /**
-   * 
-   * met à jour les droits sur la valeur
-   * 
+   *
+   * met Ã  jour les droits sur la valeur
+   *
    * @param ArrayList
    *          ( ArrayList UsersId, ArrayList GroupsId), current value
    * @return
@@ -440,9 +438,9 @@ public interface PdcBm {
       String valueId) throws PdcException;
 
   /**
-   * 
+   *
    * supprime tous les droits sur la valeur
-   * 
+   *
    * @param current
    *          value
    * @return
@@ -456,15 +454,15 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueToInsert
    * @param refValue
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int createDaughterValue(Value valueToInsert, String refValue,
@@ -472,26 +470,26 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int updateValue(Value value, String treeId) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public void deleteValueAndSubtree(Connection con, String valueId,
@@ -499,12 +497,12 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public String deleteValue(Connection con, String valueId, String axisId,
@@ -512,14 +510,14 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public List getFullPath(String valueId, String treeId) throws PdcException;
@@ -537,66 +535,66 @@ public interface PdcBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param instanceId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param usedAxis
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int addUsedAxis(UsedAxis usedAxis) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param usedAxis
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public int updateUsedAxis(UsedAxis usedAxis) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param usedAxisId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public void deleteUsedAxis(String usedAxisId) throws PdcException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param usedAxisIds
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException;
@@ -657,7 +655,7 @@ public interface PdcBm {
   // public List getPertinentDaughterValues(SearchContext searchContext, String
   // axisId, String valueId) throws PdcException;
 
-  // recherche à l'intérieur d'une instance
+  // recherche Ã  l'intÃ©rieur d'une instance
   public List getPertinentDaughterValuesByInstanceId(
       SearchContext searchContext, String axisId, String valueId,
       String instanceId) throws PdcException;

@@ -35,29 +35,32 @@ import java.text.SimpleDateFormat;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.List;
 
 public class JournalDAO {
-  // messages used:
-  // calendar_MSG_NOT_GET_PRIORITY
 
   public static final String COLUMNNAMES = "id, name, delegatorId, description, priority, classification, startDay, startHour, endDay, endHour, externalId";
   private static final String JOURNALCOLUMNNAMES = "CalendarJournal.id, CalendarJournal.name, CalendarJournal.delegatorId, CalendarJournal.description, CalendarJournal.priority, "
       + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
 
+  private static final String INSERT_JOURNAL =  "INSERT INTO CalendarJournal ("
+          + COLUMNNAMES + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String UPDATE_JOURNAL = "UPDATE CalendarJournal SET name = ?, " +
+          "delegatorId = ?, description = ?, priority = ?, classification = ?, " +
+          "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? WHERE id = ?";
+  private static final String DELETE_JOURNAL = "DELETE FROM CalendarJournal WHERE id = ?";
+
   public static String addJournal(Connection con, JournalHeader journal)
       throws SQLException, UtilException, CalendarException {
-    String insertStatement = "insert into CalendarJournal (" + COLUMNNAMES
-        + ") " + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
     PreparedStatement prepStmt = null;
-
-    int id;
+    int id = 0;
     try {
-      prepStmt = con.prepareStatement(insertStatement);
+      prepStmt = con.prepareStatement(INSERT_JOURNAL);
       id = DBUtil.getNextId("CalendarJournal", "id");
-
       prepStmt.setInt(1, id);
       prepStmt.setString(2, journal.getName());
       prepStmt.setString(3, journal.getDelegatorId());
@@ -84,13 +87,7 @@ public class JournalDAO {
     PreparedStatement prepStmt = null;
 
     try {
-      String insertStatement = "update CalendarJournal "
-          + " set name = ?, delegatorId = ?, description = ?, "
-          + "priority = ?, classification = ?, "
-          + "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? "
-          + "where id = ?";
-
-      prepStmt = con.prepareStatement(insertStatement);
+      prepStmt = con.prepareStatement(UPDATE_JOURNAL);
       prepStmt.setString(1, journal.getName());
       prepStmt.setString(2, journal.getDelegatorId());
       prepStmt.setString(3, journal.getDescription());
@@ -101,11 +98,10 @@ public class JournalDAO {
       prepStmt.setString(8, journal.getEndDay());
       prepStmt.setString(9, journal.getEndHour());
       prepStmt.setString(10, journal.getExternalId());
-
       prepStmt.setInt(11, new Integer(journal.getId()).intValue());
       if (prepStmt.executeUpdate() == 0)
         throw new CalendarException(
-            "JournalDAO.Connection con,  addJournal(Connection con, JournalHeader journal)",
+            "JournalDAO.Connection con,  updateJournal(Connection con, JournalHeader journal)",
             SilverpeasException.ERROR, "calendar.EX_EXCUTE_UPDATE_EMPTY");
     } finally {
       DBUtil.close(prepStmt);
@@ -116,14 +112,12 @@ public class JournalDAO {
   public static void removeJournal(Connection con, String id)
       throws SQLException, CalendarException {
     PreparedStatement prepStmt = null;
-
     try {
-      String statement = "delete from CalendarJournal " + "where id = ?";
-      prepStmt = con.prepareStatement(statement);
+      prepStmt = con.prepareStatement(DELETE_JOURNAL);
       prepStmt.setInt(1, new Integer(id).intValue());
       if (prepStmt.executeUpdate() == 0)
         throw new CalendarException(
-            "JournalDAO.Connection con,  addJournal(Connection con, JournalHeader journal)",
+            "JournalDAO.Connection con,  removeJournal(Connection con, JournalHeader journal)",
             SilverpeasException.ERROR, "calendar.EX_EXCUTE_DELETE_EMPTY");
     } finally {
       DBUtil.close(prepStmt);
@@ -134,29 +128,23 @@ public class JournalDAO {
       String userId) throws SQLException, java.text.ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    boolean r;
-
     try {
       prepStmt = getTentativePreparedStatement(con, userId);
       rs = prepStmt.executeQuery();
-      r = rs.next();
+      return rs.next();
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
-    return r;
   }
 
   public static Collection getTentativeJournalHeadersForUser(Connection con,
       String userId) throws SQLException, java.text.ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
-    ArrayList list = null;
+    List<JournalHeader> list = new ArrayList<JournalHeader>();
     try {
       prepStmt = getTentativePreparedStatement(con, userId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
       while (rs.next()) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);
@@ -391,15 +379,6 @@ public class JournalDAO {
         selectStatement.append(" and (categoryId = '").append(categoryId)
             .append("') ");
       }
-
-      /*
-       * selectStatement.append(" and ( (startDay >= '" + begin +
-       * "' and startDay <= '" + end + "') or " + "  (endDay >= '" + begin +
-       * "' and endDay <= '" + end + "') or " + "  ('" + begin +
-       * "' >= startDay and '" + begin + "' <= endDay) or " + "  ('" + end +
-       * "' >= startDay and '" + end + "' <= endDay) " + ") ";
-       */
-
       selectStatement.append(" and ( (startDay >= '").append(begin).append(
           "' and startDay <= '").append(end).append("')");
       selectStatement.append(" or (endDay >= '").append(begin).append(
@@ -409,13 +388,9 @@ public class JournalDAO {
       selectStatement.append(" or ('").append(end)
           .append("' >= startDay and '").append(end).append("' <= endDay) ) ");
     }
-
-    // selectStatement += " order by startDay, startHour";
-    selectStatement.append(" order by 7 , 8 "); // Modif PHiL -> Interbase
-
+    selectStatement.append(" order by 7 , 8 ");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     ArrayList list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement.toString());
@@ -547,13 +522,11 @@ public class JournalDAO {
     String selectStatement = "select " + JournalDAO.COLUMNNAMES
         + " from CalendarJournal " + "where delegatorId = ? "
         + "and ((startDay >= ?) or (startDay <= ? and endDay >= ?))"
-        + " order by 7, 8";
+        + " order by startDay, startHour";
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
-    SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-    String startDateString = format.format(startDate);
+    String startDateString = DateUtil.date2SQLDate(startDate);
     Collection list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);

@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Created on 11 févr. 2005
- *
- */
 package com.silverpeas.versioning;
 
 import java.io.File;

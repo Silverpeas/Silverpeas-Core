@@ -43,15 +43,15 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeExc
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: QuestionResultDAO.java,v 1.4 2006/08/16 11:56:47 neysseri Exp $
- * 
+ *
  * $Log: QuestionResultDAO.java,v $
  * Revision 1.4.4.2  2009/08/21 13:26:34  sfariello
- * Gestion non anonyme des enquêtes
+ * Gestion non anonyme des enquÃªtes
  *
  * Revision 1.4.4.1  2009/07/16 13:31:04  sfariello
- * trier les résultats d'une question par réponse
+ * trier les rÃ©sultats d'une question par rÃ©ponse
  *
  * Revision 1.4  2006/08/16 11:56:47  neysseri
  * no message
@@ -76,7 +76,7 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeExc
 
 /**
  * This class is made to access database only (table SB_Question_Answer)
- * 
+ *
  * @author neysseri
  */
 public class QuestionResultDAO
@@ -138,7 +138,7 @@ public class QuestionResultDAO
 				+ " where questionId = ? "
 				+ " and userId = ? order By answerId";
 
-		
+
 		PreparedStatement prepStmt = null;
 
 		try
@@ -158,9 +158,9 @@ public class QuestionResultDAO
 		finally
 		{
 			DBUtil.close(rs, prepStmt);
-		}	
+		}
 	}
-	
+
 	public static Collection<String> getUsersByAnswer(Connection con, String answerId) throws SQLException
 	{
 		SilverTrace.info("questionResult", "QuestionResultDAO.getUserQuestionResultsToQuestion()", "root.MSG_GEN_ENTER_METHOD", "answerId = " + answerId);
@@ -187,7 +187,7 @@ public class QuestionResultDAO
 		finally
 		{
 			DBUtil.close(rs, prepStmt);
-		}	
+		}
 	}
 
 	public static Collection getUserQuestionResultsToQuestionByParticipation(
@@ -215,7 +215,7 @@ public class QuestionResultDAO
 				+ " and userId = ? "
 				+ " and qrParticipationId = ? ";
 
-		
+
 		PreparedStatement prepStmt = null;
 
 		try
@@ -236,7 +236,7 @@ public class QuestionResultDAO
 		finally
 		{
 			DBUtil.close(rs, prepStmt);
-		}	
+		}
 	}
 
 	public static Collection getQuestionResultToQuestion(Connection con, ForeignPK questionPK) throws SQLException
@@ -271,7 +271,7 @@ public class QuestionResultDAO
 		finally
 		{
 			DBUtil.close(rs, prepStmt);
-		}		
+		}
 	}
 
 	public static Collection getQuestionResultToQuestionByParticipation(
@@ -316,7 +316,7 @@ public class QuestionResultDAO
 		finally
 		{
 			DBUtil.close(rs, prepStmt);
-		}		
+		}
 	}
 
 	public static void setQuestionResultToUser(Connection con, QuestionResult result) throws SQLException
@@ -326,7 +326,7 @@ public class QuestionResultDAO
 			"QuestionResultDAO.setQuestionResultToUser()",
 			"root.MSG_GEN_ENTER_METHOD",
 			"questionResult =" + result);
-		
+
 		int newId = 0;
 		String tableName = new QuestionResultPK("", result.getQuestionPK()).getTableName();
 		String questionId = result.getQuestionPK().getId();

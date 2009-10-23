@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
  * 
  * $Log: QuestionResultBmBusinessSkeleton.java,v $
  * Revision 1.2.4.1  2009/08/21 13:26:34  sfariello
- * Gestion non anonyme des enquêtes
+ * Gestion non anonyme des enquetes
  *
  * Revision 1.2  2006/08/16 11:56:47  neysseri
  * no message

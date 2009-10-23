@@ -212,7 +212,7 @@ public class CoordinatesDAO {
       currentCoordinateId = point.getCoordinateId();
       if (point.getNodeId() == ((Integer) fatherIds.get(0)).intValue()) {
 
-        // vérifie que les n-1 axes de la BD correspondent aux axes de fatherIds
+        // verifie que les n-1 axes de la BD correspondent aux axes de fatherIds
         nbMatchingPoints = getNbMatchingCoordinates(currentCoordinateId,
             fatherIds, toCheck, i + 1);
         if (nbMatchingPoints == (nbAxis - 1)) {

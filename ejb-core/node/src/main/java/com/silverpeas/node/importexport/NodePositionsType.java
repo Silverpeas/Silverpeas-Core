@@ -29,7 +29,7 @@ package com.silverpeas.node.importexport;
 import java.util.List;
 
 /**
- * Classe utilisée pour le (un)marshalling Castor
+ * Classe utilisee pour le (un)marshalling Castor
  * 
  * @author sdevolder
  */

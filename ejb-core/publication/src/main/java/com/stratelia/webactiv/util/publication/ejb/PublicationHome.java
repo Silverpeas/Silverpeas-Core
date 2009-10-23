@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * 
  * $Log: PublicationHome.java,v $
  * Revision 1.4  2005/02/23 19:13:55  neysseri
- * intégration Import/Export
+ * integration Import/Export
  *
  * Revision 1.3.2.1  2005/02/08 18:00:45  tleroi
  * *** empty log message ***

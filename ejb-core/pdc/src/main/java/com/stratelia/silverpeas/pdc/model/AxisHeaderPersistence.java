@@ -30,7 +30,6 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
  * This class contains headers of axis. And uses the persistence class for the
  * DAO. The user can access to the axis main information.
  * 
- * @author Sébastien Antonio
  */
 public class AxisHeaderPersistence extends SilverpeasBean implements
     java.io.Serializable {

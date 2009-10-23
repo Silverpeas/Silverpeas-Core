@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.exception.*;
  *
  * Revision 1.3  2002/01/22 08:57:09  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * Reorganisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.2  2001/12/21 13:51:47  scotte

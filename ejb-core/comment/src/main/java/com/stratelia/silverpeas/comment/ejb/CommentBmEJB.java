@@ -140,7 +140,7 @@ public class CommentBmEJB implements SessionBean {
     try {
       return CommentDAO.getMostCommentedAllPublications(con);
     } catch (Exception e) {
-      throw new RemoteException("Problème Base de données", e);
+      throw new RemoteException("ProblÃ¨me Base de donnÃ©es", e);
     } finally {
       closeConnection(con);
     }
@@ -206,10 +206,10 @@ public class CommentBmEJB implements SessionBean {
   }
 
   /**
-   * TODO: methode utilisée par les taglibs : elle positionne le nom de l'auteur
+   * TODO: methode utilisÃ©e par les taglibs : elle positionne le nom de l'auteur
    * du commentaire (fait habituellement dans le CommentController => a voir si
    * on modifie l'ejb pour que ce soit systematiquement fait ou non)
-   * 
+   *
    * @param foreign_pk
    * @return
    * @throws RemoteException
@@ -284,8 +284,8 @@ public class CommentBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbRemove() {
@@ -293,8 +293,8 @@ public class CommentBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbActivate() {
@@ -302,8 +302,8 @@ public class CommentBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbPassivate() {
@@ -311,10 +311,10 @@ public class CommentBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param sc
-   * 
+   *
    * @see
    */
   public void setSessionContext(SessionContext sc) {

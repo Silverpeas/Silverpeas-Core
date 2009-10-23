@@ -66,7 +66,7 @@ import org.apache.commons.fileupload.FileItem;
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML
  * and can retrieve via HTTP any file.
- * 
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -251,12 +251,12 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
           String attachmentId = param.substring("remove_".length());
           deleteAttachment(attachmentId, pageContext);
         } else if (value != null && StringUtil.isInteger(param)) {
-          //Y'avait-il un déjà un fichier ?
+          //Y'avait-il un dÃ©jÃ  un fichier ?
           //Il faut remplacer le fichier donc supprimer l'ancien
           deleteAttachment(param, pageContext);
         } else if (value == null) {
           //pas de nouveau fichier, ni de suppression
-          //le champ ne doit pas être mis à jour
+          //le champ ne doit pas Ãªtre mis Ã  jour
           return new ArrayList<String>();
         }
       }
@@ -326,7 +326,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
             attachmentId = ad.getPK().getId();
           }
         } else {
-          //le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le supprimer
+          //le fichier Ã  tout de mÃªme Ã©tÃ© crÃ©Ã© sur le serveur avec une taille 0!, il faut le supprimer
           if (dir != null) {
             FileFolderManager.deleteFolder(dir.getPath());
           }
@@ -371,7 +371,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
       pubPK.setId(objectId);
     }
 
-    //Création d'un nouveau document
+    //CrÃ©ation d'un nouveau document
     DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
     Document document = new Document(docPK, pubPK, attachment.getLogicalName(), "", -1, userId, new Date(), null, null,
         null, null, 0, 0);
@@ -381,7 +381,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
     DocumentVersion version = new DocumentVersion(attachment);
     version.setAuthorId(userId);
 
-    //et on y ajoute la première version
+    //et on y ajoute la premiÃ¨re version
     version.setMajorNumber(1);
     version.setMinorNumber(0);
     version.setType(DocumentVersion.TYPE_PUBLIC_VERSION);

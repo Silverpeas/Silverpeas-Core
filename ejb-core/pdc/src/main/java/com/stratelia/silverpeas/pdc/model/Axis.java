@@ -28,8 +28,6 @@ import java.util.List;
 /**
  * This class contains a full information about a tree. The user can access to
  * an axe.
- * 
- * @author Sébastien Antonio
  */
 public class Axis implements java.io.Serializable {
 

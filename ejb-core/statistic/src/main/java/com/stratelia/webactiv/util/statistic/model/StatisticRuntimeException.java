@@ -45,7 +45,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  *
  * Revision 1.3  2002/01/22 09:25:48  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * Reorganisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.2  2001/12/26 12:01:47  nchaix

@@ -33,13 +33,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.silverpeas.silvertrace.*;
 
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
-
 public class POPUPListener extends AbstractListener {
   public POPUPListener() {
   }

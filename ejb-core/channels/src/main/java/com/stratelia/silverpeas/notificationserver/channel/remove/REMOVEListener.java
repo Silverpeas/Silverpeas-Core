@@ -23,19 +23,10 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.remove;
 
-import java.io.*;
-import java.util.*;
-import javax.ejb.*;
-import javax.jms.*;
-import com.stratelia.silverpeas.notificationserver.*;
-import com.stratelia.silverpeas.notificationserver.channel.*;
-
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
+import com.stratelia.silverpeas.notificationserver.NotificationData;
+import com.stratelia.silverpeas.notificationserver.NotificationServerException;
+import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
+import javax.jms.Message;
 
 public class REMOVEListener extends AbstractListener {
   public REMOVEListener() {

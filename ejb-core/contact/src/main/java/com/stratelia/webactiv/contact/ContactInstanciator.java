@@ -21,11 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * NewsInstanciator.java
- *
- * Created on 13 juillet 2000, 09:54
- */
 
 package com.stratelia.webactiv.contact;
 
@@ -38,11 +33,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.InstanciationExceptio
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/**
- * 
- * @author squere
- * @version update by the Sébastien Antonio - Externalisation of the SQL request
- */
 public class ContactInstanciator extends SQLRequest {
   private static ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.contact.contactSettings", "fr");

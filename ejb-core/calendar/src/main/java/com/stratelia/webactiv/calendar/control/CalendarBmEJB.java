@@ -493,13 +493,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     try {
       String result = JournalDAO.addJournal(con, journal);
       journal.setId(result);
-      // try {
       createIndex(journal, journal.getDelegatorId());
-      /*
-       * } catch (Exception e) { SilverTrace.warn("calendar",
-       * "CalendarBmEJB.updateToDo(ToDoHeader todo)",
-       * "root.EX_INDEX_FAILED","",e); }
-       */
       return result;
     } catch (SQLException se) {
       throw new CalendarRuntimeException(
@@ -1168,7 +1162,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   /**********************************************************************************/
   /**
-   * Gestion du calendrier des jours non travaillés /
+   * Gestion du calendrier des jours non travailles /
    **********************************************************************************/
   public List getHolidayDates(String userId) throws RemoteException {
     SilverTrace.info("calendar", "calendarBmEJB.getHolidayDates()",

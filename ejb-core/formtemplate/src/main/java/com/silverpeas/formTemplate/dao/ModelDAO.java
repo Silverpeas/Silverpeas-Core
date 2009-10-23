@@ -36,12 +36,12 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class ModelDAO {
   public static void addModel(Connection con, String instanceId, String modelId)
       throws SQLException, UtilException {
-    // ajout d'un modèle
+    // ajout d'un modÃ¨le
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "insert into st_instance_ModelUsed values (?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
 
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
@@ -55,12 +55,12 @@ public class ModelDAO {
 
   public static void deleteModel(Connection con, String instanceId)
       throws SQLException, UtilException {
-    // suppression de tous les modèles
+    // suppression de tous les modÃ¨les
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "delete from st_instance_ModelUsed where instanceId = ? ";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
 
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);

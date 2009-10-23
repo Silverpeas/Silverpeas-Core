@@ -37,11 +37,6 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * 
- * @author squere
- * @version update by Sébastien Antonio - Externalisation of the SQL request
- */
 public class QuestionContainerInstanciator extends SQLRequest {
   /** Creates new QuestionContainerInstanciator */
   public QuestionContainerInstanciator() {

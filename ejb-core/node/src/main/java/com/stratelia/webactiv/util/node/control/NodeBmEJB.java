@@ -1003,7 +1003,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @since 1.0
    */
   public Collection getAnotherPath(NodePK nodePK) throws RemoteException {
-    // TODO : methode à supprimer ! il faut utiliser getPath()
+    // TODO : methode a supprimer ! il faut utiliser getPath()
 
     Connection con = getConnection();
 

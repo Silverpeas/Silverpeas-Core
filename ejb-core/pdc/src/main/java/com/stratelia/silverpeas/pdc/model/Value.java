@@ -27,9 +27,6 @@ import java.util.List;
 
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 
-/**
- * @author Sébastien Antonio
- */
 public class Value extends TreeNode implements java.io.Serializable {
 
   /**

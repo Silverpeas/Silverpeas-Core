@@ -30,8 +30,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 /**
  * This class contains headers of axis. And uses the persistence class for the
  * DAO. The user can access to the axis main information.
- * 
- * @author Sébastien Antonio
  */
 public class AxisHeader extends AbstractI18NBean implements
     java.io.Serializable {

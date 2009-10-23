@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class LinkDAO {
   public static Collection getAllLinksByUser(Connection con, String userId)
       throws SQLException {
-    // récupérer toutes les liens d'un utilisateur
+    // rÃ©cupÃ©rer toutes les liens d'un utilisateur
     ArrayList listLink = null;
 
     String query = "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '')";
@@ -61,7 +61,7 @@ public class LinkDAO {
 
   public static Collection getAllLinksByInstance(Connection con,
       String instanceId) throws SQLException {
-    // récupérer toutes les liens d'un utilisateur sur un composant
+    // rÃ©cupÃ©rer toutes les liens d'un utilisateur sur un composant
     ArrayList listLink = null;
 
     String query = "select * from SB_MyLinks_Link where instanceId = ? ";
@@ -85,7 +85,7 @@ public class LinkDAO {
 
   public static Collection getAllLinksByObject(Connection con,
       String instanceId, String objectId) throws SQLException {
-    // récupérer toutes les liens d'un objet
+    // rÃ©cupÃ©rer toutes les liens d'un objet
     ArrayList listLink = null;
 
     String query = "select * from SB_MyLinks_Link where instanceId = ? and objectId = ? ";
@@ -110,7 +110,7 @@ public class LinkDAO {
 
   public static LinkDetail getLink(Connection con, String linkId)
       throws SQLException {
-    // récupérer le lien
+    // rÃ©cupÃ©rer le lien
     LinkDetail link = new LinkDetail();
     String query = "select * from SB_MyLinks_Link where linkId = ? ";
     PreparedStatement prepStmt = null;
@@ -133,16 +133,16 @@ public class LinkDAO {
 
   public static int createLink(Connection con, LinkDetail link)
       throws SQLException, UtilException {
-    // Création d'un nouveau lien
+    // CrÃ©ation d'un nouveau lien
     LinkDetail newLink = link;
     int newId = 0;
     PreparedStatement prepStmt = null;
     try {
       newId = DBUtil.getNextId("SB_MyLinks_Link", "linkId");
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "insert into SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, instanceId, objectId) "
           + "values (?,?,?,?,?,?,?,?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, newLink);
       prepStmt.executeUpdate();
@@ -160,11 +160,11 @@ public class LinkDAO {
     try {
       String query = "update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , "
           + "userId = ? , instanceId = ? , objectId = ? where linkId = ? ";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       int linkId = updatedLink.getLinkId();
       initParam(prepStmt, linkId, updatedLink);
-      // initialisation du dernier paramètre
+      // initialisation du dernier paramÃ¨tre
       prepStmt.setInt(10, linkId);
       prepStmt.executeUpdate();
     } finally {

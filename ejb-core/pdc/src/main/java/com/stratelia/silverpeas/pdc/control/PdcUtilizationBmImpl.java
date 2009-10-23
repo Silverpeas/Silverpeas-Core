@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.pdc.control;
@@ -46,11 +46,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: PdcUtilizationBmImpl.java,v 1.7 2008/09/01 07:36:57 neysseri Exp $
  *
  * $Id: PdcUtilizationBmImpl.java,v 1.7 2008/09/01 07:36:57 neysseri Exp $
- * 
+ *
  * $Log: PdcUtilizationBmImpl.java,v $
  * Revision 1.7  2008/09/01 07:36:57  neysseri
  * no message
@@ -79,7 +79,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  *
  * Revision 1.11  2002/04/04 13:10:06  santonio
  * Tient compte de la recherche global (PDC + Classique)
- * Généralisation de certaines méthodes
+ * GÃ©nÃ©ralisation de certaines mÃ©thodes
  *
  * Revision 1.10  2002/03/05 12:51:30  neysseri
  * no message
@@ -112,8 +112,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class PdcUtilizationBmImpl implements PdcUtilizationBm {
@@ -136,7 +136,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns an axis used by an instance
-   * 
+   *
    * @param usedAxisId
    *          - the whished used axis.
    * @return an UsedAxis
@@ -155,7 +155,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of used axis sorted.
-   * 
+   *
    * @return a list sorted or null otherwise
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException {
@@ -176,7 +176,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of axis header sorted.
-   * 
+   *
    * @return a list sorted or null otherwise
    */
   public List getAxisHeaderUsedByInstanceId(String instanceId)
@@ -211,7 +211,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns the usedAxis based on a defined axis
-   * 
+   *
    * @param axisId
    *          - the id of the axis
    */
@@ -232,7 +232,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Create an used axis into the data base.
-   * 
+   *
    * @param usedAxis
    *          - the object which contains all data about utilization of an axis
    * @return usedAxisId
@@ -247,7 +247,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
         return 1;
       } else {
         dao.add(usedAxis);
-        // une fois cette axe rajouté, il faut tenir compte de la propagation
+        // une fois cette axe rajoutÃ©, il faut tenir compte de la propagation
         // des choix aux niveaux
         // obligatoire/facultatif et variant/invariante
         // PAS ENCORE UTILE
@@ -264,7 +264,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update an used axis into the data base.
-   * 
+   *
    * @param usedAxis
    *          - the object which contains all data about utilization of the axis
    */
@@ -273,10 +273,10 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     Connection con = openConnection();
 
     try {
-      // test si la valeur de base a été modifiée
+      // test si la valeur de base a Ã©tÃ© modifiÃ©e
       int newBaseValue = usedAxis.getBaseValue();
       int oldBaseValue = (getUsedAxis(usedAxis.getPK().getId())).getBaseValue();
-      // si elle a été modifiée alors on reporte la modification.
+      // si elle a Ã©tÃ© modifiÃ©e alors on reporte la modification.
       if (newBaseValue != oldBaseValue) {
         if (PdcUtilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
             new Integer(usedAxis.getPK().getId()).intValue(), usedAxis
@@ -284,7 +284,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
           return 1;
       }
       dao.update(usedAxis);
-      // une fois cette axe modifié, il faut tenir compte de la propagation des
+      // une fois cette axe modifiÃ©, il faut tenir compte de la propagation des
       // choix aux niveaux
       // obligatoire/facultatif et variant/invariante
       PdcUtilizationDAO.updateAllUsedAxis(con, usedAxis);
@@ -299,7 +299,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * delete the used axis from the data base
-   * 
+   *
    * @param usedAxisId
    *          - the id of the used axe
    */
@@ -314,12 +314,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param usedAxisIds
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException {
@@ -341,12 +341,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param axisId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   public void deleteUsedAxisByAxisId(Connection con, String axisId)
@@ -361,12 +361,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
   private void deleteUsedAxisByValueId(Connection con, int valueId, int axisId)
@@ -382,12 +382,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param valueId
-   * 
+   *
    * @throws PdcException
-   * 
+   *
    * @see
    */
 
@@ -406,7 +406,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update a base value from the PdcUtilizationDAO
-   * 
+   *
    * @param valueId
    *          - the base value that must be updated
    */
@@ -434,7 +434,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
         "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
 
     List usedAxisList = getUsedAxisByAxisId(con, axisId);
-    // pour chaque instance, on vérifie que la modification est possible
+    // pour chaque instance, on vÃ©rifie que la modification est possible
     String instanceId = null;
     UsedAxis usedAxis = null;
     boolean updateAllowed = false;
@@ -446,7 +446,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
       if (usedAxis.getBaseValue() == baseValueToUpdate) {
         try {
-          // test si la nouvelle valeur est autorisée comme nouvelle valeur de
+          // test si la nouvelle valeur est autorisÃ©e comme nouvelle valeur de
           // base
           updateAllowed = !PdcUtilizationDAO.isAlreadyAdded(con, instanceId,
               new Integer(usedAxis.getPK().getId()).intValue(), axisId,
@@ -483,10 +483,10 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private Connection openConnection() throws PdcException {
@@ -502,10 +502,10 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private void closeConnection(Connection con) {

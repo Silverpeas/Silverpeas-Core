@@ -107,8 +107,8 @@ public class TreeBmImpl implements TreeBm {
     String nodeId = node.getPK().getId();
     String treeId = node.getTreeId();
     int order = node.getOrderNumber();
-    // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à celui
-    // du noeud à modifier
+    // recupere les noeuds freres ordonnÃ©s qui ont un numÃ©ro d'ordre >= Ã  celui
+    // du noeud Ã  modifier
     String whereClause = "path = (SELECT path FROM SB_Tree_Tree WHERE treeId = "
         + treeId
         + " and id = "
@@ -128,7 +128,7 @@ public class TreeBmImpl implements TreeBm {
         it = nodesToUpdate.iterator();
         TreeNodePersistence firstNode = null;
         if (it.hasNext()) {
-          // Test si le noeud n'a pas changé de place
+          // Test si le noeud n'a pas changÃ© de place
           firstNode = (TreeNodePersistence) it.next();
           if (firstNode.getPK().getId().equals(nodeId))
             nodeHasMoved = false;
@@ -204,8 +204,8 @@ public class TreeBmImpl implements TreeBm {
       SilverTrace.info("treeManager", "TreeManagerBmImpl.updateNode()",
           "root.MSG_GEN_PARAM_VALUE", "Apres updateNode()");
 
-      // Le noeud a changé de place, on décale les noeuds dont l'ordre est
-      // supérieur ou égal
+      // Le noeud a changÃ© de place, on dÃ©cale les noeuds dont l'ordre est
+      // supÃ©rieur ou Ã©gal
       if (nodeHasMoved) {
         it = nodesToUpdate.iterator();
         TreeNodePersistence nodeToMove = null;
@@ -213,9 +213,9 @@ public class TreeBmImpl implements TreeBm {
           nodeToMove = (TreeNodePersistence) it.next();
           if (nodeToMove.getPK().getId().equals(nodeId)) {
             // C'est le noeud que l'on vient de modifier
-            // Il est à sa place, on ne fait rien
+            // Il est Ã  sa place, on ne fait rien
           } else {
-            // On modifie l'ordre du noeud en l'incrémentant de 1
+            // On modifie l'ordre du noeud en l'incrÃ©mentant de 1
             nodeToMove.setOrderNumber(nodeToMove.getOrderNumber() + 1);
             TreeNode treeNode = new TreeNode(nodeToMove);
             TreeDAO.updateNode(con, treeNode);
@@ -400,16 +400,16 @@ public class TreeBmImpl implements TreeBm {
         List list = getDescendants(con, root, filter);
 
         // 1 - On parcours la liste list
-        // pour chaque élément on le place correctement dans la liste ordonnée
+        // pour chaque Ã©lÃ©ment on le place correctement dans la liste ordonnÃ©e
         if (list != null && list.size() > 0) {
-          // Premier élément de la liste est l'élément racine
+          // Premier Ã©lÃ©ment de la liste est l'Ã©lÃ©ment racine
           TreeNodePersistence rootPers = (TreeNodePersistence) list.get(0);
           root = new TreeNode(rootPers);
 
           // get translations for DB
           setTranslations(con, root);
 
-          // On l'insére dans la liste en première position
+          // On l'insÃ©re dans la liste en premiÃ¨re position
           sortedList.add(root);
 
           TreeNode node = null;
@@ -467,10 +467,10 @@ public class TreeBmImpl implements TreeBm {
     List list = getDescendants(con, root);
 
     // 1 - On parcours la liste list
-    // pour chaque élément on le place correctement dans la liste ordonnée
+    // pour chaque Ã©lÃ©ment on le place correctement dans la liste ordonnÃ©e
     ArrayList sortedList = new ArrayList();
     if (list != null && list.size() > 0) {
-      // Premier élément de la liste est l'élément racine
+      // Premier Ã©lÃ©ment de la liste est l'Ã©lÃ©ment racine
       // root = (TreeNode) list.get(0);
 
       TreeNodePersistence rootPers = (TreeNodePersistence) list.get(0);
@@ -479,7 +479,7 @@ public class TreeBmImpl implements TreeBm {
       // get Translations from DB
       setTranslations(con, root);
 
-      // On l'insére dans la liste en première position
+      // On l'insÃ©re dans la liste en premiÃ¨re position
       sortedList.add(root);
 
       TreeNode node = null;
@@ -517,26 +517,26 @@ public class TreeBmImpl implements TreeBm {
       i++;
     }
     if (i == sortedList.size()) {
-      // On a pas trouvé le père
+      // On a pas trouvÃ© le pÃ¨re
       return i;
     } else {
-      // On a trouvé le père en i
+      // On a trouvÃ© le pÃ¨re en i
       // On commence la recherche des freres en i + 1
       i = i + 1;
       // On parcours les freres
       while (i < sortedList.size()
           && ((TreeNode) sortedList.get(i)).getFatherId().equals(fatherId)) {
         if (((TreeNode) sortedList.get(i)).getOrderNumber() >= order) {
-          // On place le noeud à insérer ici
+          // On place le noeud Ã  insÃ©rer ici
           return i;
         }
         i++;
       }
       if (i == sortedList.size()) {
-        // on est à la fin de la liste et on a pas trouvé de frere
+        // on est Ã  la fin de la liste et on a pas trouvÃ© de frere
         return i;
       } else {
-        // on a pas trouvé de frere
+        // on a pas trouvÃ© de frere
         return i;
       }
     }
@@ -642,7 +642,7 @@ public class TreeBmImpl implements TreeBm {
         TreeNodePersistence tnp = (TreeNodePersistence) nodes.get(0);
         node = new TreeNode(tnp);
 
-        // récupération des autres traductions
+        // rÃ©cupÃ©ration des autres traductions
         setTranslations(con, node);
       }
     } catch (PersistenceException pe) {
@@ -693,13 +693,13 @@ public class TreeBmImpl implements TreeBm {
             + ", refNodePK = " + refNodePK.toString() + ", treeId = " + treeId);
     TreeNode refNode = getNode(con, refNodePK, treeId);
 
-    // Mémoriser le père actuel P1 de la fille
+    // MÃ©moriser le pÃ¨re actuel P1 de la fille
     String refPath = refNode.getPath();
 
     SilverTrace.info("treeManager", "TreeManagerBmImpl.insertFatherToNode()",
         "root.MSG_GEN_PARAM_VALUE", "refPath = " + refPath);
 
-    // Insérer le nouveau père P2 avec la référence sur P1
+    // InsÃ©rer le nouveau pÃ¨re P2 avec la rÃ©fÃ©rence sur P1
     nodeToInsert.setTreeId(treeId);
     nodeToInsert.setPath(refNode.getPath());
     nodeToInsert.setLevelNumber(refNode.getLevelNumber());
@@ -715,7 +715,7 @@ public class TreeBmImpl implements TreeBm {
           SilverpeasException.ERROR, "treeManager.INSERTING_FATHER_FAILED", e);
     }
 
-    // Ajouter 1 au niveau du fils également, modifier le père du fils en P2
+    // Ajouter 1 au niveau du fils Ã©galement, modifier le pÃ¨re du fils en P2
     // refNode.setLevelNumber(refNode.getLevelNumber()+1);
     refNode.setFatherId(newFatherPK.getId());
     String newPath = refNode.getPath() + newFatherPK.getId() + "/";
@@ -726,7 +726,7 @@ public class TreeBmImpl implements TreeBm {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.insertFatherToNode()",
         "root.MSG_GEN_PARAM_VALUE", "Apres updateNode()");
 
-    // Modifier le chemin de tous les descendants en insérant le nouveau père
+    // Modifier le chemin de tous les descendants en insÃ©rant le nouveau pÃ¨re
     // juste un remplacement de sous chaine
     // Ajouter 1 au niveau des descendants
     List list = getDescendants(con, refNode); // Attention ICI
@@ -768,14 +768,14 @@ public class TreeBmImpl implements TreeBm {
     TreeNode newFatherNode = getNode(con, newFatherPK, treeId);
     List list = getDescendants(con, savedNode);
 
-    // idée le nouveau niveau = niveauActuel - niveauAncienPere +
+    // idÃ©e le nouveau niveau = niveauActuel - niveauAncienPere +
     // niveauNouveauPere
-    // Mémoriser le niveau du père actuel soit le niveauActuel -1 de la valeur
-    // déplacée
+    // MÃ©moriser le niveau du pÃ¨re actuel soit le niveauActuel -1 de la valeur
+    // dÃ©placÃ©e
     int levelFather = movedNode.getLevelNumber() - 1;
     int levelNewFather = newFatherNode.getLevelNumber();
 
-    // Mémoriser le path du movedMode et on crée la nelle racine
+    // MÃ©moriser le path du movedMode et on crÃ©e la nelle racine
     String oldRacine = movedNode.getPath();
     String newRacine = newFatherNode.getPath() + newFatherPK.getId() + "/";
 
@@ -784,7 +784,7 @@ public class TreeBmImpl implements TreeBm {
     movedNode.setLevelNumber(movedNode.getLevelNumber() - levelFather
         + levelNewFather);
     movedNode.setFatherId(newFatherPK.getId());
-    // on le place en début de liste
+    // on le place en dÃ©but de liste
     movedNode.setOrderNumber(orderNumber);
 
     updateNode(con, movedNode);
@@ -796,9 +796,9 @@ public class TreeBmImpl implements TreeBm {
     // Modifier le chemin de tous les descendants en utilisant newRacine,
     // ainsi que le levelnumber
 
-    // Premier élément de la liste est l'élément racine
+    // Premier Ã©lÃ©ment de la liste est l'Ã©lÃ©ment racine
     // root = (TreeNode) list.get(0);
-    // il a déjà été modifié donc on passe à l'index 1
+    // il a dÃ©jÃ  Ã©tÃ© modifiÃ© donc on passe Ã  l'index 1
     if (list.size() > 1) {
       TreeNodePersistence nodeToUpdate = null;
       String pathToUpdate = "";
@@ -860,14 +860,14 @@ public class TreeBmImpl implements TreeBm {
               + " following the alphabetic order");
     }
 
-    // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à celui
-    // du noeud à modifier
+    // recupere les noeuds freres ordonnÃ©s qui ont un numÃ©ro d'ordre >= Ã  celui
+    // du noeud Ã  modifier
     String whereClause = "treeId = " + treeId + " and fatherId = "
         + father.getPK().getId() + " and orderNumber >= " + order
         + " ORDER BY orderNumber ASC";
 
     try {
-      // ATTENTION il faut traiter l'ordre des frères
+      // ATTENTION il faut traiter l'ordre des frÃ¨res
       Collection nodesToUpdate = getDAO().findByWhereClause(con,
           father.getPK(), whereClause);
 
@@ -934,10 +934,10 @@ public class TreeBmImpl implements TreeBm {
     String newFather = nodeToDelete.getFatherId();
 
     try {
-      // Change le level de chaque descendants du noeud à supprimer
+      // Change le level de chaque descendants du noeud Ã  supprimer
       TreeDAO.levelUp(con, path + nodeId + "/", treeId);
 
-      // Change le père de chaque fils du noeud à supprimer
+      // Change le pÃ¨re de chaque fils du noeud Ã  supprimer
       TreeDAO.changeFatherAndPath(con, new Integer(nodeId).intValue(),
           new Integer(newFather).intValue(), path, treeId);
 
@@ -984,7 +984,7 @@ public class TreeBmImpl implements TreeBm {
     String path = getPath(con, nodePK, treeId);
     ArrayList list = new ArrayList();
     try {
-      // récupère la valeur de la colonne path de la table SB_Tree_Tree
+      // rÃ©cupÃ¨re la valeur de la colonne path de la table SB_Tree_Tree
       // if (path.length() > 1){
       StringTokenizer st = new StringTokenizer(path, "/");
       String whereClause = "treeId = " + treeId + " and (1=0 ";

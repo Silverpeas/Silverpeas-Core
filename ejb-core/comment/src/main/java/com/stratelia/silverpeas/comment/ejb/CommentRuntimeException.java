@@ -21,14 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 /**
  * Titre : Silverpeas<p>
  * Description : This object provides the versioning runtime execption<p>
  * Copyright : Copyright (c) Stratelia<p>
- * Société : Stratelia<p>
+ * SociÃ©tÃ© : Stratelia<p>
  * @author Jean-Claude Groccia
  * @version 1.0
  */
@@ -38,9 +36,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: CommentRuntimeException.java,v 1.1.1.1 2002/08/06 14:47:46 nchaix Exp $
- * 
+ *
  * $Log: CommentRuntimeException.java,v $
  * Revision 1.1.1.1  2002/08/06 14:47:46  nchaix
  * no message
@@ -62,12 +60,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  *
  * Revision 1.5  2002/01/21 18:00:31  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.4  2002/01/21 17:55:19  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.3  2002/01/08 10:28:13  groccia
@@ -80,8 +78,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class CommentRuntimeException extends SilverpeasRuntimeException {
@@ -104,13 +102,13 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
+   *
    * @see
    */
   public CommentRuntimeException(String callingClass, int errorLevel,
@@ -120,13 +118,13 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
+   *
    * @see
    */
   public CommentRuntimeException(String callingClass, int errorLevel,
@@ -136,14 +134,14 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
+   *
    * @see
    */
   public CommentRuntimeException(String callingClass, int errorLevel,

@@ -33,9 +33,9 @@ public class TagCloudUtil {
   // For each line, the characters contained in the first string has to be
   // replaced by the
   // character of the second string.
-  private static final String[][] TAG_DATA = { { "(«)", "C" },
-      { "(¿|¡|¬|√|ƒ|≈|∆)", "A" }, { "(»|…| |À)", "E" }, { "(Ã|Õ|Œ|œ)", "I" },
-      { "(“|”|‘|’|÷)", "O" }, { "(Ÿ|⁄|€|‹)", "U" }, { "(›)", "Y" } };
+  private static final String[][] TAG_DATA = { { "(√á)", "C" },
+      { "(√Ä|√Å|√Ç|√É|√Ñ|√Ö|√Ü)", "A" }, { "(√à|√â|√ä|√ã)", "E" }, { "(√å|√ç|√é|√è)", "I" },
+      { "(√í|√ì|√î|√ï|√ñ)", "O" }, { "(√ô|√ö|√õ|√ú)", "U" }, { "(√ù)", "Y" } };
 
   /**
    * @param s

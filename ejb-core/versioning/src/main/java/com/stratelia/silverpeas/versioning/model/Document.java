@@ -54,7 +54,7 @@ public class Document implements java.io.Serializable, Cloneable {
   private int currentWorkListOrder;
 
   private Date alertDate = null; // date d'alerte pour la notification
-  // intermédiaire
+  // intermediaire
   private Date expiryDate = null; // date d'expiration
 
   private VersionsType versionsType; // used by import/export engine

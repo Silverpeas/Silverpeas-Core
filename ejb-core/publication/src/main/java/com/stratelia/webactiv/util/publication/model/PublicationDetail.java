@@ -57,7 +57,7 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
 /**
  * This object contains the description of a publication
- * 
+ *
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -105,7 +105,7 @@ public class PublicationDetail extends AbstractI18NBean implements
   private boolean statusMustBeChecked = true;
   private boolean updateDateMustBeSet = true;
 
-  // ajouté pour les statistiques
+  // ajoutÃ© pour les statistiques
   private int nbAccess = 0;
 
   private boolean notYetVisible = false;
@@ -121,7 +121,7 @@ public class PublicationDetail extends AbstractI18NBean implements
   public static final String CLONE = "Clone";
 
   /**
-   * Constructeur par défaut: nécéssaire au mapping castor du module
+   * Constructeur par dÃ©faut: nÃ©cÃ©ssaire au mapping castor du module
    * d'importExport
    */
   public PublicationDetail() {

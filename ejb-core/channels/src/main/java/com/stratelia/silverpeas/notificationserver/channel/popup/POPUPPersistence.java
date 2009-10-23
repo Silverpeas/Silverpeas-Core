@@ -21,19 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
-
-/**
- * Titre :
- * Description :
- * Copyright :    Copyright (c) 2001
- * Société :
- * @author eDurand
- * @version 1.0
- */
 
 import java.util.Date;
 
@@ -47,18 +36,8 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.silverpeas.util.LongText;
 
-/**
- * Class declaration
- * 
- * 
- * @author
- * @version %I%, %G%
- */
 public class POPUPPersistence {
 
-  /**
-	 * 
-	 */
   public static void addMessage(POPUPMessage p_Msg) throws POPUPException {
     SilverpeasBeanDAO dao;
     POPUPMessageBean smb = new POPUPMessageBean();
@@ -85,9 +64,6 @@ public class POPUPPersistence {
     }
   }
 
-  /**
-	 * 
-	 */
   public static POPUPMessage getMessage(long p_Id) throws POPUPException {
     POPUPMessage result = null;
     POPUPMessageBean smb;
@@ -133,9 +109,6 @@ public class POPUPPersistence {
     return result;
   }
 
-  /**
-	 *  
-	 */
   public static void deleteMessage(long p_Id) throws POPUPException {
     SilverpeasBeanDAO dao;
     IdPK pk = new IdPK();
@@ -162,9 +135,6 @@ public class POPUPPersistence {
     }
   }
 
-  /**
-	 * 
-	 */
   protected static String getUserLogin(long userId) throws POPUPException {
     String result = "";
 

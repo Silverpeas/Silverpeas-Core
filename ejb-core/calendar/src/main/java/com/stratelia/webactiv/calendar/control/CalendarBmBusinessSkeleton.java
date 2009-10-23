@@ -219,7 +219,7 @@ public interface CalendarBmBusinessSkeleton {
 
   public void indexAllJournal() throws RemoteException;
 
-  // Gestion des jours non travaillés
+  // Gestion des jours non travailles
   public boolean isHolidayDate(HolidayDetail date) throws RemoteException;
 
   public List getHolidayDates(String userId) throws RemoteException;

@@ -51,7 +51,7 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * Classe gérant la manipulation des axes de coordinates pour le module
+ * Classe gerant la manipulation des axes de coordinates pour le module
  * d'importExport.
  * 
  * @author dlesimple

@@ -48,22 +48,22 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class HistoryObjectDAO {
   /**
    * Method declaration
-   * 
+   *
    * @param rs
    * @param space
    * @param componentName
-   * @deprecated : fonction pour récupérer les publications
+   * @deprecated : fonction pour rÃ©cupÃ©rer les publications
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getHistoryPublicationDetails(ResultSet rs,
@@ -97,15 +97,15 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
+   *
    * @param rs
    * @param space
    * @param componentName
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getHistoryDetails(ResultSet rs, String space,
@@ -146,7 +146,7 @@ public class HistoryObjectDAO {
 
   /**
    * Constructor declaration
-   * 
+   *
    * @see
    */
   public HistoryObjectDAO() {
@@ -154,16 +154,16 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
    * @param nodePK
    * @param pubPK
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void add(Connection con, String tableName, String userId,
@@ -203,15 +203,15 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
+   *
    * @param con
    * @param tableName
    * @param foreignPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getHistoryDetailByObject(Connection con,
@@ -267,15 +267,15 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
+   *
    * @param con
    * @param tableName
    * @param foreignPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void deleteHistoryByObject(Connection con, String tableName,
@@ -299,15 +299,15 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
+   *
    * @param con
    * @param tableName
    * @param foreignPK
-   * @deprecated : fonction pour récupérer les publications
+   * @deprecated : fonction pour rÃ©cupÃ©rer les publications
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getHistoryDetailByPublication(Connection con,

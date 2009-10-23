@@ -79,7 +79,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       connection = DBUtil.makeConnection(m_dbName);
       connection.setAutoCommit(false);
 
-      // Vérification de la contrainte invariante
+      // VÃ©rification de la contrainte invariante
       int nPositionId = classifyEngine.classifySilverObject(connection,
           silverObjectId, position);
 
@@ -232,7 +232,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   /**
    * Create two lists of Value. Then, we replace the first Value list by the
    * second
-   * 
+   *
    * @param con
    *          - a connection to the database
    * @param axisId
@@ -280,7 +280,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   }
 
   public List getObjectsByInstance(String instanceId) throws PdcException {
-    // récupère la liste des silverobjectId depuis le container manager
+    // rÃ©cupÃ¨re la liste des silverobjectId depuis le container manager
     // qui provienne de l'instanceId
     ArrayList objectIdList = new ArrayList();
     try {
@@ -299,7 +299,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * search a defined position for one usedAxis
-   * 
+   *
    * @param usedAxis
    *          - the UsedAxis object
    * @return true if for one UsedAxis, a position exists, false otherwise
@@ -311,14 +311,14 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     String instanceId = usedAxis.getInstanceId();
 
     boolean hasOnePosition = false;
-    // de toutes ces SilverObjectId, je récupère toutes
+    // de toutes ces SilverObjectId, je rÃ©cupÃ¨re toutes
     // les positions correspondantes
     ArrayList positions = new ArrayList();
     for (int i = 0; i < objectIdList.size(); i++) {
       if (((Integer) objectIdList.get(i)).intValue() != -1) {
         positions = (ArrayList) getPositions(((Integer) objectIdList.get(i))
             .intValue(), instanceId);
-        // maintenant, je récupère toutes les valeurs de toutes les positions
+        // maintenant, je rÃ©cupÃ¨re toutes les valeurs de toutes les positions
         // pour ne prendre que les path de chaques Values
         // si la valeur de base ne fait pas partie du chemin alors on ne peut
         // pas
@@ -332,12 +332,12 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
               .getValueByAxis(usedAxis.getAxisId());
           onePath = value.getValue();
           if (onePath != null && onePath.indexOf(newBaseValue) != -1) {
-            // une position existe déjà
+            // une position existe dÃ©jÃ 
             // on ne peut donc pas changer cette valeur de base
             hasOnePosition = true;
             break;
           }
-          // une position existe deja, inutile de continuer à chercher d'autres
+          // une position existe deja, inutile de continuer Ã  chercher d'autres
           // positions
           // je sors donc de la boucle
           if (hasOnePosition) {

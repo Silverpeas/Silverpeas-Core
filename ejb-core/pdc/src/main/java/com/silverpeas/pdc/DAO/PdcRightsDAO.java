@@ -196,7 +196,7 @@ public class PdcRightsDAO {
   }
 
   /**
-   * Lors de la supression d'un user, on supprime les droits associés
+   * Lors de la supression d'un user, on supprime les droits associes
    * 
    * @param userId
    * @throws SQLException

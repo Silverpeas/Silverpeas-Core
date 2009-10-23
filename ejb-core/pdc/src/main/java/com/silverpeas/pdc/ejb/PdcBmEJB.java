@@ -199,7 +199,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     List alInstanceIds = (List) new ArrayList();
 
     try {
-      // on récupère la liste de instance contenant tous les documents
+      // on rÃ©cupÃ¨re la liste de instance contenant tous les documents
       alInstanceIds = getContentManager().getInstanceId(silverContentIds);
       SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
           "root.MSG_GEN_PARAM_VALUE", "alInstanceIds = " + alInstanceIds);
@@ -210,9 +210,9 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
 
     instanceId = ""; // reinitialisation
 
-    // une fois la liste des instanceId définie, on parcourt cette liste pour en
+    // une fois la liste des instanceId dÃ©finie, on parcourt cette liste pour en
     // retirer les SilverContentIds
-    // propre à chaque instanceId.
+    // propre Ã  chaque instanceId.
     List allSilverContentIds = (List) new ArrayList();
     List newAlSilverContentIds = (List) new ArrayList();
 
@@ -222,7 +222,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       try {
         contentP = getContentManager().getContentPeas(instanceId);
 
-        // On récupère tous les silverContentId d'un instanceId
+        // On rÃ©cupÃ¨re tous les silverContentId d'un instanceId
         allSilverContentIds = getContentManager()
             .getSilverContentIdByInstanceId(instanceId);
         SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
@@ -234,9 +234,9 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
             c);
       }
 
-      // une fois les SilverContentId de l'instanceId récupérés, on ne garde que
+      // une fois les SilverContentId de l'instanceId rÃ©cupÃ©rÃ©s, on ne garde que
       // ceux qui sont
-      // dans la liste résultat (alSilverContentIds).
+      // dans la liste rÃ©sultat (alSilverContentIds).
       allSilverContentIds.retainAll(silverContentIds);
 
       List silverContentTempo = null;
@@ -279,7 +279,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   }
 
   /*
-   * 
+   *
    * @return a List of GlobalSilverContent
    */
   private List transformSilverContentsToGlobalSilverContents(

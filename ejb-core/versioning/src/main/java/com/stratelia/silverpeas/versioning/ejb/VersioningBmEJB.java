@@ -166,7 +166,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   private void updateDates(Document doc) {
-    // mise à jour de la date d'expiration
+    // mise Ã  jour de la date d'expiration
 
     // 1. rechercher le nombre de jours avant expiration dans le composant
     OrganizationController orga = new OrganizationController();
@@ -177,7 +177,7 @@ public class VersioningBmEJB implements SessionBean {
       SilverTrace.debug("versioning", "updateDates",
           "root.MSG_GEN_PARAM_VALUE", "nbDay = " + nbDay);
       // 2. calcul la date d'expiration en fonction de la date d'aujourd'hui et
-      // de la durée de réservation
+      // de la durÃ©e de rÃ©servation
       Calendar calendar = Calendar.getInstance(Locale.FRENCH);
       // calendar.add(Calendar.DATE, nbDay);
       SilverTrace.debug("versioning", "updateDates",
@@ -190,7 +190,7 @@ public class VersioningBmEJB implements SessionBean {
       doc.setExpiryDate(calendar.getTime());
     }
 
-    // mise à jour de la date d'alerte
+    // mise Ã  jour de la date d'alerte
 
     // 1. rechercher le % dans le properties
     int delayReservedFile = Integer.parseInt(resources
@@ -967,7 +967,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Perform work on creating validated version from version provided
-   * 
+   *
    * @param docVersion
    *          version to be validated
    */
@@ -1284,7 +1284,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Perform work on creating validated version from version provided
-   * 
+   *
    * @param docVersion
    *          version to be validated
    */
@@ -1445,7 +1445,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
-   * 
+   *
    * @return an URL for provided document
    */
   protected String getDocumentUrl(Document doc) {
@@ -1459,7 +1459,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
-   * 
+   *
    * @return language by provided user id
    */
   protected String getDefaultUserLanguage(int userID) {
@@ -1482,7 +1482,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Get the last version
-   * 
+   *
    * @param documentPK
    * @return DocumentVersion
    */
@@ -1505,7 +1505,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Get a document version
-   * 
+   *
    * @param documentVersionPK
    * @return DocumentVersion
    */
@@ -1527,7 +1527,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
-   * 
+   *
    * @return Connection to use in all ejb db operations
    */
   protected Connection openConnection() {
@@ -1690,7 +1690,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param role
    * @param userId
    * @param groupsIds
@@ -1713,7 +1713,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param componentId
    * @param documentId
    * @param listType
@@ -1734,7 +1734,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param role
    * @param componentId
    * @throws VersioningRuntimeException
@@ -1768,7 +1768,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param documentId
    * @param role
    * @param userId
@@ -1792,7 +1792,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param componentId
    * @return
    * @throws VersioningRuntimeException
@@ -1814,7 +1814,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param documentId
    * @param role
    * @param userId
@@ -1838,7 +1838,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param componentId
    * @return
    * @throws VersioningRuntimeException
@@ -1860,7 +1860,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param componentId
    * @return
    */

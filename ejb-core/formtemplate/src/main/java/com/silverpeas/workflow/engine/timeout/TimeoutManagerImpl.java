@@ -187,7 +187,7 @@ public class TimeoutManagerImpl implements TimeoutManager,
       Date endDate = new Date();
       long delay = (endDate.getTime() - beginDate.getTime()) / 1000;
       SilverTrace.debug("workflowEngine",
-          "TimeoutManagerImpl.doTimeoutManagement", "Durée de traitement : "
+          "TimeoutManagerImpl.doTimeoutManagement", "Duree de traitement : "
               + delay + " seconds.");
     }
   }

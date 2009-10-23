@@ -26,7 +26,7 @@ package com.silverpeas.versioning.importExport;
 import java.util.List;
 
 /**
- * Classe utilisée pour le (un)marshalling Castor
+ * Classe utilisee pour le (un)marshalling Castor
  * 
  * @author neysseri
  */

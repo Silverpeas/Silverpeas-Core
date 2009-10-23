@@ -38,9 +38,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: SeeAlsoDAO.java,v 1.2 2007/02/27 15:03:34 neysseri Exp $
- * 
+ *
  * $Log: SeeAlsoDAO.java,v $
  * Revision 1.2  2007/02/27 15:03:34  neysseri
  * no message
@@ -49,7 +49,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
  * no message
  *
  * Revision 1.13  2006/09/13 13:07:31  neysseri
- * Extension de la taille du htmlDisplayer et htmlEditor gr‚ce ‡ plusieurs lignes en BdD
+ * Extension de la taille du htmlDisplayer et htmlEditor gr√¢ce √† plusieurs lignes en BdD
  *
  * Revision 1.12  2006/07/10 16:23:12  neysseri
  * no message
@@ -61,7 +61,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
  * no message
  *
  * Revision 1.10  2005/05/19 14:54:16  neysseri
- * PossibilitÈ de supprimer les Voir Aussi
+ * Possibilit√© de supprimer les Voir Aussi
  *
  * Revision 1.9  2004/06/22 15:34:59  neysseri
  * nettoyage eclipse
@@ -79,7 +79,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
  * no message
  *
  * Revision 1.4  2003/01/15 10:07:24  scotte
- * Correction : pb de deplacement des contenus des champs des modËles sous Oracle
+ * Correction : pb de deplacement des contenus des champs des mod√®les sous Oracle
  *
  * Revision 1.3  2002/12/20 09:17:17  cbonin
  * Report Bug OCISI :
@@ -92,15 +92,15 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
  * no message
  *
  * Revision 1.16  2002/08/05 09:45:09  neysseri
- * Correction du bug HHB sur les mÈthodes :
+ * Correction du bug HHB sur les m√©thodes :
  * - deleteInfoTextByInfoPK()
  * - deleteInfoImageByInfoPK()
  *
- * Les requetes de suppression n'Ètait pas correctes du tout !!!
+ * Les requetes de suppression n'√©tait pas correctes du tout !!!
  *
  * Revision 1.15  2002/04/03 09:03:00  neysseri
  * Suppression de l'appel de la requete
- * qui rÈcupËre les attachments (remplacÈ pas le module attachment)
+ * qui r√©cup√®re les attachments (remplac√© pas le module attachment)
  *
  * Revision 1.14  2002/01/11 12:40:55  neysseri
  * Stabilisation Lot 2 : Exceptions et Silvertrace
@@ -109,8 +109,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class SeeAlsoDAO {
@@ -118,8 +118,8 @@ public class SeeAlsoDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public SeeAlsoDAO() {
@@ -127,14 +127,14 @@ public class SeeAlsoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param infoPK
    * @param infoLink
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void addLink(Connection con, WAPrimaryKey objectPK,
@@ -217,15 +217,15 @@ public class SeeAlsoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param infoPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static List getLinks(Connection con, WAPrimaryKey objectPK)

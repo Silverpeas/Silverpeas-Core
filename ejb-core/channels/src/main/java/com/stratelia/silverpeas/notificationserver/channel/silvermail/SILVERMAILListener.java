@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
@@ -38,32 +36,11 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
-
 public class SILVERMAILListener extends AbstractListener {
 
-  /**
-   * Constructor declaration
-   * 
-   * 
-   * @see
-   */
   public SILVERMAILListener() {
   }
 
-  /**
-   * Method declaration
-   * 
-   * 
-   * @throws CreateException
-   * 
-   * @see
-   */
   public void ejbCreate() {
   }
 
@@ -82,16 +59,6 @@ public class SILVERMAILListener extends AbstractListener {
     }
   }
 
-  /**
-   * Method declaration
-   * 
-   * 
-   * @param p_Message
-   * 
-   * @throws NotificationServerException
-   * 
-   * @see
-   */
   public void send(NotificationData p_Message)
       throws NotificationServerException {
     try {
@@ -122,5 +89,4 @@ public class SILVERMAILListener extends AbstractListener {
           SilverpeasException.ERROR, "silvermail.EX_CANT_ADD_MESSAGE", e);
     }
   }
-
 }

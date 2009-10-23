@@ -71,7 +71,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     todo.setId(task.getProcessInstance().getInstanceId());
     todo.setSpaceId(compoInst.getDomainFatherId());
     todo.setComponentId(componentId);
-    todo.setName("activité : "
+    todo.setName("activite : "
         + task.getState().getLabel(task.getUserRoleName(), "fr"));
 
     Vector attendees = new Vector();

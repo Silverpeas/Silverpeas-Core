@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.coordinates;
 
 import java.sql.Connection;
@@ -35,64 +32,19 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * @author update by Sébastien Antonio - Externalisation of the SQL request
- */
 public class CoordinatesInstanciator extends SQLRequest {
 
-  /**
-   * Constructor declaration
-   * 
-   * 
-   * @see
-   */
   public CoordinatesInstanciator() {
   }
 
-  // add by sébastien
-
-  /**
-   * Constructor declaration
-   * 
-   * 
-   * @param fullPathName
-   * 
-   * @see
-   */
   public CoordinatesInstanciator(String fullPathName) {
     super("com.stratelia.webactiv.util.coordinates");
   }
 
-  /**
-   * Method declaration
-   * 
-   * 
-   * @param con
-   * @param spaceId
-   * @param componentId
-   * @param userId
-   * 
-   * @throws InstanciationException
-   * 
-   * @see
-   */
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
   }
 
-  /**
-   * Method declaration
-   * 
-   * 
-   * @param con
-   * @param spaceId
-   * @param componentId
-   * @param userId
-   * 
-   * @throws InstanciationException
-   * 
-   * @see
-   */
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("coordinates", "CoordinatesInstanciator.delete()",

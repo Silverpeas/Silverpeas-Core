@@ -33,21 +33,21 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: QuestionDAO.java,v 1.4 2008/06/26 05:08:34 neysseri Exp $
- * 
+ *
  * $Log: QuestionDAO.java,v $
  * Revision 1.4  2008/06/26 05:08:34  neysseri
  * no message
  *
  * Revision 1.3.6.1  2008/06/06 13:05:07  sfariello
- * Ajout zone "style" pour le type de réponse
+ * Ajout zone "style" pour le type de rÃ©ponse
  *
  * Revision 1.3  2003/11/24 10:38:09  cbonin
  * no message
  *
  * Revision 1.2  2002/12/17 10:34:00  scotte
- * Correction erreur : Les questions sont TJS dans le désordre
+ * Correction erreur : Les questions sont TJS dans le dÃ©sordre
  *
  * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
  * no message
@@ -63,7 +63,7 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * This class is made to access database only (table SB_Question_Question)
- * 
+ *
  * @author neysseri
  */
 public class QuestionDAO {
@@ -72,16 +72,16 @@ public class QuestionDAO {
 
   /**
    * Build a Question object with data from the resultset
-   * 
+   *
    * @param rs
    *          the Resultset which contains data
    * @param questionPK
    *          the context
-   * 
+   *
    * @return a Question
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   private static Question getQuestionFromResultSet(ResultSet rs,
       QuestionPK questionPK) throws SQLException {
@@ -107,8 +107,8 @@ public class QuestionDAO {
     int displayOrder = rs.getInt(12);
     int nbPointsMin = rs.getInt(13);
     int nbPointsMax = rs.getInt(14);
-    // String instanceId = rs.getString(15); // pas utilisé mais dans la liste
-    // des récupérations
+    // String instanceId = rs.getString(15); // pas utilisÃ© mais dans la liste
+    // des rÃ©cupÃ©rations
     String style = rs.getString(16);
 
     Question result = new Question(new QuestionPK(id, questionPK), fatherId,
@@ -120,16 +120,16 @@ public class QuestionDAO {
 
   /**
    * Return a question
-   * 
+   *
    * @param con
    *          the Connection to dataBase
    * @param questionPK
    *          the question id
-   * 
+   *
    * @return a Question
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   public static Question getQuestion(Connection con, QuestionPK questionPK)
       throws SQLException {
@@ -159,18 +159,18 @@ public class QuestionDAO {
 
   /**
    * Return the questions linked to a given father
-   * 
+   *
    * @param con
    *          the Connection to dataBase
    * @param questionPK
    *          the question id
    * @param fatherId
    *          the father id
-   * 
+   *
    * @return a Collection of Question
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   public static Collection getQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {
@@ -207,16 +207,16 @@ public class QuestionDAO {
 
   /**
    * Create a new question
-   * 
+   *
    * @param con
    *          the Connection to dataBase
    * @param question
    *          the Question to create
-   * 
+   *
    * @return the QuestionPK of the new question
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   public static QuestionPK createQuestion(Connection con, Question question)
       throws SQLException {
@@ -279,14 +279,14 @@ public class QuestionDAO {
 
   /**
    * Update a question
-   * 
+   *
    * @param con
    *          the Connection to dataBase
    * @param question
    *          the Question to update
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   public static void updateQuestion(Connection con, Question question)
       throws SQLException {
@@ -337,14 +337,14 @@ public class QuestionDAO {
 
   /**
    * Delete a question
-   * 
+   *
    * @param con
    *          the Connection to dataBase
    * @param questionPK
    *          the question id
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   public static void deleteQuestion(Connection con, QuestionPK questionPK)
       throws SQLException {
@@ -367,16 +367,16 @@ public class QuestionDAO {
 
   /**
    * Delete all questions linked to a given father
-   * 
+   *
    * @param con
    *          the Connection to dataBase
    * @param questionPK
    *          to know the context
    * @param fatherId
    *          the father id
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    */
   public static void deleteQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {

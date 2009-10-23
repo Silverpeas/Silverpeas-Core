@@ -1,20 +1,34 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas This program is free software: you can redistribute it
- * and/or modify it under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing" This program is distributed in the hope that
- * it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-// TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.node.ejb;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.i18n.Translation;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,10 +44,11 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+import javax.ejb.NoSuchEntityException;
 
 /**
  * This is the Node Data Access Object.
- * 
+ *
  * @author Nicolas Eysseric
  */
 public class NodeDAO {
@@ -41,7 +56,7 @@ public class NodeDAO {
 
   /**
    * This class must not be instanciated
-   * 
+   *
    * @since 1.0
    */
   public NodeDAO() {
@@ -62,7 +77,7 @@ public class NodeDAO {
 
   /**
    * On node creation, check if another node have got the same name with same father
-   * 
+   *
    * @return true if there is already a node with same name with same father false else
    * @param con
    *          A connection to the database
@@ -112,7 +127,7 @@ public class NodeDAO {
 
   /**
    * On node update, check if another node have got the same name with same father
-   * 
+   *
    * @return true if there is already a node with same name with same father false else
    * @param con
    *          A connection to the database
@@ -165,7 +180,7 @@ public class NodeDAO {
 
   /**
    * Get children node PKs of a node
-   * 
+   *
    * @return A collection of NodePK
    * @param con
    *          A connection to the database
@@ -198,7 +213,7 @@ public class NodeDAO {
         nodeId = new Integer(rs.getInt(1)).toString();
         NodePK n = new NodePK(nodeId, nodePK);
 
-        a.add(n); /* Stockage du sous thème */
+        a.add(n); /* Stockage du sous thÃ¨me */
       }
     } catch (SQLException e) {
       SilverTrace.error("node", "NodeDAO.getChildrenPKs()", "root.EX_SQL_QUERY_FAILED",
@@ -213,7 +228,7 @@ public class NodeDAO {
 
   /**
    * Get descendant node PKs of a node
-   * 
+   *
    * @return A collection of NodePK
    * @param con
    *          A connection to the database
@@ -268,7 +283,7 @@ public class NodeDAO {
           nodeId = new Integer(rs.getInt(1)).toString();
           NodePK n = new NodePK(nodeId, nodePK);
 
-          a.add(n); /* Stockage du sous thème */
+          a.add(n); /* Stockage du sous thÃ¨me */
         }
       } catch (SQLException e) {
         SilverTrace.error("node", "NodeDAO.getDescendantPKs()", "root.EX_SQL_QUERY_FAILED",
@@ -285,7 +300,7 @@ public class NodeDAO {
 
   /**
    * Get descendant nodeDetails of a node
-   * 
+   *
    * @return A List of NodeDetail
    * @param con
    *          A connection to the database
@@ -353,7 +368,7 @@ public class NodeDAO {
 
   /**
    * Get descendant nodeDetails of a node
-   * 
+   *
    * @return A List of NodeDetail
    * @param con
    *          A connection to the database
@@ -396,7 +411,7 @@ public class NodeDAO {
 
   /**
    * Get nodeDetails by level
-   * 
+   *
    * @return A collection of NodeDetail
    * @since 1.6
    */
@@ -452,7 +467,7 @@ public class NodeDAO {
 
   /**
    * Get all nodeDetails
-   * 
+   *
    * @return A collection of NodeDetail
    * @since 1.6
    */
@@ -462,7 +477,7 @@ public class NodeDAO {
 
   /**
    * Get all nodeDetails
-   * 
+   *
    * @return A collection of NodeDetail
    * @since 1.6
    */
@@ -557,7 +572,7 @@ public class NodeDAO {
 
   /**
    * Get the path from root to a node
-   * 
+   *
    * @return A collection of NodeDetail
    * @param con
    *          A connection to the database
@@ -593,7 +608,7 @@ public class NodeDAO {
 
   /**
    * Create a NodeDetail from a ResultSet
-   * 
+   *
    * @param rs
    *          the ResultSet which contains data
    * @return the NodeDetail
@@ -602,7 +617,7 @@ public class NodeDAO {
    * @since 1.0
    */
   public static NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK) throws SQLException {
-    /* Récupération des données depuis la BD */
+    /* RÃ©cupÃ©ration des donnÃ©es depuis la BD */
     NodePK pk = new NodePK(new Integer(rs.getInt(1)).toString(), nodePK);
     String name = rs.getString(2);
     String description = rs.getString(3);
@@ -632,7 +647,7 @@ public class NodeDAO {
 
   /**
    * Get the detail of another Node
-   * 
+   *
    * @param pk
    *          the PK of the Node
    * @return a NodeDetail
@@ -692,7 +707,7 @@ public class NodeDAO {
 
   /**
    * Get the header of each child of the node
-   * 
+   *
    * @return a NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception java.sql.SQLException
@@ -757,7 +772,7 @@ public class NodeDAO {
 
   /**
    * Get the children number of this node
-   * 
+   *
    * @return a int
    * @exception java.sql.SQLException
    * @since 1.0
@@ -795,7 +810,7 @@ public class NodeDAO {
 
   /**
    * Insert into the database the data of a node
-   * 
+   *
    * @return a NodePK which contains the new row id
    * @param nd
    *          the NodeDetail which contains data
@@ -875,7 +890,7 @@ public class NodeDAO {
 
   /**
    * Delete into the database a node but not it's descendants
-   * 
+   *
    * @param path
    *          the path of the node to delete
    * @param creatorId
@@ -905,7 +920,7 @@ public class NodeDAO {
 
   /**
    * Check if a Node exists in database
-   * 
+   *
    * @return the fat pk (pk + detail)
    * @param pk
    *          the node PK to find
@@ -932,7 +947,7 @@ public class NodeDAO {
 
   /**
    * Method declaration
-   * 
+   *
    * @param con
    * @param pk
    * @return
@@ -960,7 +975,7 @@ public class NodeDAO {
 
   /**
    * Load node attributes from database
-   * 
+   *
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1049,7 +1064,7 @@ public class NodeDAO {
 
   /**
    * Store node attributes into database
-   * 
+   *
    * @exception java.sql.SQLException
    * @since 1.0
    */

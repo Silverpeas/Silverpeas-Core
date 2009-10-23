@@ -32,7 +32,7 @@ package com.silverpeas.pdc.importExport;
 import java.util.ArrayList;
 
 /**
- * Classe utilisée pour le mapping castor
+ * Classe utilisee pour le mapping castor
  * 
  * @author sdevolder
  */

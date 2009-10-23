@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Created on 9 févr. 2005
+ * Created on 9 fÃ©vr. 2005
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
@@ -44,8 +44,8 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * Classe gérant la manipulation des axes du pdc pour le module d'importExport.
- * 
+ * Classe gÃ©rant la manipulation des axes du pdc pour le module d'importExport.
+ *
  * @author sdevolder
  */
 public class PdcImportExport {
@@ -53,19 +53,19 @@ public class PdcImportExport {
   // Variables
   PdcBm pdcBm = null;
 
-  // Méthodes
+  // MÃ©thodes
   /**
-   * Méthodes créant les liens entre les silverObjectId et les positions
-   * définies dans un xml mappé dans la classe PdcPositionsType.
-   * 
+   * MÃ©thodes crÃ©ant les liens entre les silverObjectId et les positions
+   * dÃ©finies dans un xml mappÃ© dans la classe PdcPositionsType.
+   *
    * @param silverObjectId
-   *          - id de l'objet à lier au pdc
+   *          - id de l'objet Ã  lier au pdc
    * @param componentId
    *          - id du composant ...
    * @param positions
    *          - object contenant les classes classifyValue contenant les axes du
-   *          pdc à lier
-   * @return false si une des données est incorrecte, true sinon
+   *          pdc Ã  lier
+   * @return false si une des donnÃ©es est incorrecte, true sinon
    * @throws PdcException
    */
   public boolean addPositions(int silverObjectId, String componentId,
@@ -74,7 +74,7 @@ public class PdcImportExport {
 
     List listPositions = positions.getListClassifyPosition();
 
-    // récupération des positions valides
+    // rÃ©cupÃ©ration des positions valides
     List validPositions = getValidPositions(componentId, listPositions);
 
     if (listPositions.size() != validPositions.size()) {
@@ -103,7 +103,7 @@ public class PdcImportExport {
       throws PdcException {
     List validPositions = new ArrayList();
 
-    // récupération des axes utilisés par le composant
+    // rÃ©cupÃ©ration des axes utilisÃ©s par le composant
     List usedAxis = getPdcBm().getUsedAxisByInstanceId(componentId);
 
     if (usedAxis != null && usedAxis.size() > 0) {
@@ -135,7 +135,7 @@ public class PdcImportExport {
       return false;
     } else {
       // toutes les valeurs sont correctes
-      // Il faut encore vérifier que le classement est complet
+      // Il faut encore vÃ©rifier que le classement est complet
       return isCompletePosition(usedAxis, position);
     }
   }
@@ -178,7 +178,7 @@ public class PdcImportExport {
       if (existingValue == null) {
         return false;
       } else {
-        // Si la valeur existe, on vérifie que le chemin fournit est correct
+        // Si la valeur existe, on vÃ©rifie que le chemin fournit est correct
         if (!existingValue.getFullPath().equals(path))
           return false;
       }
@@ -195,8 +195,8 @@ public class PdcImportExport {
   }
 
   /**
-   * Méthode de récupération des position pdc pour un objet silverpeas donné.
-   * 
+   * MÃ©thode de rÃ©cupÃ©ration des position pdc pour un objet silverpeas donnÃ©.
+   *
    * @param silverObjectId
    * @param sComponentId
    * @return - liste de ClassifyPosition
@@ -205,7 +205,7 @@ public class PdcImportExport {
   public List getPositions(int silverObjectId, String sComponentId)
       throws PdcException {
     List list = getPdcBm().getPositions(silverObjectId, sComponentId);
-    if (list.size() == 0)// Pas géré dans l'EJB!!!
+    if (list.size() == 0)// Pas gÃ©rÃ© dans l'EJB!!!
       return null;
     return list;
   }
@@ -215,17 +215,17 @@ public class PdcImportExport {
   }
 
   /**
-   * Méthodes récupérant la totalité des axes utilisés par les positions de la
-   * liste en paramètre
-   * 
+   * MÃ©thodes rÃ©cupÃ©rant la totalitÃ© des axes utilisÃ©s par les positions de la
+   * liste en paramÃ¨tre
+   *
    * @param listClassifyPosition
    *          - liste des positions dont on veut les axes
-   * @return un objet PdcType contenant les axes recherchés
+   * @return un objet PdcType contenant les axes recherchÃ©s
    * @throws PdcException
    */
   public PdcType getPdc(ArrayList listClassifyPosition) throws PdcException {
 
-    // On construit une liste des axes à exporter
+    // On construit une liste des axes Ã  exporter
     HashSet set = new HashSet();
     Iterator itListClassifyPosition = listClassifyPosition.iterator();
     while (itListClassifyPosition.hasNext()) {
@@ -239,22 +239,22 @@ public class PdcImportExport {
       }
     }
 
-    // On parcours la liste des axes à exporter
+    // On parcours la liste des axes Ã  exporter
     PdcType pdcType = new PdcType();
     ArrayList listAxisType = new ArrayList();
     pdcType.setListAxisType(listAxisType);
     Iterator itSet = set.iterator();
     while (itSet.hasNext()) {
       int axisId = ((Integer) itSet.next()).intValue();
-      // Récupération de la "value" root de l'axe
+      // RÃ©cupÃ©ration de la "value" root de l'axe
       Value valueRoot = getPdcBm().getRoot(Integer.toString(axisId));
       AxisType axisType = new AxisType();
       axisType.setId(axisId);
       axisType.setName(valueRoot.getName());
       axisType.setPath(valueRoot.getFullPath());
       listAxisType.add(axisType);
-      // Récupération de la totalité de l'arbre de l'axe avec la méthode
-      // récursive getValueTree
+      // RÃ©cupÃ©ration de la totalitÃ© de l'arbre de l'axe avec la mÃ©thode
+      // rÃ©cursive getValueTree
       ArrayList listPdcValueType = getValueTree(axisId, valueRoot.getPK()
           .getId());
       axisType.setListPdcValueType(listPdcValueType);
@@ -263,14 +263,14 @@ public class PdcImportExport {
   }
 
   /**
-   * Méthode récursive utilisée par la méthode getPdc de récupération d'axes.
-   * 
+   * MÃ©thode rÃ©cursive utilisÃ©e par la mÃ©thode getPdc de rÃ©cupÃ©ration d'axes.
+   *
    * @param axisId
-   *          - id de l'axe que l'on veut récupéré
+   *          - id de l'axe que l'on veut rÃ©cupÃ©rÃ©
    * @param fatherValueId
    *          - id de la "value" dont on veut les fils
    * @return - liste des values, fils du value d id fatherValueId, null si le
-   *         père est une feuille de l'arbre
+   *         pÃ¨re est une feuille de l'arbre
    * @throws PdcException
    */
   private ArrayList getValueTree(int axisId, String fatherValueId)
@@ -278,16 +278,16 @@ public class PdcImportExport {
 
     List listValueId = null;
     ArrayList listChildrenPdcValue = null;
-    // Récupération des ids des valeurs filles directes du value père
+    // RÃ©cupÃ©ration des ids des valeurs filles directes du value pÃ¨re
     listValueId = getPdcBm().getDaughterValues(Integer.toString(axisId),
         fatherValueId);
-    if (listValueId != null) {// L'exception oject non trouvé n'est pas gérée
-      // dans la méthode DAO!!!
+    if (listValueId != null) {// L'exception oject non trouvÃ© n'est pas gÃ©rÃ©e
+      // dans la mÃ©thode DAO!!!
       Iterator itListValues = listValueId.iterator();
-      // Parcours des id des valeurs filles trouvés
+      // Parcours des id des valeurs filles trouvÃ©s
       while (itListValues.hasNext()) {
         String valueId = (String) itListValues.next();
-        // Récupération de l'objet value et remplissage de l'objet de mapping
+        // RÃ©cupÃ©ration de l'objet value et remplissage de l'objet de mapping
         Value value = getPdcBm().getValue(Integer.toString(axisId), valueId);
         PdcValueType pdcValueType = new PdcValueType();
         pdcValueType.getPK().setId(valueId);
@@ -297,7 +297,7 @@ public class PdcImportExport {
         if (listChildrenPdcValue == null)
           listChildrenPdcValue = new ArrayList();
         listChildrenPdcValue.add(pdcValueType);
-        // Parcours récursif
+        // Parcours rÃ©cursif
         pdcValueType.setListPdcValueType(getValueTree(axisId, pdcValueType
             .getPK().getId()));
       }

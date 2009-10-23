@@ -51,10 +51,10 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
  * no message
  *
  * Revision 1.6  2002/02/13 11:48:25  neysseri
- * Ajout des méthodes setName() et setDescription() indispensables pour le SilverpeasBean
+ * Ajout des methodes setName() et setDescription() indispensables pour le SilverpeasBean
  *
  * Revision 1.5  2002/02/12 18:19:51  neysseri
- * ajout de la méthode _getConnectionType
+ * ajout de la methode _getConnectionType
  *
  * Revision 1.4  2002/02/12 10:33:21  neysseri
  * no message

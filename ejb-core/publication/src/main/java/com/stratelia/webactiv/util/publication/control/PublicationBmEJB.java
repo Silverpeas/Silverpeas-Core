@@ -105,20 +105,20 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * Evolution eShop
  *
  * Revision 1.45  2009/01/23 12:50:55  neysseri
- * Livraison eShop : Intégration tagCloud
+ * Livraison eShop : IntÃ©gration tagCloud
  *
  * Revision 1.44  2008/10/15 08:19:48  neysseri
- * Utilisation systématique de la table seealso au lieu de infodetail_link
+ * Utilisation systÃ©matique de la table seealso au lieu de infodetail_link
  *
  * Revision 1.43  2008/10/10 11:22:37  neysseri
- * Ajout méthode getPublicationPKsByStatus(String status, List componentIds)
+ * Ajout mÃ©thode getPublicationPKsByStatus(String status, List componentIds)
  * Optimisations suite visite DSR
  *
  * Revision 1.42.4.1  2008/10/10 11:18:49  neysseri
  * no message
  *
  * Revision 1.42  2008/08/29 14:11:21  neysseri
- * Ajout de la méthode changePublicationsOrder(List ids, NodePK nodePK)
+ * Ajout de la mÃ©thode changePublicationsOrder(List ids, NodePK nodePK)
  *
  * Revision 1.41  2008/08/26 05:52:25  neysseri
  * no message
@@ -185,16 +185,16 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * no message
  *
  * Revision 1.27  2007/02/27 08:36:31  neysseri
- * Ajout méthode getDetailBetweenDate()
+ * Ajout mÃ©thode getDetailBetweenDate()
  *
  * Revision 1.26  2007/02/21 18:16:23  neysseri
- * Intégration FCKEditor dans formTemplate
+ * IntÃ©gration FCKEditor dans formTemplate
  *
  * Revision 1.25.4.1  2007/02/16 16:36:00  sfariello
  * modif pour utilisation dans le Blog
  *
  * Revision 1.25.2.1  2006/12/20 17:37:29  dlesimple
- * Modif méthode getDetailsNotInFatherPK
+ * Modif mÃ©thode getDetailsNotInFatherPK
  *
  * Revision 1.25  2006/12/01 15:01:37  neysseri
  * no message
@@ -203,10 +203,10 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * Indexation du contenu XML champ par champ
  *
  * Revision 1.23  2006/09/18 07:07:36  neysseri
- * Le wysiwyg n'est plus indexé via son contenu mais par le fichier wysiwyg.txt
+ * Le wysiwyg n'est plus indexÃ© via son contenu mais par le fichier wysiwyg.txt
  *
  * Revision 1.22  2006/08/10 15:46:19  neysseri
- * Ajout d'une vignette à l'indexation. Est restituée par le moteur de recherche.
+ * Ajout d'une vignette Ã  l'indexation. Est restituÃ©e par le moteur de recherche.
  *
  * Revision 1.21.2.1  2006/07/24 15:05:42  neysseri
  * no message
@@ -230,12 +230,12 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * no message
  *
  * Revision 1.17  2005/12/02 13:59:27  neysseri
- * Ajout de deux méthodes :
+ * Ajout de deux mÃ©thodes :
  * - removeImage(PublicationPK pubPK)
  * - getPublicationsByStatus(String status, List componentIds)
  *
  * Revision 1.16  2005/05/19 14:54:15  neysseri
- * Possibilité de supprimer les Voir Aussi
+ * PossibilitÃ© de supprimer les Voir Aussi
  *
  * Revision 1.15  2005/04/14 18:13:45  neysseri
  * no message
@@ -244,7 +244,7 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * no message
  *
  * Revision 1.13  2005/02/23 19:13:55  neysseri
- * intégration Import/Export
+ * intÃ©gration Import/Export
  *
  * Revision 1.12.2.1  2005/02/08 18:00:26  tleroi
  * *** empty log message ***
@@ -307,11 +307,11 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * Merge de la branche bug001 sur la branche principale
  *
  * Revision 1.37.4.1  2002/05/17 09:47:17  dwenzek
- * Coorection bug : aucun document n'est indexé sur solaris
+ * Coorection bug : aucun document n'est indexÃ© sur solaris
  *
  * Revision 1.37  2002/02/04 12:06:44  neysseri
- * Ajout d'une méthode permettant d'obtenir la liste
- * des publications référencées par au moins un père
+ * Ajout d'une mÃ©thode permettant d'obtenir la liste
+ * des publications rÃ©fÃ©rencÃ©es par au moins un pÃ¨re
  *
  * Revision 1.36  2002/01/11 12:40:30  neysseri
  * Stabilisation Lot 2 : Exceptions et Silvertrace
@@ -320,8 +320,8 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class PublicationBmEJB implements SessionBean,
@@ -336,13 +336,13 @@ public class PublicationBmEJB implements SessionBean,
   public PublicationDetail getDetail(PublicationPK pubPK)
       throws RemoteException {
     if (pubPK.getInstanceId() == null) {
-      // Cas des liens simplifiés
+      // Cas des liens simplifiÃ©s
       // On ne connait que l'id de la publication
       // Tous les attributs d'une primaryKey sont obligatoires pour faire
       // un findByPrimaryKey.
-      // On est donc obligé de faire une recherche directement dans la base
+      // On est donc obligÃ© de faire une recherche directement dans la base
       // avant
-      // pour récuperer l'instanceId !
+      // pour rÃ©cuperer l'instanceId !
       Connection con = null;
       try {
         con = getConnection();
@@ -1482,10 +1482,10 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private PublicationHome getPublicationHome() {
@@ -1505,12 +1505,12 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private Publication findPublication(PublicationPK pubPK) {
@@ -1556,10 +1556,10 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private Connection getConnection() {
@@ -1575,10 +1575,10 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private void freeConnection(Connection con) {
@@ -1617,13 +1617,13 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param indexEntry
    * @param infoDetail
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private FullIndexEntry updateIndexEntryWithInfoDetail(
@@ -1870,14 +1870,14 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getAllPublications(PublicationPK pubPK, String sorting)
@@ -1995,7 +1995,7 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Create the tagclouds corresponding to the publication detail.
-   * 
+   *
    * @param pubDetail
    *          The detail of the publication.
    * @throws RemoteException
@@ -2026,7 +2026,7 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Delete the tagclouds corresponding to the publication key.
-   * 
+   *
    * @param pubPK
    *          The primary key of the publication.
    * @throws RemoteException
@@ -2039,7 +2039,7 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Update the tagclouds corresponding to the publication detail.
-   * 
+   *
    * @param pubDetail
    *          The detail of the publication.
    * @throws RemoteException
@@ -2073,8 +2073,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public PublicationBmEJB() {
@@ -2082,8 +2082,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbCreate() {
@@ -2091,8 +2091,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbRemove() {
@@ -2100,8 +2100,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbActivate() {
@@ -2109,8 +2109,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void ejbPassivate() {
@@ -2118,10 +2118,10 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param sc
-   * 
+   *
    * @see
    */
   public void setSessionContext(SessionContext sc) {

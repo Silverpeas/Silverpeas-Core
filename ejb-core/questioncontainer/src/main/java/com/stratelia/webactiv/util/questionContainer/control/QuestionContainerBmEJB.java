@@ -1173,7 +1173,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
         {
         	QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
         	
-        	// mise à zero du nombre de participation
+        	// mise a zero du nombre de participation
         	qch.setNbVoters(0);
         	updateQuestionContainerHeader(qch);
         	

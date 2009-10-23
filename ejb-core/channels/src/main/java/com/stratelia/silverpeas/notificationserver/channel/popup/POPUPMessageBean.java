@@ -25,12 +25,6 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 import com.stratelia.webactiv.persistence.*;
 
-/**
- * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
- * @author eDurand
- * @version 1.0
- */
 public class POPUPMessageBean extends SilverpeasBean {
 
   public POPUPMessageBean() {
@@ -107,17 +101,10 @@ public class POPUPMessageBean extends SilverpeasBean {
     msgTime = time;
   }
 
-  /*****************************************************************************/
-  /**
-   *
-   */
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
-  /**
-   *
-   */
   public String _getTableName() {
     return "ST_PopupMessage";
   }

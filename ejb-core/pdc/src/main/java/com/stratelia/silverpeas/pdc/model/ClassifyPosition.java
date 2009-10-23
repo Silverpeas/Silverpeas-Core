@@ -68,8 +68,8 @@ public class ClassifyPosition extends
   }
 
   /**
-   * Méthodes nécéssaire pour le mapping castor du module importExport.
-   * 
+   * MÃ©thodes nÃ©cÃ©ssaire pour le mapping castor du module importExport.
+   *
    * @return
    */
   public List getListClassifyValue() {
@@ -77,8 +77,8 @@ public class ClassifyPosition extends
   }
 
   /**
-   * Méthodes nécéssaire pour le mapping castor du module importExport.
-   * 
+   * MÃ©thodes nÃ©cÃ©ssaire pour le mapping castor du module importExport.
+   *
    * @param values
    */
   public void setListClassifyValue(List values) {

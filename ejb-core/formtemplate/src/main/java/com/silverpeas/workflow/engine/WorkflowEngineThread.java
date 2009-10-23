@@ -1115,7 +1115,7 @@ class WorkflowTools {
     for (int i = 0; i < states.length; i++) {
       state = states[i];
       boolean eligible = (eligibleStates.containsKey(state.getName()));
-      // xoxox a compléter : gestion de la liste des pré-requis
+      // xoxox a completer : gestion de la liste des pre-requis
 
       if (eligible) {
         instance.addActiveState(state);

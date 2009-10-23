@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.util.publication.control;
 
@@ -48,14 +46,14 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  *
  * $Log: PublicationBmBusinessSkeleton.java,v $
  * Revision 1.24  2008/10/10 11:22:37  neysseri
- * Ajout méthode getPublicationPKsByStatus(String status, List componentIds)
+ * Ajout mÃ©thode getPublicationPKsByStatus(String status, List componentIds)
  * Optimisations suite visite DSR
  *
  * Revision 1.23.4.1  2008/10/10 11:18:49  neysseri
  * no message
  *
  * Revision 1.23  2008/08/29 14:11:21  neysseri
- * Ajout de la méthode changePublicationsOrder(List ids, NodePK nodePK)
+ * Ajout de la mÃ©thode changePublicationsOrder(List ids, NodePK nodePK)
  *
  * Revision 1.22  2008/05/22 12:43:59  neysseri
  * no message
@@ -94,27 +92,27 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * no message
  *
  * Revision 1.13  2007/02/27 08:36:31  neysseri
- * Ajout méthode getDetailBetweenDate()
+ * Ajout mÃ©thode getDetailBetweenDate()
  *
  * Revision 1.12.12.1  2007/02/16 16:36:00  sfariello
  * modif pour utilisation dans le Blog
  *
  * Revision 1.12.10.1  2006/12/20 17:37:34  dlesimple
- * Modif méthode getDetailsNotInFatherPK
+ * Modif mÃ©thode getDetailsNotInFatherPK
  *
  * Revision 1.12  2005/12/02 13:59:27  neysseri
- * Ajout de deux méthodes :
+ * Ajout de deux mÃ©thodes :
  * - removeImage(PublicationPK pubPK)
  * - getPublicationsByStatus(String status, List componentIds)
  *
  * Revision 1.11  2005/05/19 14:54:16  neysseri
- * Possibilité de supprimer les Voir Aussi
+ * PossibilitÃ© de supprimer les Voir Aussi
  *
  * Revision 1.10  2005/04/14 18:13:45  neysseri
  * no message
  *
  * Revision 1.9  2005/02/23 19:13:55  neysseri
- * intégration Import/Export
+ * intÃ©gration Import/Export
  *
  * Revision 1.8.2.1  2005/02/08 18:00:22  tleroi
  * *** empty log message ***
@@ -162,8 +160,8 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * no message
  *
  * Revision 1.6  2002/02/04 12:06:44  neysseri
- * Ajout d'une méthode permettant d'obtenir la liste
- * des publications référencées par au moins un père
+ * Ajout d'une mÃ©thode permettant d'obtenir la liste
+ * des publications rÃ©fÃ©rencÃ©es par au moins un pÃ¨re
  *
  * Revision 1.5  2002/01/11 12:40:30  neysseri
  * Stabilisation Lot 2 : Exceptions et Silvertrace
@@ -172,8 +170,8 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
  * Interface declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public interface PublicationBmBusinessSkeleton {
@@ -199,7 +197,7 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * Change order of the given publication identified by pubPK in the given
    * nodePK. direction less than 0 means "up" else it means "down"
-   * 
+   *
    * @param pubPK
    *          the publication's id to move
    * @param nodePK
@@ -280,13 +278,13 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubPK
    * @param creatorId
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK,
@@ -356,17 +354,17 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pk
    * @param status
    * @param nbPubs
    * @param fatherId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
@@ -424,15 +422,15 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param status
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getPublicationsByStatus(String status, PublicationPK pubPK)
@@ -446,15 +444,15 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param query
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection searchByKeywords(String query, PublicationPK pubPK)
@@ -462,29 +460,29 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherPKs
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public int getNbPubInFatherPKs(Collection fatherPKs) throws RemoteException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherPK
    * @param fatherPath
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath)
@@ -495,15 +493,15 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherIds
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getDetailsByFatherIds(ArrayList fatherIds,
@@ -530,14 +528,14 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherPKs
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getPubPKsInFatherPKs(Collection fatherPKs)
@@ -545,26 +543,26 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getPubPKsInFatherPK(NodePK fatherPK) throws RemoteException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubPK
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void createIndex(PublicationPK pubPK) throws RemoteException;
@@ -573,26 +571,26 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubPK
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void deleteIndex(PublicationPK pubPK) throws RemoteException;
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubPK
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getAllPublications(PublicationPK pubPK)
@@ -604,17 +602,17 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * Looking for, in the instance identified by pubPK, a publication named
    * pubName.
-   * 
+   *
    * @param pubPK
    *          the identifier of the instance
    * @param pubName
    *          the publication's name we are looking for
-   * 
+   *
    * @return the pubId if a publication already exists in this component's
    *         instance. null otherwise.
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    */
   public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName)
       throws RemoteException;
@@ -625,25 +623,25 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * A wysiwyg's content has been added or modified to a publication. Its
    * content must be added to the indexed content of the publication
-   * 
+   *
    * @param pubPK
    *          the identifier of the publication associated to the wysiwyg
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    */
   public void processWysiwyg(PublicationPK pubPK) throws RemoteException;
 
   /**
-   * 
+   *
    * @param beginDate
    * @param endDate
    * @param instanceId
-   * 
+   *
    * @return Collection of PublicationDetail.
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    */
   public Collection getDetailBetweenDate(String beginDate, String endDate,
       String instanceId) throws RemoteException;

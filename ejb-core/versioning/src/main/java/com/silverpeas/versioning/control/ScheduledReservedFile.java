@@ -105,7 +105,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       StringBuffer messageBody = new StringBuffer();
       StringBuffer messageBody_en = new StringBuffer();
 
-      // 1. rechercher la liste des fichiers arrivant à échéance
+      // 1. rechercher la liste des fichiers arrivant Ã  Ã©chÃ©ance
       Date expiryDate;
       Calendar calendar = Calendar.getInstance(Locale.FRENCH);
       calendar.add(Calendar.DATE, 1);
@@ -131,14 +131,14 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        // Création du message à envoyer
+        // CrÃ©ation du message Ã  envoyer
         createMessage(message, messageBody, message_en, messageBody_en, doc,
             false, false);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
       }
 
-      // 2. rechercher la liste des fichiers arrivant à la date intermédiaire
+      // 2. rechercher la liste des fichiers arrivant Ã  la date intermÃ©diaire
       Date alertDate;
       calendar = Calendar.getInstance(Locale.FRENCH);
       alertDate = calendar.getTime();
@@ -165,14 +165,14 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        // Création du message à envoyer
+        // CrÃ©ation du message Ã  envoyer
         createMessage(message, messageBody, message_en, messageBody_en, doc,
             true, false);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
       }
 
-      // 2. rechercher la liste des fichiers ayant dépassé la date d'expiration
+      // 2. rechercher la liste des fichiers ayant dÃ©passÃ© la date d'expiration
       Date libDate;
       calendar = Calendar.getInstance(Locale.FRENCH);
       libDate = calendar.getTime();
@@ -201,13 +201,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        // Création du message à envoyer
+        // CrÃ©ation du message Ã  envoyer
         createMessage(message, messageBody, message_en, messageBody_en, doc,
             false, true);
         messageBody = new StringBuffer();
         messageBody_en = new StringBuffer();
 
-        // et pour chaque message, le libérer
+        // et pour chaque message, le libÃ©rer
         getVersioningBm().checkDocumentIn(doc.getPk(), doc.getOwnerId());
       }
     } catch (Exception e) {
@@ -236,7 +236,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
 
     SilverTrace.info("versioning", "ScheduledReservedFile.createMessage()",
         "root.MSG_GEN_ENTER_METHOD");
-    // 1. création du message
+    // 1. crÃ©ation du message
 
     // french notifications
     String subject = "";

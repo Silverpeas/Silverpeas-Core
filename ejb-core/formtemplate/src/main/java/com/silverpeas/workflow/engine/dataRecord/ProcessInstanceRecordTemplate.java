@@ -237,7 +237,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     // model.label
     // model.peas-label
 
-    // xoxox à écrire
+    // xoxox a ecrire
 
     // The folder : folder.<folderItem>
 
@@ -254,7 +254,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     // form.<formName>.title
     // form.<formName>.<fieldItem>
 
-    // xoxox à écrire
+    // xoxoxa ecrire
 
     // The actions : action.<actionName>
     // action.<actionName>.label
@@ -289,7 +289,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
 
     // The users : participant.<participantName>
 
-    // xoxox à écrire
+    // xoxox a ecrire
   }
 
   /**

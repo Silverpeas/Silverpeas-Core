@@ -54,11 +54,11 @@ public class SearchContext implements ContainerPositionInterface,
       criterias = new ArrayList();
     }
 
-    // recherche de l'existance d'un critËre sur l'axe
+    // recherche de l'existance d'un crit√®re sur l'axe
     SearchCriteria existingCriteriaOnAxis = getCriteriaOnAxis(criteria
         .getAxisId());
     if (existingCriteriaOnAxis != null) {
-      // un critËre sur l'axe existe dÈj‡
+      // un crit√®re sur l'axe existe d√©j√†
       // on le supprime du contexte
       removeCriteria(existingCriteriaOnAxis);
     }

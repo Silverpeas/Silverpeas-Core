@@ -625,7 +625,7 @@ public class ClassifyEngine extends Object {
         value = (Value) classifyValues.get(i);
         // faut utiliser l'instruction suivante on a deja fait toute cette
         // operation
-        // dans la méthode updateSilverObjectPosition.
+        // dans la methode updateSilverObjectPosition.
         // value.setAxisId(this.getPhysicalAxisId(value.getAxisId()));
 
         // build the statement to update the position

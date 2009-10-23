@@ -53,10 +53,10 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * no message
  *
  * Revision 1.4  2005/12/02 13:11:51  neysseri
- * Ajout d'un méthode pour supprimer l'image
+ * Ajout d'un methode pour supprimer l'image
  *
  * Revision 1.3  2005/05/19 14:54:15  neysseri
- * Possibilité de supprimer les Voir Aussi
+ * Possibilite de supprimer les Voir Aussi
  *
  * Revision 1.2  2004/02/06 18:48:38  neysseri
  * Some useless methods removed !

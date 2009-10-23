@@ -31,7 +31,7 @@ import javax.ejb.EJBObject;
 public interface ThesaurusBm extends EJBObject {
 
   /**
-   * Retourne les synonymes d'une valeur pour un vocabulaire donné
+   * Retourne les synonymes d'une valeur pour un vocabulaire donne
    * 
    * @param idTree
    * @param idTerm
@@ -44,7 +44,7 @@ public interface ThesaurusBm extends EJBObject {
 
   /**
    * Retourne les synonymes de toutes les valeurs d'un axe pour un vocabulaire
-   * donné
+   * donne
    * 
    * @param idTree
    * @param idTerm

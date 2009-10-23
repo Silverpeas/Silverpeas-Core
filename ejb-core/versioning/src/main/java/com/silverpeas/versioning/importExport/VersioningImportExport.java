@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Created on 11 févr. 2005
+ * Created on 11 fÃ©vr. 2005
  *
  */
 package com.silverpeas.versioning.importExport;
@@ -67,7 +67,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * @author neysseri
- * 
+ *
  */
 public class VersioningImportExport {
 
@@ -96,7 +96,7 @@ public class VersioningImportExport {
   }
 
   /**
-   * 
+   *
    * @param objectId
    * @param componentId
    * @param attachments
@@ -126,7 +126,7 @@ public class VersioningImportExport {
       version.setInstanceId(componentId);
       document = isDocumentExist(documents, attachment);
       if (document != null) {
-        // Un document portant le même nom existe déjà
+        // Un document portant le mÃªme nom existe dÃ©jÃ 
         // On ajoute une nouvelle version au document
         List versions = getVersioningBm().getDocumentVersions(document.getPk());
         if (versions != null && versions.size() > 0) {
@@ -147,8 +147,8 @@ public class VersioningImportExport {
           version = getVersioningBm().addDocumentVersion(document, version);
         }
       } else {
-        // Il n'y a pas de document portant le même nom
-        // On crée un nouveau document
+        // Il n'y a pas de document portant le mÃªme nom
+        // On crÃ©e un nouveau document
         DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
         document = new Document(docPK, pubPK, attachment.getLogicalName(), "",
             -1, userId, new Date(), null, componentId, null, null, 0, 0);
@@ -158,7 +158,7 @@ public class VersioningImportExport {
           document.setDescription(attachment.getInfo());
 
         // document.setDescription(attachment.getDescription());
-        // et on y ajoute la première version
+        // et on y ajoute la premiÃ¨re version
         if (versionType == DocumentVersion.TYPE_PUBLIC_VERSION) {
           version.setMajorNumber(1);
           version.setMinorNumber(0);
@@ -189,7 +189,7 @@ public class VersioningImportExport {
   }
 
   /**
-   * 
+   *
    * @param pk
    * @param exportPath
    * @param relativeExportPath
@@ -248,7 +248,7 @@ public class VersioningImportExport {
       SilverTrace.warn("versioning", "VersioningImportExport.copyAttachment",
           "root.EX_FILE_NOT_FOUND", e);
     }
-    // Le nom physique correspond maintenant au fichier copié
+    // Le nom physique correspond maintenant au fichier copiÃ©
     attachmentCopy.setPhysicalName(relativeExportPath
         + File.separator
         + ZipManager.transformStringToAsciiString(attachmentCopy
@@ -345,7 +345,7 @@ public class VersioningImportExport {
             .getName());
 
       if (existingDocument != null) {
-        // Un document portant le même nom existe déjà
+        // Un document portant le mÃªme nom existe dÃ©jÃ 
         // On ajoute les nouvelles versions au document
         List versions = getVersioningBm().getDocumentVersions(
             existingDocument.getPk());
@@ -400,8 +400,8 @@ public class VersioningImportExport {
           }
         }
       } else {
-        // Il n'y a pas de document portant le même nom
-        // On crée un nouveau document
+        // Il n'y a pas de document portant le mÃªme nom
+        // On crÃ©e un nouveau document
         List versions = document.getVersionsType().getListVersions();
         DocumentVersion version;
         int majorNumber = 0;
@@ -409,14 +409,14 @@ public class VersioningImportExport {
         for (int v = 0; v < versions.size(); v++) {
           version = (DocumentVersion) versions.get(v);
           if (v == 0) {
-            // Création du nouveau document
+            // CrÃ©ation du nouveau document
             DocumentPK docPK = new DocumentPK(-1, "useless", objectPK
                 .getInstanceId());
             document = new Document(docPK, objectPK, document.getName(),
                 document.getDescription(), -1, userId, new Date(), null,
                 objectPK.getInstanceId(), null, null, 0, 0);
 
-            // et on y ajoute la première version
+            // et on y ajoute la premiÃ¨re version
             if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
               majorNumber = 1;
               minorNumber = 0;
@@ -534,7 +534,7 @@ public class VersioningImportExport {
 				if (version.getSize()!=0)
 					copiedAttachments.add(version);
 			}
-			
+
 		}
 		return copiedAttachments;
 	}
@@ -542,7 +542,7 @@ public class VersioningImportExport {
   private void copyFile(String componentId, DocumentVersion version, String path) {
     String fileToUpload = version.getPhysicalName();
 
-    // Préparation des paramètres du fichier à creer
+    // PrÃ©paration des paramÃ¨tres du fichier Ã  creer
     String logicalName = fileToUpload.substring(fileToUpload
         .lastIndexOf(File.separator) + 1);
     String type = FileRepositoryManager.getFileExtension(logicalName);
@@ -572,7 +572,7 @@ public class VersioningImportExport {
           "attachment.EX_FILE_COPY_ERROR", e);
     }
 
-    // Compléments sur l'objet DocumentVersion
+    // ComplÃ©ments sur l'objet DocumentVersion
     version.setSize((int) size);
     version.setMimeType(mimeType);
     version.setPhysicalName(physicalName);

@@ -35,11 +35,11 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: PdcUtilizationDAO.java,v 1.7 2003/11/25 08:27:17 cbonin Exp $
  *
  * $Id: PdcUtilizationDAO.java,v 1.7 2003/11/25 08:27:17 cbonin Exp $
- * 
+ *
  * $Log: PdcUtilizationDAO.java,v $
  * Revision 1.7  2003/11/25 08:27:17  cbonin
  * no message
@@ -71,7 +71,7 @@ import com.stratelia.webactiv.util.DBUtil;
  *
  * Revision 1.14  2002/04/04 13:10:06  santonio
  * Tient compte de la recherche global (PDC + Classique)
- * Généralisation de certaines méthodes
+ * GÃ©nÃ©ralisation de certaines mÃ©thodes
  *
  * Revision 1.13  2002/03/05 12:51:30  neysseri
  * no message
@@ -107,8 +107,8 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class PdcUtilizationDAO {
@@ -118,8 +118,8 @@ public class PdcUtilizationDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public PdcUtilizationDAO() {
@@ -127,15 +127,15 @@ public class PdcUtilizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param instanceId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static List getUsedAxisByInstanceId(Connection con, String instanceId)
@@ -195,7 +195,7 @@ public class PdcUtilizationDAO {
 
   /**
    * Update a base value from the PdcUtilizationDAO
-   * 
+   *
    * @param con
    *          - the connection to the database
    * @param valueId
@@ -237,7 +237,7 @@ public class PdcUtilizationDAO {
   /**
    * Test if the base value can be updated. No new sisters ou new "niece"s are
    * used in the utilisation
-   * 
+   *
    * @param con
    *          - the connection to the database
    * @param baseValue
@@ -249,7 +249,7 @@ public class PdcUtilizationDAO {
       String axisId, String treeId, String instanceId) throws SQLException {
 
     boolean canUpdate = true;
-    // recherche des valeurs soeurs ou nieces qui sont utilisées
+    // recherche des valeurs soeurs ou nieces qui sont utilisÃ©es
 
     // recherche du chemin de la mere de cette valeur de base
     // et construction de son chemin complet
@@ -273,7 +273,7 @@ public class PdcUtilizationDAO {
       DBUtil.close(stmt);
     }
 
-    // recherche des valeurs de base utilisées qui sont en fait soit des soeurs
+    // recherche des valeurs de base utilisÃ©es qui sont en fait soit des soeurs
     // soit des nieces
     // de la valeur que l'on veut effacer
     selectQuery = " select baseValue from " + PdcUtilizationTable
@@ -303,17 +303,17 @@ public class PdcUtilizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param instanceId
    * @param axisId
    * @param baseValue
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static boolean isAlreadyAdded(Connection con, String instanceId,
@@ -323,7 +323,7 @@ public class PdcUtilizationDAO {
     // toutes les valeurs interdites
     boolean isAdded = false;
 
-    // Récupération dans un 1er temps de toutes les valeurs de base
+    // RÃ©cupÃ©ration dans un 1er temps de toutes les valeurs de base
     // qui sont contenues dans l'axe -axisId- du composant -instanceId-
     Vector allBaseValues = getAllBaseValues(con, usedAxisId, instanceId, axisId);
 
@@ -339,10 +339,10 @@ public class PdcUtilizationDAO {
               + " does not exist for instanceId = " + instanceId
               + " and axisId = " + axisId);
 
-    // ensuite, pour chaque valeur de base récupérée, on cherche toute la
+    // ensuite, pour chaque valeur de base rÃ©cupÃ©rÃ©e, on cherche toute la
     // filiation
-    // de celle-ci. Si le vecteur est vide ou si la valeur que l'on reçoit est
-    // déja utilisée alors on peut retourner faux
+    // de celle-ci. Si le vecteur est vide ou si la valeur que l'on reÃ§oit est
+    // dÃ©ja utilisÃ©e alors on peut retourner faux
     if ((!allBaseValues.isEmpty()) && (!isAdded)) {
 
       // On cherche d'abord le chemin complet de chaque valeur de base
@@ -356,11 +356,11 @@ public class PdcUtilizationDAO {
       SilverTrace.info("Pdc", "PdcBmImpl.isAlreadyAdded",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
 
-      whereClause = "where treeId = " + treeId + " and (1=0 "; // on prépare la
+      whereClause = "where treeId = " + treeId + " and (1=0 "; // on prÃ©pare la
       // prochaine
       // clause Where
       String allCompletPathes = "";
-      // String qui va nous permettre par la suite de récupérer les valeurs
+      // String qui va nous permettre par la suite de rÃ©cupÃ©rer les valeurs
       // ascendantes
       Statement stmt = null;
       ResultSet rs = null;
@@ -376,7 +376,7 @@ public class PdcUtilizationDAO {
           node = new Integer(rs.getInt(2)).toString();
           allCompletPathes += path;
           whereClause += " or path like '" + path + node + "/%'";
-          // on construit la clause Where pour le prochain accès en base
+          // on construit la clause Where pour le prochain accÃ¨s en base
         }
         whereClause += ")";
       } finally {
@@ -384,7 +384,7 @@ public class PdcUtilizationDAO {
       }
       // ici, on ajoute dans le vecteur devant contenir toutes les valeurs
       // interdites
-      // les valeurs qui sont stockées dans le String allCompletPathes
+      // les valeurs qui sont stockÃ©es dans le String allCompletPathes
       StringTokenizer st = new StringTokenizer(allCompletPathes, "/");
       String forbiddenValue = "";
       while (st.hasMoreTokens()) {
@@ -394,12 +394,12 @@ public class PdcUtilizationDAO {
         forbiddenValues.add(forbiddenValue);
       }
 
-      // maintenant on prepare la requete SQL qui va récupérer toutes les
+      // maintenant on prepare la requete SQL qui va rÃ©cupÃ©rer toutes les
       // valeurs filles
       // et on va les mettre dans le vecteur de valeurs interdites
       forbiddenValues = getAllDaughterValues(con, forbiddenValues, whereClause);
 
-      // on détermine si la valeur que l'on reçoit appartient au vecteur
+      // on dÃ©termine si la valeur que l'on reÃ§oit appartient au vecteur
       isAdded = forbiddenValues.contains(new Integer(baseValue).toString());
     }
     return isAdded;
@@ -408,7 +408,7 @@ public class PdcUtilizationDAO {
   /**
    * Updates into the SB_Pdc_Utilization table all usedAxis. Set the mandatory
    * and variant values
-   * 
+   *
    * @param con
    *          - the connection to the database
    * @param usedAxis
@@ -560,7 +560,7 @@ public class PdcUtilizationDAO {
   /**
    * Returns all basevalue from the SB_Pdc_Utilization table for an axis and an
    * instance of the component
-   * 
+   *
    * @param con
    *          - The connection to the database
    * @param usedAxisId
@@ -611,7 +611,7 @@ public class PdcUtilizationDAO {
 
   /**
    * Returns all daughter values of the selected values
-   * 
+   *
    * @param con
    *          - the connection to the database
    * @param forbiddenValues

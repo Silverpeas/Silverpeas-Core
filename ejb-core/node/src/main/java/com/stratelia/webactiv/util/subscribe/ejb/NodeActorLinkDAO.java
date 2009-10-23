@@ -33,12 +33,12 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: NodeActorLinkDAO.java,v 1.5 2007/08/06 15:43:48 dlesimple Exp $
- * 
+ *
  * $Log: NodeActorLinkDAO.java,v $
  * Revision 1.5  2007/08/06 15:43:48  dlesimple
- * Ménage commentaires et correction méthode getActorPKsByNodePK (affectation de paramètre non présent dans la requete SQL)
+ * MÃ©nage commentaires et correction mÃ©thode getActorPKsByNodePK (affectation de paramÃ¨tre non prÃ©sent dans la requete SQL)
  *
  * Revision 1.4  2004/10/05 13:21:18  dlesimple
  * Couper/Coller composant
@@ -53,7 +53,7 @@ import com.stratelia.silverpeas.silvertrace.*;
  * no message
  *
  * Revision 1.8  2002/01/21 15:16:17  neysseri
- * Ajout d'une fonctionnalité permettant d'avoir les abonnés à un ensemble de noeuds
+ * Ajout d'une fonctionnalitÃ© permettant d'avoir les abonnÃ©s Ã  un ensemble de noeuds
  *
  * Revision 1.7  2001/12/26 14:27:42  nchaix
  * no message
@@ -62,8 +62,8 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class NodeActorLinkDAO {
@@ -72,8 +72,8 @@ public class NodeActorLinkDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public NodeActorLinkDAO() {
@@ -81,15 +81,15 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
    * @param node
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void add(Connection con, String tableName, String userId,
@@ -114,15 +114,15 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
    * @param node
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void remove(Connection con, String tableName, String userId,
@@ -146,14 +146,14 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void removeByUser(Connection con, String tableName,
@@ -174,15 +174,15 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param node
    * @param path
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void removeByNodePath(Connection con, String tableName,
@@ -208,16 +208,16 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getNodePKsByActor(Connection con, String tableName,
@@ -249,17 +249,17 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param userId
    * @param componentName
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getNodePKsByActorComponent(Connection con,
@@ -294,16 +294,16 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
    * @param tableName
    * @param node
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getActorPKsByNodePK(Connection con,

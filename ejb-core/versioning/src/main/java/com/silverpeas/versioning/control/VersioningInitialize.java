@@ -32,7 +32,7 @@ public class VersioningInitialize implements IInitialize {
 
   public boolean Initialize() {
     try {
-      // pour les réservations de fichiers
+      // pour les reservations de fichiers
       ScheduledReservedFile rf = new ScheduledReservedFile();
       rf.initialize();
     } catch (Exception e) {

@@ -41,11 +41,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * 
- * @author squere
- * @version update by the Sébastien Antonio - Externalisation of the SQL request
- */
 public class PublicationInstanciator extends SQLRequest {
   private static ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.util.publication.publicationSettings", "fr");

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Created on 15 févr. 2005
+ * Created on 15 fÃ©vr. 2005
  */
 package com.silverpeas.node.importexport;
 
@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 /**
  * Classe de gestion des node pour le bus d'importExport
- * 
+ *
  * @author sdevolder
  */
 public class NodeImportExport {
@@ -51,10 +51,10 @@ public class NodeImportExport {
   // Variables
   private NodeBm nodeBm;
 
-  // Méthodes
+  // MÃ©thodes
   /**
-   * Méthode récupération du chemin de topics menant à un topic donné
-   * 
+   * MÃ©thode rÃ©cupÃ©ration du chemin de topics menant Ã  un topic donnÃ©
+   *
    * @param nodePk
    *          - le nodePK du topic dont on veut le chemin
    * @return une collection des topic composant le chemin
@@ -71,13 +71,13 @@ public class NodeImportExport {
   }
 
   /**
-   * Méthode de récupération de l'arborescence totale des topics d'un liste de
+   * MÃ©thode de rÃ©cupÃ©ration de l'arborescence totale des topics d'un liste de
    * composants
-   * 
+   *
    * @param listComponentId
    *          - liste des ids des composants dont on veut l'arborescence des
    *          topics
-   * @return un object NodeTreesType utilisé par le mapping castor du module d '
+   * @return un object NodeTreesType utilisÃ© par le mapping castor du module d '
    *         ImportExport
    */
   public NodeTreesType getTrees(List listComponentId) {
@@ -85,8 +85,8 @@ public class NodeImportExport {
     NodeTreesType nodeTreesType = new NodeTreesType();
     ArrayList listNodeTreeType = new ArrayList();
 
-    // Parcours de la liste des id des composants dont on veut récupérer
-    // l'arborescence de thèmes
+    // Parcours de la liste des id des composants dont on veut rÃ©cupÃ©rer
+    // l'arborescence de thÃ¨mes
     Iterator itListComponentId = listComponentId.iterator();
     while (itListComponentId.hasNext()) {
       String componentId = (String) itListComponentId.next();
@@ -95,10 +95,10 @@ public class NodeImportExport {
       nodeTreeType.setComponentId(componentId);
 
       NodePK nodePK = new NodePK("0", "useless", componentId);
-      try {// Récupérarion du thème racine
+      try {// RÃ©cupÃ©rarion du thÃ¨me racine
         NodeDetail nodeDetail = getNodeBm().getDetail(nodePK);
         nodeTreeType.setNodeDetail(nodeDetail);
-        // Récupération de l'arbre des nodes de façon récursive
+        // RÃ©cupÃ©ration de l'arbre des nodes de faÃ§on rÃ©cursive
         nodeDetail.setChildrenDetails(getRecursiveTree(nodePK));
       } catch (RemoteException ex) {
         throw new NodeRuntimeException("NodeImportExport.getNodeBm()",
@@ -111,31 +111,31 @@ public class NodeImportExport {
   }
 
   /**
-   * Méthode récursive de récupération de l'arbre des fils d'un node
-   * 
+   * MÃ©thode rÃ©cursive de rÃ©cupÃ©ration de l'arbre des fils d'un node
+   *
    * @param nodePK
-   *          - le nodePK du node père dont on cherche les fils
-   * @return une Collection des fils du père
+   *          - le nodePK du node pÃ¨re dont on cherche les fils
+   * @return une Collection des fils du pÃ¨re
    * @throws RemoteException
    */
   private Collection getRecursiveTree(NodePK nodePK) throws RemoteException {
     Collection listChildrenDetails = null;
-    // Récupération des nodes fils s'ils y en a
+    // RÃ©cupÃ©ration des nodes fils s'ils y en a
     listChildrenDetails = getNodeBm().getChildrenDetails(nodePK);
     if ((listChildrenDetails != null) && (listChildrenDetails.size() != 0)) {// Il
       // n'y
       // pas
       // d'exception
-      // jetée...
-      // On parcours les nodes trouvés récursivement pour trouver leurs fils
+      // jetÃ©e...
+      // On parcours les nodes trouvÃ©s rÃ©cursivement pour trouver leurs fils
       Iterator itListChildrenDetails = listChildrenDetails.iterator();
       while (itListChildrenDetails.hasNext()) {
         NodeDetail nodeDetail = (NodeDetail) itListChildrenDetails.next();
         nodeDetail.setChildrenDetails(getRecursiveTree(nodeDetail.getNodePK()));
       }
     } else
-      listChildrenDetails = null;// Il n'y pas d'exception jetée... et en plus
-    // un arrayList vide est créé
+      listChildrenDetails = null;// Il n'y pas d'exception jetÃ©e... et en plus
+    // un arrayList vide est crÃ©Ã©
 
     return listChildrenDetails;
   }
