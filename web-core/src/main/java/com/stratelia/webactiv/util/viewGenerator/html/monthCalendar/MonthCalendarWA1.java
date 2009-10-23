@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 /*
  * MonthCalendarWA1.java
@@ -52,10 +50,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.12.2.1  2008/04/29 15:37:41  cbonin
- * evts périodiques
+ * evts pÃ©riodiques
  *
  * Revision 1.11  2008/04/29 15:32:36  cbonin
- * evts périodiques
+ * evts pÃ©riodiques
  *
  * Revision 1.10  2008/03/12 16:46:54  neysseri
  * no message
@@ -64,7 +62,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.9  2006/10/17 13:17:56  sfariello
- * Ajout paramètre d'instanciation pour affichage des week-end ou non
+ * Ajout paramÃ¨tre d'instanciation pour affichage des week-end ou non
  *
  * Revision 1.8  2006/03/21 12:09:52  neysseri
  * no message
@@ -85,7 +83,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * Centralisation de la gestion des dates
  *
  * Revision 1.4  2005/05/17 19:15:23  neysseri
- * Correction de l'affichage des horaires d'un événement
+ * Correction de l'affichage des horaires d'un Ã©vÃ©nement
  *
  * Revision 1.3  2005/04/14 18:35:44  neysseri
  * no message
@@ -114,8 +112,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class MonthCalendarWA1 extends AbstractMonthCalendar {
@@ -133,10 +131,10 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String print() {
@@ -168,10 +166,10 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private String printDayOfWeek() {
@@ -192,14 +190,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param week
-   * 
+   *
    * @return
-   * 
+   *
    * @throws Exception
-   * 
+   *
    * @see
    */
   private String printNumberDayOfWeek(int week) throws Exception {
@@ -238,14 +236,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param week
-   * 
+   *
    * @return
-   * 
+   *
    * @throws Exception
-   * 
+   *
    * @see
    */
   private String printWeek(int week, ResourceLocator message) throws Exception {
@@ -270,14 +268,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param week
    * @param row
    * @param numbersRowOfWeek
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private String printRow(int week, int row, int numbersRowOfWeek,
@@ -290,7 +288,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
     int numbersDayOfWeek = super.getNumbersDayOfWeek();
     Day[] days = super.getDayOfWeek(week);
 
-    // récupération des événements contenu dans la "row"
+    // rÃ©cupÃ©ration des Ã©vÃ©nements contenu dans la "row"
     Event[] evt = super.getEventOfRow(week, row);
 
     String height = String.valueOf(70 / numbersRowOfWeek);
@@ -323,8 +321,8 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
         boolean tdIsCreate = false;
 
-        // contrôle pour chaque événement, s'il débute ou pas ce jour courant
-        // afin d'avoir le html approprié
+        // contrÃ´le pour chaque Ã©vÃ©nement, s'il dÃ©bute ou pas ce jour courant
+        // afin d'avoir le html appropriÃ©
         for (int z = 0; z < nbEvt; z++) {
           if (evt[z].isInDay(days[k])) {
             int colspan = evt[z].getSpanDay(days[k].getDate());

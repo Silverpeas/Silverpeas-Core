@@ -56,7 +56,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * Gestion des Ips Sogreah
  *
  * Revision 1.3  2005/02/23 19:18:35  neysseri
- * intégration Import/Export
+ * integration Import/Export
  *
  * Revision 1.2.2.1  2005/01/25 09:22:11  neysseri
  * Adding tool ImportExport

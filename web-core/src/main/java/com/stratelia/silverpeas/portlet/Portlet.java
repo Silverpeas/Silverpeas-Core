@@ -60,7 +60,7 @@ public class Portlet {
   private String helpUrl = null;
   private boolean maximizable; // true if the user is alowed to maximize the
   // portlet
-  private boolean minimizable; // true si l'utilisateur est autorisé à minimiser
+  private boolean minimizable; // true si l'utilisateur est autorise a minimiser
   // la portlet : Seule sa title bar est visible.
   private int state; // Portlet state : 0:Normal, 1:Minimized, 2 Maximized
 
@@ -133,10 +133,10 @@ public class Portlet {
     setHeaderUrl(aHeaderUrl);
     setFooterUrl(aFooterUrl);
     setHelpUrl(aHelpUrl);
-    setMaximizable(aMaximizable); // true si l'utilisateur est autorisé à
+    setMaximizable(aMaximizable); // true si l'utilisateur est autorise a
     // maximiser la portlet : elle occupe tout
     // l'espace
-    setMinimizable(aMinimizable); // true si l'utilisateur est autorisé à
+    setMinimizable(aMinimizable); // true si l'utilisateur est autorise a
     // minimiser la portlet : Seule sa title bar
     // est visible.
     setState(aState);

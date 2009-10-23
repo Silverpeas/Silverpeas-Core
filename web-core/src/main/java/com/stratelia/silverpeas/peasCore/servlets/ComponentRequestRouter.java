@@ -190,7 +190,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
       }
     }
     // retourne la page jsp de destination et place dans la request les objets
-    // utilisés par cette page
+    // utilises par cette page
     destination = getDestination(function, component, request);
     SilverTrace.info("couverture",
         "ComponentRequestRouter.computeDestination()", "couverture.MSG_RR_JSP",

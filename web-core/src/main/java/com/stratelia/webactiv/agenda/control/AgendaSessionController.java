@@ -78,8 +78,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AgendaSessionController extends AbstractComponentSessionController {
@@ -125,8 +125,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public AgendaSessionController(MainSessionController mainSessionCtrl,
@@ -160,8 +160,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   private void initEJB() {
@@ -175,8 +175,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   private void setCalendarBm() {
@@ -197,9 +197,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * 
+   *
    * methods for Journal
-   * 
+   *
    */
   public String addJournal(String name, String description, String priority,
       String classification, Date startDay, String startHour, Date endDay,
@@ -235,12 +235,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param id
    * @param title
    * @param text
-   * 
+   *
    * @see
    */
   protected void notifyAttendees(String id, String title, String text) {
@@ -275,8 +275,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param id
    * @param name
    * @param description
@@ -286,10 +286,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param startHour
    * @param endDay
    * @param endHour
-   * 
+   *
    * @throws CalendarException
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void updateJournal(String id, String name, String description,
@@ -360,13 +360,13 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param id
-   * 
+   *
    * @throws CalendarException
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void removeJournal(String id) throws RemoteException,
@@ -386,14 +386,14 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param journalId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public JournalHeader getJournalHeader(String journalId)
@@ -420,13 +420,13 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param journalId
    * @param userIds
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   public void setJournalAttendees(String journalId, String[] userIds)
@@ -454,14 +454,14 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param journalId
    * @param userId
    * @param status
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   public void setJournalParticipationStatus(String journalId, String userId,
@@ -490,14 +490,14 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param categoryId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   public Category getCategory(String categoryId) throws AgendaException {
@@ -513,14 +513,14 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param journalId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   public Collection getJournalCategories(String journalId)
@@ -537,13 +537,13 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param journalId
    * @param categoryIds
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   public void setJournalCategories(String journalId, String[] categoryIds)
@@ -561,10 +561,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public void indexAll() throws RemoteException {
@@ -573,10 +573,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public UserDetail[] getUserList() {
@@ -585,12 +585,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public UserDetail getUserDetail(String userId) {
@@ -607,10 +607,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param category
-   * 
+   *
    * @see
    */
   public void setCategory(Category category) {
@@ -619,10 +619,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public JournalHeader getCurrentJournalHeader() {
@@ -631,10 +631,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param journalHeader
-   * 
+   *
    * @see
    */
   public void setCurrentJournalHeader(JournalHeader journalHeader) {
@@ -643,10 +643,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getCurrentAttendees() {
@@ -655,10 +655,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param attendees
-   * 
+   *
    * @see
    */
   public void setCurrentAttendees(Collection attendees) {
@@ -667,10 +667,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Collection getCurrentCategories() {
@@ -679,10 +679,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param categories
-   * 
+   *
    * @see
    */
   public void setCurrentCategories(Collection categories) {
@@ -691,10 +691,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param visible
-   * 
+   *
    * @see
    */
   public void setCalendarVisible(boolean visible) {
@@ -703,10 +703,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ParticipationStatus getParticipationStatus() {
@@ -719,10 +719,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public NotificationSender getNotificationSender() {
@@ -741,10 +741,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ResourceLocator getSettings() {
@@ -757,8 +757,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void viewByDay() {
@@ -767,8 +767,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void viewByWeek() {
@@ -777,8 +777,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void viewByMonth() {
@@ -787,8 +787,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void viewByYear() {
@@ -797,8 +797,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void viewChooseDays() {
@@ -807,10 +807,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getCurrentDisplayType() {
@@ -819,12 +819,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public AgendaHtmlView getCurrentHtmlView() throws RemoteException {
@@ -870,12 +870,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getDaySchedulables() throws RemoteException {
@@ -890,12 +890,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getMonthSchedulables(Date date) throws RemoteException {
@@ -913,12 +913,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getWeekSchedulables() throws RemoteException {
@@ -936,12 +936,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection countMonthSchedulables() throws RemoteException {
@@ -956,15 +956,15 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
    * @param day
-   * 
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public Collection getBusyTime(String userId, java.util.Date day)
@@ -1008,10 +1008,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Return if day has events for the user or not
-   * 
+   *
    * @param userId
    * @param day
-   * 
+   *
    * @return isDayHasEvents
    * @throws RemoteException
    */
@@ -1028,12 +1028,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws RemoteException
-   * 
+   *
    * @see
    */
   public boolean hasTentativeSchedulables() throws RemoteException {
@@ -1042,12 +1042,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   public Collection getTentativeSchedulables() throws AgendaException {
@@ -1064,10 +1064,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Date getCurrentDay() {
@@ -1079,10 +1079,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getStartDayInWeek() {
@@ -1097,10 +1097,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getStartDayInMonth() {
@@ -1119,10 +1119,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getEndDayInMonth() {
@@ -1141,10 +1141,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getStartMonth() {
@@ -1163,10 +1163,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getEndMonth() {
@@ -1185,10 +1185,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getStartYear() {
@@ -1206,10 +1206,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public int getEndYear() {
@@ -1224,10 +1224,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @see
    */
   public void setCurrentDay(Date date) {
@@ -1239,10 +1239,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param day
-   * 
+   *
    * @see
    */
   public void selectDay(String day) {
@@ -1261,8 +1261,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void next() throws RemoteException {
@@ -1279,8 +1279,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void nextDay() throws RemoteException {
@@ -1295,8 +1295,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void nextWeek() {
@@ -1308,8 +1308,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void nextMonth() {
@@ -1321,8 +1321,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void nextYear() {
@@ -1334,8 +1334,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void previous() {
@@ -1352,8 +1352,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void previousDay() {
@@ -1368,8 +1368,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void previousWeek() {
@@ -1381,8 +1381,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void previousMonth() {
@@ -1394,8 +1394,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public void previousYear() {
@@ -1407,12 +1407,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Date getWeekFirstDay(Date date) {
@@ -1428,12 +1428,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public Date getWeekLastDay(Date date) {
@@ -1449,12 +1449,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   static public Date getMonthFirstDay(Date date) {
@@ -1467,10 +1467,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get the last day of the month
-   * 
+   *
    * @param date
    * @return date
-   * 
+   *
    * @see
    */
   public Date getMonthLastDay(Date date) {
@@ -1484,12 +1484,12 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   static public Date getYearFirstDay(Date date) {
@@ -1502,8 +1502,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Paramètre le userPannel => tous les users, sélection des users participants
-   * 
+   * ParamÃ¨tre le userPannel => tous les users, sÃ©lection des users participants
+   *
    * @param
    * @return
    * @throws
@@ -1529,7 +1529,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    // set les users deja selectionnés
+    // set les users deja selectionnÃ©s
     Collection members = getCurrentAttendees();
     if (members != null) {
       String[] usersSelected;
@@ -1554,9 +1554,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Retourne une Collection de UserDetail des utilisateurs selectionnés via le
+   * Retourne une Collection de UserDetail des utilisateurs selectionnÃ©s via le
    * userPanel
-   * 
+   *
    * @param
    * @return
    * @throws
@@ -1627,7 +1627,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get Holidays dates in personal agenda (YYYY/MM/JJ)
-   * 
+   *
    * @return
    */
   public List getHolidaysDates() throws RemoteException {
@@ -1638,7 +1638,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Set holidays dates of personal agenda
-   * 
+   *
    * @param list
    */
   public void setHolidaysDates(List list) {
@@ -1647,7 +1647,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get user by the userPanel (for viewing another agenda)
-   * 
+   *
    * @return
    * @throws
    * @see
@@ -1683,7 +1683,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get a UserDetail of selected user in UserPanel
-   * 
+   *
    * @param
    * @return UserDetail
    */
@@ -1699,7 +1699,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Set userDetail for viewing his agenda
-   * 
+   *
    * @param userDetail
    */
   public void setAgendaUserDetail(UserDetail userDetail) {
@@ -1709,7 +1709,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get userDetail for this agenda
-   * 
+   *
    * @param userDetail
    */
   public UserDetail getAgendaUserDetail() {
@@ -1718,7 +1718,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get userId for this agenda
-   * 
+   *
    * @param userDetail
    */
   public String getAgendaUserId() {
@@ -1727,7 +1727,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * If current agenda is for another user
-   * 
+   *
    * @return true or false
    */
   public boolean isOtherAgendaMode() {
@@ -1736,7 +1736,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get synchronisation user settings
-   * 
+   *
    * @return CalendarImportSettings object containing user settings, null if no
    *         settings found
    */
@@ -1746,7 +1746,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Save synchronisation user settings
-   * 
+   *
    * @param importSettings
    *          CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
@@ -1758,7 +1758,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Update synchronisation user settings
-   * 
+   *
    * @param importSettings
    *          CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
@@ -1772,7 +1772,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Export Calendar in Ical format
-   * 
+   *
    * @param startDate
    * @param endDate
    * @return ReturnCode (0=ok, 1=Empty)
@@ -1795,7 +1795,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Export Calendar in Ical format
-   * 
+   *
    * @param startDate
    * @param endDate
    * @return ReturnCode (See ReturnCodes)
@@ -1813,7 +1813,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Synchronize local agenda with URLIcalendar
-   * 
+   *
    * @param urlICalendar
    * @param loginIcalendar
    * @param pwdIcalendar
@@ -1834,7 +1834,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Synchronize local agenda with URLIcalendar
-   * 
+   *
    * @param urlICalendar
    * @return ReturnCode
    * @throws Exception
@@ -1850,7 +1850,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get days off defined for this agenda user
-   * 
+   *
    * @return List of HolidayDetail (yyyy/mm/dd, userId)
    * @throws RemoteException
    */
@@ -1863,10 +1863,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     int status = new Integer(nextStatus).intValue();
     HolidayDetail holiday = new HolidayDetail(DateUtil.parse(date), getUserId());
     if (status == WORKING_DAY) {
-      // le jour devient un jour travaillé
+      // le jour devient un jour travaillÃ©
       calendarBm.removeHolidayDate(holiday);
     } else {
-      // le jour devient un jour non travaillé
+      // le jour devient un jour non travaillÃ©
       calendarBm.addHolidayDate(holiday);
     }
     setHolidaysDates(getHolidaysDatesInDb());
@@ -1874,7 +1874,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Change worked or non-worked days status
-   * 
+   *
    * @param year
    * @param month
    * @param day
@@ -1895,7 +1895,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     currentCalendar.set(Calendar.DATE, 1);
 
     // on se place sur le premier jour du mois
-    // correspondant au jour de la semaine passé en paramêtre
+    // correspondant au jour de la semaine passÃ© en paramÃªtre
     while (currentCalendar.get(Calendar.DAY_OF_WEEK) != new Integer(day)
         .intValue()) {
       currentCalendar.add(Calendar.DATE, 1);
@@ -1928,7 +1928,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Ask if a date is a day off
-   * 
+   *
    * @param date
    * @return
    */
@@ -1947,7 +1947,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Ask if a date is a day off
-   * 
+   *
    * @param date
    * @return
    */
@@ -1966,7 +1966,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Ask if the same days of the month are all holidays
-   * 
+   *
    * @param cal
    * @param month
    *          (0=january, etc...)
@@ -1986,7 +1986,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get url access to my diary
-   * 
+   *
    * @return String
    */
   public String getMyAgendaUrl() {
@@ -1999,7 +1999,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get view Type (by Day, Week, Month ou Year)
-   * 
+   *
    * @return
    */
   public String getCurrentViewType() {

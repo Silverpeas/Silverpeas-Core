@@ -74,15 +74,15 @@ public abstract class RssServlet extends HttpServlet {
     String login = getLogin(req);
     String password = getPassword(req);
 
-    // rechercher si le composant a bien le flux RSS autorisé
+    // rechercher si le composant a bien le flux RSS autorisÃ©
     if (isComponentRss(instanceId)) {
       try {
         SilverTrace.info("peasUtil", "RssServlet.doPost",
             "root.MSG_GEN_PARAM_VALUE", "InstanceId = " + instanceId);
 
-        // Vérification que le login - password correspond bien à un utilisateur
+        // VÃ©rification que le login - password correspond bien Ã  un utilisateur
         // dans Silverpeas
-        // Vérification que le user a droit d'accès au composant
+        // VÃ©rification que le user a droit d'accÃ¨s au composant
         AdminController adminController = new AdminController(null);
         UserFull user = adminController.getUserFull(userId);
         if (user != null && login.equals(user.getLogin())
@@ -92,12 +92,12 @@ public abstract class RssServlet extends HttpServlet {
           String serverURL = getServerURL(adminController, user.getDomainId());
           ChannelIF channel = new Channel();
 
-          // récupération de la liste des N éléments à remonter dans le flux
+          // rÃ©cupÃ©ration de la liste des N Ã©lÃ©ments Ã  remonter dans le flux
           int nbReturnedElements = getNbReturnedElements();
           Collection<Object> listElements = getListElements(instanceId,
               nbReturnedElements);
 
-          // création d'une liste de ItemIF en fonction de la liste des éléments
+          // crÃ©ation d'une liste de ItemIF en fonction de la liste des Ã©lÃ©ments
           Object element;
           String title;
           URL link;
@@ -133,7 +133,7 @@ public abstract class RssServlet extends HttpServlet {
 
           // construction de l'objet Channel
           channel.setTitle(getChannelTitle(instanceId));
-          
+
           URL componentUrl = new URL(serverURL + URLManager.getApplicationURL()
               + URLManager.getURL("useless", instanceId));
           channel.setLocation(componentUrl);
@@ -176,7 +176,7 @@ public abstract class RssServlet extends HttpServlet {
     OrganizationController orga = new OrganizationController();
     String paramRssValue = orga.getComponentParameterValue(instanceId, "rss");
 
-    // rechercher si le composant a bien le flux RSS autorisé
+    // rechercher si le composant a bien le flux RSS autorisÃ©
     if ("yes".equalsIgnoreCase(paramRssValue)) {
       return true;
     }

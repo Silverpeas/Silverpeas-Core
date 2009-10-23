@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.agenda;
 
@@ -38,36 +36,36 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
  *
  * $Log: AgendaIndexer.java,v $
  * Revision 1.2  2004/12/22 15:18:31  neysseri
- * Possibilité d'indiquer les jours non sélectionnables
+ * PossibilitÃ© d'indiquer les jours non sÃ©lectionnables
  * + nettoyage sources
- * + précompilation jsp
+ * + prÃ©compilation jsp
  *
  * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
  * no message
  *
  * Revision 1.2  2002/01/18 15:00:31  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  *
  */
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AgendaIndexer implements ComponentIndexerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param context
-   * 
+   *
    * @throws Exception
-   * 
+   *
    * @see
    */
   public void index(MainSessionController mainSessionCtrl,

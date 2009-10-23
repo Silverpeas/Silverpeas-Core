@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.agenda.control;
 
@@ -51,29 +49,29 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * ajout ref RssServlet
  *
  * Revision 1.4  2006/10/18 08:32:34  sfariello
- * Modif du pavÈ "Aujourd'hui" -> "Mes prochains ÈvËnements"
+ * Modif du pav√© "Aujourd'hui" -> "Mes prochains √©v√®nements"
  *
  * Revision 1.3  2005/09/30 14:15:58  neysseri
  * Centralisation de la gestion des dates
  *
  * Revision 1.2  2004/12/22 15:18:31  neysseri
- * PossibilitÈ d'indiquer les jours non sÈlectionnables
+ * Possibilit√© d'indiquer les jours non s√©lectionnables
  * + nettoyage sources
- * + prÈcompilation jsp
+ * + pr√©compilation jsp
  *
  * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
  * no message
  *
  * Revision 1.1  2002/01/21 17:34:58  mguillem
  * Stabilisation Lot2
- * RÈorganisation des Router et SessionController
+ * R√©organisation des Router et SessionController
  *
  */
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AgendaAccess {
@@ -82,7 +80,7 @@ public class AgendaAccess {
 
   /**
    * getEJB
-   * 
+   *
    * @return instance of CalendarBmHome
    */
   static private CalendarBm getEJB() throws AgendaException {
@@ -100,14 +98,14 @@ public class AgendaAccess {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws AgendaException
-   * 
+   *
    * @see
    */
   static public boolean hasTentativeSchedulables(String userId)
@@ -123,10 +121,10 @@ public class AgendaAccess {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @see
    */
   static public void setCurrentDay(Date date) {

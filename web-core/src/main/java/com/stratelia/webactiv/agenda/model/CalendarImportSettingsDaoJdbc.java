@@ -165,7 +165,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
       }
   }
 
-  // Récupération de la connection
+  // Recuperation de la connection
   private Connection getConnection() throws Exception {
     return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }

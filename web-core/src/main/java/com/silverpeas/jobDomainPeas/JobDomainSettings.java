@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 /*
  * JobDomainSettings.java
@@ -40,9 +38,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: JobDomainSettings.java,v 1.5 2008/03/12 16:42:46 neysseri Exp $
- * 
+ *
  * $Log: JobDomainSettings.java,v $
  * Revision 1.5  2008/03/12 16:42:46  neysseri
  * no message
@@ -51,13 +49,13 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.4  2007/04/17 09:42:12  neysseri
- * Dév FNMJ/Ganesha
+ * DÃ©v FNMJ/Ganesha
  *
  * Revision 1.3.10.1  2007/03/16 15:44:10  cbonin
  * *** empty log message ***
  *
  * Revision 1.3  2004/09/28 12:45:27  neysseri
- * Extension de la longueur du login (de 20 à 50 caractères) + nettoyage sources
+ * Extension de la longueur du login (de 20 Ã  50 caractÃ¨res) + nettoyage sources
  *
  * Revision 1.2  2003/12/05 15:02:41  tleroi
  * Go to jikes 1.15
@@ -77,10 +75,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class manage the informations needed for groups navigation and browse
- * 
+ *
  * PRE-REQUIRED : the Group passed in the constructor MUST BE A VALID GROUP
  * (with Id, etc...)
- * 
+ *
  * @t.leroi
  */
 public class JobDomainSettings extends SilverpeasSettings {

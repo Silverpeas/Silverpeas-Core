@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration Get connections data from database
- * 
+ *
  * @author
  */
 public class JobDomainPeasDAO {
@@ -51,13 +51,13 @@ public class JobDomainPeasDAO {
   private static final String DB_NAME = JNDINames.SILVERPEAS_DATASOURCE;
 
   /**
-   * Création de la table Domain<domainName>_Group
-   * 
-   * 
+   * CrÃ©ation de la table Domain<domainName>_Group
+   *
+   *
    * @param domainName
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void createTableDomain_Group(String domainName)
@@ -85,12 +85,12 @@ public class JobDomainPeasDAO {
 
   /**
    * Suppression de la table Domain<domainName>_Group
-   * 
-   * 
+   *
+   *
    * @param domainName
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void dropTableDomain_Group(String domainName)
@@ -112,13 +112,13 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Création de la table Domain<domainName>_User
-   * 
-   * 
+   * CrÃ©ation de la table Domain<domainName>_User
+   *
+   *
    * @param domainName
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void createTableDomain_User(String domainName)
@@ -171,12 +171,12 @@ public class JobDomainPeasDAO {
 
   /**
    * Suppression de la table Domain<domainName>_User
-   * 
-   * 
+   *
+   *
    * @param domainName
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void dropTableDomain_User(String domainName)
@@ -198,13 +198,13 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Création de la table Domain<domainName>_Group_User_Rel
-   * 
-   * 
+   * CrÃ©ation de la table Domain<domainName>_Group_User_Rel
+   *
+   *
    * @param domainName
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void createTableDomain_Group_User_Rel(String domainName)
@@ -231,12 +231,12 @@ public class JobDomainPeasDAO {
 
   /**
    * Suppression de la table Domain<domainName>_Group_User_Rel
-   * 
-   * 
+   *
+   *
    * @param domainName
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static void dropTableDomain_Group_User_Rel(String domainName)
@@ -260,10 +260,10 @@ public class JobDomainPeasDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private static Connection getConnection() {
@@ -280,10 +280,10 @@ public class JobDomainPeasDAO {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private static void freeConnection(Connection con) {
@@ -298,14 +298,14 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Sélection des groupes à synchroniser en insert ou update de la table
+   * SÃ©lection des groupes Ã  synchroniser en insert ou update de la table
    * Domain<domainName>_Group
-   * 
-   * 
+   *
+   *
    * @param domainName
    * @return Collection de Group
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection selectGroupSynchroInsertUpdateTableDomain_Group(
@@ -319,7 +319,7 @@ public class JobDomainPeasDAO {
 
     AdminController adminCtrl = new AdminController(null);
 
-    // sélectionne les users dans Silverpeas
+    // sÃ©lectionne les users dans Silverpeas
     Collection listRes = new ArrayList();
 
     String query = " SELECT g.id" + " FROM Domain" + domainName
@@ -349,14 +349,14 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Sélection des utilisateurs à synchroniser en insert ou update de la table
+   * SÃ©lection des utilisateurs Ã  synchroniser en insert ou update de la table
    * Domain<domainName>_User
-   * 
-   * 
+   *
+   *
    * @param domainName
    * @return Collection de UserFull
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection selectUserSynchroInsertUpdateTableDomain_User(
@@ -370,7 +370,7 @@ public class JobDomainPeasDAO {
 
     AdminController adminCtrl = new AdminController(null);
 
-    // sélectionne les users dans Silverpeas
+    // sÃ©lectionne les users dans Silverpeas
     Collection listRes = new ArrayList();
     UserFull userFull;
 
@@ -401,7 +401,7 @@ public class JobDomainPeasDAO {
      * Iterator itUserSilverpeas = listRes.iterator(); String specificId; String
      * specificIdGroup; String groupId; while(itUserSilverpeas.hasNext()) {
      * userFull = (UserFull) itUserSilverpeas.next();
-     * 
+     *
      * //groupe specificId = userFull.getSpecificId(); specificIdGroup =
      * selectGroupTableDomain_Group_User_Rel(domain, new
      * Integer(specificId).intValue()); groupId =
@@ -413,12 +413,12 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Sélection du groupId pour le userId spécifié dans la table
+   * SÃ©lection du groupId pour le userId spÃ©cifiÃ© dans la table
    * Domain<domainName>_Group_User_Rel
-   * 
+   *
    * @return String
    * @throws SQLException
-   * 
+   *
    * @see
    */
   /*
@@ -426,69 +426,69 @@ public class JobDomainPeasDAO {
    * int userSpecificId) throws SQLException { SilverTrace.info(
    * "jobDomainPeas", "JobDomainPeasDAO.selectGroupTableDomain_Group_User_Rel",
    * "root.MSG_GEN_ENTER_METHOD");
-   * 
+   *
    * String propDomainFileName = domain.getPropFileName(); String domainName =
    * propDomainFileName.substring(39);
-   * 
+   *
    * String groupId = "";
-   * 
+   *
    * String query = " SELECT d.groupId"+
    * " FROM Domain"+domainName+"_Group_User_Rel d "+
    * " WHERE d.userId = "+userSpecificId;
-   * 
+   *
    * Statement stmt = null; Connection myCon = getConnection(); try { stmt =
    * myCon.createStatement(); ResultSet resultSet = stmt.executeQuery(query);
-   * 
+   *
    * if (resultSet.next()) { groupId = new
    * Integer(resultSet.getInt(1)).toString(); } } finally { DBUtil.close(stmt);
    * freeConnection(myCon); }
-   * 
+   *
    * return groupId; }
    */
 
   /**
-   * Sélection du groupId pour le specificGroupId spécifié dans la table
+   * SÃ©lection du groupId pour le specificGroupId spÃ©cifiÃ© dans la table
    * ST_Group
-   * 
+   *
    * @return String
    * @throws SQLException
-   * 
+   *
    * @see
    */
   /*
    * private static String selectGroupTableST_Group(Domain domain, String
    * groupSpecificId) throws SQLException { SilverTrace.info( "jobDomainPeas",
    * "JobDomainPeasDAO.selectGroupTableST_Group", "root.MSG_GEN_ENTER_METHOD");
-   * 
+   *
    * String propDomainFileName = domain.getPropFileName(); String domainName =
    * propDomainFileName.substring(39);
-   * 
+   *
    * String groupId = "";
-   * 
+   *
    * String query = " SELECT g.id"+
    * " FROM Domain"+domainName+"_Group d, ST_Group g "+
    * " WHERE g.domainId = "+domain.getId() +
    * " AND g.specificId = "+groupSpecificId;
-   * 
+   *
    * Statement stmt = null; Connection myCon = getConnection(); try { stmt =
    * myCon.createStatement(); ResultSet resultSet = stmt.executeQuery(query);
-   * 
+   *
    * if (resultSet.next()) { groupId = new
    * Integer(resultSet.getInt(1)).toString(); } } finally { DBUtil.close(stmt);
    * freeConnection(myCon); }
-   * 
+   *
    * return groupId; }
    */
 
   /**
-   * Sélection des utilisateurs à synchroniser en delete de la table
+   * SÃ©lection des utilisateurs Ã  synchroniser en delete de la table
    * Domain<domainName>_User
-   * 
-   * 
+   *
+   *
    * @param domainName
    * @return Collection de UserDetail
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection selectUserSynchroDeleteTableDomain_User(Domain domain)
@@ -499,7 +499,7 @@ public class JobDomainPeasDAO {
 
     AdminController adminCtrl = new AdminController(null);
 
-    // sélectionne les users dans Silverpeas
+    // sÃ©lectionne les users dans Silverpeas
     Collection listRes = new ArrayList();
     UserDetail userDetail;
 

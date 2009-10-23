@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 /*
  * AbstractSilverpeasCalendar.java
@@ -34,7 +32,7 @@
  * 1 creates a new class extend AbstractMonthCalendar and implements String print()
  * 2 uses method addEvent(Event eventMonth), in order to initialize the list of the events of the month
  * 3 uses method setCurrentMonth(Date currentDate), in order to initialise monthCalendar for the current month
- * 
+ *
  * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar
  * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
  * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event
@@ -57,9 +55,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: AbstractMonthCalendar.java,v 1.7 2007/09/19 15:08:27 neysseri Exp $
- * 
+ *
  * $Log: AbstractMonthCalendar.java,v $
  * Revision 1.7  2007/09/19 15:08:27  neysseri
  * no message
@@ -68,7 +66,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.5  2006/10/17 13:17:56  sfariello
- * Ajout paramètre d'instanciation pour affichage des week-end ou non
+ * Ajout paramÃ¨tre d'instanciation pour affichage des week-end ou non
  *
  * Revision 1.4  2006/10/17 09:20:21  sfariello
  * no message
@@ -89,9 +87,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.4.4.1  2002/05/06 08:00:55  groccia
- * resolution d'un problème lié à l'initialisation de l'objet calendar=>
+ * resolution d'un problÃ¨me liÃ© Ã  l'initialisation de l'objet calendar=>
  * Precision de la variable locale: Calendar.getInstance().
- * L'objet calendar n'a apparement pas le même comportement avec Locale.US.
+ * L'objet calendar n'a apparement pas le mÃªme comportement avec Locale.US.
  *
  * Revision 1.4  2002/01/04 14:04:24  mmarengo
  * Stabilisation Lot 2
@@ -102,8 +100,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public abstract class AbstractMonthCalendar implements MonthCalendar {
@@ -133,7 +131,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Creates new AbstractMonthCalendar: constructor
-   * 
+   *
    * @param: language: type String: the language of use of the monthCalendar
    */
   public AbstractMonthCalendar(String language) {
@@ -170,7 +168,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to add event in the month calendar
-   * 
+   *
    * @param eventMonth
    *          : type
    *          com.stratelia.webactiv.util.viewGenerator.html.monthCalendar
@@ -183,10 +181,10 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param listEventMonth
-   * 
+   *
    * @see
    */
   public void addEvent(Vector listEventMonth) {
@@ -195,7 +193,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to initialise the monthcalendar to current date
-   * 
+   *
    * @param: currentDate: type java.util.Date: current date
    * @return: void
    */
@@ -231,11 +229,11 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * month jun event Startdate = 28/05 - EndDate = 15/06 for the object
    * monthCalendar this event is modified: event StartDate = 1/06 - EndDate =
    * 15/06
-   * 
+   *
    * example 2: current month = jun event StartDate = 9/06 - EnDate = 18/07 for
    * the object monthCalendar this event is modified: event StartDate = 9/06 -
    * EndDate = 30/06
-   * 
+   *
    * @return: void
    * @exception catched
    *              : java.text.ParseException: print int the log file, the event
@@ -246,7 +244,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     Iterator it = listEventMonth.iterator();
 
     while (it.hasNext()) {
-      // limitation de la date de début de l'événement au premier jour du mois
+      // limitation de la date de dÃ©but de l'Ã©vÃ©nement au premier jour du mois
       // courrant
       Event eventMonth = (Event) (it.next());
 
@@ -269,40 +267,27 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to initialise the list week of this current month and create the object Day
-   * 
+   *
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
    * @return: java.util.Vector: the vector of object Week
    */
   private Vector initListWeek() {
-    // tri des évenements pas dates et horaires croissants
+    // tri des Ã©venements pas dates et horaires croissants
     EventBeginDateComparatorAsc comparator = new EventBeginDateComparatorAsc();
     Collections.sort(listEventMonth, comparator);
 
     Vector v = new Vector();
     Calendar calY = Calendar.getInstance();
-
     calY.setMinimalDaysInFirstWeek(1);
-
     calY.setTime(cal.getTime());
-
-    /*
-     * calY.clear(Calendar.HOUR_OF_DAY); calY.clear(Calendar.HOUR);
-     * calY.clear(Calendar.MINUTE); calY.clear(Calendar.SECOND);
-     * calY.clear(Calendar.MILLISECOND);
-     */
-
     calY.set(Calendar.HOUR_OF_DAY, 0);
-    // calY.set(Calendar.HOUR, 0);
     calY.set(Calendar.MINUTE, 0);
     calY.set(Calendar.SECOND, 0);
     calY.set(Calendar.MILLISECOND, 0);
-
     calY.setFirstDayOfWeek(cal.getFirstDayOfWeek());
     SilverTrace.debug("viewgenerator", "MonthCalendarWA1.setCurrentMonth()",
         "root.MSG_GEN_PARAM_VALUE", "calY.getTime() = " + calY.getTime());
-
-    // Calendar calY = cal;
     int tmpNbWeek = numbersWeekInMonth;
 
     calY.set(Calendar.WEEK_OF_MONTH, 1);
@@ -352,17 +337,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * *********************
-   */
-  /* private methods ****** */
-
-  /**
-   * *********************
-   */
-
-  /**
    * to obtain the name of day
-   * 
+   *
    * @param: date: type java.util.Date: the date of day
    * @return: java.lang.String: the name of day
    */
@@ -377,7 +353,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the numbers of day
-   * 
+   *
    * @param date
    *          : type java.util.Date: the date of day
    * @return java.lang.String: the name of day
@@ -391,7 +367,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to control if the param date is in the current month
-   * 
+   *
    * @param: date: type java.util.Date: the date of day
    * @return: boolean: true if is in the month
    */
@@ -409,14 +385,12 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * to initialize the private parameters of the week, this method read in the
    * file properties
-   * 
+   *
    * @param: date: type java.util.Date: the date of day
    * @return: void
    * @catch: java.lang.Exception: write this exception in the log file
    */
   private void initDayOfWeek() {
-    // firstDayOfWeek = Calendar.MONDAY;
-    // lastDayOfWeek = Calendar.SUNDAY;
     try {
       firstDayOfWeek = Integer.parseInt(messages.getString("weekFirstDay"));
       lastDayOfWeek = Integer.parseInt(messages.getString("weekLastDay"));
@@ -437,7 +411,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the numbers of week in current month
-   * 
+   *
    * @param int: the current month
    * @param int: the firstDayOf Week
    * @see: java.util.Calendar
@@ -475,10 +449,10 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   protected String[] getHeaderNameDay() {
@@ -494,7 +468,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain numbers week in the current month
-   * 
+   *
    * @return: int
    */
   protected int getNumbersWeekOfMonth() {
@@ -504,7 +478,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain numbers day int the week of current month
-   * 
+   *
    * @return: int
    */
   protected int getNumbersDayOfWeek() {
@@ -514,7 +488,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain the list of Day
-   * 
+   *
    * @param: int: the number of week int the current month
    * @return: Day[]: the array of Day
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
@@ -531,7 +505,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain the numbers of row int the week
-   * 
+   *
    * @param: int: the week
    * @return: int:
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
@@ -547,7 +521,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain an array of object Event
-   * 
+   *
    * @param int: the week
    * @param int: the specific row in the week
    * @return Event[]: an array of Event object
@@ -563,13 +537,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     if (currentRow.getListEvent().isEmpty()) {
       return null;
     }
-
-    // tri des évenements pas dates
-    // EventBeginDateComparatorAsc comparateur = new
-    // EventBeginDateComparatorAsc();
-    // Collections.sort(currentRow.getListEvent(), comparateur);
-
-    int numbersEvent = currentRow.getListEvent().size();
+   int numbersEvent = currentRow.getListEvent().size();
 
     Event evt[] = new Event[numbersEvent];
 

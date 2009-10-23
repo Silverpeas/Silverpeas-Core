@@ -85,10 +85,6 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
     this.activate = activate;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Méthodes
-  // -----------------------------------------------------------------------------------------------------------------
-
   /**
    * Method declaration
    * 

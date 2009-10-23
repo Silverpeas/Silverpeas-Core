@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.agenda.view;
 
@@ -55,42 +53,42 @@ import com.stratelia.webactiv.util.viewGenerator.html.Encode;
  *
  * $Log: AgendaHtmlView.java,v $
  * Revision 1.7  2009/01/09 14:45:27  neysseri
- * Modifications des CSS utilisées pour look V5 + refonte page ajout/modification d'événement
+ * Modifications des CSS utilisÃ©es pour look V5 + refonte page ajout/modification d'Ã©vÃ©nement
  *
  * Revision 1.6  2008/07/11 11:29:49  dlesimple
- * Correction bug visu évènement public journée complète d'un agenda tiers: on ne pouvait pas voir le nom et desc
+ * Correction bug visu Ã©vÃ¨nement public journÃ©e complÃ¨te d'un agenda tiers: on ne pouvait pas voir le nom et desc
  *
  * Revision 1.5  2008/04/16 07:23:19  neysseri
  * no message
  *
  * Revision 1.4.6.6  2008/04/08 15:14:45  dlesimple
- * Correction look jours ouvrés
+ * Correction look jours ouvrÃ©s
  *
  * Revision 1.4.6.5  2008/03/26 16:39:17  dlesimple
- * Gestion visibilité jours non ouvrés
+ * Gestion visibilitÃ© jours non ouvrÃ©s
  *
  * Revision 1.4.6.4  2008/03/25 15:21:37  dlesimple
- * Gestion des jours non ouvrés
+ * Gestion des jours non ouvrÃ©s
  *
  * Revision 1.4.6.3  2008/03/19 16:08:14  dlesimple
- * Gestion Jours ouvrés
+ * Gestion Jours ouvrÃ©s
  *
  * Revision 1.4.6.2  2008/03/06 15:13:36  dlesimple
  * Import export iCal
  *
  * Revision 1.4.6.1  2008/02/29 16:28:11  dlesimple
- * Infobulle evénèment (rubrique + description)
+ * Infobulle evÃ©nÃ¨ment (rubrique + description)
  *
  * Revision 1.4  2006/02/23 18:28:07  dlesimple
- * Agenda partagé
+ * Agenda partagÃ©
  *
  * Revision 1.3  2005/09/30 14:15:59  neysseri
  * Centralisation de la gestion des dates
  *
  * Revision 1.2  2004/12/22 15:18:31  neysseri
- * Possibilité d'indiquer les jours non sélectionnables
+ * PossibilitÃ© d'indiquer les jours non sÃ©lectionnables
  * + nettoyage sources
- * + précompilation jsp
+ * + prÃ©compilation jsp
  *
  * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
  * no message
@@ -103,14 +101,14 @@ import com.stratelia.webactiv.util.viewGenerator.html.Encode;
  *
  * Revision 1.5  2002/01/18 15:43:18  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  *
  */
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AgendaHtmlView {
@@ -146,10 +144,10 @@ public class AgendaHtmlView {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param viewType
-   * 
+   *
    * @see
    */
   public AgendaHtmlView(int viewType) {
@@ -159,13 +157,13 @@ public class AgendaHtmlView {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param viewType
    * @param date
    * @param message
    * @param settings
-   * 
+   *
    * @see
    */
   public AgendaHtmlView(int viewType, Date date,
@@ -182,10 +180,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param on
-   * 
+   *
    * @see
    */
   public void setCalendarVisible(boolean on) {
@@ -194,10 +192,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
-   * 
+   *
    * @see
    */
   public void setDate(Date date) {
@@ -221,10 +219,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param scheduleCount
-   * 
+   *
    * @see
    */
   public void add(SchedulableCount scheduleCount) {
@@ -236,10 +234,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param schedule
-   * 
+   *
    * @see
    */
   public void add(Schedulable schedule) {
@@ -299,10 +297,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getHtmlView() throws AgendaException {
@@ -323,12 +321,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param startDate
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getHtmlViewByMonth(String startDate) {
@@ -383,12 +381,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param startDate
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getHtmlViewByYear(String startDate) {
@@ -446,12 +444,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param today
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getHtmlViewByDay(String today) throws AgendaException {
@@ -783,12 +781,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param firstDay
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getHtmlViewByWeek(String firstDay) throws AgendaException {
@@ -1046,12 +1044,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param schedule
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private int getDuration(Schedulable schedule) {
@@ -1081,12 +1079,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param group
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   private int getDuration(SchedulableGroup group) {
@@ -1113,7 +1111,7 @@ public class AgendaHtmlView {
 
   /**
    * Get infobulle detail of the event
-   * 
+   *
    * @param schedule
    * @return
    * @throws AgendaException

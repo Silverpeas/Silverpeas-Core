@@ -286,7 +286,7 @@ public class Event extends Object {
 
   /*
    * to initialize the parametar spanDay. This parameter represent le nombre de
-   * jour couvert par l'événement it's use by the print method of the class of
+   * jour couvert par l'evenement it's use by the print method of the class of
    * extend AbstractMonthCalendar default value for spanDay is 0
    * 
    * @return int

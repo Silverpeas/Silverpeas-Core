@@ -135,7 +135,7 @@ public class FormButtonsLine extends FormLine {
     fpw.add(new FormLabel("configuratorTitle", "Configuration du FormLabel"));
     fpw.add(new FormTextField("configuratorLabelValue", "",
         "Entrez la valeur : "));
-    fpw.add(new FormButtonSubmit("newConfiguratorSubmitButton", "Créer"));
+    fpw.add(new FormButtonSubmit("newConfiguratorSubmitButton", "CrÃ©er"));
     return fpw;
   }
 

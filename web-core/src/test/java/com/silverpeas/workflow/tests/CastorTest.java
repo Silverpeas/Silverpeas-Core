@@ -74,7 +74,7 @@ public class CastorTest extends TestCase {
     assertEquals("We should have a label", "Responsable", responsable.getLabel(null, null));
     Role secretaire = process.getRole("Secretaire");
     assertNotNull("We should have an secretaire role", secretaire);
-    assertEquals("We should have a label", "Secrétaire", secretaire.getLabel(null, null));
+    assertEquals("We should have a label", "SecrÃ©taire", secretaire.getLabel(null, null));
     Role supervisor = process.getRole("supervisor");
     assertNotNull("We should have an supervisor role", supervisor);
     assertEquals("We should have a label", "Superviseur", supervisor.getLabel(null, null));

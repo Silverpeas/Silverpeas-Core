@@ -95,19 +95,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
     this.checked = checked;
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Méthodes
-  // -----------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Method declaration
-   * 
-   * 
-   * @return
-   * 
-   * @see
-   */
-  public String getCellAlign() {
+   public String getCellAlign() {
     return cellAlign;
   }
 

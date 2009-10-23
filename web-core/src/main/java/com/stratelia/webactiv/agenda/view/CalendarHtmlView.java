@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.agenda.view;
@@ -54,7 +54,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * - dans le cas pda, on n'utilise pas les onMouseOver sur le calendrier.
  *
  * Revision 1.9  2008/04/16 14:09:06  dlesimple
- * Calendrier: Bug nom du jour en gris si tous les memes jours du mois courant sont non ouvrés. (ex: L en gris si tous les Lundi non ouvrés, L en noir si au moins un Lundi est ouvré dans le mois)
+ * Calendrier: Bug nom du jour en gris si tous les memes jours du mois courant sont non ouvrÃ©s. (ex: L en gris si tous les Lundi non ouvrÃ©s, L en noir si au moins un Lundi est ouvrÃ© dans le mois)
  *
  * Revision 1.8  2008/04/16 07:23:19  neysseri
  * no message
@@ -63,55 +63,55 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * no message
  *
  * Revision 1.7.4.4  2008/04/08 15:14:44  dlesimple
- * Correction look jours ouvrés
+ * Correction look jours ouvrÃ©s
  *
  * Revision 1.7.4.3  2008/03/31 11:43:38  dlesimple
  * Synchro feed rss + traces et messages
  *
  * Revision 1.7.4.2  2008/03/26 16:39:27  dlesimple
- * Gestion visibilité jours non ouvrés
+ * Gestion visibilitÃ© jours non ouvrÃ©s
  *
  * Revision 1.7.4.1  2008/03/25 15:21:36  dlesimple
- * Gestion des jours non ouvrés
+ * Gestion des jours non ouvrÃ©s
  *
  * Revision 1.7  2007/04/20 14:10:15  neysseri
  * no message
  *
  * Revision 1.6  2006/06/30 15:12:58  dlesimple
- * Evènements sur plusieurs jours et/ou mois apparait maintenant bien surlignés
- * en vue par Mois ou Année
+ * EvÃ¨nements sur plusieurs jours et/ou mois apparait maintenant bien surlignÃ©s
+ * en vue par Mois ou AnnÃ©e
  *
  * Revision 1.5  2006/02/23 18:28:07  dlesimple
- * Agenda partagé
+ * Agenda partagÃ©
  *
  * Revision 1.4  2005/09/30 14:15:59  neysseri
  * Centralisation de la gestion des dates
  *
  * Revision 1.3  2004/12/22 15:18:31  neysseri
- * Possibilité d'indiquer les jours non sélectionnables
+ * PossibilitÃ© d'indiquer les jours non sÃ©lectionnables
  * + nettoyage sources
- * + précompilation jsp
+ * + prÃ©compilation jsp
  *
  * Revision 1.2  2002/12/26 09:36:25  scotte
- * Correction : Ajouter l'année au calendrier général
+ * Correction : Ajouter l'annÃ©e au calendrier gÃ©nÃ©ral
  *
  * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
  * no message
  *
  * Revision 1.4  2002/01/21 13:57:47  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  *
  * Revision 1.3  2002/01/18 15:43:18  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * RÃ©organisation des Router et SessionController
  *
  */
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class CalendarHtmlView {
@@ -137,10 +137,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param scheduleCount
-   * 
+   *
    * @see
    */
   public void add(SchedulableCount scheduleCount) {
@@ -149,12 +149,12 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param day
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public SchedulableCount getSchedulableCount(int day) {
@@ -176,10 +176,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @see
    */
   public void setWeekDayStyle(String value) {
@@ -188,10 +188,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @see
    */
   public void setMonthDayStyle(String value) {
@@ -200,10 +200,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @see
    */
   public void setMonthSelectedDayStyle(String value) {
@@ -212,10 +212,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @see
    */
   public void setMonthVisible(boolean value) {
@@ -224,10 +224,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @see
    */
   public void setNavigationBar(boolean value) {
@@ -236,10 +236,10 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param value
-   * 
+   *
    * @see
    */
   public void setShortName(boolean value) {
@@ -248,13 +248,13 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
    * @param agendaSessionController
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
 
@@ -265,13 +265,13 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param date
    * @param agendaSessionController
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getPDAView(Date date,
@@ -280,16 +280,16 @@ public class CalendarHtmlView {
   }
 
   /**
-   * Fonction ajoutée pour génerer le calendar soit pour un PDA (sans
+   * Fonction ajoutÃ©e pour gÃ©nerer le calendar soit pour un PDA (sans
    * onmouseover) soit pour un web classique.
-   * 
-   * 
+   *
+   *
    * @param date
    * @param agendaSessionController
    * @param forPDA
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getHtmlView(Date date,

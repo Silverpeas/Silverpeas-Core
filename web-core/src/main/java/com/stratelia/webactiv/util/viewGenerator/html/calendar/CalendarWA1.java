@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.util.viewGenerator.html.calendar;
 
@@ -39,8 +37,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class CalendarWA1 extends AbstractCalendar {
@@ -201,8 +199,8 @@ public class CalendarWA1 extends AbstractCalendar {
       // If day has events
       dayStyle = monthDayStyle;
       boolean isSelectable = true;
-      // si "nonSelectable = true" on fait la diférence entre les jours avec
-      // évènements et ceux sans évènements
+      // si "nonSelectable = true" on fait la difÃ©rence entre les jours avec
+      // Ã©vÃ¨nements et ceux sans Ã©vÃ¨nements
       if (nonSelectable)
         isSelectable = false;
       if (dayWithEvents.contains(new Integer(i))) {

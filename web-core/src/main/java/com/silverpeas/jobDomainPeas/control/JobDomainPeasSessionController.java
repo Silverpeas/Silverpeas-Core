@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.silverpeas.jobDomainPeas.control;
 
@@ -87,8 +85,8 @@ import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class JobDomainPeasSessionController extends
@@ -113,18 +111,18 @@ public class JobDomainPeasSessionController extends
 
   private ArrayList listSelectedUsers = new ArrayList();
 
-  // pagination de la liste des résultats
+  // pagination de la liste des rÃ©sultats
   private int indexOfFirstItemToDisplay = 0;
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public JobDomainPeasSessionController(MainSessionController mainSessionCtrl,
@@ -165,7 +163,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
+   *
    * USER functions
    */
   public void setTargetUser(String userId) {
@@ -279,11 +277,11 @@ public class JobDomainPeasSessionController extends
   }
 
   /**
-   * Regroupement éventuel de l'utilisateur dans un groupe (pour les domaines
+   * Regroupement Ã©ventuel de l'utilisateur dans un groupe (pour les domaines
    * SQL)
-   * 
+   *
    * @throws JobDomainPeasException
-   * 
+   *
    */
   private void regroupInGroup(HashMap properties, String lastGroupId)
       throws JobDomainPeasException {
@@ -349,11 +347,11 @@ public class JobDomainPeasSessionController extends
             m_TargetDomainId);
 
         if (group == null) {
-          // le groupe n'existe pas, on le crée
+          // le groupe n'existe pas, on le crÃ©e
           group = new Group();
           group.setId("-1");
           group.setDomainId(m_TargetDomainId);
-          group.setSuperGroupId(null); // groupe à la racine
+          group.setSuperGroupId(null); // groupe Ã  la racine
           group.setName(nomRegroup);
           group.setDescription("");
           String groupId = m_AdminCtrl.addGroup(group);
@@ -374,7 +372,7 @@ public class JobDomainPeasSessionController extends
 
   /**
    * parse le fichier CSV
-   * 
+   *
    * @param InputStream
    */
   public void importCsvUsers(FileItem filePart) throws UtilTrappedException,
@@ -394,7 +392,7 @@ public class JobDomainPeasSessionController extends
         "com.silverpeas.jobDomainPeas.settings.usersCSVFormat", "User", ";",
         getTargetDomain().getPropFileName(), "property_");
 
-    // spécifique domaine Silverpeas (2 colonnes en moins (password et
+    // spÃ©cifique domaine Silverpeas (2 colonnes en moins (password et
     // passwordValid)
     if ("-1".equals(getTargetDomain().getId())
         || "0".equals(getTargetDomain().getId())) {// domaine Silverpeas
@@ -659,7 +657,7 @@ public class JobDomainPeasSessionController extends
           }
         } else {// domaine SQL
 
-          // informations spécifiques
+          // informations spÃ©cifiques
           for (int j = 0; j < csvReader.getM_specificNbCols(); j++) {
             if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
               informationSpecifiqueString = csvValues[i][j + 6]
@@ -723,7 +721,7 @@ public class JobDomainPeasSessionController extends
       // MotDePasse
       motDePasse = csvValues[i][5].getValueString();
 
-      // données spécifiques
+      // donnÃ©es spÃ©cifiques
       properties = new HashMap();
       if (csvReader.getM_specificNbCols() > 0) {
         if ("-1".equals(getTargetDomain().getId())
@@ -768,7 +766,7 @@ public class JobDomainPeasSessionController extends
 
         } else {// domaine SQL
 
-          // informations spécifiques
+          // informations spÃ©cifiques
           for (int j = 0; j < csvReader.getM_specificNbCols(); j++) {
             if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
               informationSpecifiqueString = csvValues[i][j + 6]
@@ -789,7 +787,7 @@ public class JobDomainPeasSessionController extends
       }
 
       createUser(login, nom, prenom, email, userAccessLevel, true, motDePasse,
-          properties); // l'id User créé est dans m_TargetUserId
+          properties); // l'id User crÃ©Ã© est dans m_TargetUserId
 
     }
   }
@@ -863,7 +861,7 @@ public class JobDomainPeasSessionController extends
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
     }
 
-    // nom du groupe auquel était rattaché l'utilisateur
+    // nom du groupe auquel Ã©tait rattachÃ© l'utilisateur
     String lastGroupId = getLastGroupId(theModifiedUser);
 
     theModifiedUser.setLastName(userLastName);
@@ -1059,7 +1057,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
+   *
    * GROUP functions
    */
   public void returnIntoGroup(String groupId) throws JobDomainPeasException {
@@ -1601,7 +1599,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
+   *
    * DOMAIN functions
    */
 
@@ -1803,7 +1801,7 @@ public class JobDomainPeasSessionController extends
       String domainAuthentication, String silverpeasServerURL,
       String domainTimeStamp) throws JobDomainPeasException,
       JobDomainPeasTrappedException {
-    // Vérif domainName
+    // VÃ©rif domainName
     verifCreateDomain(domainName, false);
 
     Domain theNewDomain = new Domain();
@@ -1840,13 +1838,13 @@ public class JobDomainPeasSessionController extends
     else
       trappedException.setGoBackPage("displayDomainCreate");
 
-    // 1-Vérif non présence d'espaces
+    // 1-VÃ©rif non prÃ©sence d'espaces
     int indexOfSpace = domainName.indexOf(" ");
     if (indexOfSpace > -1) {
       throw trappedException;
     }
 
-    // 2-Vérif caractères alphanumériques
+    // 2-VÃ©rif caractÃ¨res alphanumÃ©riques
     int i = 0;
     char car;
     while (i < domainName.length()) {
@@ -1856,7 +1854,7 @@ public class JobDomainPeasSessionController extends
       i++;
     }
 
-    // 3-Vérif domainName unique dans la table ST_Domain
+    // 3-VÃ©rif domainName unique dans la table ST_Domain
     Domain[] tabDomain = m_AdminCtrl.getAllDomains();
     Domain domain;
     for (int j = 0; j < tabDomain.length; j++) {
@@ -1866,7 +1864,7 @@ public class JobDomainPeasSessionController extends
     }
 
     if (domainSql) {
-      // 4-Vérif domainName unique dans le fileSystem
+      // 4-VÃ©rif domainName unique dans le fileSystem
       // pour les properties
       // com.stratelia.silverpeas.domains.domain<domainName>.properties
       // et
@@ -1920,17 +1918,17 @@ public class JobDomainPeasSessionController extends
       String silverpeasServerURL) throws JobDomainPeasException,
       JobDomainPeasTrappedException {
 
-    // 0- Vérif domainName
+    // 0- VÃ©rif domainName
     verifCreateDomain(domainName, true);
 
-    // 1-Création sur le fileSystem du properties
+    // 1-CrÃ©ation sur le fileSystem du properties
     // com.stratelia.silverpeas.domains.domain<domainName>
     SilverTrace
         .info(
             "jobDomainPeas",
             "JobDomainPeasSessionController.createSQLDomain()",
             "root.MSG_GEN_ENTER_METHOD",
-            "Création sur le fileSystem du properties com.stratelia.silverpeas.domains.domain<domainName>");
+            "CrÃ©ation sur le fileSystem du properties com.stratelia.silverpeas.domains.domain<domainName>");
 
     ResourceLocator propInitialize = new ResourceLocator(
         "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
@@ -2052,14 +2050,14 @@ public class JobDomainPeasSessionController extends
     }
     sortie.close();
 
-    // 2-Création sur le fileSystem du properties
+    // 2-CrÃ©ation sur le fileSystem du properties
     // com.stratelia.silverpeas.authentication.autDomain<domainName>
     SilverTrace
         .info(
             "jobDomainPeas",
             "JobDomainPeasSessionController.createSQLDomain()",
             "root.MSG_GEN_ENTER_METHOD",
-            "Création sur le fileSystem du properties com.stratelia.silverpeas.authentication.autDomain<domainName>");
+            "CrÃ©ation sur le fileSystem du properties com.stratelia.silverpeas.authentication.autDomain<domainName>");
     String cheminFichierAutDomain = pathInitialize.substring(0,
         indexOfInitialize)
         + "properties"
@@ -2121,13 +2119,13 @@ public class JobDomainPeasSessionController extends
     sortie.println("autServer0.SQLPasswordEncryption 		= " + cryptMethod);
     sortie.close();
 
-    // 3-Création en base de données des 3 nouvelles tables du domaine :
+    // 3-CrÃ©ation en base de donnÃ©es des 3 nouvelles tables du domaine :
     // Domain<domainName>_Group, Domain<domainName>_Group_User_Rel et
     // Domain<domainName>_User
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.createSQLDomain()",
         "root.MSG_GEN_ENTER_METHOD",
-        "Création en base de données des 3 tablse du Domain");
+        "CrÃ©ation en base de donnÃ©es des 3 tablse du Domain");
     try {
       JobDomainPeasDAO.createTableDomain_Group(domainName);
     } catch (SQLException e) {
@@ -2224,11 +2222,11 @@ public class JobDomainPeasSessionController extends
           SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
     }
 
-    // 4-Enregistrement en base de données du nouveau Domaine dans ST_Domain
+    // 4-Enregistrement en base de donnÃ©es du nouveau Domaine dans ST_Domain
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.createSQLDomain()",
         "root.MSG_GEN_ENTER_METHOD",
-        "Insertion d'une entrée dans la table ST_Domain");
+        "Insertion d'une entrÃ©e dans la table ST_Domain");
     Domain theNewDomain = new Domain();
     String idRet = null;
     theNewDomain.setId("-1");
@@ -2290,7 +2288,7 @@ public class JobDomainPeasSessionController extends
       JobDomainPeasTrappedException {
     Domain theNewDomain = getTargetDomain();
 
-    // Vérif domainName unique dans la table ST_Domain
+    // VÃ©rif domainName unique dans la table ST_Domain
     JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
         "JobDomainPeasSessionController", SilverpeasException.WARNING,
         "jobDomainPeas.WARN_DOMAIN_SQL_NAME");
@@ -2337,7 +2335,7 @@ public class JobDomainPeasSessionController extends
       JobDomainPeasTrappedException {
     Domain theNewDomain = getTargetDomain();
 
-    // Vérif domainName unique dans la table ST_Domain
+    // VÃ©rif domainName unique dans la table ST_Domain
     JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
         "JobDomainPeasSessionController", SilverpeasException.WARNING,
         "jobDomainPeas.WARN_DOMAIN_SQL_NAME");
@@ -2398,7 +2396,7 @@ public class JobDomainPeasSessionController extends
     String cheminProperties = getTargetDomain().getPropFileName();
     String domainName = cheminProperties.substring(39);
 
-    // 1-Suppression en base de données du Domaine dans ST_Domain
+    // 1-Suppression en base de donnÃ©es du Domaine dans ST_Domain
     if ((m_TargetDomainId == null) || (m_TargetDomainId.equals("-1"))
         || (m_TargetDomainId.equals("0")) || (m_TargetDomainId.length() <= 0)) {
       throw new JobDomainPeasException(
@@ -2490,7 +2488,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
+   *
    * Selection Peas functions
    */
 
@@ -2532,7 +2530,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * Appel UserPannel pour récup du user sélectionné :
+   * Appel UserPannel pour rÃ©cup du user sÃ©lectionnÃ© :
    */
   public String[] getSelectedUsersIds() {
     return getSelection().getSelectedElements();
@@ -2621,8 +2619,8 @@ public class JobDomainPeasSessionController extends
     String sReport = "";
     SynchroUserWebServiceItf synchroUserWebService = null;
     try {
-      sReport = "Démarrage de la synchronisation...\n\n";
-      // Démarrage de la synchro avec la Popup d'affichage
+      sReport = "DÃ©marrage de la synchronisation...\n\n";
+      // DÃ©marrage de la synchro avec la Popup d'affichage
       SynchroReport.startSynchro();
 
       Domain theDomain = getTargetDomain();
@@ -2631,7 +2629,7 @@ public class JobDomainPeasSessionController extends
           "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId()
               + ")", null);
 
-      // 1- Récupère la liste des groupes à synchroniser (en insert et update)
+      // 1- RÃ©cupÃ¨re la liste des groupes Ã  synchroniser (en insert et update)
       Collection listGroupToInsertUpdate;
       try {
         listGroupToInsertUpdate = JobDomainPeasDAO
@@ -2660,7 +2658,7 @@ public class JobDomainPeasSessionController extends
 
       synchroUserWebService.startConnection();
 
-      // Insertion / Update de la société
+      // Insertion / Update de la sociÃ©tÃ©
       sReport += synchroUserWebService.insertUpdateDomainWebService(theDomain
           .getId(), theDomain.getName());
 
@@ -2681,7 +2679,7 @@ public class JobDomainPeasSessionController extends
 
       }
 
-      // 4- Récupère la liste des users à synchroniser (en insert et update)
+      // 4- RÃ©cupÃ¨re la liste des users Ã  synchroniser (en insert et update)
       Collection listUserToInsertUpdate;
       try {
         listUserToInsertUpdate = JobDomainPeasDAO
@@ -2692,7 +2690,7 @@ public class JobDomainPeasSessionController extends
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e1);
       }
 
-      // 5- Récupère la liste des users à synchroniser (en delete)
+      // 5- RÃ©cupÃ¨re la liste des users Ã  synchroniser (en delete)
       Collection listUserToDelete;
       try {
         listUserToDelete = JobDomainPeasDAO
@@ -2714,7 +2712,7 @@ public class JobDomainPeasSessionController extends
          * synchroUserWebService.insertUpdateListUserWebService
          * (theDomain.getId(), listUserToInsertUpdate, listGroupToInsertUpdate);
          * }
-         * 
+         *
          * //Suppression des users if(listUserToDelete != null &&
          * listUserToDelete.size()>0) { sReport +=
          * synchroUserWebService.deleteListUserWebService(theDomain.getId(),
@@ -2743,7 +2741,7 @@ public class JobDomainPeasSessionController extends
           "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
       SynchroReport.error(
           "JobDomainPeasSessionController.synchronizeSilverpeasViaWebService",
-          "Problème lors de la synchronisation : " + e.getMessage(), null);
+          "ProblÃ¨me lors de la synchronisation : " + e.getMessage(), null);
       sReport = "Erreurs lors de la synchronisation : \n" + e.getMessage();
     } finally {
       // Fin de synchro avec la Popup d'affichage

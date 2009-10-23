@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.silverpeas.jobManagerPeas.control;
@@ -45,8 +45,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class JobManagerPeasSessionController extends
@@ -60,13 +60,13 @@ public class JobManagerPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public JobManagerPeasSessionController(MainSessionController mainSessionCtrl,
@@ -97,7 +97,7 @@ public class JobManagerPeasSessionController extends
     JobManagerService jSTAT = null;
     JobManagerService jTools = null;
 
-    // initialisation des opÈrations du services jDesigner
+    // initialisation des op√©rations du services jDesigner
     JobManagerService jdp = new JobManagerService("11", "JDP",
         JobManagerService.LEVEL_OPERATION, m_context
             + URLManager.getURL(URLManager.CMP_JOBDOMAINPEAS) + "Main", null,
@@ -136,7 +136,7 @@ public class JobManagerPeasSessionController extends
         JobManagerService.LEVEL_OPERATION, m_context
             + "/admin/jsp/ExploitationSilverTrace.jsp", null, false);
 
-    // initialisation des opÈrations du service jKM
+    // initialisation des op√©rations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1",
         JobManagerService.LEVEL_OPERATION, m_context
             + URLManager.getURL(URLManager.CMP_PDC) + "Main", null, false);
@@ -144,7 +144,7 @@ public class JobManagerPeasSessionController extends
         JobManagerService.LEVEL_OPERATION, m_context
             + URLManager.getURL(URLManager.CMP_THESAURUS) + "Main", null, false);
 
-    // initialisation des opÈrations du service jSTAT
+    // initialisation des op√©rations du service jSTAT
     JobManagerService jSTAT1 = new JobManagerService("31", "JSTAT1",
         JobManagerService.LEVEL_OPERATION, m_context
             + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS) + "Main",
@@ -162,7 +162,7 @@ public class JobManagerPeasSessionController extends
     int nbServices = 0;
 
     if (getUserDetail().isAccessAdmin()) {
-      // l'administrateur ‡ accËs au tout
+      // l'administrateur √† acc√®s au tout
       String[] id = { "11", "13", "12" };
       jDesigner = new JobManagerService("1", "JD",
           JobManagerService.LEVEL_SERVICE, null, id, false);
@@ -235,7 +235,7 @@ public class JobManagerPeasSessionController extends
       // services.put(jImportExport.getId(), jImportExport);
     } else if (isManager) {
       if (getUserDetail().isAccessDomainManager()) {
-        // l'administrateur du composant ‡ accËs seulement ‡ certaine fonction
+        // l'administrateur du composant √† acc√®s seulement √† certaine fonction
         String[] id3 = { "11", "13", "12" };
         jDesigner = new JobManagerService("1", "JD",
             JobManagerService.LEVEL_SERVICE, null, id3, false);
@@ -247,9 +247,9 @@ public class JobManagerPeasSessionController extends
         services.put(jrp.getId(), jrp);
         services.put(jspp.getId(), jspp);
       } else {
-        // l'administrateur d'espace ‡ accËs seulement ‡ certaine fonction
+        // l'administrateur d'espace √† acc√®s seulement √† certaine fonction
         if (getUserManageableGroupIds().size() > 0) {
-          // Il est Ègalement gestionnaire de groupe, il a acces au rÈfÈrentiel
+          // Il est √©galement gestionnaire de groupe, il a acces au r√©f√©rentiel
           // (jobDomain)
           String[] id3 = { "11", "13", "12" };
           jDesigner = new JobManagerService("1", "JD",
@@ -337,15 +337,15 @@ public class JobManagerPeasSessionController extends
       services.put(jKM1.getId(), jKM1);
     }
 
-    // set du service par defaut=> ‡ rÈcupÈrer d'un properties
+    // set du service par defaut=> √† r√©cup√©rer d'un properties
     // this.idCurrentServiceActif = "1";
-    // set de l'opÈration par defaut correspondant au service
+    // set de l'op√©ration par defaut correspondant au service
 
   }
 
   // retourne les services de niveau level
   // 0 => niveau Service
-  // 1 => opÈration
+  // 1 => op√©ration
   // 2 => action
   // 3 => acteur
   public JobManagerService[] getServices(int level) {
@@ -411,7 +411,7 @@ public class JobManagerPeasSessionController extends
             "root.MSG_GEN_PARAM_VALUE", "ENTER idCurrentServiceActif="
                 + idCurrentServiceActif + " idNewService=" + idNewService);
     if (this.idCurrentServiceActif != null) {// si = null, nous sommes dans la
-      // premiËre initialisation de
+      // premi√®re initialisation de
       // idCurrentServiceActif
       // resset du flag actif du service courant
       ((JobManagerService) services.get(this.idCurrentServiceActif))
@@ -423,7 +423,7 @@ public class JobManagerPeasSessionController extends
     newService.setActif(true);
     this.idCurrentServiceActif = idNewService;
 
-    // initialisation du idCurrentOperationActif avec l'opÈration active
+    // initialisation du idCurrentOperationActif avec l'op√©ration active
     // correspondant au nouveau service
     JobManagerService[] jms = this.getSubServices(newService);
     idCurrentOperationActif = null;
@@ -432,10 +432,10 @@ public class JobManagerPeasSessionController extends
         idCurrentOperationActif = jms[i].getId();
     }
 
-    // contrÙle si l'attribut idCurrentServiceActif ‡ bien une valeur
-    // si oui=> le service courant ‡ dÈj‡ ÈtÈ consultÈ et il existe bien une
-    // opÈration active
-    // si non => le service courant n'a pas encore ÈtÈ consultÈ et l'opÈration
+    // contr√¥le si l'attribut idCurrentServiceActif √† bien une valeur
+    // si oui=> le service courant √† d√©j√† √©t√© consult√© et il existe bien une
+    // op√©ration active
+    // si non => le service courant n'a pas encore √©t√© consult√© et l'op√©ration
     // active est la valeur par defaut
     if (idCurrentOperationActif == null) {
       JobManagerService currentOperation = (JobManagerService) services

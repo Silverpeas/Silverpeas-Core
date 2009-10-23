@@ -26,7 +26,7 @@ package com.silverpeas.jobDomainPeas;
 import java.util.Collection;
 
 /**
- * Interface de définition des webServices pour la synchronisation des
+ * Interface de definition des webServices pour la synchronisation des
  * utilisateurs d'un domaine
  * 
  * @c.bonin

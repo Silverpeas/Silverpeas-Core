@@ -77,10 +77,6 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
     labels.addAll(Arrays.asList(astrLabels));
   }
 
-  // -----------------------------------------------------------------------------------------------------------------
-  // Méthodes
-  // -----------------------------------------------------------------------------------------------------------------
-
   /**
    * @return
    */

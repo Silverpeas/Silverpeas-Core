@@ -21,18 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/**
- * Titre : Silverpeas<p>
- * Description : This object provides the calendar exeception<p>
- * Copyright : Copyright (c) Stratelia<p>
- * Société : Stratelia<p>
- * @author Jean-Claude Groccia
- * @version 1.0
- * Created on 26 decembre 2001, 16:38
- */
 
 package com.stratelia.silverpeas.portlet;
 
@@ -49,7 +37,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  *
  * Revision 1.4  2002/01/22 08:52:25  mguillem
  * Stabilisation Lot2
- * Réorganisation des Router et SessionController
+ * Rï¿½organisation des Router et SessionController
  * Suppression dans les fichiers *Exception de 'implements FromModule'
  *
  * Revision 1.3  2002/01/09 09:56:57  groccia

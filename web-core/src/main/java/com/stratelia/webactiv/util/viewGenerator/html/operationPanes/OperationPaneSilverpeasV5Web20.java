@@ -108,7 +108,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append(
         "<div align=\"right\"><span id=\"menutoggle\">"
             + GraphicElementFactory.getSettings().getString("ActionsLabel",
-                "Opérations") + "<img src=\"").append(getIconsPath()).append(
+                "OpÃ©rations") + "<img src=\"").append(getIconsPath()).append(
         "/ptr.gif\"></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");

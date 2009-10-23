@@ -108,7 +108,7 @@ public class OperationPaneWeb20 extends AbstractOperationPane {
     result.append(
         "<div align=\"right\">"
             + GraphicElementFactory.getSettings().getString("ActionsLabel",
-                "Opérations") + "<span id=\"menutoggle\"><img src=\"").append(
+                "OpÃ©rations") + "<span id=\"menutoggle\"><img src=\"").append(
         getIconsPath()).append("/ptr.gif\"></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");

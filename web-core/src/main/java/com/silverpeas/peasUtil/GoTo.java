@@ -61,7 +61,7 @@ public abstract class GoTo extends HttpServlet {
         objectNotFound(req, res);
       else {
         if (res.isCommitted()) {
-          // La rÈponse a dÈj‡ ÈtÈ envoyÈe
+          // La r√©ponse a d√©j√† √©t√© envoy√©e
         } else
           res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
               .getString("ApplicationURL")

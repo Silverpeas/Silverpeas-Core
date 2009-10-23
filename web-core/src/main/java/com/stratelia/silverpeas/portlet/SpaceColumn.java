@@ -181,7 +181,7 @@ public class SpaceColumn {
     }
     aPortlet.setColumnNumber(getColumnNumber());
     portlets.add(row, aPortlet);
-    // Renumérote les portlets
+    // Renumerote les portlets
     for (int i = 0; i < portlets.size(); i++) {
       Portlet p = (Portlet) portlets.get(i);
 
