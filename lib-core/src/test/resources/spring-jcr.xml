@@ -29,7 +29,7 @@
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:repository.xml" />
-    <property name="homeDir" value="file:///c:/tmp/jackrabbit" />
+    <property name="homeDir" value="file://${project.basedir}/target/tmp/jackrabbit" />
   </bean>
 
   <bean id="repositoryHelper" class="com.stratelia.webactiv.util.attachment.control.RepositoryHelper"
