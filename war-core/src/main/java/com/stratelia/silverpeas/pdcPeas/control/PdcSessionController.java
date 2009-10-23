@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
@@ -73,11 +71,11 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @see
    */
   public PdcSessionController(MainSessionController mainSessionCtrl,
@@ -188,7 +186,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
     Connection con = getConnection();
 
     try {
-      // on recherche le treeId de l'axe à supprimer
+      // on recherche le treeId de l'axe Ã  supprimer
       Axis axis = getPdcBm().getAxisDetail(axisId);
       long treeId = axis.getAxisHeader().getRootId();
 
@@ -299,8 +297,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
           new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
 
       getThBm().deleteSynonymsTerms(con, treeId, values);
-      // dans le PdcBmImpl : on efface les droits liées aux valeurs du subtree
-      // effacé
+      // dans le PdcBmImpl : on efface les droits liÃ©es aux valeurs du subtree
+      // effacÃ©
       commitConnection(con);
 
       refreshCurrentValueAndCurrentAxis(null, getAxisDetail(getCurrentAxis()
@@ -348,7 +346,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * Returns the full path of the value
-   * 
+   *
    * @param valueId
    *          - the id of the selected value (valueId is not empty)
    * @return the complet path
@@ -362,13 +360,13 @@ public class PdcSessionController extends AbstractComponentSessionController {
       throws PdcException {
     // Supprime la valeur courante dans la session
     setCurrentValue(value);
-    // Recharge le détail de l'axe courant
+    // Recharge le dÃ©tail de l'axe courant
     // afin de prendre en compte la suppression
     setCurrentAxis(axis);
   }
 
   private void refreshCurrentAxis(Axis axis) throws PdcException {
-    // Recharge le détail de l'axe courant
+    // Recharge le dÃ©tail de l'axe courant
     // afin de prendre en compte la suppression
     setCurrentAxis(axis);
   }
@@ -419,9 +417,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Initialise le UserPanel avec les permissions déjà existantes pour la valeur
+   * Initialise le UserPanel avec les permissions dÃ©jÃ  existantes pour la valeur
    * courante
-   * 
+   *
    * @return l'URL du panel
    * @throws RemoteException
    * @throws PdcException
@@ -460,7 +458,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
 
-    // On récupère la liste des utilisateurs et groupes ayant droits
+    // On rÃ©cupÃ¨re la liste des utilisateurs et groupes ayant droits
     List managers = getManagers();
     List users = (List) managers.get(0);
     List groups = (List) managers.get(1);
@@ -483,8 +481,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * récupère le résultat du UserPanel
-   * 
+   * rÃ©cupÃ¨re le rÃ©sultat du UserPanel
+   *
    * @throws PdcException
    * @throws SQLException
    */
@@ -524,7 +522,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the managers for the current value
-   * 
+   *
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
    */
@@ -547,7 +545,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the managers of the specified value
-   * 
+   *
    * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
@@ -567,7 +565,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the inherited managers of the specified value
-   * 
+   *
    * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
@@ -587,8 +585,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * retourne un tableau des valeurs où l'utilisateur courant possède des droits
-   * 
+   * retourne un tableau des valeurs oÃ¹ l'utilisateur courant possÃ¨de des droits
+   *
    * @return ArrayList ( valueid )
    * @throws PdcException
    *           , SQLException
@@ -717,7 +715,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * update permissions on current value
-   * 
+   *
    * @param ArrayList
    *          usersId
    * @param ArrayList
@@ -737,7 +735,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * delete permissions on current value
-   * 
+   *
    * @throws PdcException
    * @throws SQLException
    */

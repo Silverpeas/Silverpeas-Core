@@ -56,7 +56,7 @@ public class PdcClassifySessionController extends
 
   private ThesaurusManager thesaurus = new ThesaurusManager();
 
-  // jargon utilisé par l'utilisateur
+  // jargon utilise par l'utilisateur
   private Jargon jargon = null;
 
   public PdcClassifySessionController(MainSessionController mainSessionCtrl,

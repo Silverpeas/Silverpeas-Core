@@ -376,7 +376,7 @@ public class PdcSearchRequestRouterHelper {
 
         if (isExistInSecondaryAxis || isExistInPrimaryAxis) {
           searchValue = getLastValueOf(sc.getValue());
-          // on créait un axis
+          // on creait un axis
           axis = pdcSC.getAxisDetail(new Integer(searchAxisId).toString());
           treeId = new Integer(axis.getAxisHeader().getRootId()).toString();
           List fullPath = pdcSC.getFullPath(searchValue, treeId);

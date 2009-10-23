@@ -36,7 +36,7 @@
 
 <repositories>
     <repository>
-      <id>EclipseSilverpeas</id>
+      <id>NexusSilverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
       <url>http://repository.silverpeas.org/nexus/content/groups/silverpeas</url>

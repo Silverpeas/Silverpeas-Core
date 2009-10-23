@@ -58,13 +58,13 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -75,7 +75,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -87,7 +87,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
     {
         String destination 	= "";
         String rootDest 	= "/fileSharing/jsp/";
-        
+
         FileSharingSessionController  fileSharingSC = (FileSharingSessionController)componentSC;
         SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
 
@@ -114,11 +114,11 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
 
             else if (function.equals("NewTicket"))
 			{
-            	// récupération des données venant de attachment ou versioning
+            	// rÃ©cupÃ©ration des donnÃ©es venant de attachment ou versioning
             	String fileId =  request.getParameter("FileId");
             	String componentId = request.getParameter("ComponentId");
             	String type = request.getParameter("Type"); //versioning or not
-            	
+
             	String logicalName = null;
             	if (StringUtil.isDefined(type) && "version".equalsIgnoreCase(type))
             	{
@@ -131,8 +131,8 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
             		AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(fileId));
             		logicalName = attachment.getLogicalName();
             	}
-            	
-            	// passage des paramètres
+
+            	// passage des paramÃ¨tres
             	request.setAttribute("FileId", fileId);
             	request.setAttribute("Versioning", new Boolean("version".equalsIgnoreCase(type)));
             	request.setAttribute("ComponentId", componentId);
@@ -142,10 +142,10 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
 			}
 			else if (function.equals("CreateTicket"))
 			{
-				// récupération des paramètres venus de l'écran de saisie et création de l'objet TicketDetail
+				// rÃ©cupÃ©ration des paramÃ¨tres venus de l'Ã©cran de saisie et crÃ©ation de l'objet TicketDetail
 				TicketDetail ticket = generateTicket(fileSharingSC, request);
 				String keyFile = fileSharingSC.createTicket(ticket);
-				// mettre à jour l'objet ticket
+				// mettre Ã  jour l'objet ticket
 				ticket.setKeyFile(keyFile);
 				request.setAttribute("Url", ticket.getUrl());
 
@@ -157,24 +157,24 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
 				TicketDetail ticket = fileSharingSC.getTicket(keyFile);
             	request.setAttribute("Ticket",ticket);
 				// appel jsp
-				destination = rootDest + "ticketManager.jsp";  
+				destination = rootDest + "ticketManager.jsp";
 			}
 			else if (function.equals("UpdateTicket"))
 			{
-				// récupération des paramètres venus de l'écran de saisie
+				// rÃ©cupÃ©ration des paramÃ¨tres venus de l'Ã©cran de saisie
 				String keyFile = request.getParameter("KeyFile");
 				TicketDetail ticket = updateTicket(keyFile, fileSharingSC, request);
 				ticket.setKeyFile(keyFile);
 				// modification du lien
 				fileSharingSC.updateTicket(ticket);
 				// retour sur le liste des tickets
-				destination = getDestination("ViewTickets", fileSharingSC,request); 
+				destination = getDestination("ViewTickets", fileSharingSC,request);
 			}
 			else if (function.equals("DownloadFile"))
 			{
-				// contrôler 
+				// contrÃ´ler
 			}
-      
+
            else
 			{
 				destination = rootDest + function;

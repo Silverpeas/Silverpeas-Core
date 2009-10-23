@@ -21,8 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
+
 
 package com.stratelia.silverpeas.personalizationPeas.control;
 
@@ -82,11 +81,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * Revision 1.16 2007/06/12 07:52:26 neysseri no message
  *
  * Revision 1.15.2.1 2007/05/04 10:22:06 cbonin Personnalisation de l'activation
- * de l'applet de drag and drop et de l'active X d'édition de documents Office
+ * de l'applet de drag and drop et de l'active X d'Ã©dition de documents Office
  * en ligne
  *
  * Revision 1.14 2007/05/04 09:42:23 cbonin Personnalisation de l'activation de
- * l'applet de drag and drop et de l'active X d'édition de documents Office en
+ * l'applet de drag and drop et de l'active X d'Ã©dition de documents Office en
  * ligne
  *
  * Revision 1.13 2007/04/20 14:24:40 neysseri no message
@@ -97,12 +96,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  *
  * Revision 1.11 2007/02/02 10:25:46 neysseri no message
  *
- * Revision 1.10 2007/01/04 09:32:03 cbonin Modif de la méthode modifyUser pour
+ * Revision 1.10 2007/01/04 09:32:03 cbonin Modif de la mÃ©thode modifyUser pour
  * ajouter les infos custom de l'utilisateur
  *
  * Revision 1.9.2.1 2007/01/29 08:26:15 neysseri no message
  *
- * Revision 1.9 2005/07/25 16:07:15 neysseri Ajout de l'onglet "Identité"
+ * Revision 1.9 2005/07/25 16:07:15 neysseri Ajout de l'onglet "IdentitÃ©"
  *
  * Revision 1.8.2.2 2005/07/25 14:25:58 neysseri no message
  *
@@ -145,7 +144,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * Revision 1.1.1.1 2002/08/06 14:47:55 nchaix no message
  *
  * Revision 1.2 2002/03/29 12:16:17 neysseri Avertit le MainSessionController
- * que la langue de l'utilisateur a changé
+ * que la langue de l'utilisateur a changÃ©
  *
  * Revision 1.1 2002/01/30 11:07:43 tleroi Move Bus peas to BusIHM
  *
@@ -164,8 +163,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class PersonalizationSessionController extends
@@ -186,11 +185,11 @@ public class PersonalizationSessionController extends
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @see
    */
   public PersonalizationSessionController(
@@ -215,10 +214,10 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public synchronized String getFavoriteLanguage() {
@@ -265,15 +264,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param languages
-   * 
+   *
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public void setLanguages(Vector languages) throws PeasCoreException {
@@ -299,15 +298,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public Vector getLanguages() throws PeasCoreException {
@@ -329,15 +328,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public String getFavoriteLook() throws PeasCoreException {
@@ -363,15 +362,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param look
-   * 
+   *
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public void setFavoriteLook(String look) throws PeasCoreException {
@@ -580,12 +579,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public ArrayList getNotificationAddresses() throws PeasCoreException {
@@ -602,14 +601,14 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param aNotificationAddressId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public Properties getNotificationAddress(String aNotificationAddressId)
@@ -630,12 +629,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public ArrayList getNotifChannels() throws PeasCoreException {
@@ -651,14 +650,14 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param aPreferenceId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public Properties getNotifPreference(String aPreferenceId)
@@ -679,12 +678,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public ArrayList getNotifPreferences() throws PeasCoreException {
@@ -702,16 +701,16 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param aNotifAddressId
    * @param aNotifName
    * @param aChannelId
    * @param aAddress
    * @param aUsage
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public void saveNotifAddress(String aNotifAddressId, String aNotifName,
@@ -744,12 +743,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param aNotifAddressId
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public void deleteNotifAddress(String aNotifAddressId)
@@ -769,12 +768,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param aPreferenceId
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public void deletePreference(String aPreferenceId) throws PeasCoreException {
@@ -791,7 +790,7 @@ public class PersonalizationSessionController extends
 
   /**
    * Send a test message to the given notification address Id
-   * 
+   *
    * @param id
    *          of the table ST_NotifAddress row to send notification to.
    */
@@ -830,7 +829,7 @@ public class PersonalizationSessionController extends
 
   /**
    * Set the default Notification address Id
-   * 
+   *
    * @param id
    *          of the table ST_NotifAddress row to send notification to.
    */
@@ -853,14 +852,14 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param componentId
    * @param priorityId
    * @param notificationId
-   * 
+   *
    * @throws PeasCoreException
-   * 
+   *
    * @see
    */
   public void addPreference(String componentId, String priorityId,
@@ -908,7 +907,7 @@ public class PersonalizationSessionController extends
    */
   public ArrayList getInstanceList() throws PeasCoreException {
 
-    // Liste des instances triés par nom de composants
+    // Liste des instances triÃ©s par nom de composants
     ArrayList sortedComponentList;
     // Get the id list of all available Instances for this user
     String[] instancesIds = getUserAvailComponentIds();
@@ -944,13 +943,13 @@ public class PersonalizationSessionController extends
 
         /**
          * Method declaration
-         * 
-         * 
+         *
+         *
          * @param o1
          * @param o2
-         * 
+         *
          * @return
-         * 
+         *
          * @see
          */
         public int compare(Object o1, Object o2) {
@@ -960,12 +959,12 @@ public class PersonalizationSessionController extends
 
         /**
          * Method declaration
-         * 
-         * 
+         *
+         *
          * @param o
-         * 
+         *
          * @return
-         * 
+         *
          * @see
          */
         public boolean equals(Object o) {
@@ -993,11 +992,11 @@ public class PersonalizationSessionController extends
 
   /**
    * Extract the last number from the string
-   * 
+   *
    * @param chaine
    *          The String to clean
    * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
-   * 
+   *
    */
   static String extractLastNumber(String chaine) {
     String s = "";
@@ -1124,7 +1123,7 @@ public class PersonalizationSessionController extends
       theModifiedUser.setFirstName(userFirstName);
       theModifiedUser.seteMail(userEMail);
 
-      // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
+      // Si l'utilisateur n'a pas entrÃ© de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
         // In this case, this method checks if oldPassword and actual password
         // match !

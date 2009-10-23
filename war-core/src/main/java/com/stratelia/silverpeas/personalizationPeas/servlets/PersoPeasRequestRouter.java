@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.personalizationPeas.servlets;
 
@@ -65,10 +63,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * no message
  *
  * Revision 1.17.2.1  2007/05/04 10:23:52  cbonin
- * Personnalisation de l'activation de l'applet de drag and drop et de l'active X d'édition de documents Office en ligne
+ * Personnalisation de l'activation de l'applet de drag and drop et de l'active X d'Ã©dition de documents Office en ligne
  *
  * Revision 1.16  2007/05/04 09:42:35  cbonin
- * Personnalisation de l'activation de l'applet de drag and drop et de l'active X d'édition de documents Office en ligne
+ * Personnalisation de l'activation de l'applet de drag and drop et de l'active X d'Ã©dition de documents Office en ligne
  *
  * Revision 1.15  2007/04/20 14:24:40  neysseri
  * no message
@@ -93,14 +91,14 @@ import com.stratelia.webactiv.util.ResourceLocator;
  *
  * Revision 1.10  2006/08/21 12:39:18  dlesimple
  * - Pas d'espaces dans le mot de passe
- * - Paramétrage d'affichage et de moficiation des champs de l'onglet identitié
+ * - ParamÃ©trage d'affichage et de moficiation des champs de l'onglet identitiÃ©
  *
  * Revision 1.9  2005/11/23 11:11:15  neysseri
- * Modification de l'identité d'un utilisateur impossible
+ * Modification de l'identitÃ© d'un utilisateur impossible
  * Ne concerne que les utilisateurs des domaines SQL
  *
  * Revision 1.8  2005/07/25 16:07:15  neysseri
- * Ajout de l'onglet "Identité"
+ * Ajout de l'onglet "IdentitÃ©"
  *
  * Revision 1.7.2.1  2005/06/02 16:54:53  sdevolder
  * *** empty log message ***
@@ -112,7 +110,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * Modification mot de passe utilisateur
  *
  * Revision 1.5  2004/11/30 17:02:02  neysseri
- * Espace par défaut étendu aux sous espaces + nettoyage sources
+ * Espace par dÃ©faut Ã©tendu aux sous espaces + nettoyage sources
  *
  * Revision 1.4  2003/01/15 11:59:14  neysseri
  * The both tabs 'Preferences' and 'Appearence' has been merged
@@ -140,8 +138,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class PersoPeasRequestRouter extends ComponentRequestRouter {
@@ -153,13 +151,13 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -180,7 +178,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -287,7 +285,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
             "root.MSG_GEN_PARAM_VALUE");
         destination = getDestination("Main", componentSC, request);
       } else if (function.startsWith("ChangePassword")) {
-        // Détermination du domaine du user
+        // DÃ©termination du domaine du user
         boolean domainRW = personalizationScc.isUserDomainRW();
         if (domainRW)
           request.setAttribute("action", "userModify");

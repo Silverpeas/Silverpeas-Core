@@ -406,7 +406,7 @@ public class PortletRequestRooter extends HttpServlet {
         request.setAttribute("portlet", portlet);
         destination = "/portlet/jsp/admin/portletTitle.jsp";
 
-        // Liste des composants portlétisés
+        // Liste des composants portletises
       } else if (function.equalsIgnoreCase("componentList")) {
         destination = "/portlet/jsp/admin/componentList.jsp";
 

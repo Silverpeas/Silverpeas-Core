@@ -74,7 +74,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -96,7 +96,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
     String destination = "";
 
     try {
-      // récupération de la langue et passage en paramètre à la jsp
+      // rÃ©cupÃ©ration de la langue et passage en paramÃ¨tre Ã  la jsp
       setLanguageAsAttribute(pdcSC, request);
 
       if (function.startsWith("Main")) {
@@ -128,15 +128,15 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         destination = "/pdcPeas/jsp/pdc.jsp";
 
       } else if (function.equals("ChangeLanguage")) {
-        // récupération de la langue choisie
+        // rÃ©cupÃ©ration de la langue choisie
         String currentLanguage = request.getParameter("SwitchLanguage");
-        // mise à jour de la langue courante
+        // mise Ã  jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
         // rechargement de la page avec la nouvelle langue
         destination = getDestination("Main", componentSC, request);
 
       } else if (function.equals("ChangeLanguageView")) {
-        // récupération de la langue choisie
+        // rÃ©cupÃ©ration de la langue choisie
         String currentLanguage = request.getParameter("SwitchLanguage");
 
         String axeId = request.getParameter("Id");
@@ -144,13 +144,13 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         String valueId = request.getParameter("ValueId");
         request.setAttribute("ValueId", valueId);
 
-        // mise à jour de la langue courante
+        // mise Ã  jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
         // rechargement de la page avec la nouvelle langue
         destination = getDestination("ViewAxis", componentSC, request);
 
       } else if (function.equals("ChangeLanguageValue")) {
-        // récupération de la langue choisie
+        // rÃ©cupÃ©ration de la langue choisie
         String currentLanguage = request.getParameter("SwitchLanguage");
 
         String valueId = request.getParameter("Id");
@@ -165,7 +165,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK()
             .getId()));
 
-        // mise à jour de la langue courante
+        // mise Ã  jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
         // rechargement de la page avec la nouvelle langue
         destination = getDestination("ViewValue", componentSC, request);
@@ -317,7 +317,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // ajout de la langue
         axisHeader.setLanguage(I18NHelper.getSelectedLanguage(request));
 
-        // récupération des traductions
+        // rÃ©cupÃ©ration des traductions
         I18NHelper.setI18NInfo(axisHeader, request);
 
         int status = pdcSC.createAxis(axisHeader);
@@ -379,7 +379,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         AxisHeader axisHeader = new AxisHeader(currentAxisPK, axeName, axeType,
             order, null, null, -1, axeDescription);
 
-        // récupération des traductions
+        // rÃ©cupÃ©ration des traductions
         I18NHelper.setI18NInfo(axisHeader, request);
 
         int status = pdcSC.updateAxis(axisHeader);
@@ -411,7 +411,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         else
           currentValue = pdcSC.getValue(axisId, valueId);
 
-        if (currentValue == null) {// il n'y a pas de documents classés dans
+        if (currentValue == null) {// il n'y a pas de documents classÃ©s dans
           // cette valeur
           currentValue = pdcSC.getAxisValue(valueId);
           currentValue.setNbObjects(0);
@@ -631,7 +631,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
             valueDescription, null, null, null, -1, (new Integer(valueOrder))
                 .intValue(), null);
 
-        // récupération des traductions
+        // rÃ©cupÃ©ration des traductions
         I18NHelper.setI18NInfo(updatedValue, request);
 
         int status = pdcSC.updateValue(updatedValue);
@@ -744,14 +744,14 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // request.setAttribute("Path",
         // pdcSC.getFullPath(currentValue.getPK().getId()));
 
-        // on passe en paramètre les droits directs
+        // on passe en paramÃ¨tre les droits directs
         List users = (List) pdcSC.getManagers().get(0);
         List groups = (List) pdcSC.getManagers().get(1);
         request.setAttribute("Users", users);
         request.setAttribute("Groups", groups);
 
         if (currentValue != null) {
-          // on passe en paramètre les droits hérités
+          // on passe en paramÃ¨tre les droits hÃ©ritÃ©s
           List inheritedManagers = pdcSC.getInheritedManagers(currentValue);
           List usersInherited = (List) inheritedManagers.get(0);
           List groupsInherited = (List) inheritedManagers.get(1);
@@ -860,7 +860,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search the axisHeader whished from the sorted list of axis header.
-   * 
+   *
    * @param axeId
    *          - the id of the whished axisHeader
    * @param axis
@@ -883,7 +883,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search sisters values of a Value from an axe.
-   * 
+   *
    * @param axis
    *          - A primary or secondary list of axes
    * @param value
@@ -910,7 +910,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search daughters values of a Value from an axe.
-   * 
+   *
    * @param axis
    *          - A primary or secondary list of axes
    * @param mother
@@ -936,7 +936,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Extract the order of axis or values values.
-   * 
+   *
    * @param text
    *          - The value of the axis or the value (String+separator+order)
    * @return the order
@@ -955,7 +955,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   private void setLanguageAsAttribute(PdcSessionController pdcSC,
       HttpServletRequest request) {
-    // récupération de la langue et passage en paramètre à la jsp
+    // rÃ©cupÃ©ration de la langue et passage en paramÃ¨tre Ã  la jsp
     String currentLanguage = pdcSC.getCurrentLanguage();
     if (!StringUtil.isDefined(currentLanguage))
       currentLanguage = I18NHelper.defaultLanguage;

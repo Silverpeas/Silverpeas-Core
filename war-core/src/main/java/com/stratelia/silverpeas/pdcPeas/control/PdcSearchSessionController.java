@@ -130,7 +130,7 @@ public class PdcSearchSessionController extends
   // DomainsBar
   private ResourceLocator pdcSettings = new ResourceLocator(
       "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
-  // pagination de la liste des résultats (PDC via DomainsBar)
+  // pagination de la liste des rÃ©sultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 1;
   private int nbItemsPerPage = -1;
   private Value currentValue = null;
@@ -389,7 +389,7 @@ public class PdcSearchSessionController extends
                 + mie.getObjectType(), e);
       }
     }
-    // contrôle des droits sur les espaces et les composants
+    // contrÃ´le des droits sur les espaces et les composants
     String objectType = mie.getObjectType();
     if (objectType.equals("Space")) {
       return getOrganizationController().isSpaceAvailable(mie.getObjectId(),
@@ -421,7 +421,7 @@ public class PdcSearchSessionController extends
       throws Exception {
     List sortedResultsToDisplay = new ArrayList();
 
-    // Tous les résultats
+    // Tous les rÃ©sultats
     List results = null;
     if (getSearchScope() == SEARCH_PDC) {
       results = globalSilverContents2GlobalSilverResults(getResults());
@@ -441,7 +441,7 @@ public class PdcSearchSessionController extends
       }
     }
 
-    // Tri de tous les résultats
+    // Tri de tous les rÃ©sultats
     GlobalSilverResult[] arrayGlobalSilverResult = (GlobalSilverResult[]) results
         .toArray(new GlobalSilverResult[0]);
 
@@ -840,12 +840,12 @@ public class PdcSearchSessionController extends
 
   /**
    * Cette methode construit un tableau contenant toutes les informations utiles
-   * à la construction de la JSP resultat
-   * 
+   * Ã  la construction de la JSP resultat
+   *
    * @param results
    *          - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres
-   *         d'entrée
+   *         d'entrÃ©e
    */
   private List matchingIndexEntries2GlobalSilverResults(
       List matchingIndexEntries) throws Exception {
@@ -1024,14 +1024,14 @@ public class PdcSearchSessionController extends
     String urlAttachment = attachmentDetail.getAttachmentURL(language);
 
     // Utilisation de l'API Acrobat Reader pour ouvrir le document PDF en mode
-    // recherche (paramètre 'search')
-    // Transmet au PDF la requête tapée par l'utilisateur via l'URL d'accès
+    // recherche (paramÃ¨tre 'search')
+    // Transmet au PDF la requÃªte tapÃ©e par l'utilisateur via l'URL d'accÃ¨s
     // http://partners.adobe.com/public/developer/en/acrobat/sdk/pdf/pdf_creation_apis_and_specs/PDFOpenParameters.pdf
     if (queryParameters != null) {
       String keywords = queryParameters.getKeywords();
       if (keywords != null && keywords.trim().length() > 0
           && "application/pdf".equals(attachmentDetail.getType(language))) {
-        // Suppression des éventuelles quotes (ne sont pas acceptées)
+        // Suppression des Ã©ventuelles quotes (ne sont pas acceptÃ©es)
         if (keywords.startsWith("\"")) {
           keywords = keywords.substring(1);
         }
@@ -1039,7 +1039,7 @@ public class PdcSearchSessionController extends
           keywords = keywords.substring(0, keywords.length() - 1);
         }
 
-        // Ajout du paramètre search à la fin de l'URL
+        // Ajout du paramÃ¨tre search Ã  la fin de l'URL
         urlAttachment += "#search=%22" + keywords + "%22";
       }
     }
@@ -1348,7 +1348,7 @@ public class PdcSearchSessionController extends
    ******************************************************************************************************************/
   private ThesaurusManager thesaurus = new ThesaurusManager();
   private boolean activeThesaurus = false; // thesaurus actif
-  private Jargon jargon = null;// jargon utilisé par l'utilisateur
+  private Jargon jargon = null;// jargon utilisÃ© par l'utilisateur
   private Map synonyms = new HashMap();
   private static final int QUOTE_CHAR = new Integer('"').intValue();
   private static String[] KEYWORDS = null;
@@ -2068,12 +2068,12 @@ public class PdcSearchSessionController extends
 
   /**
    * Cette methode construit un tableau contenant toutes les informations utiles
-   * à la construction de la JSP resultat
-   * 
+   * Ã  la construction de la JSP resultat
+   *
    * @param results
    *          - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres
-   *         d'entrée
+   *         d'entrÃ©e
    */
   private List filterMatchingIndexEntries(
       MatchingIndexEntry[] matchingIndexEntries) {

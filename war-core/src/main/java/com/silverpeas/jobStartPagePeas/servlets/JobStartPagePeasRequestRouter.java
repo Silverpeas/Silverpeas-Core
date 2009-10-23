@@ -141,7 +141,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       request.setAttribute("urlToReload", "StartPageInfo");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.equals("URL")) {
-      // C'est le quatrième type de page d'accueil d'espace
+      // C'est le quatriÃ¨me type de page d'accueil d'espace
       String url = request.getParameter("URL");
 
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
@@ -151,7 +151,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
       request.setAttribute("urlToReload", "StartPageInfo");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("SetPortlet")) // on a validé des portlets
+    } else if (function.equals("SetPortlet")) // on a validÃ© des portlets
     {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
       spaceint1.setFirstPageType(SpaceInst.FP_TYPE_PORTLET);
@@ -164,7 +164,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  /*********************** Gestion de la navigation à gauche *****************************************/
+  /*********************** Gestion de la navigation Ã  gauche *****************************************/
   public String getDestinationNavBar(String function,
       JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
@@ -269,7 +269,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       String idFather = spaceint1.getDomainFatherId();
       if (idFather == null || (idFather != null && idFather.equals("0"))) {// l'instance
         // appartient
-        // à
+        // Ã 
         // un
         // espace
         jobStartPageSC.setSpaceId(spaceint1.getId());
@@ -340,8 +340,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
       } else {
         // TODO : Mauvaise gestion des exceptions
-        // Si la création de l'espace se passe mal alors l'exception n'est pas
-        // déportée vers les appelants
+        // Si la crÃ©ation de l'espace se passe mal alors l'exception n'est pas
+        // dÃ©portÃ©e vers les appelants
         request.setAttribute("When", "ComponentCreation");
 
         setSpacesNameInRequest(jobStartPageSC, request);
@@ -420,8 +420,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
       } else {
         // TODO : Mauvaise gestion des exceptions
-        // Si la création de l'espace se passe mal alors l'exception n'est pas
-        // déportée vers les appelants
+        // Si la crÃ©ation de l'espace se passe mal alors l'exception n'est pas
+        // dÃ©portÃ©e vers les appelants
         request.setAttribute("When", "ComponentUpdate");
 
         setSpacesNameInRequest(jobStartPageSC, request);
@@ -772,8 +772,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
       } else {
         // TODO : Mauvaise gestion des exceptions
-        // Si la création de l'espace se passe mal alors l'exception n'est pas
-        // déportée vers les appelants
+        // Si la crÃ©ation de l'espace se passe mal alors l'exception n'est pas
+        // dÃ©portÃ©e vers les appelants
         request.setAttribute("When", "SpaceCreation");
 
         setSpacesNameInRequest(jobStartPageSC, request);
@@ -806,8 +806,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
       } else {
         // TODO : Mauvaise gestion des exceptions
-        // Si la création de l'espace se passe mal alors l'exception n'est pas
-        // déportée vers les appelants
+        // Si la crÃ©ation de l'espace se passe mal alors l'exception n'est pas
+        // dÃ©portÃ©e vers les appelants
         request.setAttribute("When", "SpaceUpdate");
 
         setSpacesNameInRequest(jobStartPageSC, request);
@@ -855,7 +855,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           .isProfileEditable());
       request.setAttribute("Role", role);
 
-      // Profile hérité, liste des groupes et user du role hérité courant
+      // Profile hÃ©ritÃ©, liste des groupes et user du role hÃ©ritÃ© courant
       SpaceProfileInst inheritedProfile = spaceint1
           .getInheritedSpaceProfileInst(role);
       if (inheritedProfile != null) {
@@ -1045,7 +1045,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -1190,7 +1190,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("listUser", jobStartPageSC
             .getAllCurrentUserInstance());
 
-        // Profile hérité, liste des groupes et user du role hérité courant
+        // Profile hÃ©ritÃ©, liste des groupes et user du role hÃ©ritÃ© courant
         ProfileInst inheritedProfile = jobStartPageSC
             .getManagedInheritedProfile();
         if (inheritedProfile != null) {

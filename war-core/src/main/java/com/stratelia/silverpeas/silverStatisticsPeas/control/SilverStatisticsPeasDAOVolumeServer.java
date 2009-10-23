@@ -49,7 +49,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * Modifs Gestionnaires de sous-espace
  *
  * Revision 1.5  2007/03/27 12:13:36  cbonin
- * Correction de bug remise à jour de la hashtable de résultat
+ * Correction de bug remise Ã  jour de la hashtable de rÃ©sultat
  *
  * Revision 1.4  2007/03/20 13:02:20  neysseri
  * no message
@@ -61,7 +61,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * *** empty log message ***
  *
  * Revision 1.3  2005/02/28 16:54:50  neysseri
- * Bug sur les années Accès et Volume + nettoyage sources
+ * Bug sur les annÃ©es AccÃ¨s et Volume + nettoyage sources
  *
  * Revision 1.2  2003/11/24 14:14:41  cbonin
  * no message
@@ -85,7 +85,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration Get stat size directory data from database
- * 
+ *
  * @author
  */
 public class SilverStatisticsPeasDAOVolumeServer {
@@ -100,15 +100,15 @@ public class SilverStatisticsPeasDAOVolumeServer {
   /**
    * donne les stats global pour l'enemble de tous les users cad 2 infos, la
    * collection contient donc un seul element
-   * 
-   * 
+   *
+   *
    * @param dateBegin
    * @param dateEnd
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   public static Collection getStatsVolumeServer() throws SQLException {
@@ -122,10 +122,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private static Connection getConnection() {
@@ -143,10 +143,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private static void freeConnection(Connection con) {
@@ -163,14 +163,14 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param selectQuery
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   private static Collection getStatsVolumeServerFromQuery(String selectQuery)
@@ -197,14 +197,14 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param rs
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   private static Collection getStatsVolumeServerFromResultSet(ResultSet rs)
@@ -230,10 +230,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
   }
 
   /**
-   * donne les stats sur le nombre de pièces jointes non versionnées
-   * 
+   * donne les stats sur le nombre de piÃ¨ces jointes non versionnÃ©es
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    */
   public static Hashtable getStatsAttachmentsVentil(String currentUserId)
@@ -259,7 +259,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
     while (it.hasNext()) {
       cmpId = (String) it.next();
 
-      // filtre les composants autorisés selon les droits de l'utilisateur
+      // filtre les composants autorisÃ©s selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
       if (myAdminController.isComponentAvailable(cmpId, currentUserId)) {
         values = new String[3];
@@ -272,10 +272,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
   }
 
   /**
-   * donne les stats sur le nombre de pièces jointes versionnées
-   * 
+   * donne les stats sur le nombre de piÃ¨ces jointes versionnÃ©es
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    */
   public static Hashtable getStatsVersionnedAttachmentsVentil(
@@ -315,7 +315,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
       tabManageableSpaceIds = myAdminController
           .getUserManageableSpaceClientIds(currentUserId);
 
-      // filtre les composants autorisés selon les droits de l'utilisateur
+      // filtre les composants autorisÃ©s selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
       for (int i = 0; i < tabManageableSpaceIds.length; i++) {
         if (spaceId.equals(tabManageableSpaceIds[i])) {
@@ -335,10 +335,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
   }
 
   /**
-   * donne les stats sur la taille des pièces jointes non versionnées
-   * 
+   * donne les stats sur la taille des piÃ¨ces jointes non versionnÃ©es
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    */
   public static Hashtable getStatsAttachmentsSizeVentil(String currentUserId)
@@ -376,7 +376,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
       tabManageableSpaceIds = myAdminController
           .getUserManageableSpaceClientIds(currentUserId);
 
-      // filtre les composants autorisés selon les droits de l'utilisateur
+      // filtre les composants autorisÃ©s selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
       for (int i = 0; i < tabManageableSpaceIds.length; i++) {
         if (spaceId.equals(tabManageableSpaceIds[i])) {
@@ -396,10 +396,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
   }
 
   /**
-   * donne les stats sur la taille des pièces jointes versionnées
-   * 
+   * donne les stats sur la taille des piÃ¨ces jointes versionnÃ©es
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    */
   public static Hashtable getStatsVersionnedAttachmentsSizeVentil(
@@ -439,7 +439,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
       tabManageableSpaceIds = myAdminController
           .getUserManageableSpaceClientIds(currentUserId);
 
-      // filtre les composants autorisés selon les droits de l'utilisateur
+      // filtre les composants autorisÃ©s selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
       for (int i = 0; i < tabManageableSpaceIds.length; i++) {
         if (spaceId.equals(tabManageableSpaceIds[i])) {

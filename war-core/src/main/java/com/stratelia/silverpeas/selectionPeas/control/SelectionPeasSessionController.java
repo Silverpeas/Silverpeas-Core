@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.selectionPeas.control;
@@ -51,8 +51,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class SelectionPeasSessionController extends
@@ -73,13 +73,13 @@ public class SelectionPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public SelectionPeasSessionController(MainSessionController mainSessionCtrl,
@@ -113,7 +113,7 @@ public class SelectionPeasSessionController extends
     } else if (Selection.TYPE_JDBC_CONNECTOR.equals(m_SelectionType)) {
       m_Selection.setMultiSelect(false);
       m_Selection.setPopupMode(true);
-      m_Selection.setHostComponentName(new PairObject("Sélection d'un élément",
+      m_Selection.setHostComponentName(new PairObject("SÃ©lection d'un Ã©lÃ©ment",
           null));
       m_Selection.setHostPath(null);
       m_Selection.setElementSelectable(false);

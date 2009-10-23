@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
@@ -58,8 +56,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class SilverStatisticsPeasSessionController extends
@@ -132,13 +130,13 @@ public class SilverStatisticsPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public SilverStatisticsPeasSessionController(
@@ -619,10 +617,10 @@ public class SilverStatisticsPeasSessionController extends
   }
 
   /**
-   * Méthode d'envoi de notification aux utilisateurs connectés
-   * 
+   * MÃ©thode d'envoi de notification aux utilisateurs connectÃ©s
+   *
    * @param listUserDetail
-   *          - liste des utilisateurs conenctés
+   *          - liste des utilisateurs conenctÃ©s
    * @param message
    */
   public void notifyAllSessions(Collection listUserDetail, String message) {
@@ -1385,7 +1383,7 @@ public class SilverStatisticsPeasSessionController extends
   }
 
   /**
-   * 
+   *
    * @return Returns the path.
    */
   public Vector getPath() {

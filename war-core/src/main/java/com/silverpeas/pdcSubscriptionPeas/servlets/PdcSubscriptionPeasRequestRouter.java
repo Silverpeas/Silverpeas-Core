@@ -88,7 +88,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ViewSubscriptionTheme")) {
         String userId = request.getParameter("userId");
         String action = request.getParameter("action");
-        // passage des paramètres ...
+        // passage des parametres ...
         Collection subscribeThemeList = pdcSC.getUserSubscribe(userId);
         request.setAttribute("SubscribeThemeList", subscribeThemeList);
         request.setAttribute("action", action);

@@ -195,7 +195,7 @@ public class AuthenticationServlet extends HttpServlet {
       if (casMode) {
         url = "/admin/jsp/casAuthenticationError.jsp";
       } else {
-        // mettre à jour le code erreur : "2" = problème technique
+        // mettre a jour le code erreur : "2" = probleme technique
         // "1" = login ou mot de passe incorrect
         String errorCode = ("Error_1".equals(authentificationKey) ? "1" : "2");
 

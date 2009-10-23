@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.silverpeas.jobManagerPeas.servlets;
 
 import javax.servlet.http.*;
@@ -35,12 +32,12 @@ import com.silverpeas.jobManagerPeas.control.JobManagerPeasSessionController;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: JobManagerPeasRequestRouter.java,v 1.3 2006/03/28 18:00:20 dlesimple Exp $
- * 
+ *
  * $Log: JobManagerPeasRequestRouter.java,v $
  * Revision 1.3  2006/03/28 18:00:20  dlesimple
- * Ménage imports inutiles
+ * MÃ©nage imports inutiles
  *
  * Revision 1.2  2002/10/14 16:23:27  dlesimple
  * Mode maintenance
@@ -59,21 +56,21 @@ import com.silverpeas.jobManagerPeas.control.JobManagerPeasSessionController;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -94,7 +91,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -114,18 +111,18 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
     try {
       if (function.startsWith("Main")) {
         destination = "/jobManagerPeas/jsp/jobManager.jsp";
-      } else if (function.startsWith("TopBarManager"))// lors du permier accès=>
+      } else if (function.startsWith("TopBarManager"))// lors du permier accÃ¨s=>
       // via jobManager.jsp
       {
         // set le service actif par le service par defaut; active aussi une
-        // opération par défaut pour ce service
+        // opÃ©ration par dÃ©faut pour ce service
         jobManagerSC.changeServiceActif(jobManagerSC.getIdDefaultService());
         destination = this.setAttributes(request, jobManagerSC);
       } else if (function.startsWith("ChangeService")) {
         String idService = request.getParameter("Id");
-        // changer l'id représentant le service actif
-        // set aussi l' idCurrentOperationActif pour ce service (à la vaeleur
-        // par defaut ou la valeur précdente si existe
+        // changer l'id reprÃ©sentant le service actif
+        // set aussi l' idCurrentOperationActif pour ce service (Ã  la vaeleur
+        // par defaut ou la valeur prÃ©cdente si existe
         jobManagerSC.changeServiceActif(idService);
         destination = this.setAttributes(request, jobManagerSC);
       } else if (function.startsWith("ChangeOperation")) {
@@ -136,7 +133,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
               "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
           request.setAttribute("mode", mode.toString());
         }
-        // changer l'id représentant l'opération active
+        // changer l'id reprÃ©sentant l'opÃ©ration active
         // set idCurrentOperationActif avec cette id
         jobManagerSC.changeOperationActif(idOperation);
         destination = this.setAttributes(request, jobManagerSC);
@@ -176,7 +173,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Services", jmpSC
         .getServices(JobManagerService.LEVEL_SERVICE));
 
-    // l'objet "Operation" est la liste des opérations disponibles pour le
+    // l'objet "Operation" est la liste des opÃ©rations disponibles pour le
     // service actif
     request.setAttribute("Operation", jmpSC.getSubServices(jmpSC
         .getIdServiceActif()));

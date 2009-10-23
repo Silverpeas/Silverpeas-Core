@@ -38,7 +38,7 @@ public interface FileSharingInterface {
 	public String createTicket(TicketDetail ticket);
 
 	/**
-	 * mise à jour des téléchargements
+	 * mise a jour des telechargements
 	 * @param download
 	 */
 	public void addDownload(DownloadDetail download);

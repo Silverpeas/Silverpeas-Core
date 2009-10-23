@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.notificationUser.servlets;
 
@@ -39,21 +37,21 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -74,7 +72,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -87,12 +85,12 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     // remarques
-    // tous les paramètres des la jsp sont transferé par la request.
-    // le UserPanel étant unique par session, il est impératif de récupérér les
-    // objets selectionnés via userPanel et de transporter
+    // tous les paramÃ¨tres des la jsp sont transferÃ© par la request.
+    // le UserPanel Ã©tant unique par session, il est impÃ©ratif de rÃ©cupÃ©rÃ©r les
+    // objets selectionnÃ©s via userPanel et de transporter
     // les id des ses de jsp en jsp en soumettant un formulaire.
-    // En effet, la notification peut être utilisé "en même temps" qu' le client
-    // utiliser userPanelPeas. Cela mélange les objets selectionnée.
+    // En effet, la notification peut Ãªtre utilisÃ© "en mÃªme temps" qu' le client
+    // utiliser userPanelPeas. Cela mÃ©lange les objets selectionnÃ©e.
 
     String destination = "";
     NotificationUserSessionController nuSC = (NotificationUserSessionController) componentSC;
@@ -135,11 +133,11 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         request.setAttribute("SelectedIdUsers", selectedIdUsers);
         request.setAttribute("SelectedIdGroups", selectedIdGroups);
       } else if (function.equals("SetTarget")) {
-        // récupération des is des objet selectionés
+        // rÃ©cupÃ©ration des is des objet selectionÃ©s
         String[] idUsers = request.getParameterValues("selectedUsers");
         String[] idGroups = request.getParameterValues("selectedGroups");
 
-        // paramètres jsp
+        // paramÃ¨tres jsp
         popupMode = request.getParameter("popupMode");
         editTargets = request.getParameter("editTargets");
         txtTitle = request.getParameter("txtTitle");
@@ -155,16 +153,16 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         StringBuffer paramValue = new StringBuffer("?popupMode=")
             .append(popupMode);
 
-        // initialisation des paramètres d'initialisations de
+        // initialisation des paramÃ¨tres d'initialisations de
         // UserPanel/UserPanelPeas
         destination = nuSC.initSelectionPeas(idUsers, idGroups, paramValue
             .toString());
       } else if (function.startsWith("GetTarget")) {
-        // récupération des objets sélélectionnés
+        // rÃ©cupÃ©ration des objets sÃ©lÃ©lectionnÃ©s
         String[] selectedIdUsers = nuSC.getTargetIdUsers();
         String[] selectedIdGroups = nuSC.getTargetIdGroups();
 
-        // paramètres jsp
+        // paramÃ¨tres jsp
         popupMode = request.getParameter("popupMode");
         editTargets = request.getParameter("editTargets");
 
@@ -185,7 +183,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
             "NotificationUserRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
 
-        // récupération des donnés sélélectionnées
+        // rÃ©cupÃ©ration des donnÃ©s sÃ©lÃ©lectionnÃ©es
         String[] selectedIdUsers = request.getParameterValues("selectedUsers");
         String[] selectedIdGroups = request
             .getParameterValues("selectedGroups");
@@ -200,7 +198,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
               "root.MSG_GEN_PARAM_VALUE", "value=" + request.getParameter(nom));
         }
 
-        // paramètres jsp
+        // paramÃ¨tres jsp
         notificationId = request.getParameter("notificationId");
         priorityId = request.getParameter("priorityId");
         txtTitle = request.getParameter("txtTitle");

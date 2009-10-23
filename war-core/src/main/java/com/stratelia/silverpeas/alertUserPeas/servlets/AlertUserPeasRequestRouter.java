@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.alertUserPeas.servlets;
 
@@ -39,21 +37,21 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -73,7 +71,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -97,8 +95,8 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
       // groupes
       {
         destination = scc.initSelection();
-      } else if (function.startsWith("FromSelection")) // récupère les users et
-      // groupes selectionnés
+      } else if (function.startsWith("FromSelection")) // rÃ©cupÃ¨re les users et
+      // groupes selectionnÃ©s
       // au travers de
       // selectionPeas et les
       // place en session
@@ -117,8 +115,8 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
         // ou groupes
         // selectionnes
         // => fermeture
-        // fenêtre
-      } else if (function.startsWith("Close")) // fermeture de la fenêtre
+        // fenÃªtre
+      } else if (function.startsWith("Close")) // fermeture de la fenÃªtre
       {
         destination = "/alertUserPeas/jsp/close.jsp";
       } else if (function.startsWith("ToAlert")) // nav vers message attente

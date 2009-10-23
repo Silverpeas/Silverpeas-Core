@@ -21,12 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 /*
  * CommunicationUserSessionControl.java
- * 
+ *
  */
 
 package com.silverpeas.communicationUser.control;
@@ -55,7 +55,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
- * 
+ *
  * @author dlesimple
  * @version
  */
@@ -71,11 +71,11 @@ public class CommunicationUserSessionController extends
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @see
    */
   public CommunicationUserSessionController(
@@ -94,7 +94,7 @@ public class CommunicationUserSessionController extends
 
   /**
    * Get nb of connected users
-   * 
+   *
    * @author dlesimple
    * @return
    */
@@ -104,7 +104,7 @@ public class CommunicationUserSessionController extends
 
   /**
    * Get connected users
-   * 
+   *
    * @author dlesimple
    * @return Collection of connected Users
    */
@@ -114,7 +114,7 @@ public class CommunicationUserSessionController extends
 
   /**
    * Get UserDetail
-   * 
+   *
    * @param userId
    * @return User
    */
@@ -124,7 +124,7 @@ public class CommunicationUserSessionController extends
 
   /**
    * Send message to user
-   * 
+   *
    * @param userId
    * @param message
    */
@@ -209,14 +209,14 @@ public class CommunicationUserSessionController extends
       throws CommunicationUserException {
     String currentUserId = this.getUserId();
 
-    // serveur de fichiers : récupérer la discussion en cours entre ces 2
+    // serveur de fichiers : rÃ©cupÃ©rer la discussion en cours entre ces 2
     // utilisateurs
     return getExistingFileDiscussion(userId, currentUserId);
   }
 
   private File getExistingFileDiscussion(String userId, String currentUserId)
       throws CommunicationUserException {
-    // serveur de fichiers : récupérer la discussion entre userId et
+    // serveur de fichiers : rÃ©cupÃ©rer la discussion entre userId et
     // currentUserId
     if (getPathDiscussions() != null) {
       try {
@@ -251,12 +251,12 @@ public class CommunicationUserSessionController extends
 
   public File createDiscussion(String userId) throws CommunicationUserException {
     String currentUserId = this.getUserId();
-    // serveur de fichiers : crée le fichier userId1.userId2.txt
+    // serveur de fichiers : crÃ©e le fichier userId1.userId2.txt
     if (getPathDiscussions() != null) {
       try {
         File directory = new File(getPathDiscussions());
         if (directory.isDirectory()) {
-          /* Création d'un nouveau fichier sous la bonne arborescence */
+          /* CrÃ©ation d'un nouveau fichier sous la bonne arborescence */
           File discussion = new File(directory, currentUserId + "." + userId
               + ".txt");
 
@@ -286,7 +286,7 @@ public class CommunicationUserSessionController extends
 
   public String getDiscussion(File fileDiscussion)
       throws CommunicationUserException {
-    // serveur de fichiers : récupérer la discussion en cours entre ces 2
+    // serveur de fichiers : rÃ©cupÃ©rer la discussion en cours entre ces 2
     // utilisateurs
     try {
       /* lecture du contenu du fichier */
@@ -311,7 +311,7 @@ public class CommunicationUserSessionController extends
 
   public void addMessageDiscussion(File fileDiscussion, String message)
       throws CommunicationUserException {
-    // serveur de fichiers : récupérer la discussion en cours entre ces 2
+    // serveur de fichiers : rÃ©cupÃ©rer la discussion en cours entre ces 2
     // utilisateurs
     if (getPathDiscussions() != null) {
       try {
@@ -320,7 +320,7 @@ public class CommunicationUserSessionController extends
 
         messages += message + "\n";
 
-        // écrase le contenu du fichier avec ce nouveau contenu
+        // Ã©crase le contenu du fichier avec ce nouveau contenu
         FileFolderManager.createFile(getPathDiscussions(), fileDiscussion
             .getName(), messages);
 
@@ -335,7 +335,7 @@ public class CommunicationUserSessionController extends
   public void clearDiscussion(File fileDiscussion)
       throws CommunicationUserException {
     if (getPathDiscussions() != null) {
-      // écrase le contenu du fichier avec ce nouveau contenu vide
+      // Ã©crase le contenu du fichier avec ce nouveau contenu vide
       try {
         FileFolderManager.createFile(getPathDiscussions(), fileDiscussion
             .getName(), " ");

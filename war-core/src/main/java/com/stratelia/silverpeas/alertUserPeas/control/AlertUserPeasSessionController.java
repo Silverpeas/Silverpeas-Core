@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.alertUserPeas.control;
 
@@ -46,8 +44,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class AlertUserPeasSessionController extends
@@ -61,13 +59,13 @@ public class AlertUserPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public AlertUserPeasSessionController(MainSessionController mainSessionCtrl,
@@ -128,9 +126,9 @@ public class AlertUserPeasSessionController extends
     m_Selection.setGoBackURL(goUrl);
     m_Selection.setCancelURL(cancelUrl);
 
-    // bien que le up s'affiche en popup, le mÈcanisme de fermeture est assurÈ
-    // par le composant=> il est donc nÈcessaire d'indiquer
-    // ‡ l'UserPanelPeas de ne pas s'occuper de cette fermeture!
+    // bien que le up s'affiche en popup, le m√©canisme de fermeture est assur√©
+    // par le composant=> il est donc n√©cessaire d'indiquer
+    // √† l'UserPanelPeas de ne pas s'occuper de cette fermeture!
     m_Selection.setHostPath(null);
     m_Selection.setHostComponentName(getHostComponentName());
     m_Selection.setHostSpaceName(getHostSpaceName());
@@ -143,7 +141,7 @@ public class AlertUserPeasSessionController extends
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
-  // recupÈration des users et groupes selectionnÈs au travers de selectionPeas
+  // recup√©ration des users et groupes selectionn√©s au travers de selectionPeas
   public void computeSelection() {
     m_userRecipients = SelectionUsersGroups.getUserDetails(m_Selection
         .getSelectedElements());

@@ -43,7 +43,7 @@ public class TicketDAO
 {
 	public List<TicketDetail> getTicketsByUser(Connection con, String userId) throws SQLException
 	{
-		// récupérer toutes les tickets d'un utilisateur
+		// rÃ©cupÃ©rer toutes les tickets d'un utilisateur
 		ArrayList<TicketDetail> tickets = null;
 
 		String query = "select * from SB_fileSharing_ticket where creatorId = ? ";
@@ -68,10 +68,10 @@ public class TicketDAO
 		}
 		return tickets;
 	}
-	
+
 	public List<TicketDetail> getTicketsByComponentIds(Connection con, List<String> componentIds) throws SQLException
 	{
-		// récupérer toutes les tickets d'un utilisateur
+		// rÃ©cupÃ©rer toutes les tickets d'un utilisateur
 		ArrayList<TicketDetail> tickets = null;
 
 		String query = "select * from SB_fileSharing_ticket";
@@ -103,10 +103,10 @@ public class TicketDAO
 		}
 		return tickets;
 	}
-	
+
 	public TicketDetail getTicket(Connection con, String key) throws SQLException
 	{
-		// récupérer un ticket
+		// rÃ©cupÃ©rer un ticket
 		TicketDetail ticket = new TicketDetail();
 		String query = "select * from SB_fileSharing_ticket where keyFile = ? ";
 		PreparedStatement prepStmt = null;
@@ -121,7 +121,7 @@ public class TicketDAO
 				// recuperation des colonnes du resulSet et construction de l'objet photo
 				ticket = recupTicket(rs);
 			}
-			// récupérer la liste des téléchargements
+			// rÃ©cupÃ©rer la liste des tÃ©lÃ©chargements
 			ticket.setDownloads(getAllDownloads(con, key));
 		}
 		finally
@@ -134,7 +134,7 @@ public class TicketDAO
 
 	public void deleteTicketsByFile(Connection con, String fileId, boolean versioning) throws SQLException
 	{
-		// récupérer toutes les tickets associés à un fichier
+		// rÃ©cupÃ©rer toutes les tickets associÃ©s Ã  un fichier
 		String query = "select keyFile from SB_fileSharing_ticket where fileId = ?";
 		String and = " and versioning = 0";
 		if (versioning)
@@ -159,12 +159,12 @@ public class TicketDAO
 			DBUtil.close(rs, prepStmt);
 		}
 	}
-	
-	
-	
+
+
+
 	public List<DownloadDetail> getAllDownloads(Connection con, String key) throws SQLException
 	{
-		// récupérer tous les downloads sur un ticket
+		// rÃ©cupÃ©rer tous les downloads sur un ticket
 		List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
 
 		String query = "select * from SB_fileSharing_history where keyFile = ?";
@@ -188,26 +188,26 @@ public class TicketDAO
 		}
 		return downloads;
 	}
-		
+
 	public static String createTicket(Connection con, TicketDetail ticket) throws SQLException
 
 	{
-		// Création d'une commande
+		// CrÃ©ation d'une commande
 		String key = createUniKey();
 		PreparedStatement prepStmt = null;
 		try
 		{
 			Date today = new Date();
-			// création de la requête
+			// crÃ©ation de la requÃªte
 			String query = "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"+
 			               " values (?,?,?,?,?,?,?,?)";
-			// initialisation des paramètres
+			// initialisation des paramÃ¨tres
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setInt(1, ticket.getFileId());
 			prepStmt.setString(2, ticket.getComponentId());
 			prepStmt.setInt(3, 0);
 			if (ticket.isVersioning())
-				prepStmt.setInt(3, 1);			
+				prepStmt.setInt(3, 1);
 			prepStmt.setString(4,ticket.getCreatorId());
 			prepStmt.setString(5,"" +today.getTime());
 			Date endDate = ticket.getEndDate();
@@ -217,13 +217,13 @@ public class TicketDAO
 			calendar.set(Calendar.MINUTE, 59);
 			calendar.set(Calendar.SECOND, 59);
 			prepStmt.setString(6, Long.toString(calendar.getTime().getTime()));
-			prepStmt.setInt(7, ticket.getNbAccessMax());			
+			prepStmt.setInt(7, ticket.getNbAccessMax());
 			prepStmt.setString(8,key);
 			prepStmt.executeUpdate();
 		}catch(Exception e) {
 			//TODO trace
 			return null;
-		}		
+		}
 		finally
 		{
 			// fermeture
@@ -231,7 +231,7 @@ public class TicketDAO
 		}
 		return key;
 	}
-	
+
 	public void updateTicket(Connection con, TicketDetail ticket) throws SQLException
 	{
 		PreparedStatement prepStmt = null;
@@ -240,7 +240,7 @@ public class TicketDAO
 			Date today = new Date();
 			String query = "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , " +
 					"endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
-			// initialisation des paramètres
+			// initialisation des paramÃ¨tres
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setInt(1, ticket.getFileId());
 			prepStmt.setString(2, ticket.getComponentId());
@@ -258,7 +258,7 @@ public class TicketDAO
 			prepStmt.setInt(6, ticket.getNbAccessMax());
 			prepStmt.setInt(7, ticket.getNbAccess());
 			prepStmt.setString(8,ticket.getKeyFile());
-			
+
 			prepStmt.executeUpdate();
 		}
 		finally
@@ -267,17 +267,17 @@ public class TicketDAO
 			DBUtil.close(prepStmt);
 		}
 	}
-	
-	public void addDownload(Connection con, DownloadDetail download) throws SQLException, UtilException 
+
+	public void addDownload(Connection con, DownloadDetail download) throws SQLException, UtilException
 	{
-		// Ajout d'un téléchargement
+		// Ajout d'un tÃ©lÃ©chargement
 		PreparedStatement prepStmt = null;
 		try
 		{
-			// création de la requête
+			// crÃ©ation de la requÃªte
 			String query = "insert into SB_fileSharing_history (id, keyfile, downloadDate, downloadIp)"+
 			               " values (?,?,?,?)";
-			// initialisation des paramètres
+			// initialisation des paramÃ¨tres
 			int id = DBUtil.getNextId("SB_fileSharing_history", "id");
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setInt(1, id);
@@ -292,13 +292,13 @@ public class TicketDAO
 			DBUtil.close(prepStmt);
 		}
 	}
-	
-	private static void deleteDownloads(Connection con, String key) throws SQLException 
+
+	private static void deleteDownloads(Connection con, String key) throws SQLException
 	{
 		PreparedStatement prepStmt = null;
 		try
 		{
-			// création de la requête
+			// crÃ©ation de la requÃªte
 			String query = "delete from SB_fileSharing_history where keyfile = ? ";
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setString(1, key);
@@ -310,15 +310,15 @@ public class TicketDAO
 			DBUtil.close(prepStmt);
 		}
 	}
-	
-	public static void deleteTicket(Connection con, String key) throws SQLException 
+
+	public static void deleteTicket(Connection con, String key) throws SQLException
 	{
 		PreparedStatement prepStmt = null;
 		try
 		{
 			//delete according history
 			deleteDownloads(con, key);
-			
+
 			String query = "delete from SB_fileSharing_ticket where keyFile = ? ";
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setString(1, key);
@@ -330,19 +330,19 @@ public class TicketDAO
 			DBUtil.close(prepStmt);
 		}
 	}
-	 
+
 
 	public static String createUniKey()
 	{
 		return UUID.randomUUID().toString().substring(0,32);
 	}
 
-	   
+
 	protected TicketDetail recupTicket(ResultSet rs) throws SQLException
 	{
 		TicketDetail ticket = new TicketDetail();
 		// recuperation des colonnes du resulSet et construction de l'objet ticket
-		
+
 		ticket.setFileId(rs.getInt("fileId"));
 		ticket.setComponentId(rs.getString("componentId"));
 		boolean versioning = false;
@@ -395,16 +395,16 @@ public class TicketDAO
 		ticket.setNbAccess(rs.getInt("NbAccess"));
 		ticket.setKeyFile(rs.getString("KeyFile"));
 
-		
+
 		return ticket;
 	}
-	
+
 
 	protected DownloadDetail recupDownload(ResultSet rs) throws SQLException
 	{
 		DownloadDetail download = new DownloadDetail();
 		// recuperation des colonnes du resulSet et construction de l'objet download
-		
+
 		download.setId(rs.getInt("id"));
 		download.setKeyFile(rs.getString("keyFile"));
 		String downloadDate = rs.getString("downloadDate");
@@ -418,14 +418,14 @@ public class TicketDAO
 			{
 				download.setDownloadDate(new Date());
 			}
-			
+
 		}else {
 			download.setDownloadDate(new Date());
 		}
 		download.setUserIP(rs.getString("downloadIp"));
-		
+
 		return download;
 	}
-	
+
 
 }

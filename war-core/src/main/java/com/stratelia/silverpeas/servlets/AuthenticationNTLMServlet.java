@@ -232,7 +232,7 @@ public class AuthenticationNTLMServlet extends HttpServlet {
           && !authentificationKey.startsWith("Error")) {
         redirectURL = startURL + "LoginServlet?Key=" + authentificationKey;
       } else {
-        // mettre à jour le code erreur : "2" = problème technique
+        // mettre a jour le code erreur : "2" = probleme technique
         // "1" = login ou mot de passe incorrect
         String errorCode = "2";
         if ("Error_1".equals(authentificationKey))

@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Created on 5 août 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import java.util.ArrayList;

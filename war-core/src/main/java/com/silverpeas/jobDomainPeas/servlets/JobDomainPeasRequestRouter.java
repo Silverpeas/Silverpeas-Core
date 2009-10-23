@@ -762,12 +762,12 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("Pagination")) {
         processSelection(request, jobDomainSC);
 
-        // traitement de la pagination : passage des paramètres
+        // traitement de la pagination : passage des parametres
         String index = request.getParameter("Pagination_Index");
 
         if (index != null && index.length() > 0)
           jobDomainSC.setIndexOfFirstItemToDisplay(index);
-        // retour à l'album courant
+        // retour a l'album courant
         request.setAttribute("Query", jobDomainSC.getQueryToImport());
         request.setAttribute("Users", jobDomainSC.getUsersToImport());
         destination = getDestination("displayUserImport", jobDomainSC, request);

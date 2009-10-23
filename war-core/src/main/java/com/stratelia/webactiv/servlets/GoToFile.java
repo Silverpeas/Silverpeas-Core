@@ -51,7 +51,7 @@ public class GoToFile extends GoTo {
 
     if (isLoggedIn) {
       boolean isAccessAuthorized = false;
-      // L'utilisateur est dÈj‡ logguÈ
+      // L'utilisateur est d√©j√† loggu√©
       if (isUserAllowed(req, componentId)) {
         // L'utilisateur a-t-il le droit de consulter le fichier/la publication
         isAccessAuthorized = true;

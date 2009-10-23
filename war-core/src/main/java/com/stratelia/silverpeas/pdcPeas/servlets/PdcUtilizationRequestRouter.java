@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
@@ -62,7 +62,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -135,7 +135,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
         String axisId = request.getParameter("Id");
         Axis axis = pdcSC.getAxisDetail(axisId);
 
-        // Recherche si cet axe est dÈj‡ utilisÈ
+        // Recherche si cet axe est d√©j√† utilis√©
         List list = pdcSC.getUsedAxisByInstanceId();
         UsedAxis usedAxis = null;
         Integer isMandatory = null;
@@ -143,8 +143,8 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
         for (int i = 0; i < list.size(); i++) {
           usedAxis = (UsedAxis) list.get(i);
           if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
-            // L'axe est dÈj‡ utilisÈ
-            // On rÈcupËre ses paramÍtres
+            // L'axe est d√©j√† utilis√©
+            // On r√©cup√®re ses param√™tres
             isMandatory = new Integer(usedAxis.getMandatory());
             isVariant = new Integer(usedAxis.getVariant());
             break;
@@ -188,15 +188,15 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 
             String axisId = request.getParameter("Id");
 
-            // Recherche si cet axe est dÈj‡ utilisÈ
+            // Recherche si cet axe est d√©j√† utilis√©
             List list = pdcSC.getUsedAxisByInstanceId();
             Integer isMandatory = null;
             Integer isVariant = null;
             for (int i = 0; i < list.size(); i++) {
               usedAxis = (UsedAxis) list.get(i);
               if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
-                // L'axe est dÈj‡ utilisÈ
-                // On rÈcupËre ses paramÍtres
+                // L'axe est d√©j√† utilis√©
+                // On r√©cup√®re ses param√™tres
                 isMandatory = new Integer(usedAxis.getMandatory());
                 isVariant = new Integer(usedAxis.getVariant());
                 break;

@@ -45,7 +45,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#isComponentRss(java.lang.String)
    */
   public boolean isComponentRss(String userIdAgenda) {
@@ -54,7 +54,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.silverpeas.peasUtil.RssServlet#isComponentAvailable(java.lang.String,
    * java.lang.String)
@@ -77,14 +77,14 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
    * int)
    */
   public Collection getListElements(String userIdAgenda, int nbReturned)
       throws RemoteException {
-    // récupération de la liste des 10 prochains événements de l'Agenda du user
-    // passé en paramètre
+    // rÃ©cupÃ©ration de la liste des 10 prochains Ã©vÃ©nements de l'Agenda du user
+    // passÃ© en paramÃ¨tre
     Collection events;
     try {
       events = AgendaAccess.getJournalHeadersForUserAfterDate(userIdAgenda,
@@ -97,7 +97,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
    * java.lang.String)
    */
@@ -118,7 +118,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
    * java.lang.String)
    */
@@ -126,17 +126,17 @@ public class AgendaRssServlet extends RssServlet {
     JournalHeader event = (JournalHeader) element;
     String eventUrl = URLManager.getApplicationURL()
         + "/Ragenda/jsp/journal.jsp?Action=Update&JournalId=" + event.getId(); // par
-    // défaut,
+    // dÃ©faut,
     // lien
     // sur
-    // l'événement
+    // l'Ã©vÃ©nement
     // en
     // lui-meme
     // URL eventUrl = new
     // URL(getServerURL()+URLManager.getApplicationURL()+"/Journal/"+event.getId());
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
-      // lien sur le calendrier à la date de l'événement
+      // lien sur le calendrier Ã  la date de l'Ã©vÃ©nement
       eventUrl = URLManager.getApplicationURL() + "/Agenda/"
           + event.getDelegatorId();
     }
@@ -146,7 +146,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
@@ -163,7 +163,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
   public Date getElementDate(Object element) {

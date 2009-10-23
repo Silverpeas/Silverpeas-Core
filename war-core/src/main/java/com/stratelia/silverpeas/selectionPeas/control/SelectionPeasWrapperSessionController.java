@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.selectionPeas.control;
 
@@ -39,7 +37,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * A simple wrapper to the userpanel.
- * 
+ *
  * @author Didier Wenzek
  */
 public class SelectionPeasWrapperSessionController extends
@@ -49,7 +47,7 @@ public class SelectionPeasWrapperSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
+   *
    * @param mainSessionCtrl
    *          The full work session.
    * @param componentContext
@@ -169,7 +167,7 @@ public class SelectionPeasWrapperSessionController extends
       sel.setExtraParams(sug);
     }
 
-    // Initialisation des éléments sélectionnés
+    // Initialisation des Ã©lÃ©ments sÃ©lectionnÃ©s
     sel.setSelectedElements(selectedUserIds);
 
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

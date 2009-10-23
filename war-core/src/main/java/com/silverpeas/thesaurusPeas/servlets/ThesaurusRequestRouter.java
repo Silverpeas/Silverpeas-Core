@@ -61,7 +61,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -146,7 +146,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
         String nom = request.getParameter("nom");
         String desc = request.getParameter("description");
         long id = scc.createVocabulary(nom, desc);
-        if (id == -1) // pb : le vocabulaire existe déjà
+        if (id == -1) // pb : le vocabulaire existe dÃ©jÃ 
         {
           scc.setCurrentUpdVoca(nom, desc);
           destination = "/thesaurusPeas/jsp/errorCreateVocabulary.jsp";
@@ -169,7 +169,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
         String nom = request.getParameter("nom");
         String desc = request.getParameter("description");
         long id = scc.updateVocabulary(nom, desc);
-        if (id == -1) // pb : un vocabulaire de même nom existe déjà
+        if (id == -1) // pb : un vocabulaire de mÃªme nom existe dÃ©jÃ 
         {
           scc.setCurrentUpdVoca(nom, desc);
           destination = "/thesaurusPeas/jsp/errorUpdateVocabulary.jsp";

@@ -82,7 +82,7 @@ public class AjaxCommunicationUserServlet extends HttpServlet {
       }
 
       if (!trouve) {
-        throw new IOException("Fichier de discussion non trouvé !!");
+        throw new IOException("Fichier de discussion non trouvÃ© !!");
       }
 
       // Post

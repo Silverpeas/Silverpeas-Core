@@ -49,13 +49,13 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -66,7 +66,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -137,18 +137,18 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         // appel jsp
         destination = rootDest + "linkManager.jsp";
       } else if (function.equals("CreateLink")) {
-        // récupération des paramètres venus de l'écran de saisie et création de
+        // rÃ©cupÃ©ration des paramÃ¨tres venus de l'Ã©cran de saisie et crÃ©ation de
         // l'objet LinkDetail
         LinkDetail link = generateLink(request);
         myLinksSC.createLink(link);
         // retour sur le liste des liens
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("CreateLinkFromComponent")) {
-        // récupération des paramètres transmis et création de l'objet
+        // rÃ©cupÃ©ration des paramÃ¨tres transmis et crÃ©ation de l'objet
         // LinkDetail
         LinkDetail link = generateLink(request);
         myLinksSC.createLink(link);
-        // affichage d'une fenêtre de confirmation
+        // affichage d'une fenÃªtre de confirmation
         destination = rootDest + "confirm.jsp";
       } else if (function.equals("EditLink")) {
         String linkId = request.getParameter("LinkId");
@@ -161,7 +161,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         // appel jsp
         destination = rootDest + "linkManager.jsp";
       } else if (function.equals("UpdateLink")) {
-        // récupération des paramètres venus de l'écran de saisie
+        // rÃ©cupÃ©ration des paramÃ¨tres venus de l'Ã©cran de saisie
         String linkId = request.getParameter("LinkId");
         LinkDetail link = generateLink(request);
         link.setLinkId(Integer.parseInt(linkId));
@@ -194,7 +194,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
     String url = request.getParameter("Url");
-    // supprimer le context en début d'url
+    // supprimer le context en dÃ©but d'url
     String sRequestURL = HttpUtils.getRequestURL(request).toString();
     String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
         - request.getRequestURI().length());

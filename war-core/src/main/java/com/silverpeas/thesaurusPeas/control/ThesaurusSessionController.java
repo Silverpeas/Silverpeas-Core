@@ -68,7 +68,7 @@ public class ThesaurusSessionController extends
   // groupsSelected
   // n'ayant pas de
   // jargon
-  private Vocabulary currentUpdVoca = null; // vocabulaire en cours de création
+  private Vocabulary currentUpdVoca = null; // vocabulaire en cours de crÃ©ation
   // ou de modification
   private PdcBm pdcBm;
   private ThesaurusBm thBm;
@@ -153,12 +153,12 @@ public class ThesaurusSessionController extends
     setThBm();
   }
 
-  // *** méthodes métier *** //
+  // *** mÃ©thodes mÃ©tier *** //
 
   // *** Gestion des axes et termes *** /
   /**
    * Retourne la liste des axes (Collection Axis)
-   * 
+   *
    * @param
    * @return Collection
    * @throws ThesaurusException
@@ -177,8 +177,8 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne le détail d'un axe et le met en session (currentAxis)
-   * 
+   * Retourne le dÃ©tail d'un axe et le met en session (currentAxis)
+   *
    * @param idAxis
    * @return Axis
    * @throws ThesaurusException
@@ -202,7 +202,7 @@ public class ThesaurusSessionController extends
   /**
    * Retourne la liste des termes de l'axe courant
    * (getCurrentAxis().getValues())
-   * 
+   *
    * @param
    * @return Collection
    * @throws ThesaurusException
@@ -216,9 +216,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne le détail d'un terme à partir d'un idTerm et du rootId de l'axe
+   * Retourne le dÃ©tail d'un terme Ã  partir d'un idTerm et du rootId de l'axe
    * courant, met le terme en session (currentTerm)
-   * 
+   *
    * @param idTerm
    * @return Value
    * @see
@@ -247,7 +247,7 @@ public class ThesaurusSessionController extends
   // *** Gestion des vocabulaires *** //
   /**
    * Retourne la liste des vocabulaires
-   * 
+   *
    * @param
    * @return Collection
    * @throws ThesaurusException
@@ -267,8 +267,8 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne le détail d'un vocabulaire et le met en session (currentVoca)
-   * 
+   * Retourne le dÃ©tail d'un vocabulaire et le met en session (currentVoca)
+   *
    * @param idVoca
    * @return Vocabulary
    * @throws ThesaurusException
@@ -286,10 +286,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Crée en base un vocabulaire à partir du nom et de la description du
-   * vocabulaire Retourne l'id du vocabulaire créé ou -1 si le vocabulaire ne
-   * peut pas être créé car un vocabulaire de même nom existe
-   * 
+   * CrÃ©e en base un vocabulaire Ã  partir du nom et de la description du
+   * vocabulaire Retourne l'id du vocabulaire crÃ©Ã© ou -1 si le vocabulaire ne
+   * peut pas Ãªtre crÃ©Ã© car un vocabulaire de mÃªme nom existe
+   *
    * @param name
    * @param desc
    * @return long
@@ -310,7 +310,7 @@ public class ThesaurusSessionController extends
 
   /**
    * Indique si un vocabulaire de nom "name" existe
-   * 
+   *
    * @param name
    * @return boolean
    * @throws ThesaurusException
@@ -321,10 +321,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Affecte au vocabualire courant le nom et la description en paramètre et
-   * enregistre en base Retourne -1 si le vocabulaire ne peut pas être modifié
-   * car un vocabulaire de même nom existe, 0 sinon
-   * 
+   * Affecte au vocabualire courant le nom et la description en paramÃ¨tre et
+   * enregistre en base Retourne -1 si le vocabulaire ne peut pas Ãªtre modifiÃ©
+   * car un vocabulaire de mÃªme nom existe, 0 sinon
+   *
    * @param name
    * @param desc
    * @return
@@ -343,8 +343,8 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Supprime un vocabulaire à partir de son id
-   * 
+   * Supprime un vocabulaire Ã  partir de son id
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -356,7 +356,7 @@ public class ThesaurusSessionController extends
 
   /**
    * Supprime le vocabulaire courant
-   * 
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -373,7 +373,7 @@ public class ThesaurusSessionController extends
   /**
    * Retourne un nouveau Synonyme pour le terme et le vocabulaire courant (new
    * Synonym(), set ...)
-   * 
+   *
    * @param name
    * @return Synonym
    * @throws ThesaurusException
@@ -396,7 +396,7 @@ public class ThesaurusSessionController extends
 
   /**
    * Retourne la liste des synonymes du vocabulaire et du terme courant
-   * 
+   *
    * @param
    * @return Collection
    * @throws ThesaurusException
@@ -413,8 +413,8 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Met à jour la liste des synonymes du vocabulaire et du terme courant
-   * 
+   * Met Ã  jour la liste des synonymes du vocabulaire et du terme courant
+   *
    * @param names
    * @return
    * @throws ThesaurusException
@@ -438,8 +438,8 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Supprime un ensemble de synonymes à partir de leur id
-   * 
+   * Supprime un ensemble de synonymes Ã  partir de leur id
+   *
    * @param idSynonyms
    * @return
    * @throws ThesaurusException
@@ -449,11 +449,11 @@ public class ThesaurusSessionController extends
     getThBm().deleteSynonyms(idSynonyms);
   }
 
-  // *** Gestion des users et groupes affectés aux vocabulaire *** //
+  // *** Gestion des users et groupes affectÃ©s aux vocabulaire *** //
   /**
    * Retourne la liste des users ou groupes utilisant le vocabulaire courant
    * (Collection Jargon)
-   * 
+   *
    * @param
    * @return Collection
    * @throws ThesaurusException
@@ -478,9 +478,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Paramètre le userPannel => tous les users et groupes, users et groupes
-   * affectés au voca courant sont sélectionnés
-   * 
+   * ParamÃ¨tre le userPannel => tous les users et groupes, users et groupes
+   * affectÃ©s au voca courant sont sÃ©lectionnÃ©s
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -541,8 +541,8 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Paramètre le userPannel => tous les users et groupes, aucun sélectionné
-   * 
+   * ParamÃ¨tre le userPannel => tous les users et groupes, aucun sÃ©lectionnÃ©
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -576,10 +576,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * met en session les jargons des users et groupes sélectionnés au travers du
+   * met en session les jargons des users et groupes sÃ©lectionnÃ©s au travers du
    * userPanel met en session la liste des users et la liste des groupes
-   * sélectionnés au travers du userPanel
-   * 
+   * sÃ©lectionnÃ©s au travers du userPanel
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -598,9 +598,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * met en session les jargons des users et groupes sélectionnés au travers du
+   * met en session les jargons des users et groupes sÃ©lectionnÃ©s au travers du
    * userPanel
-   * 
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -612,9 +612,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Set la liste des jargons pour la liste des users et groupes sélectionnés au
+   * Set la liste des jargons pour la liste des users et groupes sÃ©lectionnÃ©s au
    * travers du userPanel ayant un jargon
-   * 
+   *
    * @param
    * @return Collection
    * @throws ThesaurusException
@@ -642,9 +642,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Set la liste des jargons pour la liste des users et groupes sélectionnés au
+   * Set la liste des jargons pour la liste des users et groupes sÃ©lectionnÃ©s au
    * travers du userPanel n'ayant pas de jargons
-   * 
+   *
    * @param
    * @return
    * @see
@@ -681,9 +681,9 @@ public class ThesaurusSessionController extends
 
   /**
    * Enregistre l'affectation au vocabulaire courant de tous les users et
-   * groupes sélectionnés au travers du userPanel s'il n'existe pas de conflits
+   * groupes sÃ©lectionnÃ©s au travers du userPanel s'il n'existe pas de conflits
    * Retourne le nombre de conflits
-   * 
+   *
    * @param
    * @return int
    * @throws ThesaurusException
@@ -700,10 +700,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Enregistre l'affectation au vocabulaire passé en paramètre de tous les
-   * users et groupes sélectionnés au travers du userPanel s'il n'existe pas de
+   * Enregistre l'affectation au vocabulaire passÃ© en paramÃ¨tre de tous les
+   * users et groupes sÃ©lectionnÃ©s au travers du userPanel s'il n'existe pas de
    * conflits Retourne le nombre de conflits
-   * 
+   *
    * @param idVoca
    * @return int
    * @throws ThesaurusException
@@ -724,10 +724,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne le nombre de conflits : nbre de user ou groupe sélectionnés au
-   * travers du userPanel... ... qui possède déjà une affectation autre que
-   * celle au vocabulaire passé en paramètre
-   * 
+   * Retourne le nombre de conflits : nbre de user ou groupe sÃ©lectionnÃ©s au
+   * travers du userPanel... ... qui possÃ¨de dÃ©jÃ  une affectation autre que
+   * celle au vocabulaire passÃ© en paramÃ¨tre
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -748,8 +748,8 @@ public class ThesaurusSessionController extends
 
   /**
    * Enregistre en base les affectations au vocabulaire courant de tous les
-   * users et groupes sélectionnés au travers du userPanel
-   * 
+   * users et groupes sÃ©lectionnÃ©s au travers du userPanel
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -762,9 +762,9 @@ public class ThesaurusSessionController extends
 
   /**
    * Enregistre en base les affectations au vocabulaire courant de tous les
-   * users et groupes sélectionnés au travers du userPanel et ... ... n'ayant
-   * pas déjà une affectation autre que celle au vocabulaire courant
-   * 
+   * users et groupes sÃ©lectionnÃ©s au travers du userPanel et ... ... n'ayant
+   * pas dÃ©jÃ  une affectation autre que celle au vocabulaire courant
+   *
    * @param
    * @return
    * @throws ThesaurusException
@@ -779,9 +779,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Enregistre en base les affectations au vocabulaire passé en paramètre de
-   * tous les users et groupes sélectionnés au travers du userPanel
-   * 
+   * Enregistre en base les affectations au vocabulaire passÃ© en paramÃ¨tre de
+   * tous les users et groupes sÃ©lectionnÃ©s au travers du userPanel
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -792,10 +792,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Enregistre en base les affectations au vocabulaire passé en paramètre de
-   * tous les users et groupes sélectionnés au travers du userPanel et ... ...
-   * n'ayant pas déjà une affectation autre que celle au vocabulaire
-   * 
+   * Enregistre en base les affectations au vocabulaire passÃ© en paramÃ¨tre de
+   * tous les users et groupes sÃ©lectionnÃ©s au travers du userPanel et ... ...
+   * n'ayant pas dÃ©jÃ  une affectation autre que celle au vocabulaire
+   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -806,12 +806,12 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne la liste des nouvelles affectations (à enregistrer) pour la liste
-   * des users et groupes sélectionnés au travers du userPanel i.e. vérifie pour
-   * chaque user et groupe s'ils n'ont pas un jargon différent de idVoca dans la
-   * liste des jargons ... ... des users et groupes sélectionnés
+   * Retourne la liste des nouvelles affectations (Ã  enregistrer) pour la liste
+   * des users et groupes sÃ©lectionnÃ©s au travers du userPanel i.e. vÃ©rifie pour
+   * chaque user et groupe s'ils n'ont pas un jargon diffÃ©rent de idVoca dans la
+   * liste des jargons ... ... des users et groupes sÃ©lectionnÃ©s
    * (jargonsSelected)
-   * 
+   *
    * @param idVoca
    * @return Collection
    * @see
@@ -832,10 +832,10 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne la liste des affectations (à enregistrer) portant sur le
-   * vocabulaire pour la liste des users et groupes sélectionnés au travers du
+   * Retourne la liste des affectations (Ã  enregistrer) portant sur le
+   * vocabulaire pour la liste des users et groupes sÃ©lectionnÃ©s au travers du
    * userPanel
-   * 
+   *
    * @param idVoca
    * @return Collection
    * @see
@@ -853,9 +853,9 @@ public class ThesaurusSessionController extends
   }
 
   /**
-   * Retourne la liste de toutes les affectations (à enregistrer) pour la liste
-   * des users et groupes sélectionnés au travers du userPanel
-   * 
+   * Retourne la liste de toutes les affectations (Ã  enregistrer) pour la liste
+   * des users et groupes sÃ©lectionnÃ©s au travers du userPanel
+   *
    * @param idVoca
    * @return Collection
    * @see
@@ -878,8 +878,8 @@ public class ThesaurusSessionController extends
 
   /**
    * Supprime l'affectation de vocabulaire actuel de la liste des users et
-   * groupes sélectionnés au travers du userPanel
-   * 
+   * groupes sÃ©lectionnÃ©s au travers du userPanel
+   *
    * @param
    * @return
    * @see

@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration Get cumul datas from database to access and Volume
- * 
+ *
  * @author
  */
 public class SilverStatisticsPeasDAOAccesVolume {
@@ -69,10 +69,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
   }
 
   /**
-   * donne les stats sur le nombre d'accès
-   * 
+   * donne les stats sur le nombre d'accÃ¨s
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    */
   public static Hashtable getStatsUserVentil(String dateStat,
@@ -113,7 +113,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       tabManageableSpaceIds = myAdminController
           .getUserManageableSpaceClientIds(currentUserId);
 
-      // filtre les composants autorisés selon les droits de l'utilisateur
+      // filtre les composants autorisÃ©s selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
       for (int i = 0; i < tabManageableSpaceIds.length; i++) {
         if (spaceId.equals(tabManageableSpaceIds[i])) {
@@ -132,7 +132,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     // Query Groupe
     if (!filterIdGroup.equals("")) {
 
-      // préremplit tout avec 0
+      // prÃ©remplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
         cmpId = (String) it.next();
@@ -166,7 +166,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     // Query User
     if (!filterIdUser.equals("")) {
 
-      // préremplit tout avec 0
+      // prÃ©remplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
         cmpId = (String) it.next();
@@ -198,10 +198,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
   }
 
   /**
-   * donne les stats sur le nombre d'accès
-   * 
+   * donne les stats sur le nombre d'accÃ¨s
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    * @throws ParseException
    */
@@ -268,15 +268,15 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param selectQuery
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    * @throws ParseException
-   * 
+   *
    * @see
    */
   private static Collection getStatsUserFromQuery(String selectQuery)
@@ -303,15 +303,15 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param rs
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    * @throws ParseException
-   * 
+   *
    * @see
    */
   private static Collection getStatsUserFromResultSet(ResultSet rs)
@@ -337,7 +337,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       while (dateRef.compareTo(date) < 0) {
         stat = new String[2];
         stat[0] = dateRef; // date
-        stat[1] = "0"; // nb Accès
+        stat[1] = "0"; // nb AccÃ¨s
         myList.add(stat);
 
         // ajoute un mois
@@ -347,7 +347,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
       stat = new String[2];
       stat[0] = date; // date
-      stat[1] = Long.toString(count); // nb Accès
+      stat[1] = Long.toString(count); // nb AccÃ¨s
       myList.add(stat);
 
       // ajoute un mois
@@ -359,14 +359,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param selectQuery
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   private static Hashtable getHashtableFromQuery(String selectQuery)
@@ -393,14 +393,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param rs
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
-   * 
+   *
    * @see
    */
   private static Hashtable getHashtableFromResultset(ResultSet rs)
@@ -417,9 +417,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * donne les stats sur le nombre de publications
-   * 
+   *
    * @return
-   * 
+   *
    * @throws SQLException
    */
   public static Hashtable getStatsPublicationsVentil(String dateStat,
@@ -459,7 +459,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       tabManageableSpaceIds = myAdminController
           .getUserManageableSpaceClientIds(currentUserId);
 
-      // filtre les composants autorisés selon les droits de l'utilisateur
+      // filtre les composants autorisÃ©s selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
       for (int i = 0; i < tabManageableSpaceIds.length; i++) {
         if (spaceId.equals(tabManageableSpaceIds[i])) {
@@ -478,7 +478,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     // Query Groupe
     if (!filterIdGroup.equals("")) {
 
-      // préremplit tout avec 0
+      // prÃ©remplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
         cmpId = (String) it.next();
@@ -512,7 +512,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     // Query User
     if (!filterIdUser.equals("")) {
 
-      // préremplit tout avec 0
+      // prÃ©remplit tout avec 0
       it = resultat.keySet().iterator();
       while (it.hasNext()) {
         cmpId = (String) it.next();
@@ -577,10 +577,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   private static Connection getConnection() {
@@ -602,10 +602,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private static void freeConnection(Connection con) {

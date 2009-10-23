@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.silverpeas.communicationUser.servlets;
 
@@ -41,21 +39,21 @@ import com.silverpeas.communicationUser.control.*;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class CommunicationUserRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -76,7 +74,7 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -89,12 +87,12 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     // remarques
-    // tous les paramètres des la jsp sont transferé par la request.
-    // le UserPanel étant unique par session, il est impératif de récupérér les
-    // objets selectionnés via userPanel et de transporter
+    // tous les paramÃ¨tres des la jsp sont transferÃ© par la request.
+    // le UserPanel Ã©tant unique par session, il est impÃ©ratif de rÃ©cupÃ©rÃ©r les
+    // objets selectionnÃ©s via userPanel et de transporter
     // les id des ses de jsp en jsp en soumettant un formulaire.
-    // En effet, la communication peut être utilisé "en même temps" qu' le
-    // client utiliser userPanelPeas. Cela mélange les objets selectionnée.
+    // En effet, la communication peut Ãªtre utilisÃ© "en mÃªme temps" qu' le
+    // client utiliser userPanelPeas. Cela mÃ©lange les objets selectionnÃ©e.
 
     String destination = "";
     CommunicationUserSessionController commUserSC = (CommunicationUserSessionController) componentSC;
@@ -164,7 +162,7 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
           }
 
           if (!trouve) {
-            throw new IOException("Fichier de discussion non trouvé !!");
+            throw new IOException("Fichier de discussion non trouvÃ© !!");
           }
 
           request.setAttribute("FileDiscussion", fileDiscussion);
