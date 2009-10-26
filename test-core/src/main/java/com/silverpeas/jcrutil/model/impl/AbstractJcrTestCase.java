@@ -80,6 +80,15 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   public void setDataSource(DataSource datasource) {
     this.datasource = datasource;
     try {
+      Properties jndiProperties = new Properties();
+      jndiProperties.load(PathTestUtil.class.getClassLoader().
+          getResourceAsStream("jndi.properties"));
+      String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
+      File jndiDirectory = new File(jndiDirectoryPath);
+      if(!jndiDirectory.exists()){
+        jndiDirectory.mkdirs();
+        jndiDirectory.mkdir();
+      }
       Hashtable env = new Hashtable();
       env.put(Context.INITIAL_CONTEXT_FACTORY,
           "com.sun.jndi.fscontext.RefFSContextFactory");
