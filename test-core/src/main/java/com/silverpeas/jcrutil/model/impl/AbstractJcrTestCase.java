@@ -80,15 +80,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   public void setDataSource(DataSource datasource) {
     this.datasource = datasource;
     try {
-      Properties jndiProperties = new Properties();
-      jndiProperties.load(PathTestUtil.class.getClassLoader().
-          getResourceAsStream("jndi.properties"));
-      String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
-      File jndiDirectory = new File(jndiDirectoryPath);
-      if(!jndiDirectory.exists()){
-        jndiDirectory.mkdirs();
-        jndiDirectory.mkdir();
-      }
+      prepareJndi();
       Hashtable env = new Hashtable();
       env.put(Context.INITIAL_CONTEXT_FACTORY,
           "com.sun.jndi.fscontext.RefFSContextFactory");
@@ -248,6 +240,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
     try {
       connection = new DatabaseConnection(datasource.getConnection());
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+      cleanJndi();
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -258,6 +251,37 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
           e.printStackTrace();
         }
       }
+    }
+  }
+
+  /**
+   * Creates the directory for JNDI files ystem provider
+   * @throws IOException
+   */
+  protected void prepareJndi() throws IOException {
+    Properties jndiProperties = new Properties();
+    jndiProperties.load(PathTestUtil.class.getClassLoader().
+        getResourceAsStream("jndi.properties"));
+    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
+    File jndiDirectory = new File(jndiDirectoryPath);
+    if (!jndiDirectory.exists()) {
+      jndiDirectory.mkdirs();
+      jndiDirectory.mkdir();
+    }
+  }
+
+  /**
+   * Deletes the directory for JNDI files ystem provider
+   * @throws IOException
+   */
+  protected void cleanJndi() throws IOException {
+    Properties jndiProperties = new Properties();
+    jndiProperties.load(PathTestUtil.class.getClassLoader().
+        getResourceAsStream("jndi.properties"));
+    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
+    File jndiDirectory = new File(jndiDirectoryPath);
+    if (jndiDirectory.exists()) {
+      jndiDirectory.delete();
     }
   }
 
