@@ -274,7 +274,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
-   * Deletes the directory for JNDI files ystem provider
+   * Deletes the directory for JNDI file system provider
    * @throws IOException
    */
   protected void cleanJndi() throws IOException {
@@ -288,6 +288,13 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
     }
   }
 
+  /**
+   * Workaround to be able to use Sun's JNDI file system provider on Unix
+   * @param ic : the JNDI initial context
+   * @param jndiName : the binding name
+   * @param ref : the reference to be bound
+   * @throws NamingException
+   */
   protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
     Context currentContext = ic;
     StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);

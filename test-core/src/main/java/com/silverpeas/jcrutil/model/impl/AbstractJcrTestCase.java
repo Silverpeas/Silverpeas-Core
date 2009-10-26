@@ -60,6 +60,7 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import com.stratelia.webactiv.util.JNDINames;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpringContextTests {
 
@@ -104,8 +105,8 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
       ref.add(new StringRefAddr("maxWait", "5000"));
       ref.add(new StringRefAddr("removeAbandoned", "true"));
       ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-      ic.rebind(JNDINames.DATABASE_DATASOURCE, ref);
-      ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
+      rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
+      rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
     } catch (NamingException nex) {
       nex.printStackTrace();
     } catch (IOException nex) {
@@ -271,7 +272,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
-   * Deletes the directory for JNDI files ystem provider
+   * Deletes the directory for JNDI file system provider
    * @throws IOException
    */
   protected void cleanJndi() throws IOException {
@@ -282,6 +283,30 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
     File jndiDirectory = new File(jndiDirectoryPath);
     if (jndiDirectory.exists()) {
       jndiDirectory.delete();
+    }
+  }
+
+  /**
+   * Workaround to be able to use Sun's JNDI file system provider on Unix
+   * @param ic : the JNDI initial context
+   * @param jndiName : the binding name
+   * @param ref : the reference to be bound
+   * @throws NamingException
+   */
+  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+    Context currentContext = ic;
+    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
+    while(tokenizer.hasMoreTokens()) {
+      String name = tokenizer.nextToken();
+      if(tokenizer.hasMoreTokens()) {
+        try {
+          currentContext = (Context) currentContext.lookup(name);
+        }catch(javax.naming.NameNotFoundException nnfex) {
+           currentContext = currentContext.createSubcontext(name);
+        }
+      } else {
+        currentContext.rebind(name, ref);
+      }
     }
   }
 

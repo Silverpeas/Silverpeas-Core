@@ -28,6 +28,7 @@ import java.util.Calendar;
 import junit.framework.TestCase;
 import static com.silverpeas.util.PathTestUtil.*;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import java.io.File;
 
 public class TestAttachmentDetail extends TestCase {
 
@@ -37,6 +38,7 @@ public class TestAttachmentDetail extends TestCase {
       SEPARATOR + "simpson" + SEPARATOR + "bart" + SEPARATOR;
   private Calendar calend;
 
+  @Override
   protected void setUp() throws Exception {
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
@@ -72,8 +74,9 @@ public class TestAttachmentDetail extends TestCase {
     assertEquals(
         "/silverpeas//OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
         "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88869&MimeType=application/vnd" +
-        ".oasis.opendocument.presentation&Directory=Attachment\\tests\\simpson\\" +
-        "bart\\", attachment.getOnlineURL());
+        ".oasis.opendocument.presentation&Directory=Attachment" + File.separatorChar +"tests"
+        + File.separatorChar + "simpson" + File.separatorChar + "bart" + File.separatorChar,
+        attachment.getOnlineURL());
     assertEquals(
         "componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/frenchScrum.odp",
@@ -127,8 +130,9 @@ public class TestAttachmentDetail extends TestCase {
     assertEquals(
         "/silverpeas//OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
         "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88869&MimeType=application/vnd" +
-        ".oasis.opendocument.presentation&Directory=Attachment\\tests\\simpson\\" +
-        "bart\\", attachment.getOnlineURL());
+        ".oasis.opendocument.presentation&Directory=Attachment"+ File.separatorChar + "tests"
+        + File.separatorChar + "simpson" + File.separatorChar + "bart" + File.separatorChar,
+        attachment.getOnlineURL());
     assertEquals(
         "componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/frenchScrum.odp",
@@ -181,9 +185,9 @@ public class TestAttachmentDetail extends TestCase {
     assertEquals("kmelia57", attachment.getInstanceId());
     assertEquals(
         "/silverpeas//OnlineFileServer/Spec-Silverpeas-p3-1_2.doc?ComponentId=kmelia57&Sour" +
-        "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88378&MimeType=" +
-        "application/msword&Directory=Attachment\\tests\\simpson\\" + "bart\\",
-        attachment.getOnlineURL());
+        "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88378&MimeType=application/msword&Directory=Attachment" 
+        + File.separatorChar + "tests" + File.separatorChar + "simpson"+ File.separatorChar + "bart"
+        + File.separatorChar, attachment.getOnlineURL());
     assertEquals(
         "componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/Spec-Silverpeas-p3-1_2.doc",
