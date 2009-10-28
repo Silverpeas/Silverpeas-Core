@@ -49,7 +49,7 @@
   <artifactId>core</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Core</name>
+  <name>Silverpeas Core</name>
 
   <build>
     <plugins>
