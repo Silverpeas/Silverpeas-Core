@@ -916,25 +916,23 @@ public class GenericRecordSetManager {
         field = record.getField(fieldName);
         fieldValue = (String) field.getStringValue();
 
-        if (fieldValue != null) {
-          update.setString(1, fieldValue);
-          update.setInt(2, recordId);
-          update.setString(3, fieldName);
+        update.setString(1, fieldValue);
+        update.setInt(2, recordId);
+        update.setString(3, fieldName);
 
-          nbRowsCount = update.executeUpdate();
-          if (nbRowsCount == 0) {
-            // no row has been updated because the field fieldName doesn't exist
-            // in database.
-            // The form has changed since the last modification of the record.
-            // So we must insert this new field.
-            insert = con.prepareStatement(INSERT_FIELD);
+        nbRowsCount = update.executeUpdate();
+        if (nbRowsCount == 0) {
+          // no row has been updated because the field fieldName doesn't exist
+          // in database.
+          // The form has changed since the last modification of the record.
+          // So we must insert this new field.
+          insert = con.prepareStatement(INSERT_FIELD);
 
-            insert.setInt(1, recordId);
-            insert.setString(2, fieldName);
-            insert.setString(3, fieldValue);
+          insert.setInt(1, recordId);
+          insert.setString(2, fieldName);
+          insert.setString(3, fieldValue);
 
-            insert.execute();
-          }
+          insert.execute();
         }
       }
     } finally {

@@ -60,6 +60,8 @@ import org.apache.commons.fileupload.FileItem;
  * @see FieldDisplayer
  */
 public class ImageFieldDisplayer extends AbstractFieldDisplayer {
+ 
+  public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
   /**
    * Returns the name of the managed types.
@@ -268,7 +270,6 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       String physicalName = null;
       String type = null;
       String mimeType = null;
-      String context = "XMLFormImages";
       File dir = null;
       long size = 0;
       if (StringUtil.isDefined(logicalName)) {
@@ -284,7 +285,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
 
         physicalName = new Long(new Date().getTime()).toString() + "." + type;
 
-        String path = AttachmentController.createPath(componentId, context);
+        String path = AttachmentController.createPath(componentId, ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
         dir = new File(path + physicalName);
         size = item.getSize();
         item.write(dir);
@@ -293,7 +294,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         //sinon cela indique que le fichier n'est pas valide (chemin non valide, fichier non accessible)
         if (size > 0) {
           AttachmentDetail ad = createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType, size,
-              context, userId);
+              ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
           ad = AttachmentController.createAttachment(ad, true);
           attachmentId = ad.getPK().getId();
         } else {

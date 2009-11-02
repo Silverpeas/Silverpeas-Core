@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -87,9 +88,9 @@ public class FormTemplateImportExport {
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
             String context = null;
             if (fieldTemplate.getDisplayerName().equals("image"))
-              context = "XMLFormImages";
+              context = AbstractForm.CONTEXT_FORM_IMAGE;
             else
-              context = "Images";
+              context = AbstractForm.CONTEXT_FORM_FILE;
 
             String imagePath = xmlFieldValue;
             String imageName = imagePath.substring(imagePath

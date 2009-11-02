@@ -28,6 +28,7 @@
 package com.silverpeas.attachment.importExport;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
@@ -61,7 +63,6 @@ public class AttachmentImportExport {
 
   // Variables
   private static int BUFFER_SIZE = 1024;
-  private static String CONTEXT_ATTACHMENTS = "Images";
 
   // Methodes
   /**
@@ -84,7 +85,7 @@ public class AttachmentImportExport {
     this.copyFile(componentId, attachmentDetail);
     if (attachmentDetail.getSize() > 0)
       this.addAttachmentToPublication(pubId, componentId, attachmentDetail,
-          CONTEXT_ATTACHMENTS, indexIt);
+          AbstractForm.CONTEXT_FORM_FILE, indexIt);
   }
 
   public AttachmentDetail importWysiwygAttachment(String pubId,
@@ -116,7 +117,7 @@ public class AttachmentImportExport {
         attDetail.setXmlForm(xmlContent.getName());
 
       this.addAttachmentToPublication(pubId, componentId, attDetail,
-          CONTEXT_ATTACHMENTS, indexIt);
+          AbstractForm.CONTEXT_FORM_FILE, indexIt);
 
       // Store xml content
       try {
@@ -371,7 +372,7 @@ public class AttachmentImportExport {
       // d'exportation
       while (itListAttachment.hasNext()) {
         AttachmentDetail attDetail = (AttachmentDetail) itListAttachment.next();
-        if (!attDetail.getContext().equals(CONTEXT_ATTACHMENTS)) {
+        if (!attDetail.getContext().equals(AbstractForm.CONTEXT_FORM_FILE)) {
           // ce n est pas un fichier joint mais un fichier appartenant surement
           // au wysiwyg si le context
           // est different de images et ce quelque soit le type du fichier
@@ -438,7 +439,7 @@ public class AttachmentImportExport {
    */
   private String getPath(String componentId) {
     String path = AttachmentController.createPath(componentId,
-        CONTEXT_ATTACHMENTS);
+        AbstractForm.CONTEXT_FORM_FILE);
     SilverTrace.info("attachment", "AttachmentImportExport.getPath()",
         "root.MSG_GEN_PARAM_VALUE", "path=" + path);
     return path;

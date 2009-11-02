@@ -74,7 +74,9 @@ import org.apache.commons.fileupload.FileItem;
  */
 public class FileFieldDisplayer extends AbstractFieldDisplayer {
 
+  public static final String CONTEXT_FORM_FILE = "Images";
   private VersioningBm 	versioningBm 	= null;
+  
   /**
    * Returns the name of the managed types.
    */
@@ -280,7 +282,6 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
       String logicalName = item.getName();
       String physicalName = null;
       String mimeType = null;
-      String context = "Images";
       File dir = null;
       long size = 0;
       VersioningUtil versioningUtil = new VersioningUtil();
@@ -305,7 +306,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
         if (pagesContext.isVersioningUsed()) {
           path = versioningUtil.createPath("useless", componentId, "useless");
         } else {
-          path = AttachmentController.createPath(componentId, context);
+          path = AttachmentController.createPath(componentId, FileFieldDisplayer.CONTEXT_FORM_FILE);
         }
         dir = new File(path + physicalName);
         size = item.getSize();
@@ -315,7 +316,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
         //sinon cela indique que le fichier n'est pas valide (chemin non valide, fichier non accessible)
         if (size > 0) {
           AttachmentDetail ad = createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType, size,
-              context, userId);
+              FileFieldDisplayer.CONTEXT_FORM_FILE, userId);
 
           if (pagesContext.isVersioningUsed()) {
             //mode versioning

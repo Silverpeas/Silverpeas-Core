@@ -43,6 +43,8 @@ public abstract class AbstractForm implements Form {
 
   private List fieldTemplates = new ArrayList();
   private String title = "";
+  public static final String CONTEXT_FORM_FILE = "Images";
+  public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
   public AbstractForm(RecordTemplate template) throws FormException {
     if (template != null) {
