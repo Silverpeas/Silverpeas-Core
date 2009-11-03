@@ -13,8 +13,8 @@ Silverpeas V5 has also been successfully deployed and run on other Application S
 Please find a list of the tools you will need to install Silverpeas below.<br/>
       </p>
       <subsection name="Java 6">
-        <p>Silverpeas needs a JDK at least of version 6, which can be downloaded from Sun
-          <a href="http://java.sun.com/javase/downloads/index.jsp">here</a>.<br/>
+        <p>Silverpeas needs a Java SE Development Kit (JDK) at least of version 6, which can be downloaded from Sun
+          <a href="http://java.sun.com/javase/downloads/index.jsp#jdk">here</a>.<br/>
           Don't forget to set-up the environment variable <code>%JAVA_HOME%</code>.
         </p>
       </subsection>
@@ -54,11 +54,11 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
           <li><a href="http://repository.silverpeas.org/files/silverpeas-1.0-SNAPSHOT.zip"><img src="images/windows_logo_24X24.png"/> here for Windows</a></li>
           <li><a href="http://repository.silverpeas.org/files/silverpeas-1.0-SNAPSHOT.tar.gz"><img src="images/linux_logo_24X24.png"/> here for Linux</a></li>
         </ul>
-        <p>1. Unzip/decompress the contents into any directory,</p>
+        <p>1. Unzip/decompress the contents into a <code>silverpeas</code> directory,</p>
         <p>2. Define an environment variable <code>%SILVERPEAS_HOME%</code> that points to this directory.</p>
         <p>For example:<br/>
-        unzip the <b>silverpeas-1.0-SNAPSHOT.zip</b> file into <i>C:\Silverpeas</i>.<br/>
-        The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:\Silverpeas</i>.
+        unzip the <b>silverpeas-1.0-SNAPSHOT.zip</b> file into <i>C:\Java\silverpeas</i>.<br/>
+        The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:\Java\silverpeas</i>.
         </p>
         <p>3. Next, configure your installation by editing the files<br/>
             %SILVERPEAS_HOME%\setup\settings\JBossSettings.xml and<br/>
