@@ -38,7 +38,6 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.apache.jackrabbit.core.security.AnonymousPrincipal;
-import org.apache.jackrabbit.core.security.CredentialsCallback;
 
 import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
@@ -48,6 +47,7 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 
 public class SilverpeasLoginModule implements LoginModule {
 

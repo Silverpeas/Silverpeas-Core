@@ -393,7 +393,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertNotNull(folder2);
       assertEquals(JcrConstants.NT_FOLDER,
           folder2.getPrimaryNodeType().getName());
-      assertEquals(folder, folder2);
+      assertEquals(folder.getPath(), folder2.getPath());
     } finally {
       BasicDaoFactory.logout(session);
     }

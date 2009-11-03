@@ -33,35 +33,70 @@ import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
 
 import com.silverpeas.jcrutil.security.impl.RepositoryHelper;
+import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
+import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.Path;
 
 public class ProxyAccessManager implements AccessManager {
+
   AccessManager realManager;
 
   public ProxyAccessManager() {
     this.realManager = RepositoryHelper.getJcrAccessManager();
   }
 
+  @Override
   public boolean canAccess(String workspaceName)
       throws NoSuchWorkspaceException, RepositoryException {
     return this.realManager.canAccess(workspaceName);
   }
 
+  @Override
   public void checkPermission(ItemId id, int permissions)
       throws AccessDeniedException, ItemNotFoundException, RepositoryException {
     this.realManager.checkPermission(id, permissions);
   }
 
+  @Override
   public void close() throws Exception {
     this.realManager.close();
   }
 
+  @Override
   public void init(AMContext context) throws AccessDeniedException, Exception {
     this.realManager.init(context);
   }
 
+  @Override
   public boolean isGranted(ItemId id, int permissions)
       throws ItemNotFoundException, RepositoryException {
     return this.realManager.isGranted(id, permissions);
   }
 
+  @Override
+  public void init(AMContext context, AccessControlProvider acProvider, WorkspaceAccessManager wspAccessManager)
+      throws AccessDeniedException, Exception {
+    this.realManager.init(context, acProvider, wspAccessManager);
+  }
+
+  @Override
+  public void checkPermission(Path path, int permissions) throws AccessDeniedException, RepositoryException {
+    this.realManager.checkPermission(path, permissions);
+  }
+
+  @Override
+  public boolean isGranted(Path path, int permissions) throws RepositoryException {
+    return this.realManager.isGranted(path, permissions);
+  }
+
+  @Override
+  public boolean isGranted(Path path, Name name, int permissions) throws RepositoryException {
+    return this.realManager.isGranted(path, name, permissions);
+  }
+
+  @Override
+  public boolean canRead(Path path) throws RepositoryException {
+    return this.realManager.canRead(path);
+  }
 }

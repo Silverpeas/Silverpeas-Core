@@ -52,6 +52,12 @@ import javax.ejb.NoSuchEntityException;
  * @author Nicolas Eysseric
  */
 public class NodeDAO {
+
+  private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, " +
+      "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
+      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM SB_Node_Node WHERE " +
+      "nodeId = ? AND instanceId = ?";
+
   private static Hashtable alltrees = new Hashtable();
 
   /**
@@ -983,19 +989,15 @@ public class NodeDAO {
       throws SQLException {
     SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK);
     NodeDetail detail = null;
-    StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select * from ").append(nodePK.getTableName());
-    selectQuery.append(" where nodeId=?");
-    selectQuery.append(" and instanceId=?");
     SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-        + selectQuery.toString());
+        + SELECT_NODE_BY_ID);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
     try {
-      stmt = con.prepareStatement(selectQuery.toString());
-      stmt.setString(1, nodePK.getId());
+      stmt = con.prepareStatement(SELECT_NODE_BY_ID);
+      stmt.setInt(1, Integer.parseInt(nodePK.getId()));
       stmt.setString(2, nodePK.getComponentName());
       rs = stmt.executeQuery();
       if (rs.next()) {
@@ -1011,7 +1013,7 @@ public class NodeDAO {
       }
     } catch (SQLException e) {
       SilverTrace.error("node", "NodeDAO.loadRow()", "root.EX_SQL_QUERY_FAILED", "selectQuery = "
-          + selectQuery.toString(), e);
+          + SELECT_NODE_BY_ID, e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);

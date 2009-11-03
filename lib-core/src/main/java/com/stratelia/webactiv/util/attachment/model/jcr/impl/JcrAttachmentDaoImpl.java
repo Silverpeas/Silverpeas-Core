@@ -239,6 +239,7 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
     contentNode.setProperty(JcrConstants.JCR_MIMETYPE, attachment
         .getType(language));
     contentNode.setProperty(JcrConstants.JCR_ENCODING, "");
+    contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.getInstance());
     setContent(fileNode, attachment, language);
     return fileNode;
 

@@ -23,6 +23,7 @@
  */
 package com.silverpeas.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -152,6 +153,14 @@ public class StringUtil {
       result = false;
     }
     return result;
+  }
+
+  public static final String convertToEncoding(String toConvert, String encoding) {
+    try {
+      return new String(toConvert.getBytes(System.getProperty("file.encoding")), encoding);
+    }catch(UnsupportedEncodingException ex) {
+     return toConvert;
+    }
   }
 
 }

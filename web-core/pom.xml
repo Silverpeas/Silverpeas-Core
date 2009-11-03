@@ -6,13 +6,11 @@
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.core</groupId>
   <artifactId>web-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>Web Core Library</name>
 
   <dependencies>
@@ -23,6 +21,7 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-server</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>

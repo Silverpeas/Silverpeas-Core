@@ -72,4 +72,10 @@ public class TestStringUtil extends TestCase {
     assertFalse(StringUtil.isDefined("NuLl"));
     assertFalse(StringUtil.isDefined(null));
   }
+
+
+  public void testConvertToEncoding() throws Exception {
+    assertEquals("élève", StringUtil.convertToEncoding(new String("élève".getBytes("UTF-8")), "UTF-8"));
+    assertNotSame("élève", StringUtil.convertToEncoding(new String("élève".getBytes("ISO-8859-1")), "UTF-8"));
+  }
 }

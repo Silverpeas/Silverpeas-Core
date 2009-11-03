@@ -34,7 +34,7 @@
   </distributionManagement>
 
 
-<repositories>
+  <repositories>
     <repository>
       <id>NexusSilverpeas</id>
       <layout>default</layout>
@@ -97,20 +97,6 @@
       </plugin>
     </plugins>
   </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <effort>Max</effort>
-          <threshold>Low</threshold>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
 
   <modules>
     <module>lib-core</module>

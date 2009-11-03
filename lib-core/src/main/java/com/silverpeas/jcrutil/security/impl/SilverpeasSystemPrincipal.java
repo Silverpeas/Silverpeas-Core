@@ -28,6 +28,7 @@ import java.security.Principal;
 public class SilverpeasSystemPrincipal implements Principal {
   public static final String SYSTEM = "system";
 
+  @Override
   public String getName() {
     return SYSTEM;
   }

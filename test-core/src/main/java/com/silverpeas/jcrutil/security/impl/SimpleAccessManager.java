@@ -31,30 +31,62 @@ import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.core.ItemId;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
+import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
+import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.Path;
 
 public class SimpleAccessManager implements AccessManager {
 
+  @Override
   public boolean canAccess(String workspaceName)
       throws NoSuchWorkspaceException, RepositoryException {
     return true;
   }
 
+  @Override
   public void checkPermission(ItemId id, int permissions)
       throws AccessDeniedException, ItemNotFoundException, RepositoryException {
     return;
   }
 
+  @Override
   public synchronized void close() throws Exception {
     // Nothing to be done
   }
 
+  @Override
   public void init(AMContext context) throws AccessDeniedException, Exception {
     // Nothing to be done
 
   }
 
+  @Override
   public boolean isGranted(ItemId id, int permissions)
       throws ItemNotFoundException, RepositoryException {
+    return true;
+  }
+
+  @Override
+  public void init(AMContext amc, AccessControlProvider acp, WorkspaceAccessManager wam) throws AccessDeniedException, Exception {
+  }
+
+  @Override
+  public void checkPermission(Path path, int i) throws AccessDeniedException, RepositoryException {
+  }
+
+  @Override
+  public boolean isGranted(Path path, int i) throws RepositoryException {
+    return true;
+  }
+
+  @Override
+  public boolean isGranted(Path path, Name name, int i) throws RepositoryException {
+    return true;
+  }
+
+  @Override
+  public boolean canRead(Path path) throws RepositoryException {
     return true;
   }
 

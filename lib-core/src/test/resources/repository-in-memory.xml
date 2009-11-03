@@ -28,18 +28,14 @@
     "-//The Apache Software Foundation//DTD Jackrabbit 1.4//EN"
     "http://jackrabbit.apache.org/dtd/repository-1.4.dtd">
 <Repository>
-  <FileSystem class="${jcr.configuration.filesystem.manager}">
-    <param name="path" value="${rep.home}/repository" />
-  </FileSystem>
+  <FileSystem class="${jcr.configuration.filesystem.manager}" />
   <Security appName="Jackrabbit">
     <AccessManager class="com.silverpeas.jcrutil.security.ProxyAccessManager" />
     <LoginModule class="com.silverpeas.jcrutil.security.ProxyLoginModule" />
   </Security>
   <Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="${jcr.configuration.workspace}" />
   <Workspace name="${wsp.name}">
-    <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem">
-      <param name="path" value="${wsp.home}" />
-    </FileSystem>
+    <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem" />
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
       <param name="persistent" value="false" />
     </PersistenceManager>
@@ -61,9 +57,7 @@
     -->
   </Workspace>
   <Versioning rootPath="${rep.home}/version">
-    <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem">
-      <param name="path" value="${rep.home}/version" />
-    </FileSystem>
+    <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem" />
     <PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
       <param name="persistent" value="false" />
     </PersistenceManager>

@@ -10,7 +10,6 @@
 	
   <groupId>com.silverpeas.core</groupId>
   <artifactId>ejb-core</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name> EJB Core</name>
 
@@ -18,7 +17,7 @@
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>

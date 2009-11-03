@@ -47,6 +47,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
   }
   
   private static final String FOLDER_NAME = "SimpleTest";
+  private static final String SUB_FOLDER_NAME = "SubTest";
   private static final String FILE_NAME = "MyTest";
   private static final String BART_ID = "7";
   private static final String BART_LOGIN = "bsimpson";
@@ -205,7 +206,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     assertNotNull("Folder not found", parentFolderNode);
     assertEquals("Folder not of correct type", JcrConstants.NT_FOLDER,
         parentFolderNode.getPrimaryNodeType().getName());
-    Node folderNode = parentFolderNode.getNode(FILE_NAME);
+    Node folderNode = parentFolderNode.getNode(SUB_FOLDER_NAME);
     assertNotNull("Folder not found", folderNode);
     assertEquals("Folder not of correct type", JcrConstants.NT_FOLDER,
         folderNode.getPrimaryNodeType().getName());
@@ -219,7 +220,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     try {
       session = BasicDaoFactory.getSystemSession();
       Node folder = session.getRootNode().getNode(FOLDER_NAME);
-      Node fileNode = folder.addNode(FILE_NAME, JcrConstants.NT_FOLDER);
+      Node fileNode = folder.addNode(SUB_FOLDER_NAME, JcrConstants.NT_FOLDER);
       fileNode.addMixin(JcrConstants.SLV_OWNABLE_MIXIN);
       fileNode.setProperty(JcrConstants.SLV_PROPERTY_OWNER, BART_ID);
       session.save();
@@ -232,6 +233,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       session = BasicDaoFactory.getSystemSession();
       validateFolder(session, true);
     } catch (Exception ex) {
+      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -251,6 +253,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       session = BasicDaoFactory.getAuthentifiedSession("lsimpson", "lisa");
       validateFolder(session, true);
     } catch (Exception ex) {
+      ex.printStackTrace();
       fail(ex.getMessage());
     } finally {
       BasicDaoFactory.logout(session);
@@ -262,7 +265,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     try {
       session = BasicDaoFactory.getSystemSession();
       Node folder = session.getRootNode().getNode(FOLDER_NAME);
-      folder.addNode(FILE_NAME, JcrConstants.NT_FOLDER);
+      folder.addNode(SUB_FOLDER_NAME, JcrConstants.NT_FOLDER);
       session.save();
     } catch (Exception ex) {
       fail(ex.getMessage());

@@ -32,41 +32,51 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.jackrabbit.core.security.CredentialsCallback;
-import org.apache.jackrabbit.core.security.SimpleLoginModule;
-
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+import org.apache.jackrabbit.core.config.LoginModuleConfig;
+import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
+import org.apache.jackrabbit.core.security.simple.SimpleLoginModule;
 
 public class BasicLoginModule implements LoginModule {
+
   private SimpleLoginModule module;
   private CallbackHandler callbackHandler;
   private Subject subject;
   private boolean isRoot = false;
 
+  @Override
   public boolean abort() throws LoginException {
     return this.module.abort();
   }
 
+  @Override
   public boolean commit() throws LoginException {
-    if(isRoot) {
+    if (isRoot) {
       subject.getPrincipals().add(new SilverpeasSystemPrincipal());
+      return true;
     }
     return this.module.commit();
   }
 
+  @Override
   public void initialize(Subject subject, CallbackHandler callbackHandler,
       Map sharedState, Map options) {
+    if(! options.containsKey(LoginModuleConfig.PARAM_ANONYMOUS_ID)) {
+      options.put(LoginModuleConfig.PARAM_ANONYMOUS_ID, "anonymous");
+    }
+    if(! options.containsKey(LoginModuleConfig.PARAM_ADMIN_ID)) {
+      options.put(LoginModuleConfig.PARAM_ADMIN_ID, SilverpeasSystemPrincipal.SYSTEM);
+    }
     this.module = new SimpleLoginModule();
     this.module.initialize(subject, callbackHandler, sharedState, options);
     this.callbackHandler = callbackHandler;
     this.subject = subject;
   }
 
+  @Override
   public boolean login() throws LoginException {
     try {
       CredentialsCallback ccb = new CredentialsCallback();
-      callbackHandler.handle(new Callback[] { ccb });
+      callbackHandler.handle(new Callback[]{ccb});
       isRoot = (ccb.getCredentials() instanceof SilverpeasSystemCredentials);
       return isRoot || this.module.login();
     } catch (java.io.IOException ioe) {
@@ -77,10 +87,10 @@ public class BasicLoginModule implements LoginModule {
 
   }
 
+  @Override
   public boolean logout() throws LoginException {
     this.callbackHandler = null;
     return this.module.logout();
   }
-
 }
 
