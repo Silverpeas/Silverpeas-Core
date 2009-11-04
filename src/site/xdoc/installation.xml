@@ -36,6 +36,17 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
             <strong>pgAdmin</strong>
           </a> which provides a GUI to manage Postgresql.
         </p>
+        <subsection name="Postgresql on Linux">
+        <p>For Linux users, here are the commands to run from a xTerm console to configure such a database :<br/>
+            <source>
+<b>silverpeas@sd-7358:~$</b> sudo apt-get install postgresql
+<b>silverpeas@sd-7358:~$</b>  sudo -i
+<b>root@sd-7358:~$</b>  su – postgres
+<b>postgres@sd-7358:~$</b> psql -d template1 -c "ALTER USER postgres WITH PASSWORD '*******'"
+    <b>#</b> createdb -E UTF-8 SilverpeasV5
+    <b>#</b> exit</source>
+        </p>
+        </subsection>
       </subsection>
     </section>
     <Section name="Installation">
@@ -57,15 +68,17 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         <p>1. Unzip/decompress the contents into a <code>silverpeas</code> directory,</p>
         <p>2. Define an environment variable <code>%SILVERPEAS_HOME%</code> that points to this directory.</p>
         <p>For example:<br/>
-        unzip the <b>silverpeas-1.0-SNAPSHOT.zip</b> file into <i>C:\Java\silverpeas</i>.<br/>
+        Unzip the <b>silverpeas-1.0-SNAPSHOT.zip</b> file into <i>C:\Java\silverpeas</i>.<br/>
         The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:\Java\silverpeas</i>.
         </p>
-        <p>3. Next, configure your installation by editing the files<br/>
-            %SILVERPEAS_HOME%\setup\settings\JBossSettings.xml and<br/>
-            %SILVERPEAS_HOME%\setup\settings\SilverpeasSettings.xml.</p>
+        <p>3. Next, configure your installation by editing the files:<br/>
+        <ul>
+          <li>%SILVERPEAS_HOME%\setup\settings\JBossSettings.xml</li>
+          <li>%SILVERPEAS_HOME%\setup\settings\SilverpeasSettings.xml</li>
+        </ul></p>
       </subsection>
       <subsection name="Deploying Silverpeas">
-        <p>This is a 4 step operation in %SILVERPEAS_HOME%\bin:</p>
+        <p>This is a 4 steps operation which are to be executed inside the directory <code>%SILVERPEAS_HOME%\bin</code>:</p>
         <ol>
           <li>mvn clean install</li>
           <li>appBuilder.bat</li>
