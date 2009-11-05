@@ -27,8 +27,8 @@
 
 FCKConfig.CustomConfigurationsPath = '' ;
 
-FCKConfig.EditorAreaCSS='/weblib/customWysiwyg/example.css'
-FCKConfig.ToolbarComboPreviewCSS='/weblib/customWysiwyg/example.css'
+FCKConfig.EditorAreaCSS='/weblib/customWysiwyg/exampleBackOffice.css'
+FCKConfig.ToolbarComboPreviewCSS='/weblib/customWysiwyg/exampleBackOffice.css'
 FCKConfig.StylesXmlPath='/weblib/customWysiwyg/exampleStyles.xml'
 FCKConfig.TemplatesXmlPath = '/weblib/customWysiwyg/exampleTemplates.xml' ;
 
@@ -53,9 +53,8 @@ FCKConfig.PreloadImages = [ FCKConfig.SkinPath + 'images/toolbar.start.gif', FCK
 FCKConfig.PluginsPath = FCKConfig.BasePath + 'plugins/' ;
 
 FCKConfig.AutoGrowMax = 400 ;
-//FCKConfig.Plugins.Add( 'imgmap', 'fr,en') ;
-//FCKConfig.Plugins.Add( 'flvPlayer','en,fr') ;
-
+FCKConfig.Plugins.Add( 'imgmap', 'fr,en') ;
+FCKConfig.Plugins.Add( 'flvPlayer','en') ;
 
 // FCKConfig.ProtectedSource.Add( /<%[\s\S]*?%>/g ) ;	// ASP style server side code <%...%>
 // FCKConfig.ProtectedSource.Add( /<\?[\s\S]*?\?>/g ) ;	// PHP style server side code
@@ -94,7 +93,7 @@ FCKConfig.PreserveSessionOnFileBrowser = false ;
 FCKConfig.FloatingPanelsZIndex = 10000 ;
 FCKConfig.HtmlEncodeOutput = false ;
 
-FCKConfig.TemplateReplaceAll = true ;
+FCKConfig.TemplateReplaceAll = false ;
 FCKConfig.TemplateReplaceCheckbox = true ;
 
 FCKConfig.ToolbarLocation = 'In' ;
@@ -191,11 +190,12 @@ FCKConfig.ContextMenu = ['Generic','Link','Anchor','Image','Flash','Select','Tex
 FCKConfig.BrowserContextMenuOnCtrl = false ;
 
 FCKConfig.EnableMoreFontColors = true ;
-FCKConfig.FontColors = '000000,993300,333300,003300,003366,000080,333399,333333,800000,FF6600,808000,808080,008080,0000FF,666699,808080,FF0000,FF9900,99CC00,339966,33CCCC,3366FF,800080,999999,FF00FF,FFCC00,FFFF00,00FF00,00FFFF,00CCFF,993366,C0C0C0,FF99CC,FFCC99,FFFF99,CCFFCC,CCFFFF,99CCFF,CC99FF,FFFFFF' ;
+//FCKConfig.FontColors = '000000,993300,333300,003300,003366,000080,333399,333333,800000,FF6600,808000,808080,008080,0000FF,666699,808080,FF0000,FF9900,99CC00,339966,33CCCC,3366FF,800080,999999,FF00FF,FFCC00,FFFF00,00FF00,00FFFF,00CCFF,993366,C0C0C0,FF99CC,FFCC99,FFFF99,CCFFCC,CCFFFF,99CCFF,CC99FF,FFFFFF' ;
+FCKConfig.FontColors = 'af2c5a,5a4c9d,8e002a,f59237,6b94be,94bd43,9e9e9e' ;
 
 FCKConfig.FontFormats	= 'p;h1;h2;h3' ;
-FCKConfig.FontNames		= 'Arial;Comic Sans MS;Courier New;Tahoma;Times New Roman;Verdana' ;
-FCKConfig.FontSizes		= 'smaller;larger;xx-small;x-small;small;medium;large;x-large;xx-large' ;
+FCKConfig.FontNames		= 'Arial;Helvetica;sans-serif;Sans-Comic Sans MS;Courier New;Tahoma;Times New Roman;Verdana' ;
+FCKConfig.FontSizes		= '8px;9px;10px;11px;12px;13px;14px;16px;18px;21px;24px;30px;36px' ;
 
 FCKConfig.SpellChecker			= 'ieSpell' ;	// 'ieSpell' | 'SpellerPages'
 FCKConfig.IeSpellDownloadUrl	= 'http://www.iespell.com/download.php' ;
