@@ -109,8 +109,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class SeeAlsoDAO {
@@ -118,8 +118,8 @@ public class SeeAlsoDAO {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public SeeAlsoDAO() {
@@ -127,14 +127,14 @@ public class SeeAlsoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param infoLink
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void addLink(Connection con, WAPrimaryKey objectPK,
@@ -217,15 +217,15 @@ public class SeeAlsoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static List getLinks(Connection con, WAPrimaryKey objectPK)

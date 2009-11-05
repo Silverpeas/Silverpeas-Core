@@ -30,7 +30,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
- *
+ * 
  * @author sdevolder
  */
 public class NodeTreeType {

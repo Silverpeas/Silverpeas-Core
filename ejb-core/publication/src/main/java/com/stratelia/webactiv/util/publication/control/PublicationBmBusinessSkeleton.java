@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
@@ -167,11 +166,10 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * Stabilisation Lot 2 : Exceptions et Silvertrace
  *
  */
-
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public interface PublicationBmBusinessSkeleton {
@@ -197,7 +195,7 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * Change order of the given publication identified by pubPK in the given
    * nodePK. direction less than 0 means "up" else it means "down"
-   *
+   * 
    * @param pubPK
    *          the publication's id to move
    * @param nodePK
@@ -263,7 +261,6 @@ public interface PublicationBmBusinessSkeleton {
    */
   // public void removeAllIssue(NodePK originPK, PublicationPK pubPK) throws
   // RemoteException;
-
   /**
    * return the Detail of publication which are not linked to a father
    */
@@ -278,13 +275,13 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubPK
    * @param creatorId
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK,
@@ -354,17 +351,17 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pk
    * @param status
    * @param nbPubs
    * @param fatherId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
@@ -372,36 +369,36 @@ public interface PublicationBmBusinessSkeleton {
       throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public Collection getAllModelsDetail( /* PublicationPK pubPK */)
       throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public ModelDetail getModelDetail(ModelPK modelPK) throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK,
       InfoDetail infos) throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public void createInfoModelDetail(PublicationPK pubPK, ModelPK modelPK,
       InfoDetail infos) throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public InfoDetail getInfoDetail(PublicationPK pubPK) throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
       throws RemoteException;
 
@@ -409,28 +406,28 @@ public interface PublicationBmBusinessSkeleton {
       throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public CompletePublication getCompletePublication(PublicationPK pubPK)
       throws RemoteException;
 
   /**
-     *
-     */
+   *
+   */
   public Collection getPublications(Collection publicationPKs)
       throws RemoteException;
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param status
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getPublicationsByStatus(String status, PublicationPK pubPK)
@@ -444,15 +441,15 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param query
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection searchByKeywords(String query, PublicationPK pubPK)
@@ -460,29 +457,29 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param fatherPKs
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public int getNbPubInFatherPKs(Collection fatherPKs) throws RemoteException;
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param fatherPK
    * @param fatherPath
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath)
@@ -493,15 +490,15 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param fatherIds
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getDetailsByFatherIds(ArrayList fatherIds,
@@ -528,14 +525,14 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param fatherPKs
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getPubPKsInFatherPKs(Collection fatherPKs)
@@ -543,26 +540,26 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param fatherPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getPubPKsInFatherPK(NodePK fatherPK) throws RemoteException;
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubPK
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void createIndex(PublicationPK pubPK) throws RemoteException;
@@ -571,26 +568,26 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubPK
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void deleteIndex(PublicationPK pubPK) throws RemoteException;
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getAllPublications(PublicationPK pubPK)
@@ -602,17 +599,17 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * Looking for, in the instance identified by pubPK, a publication named
    * pubName.
-   *
+   * 
    * @param pubPK
    *          the identifier of the instance
    * @param pubName
    *          the publication's name we are looking for
-   *
+   * 
    * @return the pubId if a publication already exists in this component's
    *         instance. null otherwise.
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    */
   public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName)
       throws RemoteException;
@@ -623,25 +620,25 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * A wysiwyg's content has been added or modified to a publication. Its
    * content must be added to the indexed content of the publication
-   *
+   * 
    * @param pubPK
    *          the identifier of the publication associated to the wysiwyg
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    */
   public void processWysiwyg(PublicationPK pubPK) throws RemoteException;
 
   /**
-   *
+   * 
    * @param beginDate
    * @param endDate
    * @param instanceId
-   *
+   * 
    * @return Collection of PublicationDetail.
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    */
   public Collection getDetailBetweenDate(String beginDate, String endDate,
       String instanceId) throws RemoteException;
@@ -658,4 +655,6 @@ public interface PublicationBmBusinessSkeleton {
   public void changePublicationsOrder(List ids, NodePK nodePK)
       throws RemoteException;
 
+  public Collection getCoordinates(String pubId, String componentId)
+      throws RemoteException;
 }

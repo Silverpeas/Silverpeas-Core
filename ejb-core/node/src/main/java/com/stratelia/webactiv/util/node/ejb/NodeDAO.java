@@ -48,27 +48,28 @@ import javax.ejb.NoSuchEntityException;
 
 /**
  * This is the Node Data Access Object.
- *
+ * 
  * @author Nicolas Eysseric
  */
 public class NodeDAO {
 
-  private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, " +
-      "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
-      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM SB_Node_Node WHERE " +
-      "nodeId = ? AND instanceId = ?";
+  private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, "
+      + "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, "
+      + "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM SB_Node_Node WHERE "
+      + "nodeId = ? AND instanceId = ?";
 
   private static Hashtable alltrees = new Hashtable();
 
   /**
    * This class must not be instanciated
-   *
+   * 
    * @since 1.0
    */
   public NodeDAO() {
   }
 
-  public static ArrayList getTree(Connection con, NodePK nodePK) throws SQLException {
+  public static ArrayList getTree(Connection con, NodePK nodePK)
+      throws SQLException {
     ArrayList tree = (ArrayList) alltrees.get(nodePK.getComponentName());
     if (tree == null) {
       tree = (ArrayList) getAllHeaders(con, nodePK);
@@ -82,9 +83,11 @@ public class NodeDAO {
   }
 
   /**
-   * On node creation, check if another node have got the same name with same father
-   *
-   * @return true if there is already a node with same name with same father false else
+   * On node creation, check if another node have got the same name with same
+   * father
+   * 
+   * @return true if there is already a node with same name with same father
+   *         false else
    * @param con
    *          A connection to the database
    * @param nd
@@ -94,15 +97,16 @@ public class NodeDAO {
    * @since 1.0
    */
 
-  public static boolean isSameNameSameLevelOnCreation(Connection con, NodeDetail nd)
-      throws SQLException {
+  public static boolean isSameNameSameLevelOnCreation(Connection con,
+      NodeDetail nd) throws SQLException {
 
     int nbItems = 0;
     int level = nd.getLevel();
     String name = nd.getName();
 
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("SELECT count(nodeId) FROM ").append(nd.getNodePK().getTableName());
+    selectQuery.append("SELECT count(nodeId) FROM ").append(
+        nd.getNodePK().getTableName());
     selectQuery.append(" WHERE nodeLevelNumber = ? ");
     selectQuery.append(" AND nodeName = ? ");
     selectQuery.append(" AND instanceId = ? ");
@@ -120,10 +124,10 @@ public class NodeDAO {
         nbItems = rs.getInt(1);
       }
     } catch (SQLException e) {
-      SilverTrace
-          .error("node", "NodeDAO.isSameNameSameLevelOnCreation()", "root.EX_SQL_QUERY_FAILED",
-              "selectQuery = " + selectQuery.toString() + " level = " + level + " name = " + name
-                  + " compo name = " + nd.getNodePK().getComponentName(), e);
+      SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnCreation()",
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+              + " level = " + level + " name = " + name + " compo name = "
+              + nd.getNodePK().getComponentName(), e);
       throw e;
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -132,9 +136,11 @@ public class NodeDAO {
   }
 
   /**
-   * On node update, check if another node have got the same name with same father
-   *
-   * @return true if there is already a node with same name with same father false else
+   * On node update, check if another node have got the same name with same
+   * father
+   * 
+   * @return true if there is already a node with same name with same father
+   *         false else
    * @param con
    *          A connection to the database
    * @param nd
@@ -143,15 +149,16 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static boolean isSameNameSameLevelOnUpdate(Connection con, NodeDetail nd)
-      throws SQLException {
+  public static boolean isSameNameSameLevelOnUpdate(Connection con,
+      NodeDetail nd) throws SQLException {
     int nbItems = 0;
     String id = nd.getNodePK().getId();
     int level = nd.getLevel();
     String name = nd.getName();
 
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("SELECT count(nodeId) FROM ").append(nd.getNodePK().getTableName());
+    selectQuery.append("SELECT count(nodeId) FROM ").append(
+        nd.getNodePK().getTableName());
     selectQuery.append(" WHERE nodeId <> ? ");
     selectQuery.append(" AND nodeLevelNumber = ? ");
     selectQuery.append(" AND nodeName = ? ");
@@ -173,9 +180,9 @@ public class NodeDAO {
       }
     } catch (SQLException e) {
       SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnUpdate()",
-          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString() + " id = " + id
-              + " level = " + level + " name = " + name + " compo name = "
-              + nd.getNodePK().getComponentName(), e);
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+              + " id = " + id + " level = " + level + " name = " + name
+              + " compo name = " + nd.getNodePK().getComponentName(), e);
       throw e;
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -186,7 +193,7 @@ public class NodeDAO {
 
   /**
    * Get children node PKs of a node
-   *
+   * 
    * @return A collection of NodePK
    * @param con
    *          A connection to the database
@@ -196,10 +203,12 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static Collection getChildrenPKs(Connection con, NodePK nodePK) throws SQLException {
+  public static Collection getChildrenPKs(Connection con, NodePK nodePK)
+      throws SQLException {
     ArrayList a = null;
     StringBuffer childrenStatement = new StringBuffer();
-    childrenStatement.append("select nodeId from ").append(nodePK.getTableName());
+    childrenStatement.append("select nodeId from ").append(
+        nodePK.getTableName());
     childrenStatement.append(" where nodeFatherId = ? ");
     childrenStatement.append(" and instanceId = ? ");
     childrenStatement.append(" order by nodeId");
@@ -222,8 +231,9 @@ public class NodeDAO {
         a.add(n); /* Stockage du sous thème */
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getChildrenPKs()", "root.EX_SQL_QUERY_FAILED",
-          "childrenStatement = " + childrenStatement.toString() + " id = " + nodePK.getId()
+      SilverTrace.error("node", "NodeDAO.getChildrenPKs()",
+          "root.EX_SQL_QUERY_FAILED", "childrenStatement = "
+              + childrenStatement.toString() + " id = " + nodePK.getId()
               + " compo name = " + nodePK.getComponentName(), e);
       throw e;
     } finally {
@@ -234,7 +244,7 @@ public class NodeDAO {
 
   /**
    * Get descendant node PKs of a node
-   *
+   * 
    * @return A collection of NodePK
    * @param con
    *          A connection to the database
@@ -244,12 +254,13 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static Collection getDescendantPKs(Connection con, NodePK nodePK) throws SQLException {
+  public static Collection getDescendantPKs(Connection con, NodePK nodePK)
+      throws SQLException {
 
     String path = null;
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select nodePath from ").append(nodePK.getTableName()).append(
-        " where nodeId = ? and instanceId = ? ");
+    selectQuery.append("select nodePath from ").append(nodePK.getTableName())
+        .append(" where nodeId = ? and instanceId = ? ");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -262,8 +273,9 @@ public class NodeDAO {
         path = rs.getString(1);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getDescendantPKs()", "root.EX_SQL_QUERY_FAILED",
-          "selectQuery = " + selectQuery.toString() + " id = " + nodePK.getId() + " compo name = "
+      SilverTrace.error("node", "NodeDAO.getDescendantPKs()",
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+              + " id = " + nodePK.getId() + " compo name = "
               + nodePK.getComponentName(), e);
       throw e;
     } finally {
@@ -292,8 +304,9 @@ public class NodeDAO {
           a.add(n); /* Stockage du sous thème */
         }
       } catch (SQLException e) {
-        SilverTrace.error("node", "NodeDAO.getDescendantPKs()", "root.EX_SQL_QUERY_FAILED",
-            "selectQuery = " + selectQuery.toString() + " compo name = "
+        SilverTrace.error("node", "NodeDAO.getDescendantPKs()",
+            "root.EX_SQL_QUERY_FAILED", "selectQuery = "
+                + selectQuery.toString() + " compo name = "
                 + nodePK.getComponentName(), e);
         throw e;
       } finally {
@@ -306,7 +319,7 @@ public class NodeDAO {
 
   /**
    * Get descendant nodeDetails of a node
-   *
+   * 
    * @return A List of NodeDetail
    * @param con
    *          A connection to the database
@@ -315,12 +328,13 @@ public class NodeDAO {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.6
    */
-  public static List getDescendantDetails(Connection con, NodePK nodePK) throws SQLException {
+  public static List getDescendantDetails(Connection con, NodePK nodePK)
+      throws SQLException {
 
     String path = null;
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("SELECT nodePath from ").append(nodePK.getTableName()).append(
-        " where nodeId = ? and instanceId = ?");
+    selectQuery.append("SELECT nodePath from ").append(nodePK.getTableName())
+        .append(" where nodeId = ? and instanceId = ?");
     ArrayList a = new ArrayList();
 
     PreparedStatement prepStmt = null;
@@ -335,8 +349,9 @@ public class NodeDAO {
         path = rs.getString(1);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getDescendantDetails()", "root.EX_SQL_QUERY_FAILED",
-          "selectQuery = " + selectQuery.toString() + " id = " + nodePK.getId() + " compo name = "
+      SilverTrace.error("node", "NodeDAO.getDescendantDetails()",
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+              + " id = " + nodePK.getId() + " compo name = "
               + nodePK.getComponentName(), e);
       throw e;
     } finally {
@@ -360,8 +375,9 @@ public class NodeDAO {
           a.add(nd);
         }
       } catch (SQLException e) {
-        SilverTrace.error("node", "NodeDAO.getDescendantDetails()", "root.EX_SQL_QUERY_FAILED",
-            "selectQuery = " + selectQuery.toString() + " compo name = "
+        SilverTrace.error("node", "NodeDAO.getDescendantDetails()",
+            "root.EX_SQL_QUERY_FAILED", "selectQuery = "
+                + selectQuery.toString() + " compo name = "
                 + nodePK.getComponentName(), e);
         throw e;
       } finally {
@@ -374,7 +390,7 @@ public class NodeDAO {
 
   /**
    * Get descendant nodeDetails of a node
-   *
+   * 
    * @return A List of NodeDetail
    * @param con
    *          A connection to the database
@@ -382,11 +398,13 @@ public class NodeDAO {
    *          A NodeDetail
    * @since 4.07
    */
-  public static List getDescendantDetails(Connection con, NodeDetail node) throws SQLException {
+  public static List getDescendantDetails(Connection con, NodeDetail node)
+      throws SQLException {
     String path = node.getPath() + node.getNodePK().getId() + "/%";
 
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select * from ").append(node.getNodePK().getTableName());
+    selectQuery.append("select * from ")
+        .append(node.getNodePK().getTableName());
     selectQuery.append(" where nodePath like '").append(path).append("'");
     selectQuery.append(" and instanceId = ? order by nodePath");
 
@@ -404,9 +422,9 @@ public class NodeDAO {
         a.add(nd);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getDescendantDetails()", "root.EX_SQL_QUERY_FAILED",
-          "selectQuery = " + selectQuery.toString() + " compo name = "
-              + node.getNodePK().getComponentName(), e);
+      SilverTrace.error("node", "NodeDAO.getDescendantDetails()",
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+              + " compo name = " + node.getNodePK().getComponentName(), e);
       throw e;
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -417,7 +435,7 @@ public class NodeDAO {
 
   /**
    * Get nodeDetails by level
-   *
+   * 
    * @return A collection of NodeDetail
    * @since 1.6
    */
@@ -429,7 +447,8 @@ public class NodeDAO {
     StringBuffer nodeStatement = new StringBuffer();
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeLevelNumber=").append(level);
-    nodeStatement.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
+    nodeStatement.append(" and instanceId='").append(nodePK.getComponentName())
+        .append("'");
     nodeStatement.append(" order by nodeId asc ");
     Statement stmt = null;
     ResultSet rs = null;
@@ -445,8 +464,9 @@ public class NodeDAO {
         headers.add(nd);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getHeadersByLevel()", "root.EX_SQL_QUERY_FAILED",
-          "nodeStatement = " + nodeStatement.toString(), e);
+      SilverTrace.error("node", "NodeDAO.getHeadersByLevel()",
+          "root.EX_SQL_QUERY_FAILED", "nodeStatement = "
+              + nodeStatement.toString(), e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -455,10 +475,11 @@ public class NodeDAO {
     return headers;
   }
 
-  private static void setTranslations(Connection con, NodeDetail node) throws SQLException {
+  private static void setTranslations(Connection con, NodeDetail node)
+      throws SQLException {
     // Add default translation
-    NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node.getName(), node
-        .getDescription());
+    NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node
+        .getName(), node.getDescription());
     node.addTranslation((Translation) nodeI18NDetail);
 
     if (I18NHelper.isI18N) {
@@ -473,17 +494,18 @@ public class NodeDAO {
 
   /**
    * Get all nodeDetails
-   *
+   * 
    * @return A collection of NodeDetail
    * @since 1.6
    */
-  public static List getAllHeaders(Connection con, NodePK nodePK) throws SQLException {
+  public static List getAllHeaders(Connection con, NodePK nodePK)
+      throws SQLException {
     return getAllHeaders(con, nodePK, null);
   }
 
   /**
    * Get all nodeDetails
-   *
+   * 
    * @return A collection of NodeDetail
    * @since 1.6
    */
@@ -493,7 +515,8 @@ public class NodeDAO {
     StringBuffer nodeStatement = new StringBuffer();
 
     nodeStatement.append("select * from ").append(nodePK.getTableName());
-    nodeStatement.append(" where instanceId ='").append(nodePK.getComponentName()).append("'");
+    nodeStatement.append(" where instanceId ='").append(
+        nodePK.getComponentName()).append("'");
     if (StringUtil.isDefined(sorting))
       nodeStatement.append(" order by ").append(sorting);
     else
@@ -509,8 +532,8 @@ public class NodeDAO {
         NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
 
         // Add default translation
-        NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd
-            .getDescription());
+        NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd
+            .getName(), nd.getDescription());
         nd.addTranslation((Translation) nodeI18NDetail);
 
         List translations = NodeI18NDAO.getTranslations(con, nd.getId());
@@ -523,8 +546,9 @@ public class NodeDAO {
         headers.add(nd);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getAllHeaders()", "root.EX_SQL_QUERY_FAILED",
-          "nodeStatement = " + nodeStatement.toString(), e);
+      SilverTrace.error("node", "NodeDAO.getAllHeaders()",
+          "root.EX_SQL_QUERY_FAILED", "nodeStatement = "
+              + nodeStatement.toString(), e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -533,9 +557,11 @@ public class NodeDAO {
     return headers;
   }
 
-  public static List getSubTree(Connection con, NodePK nodePK, String status) throws SQLException {
-    SilverTrace.info("node", "NodeDAO.getSubTree()", "root.MSG_GEN_ENTER_METHOD", "nodePK = "
-        + nodePK + ", status = " + status);
+  public static List getSubTree(Connection con, NodePK nodePK, String status)
+      throws SQLException {
+    SilverTrace.info("node", "NodeDAO.getSubTree()",
+        "root.MSG_GEN_ENTER_METHOD", "nodePK = " + nodePK + ", status = "
+            + status);
     // get the path of the given nodePK
     NodeDetail detail = loadRow(con, nodePK);
 
@@ -554,8 +580,8 @@ public class NodeDAO {
     return headers;
   }
 
-  private static List getSubTree(Connection con, List tree, NodePK nodePK, String status)
-      throws SQLException {
+  private static List getSubTree(Connection con, List tree, NodePK nodePK,
+      String status) throws SQLException {
     Collection childrenDetails = getChildrenDetails(con, nodePK);
     if (childrenDetails.size() > 0) {
       Iterator iterator = childrenDetails.iterator();
@@ -578,7 +604,7 @@ public class NodeDAO {
 
   /**
    * Get the path from root to a node
-   *
+   * 
    * @return A collection of NodeDetail
    * @param con
    *          A connection to the database
@@ -589,7 +615,8 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static Collection getAnotherPath(Connection con, NodePK nodePK) throws SQLException {
+  public static Collection getAnotherPath(Connection con, NodePK nodePK)
+      throws SQLException {
     ArrayList nodeDetails = new ArrayList();
 
     /* le node courant */
@@ -614,7 +641,7 @@ public class NodeDAO {
 
   /**
    * Create a NodeDetail from a ResultSet
-   *
+   * 
    * @param rs
    *          the ResultSet which contains data
    * @return the NodeDetail
@@ -622,7 +649,8 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK) throws SQLException {
+  public static NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK)
+      throws SQLException {
     /* Récupération des données depuis la BD */
     NodePK pk = new NodePK(new Integer(rs.getInt(1)).toString(), nodePK);
     String name = rs.getString(2);
@@ -642,8 +670,8 @@ public class NodeDAO {
     if (description == null)
       description = "";
 
-    NodeDetail nd = new NodeDetail(pk, name, description, creationDate, creatorId, path, level,
-        fatherPK, modelId, status, null, type);
+    NodeDetail nd = new NodeDetail(pk, name, description, creationDate,
+        creatorId, path, level, fatherPK, modelId, status, null, type);
 
     nd.setLanguage(language);
     nd.setOrder(order);
@@ -653,7 +681,7 @@ public class NodeDAO {
 
   /**
    * Get the detail of another Node
-   *
+   * 
    * @param pk
    *          the PK of the Node
    * @return a NodeDetail
@@ -661,7 +689,8 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static NodeDetail getAnotherHeader(Connection con, NodePK nodePK) throws SQLException {
+  public static NodeDetail getAnotherHeader(Connection con, NodePK nodePK)
+      throws SQLException {
 
     String nodeId = nodePK.getId();
     NodeDetail nd = null;
@@ -669,12 +698,16 @@ public class NodeDAO {
     StringBuffer nodeStatement = new StringBuffer();
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeId = ").append(nodeId);
-    nodeStatement.append(" and instanceId = '").append(nodePK.getComponentName()).append("'");
+    nodeStatement.append(" and instanceId = '").append(
+        nodePK.getComponentName()).append("'");
     /*
-     * nodeStatement.append("select * from ").append(nodePK.getTableName()).append (" n1 ");
-     * nodeStatement.append("LEFT OUTER JOIN ").append(NodeI18NDAO.TABLE_NAME ).append(" n2");
-     * nodeStatement.append(" on (n1.nodeId = n2.nodeId)"); nodeStatement
-     * .append(" where instanceId ='").append(nodePK.getComponentName ()).append("'");
+     * nodeStatement.append("select * from ").append(nodePK.getTableName()).append
+     * (" n1 ");
+     * nodeStatement.append("LEFT OUTER JOIN ").append(NodeI18NDAO.TABLE_NAME
+     * ).append(" n2"); nodeStatement.append(" on (n1.nodeId = n2.nodeId)");
+     * nodeStatement
+     * .append(" where instanceId ='").append(nodePK.getComponentName
+     * ()).append("'");
      * nodeStatement.append(" and n1.nodeId = ").append(nodeId);
      * nodeStatement.append(" order by nodePath, orderNumber, n2.id");
      */
@@ -688,8 +721,8 @@ public class NodeDAO {
       if (rs.next()) {
         nd = resultSet2NodeDetail(rs, nodePK);
         // Add default translation
-        NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd
-            .getDescription());
+        NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd
+            .getName(), nd.getDescription());
         nd.addTranslation((Translation) nodeI18NDetail);
 
         List translations = NodeI18NDAO.getTranslations(con, nd.getId());
@@ -700,11 +733,13 @@ public class NodeDAO {
         }
         return nd;
       } else {
-        throw new NoSuchEntityException("Row for id " + nodeId + " not found in database.");
+        throw new NoSuchEntityException("Row for id " + nodeId
+            + " not found in database.");
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getAnotherHeader()", "root.EX_SQL_QUERY_FAILED",
-          "nodeStatement = " + nodeStatement.toString(), e);
+      SilverTrace.error("node", "NodeDAO.getAnotherHeader()",
+          "root.EX_SQL_QUERY_FAILED", "nodeStatement = "
+              + nodeStatement.toString(), e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -713,18 +748,19 @@ public class NodeDAO {
 
   /**
    * Get the header of each child of the node
-   *
+   * 
    * @return a NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static Collection getChildrenDetails(Connection con, NodePK nodePK) throws SQLException {
+  public static Collection getChildrenDetails(Connection con, NodePK nodePK)
+      throws SQLException {
     return getChildrenDetails(con, nodePK, null);
   }
 
-  public static Collection getChildrenDetails(Connection con, NodePK nodePK, String sorting)
-      throws SQLException {
+  public static Collection getChildrenDetails(Connection con, NodePK nodePK,
+      String sorting) throws SQLException {
 
     String nodeId = nodePK.getId();
     ArrayList a = null;
@@ -739,8 +775,10 @@ public class NodeDAO {
     }
 
     /*
-     * childrenStatement.append("select * from ").append(nodePK.getTableName()).append (" n1 ");
-     * childrenStatement.append("LEFT OUTER JOIN ").append(NodeI18NDAO. TABLE_NAME).append(" n2");
+     * childrenStatement.append("select * from ").append(nodePK.getTableName()).append
+     * (" n1 ");
+     * childrenStatement.append("LEFT OUTER JOIN ").append(NodeI18NDAO.
+     * TABLE_NAME).append(" n2");
      * childrenStatement.append(" on (n1.nodeId = n2.nodeId)");
      * childrenStatement.append(" where nodeFatherId = ? ");
      * childrenStatement.append(" and instanceId = ? "); if (sorting != null) {
@@ -765,8 +803,9 @@ public class NodeDAO {
         a.add(nd);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getChildrenDetails()", "root.EX_SQL_QUERY_FAILED",
-          "childrenStatement = " + childrenStatement.toString() + " nodeId = " + nodeId
+      SilverTrace.error("node", "NodeDAO.getChildrenDetails()",
+          "root.EX_SQL_QUERY_FAILED", "childrenStatement = "
+              + childrenStatement.toString() + " nodeId = " + nodeId
               + " compo name = " + nodePK.getComponentName(), e);
       throw e;
     } finally {
@@ -778,18 +817,19 @@ public class NodeDAO {
 
   /**
    * Get the children number of this node
-   *
+   * 
    * @return a int
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static int getChildrenNumber(Connection con, NodePK nodePK) throws SQLException {
+  public static int getChildrenNumber(Connection con, NodePK nodePK)
+      throws SQLException {
 
     int nbChildren = 0;
 
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select count(*) from ").append(nodePK.getTableName()).append(
-        " where nodeFatherId = ? and instanceId = ?");
+    selectQuery.append("select count(*) from ").append(nodePK.getTableName())
+        .append(" where nodeFatherId = ? and instanceId = ?");
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -803,9 +843,10 @@ public class NodeDAO {
         nbChildren = rs.getInt(1);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getChildrenNumber()", "root.EX_SQL_QUERY_FAILED",
-          "selectQuery = " + selectQuery.toString() + " nodeId = " + nodePK.getId()
-              + " compo name = " + nodePK.getComponentName(), e);
+      SilverTrace.error("node", "NodeDAO.getChildrenNumber()",
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+              + " nodeId = " + nodePK.getId() + " compo name = "
+              + nodePK.getComponentName(), e);
       throw e;
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -816,7 +857,7 @@ public class NodeDAO {
 
   /**
    * Insert into the database the data of a node
-   *
+   * 
    * @return a NodePK which contains the new row id
    * @param nd
    *          the NodeDetail which contains data
@@ -826,7 +867,8 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static NodePK insertRow(Connection con, NodeDetail nd) throws SQLException {
+  public static NodePK insertRow(Connection con, NodeDetail nd)
+      throws SQLException {
     NodePK pk = nd.getNodePK();
 
     int newId = 0;
@@ -844,8 +886,9 @@ public class NodeDAO {
     String language = nd.getLanguage();
 
     int nbBrothers = getChildrenNumber(con, nd.getFatherPK());
-    SilverTrace.info("node", "NodeDAO.insertRow()", "root.MSG_GEN_PARAM_VALUE", "fatherId = "
-        + nd.getFatherPK().getId() + ", nbBrothers = " + nbBrothers);
+    SilverTrace.info("node", "NodeDAO.insertRow()", "root.MSG_GEN_PARAM_VALUE",
+        "fatherId = " + nd.getFatherPK().getId() + ", nbBrothers = "
+            + nbBrothers);
 
     int order = nbBrothers + 1;
 
@@ -854,16 +897,20 @@ public class NodeDAO {
         newId = Integer.parseInt(nd.getNodePK().getId());
       } else {
         /* Recherche de la nouvelle PK de la table */
-        newId = DBUtil.getNextId(nd.getNodePK().getTableName(), new String("nodeId"));
+        newId = DBUtil.getNextId(nd.getNodePK().getTableName(), new String(
+            "nodeId"));
       }
     } catch (Exception e) {
-      throw new NodeRuntimeException("NodeDAO.insertRow()", SilverpeasRuntimeException.ERROR,
-          "root.EX_GET_NEXTID_FAILED", e);
+      throw new NodeRuntimeException("NodeDAO.insertRow()",
+          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
     }
 
     StringBuffer insertQuery = new StringBuffer();
-    insertQuery.append("insert into ").append(nd.getNodePK().getTableName()).append(
-        " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)");
+    insertQuery
+        .append("insert into ")
+        .append(nd.getNodePK().getTableName())
+        .append(
+            " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(insertQuery.toString());
@@ -896,7 +943,7 @@ public class NodeDAO {
 
   /**
    * Delete into the database a node but not it's descendants
-   *
+   * 
    * @param path
    *          the path of the node to delete
    * @param creatorId
@@ -905,12 +952,14 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static void deleteRow(Connection con, NodePK nodePK) throws SQLException {
+  public static void deleteRow(Connection con, NodePK nodePK)
+      throws SQLException {
 
     StringBuffer deleteQuery = new StringBuffer();
     deleteQuery.append("delete from ").append(nodePK.getTableName());
     deleteQuery.append(" where nodeId=").append(nodePK.getId());
-    deleteQuery.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
+    deleteQuery.append(" and instanceId='").append(nodePK.getComponentName())
+        .append("'");
 
     Statement stmt = null;
 
@@ -926,7 +975,7 @@ public class NodeDAO {
 
   /**
    * Check if a Node exists in database
-   *
+   * 
    * @return the fat pk (pk + detail)
    * @param pk
    *          the node PK to find
@@ -934,7 +983,8 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static NodePK selectByPrimaryKey(Connection con, NodePK pk) throws SQLException {
+  public static NodePK selectByPrimaryKey(Connection con, NodePK pk)
+      throws SQLException {
     NodeDetail detail = loadRow(con, pk);
     NodePK primary = new NodePK(pk.getId(), pk);
 
@@ -942,10 +992,11 @@ public class NodeDAO {
     return primary;
   }
 
-  public static NodePK selectByNameAndFatherId(Connection con, NodePK pk, String name,
-      int nodeFatherId) throws SQLException {
+  public static NodePK selectByNameAndFatherId(Connection con, NodePK pk,
+      String name, int nodeFatherId) throws SQLException {
     NodeDetail detail = loadRow(con, pk, name, nodeFatherId);
-    NodePK primary = new NodePK(detail.getNodePK().getId(), detail.getNodePK().getInstanceId());
+    NodePK primary = new NodePK(detail.getNodePK().getId(), detail.getNodePK()
+        .getInstanceId());
 
     primary.nodeDetail = detail;
     return primary;
@@ -953,14 +1004,15 @@ public class NodeDAO {
 
   /**
    * Method declaration
-   *
+   * 
    * @param con
    * @param pk
    * @return
    * @throws SQLException
    * @see
    */
-  public static Collection selectByFatherPrimaryKey(Connection con, NodePK pk) throws SQLException {
+  public static Collection selectByFatherPrimaryKey(Connection con, NodePK pk)
+      throws SQLException {
     Collection children = getChildrenDetails(con, pk);
     List result = new ArrayList();
     NodeDetail detail = null;
@@ -975,22 +1027,24 @@ public class NodeDAO {
     return result;
   }
 
-  public static NodeDetail loadRow(Connection con, NodePK nodePK) throws SQLException {
+  public static NodeDetail loadRow(Connection con, NodePK nodePK)
+      throws SQLException {
     return loadRow(con, nodePK, true);
   }
 
   /**
    * Load node attributes from database
-   *
+   * 
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static NodeDetail loadRow(Connection con, NodePK nodePK, boolean getTranslations)
-      throws SQLException {
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK);
+  public static NodeDetail loadRow(Connection con, NodePK nodePK,
+      boolean getTranslations) throws SQLException {
+    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
+        "nodePK = " + nodePK);
     NodeDetail detail = null;
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-        + SELECT_NODE_BY_ID);
+    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
+        "selectQuery = " + SELECT_NODE_BY_ID);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -1008,12 +1062,13 @@ public class NodeDAO {
       } else {
         // throw new NoSuchEntityException("Row for id " + nodePK.getId() +
         // " not found in database.");
-        throw new NodeRuntimeException("NodeDAO.loadRow()", SilverpeasRuntimeException.ERROR,
+        throw new NodeRuntimeException("NodeDAO.loadRow()",
+            SilverpeasRuntimeException.ERROR,
             "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "NodeId = " + nodePK.getId());
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.loadRow()", "root.EX_SQL_QUERY_FAILED", "selectQuery = "
-          + SELECT_NODE_BY_ID, e);
+      SilverTrace.error("node", "NodeDAO.loadRow()",
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + SELECT_NODE_BY_ID, e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -1022,17 +1077,18 @@ public class NodeDAO {
     return detail;
   }
 
-  public static NodeDetail loadRow(Connection con, NodePK nodePK, String name, int nodeFatherId)
-      throws SQLException {
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK);
+  public static NodeDetail loadRow(Connection con, NodePK nodePK, String name,
+      int nodeFatherId) throws SQLException {
+    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
+        "nodePK = " + nodePK);
     NodeDetail detail = null;
     StringBuffer selectQuery = new StringBuffer();
     selectQuery.append("select * from ").append(nodePK.getTableName());
     selectQuery.append(" where lower(nodename)=?");
     selectQuery.append(" and instanceId=?");
     selectQuery.append(" and nodefatherid=?");
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-        + selectQuery.toString());
+    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
+        "selectQuery = " + selectQuery.toString());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -1050,12 +1106,14 @@ public class NodeDAO {
       } else {
         // throw new NoSuchEntityException("Row for id " + nodePK.getId() +
         // " not found in database.");
-        throw new NodeRuntimeException("NodeDAO.loadRow()", SilverpeasRuntimeException.ERROR,
+        throw new NodeRuntimeException("NodeDAO.loadRow()",
+            SilverpeasRuntimeException.ERROR,
             "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "NodeId = " + nodePK.getId());
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.loadRow()", "root.EX_SQL_QUERY_FAILED", "selectQuery = "
-          + selectQuery.toString(), e);
+      SilverTrace.error("node", "NodeDAO.loadRow()",
+          "root.EX_SQL_QUERY_FAILED",
+          "selectQuery = " + selectQuery.toString(), e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -1066,15 +1124,18 @@ public class NodeDAO {
 
   /**
    * Store node attributes into database
-   *
+   * 
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static void storeRow(Connection con, NodeDetail nodeDetail) throws SQLException {
+  public static void storeRow(Connection con, NodeDetail nodeDetail)
+      throws SQLException {
     int rowCount = 0;
     StringBuffer updateStatement = new StringBuffer();
-    updateStatement.append("update ").append(nodeDetail.getNodePK().getTableName());
-    updateStatement.append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
+    updateStatement.append("update ").append(
+        nodeDetail.getNodePK().getTableName());
+    updateStatement
+        .append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
     updateStatement
         .append(" nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? and instanceId = ?");
@@ -1086,13 +1147,15 @@ public class NodeDAO {
       prepStmt.setString(2, nodeDetail.getDescription());
       prepStmt.setString(3, nodeDetail.getPath());
       prepStmt.setInt(4, nodeDetail.getLevel());
-      prepStmt.setInt(5, new Integer(nodeDetail.getFatherPK().getId()).intValue());
+      prepStmt.setInt(5, new Integer(nodeDetail.getFatherPK().getId())
+          .intValue());
       prepStmt.setString(6, nodeDetail.getModelId());
       prepStmt.setString(7, nodeDetail.getStatus());
       prepStmt.setInt(8, nodeDetail.getOrder());
       prepStmt.setString(9, nodeDetail.getLanguage());
       prepStmt.setInt(10, nodeDetail.getRightsDependsOn());
-      prepStmt.setInt(11, new Integer(nodeDetail.getNodePK().getId()).intValue());
+      prepStmt.setInt(11, new Integer(nodeDetail.getNodePK().getId())
+          .intValue());
       prepStmt.setString(12, nodeDetail.getNodePK().getComponentName());
       rowCount = prepStmt.executeUpdate();
 
@@ -1102,15 +1165,19 @@ public class NodeDAO {
     }
 
     if (rowCount == 0) {
-      throw new NodeRuntimeException("NodeDAO.storeRow()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = " + nodeDetail.getNodePK().getId());
+      throw new NodeRuntimeException("NodeDAO.storeRow()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = "
+              + nodeDetail.getNodePK().getId());
     }
   }
 
-  public static void moveNode(Connection con, NodeDetail nodeDetail) throws SQLException {
+  public static void moveNode(Connection con, NodeDetail nodeDetail)
+      throws SQLException {
     int rowCount = 0;
     StringBuffer updateStatement = new StringBuffer();
-    updateStatement.append("update ").append(nodeDetail.getNodePK().getTableName());
+    updateStatement.append("update ").append(
+        nodeDetail.getNodePK().getTableName());
     updateStatement.append(" set nodePath = ? , ");
     updateStatement
         .append(" nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, rightsDependsOn = ? ");
@@ -1132,15 +1199,18 @@ public class NodeDAO {
     }
 
     if (rowCount == 0) {
-      throw new NodeRuntimeException("NodeDAO.storeRow()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = " + nodeDetail.getNodePK().getId());
+      throw new NodeRuntimeException("NodeDAO.storeRow()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = "
+              + nodeDetail.getNodePK().getId());
     }
   }
 
-  public static void updateRightsDependency(Connection con, NodePK pk, int rightsDependsOn)
-      throws SQLException {
-    SilverTrace.info("node", "NodeDAO.updateRightsDependency()", "root.MSG_GEN_ENTER_METHOD",
-        "nodePK = " + pk.toString() + ", rightsDependsOn = " + rightsDependsOn);
+  public static void updateRightsDependency(Connection con, NodePK pk,
+      int rightsDependsOn) throws SQLException {
+    SilverTrace.info("node", "NodeDAO.updateRightsDependency()",
+        "root.MSG_GEN_ENTER_METHOD", "nodePK = " + pk.toString()
+            + ", rightsDependsOn = " + rightsDependsOn);
 
     StringBuffer updateStatement = new StringBuffer();
     updateStatement.append("update ").append(pk.getTableName());

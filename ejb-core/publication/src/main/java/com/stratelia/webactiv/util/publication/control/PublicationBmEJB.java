@@ -48,7 +48,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
-import com.silverpeas.tagcloud.ejb.TagCloudRuntimeException;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
@@ -64,12 +63,20 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
+import com.stratelia.webactiv.util.coordinates.model.Coordinate;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.ejb.Publication;
 import com.stratelia.webactiv.util.publication.ejb.PublicationDAO;
@@ -317,11 +324,10 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  * Stabilisation Lot 2 : Exceptions et Silvertrace
  *
  */
-
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PublicationBmEJB implements SessionBean,
@@ -413,8 +419,9 @@ public class PublicationBmEJB implements SessionBean,
       createIndex(pubDetail);
 
       if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-          false))
+          false)) {
         createTagCloud(pubDetail);
+      }
     } catch (Exception re) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.createPublication()",
@@ -433,8 +440,9 @@ public class PublicationBmEJB implements SessionBean,
 
       publi.move(nodePK);
 
-      if (indexIt)
+      if (indexIt) {
         createIndex(pubPK);
+      }
     } catch (Exception re) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.movePublication()",
@@ -446,8 +454,9 @@ public class PublicationBmEJB implements SessionBean,
 
   public void changePublicationsOrder(List ids, NodePK nodePK)
       throws RemoteException {
-    if (ids == null || ids.size() == 0)
+    if (ids == null || ids.size() == 0) {
       return;
+    }
 
     Connection con = null;
 
@@ -489,10 +498,11 @@ public class PublicationBmEJB implements SessionBean,
     index = index + direction;
 
     // prevent indexOutOfBound
-    if (index < 0)
+    if (index < 0) {
       index = 0;
-    else if (index > publications.size())
+    } else if (index > publications.size()) {
       index = publications.size();
+    }
 
     // insert publication at the right place
     publications.add(index, publication);
@@ -611,8 +621,9 @@ public class PublicationBmEJB implements SessionBean,
       }
 
       if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-          false))
+          false)) {
         updateTagCloud(detail);
+      }
     } catch (Exception re) {
       throw new PublicationRuntimeException("PublicationBmEJB.setDetail()",
           SilverpeasRuntimeException.ERROR,
@@ -776,8 +787,9 @@ public class PublicationBmEJB implements SessionBean,
 
     try {
       Collection pubDetails = PublicationDAO.getOrphanPublications(con, pubPK);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, pubDetails);
+      }
       return pubDetails;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -795,8 +807,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection pubDetails = PublicationDAO.getNotOrphanPublications(con,
           pubPK);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, pubDetails);
+      }
       return pubDetails;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -833,8 +846,9 @@ public class PublicationBmEJB implements SessionBean,
       Collection pubDetails = PublicationDAO
           .getUnavailablePublicationsByPublisherId(con, pubPK, publisherId,
               nodeId);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, pubDetails);
+      }
       return pubDetails;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -941,8 +955,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection publis = PublicationDAO.selectByFatherPK(con, fatherPK,
           sorting, filterOnVisibilityPeriod);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, publis);
+      }
       return publis;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -962,8 +977,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection publis = PublicationDAO.selectByFatherPK(con, fatherPK,
           sorting, filterOnVisibilityPeriod, userId);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, publis);
+      }
       return publis;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -988,8 +1004,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection detailList = PublicationDAO.selectNotInFatherPK(con, fatherPK,
           sorting);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, detailList);
+      }
       return detailList;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1022,8 +1039,9 @@ public class PublicationBmEJB implements SessionBean,
         i++;
       }
 
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, result);
+      }
       return result;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1046,8 +1064,9 @@ public class PublicationBmEJB implements SessionBean,
       detailList = PublicationDAO
           .selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, pk,
               status, fatherId, nbPubs);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, detailList);
+      }
       return detailList;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1077,8 +1096,9 @@ public class PublicationBmEJB implements SessionBean,
         result.add(pubDetail);
         i++;
       }
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, result);
+      }
       return result;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1126,8 +1146,9 @@ public class PublicationBmEJB implements SessionBean,
 
     try {
       pub.createInfoDetail(modelPK, infos);
-      if (infos != null)
+      if (infos != null) {
         createIndex(pubPK, false, infos.getIndexOperation());
+      }
     } catch (Exception e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.createInfoDetail()",
@@ -1144,8 +1165,9 @@ public class PublicationBmEJB implements SessionBean,
 
     try {
       pub.createInfoModelDetail(modelPK, infos);
-      if (infos != null)
+      if (infos != null) {
         createIndex(pubPK, false, infos.getIndexOperation());
+      }
     } catch (Exception e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.createInfoModelDetail()",
@@ -1178,8 +1200,9 @@ public class PublicationBmEJB implements SessionBean,
       if (isInteger(pub.getDetail().getInfoId())
           && !"0".equals(pub.getDetail().getInfoId())) {
         pub.updateInfoDetail(infos);
-        if (infos != null)
+        if (infos != null) {
           createIndex(pubPK, false, infos.getIndexOperation());
+        }
       } else {
         // XML Template
         // Only infoLinks are used
@@ -1245,8 +1268,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection resultList = PublicationDAO
           .searchByKeywords(con, query, pubPK);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, resultList);
+      }
       return resultList;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1266,8 +1290,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection publications = PublicationDAO.selectByPublicationPKs(con,
           publicationPKs);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, publications);
+      }
       return publications;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1287,8 +1312,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection publications = PublicationDAO.selectByStatus(con, pubPK,
           status);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, publications);
+      }
       return publications;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1323,8 +1349,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection publications = PublicationDAO.selectByStatus(con,
           componentIds, status);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, publications);
+      }
       return publications;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1428,8 +1455,9 @@ public class PublicationBmEJB implements SessionBean,
     try {
       Collection detailList = PublicationDAO.selectByFatherIds(con, fatherIds,
           pubPK, sorting, status, filterOnVisibilityPeriod);
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, detailList);
+      }
       return detailList;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1479,13 +1507,12 @@ public class PublicationBmEJB implements SessionBean,
   }
 
   // internal methods
-
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private PublicationHome getPublicationHome() {
@@ -1505,12 +1532,12 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private Publication findPublication(PublicationPK pubPK) {
@@ -1556,10 +1583,10 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private Connection getConnection() {
@@ -1575,10 +1602,10 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -1617,13 +1644,13 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param indexEntry
    * @param infoDetail
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private FullIndexEntry updateIndexEntryWithInfoDetail(
@@ -1721,8 +1748,9 @@ public class PublicationBmEJB implements SessionBean,
           "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + pubDetail.toString());
       try {
         FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
-        if (indexEntry != null)
+        if (indexEntry != null) {
           IndexEngineProxy.addIndexEntry(indexEntry);
+        }
       } catch (Exception e) {
         SilverTrace.error("publication", "PublicationBmEJB.createIndex()",
             "root.MSG_GEN_ENTER_METHOD", "pubDetail = " + pubDetail.toString()
@@ -1859,25 +1887,27 @@ public class PublicationBmEJB implements SessionBean,
     // Suppression du nuage de tags lors de la suppression de l'index (et pas
     // lors de l'envoi de la publication dans la corbeille).
     if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-        false))
+        false)) {
       deleteTagCloud(pubPK);
+    }
 
     // idem pour les notations
     if (SilverpeasSettings.readBoolean(publicationSettings, "useNotation",
-        false))
+        false)) {
       deleteNotation(pubPK);
+    }
   }
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getAllPublications(PublicationPK pubPK, String sorting)
@@ -1965,8 +1995,9 @@ public class PublicationBmEJB implements SessionBean,
         result.add(pubDetail);
         i++;
       }
-      if (I18NHelper.isI18N)
+      if (I18NHelper.isI18N) {
         setTranslations(con, result);
+      }
       return result;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
@@ -1988,14 +2019,47 @@ public class PublicationBmEJB implements SessionBean,
       TagCloudBm tagCloudBm = tagCloudBmHome.create();
       return tagCloudBm;
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("PublicationBmEJB.getTagCloudBm()",
+      throw new PublicationRuntimeException("PublicationBmEJB.getTagCloudBm()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   /**
+   * "Kmax" method
+   * 
+   * @return
+   */
+  public CoordinatesBm getCoordinatesBm() {
+    CoordinatesBm currentCoordinatesBm = null;
+    try {
+      CoordinatesBmHome coordinatesBmHome = (CoordinatesBmHome) EJBUtilitaire
+          .getEJBObjectRef(JNDINames.COORDINATESBM_EJBHOME,
+              CoordinatesBmHome.class);
+      currentCoordinatesBm = coordinatesBmHome.create();
+    } catch (Exception e) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getCoordinatesBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return currentCoordinatesBm;
+  }
+
+  public NodeBm getNodeBm() {
+    NodeBm nodeBm = null;
+    try {
+      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      nodeBm = nodeBmHome.create();
+    } catch (Exception e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getNodeBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return nodeBm;
+  }
+
+  /**
    * Create the tagclouds corresponding to the publication detail.
-   *
+   * 
    * @param pubDetail
    *          The detail of the publication.
    * @throws RemoteException
@@ -2026,7 +2090,7 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Delete the tagclouds corresponding to the publication key.
-   *
+   * 
    * @param pubPK
    *          The primary key of the publication.
    * @throws RemoteException
@@ -2039,7 +2103,7 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Update the tagclouds corresponding to the publication detail.
-   *
+   * 
    * @param pubDetail
    *          The detail of the publication.
    * @throws RemoteException
@@ -2072,9 +2136,62 @@ public class PublicationBmEJB implements SessionBean,
   }
 
   /**
+   * 
+   * Recupere les coordonnees de la publication (collection de nodePK)
+   * 
+   * @param pubId
+   * @param componentId
+   * @return
+   * @throws RemoteException
+   */
+  public Collection getCoordinates(String pubId, String componentId)
+      throws RemoteException {
+    SilverTrace.info("kmax", "KmeliaBmEjb.getPublicationCoordinates()",
+        "root.MSG_GEN_ENTER_METHOD");
+    PublicationPK pubPK = new PublicationPK(pubId, componentId);
+    Collection fatherPKs = getAllFatherPK(pubPK);
+    Iterator it = fatherPKs.iterator();
+    ArrayList coordinateIds = new ArrayList();
+    CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK);
+    while (it.hasNext()) {
+      String coordinateId = ((NodePK) it.next()).getId();
+      coordinateIds.add(coordinateId);
+    }
+    Collection coordinates = getCoordinatesBm().getCoordinatesByCoordinateIds(
+        coordinateIds, coordinatePK);
+    // Enrichit les coordonnees avec le nom du noeud
+    it = coordinates.iterator();
+    Iterator pointsIt = null;
+    while (it.hasNext()) {
+      Coordinate coordinate = (Coordinate) it.next();
+      Collection points = coordinate.getCoordinatePoints();
+      Collection surePoints = new ArrayList();
+      pointsIt = points.iterator();
+      while (pointsIt.hasNext()) {
+        CoordinatePoint point = (CoordinatePoint) pointsIt.next();
+        try {
+          NodeDetail node = getNodeBm().getHeader(
+              new NodePK("" + point.getNodeId(), componentId));
+          point.setName(node.getName());
+          point.setLevel(node.getLevel());
+          point.setPath(node.getPath());
+          surePoints.add(point);
+        } catch (Exception e) {
+          SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationCoordinates",
+              "root.MSG_GEN_PARAM_VALUE", "node unfindable !");
+        }
+      }
+      coordinate.setCoordinatePoints(surePoints);
+    }
+    SilverTrace.info("kmax", "KmeliaBmEJB.getPublicationCoordinates()",
+        "root.MSG_GEN_EXIT_METHOD");
+    return coordinates;
+  }
+
+  /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public PublicationBmEJB() {
@@ -2082,8 +2199,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void ejbCreate() {
@@ -2091,8 +2208,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void ejbRemove() {
@@ -2100,8 +2217,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void ejbActivate() {
@@ -2109,8 +2226,8 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void ejbPassivate() {
@@ -2118,13 +2235,12 @@ public class PublicationBmEJB implements SessionBean,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param sc
-   *
+   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {
   }
-
 }

@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 /**
  * Classe de gestion des node pour le bus d'importExport
- *
+ * 
  * @author sdevolder
  */
 public class NodeImportExport {
@@ -54,7 +54,7 @@ public class NodeImportExport {
   // Méthodes
   /**
    * Méthode récupération du chemin de topics menant à un topic donné
-   *
+   * 
    * @param nodePk
    *          - le nodePK du topic dont on veut le chemin
    * @return une collection des topic composant le chemin
@@ -71,14 +71,14 @@ public class NodeImportExport {
   }
 
   /**
-   * Méthode de récupération de l'arborescence totale des topics d'un liste de
-   * composants
-   *
+   * Méthode de récupération de l'arborescence totale des topics d'un liste
+   * de composants
+   * 
    * @param listComponentId
    *          - liste des ids des composants dont on veut l'arborescence des
    *          topics
-   * @return un object NodeTreesType utilisé par le mapping castor du module d '
-   *         ImportExport
+   * @return un object NodeTreesType utilisé par le mapping castor du module d
+   *         ' ImportExport
    */
   public NodeTreesType getTrees(List listComponentId) {
 
@@ -112,7 +112,7 @@ public class NodeImportExport {
 
   /**
    * Méthode récursive de récupération de l'arbre des fils d'un node
-   *
+   * 
    * @param nodePK
    *          - le nodePK du node père dont on cherche les fils
    * @return une Collection des fils du père

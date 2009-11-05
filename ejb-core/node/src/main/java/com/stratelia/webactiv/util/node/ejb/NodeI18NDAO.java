@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * This is the Node Data Access Object.
- *
+ * 
  * @author Nicolas Eysseric
  */
 public class NodeI18NDAO {
@@ -52,7 +52,7 @@ public class NodeI18NDAO {
 
   /**
    * This class must not be instanciated
-   *
+   * 
    * @since 1.0
    */
   public NodeI18NDAO() {
@@ -64,7 +64,7 @@ public class NodeI18NDAO {
 
   /**
    * Create a NodeI18N from a ResultSet
-   *
+   * 
    * @param rs
    *          the ResultSet which contains data
    * @return the NodeI18NDetail
@@ -93,7 +93,7 @@ public class NodeI18NDAO {
 
   /**
    * Insert into the database the data of a node
-   *
+   * 
    * @return a NodeI18NPK which contains the new row id
    * @param nd
    *          the NodeI18NDetail which contains data
@@ -144,7 +144,7 @@ public class NodeI18NDAO {
 
   /**
    * Update into the database the translation
-   *
+   * 
    * @return a NodeI18NPK which contains the new row id
    * @param nd
    *          the NodeI18NDetail which contains data
@@ -183,7 +183,7 @@ public class NodeI18NDAO {
 
   /**
    * Delete into the database a translation
-   *
+   * 
    * @param the
    *          translationId
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
@@ -212,7 +212,7 @@ public class NodeI18NDAO {
 
   /**
    * Delete all translations of a node
-   *
+   * 
    * @param the
    *          nodeI18NDetail of the node to delete
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail

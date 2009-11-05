@@ -57,7 +57,7 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
 /**
  * This object contains the description of a publication
- *
+ * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -1214,6 +1214,10 @@ public class PublicationDetail extends AbstractI18NBean implements
 
   public void setEndDateAndHour(Date endDateAndHour) {
     this.endDateAndHour = endDateAndHour;
+  }
+
+  public boolean isIndexable() {
+    return VALID.equals(this.status);
   }
 
 }

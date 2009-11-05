@@ -117,16 +117,16 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class InfoDAO {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public InfoDAO() {
@@ -136,14 +136,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getAllModelsDetail(Connection con)
@@ -205,15 +205,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static ModelDetail getModelDetail(Connection con, InfoPK infoPK)
@@ -248,7 +248,7 @@ public class InfoDAO {
        * String name = rs.getString(2); String description = rs.getString(3);
        * String imageName = rs.getString(4); String htmlDisplayer =
        * rs.getString(5); String htmlEditor = rs.getString(6);
-       *
+       * 
        * detail = new ModelDetail(id, name, description, imageName,
        * htmlDisplayer, htmlEditor); }
        */
@@ -292,15 +292,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param modelPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static ModelDetail getModelDetail(Connection con, ModelPK modelPK)
@@ -327,7 +327,7 @@ public class InfoDAO {
        * String name = rs.getString(2); String description = rs.getString(3);
        * String imageName = rs.getString(4); String htmlDisplayer =
        * rs.getString(5); String htmlEditor = rs.getString(6);
-       *
+       * 
        * modelDetail = new ModelDetail(id, name, description, imageName,
        * htmlDisplayer, htmlEditor); }
        */
@@ -374,15 +374,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static InfoPK hasInfo(Connection con, PublicationPK pubPK)
@@ -422,16 +422,16 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param modelPK
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static InfoPK createInfo(Connection con, ModelPK modelPK,
@@ -494,14 +494,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param modelPK
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void updateInfo(Connection con, ModelPK modelPK, InfoPK infoPK)
@@ -534,13 +534,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void deleteInfo(Connection con, InfoPK infoPK)
@@ -563,14 +563,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infos
-   *
+   * 
    * @throws SQLException
    * @throws UtilException
-   *
+   * 
    * @see
    */
   public static void addInfoItems(Connection con, InfoDetail infos)
@@ -620,15 +620,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infos
    * @param infoPK
-   *
+   * 
    * @throws SQLException
    * @throws UtilException
-   *
+   * 
    * @see
    */
   public static void updateInfoItems(Connection con, InfoDetail infos,
@@ -676,13 +676,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void deleteInfoItems(Connection con, InfoPK infoPK)
@@ -699,14 +699,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param infoText
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void addInfoText(Connection con, InfoPK infoPK,
@@ -742,14 +742,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoText
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static void updateInfoText(Connection con, InfoTextDetail infoText,
@@ -776,13 +776,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static void deleteInfoTextByInfoPK(Connection con, InfoPK infoPK)
@@ -806,14 +806,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param infoImage
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void addInfoImage(Connection con, InfoPK infoPK,
@@ -853,14 +853,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param infoImage
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void updateInfoImage(Connection con, InfoPK infoPK,
@@ -893,13 +893,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void deleteInfoImageByInfoPK(Connection con, InfoPK infoPK)
@@ -925,14 +925,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param infoLink
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void addInfoLink(Connection con, InfoPK infoPK,
@@ -970,14 +970,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param linkIds
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void deleteInfoLinksByPKs(Connection con, InfoPK infoPK,
@@ -995,13 +995,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param linkPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static void deleteInfoLinkByPK(Connection con, InfoLinkPK linkPK)
@@ -1050,13 +1050,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static void deleteInfoLinkByInfoPK(Connection con, InfoPK infoPK)
@@ -1076,14 +1076,14 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
    * @param targetLink
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void deleteInfoLinkByTargetLink(Connection con, InfoPK infoPK,
@@ -1104,15 +1104,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static InfoDetail getInfoDetailByInfoPK(Connection con, InfoPK infoPK)
@@ -1144,13 +1144,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void deleteInfoDetailByInfoPK(Connection con, InfoPK infoPK)
@@ -1163,15 +1163,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static Collection getAllInfoTextByInfoPK(Connection con, InfoPK infoPK)
@@ -1207,15 +1207,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static Collection getAllInfoImageByInfoPK(Connection con,
@@ -1261,15 +1261,15 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param infoPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static Collection getAllInfoLinkByInfoPK(Connection con, InfoPK infoPK)

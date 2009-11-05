@@ -41,10 +41,7 @@ import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.coordinates.model.CoordinateRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome; /*import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;*/
-
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
@@ -126,24 +123,6 @@ public class CoordinateImportExport {
         "root.MSG_GEN_PARAM_VALUE", "coordinateId = " + coordinateId);
     return coordinateId;
   }
-
-  /**
-   * Add nodes (coordinatesId) to a publication
-   * 
-   * @param PublicationDetail
-   *          , List of coordinateId
-   * @return nothing
-   */
-  /*
-   * public void addNodesToPublication(PublicationPK pubPK, List nodes) { try {
-   * Iterator nodesIterator = nodes.iterator(); while (nodesIterator.hasNext())
-   * { Integer coordinateId = (Integer) nodesIterator.next();
-   * getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(),
-   * pubPK)); } } catch (Exception e) { throw new
-   * CoordinateRuntimeException("CoordinateImportExport.addNodesToPublication()"
-   * ,SilverpeasRuntimeException.ERROR,
-   * "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e); } }
-   */
 
   /**
    * Get NodeByName
@@ -465,39 +444,6 @@ public class CoordinateImportExport {
     }
     return nodeBm;
   }
-
-  /**
-   * @return l'EJB PublicationBm
-   * @throws CoordinateRuntimeException
-   */
-  /*
-   * private PublicationBm getPublicationBm() { PublicationBm publicationBm =
-   * null; try { PublicationBmHome publicationBmHome = (PublicationBmHome)
-   * EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-   * PublicationBmHome.class); publicationBm = publicationBmHome.create(); }
-   * catch (Exception e) { throw new
-   * CoordinateRuntimeException("CoordinateImportExport.getPublicationBm()"
-   * ,SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e); }
-   * return publicationBm; }
-   */
-
-  /**
-   * Get unbalanced publications
-   * 
-   * @param componentId
-   * @return ArrayList of publicationDetail
-   */
-  /*
-   * public Collection getUnbalancedPublications(String componentId) {
-   * PublicationPK pk = new PublicationPK("useless", componentId); Collection
-   * publications = null; try { publications =
-   * getPublicationBm().getOrphanPublications(pk); } catch (Exception e) { throw
-   * new
-   * CoordinateRuntimeException("CoordinateImportExport.getUnbalancedPublications()"
-   * ,SilverpeasRuntimeException.ERROR,
-   * "importExport.EX_IMPOSSIBLE_DOBTENIR_LA_LISTE_DES_PUBLICATIONS_NON_CLASSEES"
-   * , e); } return publications; }
-   */
 
   /**
    * Generate index files with combination

@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 /**
  * This object contains the description of a node (own attributes and children
  * attributes)
- *
+ * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -72,7 +72,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Construct an empty NodeDetail
-   *
+   * 
    * @since 1.0
    */
   public NodeDetail() {
@@ -81,7 +81,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Create a new NodeDetail
-   *
+   * 
    * @since 1.0
    */
 
@@ -118,7 +118,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Create a new NodeDetail
-   *
+   * 
    * @param nodePK
    *          NodePK of the node
    * @param name
@@ -158,7 +158,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Create a new NodeDetail
-   *
+   * 
    * @param id
    *          id of the node
    * @param name
@@ -267,7 +267,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the NodePK
-   *
+   * 
    * @return The NodePK
    * @since 1.0
    */
@@ -281,7 +281,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the name
-   *
+   * 
    * @return The node name
    * @since 1.0
    */
@@ -304,7 +304,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the description
-   *
+   * 
    * @return The node description
    * @since 1.0
    */
@@ -325,7 +325,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Méthode nécéssaire au marshalling castor
-   *
+   * 
    * @return
    */
   public int getId() {
@@ -334,7 +334,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the creation date
-   *
+   * 
    * @return the creation date
    * @since 1.0
    */
@@ -344,7 +344,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the creator id
-   *
+   * 
    * @return the creator identifier
    * @since 1.0
    */
@@ -354,7 +354,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the path
-   *
+   * 
    * @return the path
    * @since 1.0
    */
@@ -364,7 +364,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the level
-   *
+   * 
    * @return the level
    * @since 1.0
    */
@@ -374,7 +374,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the modelId
-   *
+   * 
    * @return the modelId
    */
   public String getModelId() {
@@ -383,7 +383,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the status
-   *
+   * 
    * @return the status
    */
   public String getStatus() {
@@ -392,7 +392,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the NodePK of the father
-   *
+   * 
    * @return the NodePK of the father
    * @since 1.0
    */
@@ -402,7 +402,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the details of each child
-   *
+   * 
    * @return A collection of NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -413,7 +413,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the creation date
-   *
+   * 
    * @param date
    *          A string representing a date
    * @since 1.0
@@ -424,7 +424,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the creator name
-   *
+   * 
    * @param name
    *          The creator name
    * @since 1.0
@@ -435,7 +435,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the modelId
-   *
+   * 
    * @param modelId
    *          the modelId of the node
    */
@@ -445,7 +445,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the status
-   *
+   * 
    * @param status
    *          the status of the node
    */
@@ -455,7 +455,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the details of children
-   *
+   * 
    * @param childrenDetails
    *          a NodeDetail Collection
    * @since 1.0
@@ -466,7 +466,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the father of the node
-   *
+   * 
    * @param fatherPK
    *          the nodePK of the father
    * @since 1.0
@@ -477,7 +477,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Méthode nécéssaire au marshalling castor
-   *
+   * 
    * @param id
    */
   public void setId(int id) {
@@ -486,7 +486,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the path
-   *
+   * 
    * @param path
    *          the path of the node
    * @since 1.0
@@ -498,7 +498,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Set the level
-   *
+   * 
    * @param level
    *          the level of the node
    * @since 1.0
@@ -509,7 +509,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Get the number of children of the node
-   *
+   * 
    * @return the number of children of the node
    * @since 1.0
    */
@@ -527,7 +527,7 @@ public class NodeDetail extends AbstractI18NBean implements
 
   /**
    * Converts the contents of the key into a readable String.
-   *
+   * 
    * @return The string representation of this object
    */
   public String toString() {

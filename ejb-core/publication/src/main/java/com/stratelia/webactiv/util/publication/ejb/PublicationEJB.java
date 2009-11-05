@@ -188,8 +188,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PublicationEJB implements EntityBean {
@@ -227,8 +227,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public PublicationEJB() {
@@ -236,7 +236,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get the attributes of THIS publication
-   *
+   * 
    * @return a PublicationDetail
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception java.sql.SQLException
@@ -268,7 +268,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Update the attributes of the publication
-   *
+   * 
    * @param pubDetail
    *          the PublicationDetail which contains updated data
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
@@ -462,7 +462,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Add a new father to this publication
-   *
+   * 
    * @param fatherPK
    *          the father NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
@@ -503,7 +503,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Remove a father to this publication
-   *
+   * 
    * @param fatherPK
    *          the father NodePK to remove
    * @see com.stratelia.webactiv.util.node.model.NodePK
@@ -524,7 +524,7 @@ public class PublicationEJB implements EntityBean {
   /**
    * Remove all fathers to this publication - this publication will be linked to
    * no Node
-   *
+   * 
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -542,7 +542,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get all fathers of this publication
-   *
+   * 
    * @return A collection of NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see java.util.Collection
@@ -569,7 +569,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create or update info to this publication
-   *
+   * 
    * @param modelPK
    *          The modelPk corresponding to the choosen model
    * @param infos
@@ -603,7 +603,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create only info associated to a model
-   *
+   * 
    * @param modelPK
    *          The modelPk corresponding to the choosen model
    * @param infos
@@ -643,7 +643,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get all info associated to this publication
-   *
+   * 
    * @return All info are in a InfoDetail object
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @exception java.sql.SQLException
@@ -664,7 +664,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Update info associated to this publication
-   *
+   * 
    * @param infos
    *          An InfoDetail which contains info to update to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
@@ -737,7 +737,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get all info on publication (parameters, model and info)
-   *
+   * 
    * @return A completePublication
    * @see com.stratelia.webactiv.util.publication.model.CompletePublication
    * @exception java.sql.SQLException
@@ -775,7 +775,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create a new Publication object
-   *
+   * 
    * @param pubDetail
    *          the PublicationDetail which contains data
    * @return the PublicationPK of the new Publication
@@ -866,12 +866,12 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param pubDetail
-   *
+   * 
    * @throws CreateException
-   *
+   * 
    * @see
    */
   public void ejbPostCreate(PublicationDetail pubDetail) throws CreateException {
@@ -879,7 +879,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create an instance of a Publication object
-   *
+   * 
    * @param pk
    *          the PK of the Publication to instanciate
    * @return the PublicationPK of the instanciated Publication if it exists in
@@ -915,7 +915,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create an instance of a Publication object
-   *
+   * 
    * @param pk
    *          the PK where the Publication is instanciated
    * @param name
@@ -977,7 +977,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Load publication attributes from database
-   *
+   * 
    * @since 1.0
    */
   public void ejbLoad() {
@@ -1034,7 +1034,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Store publication attributes into database
-   *
+   * 
    * @since 1.0
    */
   public void ejbStore() {
@@ -1079,7 +1079,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Delete this Publication and all info associated
-   *
+   * 
    * @since 1.0
    */
   public void ejbRemove() {
@@ -1113,8 +1113,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void ejbActivate() {
@@ -1123,8 +1123,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void ejbPassivate() {
@@ -1133,10 +1133,10 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param ec
-   *
+   * 
    * @see
    */
   public void setEntityContext(EntityContext ec) {
@@ -1145,8 +1145,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public void unsetEntityContext() {
