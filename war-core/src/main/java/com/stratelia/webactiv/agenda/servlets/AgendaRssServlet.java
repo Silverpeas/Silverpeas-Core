@@ -45,7 +45,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see com.silverpeas.peasUtil.RssServlet#isComponentRss(java.lang.String)
    */
   public boolean isComponentRss(String userIdAgenda) {
@@ -54,7 +54,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see
    * com.silverpeas.peasUtil.RssServlet#isComponentAvailable(java.lang.String,
    * java.lang.String)
@@ -77,13 +77,14 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
    * int)
    */
   public Collection getListElements(String userIdAgenda, int nbReturned)
       throws RemoteException {
-    // récupération de la liste des 10 prochains événements de l'Agenda du user
+    // récupération de la liste des 10 prochains événements de l'Agenda du
+    // user
     // passé en paramètre
     Collection events;
     try {
@@ -97,7 +98,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
    * java.lang.String)
    */
@@ -118,7 +119,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
    * java.lang.String)
    */
@@ -146,7 +147,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see
    * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
@@ -163,7 +164,7 @@ public class AgendaRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
   public Date getElementDate(Object element) {

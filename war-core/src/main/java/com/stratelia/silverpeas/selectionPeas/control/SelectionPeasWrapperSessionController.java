@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * A simple wrapper to the userpanel.
- *
+ * 
  * @author Didier Wenzek
  */
 public class SelectionPeasWrapperSessionController extends
@@ -47,7 +47,7 @@ public class SelectionPeasWrapperSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
+   * 
    * @param mainSessionCtrl
    *          The full work session.
    * @param componentContext

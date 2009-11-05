@@ -39,21 +39,21 @@ import com.silverpeas.communicationUser.control.*;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class CommunicationUserRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -74,7 +74,7 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -88,7 +88,8 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
       ComponentSessionController componentSC, HttpServletRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
-    // le UserPanel étant unique par session, il est impératif de récupérér les
+    // le UserPanel étant unique par session, il est impératif de récupérér
+    // les
     // objets selectionnés via userPanel et de transporter
     // les id des ses de jsp en jsp en soumettant un formulaire.
     // En effet, la communication peut être utilisé "en même temps" qu' le

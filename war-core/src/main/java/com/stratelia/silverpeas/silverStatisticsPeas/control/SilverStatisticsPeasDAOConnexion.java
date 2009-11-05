@@ -103,7 +103,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration Get connections data from database
- *
+ * 
  * @author
  */
 public class SilverStatisticsPeasDAOConnexion {
@@ -121,15 +121,15 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne les stats global pour l'enemble de tous les users cad 2 infos, la
    * collection contient donc un seul element
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionAllAll(String dateBegin,
@@ -146,15 +146,15 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param rs
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
-   *
+   * 
    * @see
    */
   private static Collection[] getCollectionArrayFromResultset(ResultSet rs,
@@ -203,15 +203,15 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param selectQuery
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
-   *
+   * 
    * @see
    */
   private static Collection[] getCollectionArrayFromQuery(String selectQuery,
@@ -238,9 +238,9 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * donne les stats sur le nombre d'utilisateurs disctincts par mois
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
    */
@@ -260,9 +260,9 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne les stats global pour l'enemble de tous les users cad 2 infos, la
    * collection contient donc un seul element
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
    */
@@ -282,16 +282,16 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne les stats pour un user seulement cad 2 infos, la collection contient
    * donc un seul element
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
    * @param idUser
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionAllUser(String dateBegin,
@@ -318,9 +318,9 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * donne les stats pour un groupe
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
    */
@@ -340,16 +340,16 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne les stats pour un groupe seulement cad 2 info, la collection contient
    * donc un seul element
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
    * @param idGroup
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionAllGroup(String dateBegin,
@@ -377,9 +377,9 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * donne les stats pour un groupe
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
    */
@@ -400,15 +400,15 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne pour chaque groupe ses stats cad 3 infos par groupe, la collection
    * contient autant d'elements que de groupes
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionGroupAll(String dateBegin,
@@ -434,16 +434,16 @@ public class SilverStatisticsPeasDAOConnexion {
    * donne pour un chaque groupe d'un user les stats cad 3 infos par groupe, la
    * collection contient autant d'elements que de groupes dont le user fait
    * parti
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
    * @param idUser
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionGroupUser(String dateBegin,
@@ -468,15 +468,15 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne pour chaque user ses stats, cad 3 infos, la collection contient
    * autant d'elements que de users
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionUserAll(String dateBegin,
@@ -500,16 +500,16 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * donne pour chaque user d'un groupe ses stats, cad 3 infos, la collection
    * contient autant d'elements que de users dans le groupe
-   *
-   *
+   * 
+   * 
    * @param dateBegin
    * @param dateEnd
    * @param idGroup
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getStatsConnexionUserUser(String dateBegin,
@@ -542,9 +542,9 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * donne les stats d'accès par KM pour la date donnée
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
    * @throws ParseException
    */
@@ -565,10 +565,10 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private static Connection getConnection() {
@@ -586,10 +586,10 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private static void freeConnection(Connection con) {
@@ -606,14 +606,14 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param selectQuery
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static Collection getStatsConnexionFromQuery(String selectQuery)
@@ -662,15 +662,15 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param selectQuery
    * @param id
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static Collection getStatsConnexionFromQuery(String selectQuery,
@@ -710,14 +710,14 @@ public class SilverStatisticsPeasDAOConnexion {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param rs
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private static Collection getStatsConnexion(ResultSet rs) throws SQLException {

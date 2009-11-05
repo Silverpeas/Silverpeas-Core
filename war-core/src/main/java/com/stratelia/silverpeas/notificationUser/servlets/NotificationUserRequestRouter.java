@@ -37,21 +37,21 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -72,7 +72,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -86,10 +86,12 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
       ComponentSessionController componentSC, HttpServletRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
-    // le UserPanel étant unique par session, il est impératif de récupérér les
+    // le UserPanel étant unique par session, il est impératif de récupérér
+    // les
     // objets selectionnés via userPanel et de transporter
     // les id des ses de jsp en jsp en soumettant un formulaire.
-    // En effet, la notification peut être utilisé "en même temps" qu' le client
+    // En effet, la notification peut être utilisé "en même temps" qu' le
+    // client
     // utiliser userPanelPeas. Cela mélange les objets selectionnée.
 
     String destination = "";

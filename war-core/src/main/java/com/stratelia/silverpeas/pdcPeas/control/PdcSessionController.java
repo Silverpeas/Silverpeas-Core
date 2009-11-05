@@ -71,11 +71,11 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @see
    */
   public PdcSessionController(MainSessionController mainSessionCtrl,
@@ -346,7 +346,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * Returns the full path of the value
-   *
+   * 
    * @param valueId
    *          - the id of the selected value (valueId is not empty)
    * @return the complet path
@@ -417,9 +417,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Initialise le UserPanel avec les permissions déjà existantes pour la valeur
-   * courante
-   *
+   * Initialise le UserPanel avec les permissions déjà existantes pour la
+   * valeur courante
+   * 
    * @return l'URL du panel
    * @throws RemoteException
    * @throws PdcException
@@ -482,7 +482,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * récupère le résultat du UserPanel
-   *
+   * 
    * @throws PdcException
    * @throws SQLException
    */
@@ -522,7 +522,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the managers for the current value
-   *
+   * 
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
    */
@@ -545,7 +545,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the managers of the specified value
-   *
+   * 
    * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
@@ -565,7 +565,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the inherited managers of the specified value
-   *
+   * 
    * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
@@ -585,8 +585,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * retourne un tableau des valeurs où l'utilisateur courant possède des droits
-   *
+   * retourne un tableau des valeurs où l'utilisateur courant possède des
+   * droits
+   * 
    * @return ArrayList ( valueid )
    * @throws PdcException
    *           , SQLException
@@ -715,7 +716,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * update permissions on current value
-   *
+   * 
    * @param ArrayList
    *          usersId
    * @param ArrayList
@@ -735,7 +736,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * delete permissions on current value
-   *
+   * 
    * @throws PdcException
    * @throws SQLException
    */

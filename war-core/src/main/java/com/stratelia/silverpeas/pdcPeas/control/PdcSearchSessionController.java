@@ -841,7 +841,7 @@ public class PdcSearchSessionController extends
   /**
    * Cette methode construit un tableau contenant toutes les informations utiles
    * à la construction de la JSP resultat
-   *
+   * 
    * @param results
    *          - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres
@@ -1142,7 +1142,7 @@ public class PdcSearchSessionController extends
 
   public List getAxis(String viewType, AxisFilter filter) throws PdcException {
     if (componentList == null || componentList.size() == 0) {
-      if(StringUtil.isDefined(getCurrentComponentId())) {
+      if (StringUtil.isDefined(getCurrentComponentId())) {
         return getPdcBm().getPertinentAxisByInstanceId(searchContext, viewType,
             getCurrentComponentId());
       }
@@ -2069,7 +2069,7 @@ public class PdcSearchSessionController extends
   /**
    * Cette methode construit un tableau contenant toutes les informations utiles
    * à la construction de la JSP resultat
-   *
+   * 
    * @param results
    *          - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres

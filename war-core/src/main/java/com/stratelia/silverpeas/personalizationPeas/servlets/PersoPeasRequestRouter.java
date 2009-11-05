@@ -138,8 +138,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PersoPeasRequestRouter extends ComponentRequestRouter {
@@ -151,13 +151,13 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -178,7 +178,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC

@@ -22,7 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package com.stratelia.silverpeas.personalizationPeas.control;
 
 import java.rmi.NoSuchObjectException;
@@ -163,8 +162,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PersonalizationSessionController extends
@@ -185,11 +184,11 @@ public class PersonalizationSessionController extends
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @see
    */
   public PersonalizationSessionController(
@@ -214,10 +213,10 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public synchronized String getFavoriteLanguage() {
@@ -264,15 +263,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param languages
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setLanguages(Vector languages) throws PeasCoreException {
@@ -298,15 +297,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public Vector getLanguages() throws PeasCoreException {
@@ -328,15 +327,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public String getFavoriteLook() throws PeasCoreException {
@@ -362,15 +361,15 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param look
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setFavoriteLook(String look) throws PeasCoreException {
@@ -579,12 +578,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public ArrayList getNotificationAddresses() throws PeasCoreException {
@@ -601,14 +600,14 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param aNotificationAddressId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public Properties getNotificationAddress(String aNotificationAddressId)
@@ -629,12 +628,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public ArrayList getNotifChannels() throws PeasCoreException {
@@ -650,14 +649,14 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param aPreferenceId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public Properties getNotifPreference(String aPreferenceId)
@@ -678,12 +677,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public ArrayList getNotifPreferences() throws PeasCoreException {
@@ -701,16 +700,16 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param aNotifAddressId
    * @param aNotifName
    * @param aChannelId
    * @param aAddress
    * @param aUsage
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public void saveNotifAddress(String aNotifAddressId, String aNotifName,
@@ -743,12 +742,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param aNotifAddressId
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public void deleteNotifAddress(String aNotifAddressId)
@@ -768,12 +767,12 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param aPreferenceId
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public void deletePreference(String aPreferenceId) throws PeasCoreException {
@@ -790,7 +789,7 @@ public class PersonalizationSessionController extends
 
   /**
    * Send a test message to the given notification address Id
-   *
+   * 
    * @param id
    *          of the table ST_NotifAddress row to send notification to.
    */
@@ -829,7 +828,7 @@ public class PersonalizationSessionController extends
 
   /**
    * Set the default Notification address Id
-   *
+   * 
    * @param id
    *          of the table ST_NotifAddress row to send notification to.
    */
@@ -852,14 +851,14 @@ public class PersonalizationSessionController extends
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param componentId
    * @param priorityId
    * @param notificationId
-   *
+   * 
    * @throws PeasCoreException
-   *
+   * 
    * @see
    */
   public void addPreference(String componentId, String priorityId,
@@ -943,13 +942,13 @@ public class PersonalizationSessionController extends
 
         /**
          * Method declaration
-         *
-         *
+         * 
+         * 
          * @param o1
          * @param o2
-         *
+         * 
          * @return
-         *
+         * 
          * @see
          */
         public int compare(Object o1, Object o2) {
@@ -959,12 +958,12 @@ public class PersonalizationSessionController extends
 
         /**
          * Method declaration
-         *
-         *
+         * 
+         * 
          * @param o
-         *
+         * 
          * @return
-         *
+         * 
          * @see
          */
         public boolean equals(Object o) {
@@ -992,11 +991,11 @@ public class PersonalizationSessionController extends
 
   /**
    * Extract the last number from the string
-   *
+   * 
    * @param chaine
    *          The String to clean
    * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
-   *
+   * 
    */
   static String extractLastNumber(String chaine) {
     String s = "";

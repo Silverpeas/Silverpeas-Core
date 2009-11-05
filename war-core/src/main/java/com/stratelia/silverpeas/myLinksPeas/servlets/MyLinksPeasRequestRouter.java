@@ -49,13 +49,13 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -66,7 +66,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -137,7 +137,8 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         // appel jsp
         destination = rootDest + "linkManager.jsp";
       } else if (function.equals("CreateLink")) {
-        // récupération des paramètres venus de l'écran de saisie et création de
+        // récupération des paramètres venus de l'écran de saisie et
+        // création de
         // l'objet LinkDetail
         LinkDetail link = generateLink(request);
         myLinksSC.createLink(link);

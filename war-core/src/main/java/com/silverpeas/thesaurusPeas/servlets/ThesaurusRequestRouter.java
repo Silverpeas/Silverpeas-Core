@@ -61,7 +61,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC

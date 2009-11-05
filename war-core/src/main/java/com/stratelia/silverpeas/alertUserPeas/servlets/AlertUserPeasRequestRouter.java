@@ -37,21 +37,21 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -71,7 +71,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -95,7 +95,8 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
       // groupes
       {
         destination = scc.initSelection();
-      } else if (function.startsWith("FromSelection")) // récupère les users et
+      } else if (function.startsWith("FromSelection")) // récupère les users
+                                                       // et
       // groupes selectionnés
       // au travers de
       // selectionPeas et les

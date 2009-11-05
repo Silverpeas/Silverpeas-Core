@@ -56,8 +56,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class SilverStatisticsPeasSessionController extends
@@ -130,13 +130,13 @@ public class SilverStatisticsPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   *
+   * 
    * @see
    */
   public SilverStatisticsPeasSessionController(
@@ -618,7 +618,7 @@ public class SilverStatisticsPeasSessionController extends
 
   /**
    * Méthode d'envoi de notification aux utilisateurs connectés
-   *
+   * 
    * @param listUserDetail
    *          - liste des utilisateurs conenctés
    * @param message
@@ -1383,7 +1383,7 @@ public class SilverStatisticsPeasSessionController extends
   }
 
   /**
-   *
+   * 
    * @return Returns the path.
    */
   public Vector getPath() {

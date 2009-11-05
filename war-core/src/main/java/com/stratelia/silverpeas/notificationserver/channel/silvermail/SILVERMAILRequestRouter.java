@@ -48,8 +48,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  * @version %I%, %G%
  */
@@ -173,12 +173,12 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param action
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   protected String extractFunctionName(String action) {

@@ -56,21 +56,21 @@ import com.silverpeas.jobManagerPeas.control.JobManagerPeasSessionController;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param componentContext
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -91,7 +91,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -111,7 +111,8 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
     try {
       if (function.startsWith("Main")) {
         destination = "/jobManagerPeas/jsp/jobManager.jsp";
-      } else if (function.startsWith("TopBarManager"))// lors du permier accès=>
+      } else if (function.startsWith("TopBarManager"))// lors du permier
+                                                      // accès=>
       // via jobManager.jsp
       {
         // set le service actif par le service par defaut; active aussi une

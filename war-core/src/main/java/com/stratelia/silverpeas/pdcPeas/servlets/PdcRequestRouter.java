@@ -74,7 +74,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -860,7 +860,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search the axisHeader whished from the sorted list of axis header.
-   *
+   * 
    * @param axeId
    *          - the id of the whished axisHeader
    * @param axis
@@ -883,7 +883,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search sisters values of a Value from an axe.
-   *
+   * 
    * @param axis
    *          - A primary or secondary list of axes
    * @param value
@@ -910,7 +910,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search daughters values of a Value from an axe.
-   *
+   * 
    * @param axis
    *          - A primary or secondary list of axes
    * @param mother
@@ -936,7 +936,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Extract the order of axis or values values.
-   *
+   * 
    * @param text
    *          - The value of the axis or the value (String+separator+order)
    * @return the order

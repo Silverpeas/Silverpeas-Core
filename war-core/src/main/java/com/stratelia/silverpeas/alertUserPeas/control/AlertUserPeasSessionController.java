@@ -44,8 +44,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AlertUserPeasSessionController extends
@@ -59,13 +59,13 @@ public class AlertUserPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   *
+   * 
    * @see
    */
   public AlertUserPeasSessionController(MainSessionController mainSessionCtrl,
@@ -141,7 +141,8 @@ public class AlertUserPeasSessionController extends
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
-  // recupération des users et groupes selectionnés au travers de selectionPeas
+  // recupération des users et groupes selectionnés au travers de
+  // selectionPeas
   public void computeSelection() {
     m_userRecipients = SelectionUsersGroups.getUserDetails(m_Selection
         .getSelectedElements());
