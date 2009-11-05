@@ -85,8 +85,8 @@ import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class JobDomainPeasSessionController extends
@@ -116,13 +116,13 @@ public class JobDomainPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   *
+   * 
    * @see
    */
   public JobDomainPeasSessionController(MainSessionController mainSessionCtrl,
@@ -163,7 +163,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   *
+   * 
    * USER functions
    */
   public void setTargetUser(String userId) {
@@ -279,9 +279,9 @@ public class JobDomainPeasSessionController extends
   /**
    * Regroupement éventuel de l'utilisateur dans un groupe (pour les domaines
    * SQL)
-   *
+   * 
    * @throws JobDomainPeasException
-   *
+   * 
    */
   private void regroupInGroup(HashMap properties, String lastGroupId)
       throws JobDomainPeasException {
@@ -372,7 +372,7 @@ public class JobDomainPeasSessionController extends
 
   /**
    * parse le fichier CSV
-   *
+   * 
    * @param InputStream
    */
   public void importCsvUsers(FileItem filePart) throws UtilTrappedException,
@@ -1057,7 +1057,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   *
+   * 
    * GROUP functions
    */
   public void returnIntoGroup(String groupId) throws JobDomainPeasException {
@@ -1599,7 +1599,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   *
+   * 
    * DOMAIN functions
    */
 
@@ -2488,7 +2488,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   *
+   * 
    * Selection Peas functions
    */
 
@@ -2629,7 +2629,8 @@ public class JobDomainPeasSessionController extends
           "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId()
               + ")", null);
 
-      // 1- Récupère la liste des groupes à synchroniser (en insert et update)
+      // 1- Récupère la liste des groupes à synchroniser (en insert et
+      // update)
       Collection listGroupToInsertUpdate;
       try {
         listGroupToInsertUpdate = JobDomainPeasDAO
@@ -2712,7 +2713,7 @@ public class JobDomainPeasSessionController extends
          * synchroUserWebService.insertUpdateListUserWebService
          * (theDomain.getId(), listUserToInsertUpdate, listGroupToInsertUpdate);
          * }
-         *
+         * 
          * //Suppression des users if(listUserToDelete != null &&
          * listUserToDelete.size()>0) { sReport +=
          * synchroUserWebService.deleteListUserWebService(theDomain.getId(),

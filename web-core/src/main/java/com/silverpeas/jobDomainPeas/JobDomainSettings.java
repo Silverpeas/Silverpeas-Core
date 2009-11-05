@@ -75,10 +75,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class manage the informations needed for groups navigation and browse
- *
+ * 
  * PRE-REQUIRED : the Group passed in the constructor MUST BE A VALID GROUP
  * (with Id, etc...)
- *
+ * 
  * @t.leroi
  */
 public class JobDomainSettings extends SilverpeasSettings {

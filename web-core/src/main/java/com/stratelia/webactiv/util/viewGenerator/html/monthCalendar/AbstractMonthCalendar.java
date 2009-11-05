@@ -100,8 +100,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public abstract class AbstractMonthCalendar implements MonthCalendar {
@@ -131,7 +131,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Creates new AbstractMonthCalendar: constructor
-   *
+   * 
    * @param: language: type String: the language of use of the monthCalendar
    */
   public AbstractMonthCalendar(String language) {
@@ -168,7 +168,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to add event in the month calendar
-   *
+   * 
    * @param eventMonth
    *          : type
    *          com.stratelia.webactiv.util.viewGenerator.html.monthCalendar
@@ -181,10 +181,10 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param listEventMonth
-   *
+   * 
    * @see
    */
   public void addEvent(Vector listEventMonth) {
@@ -193,7 +193,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to initialise the monthcalendar to current date
-   *
+   * 
    * @param: currentDate: type java.util.Date: current date
    * @return: void
    */
@@ -229,11 +229,11 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * month jun event Startdate = 28/05 - EndDate = 15/06 for the object
    * monthCalendar this event is modified: event StartDate = 1/06 - EndDate =
    * 15/06
-   *
+   * 
    * example 2: current month = jun event StartDate = 9/06 - EnDate = 18/07 for
    * the object monthCalendar this event is modified: event StartDate = 9/06 -
    * EndDate = 30/06
-   *
+   * 
    * @return: void
    * @exception catched
    *              : java.text.ParseException: print int the log file, the event
@@ -244,7 +244,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     Iterator it = listEventMonth.iterator();
 
     while (it.hasNext()) {
-      // limitation de la date de début de l'événement au premier jour du mois
+      // limitation de la date de début de l'événement au premier jour du
+      // mois
       // courrant
       Event eventMonth = (Event) (it.next());
 
@@ -267,7 +268,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to initialise the list week of this current month and create the object Day
-   *
+   * 
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
    * @return: java.util.Vector: the vector of object Week
@@ -338,7 +339,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the name of day
-   *
+   * 
    * @param: date: type java.util.Date: the date of day
    * @return: java.lang.String: the name of day
    */
@@ -353,7 +354,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the numbers of day
-   *
+   * 
    * @param date
    *          : type java.util.Date: the date of day
    * @return java.lang.String: the name of day
@@ -367,7 +368,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to control if the param date is in the current month
-   *
+   * 
    * @param: date: type java.util.Date: the date of day
    * @return: boolean: true if is in the month
    */
@@ -385,7 +386,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * to initialize the private parameters of the week, this method read in the
    * file properties
-   *
+   * 
    * @param: date: type java.util.Date: the date of day
    * @return: void
    * @catch: java.lang.Exception: write this exception in the log file
@@ -411,7 +412,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the numbers of week in current month
-   *
+   * 
    * @param int: the current month
    * @param int: the firstDayOf Week
    * @see: java.util.Calendar
@@ -449,10 +450,10 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   protected String[] getHeaderNameDay() {
@@ -468,7 +469,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain numbers week in the current month
-   *
+   * 
    * @return: int
    */
   protected int getNumbersWeekOfMonth() {
@@ -478,7 +479,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain numbers day int the week of current month
-   *
+   * 
    * @return: int
    */
   protected int getNumbersDayOfWeek() {
@@ -488,7 +489,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain the list of Day
-   *
+   * 
    * @param: int: the number of week int the current month
    * @return: Day[]: the array of Day
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
@@ -505,7 +506,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain the numbers of row int the week
-   *
+   * 
    * @param: int: the week
    * @return: int:
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
@@ -521,7 +522,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   /**
    * this method is use by the class who extend AbstractMonthCalendar the get
    * method to obtain an array of object Event
-   *
+   * 
    * @param int: the week
    * @param int: the specific row in the week
    * @return Event[]: an array of Event object
@@ -537,7 +538,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     if (currentRow.getListEvent().isEmpty()) {
       return null;
     }
-   int numbersEvent = currentRow.getListEvent().size();
+    int numbersEvent = currentRow.getListEvent().size();
 
     Event evt[] = new Event[numbersEvent];
 

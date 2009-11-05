@@ -68,8 +68,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 class Week extends Object {
@@ -83,7 +83,7 @@ class Week extends Object {
 
   /**
    * Creates the new Week
-   *
+   * 
    * @param Day
    *          [], an array of Day
    * @param Vector
@@ -128,7 +128,7 @@ class Week extends Object {
 
   /**
    * to initialise the event of the week
-   *
+   * 
    * @param Vector
    *          , the list of object Event. The event of current month
    * @return Vector, the list of objectEvent. The event of this week
@@ -155,7 +155,8 @@ class Week extends Object {
         // a value less than 0 if this Date is before the Date argument;
         // and a value greater than 0 if this Date is after the Date argument
 
-        // ramène le date du nouvel evenement (issue de l'evenement en cours) au
+        // ramène le date du nouvel evenement (issue de l'evenement en cours)
+        // au
         // limite de date de la semaine
         if (currentEvt.getStartDate().compareTo(startDate) <= 0) {
           stDateEvt = startDate;
@@ -186,7 +187,7 @@ class Week extends Object {
   /**
    * to initialise the object Row in this week. if isn't possible to insert the
    * event in the row, the new row is created
-   *
+   * 
    * @param Vector
    *          , the list of object Event of current week
    * @return Vector, the list of object Row of current week
@@ -229,7 +230,8 @@ class Week extends Object {
         resultAddEventInRow = addEventInRow(nextRow, evt);
 
         if (resultAddEventInRow) {
-          // l'événement à été rajouter au row courrant, on remplace l'ancien
+          // l'événement à été rajouter au row courrant, on remplace
+          // l'ancien
           // row par le row courrant
           // listRow.removeElementAt(index);
           // listRow.add(index, tmpRow);
@@ -257,7 +259,7 @@ class Week extends Object {
 
   /**
    * to add a object Event int the current row
-   *
+   * 
    * @param Row
    *          , Event, the event who is add in the row
    * @return boolean, true if the operation "add" is succesfull, false else if
@@ -304,10 +306,10 @@ class Week extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Date getEndDate() {
@@ -316,10 +318,10 @@ class Week extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Vector getListEventWeek() {
@@ -328,10 +330,10 @@ class Week extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Date[] getDateDayOfWeek() {
@@ -340,10 +342,10 @@ class Week extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Day[] getDayOfWeek() {
@@ -352,12 +354,12 @@ class Week extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param index
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Day getDayOfWeek(int index) {
@@ -372,10 +374,10 @@ class Week extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Vector getListRow() {

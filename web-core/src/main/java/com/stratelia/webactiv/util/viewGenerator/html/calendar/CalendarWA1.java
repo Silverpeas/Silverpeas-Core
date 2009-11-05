@@ -37,8 +37,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class CalendarWA1 extends AbstractCalendar {

@@ -107,8 +107,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AgendaHtmlView {
@@ -144,10 +144,10 @@ public class AgendaHtmlView {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param viewType
-   *
+   * 
    * @see
    */
   public AgendaHtmlView(int viewType) {
@@ -157,13 +157,13 @@ public class AgendaHtmlView {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param viewType
    * @param date
    * @param message
    * @param settings
-   *
+   * 
    * @see
    */
   public AgendaHtmlView(int viewType, Date date,
@@ -180,10 +180,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param on
-   *
+   * 
    * @see
    */
   public void setCalendarVisible(boolean on) {
@@ -192,10 +192,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param date
-   *
+   * 
    * @see
    */
   public void setDate(Date date) {
@@ -219,10 +219,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param scheduleCount
-   *
+   * 
    * @see
    */
   public void add(SchedulableCount scheduleCount) {
@@ -234,10 +234,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param schedule
-   *
+   * 
    * @see
    */
   public void add(Schedulable schedule) {
@@ -297,10 +297,10 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getHtmlView() throws AgendaException {
@@ -321,12 +321,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param startDate
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getHtmlViewByMonth(String startDate) {
@@ -381,12 +381,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param startDate
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getHtmlViewByYear(String startDate) {
@@ -444,12 +444,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param today
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getHtmlViewByDay(String today) throws AgendaException {
@@ -781,12 +781,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param firstDay
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getHtmlViewByWeek(String firstDay) throws AgendaException {
@@ -1044,12 +1044,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param schedule
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private int getDuration(Schedulable schedule) {
@@ -1079,12 +1079,12 @@ public class AgendaHtmlView {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param group
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private int getDuration(SchedulableGroup group) {
@@ -1111,7 +1111,7 @@ public class AgendaHtmlView {
 
   /**
    * Get infobulle detail of the event
-   *
+   * 
    * @param schedule
    * @return
    * @throws AgendaException

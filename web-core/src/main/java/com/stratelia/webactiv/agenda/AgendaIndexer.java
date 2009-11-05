@@ -51,21 +51,21 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AgendaIndexer implements ComponentIndexerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    * @param context
-   *
+   * 
    * @throws Exception
-   *
+   * 
    * @see
    */
   public void index(MainSessionController mainSessionCtrl,

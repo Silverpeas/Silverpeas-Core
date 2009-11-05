@@ -44,8 +44,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class ArrayCellCheckbox extends ArrayCell implements
@@ -67,13 +67,13 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param name
    * @param value
    * @param checked
    * @param line
-   *
+   * 
    * @see
    */
   public ArrayCellCheckbox(String name, String value, boolean checked,
@@ -90,10 +90,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getCellAlign() {
@@ -102,10 +102,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param cellAlign
-   *
+   * 
    * @see
    */
   public void setCellAlign(String cellAlign) {
@@ -114,10 +114,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getName() {
@@ -126,10 +126,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getValue() {
@@ -138,10 +138,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public boolean getChecked() {
@@ -154,10 +154,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getSyntax() {
@@ -192,10 +192,10 @@ public class ArrayCellCheckbox extends ArrayCell implements
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {

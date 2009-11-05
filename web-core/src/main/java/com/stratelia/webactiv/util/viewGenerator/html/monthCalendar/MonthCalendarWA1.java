@@ -112,8 +112,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class MonthCalendarWA1 extends AbstractMonthCalendar {
@@ -131,10 +131,10 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String print() {
@@ -166,10 +166,10 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String printDayOfWeek() {
@@ -190,14 +190,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param week
-   *
+   * 
    * @return
-   *
+   * 
    * @throws Exception
-   *
+   * 
    * @see
    */
   private String printNumberDayOfWeek(int week) throws Exception {
@@ -236,14 +236,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param week
-   *
+   * 
    * @return
-   *
+   * 
    * @throws Exception
-   *
+   * 
    * @see
    */
   private String printWeek(int week, ResourceLocator message) throws Exception {
@@ -268,14 +268,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param week
    * @param row
    * @param numbersRowOfWeek
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private String printRow(int week, int row, int numbersRowOfWeek,
@@ -321,7 +321,8 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
         boolean tdIsCreate = false;
 
-        // contrôle pour chaque événement, s'il débute ou pas ce jour courant
+        // contrôle pour chaque événement, s'il débute ou pas ce jour
+        // courant
         // afin d'avoir le html approprié
         for (int z = 0; z < nbEvt; z++) {
           if (evt[z].isInDay(days[k])) {

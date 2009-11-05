@@ -45,8 +45,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class JobManagerPeasSessionController extends
@@ -60,13 +60,13 @@ public class JobManagerPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   *
+   * 
    * @see
    */
   public JobManagerPeasSessionController(MainSessionController mainSessionCtrl,
@@ -235,7 +235,8 @@ public class JobManagerPeasSessionController extends
       // services.put(jImportExport.getId(), jImportExport);
     } else if (isManager) {
       if (getUserDetail().isAccessDomainManager()) {
-        // l'administrateur du composant à accès seulement à certaine fonction
+        // l'administrateur du composant à accès seulement à certaine
+        // fonction
         String[] id3 = { "11", "13", "12" };
         jDesigner = new JobManagerService("1", "JD",
             JobManagerService.LEVEL_SERVICE, null, id3, false);
@@ -249,7 +250,8 @@ public class JobManagerPeasSessionController extends
       } else {
         // l'administrateur d'espace à accès seulement à certaine fonction
         if (getUserManageableGroupIds().size() > 0) {
-          // Il est également gestionnaire de groupe, il a acces au référentiel
+          // Il est également gestionnaire de groupe, il a acces au
+          // référentiel
           // (jobDomain)
           String[] id3 = { "11", "13", "12" };
           jDesigner = new JobManagerService("1", "JD",
@@ -433,9 +435,11 @@ public class JobManagerPeasSessionController extends
     }
 
     // contrôle si l'attribut idCurrentServiceActif à bien une valeur
-    // si oui=> le service courant à déjà été consulté et il existe bien une
+    // si oui=> le service courant à déjà été consulté et il existe bien
+    // une
     // opération active
-    // si non => le service courant n'a pas encore été consulté et l'opération
+    // si non => le service courant n'a pas encore été consulté et
+    // l'opération
     // active est la valeur par defaut
     if (idCurrentOperationActif == null) {
       JobManagerService currentOperation = (JobManagerService) services
