@@ -83,7 +83,14 @@ public class FileUploadUtil {
     }
   }
 
-  public static String getParameter(List<FileItem> items, String parameterName) {
+  /**
+   * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter is not found.
+   * @param items the items resulting from parsing the request.
+   * @param parameterName
+   * @param defaultValue the value to be returned if the parameter is not found.
+   * @return the parameter value from the list of FileItems. Returns the defaultValue if the parameter is not found.
+   */
+  public static String getParameter(List<FileItem> items, String parameterName, String defaultValue) {
     Iterator<FileItem> iter = items.iterator();
     while (iter.hasNext()) {
       FileItem item = iter.next();
@@ -91,11 +98,25 @@ public class FileUploadUtil {
         return item.getString();
       }
     }
-    return null;
+    return defaultValue;
+  }
+
+  /**
+   * Get the parameter value from the list of FileItems. Returns null if the parameter is not found.
+   * @param items the items resulting from parsing the request.
+   * @param parameterName
+   * @return the parameter value from the list of FileItems. Returns null if the parameter is not found.
+   */
+  public static String getParameter(List<FileItem> items, String parameterName) {
+    return getParameter(items, parameterName, null);
   }
 
   public static String getOldParameter(List items, String parameterName) {
-    return getParameter((List<FileItem>) items, parameterName);
+    return getParameter((List<FileItem>) items, parameterName, null);
+  }
+
+  public static String getOldParameter(List items, String parameterName, String defaultValue) {
+    return getParameter((List<FileItem>) items, parameterName, defaultValue);
   }
 
   public static FileItem getOldFile(List items, String parameterName) {
@@ -126,7 +147,6 @@ public class FileUploadUtil {
 
   public static FileItem getFile(HttpServletRequest request) throws UtilException {
     List<FileItem> items = FileUploadUtil.parseRequest(request);
-
     return FileUploadUtil.getFile(items);
   }
 
@@ -134,12 +154,10 @@ public class FileUploadUtil {
     if (file == null) {
       return "";
     }
-
     String fullFileName = file.getName();
     if (fullFileName == null) {
       return "";
     }
-
     return fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName.length());
   }
 
