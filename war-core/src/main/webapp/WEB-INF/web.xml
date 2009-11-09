@@ -441,6 +441,12 @@
     <description>no description</description>
     <servlet-class>com.silverpeas.importExportPeas.servlets.ImportDragAndDrop</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>WorkflowDesignerRequestRouter</servlet-name>
+    <display-name>WorkflowDesignerRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.workflowdesigner.servlets.WorkflowDesignerRequestRouter</servlet-class>
+  </servlet>
 
 
 
@@ -712,6 +718,10 @@
   <servlet-mapping>
     <servlet-name>ImportDragAndDrop</servlet-name>
     <url-pattern>/RImportDragAndDrop/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>WorkflowDesignerRequestRouter</servlet-name>
+    <url-pattern>/RworkflowDesigner/*</url-pattern>
   </servlet-mapping>
 
 

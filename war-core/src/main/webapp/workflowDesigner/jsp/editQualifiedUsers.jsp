@@ -1,0 +1,210 @@
+<%@ include file="check.jsp" %>
+<%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
+<%
+    QualifiedUsers           qualifiedUsers = (QualifiedUsers)request.getAttribute( "QualifiedUsers" );
+    Boolean                  fDisplayRoleSelector = (Boolean)request.getAttribute( "RoleSelector" ),
+                             fNotifiedUser = (Boolean)request.getAttribute( "NotifiedUser"),
+                             fExistingQualifiedUser = (Boolean)request.getAttribute("IsExisitingQualifiedUser");
+    String                   strParentScreen = (String)request.getAttribute( "parentScreen" ), 
+                             strEditorName = (String)request.getAttribute( "EditorName" ),
+                             strContext = (String)request.getAttribute( "context" ),
+                             strCurrentScreen = "ModifyQualifiedUsers?context=" + strContext;
+    String[]                 astrRoleNames = (String[])request.getAttribute( "RoleNames" ),
+                             astrRoleValues = (String[])astrRoleNames.clone();
+    ArrayPane                headerPane = gef.getArrayPane( "headerPane", "", request, session ),
+                             inRolePane = gef.getArrayPane( "inRolePane", "", request, session );
+%>
+
+<HTML>
+<HEAD>
+<% out.println(gef.getLookStyleSheet()); %>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
+<script type="text/javascript">
+    function sendData() 
+    {
+        if ( isCorrectlyFilled() ) 
+        {
+            document.qualifiedUsersForm.submit();
+        }
+    }
+
+    function isCorrectlyFilled() 
+    {
+        var errorMsg = '';
+        var errorNb = 0;
+        var result;
+        var fExistingQualifiedUser = <%=fExistingQualifiedUser.toString()%>;
+        var fUserInRoleVisible = !<%=fNotifiedUser.toString()%>;
+        var fMessageVisible = <%=fNotifiedUser.toString()%>;
+        var fRelatedUserDefined = <%=Boolean.toString( qualifiedUsers.iterateRelatedUser().hasNext() )%>;
+        var fUserInRoleDefined = false;
+        var i = 0;
+
+        // Verify only for an existing (not new object)
+        //
+        if ( fExistingQualifiedUser )
+        {
+            if ( fUserInRoleVisible && document.qualifiedUsersForm.userInRole != null )
+                for ( i = 0; i < document.qualifiedUsersForm.userInRole.length; i++ )
+                    fUserInRoleDefined = fUserInRoleDefined || document.qualifiedUsersForm.userInRole[i].checked;
+    
+            if ( fUserInRoleVisible && !fUserInRoleDefined && !fRelatedUserDefined )
+            {
+                // If Both UserInRole and RelatedUser can be entered, one of them must be set
+                //
+                errorMsg +=" - '<%=resource.getString("workflowDesigner.list.userInRole")%>'"
+                         + " <%=resource.getString("workflowDesigner.or")%>"
+                         + " '<%=resource.getString("workflowDesigner.list.relatedUser")%>'"
+                         + " <%=resource.getString("GML.MustBeFilled")%>\n";
+                errorNb++;
+            }
+            else if ( !fUserInRoleVisible && !fRelatedUserDefined  ) 
+            {
+                // If only RelatedUser input is visible at least one must be defined
+                //
+                errorMsg +=" - '<%=resource.getString("workflowDesigner.list.relatedUser")%>'"
+                         + " <%=resource.getString("GML.MustBeFilled")%>\n";
+                errorNb++;
+            }
+        }
+
+        // If the message is visible it should be filled
+        //
+        if ( fMessageVisible && isWhitespace(document.qualifiedUsersForm.message.value) ) 
+        {
+            errorMsg+="  - '<%=resource.getString("workflowDesigner.message")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+        }
+         
+                
+        switch(errorNb) 
+        {
+            case 0 :
+                result = true;
+                break;
+            case 1 :
+                errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
+                window.alert(errorMsg);
+                result = false;
+                break;
+            default :
+                errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
+                window.alert(errorMsg);
+                result = false;
+                break;
+        } 
+        return result;
+    }
+</script>
+</HEAD>
+<BODY leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+<%
+    browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
+    browseBar.setComponentName( resource.getString(strEditorName) );
+
+    if ( fExistingQualifiedUser.booleanValue() )
+        addRelatedUser( operationPane, resource, strContext );
+    
+    // Role - display for workingUsers and InterestedUsers, omit for AllowedUsers and Notified users
+    //
+    if ( fDisplayRoleSelector.booleanValue() )
+    {
+        headerPane.setTitle(resource.getString(strEditorName));
+        row = headerPane.addArrayLine();
+        cellText = row.addArrayCellText( resource.getString("workflowDesigner.role") );
+        cellText.setStyleSheet( "txtlibform" );
+        
+        astrRoleNames[0] = resource.getString( "GML.none" );
+        cellSelect = row.addArrayCellSelect( "role", astrRoleNames, astrRoleValues ); 
+        cellSelect.setSelectedValues( new String[] { qualifiedUsers.getRole() } );
+        cellSelect.setSize( "1" );
+    }
+    
+    // add a row with the message to the header pane
+    //
+    if ( fNotifiedUser.booleanValue() )
+    {
+        headerPane.setTitle(resource.getString(strEditorName));
+        row = headerPane.addArrayLine();
+        cellText = row.addArrayCellText( resource.getString("workflowDesigner.message") );
+        cellText.setStyleSheet( "txtlibform" );
+        
+        cellInput = row.addArrayCellInputText( "message", qualifiedUsers.getMessage() );
+        cellInput.setSize( "100" );
+    }
+    
+    // User In Role - print a list of role names, based on the 'roles' element
+    // Starting form i = 1 since the '0' element holds the 'none' choice
+    //
+    if ( !fNotifiedUser.booleanValue() )
+    {
+        inRolePane.setTitle( resource.getString( "workflowDesigner.list.userInRole" ) );
+    
+        for ( int i = 1; i < astrRoleValues.length; i ++ )
+        {
+            boolean         fChecked;
+    
+            row = inRolePane.addArrayLine();
+            fChecked = qualifiedUsers.getUserInRole( astrRoleValues[i] ) != null;
+            
+            row.addArrayCellCheckbox( "userInRole", astrRoleValues[i], fChecked );
+            row.addArrayCellText( astrRoleValues[i] );
+        }
+    }
+    out.println(window.printBefore());
+    out.println(frame.printBefore());
+
+    //help
+    //
+    out.println(boardHelp.printBefore());
+    out.println("<table border=\"0\"><tr>");
+    out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resource.getIcon("workflowDesigner.info")+"\"></td>");
+    
+    if ( fNotifiedUser.booleanValue() )
+    {
+        out.println("<td>"+resource.getString("workflowDesigner.help.notifiedUsers")+"</td>");   
+    }
+    else  // allowed, interested or working users
+    {  
+        if ( fDisplayRoleSelector.booleanValue() ) // interested or working users
+            out.println("<td>"+resource.getString("workflowDesigner.help.interestedOrWorkingUsers")+"</td>");
+        else                                       // allowed users
+            out.println("<td>"+resource.getString("workflowDesigner.help.allowedUsers")+"</td>");
+    }
+    
+    out.println("</tr></table>");
+    out.println(boardHelp.printAfter());
+    out.println("<br/>");
+
+    out.println(board.printBefore());
+%>
+<FORM NAME="qualifiedUsersForm" METHOD="POST" ACTION="UpdateQualifiedUsers">
+    <input type="hidden" name="role_original" value="<%=qualifiedUsers.getRole()%> "/>
+    <input type="hidden" name="context" value="<%=strContext%>" />
+<%
+    if ( fDisplayRoleSelector.booleanValue() || fNotifiedUser.booleanValue() )
+        out.println( headerPane.print() );
+
+    // List of users in role
+    //
+    if ( !fNotifiedUser.booleanValue() )
+        out.println( inRolePane.print() );
+    
+%>
+</FORM>
+
+<!-- List of related users -->
+<designer:relatedUsersList iterRelatedUser="<%=qualifiedUsers.iterateRelatedUser()%>" 
+    context="<%=strContext%>" currentScreen="<%=strCurrentScreen%>" />
+
+<%
+    out.println(board.printAfter());
+%>
+<designer:buttonPane cancelAction="<%=strParentScreen%>" />
+<%    
+    out.println(frame.printAfter());
+    out.println(window.printAfter()); 
+%>
+</BODY>
+</HTML>
