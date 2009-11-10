@@ -76,8 +76,8 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class HistoryNodePublicationActorDAO {
@@ -85,16 +85,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param rs
    * @param space
    * @param componentName
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getHistoryDetails(ResultSet rs, String space,
@@ -130,8 +130,8 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public HistoryNodePublicationActorDAO() {
@@ -139,7 +139,7 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Get descendant node PKs of a node
-   *
+   * 
    * @return A collection of NodePK
    * @param con
    *          A connection to the database
@@ -201,16 +201,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param tableName
    * @param fatherPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getNodesUsage(Connection con, String tableName,
@@ -260,16 +260,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param tableName
    * @param userId
    * @param nodePK
    * @param pubPK
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static void add(Connection con, String tableName, String userId,
@@ -295,16 +295,16 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param tableName
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static Collection getHistoryDetailByPublication(Connection con,

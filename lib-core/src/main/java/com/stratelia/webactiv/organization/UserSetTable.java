@@ -347,7 +347,7 @@ public class UserSetTable extends Table {
 
   /**
    * Adds a userSet in a userSet.
-   *
+   * 
    * <P>
    * To insert a SUBSET in a SUPERSET, we must :
    * <UL>
@@ -471,7 +471,7 @@ public class UserSetTable extends Table {
 
   /**
    * Removes a userSet from a userSet.
-   *
+   * 
    * <P>
    * To remove a SUBSET from a SUPERSET, we must :
    * <UL>
@@ -694,7 +694,7 @@ public class UserSetTable extends Table {
   /**
    * Returns the integer of the single row, single column resultset returned by
    * the given query with (type,id) parameters.
-   *
+   * 
    * Returns null if the result set was empty.
    */
   protected Integer getInteger(String query, String[] types, int[] ids)

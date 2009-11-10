@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.templatedesigner.servlets;
 
 import java.util.Enumeration;
@@ -23,323 +46,302 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class TemplateDesignerRequestRouter extends ComponentRequestRouter
-{
-    /**
-     * This method has to be implemented in the component request rooter class.
-     * returns the session control bean name to be put in the request object
-     * ex : for almanach, returns "almanach"
-     */
-    public String getSessionControlBeanName()
-	 {
-	    return "TemplateDesigner";
-	 }
+public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
+  /**
+   * This method has to be implemented in the component request rooter class.
+   * returns the session control bean name to be put in the request object ex :
+   * for almanach, returns "almanach"
+   */
+  public String getSessionControlBeanName() {
+    return "TemplateDesigner";
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param mainSessionCtrl
-     * @param componentContext
-     *
-     * @return
-     *
-     * @see
-     */
-    public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-    {
-        return new TemplateDesignerSessionController(mainSessionCtrl, componentContext);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * @param componentContext
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    return new TemplateDesignerSessionController(mainSessionCtrl,
+        componentContext);
+  }
+
+  /**
+   * This method has to be implemented by the component request rooter it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex :
+   *         "/almanach/jsp/almanach.jsp?flag=user")
+   */
+  public String getDestination(String function,
+      ComponentSessionController componentSC, HttpServletRequest request) {
+    String destination = "";
+    String root = "/templateDesigner/jsp/";
+    TemplateDesignerSessionController templateDesignerSC = (TemplateDesignerSessionController) componentSC;
+    SilverTrace.info("templateDesigner",
+        "TemplateDesignerRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
+            + " Function=" + function);
+
+    try {
+      if (function.startsWith("Main")) {
+        List templates = templateDesignerSC.getTemplates();
+
+        request.setAttribute("Templates", templates);
+
+        destination = root + "welcome.jsp";
+      } else if (function.equals("ViewTemplate")) {
+        String fileName = request.getParameter("Template");
+
+        PublicationTemplate template = null;
+        if (!isDefined(fileName))
+          template = templateDesignerSC.reloadCurrentTemplate();
+        else
+          template = templateDesignerSC.setTemplate(fileName);
+
+        Form formUpdate = template.getUpdateForm();
+        DataRecord data = template.getRecordSet().getEmptyRecord();
+
+        request.setAttribute("Form", formUpdate);
+        request.setAttribute("Data", data);
+
+        PagesContext context = new PagesContext("myForm", "2",
+            templateDesignerSC.getLanguage(), false, "useless",
+            templateDesignerSC.getUserId());
+        context.setBorderPrinted(false);
+        request.setAttribute("context", context);
+
+        destination = root + "template.jsp";
+      } else if (function.equals("NewTemplate")) {
+        destination = root + "templateHeader.jsp";
+      } else if (function.equals("EditTemplate")) {
+        String fileName = request.getParameter("FileName");
+
+        PublicationTemplate template = null;
+        if (isDefined(fileName))
+          template = templateDesignerSC.setTemplate(fileName);
+        else
+          template = templateDesignerSC.getCurrentTemplate();
+
+        request.setAttribute("Template", template);
+
+        destination = root + "templateHeader.jsp";
+      } else if (function.equals("AddTemplate")) {
+        PublicationTemplate template = request2Template(request);
+
+        templateDesignerSC.createTemplate(template);
+
+        destination = getDestination("ViewFields", componentSC, request);
+      } else if (function.equals("UpdateTemplate")) {
+        PublicationTemplate template = request2Template(request);
+
+        templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
+
+        destination = getDestination("Main", componentSC, request);
+      } else if (function.equals("ViewFields")) {
+        request.setAttribute("Fields", templateDesignerSC.getFields());
+        request.setAttribute("UpdateInProgress", new Boolean(templateDesignerSC
+            .isUpdateInProgress()));
+
+        destination = root + "fields.jsp";
+      } else if (function.equals("NewField")) {
+        String displayer = request.getParameter("Displayer");
+
+        request.setAttribute("Languages", templateDesignerSC.getLanguages());
+        request.setAttribute("Displayer", displayer);
+
+        destination = root + getDestinationFromDisplayer(displayer);
+      } else if (function.equals("AddField")) {
+        GenericFieldTemplate field = request2Field(request);
+
+        templateDesignerSC.addField(field);
+      } else if (function.equals("EditField")) {
+        String fieldName = request.getParameter("FieldName");
+
+        FieldTemplate field = templateDesignerSC.getField(fieldName);
+        request.setAttribute("Field", field);
+
+        request.setAttribute("Languages", templateDesignerSC.getLanguages());
+        request.setAttribute("Displayer", field.getDisplayerName());
+
+        destination = root
+            + getDestinationFromDisplayer(field.getDisplayerName());
+      } else if (function.equals("UpdateField")) {
+        GenericFieldTemplate field = request2Field(request);
+
+        templateDesignerSC.updateField(field);
+
+        destination = getDestination("ViewFields", componentSC, request);
+      } else if (function.equals("DeleteField")) {
+        String fieldName = request.getParameter("FieldName");
+
+        templateDesignerSC.removeField(fieldName);
+
+        destination = getDestination("ViewFields", componentSC, request);
+      } else if (function.equals("MoveField")) {
+        String fieldName = request.getParameter("FieldName");
+        int direction = Integer.parseInt(request.getParameter("Direction"));
+
+        templateDesignerSC.moveField(fieldName, direction);
+
+        destination = getDestination("ViewFields", componentSC, request);
+      }
+
+      else if (function.equals("SaveTemplate")) {
+        templateDesignerSC.saveTemplate();
+
+        destination = getDestination("ViewTemplate", componentSC, request);
+      } else {
+        destination = root + "welcome.jsp";
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    /**
-     * This method has to be implemented by the component request rooter
-     * it has to compute a destination page
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param componentSC The component Session Control, build and initialised.
-     * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
-     */
-    public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
-    {
-        String destination 	= "";
-        String root 		= "/templateDesigner/jsp/";
-        TemplateDesignerSessionController  templateDesignerSC = (TemplateDesignerSessionController)componentSC;
-        SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+    SilverTrace.info("templateDesigner",
+        "TemplateDesignerRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+    return destination;
+  }
 
-        try
-        {
-            if (function.startsWith("Main"))
-            {
-            	List templates = templateDesignerSC.getTemplates();
-            	
-            	request.setAttribute("Templates", templates);
-            	
-	            destination = root+"welcome.jsp";
-            }
-            else if (function.equals("ViewTemplate"))
-            {
-            	String fileName = request.getParameter("Template");
-            	
-            	PublicationTemplate template = null;
-            	if (!isDefined(fileName))
-            		template = templateDesignerSC.reloadCurrentTemplate();
-            	else
-            		template = templateDesignerSC.setTemplate(fileName);
-            	
-            	Form 		formUpdate 	= template.getUpdateForm();
-            	DataRecord 	data  		= template.getRecordSet().getEmptyRecord();
-        		
-        		request.setAttribute("Form", formUpdate);
-        		request.setAttribute("Data", data);
-        		
-   				PagesContext context = new PagesContext("myForm", "2", templateDesignerSC.getLanguage(), false, "useless", templateDesignerSC.getUserId());
-   				context.setBorderPrinted(false);
-   				request.setAttribute("context", context);
-            	
-            	destination = root+"template.jsp";
-            }
-            else if (function.equals("NewTemplate"))
-            {
-            	destination = root+"templateHeader.jsp";
-            }
-            else if (function.equals("EditTemplate"))
-            {
-            	String fileName = request.getParameter("FileName");
-            	
-            	PublicationTemplate template = null;
-            	if (isDefined(fileName))
-            		template = templateDesignerSC.setTemplate(fileName);
-            	else
-            		template = templateDesignerSC.getCurrentTemplate();
-            	
-            	request.setAttribute("Template", template);
-            	
-            	destination = root+"templateHeader.jsp";
-            }
-            else if (function.equals("AddTemplate"))
-            {
-            	PublicationTemplate template = request2Template(request);
-            	
-            	templateDesignerSC.createTemplate(template);
-            	
-            	destination = getDestination("ViewFields", componentSC, request);
-            }
-            else if (function.equals("UpdateTemplate"))
-            {
-            	PublicationTemplate template = request2Template(request);
-            	
-            	templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
-            	
-            	destination = getDestination("Main", componentSC, request);
-            }
-            else if (function.equals("ViewFields"))
-            {           	
-            	request.setAttribute("Fields", templateDesignerSC.getFields());
-            	request.setAttribute("UpdateInProgress", new Boolean(templateDesignerSC.isUpdateInProgress()));
-            	
-            	destination = root+"fields.jsp";
-            }
-            else if (function.equals("NewField"))
-            {
-            	String displayer = request.getParameter("Displayer");
-            	
-            	request.setAttribute("Languages", templateDesignerSC.getLanguages());
-            	request.setAttribute("Displayer", displayer);
-            	           	
-            	destination = root+getDestinationFromDisplayer(displayer);
-            }
-            else if (function.equals("AddField"))
-            {
-            	GenericFieldTemplate field = request2Field(request);
-            	
-            	templateDesignerSC.addField(field);
-            }
-            else if (function.equals("EditField"))
-            {
-            	String fieldName = request.getParameter("FieldName");
-            	
-            	FieldTemplate field = templateDesignerSC.getField(fieldName);
-            	request.setAttribute("Field", field);
-            	
-            	request.setAttribute("Languages", templateDesignerSC.getLanguages());
-            	request.setAttribute("Displayer", field.getDisplayerName());
-            	
-            	destination = root+getDestinationFromDisplayer(field.getDisplayerName());
-            }
-            else if (function.equals("UpdateField"))
-            {
-            	GenericFieldTemplate field = request2Field(request);
-            	
-            	templateDesignerSC.updateField(field);
-            	            	
-            	destination = getDestination("ViewFields", componentSC, request);
-            }
-            else if (function.equals("DeleteField"))
-            {
-            	String fieldName = request.getParameter("FieldName");
-            	
-            	templateDesignerSC.removeField(fieldName);
-            	
-            	destination = getDestination("ViewFields", componentSC, request);
-            }
-            else if (function.equals("MoveField"))
-            {
-            	String fieldName = request.getParameter("FieldName");
-            	int direction = Integer.parseInt(request.getParameter("Direction"));
-            	
-            	templateDesignerSC.moveField(fieldName, direction);
-            	
-            	destination = getDestination("ViewFields", componentSC, request);
-            }
-            
-            else if (function.equals("SaveTemplate"))
-            {
-            	templateDesignerSC.saveTemplate();
-            	
-            	destination = getDestination("ViewTemplate", componentSC, request);
-            }
-            else
-            {
-                destination = root+"welcome.jsp";
-            }
+  private String getDestinationFromDisplayer(String displayer) {
+    if (displayer.equals("wysiwyg"))
+      return "fieldWysiwyg.jsp";
+    else if (displayer.equals("textarea"))
+      return "fieldTextarea.jsp";
+    else if (displayer.equals("listbox"))
+      return "fieldMultivalues.jsp";
+    else if (displayer.equals("checkbox"))
+      return "fieldMultivalues.jsp";
+    else if (displayer.equals("radio"))
+      return "fieldMultivalues.jsp";
+    else if (displayer.equals("url"))
+      return "fieldURL.jsp";
+    else if (displayer.equals("date"))
+      return "fieldDate.jsp";
+    else if (displayer.equals("file"))
+      return "fieldFile.jsp";
+    else if (displayer.equals("image"))
+      return "fieldImage.jsp";
+    else if (displayer.equals("user"))
+      return "fieldUser.jsp";
+    else if (displayer.equals("multipleUser"))
+      return "fieldMultipleUser.jsp";
+    else if (displayer.equals("ldap"))
+      return "fieldLdap.jsp";
+    else if (displayer.equals("accessPath"))
+      return "fieldAccessPath.jsp";
+    else if (displayer.equals("jdbc"))
+      return "fieldJdbc.jsp";
+    else
+      return "fieldText.jsp";
+  }
+
+  private PublicationTemplate request2Template(HttpServletRequest request) {
+    String name = request.getParameter("Name");
+    String description = request.getParameter("Description");
+    String visible = request.getParameter("Visible");
+    String thumbnail = request.getParameter("Thumbnail");
+    boolean searchable = "true".equalsIgnoreCase(request
+        .getParameter("Searchable"));
+
+    PublicationTemplateImpl template = new PublicationTemplateImpl();
+    template.setName(name);
+    template.setDescription(description);
+    template.setThumbnail(thumbnail);
+    template.setVisible(isDefined(visible) && visible.equals("true"));
+
+    if (searchable)
+      template.setSearchFileName("dummy");
+    else
+      template.setSearchFileName(null);
+
+    return template;
+  }
+
+  private GenericFieldTemplate request2Field(HttpServletRequest request)
+      throws FormException {
+    String displayer = request.getParameter("Displayer");
+    String fieldName = request.getParameter("FieldName");
+    boolean mandatory = "true".equalsIgnoreCase(request
+        .getParameter("Mandatory"));
+    boolean readOnly = "true"
+        .equalsIgnoreCase(request.getParameter("ReadOnly"));
+    boolean hidden = "true".equalsIgnoreCase(request.getParameter("Hidden"));
+    boolean disabled = "true"
+        .equalsIgnoreCase(request.getParameter("Disabled"));
+    boolean searchable = "true".equalsIgnoreCase(request
+        .getParameter("Searchable"));
+
+    String fieldType = "text";
+    if (displayer.equals("user"))
+      fieldType = "user";
+    else if (displayer.equals("multipleUser"))
+      fieldType = "multipleUser";
+    else if (displayer.equals("date"))
+      fieldType = "date";
+    else if (displayer.equals("image") || displayer.equals("file"))
+      fieldType = "file";
+    else if (displayer.equals("ldap"))
+      fieldType = "ldap";
+    else if (displayer.equals("accessPath"))
+      fieldType = "accessPath";
+    else if (displayer.equals("jdbc"))
+      fieldType = "jdbc";
+
+    GenericFieldTemplate field = new GenericFieldTemplate();
+    field.setDisplayerName(displayer);
+    field.setFieldName(fieldName);
+    field.setDisabled(disabled);
+    field.setHidden(hidden);
+    field.setMandatory(mandatory);
+    field.setReadOnly(readOnly);
+    field.setTypeName(fieldType);
+    field.setSearchable(searchable);
+
+    Enumeration paramNames = request.getParameterNames();
+    while (paramNames.hasMoreElements()) {
+      String paramName = (String) paramNames.nextElement();
+      if (paramName.startsWith("Param_")) {
+        String xmlParameterName = paramName.substring(6);
+        String xmlParameterValue = request.getParameter(paramName);
+
+        if (isDefined(xmlParameterValue)) {
+          Parameter parameter = new Parameter(xmlParameterName, "dummy");
+          parameter.getParameterValuesObj().add(
+              new ParameterValue("fr", xmlParameterValue));
+
+          field.getParametersObj().add(parameter);
         }
-        catch (Exception e)
-        {
-            request.setAttribute("javax.servlet.jsp.jspException", e);
-            destination = "/admin/jsp/errorpageMain.jsp";
-        }
+      } else if (paramName.startsWith("Label_")) {
+        String lang = paramName.substring(6);
+        String sLabel = request.getParameter(paramName);
 
-        SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
-        return destination;
+        if (isDefined(sLabel)) {
+          Label label = new Label(sLabel, lang);
+          field.getLabelsObj().add(label);
+        }
+      }
     }
-    
-    private String getDestinationFromDisplayer(String displayer)
-    {
-    	if (displayer.equals("wysiwyg"))
-    		return "fieldWysiwyg.jsp";
-    	else if (displayer.equals("textarea"))
-    		return "fieldTextarea.jsp";
-    	else if (displayer.equals("listbox"))
-    		return "fieldMultivalues.jsp";
-    	else if (displayer.equals("checkbox"))
-    		return "fieldMultivalues.jsp";
-    	else if (displayer.equals("radio"))
-    		return "fieldMultivalues.jsp";
-    	else if (displayer.equals("url"))
-    		return "fieldURL.jsp";
-    	else if (displayer.equals("date"))
-    		return "fieldDate.jsp";
-    	else if (displayer.equals("file"))
-    		return "fieldFile.jsp";
-    	else if (displayer.equals("image"))
-    		return "fieldImage.jsp";
-    	else if (displayer.equals("user"))
-    		return "fieldUser.jsp";
-    	else if (displayer.equals("multipleUser"))
-    		return "fieldMultipleUser.jsp";
-    	else if (displayer.equals("ldap"))
-    		return "fieldLdap.jsp";
-    	else if (displayer.equals("accessPath"))
-    		return "fieldAccessPath.jsp";
-    	else if (displayer.equals("jdbc"))
-    		return "fieldJdbc.jsp";
-    	else 
-    		return "fieldText.jsp";
-    }
-    
-    private PublicationTemplate request2Template(HttpServletRequest request)
-    {
-    	String name 		= request.getParameter("Name");
-    	String description 	= request.getParameter("Description");
-    	String visible 		= request.getParameter("Visible");
-    	String thumbnail 	= request.getParameter("Thumbnail");
-    	boolean searchable	= "true".equalsIgnoreCase(request.getParameter("Searchable"));
-    	
-    	PublicationTemplateImpl template = new PublicationTemplateImpl();
-    	template.setName(name);
-    	template.setDescription(description);
-    	template.setThumbnail(thumbnail);
-    	template.setVisible(isDefined(visible) && visible.equals("true"));
-    	
-    	if (searchable)
-    		template.setSearchFileName("dummy");
-    	else
-    		template.setSearchFileName(null);
-    	
-    	return template;
-    }
-    
-    private GenericFieldTemplate request2Field(HttpServletRequest request) throws FormException
-    {
-    	String displayer 	= request.getParameter("Displayer");
-    	String fieldName	= request.getParameter("FieldName");
-    	boolean mandatory 	= "true".equalsIgnoreCase(request.getParameter("Mandatory"));
-    	boolean readOnly	= "true".equalsIgnoreCase(request.getParameter("ReadOnly"));
-    	boolean hidden		= "true".equalsIgnoreCase(request.getParameter("Hidden"));
-    	boolean disabled	= "true".equalsIgnoreCase(request.getParameter("Disabled"));
-    	boolean searchable	= "true".equalsIgnoreCase(request.getParameter("Searchable"));
-    	    	
-    	String fieldType = "text";
-    	if (displayer.equals("user"))
-    		fieldType = "user";
-    	else if (displayer.equals("multipleUser"))
-    		fieldType = "multipleUser";
-    	else if (displayer.equals("date"))
-    		fieldType = "date";
-    	else if (displayer.equals("image") || displayer.equals("file"))
-    		fieldType = "file";
-    	else if (displayer.equals("ldap"))
-    		fieldType = "ldap";
-    	else if (displayer.equals("accessPath"))
-    		fieldType = "accessPath";
-    	else if (displayer.equals("jdbc"))
-    		fieldType = "jdbc";
-    	    	
-    	GenericFieldTemplate field = new GenericFieldTemplate();
-    	field.setDisplayerName(displayer);
-    	field.setFieldName(fieldName);
-    	field.setDisabled(disabled);
-    	field.setHidden(hidden);
-    	field.setMandatory(mandatory);
-    	field.setReadOnly(readOnly);
-    	field.setTypeName(fieldType);
-    	field.setSearchable(searchable);
-    	    	
-    	Enumeration paramNames = request.getParameterNames();
-    	while (paramNames.hasMoreElements())
-    	{
-    		String paramName = (String) paramNames.nextElement();
-    		if (paramName.startsWith("Param_"))
-    		{
-    			String xmlParameterName 	= paramName.substring(6);
-    			String xmlParameterValue 	= request.getParameter(paramName);
-    			
-    			if (isDefined(xmlParameterValue))
-    			{
-	    			Parameter parameter = new Parameter(xmlParameterName, "dummy");
-	    			parameter.getParameterValuesObj().add(new ParameterValue("fr", xmlParameterValue));
-	    			
-	    			field.getParametersObj().add(parameter);
-    			}
-    		}
-    		else if (paramName.startsWith("Label_"))
-    		{
-    			String lang 	= paramName.substring(6);
-    			String sLabel 	= request.getParameter(paramName);
-    			
-    			if (isDefined(sLabel))
-    			{
-	    			Label label = new Label(sLabel, lang);
-	    			field.getLabelsObj().add(label);
-    			}
-    		}
-    	}
-    	
-    	return field;
-    }
-    
-    private boolean isDefined(String parameter)
-    {
-    	return (parameter != null && parameter.length() > 0 && !parameter.equals("null"));
-    }
+
+    return field;
+  }
+
+  private boolean isDefined(String parameter) {
+    return (parameter != null && parameter.length() > 0 && !parameter
+        .equals("null"));
+  }
 
 }

@@ -73,7 +73,7 @@ public class HtmlExportPublicationGenerator {
                                                                           * dbModelContent
                                                                           * ,
                                                                           */
-      ModelDetail modelDetail, String wysiwygText, String urlPub) {
+  ModelDetail modelDetail, String wysiwygText, String urlPub) {
     this.publicationDetail = publicationType.getPublicationDetail();
     if (publicationType.getPublicationContentType() != null) {
       this.dbModelContent = publicationType.getPublicationContentType()

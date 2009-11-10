@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.workflowdesigner.taglib;
 
 import java.io.IOException;
@@ -21,161 +44,157 @@ import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
 /**
  * Class implementing the tag &lt;itemList&gt; from workflowEditor.tld
  */
-public class ItemList extends TagSupport
-{
-    private String                 strContext,
-                                   strPaneTitleKey,
-                                   strCurrentScreen; 
-    private DataFolder             items;
-    
-    /* (non-Javadoc)
-     * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-     */
-    public int doStartTag() throws JspException
-    {
-        GraphicElementFactory  gef;
-        ResourcesWrapper       resource;
-        ArrayPane              itemPane;
-        ArrayLine              row;
-        ArrayColumn            column;
-        String                 strContextEncoded,
-                               strEditURL,
-                               strPaneTitle;
-        StringBuffer           sb = new StringBuffer();
-        
-        try
-        {
-            gef = (GraphicElementFactory)pageContext.getSession().getAttribute("SessionGraphicElementFactory");
-            resource = (ResourcesWrapper)pageContext.getRequest().getAttribute("resources");
-            strPaneTitle = resource.getString(strPaneTitleKey);
-            
-            itemPane = gef.getArrayPane("itemList", strCurrentScreen, pageContext.getRequest(), pageContext.getSession());
-            itemPane.setVisibleLineNumber(20);
-            itemPane.setTitle(strPaneTitle);
-            itemPane.addArrayColumn(resource.getString("GML.name"));
-            itemPane.addArrayColumn(resource.getString("GML.type" ) );
-            itemPane.addArrayColumn(resource.getString("workflowDesigner.readonly"));
-            itemPane.addArrayColumn(resource.getString("workflowDesigner.computed"));
-            itemPane.addArrayColumn(resource.getString("workflowDesigner.directoryEntry")); // mapTo
-            column = itemPane.addArrayColumn(resource.getString("GML.operations"));
-            column.setSortable(false);
-            
-            if ( items != null )
-            {
-                IconPane   iconPane;
-                Icon       updateIcon;
-                Icon       delIcon;
-                Item       item;
-                Iterator   iterItem = items.iterateItem();
-                
-                while ( iterItem.hasNext() )
-                {
-                    item = (Item)iterItem.next();
-                    strContextEncoded = URLEncoder.encode( strContext + "/" + item.getName(), "UTF-8");
-                    strEditURL = "ModifyItem?context=" + strContextEncoded;
+public class ItemList extends TagSupport {
+  private String strContext, strPaneTitleKey, strCurrentScreen;
+  private DataFolder items;
 
-                    // Create the remove link
-                    //
-                    sb.setLength(0);
-                    sb.append( "javascript:confirmRemove('RemoveItem?context=" ); 
-                    sb.append( strContextEncoded );
-                    sb.append( "', '" );
-                    sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
-                    sb.append( " " );
-                    sb.append( Encode.javaStringToJsString( item.getName() ) );
-                    sb.append( " ?');" );
-                    
-                    iconPane = gef.getIconPane();
-                    updateIcon = iconPane.addIcon();
-                    delIcon = iconPane.addIcon();
-                    updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
-                                      resource.getString("GML.modify"),
-                                      strEditURL );
-                    delIcon.setProperties(resource.getIcon("workflowDesigner.smallDelete"),
-                                   resource.getString("GML.delete"),
-                                   sb.toString() );
-                    iconPane.setSpacing("30px");
-                    
-                    row = itemPane.addArrayLine();
-                    row.addArrayCellLink( item.getName(), strEditURL );
-                    row.addArrayCellLink( item.getType() == null ? "" : item.getType(), strEditURL );
-                    row.addArrayCellLink( resource.getString( item.isReadonly() ? "GML.yes" : "GML.no" ), strEditURL );
-                    row.addArrayCellLink( resource.getString( item.isComputed() ? "GML.yes" : "GML.no" ), strEditURL );
-                    row.addArrayCellLink( item.getMapTo() == null ? "" : item.getMapTo(), strEditURL );
-                    row.addArrayCellIconPane(iconPane);
-                }
-            }
-            
-            pageContext.getOut().println(itemPane.print());
-        } 
-        catch (IOException e)
-        {
-            throw new JspException("Error when printing the Items", e);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
+   */
+  public int doStartTag() throws JspException {
+    GraphicElementFactory gef;
+    ResourcesWrapper resource;
+    ArrayPane itemPane;
+    ArrayLine row;
+    ArrayColumn column;
+    String strContextEncoded, strEditURL, strPaneTitle;
+    StringBuffer sb = new StringBuffer();
+
+    try {
+      gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
+          "SessionGraphicElementFactory");
+      resource = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+          "resources");
+      strPaneTitle = resource.getString(strPaneTitleKey);
+
+      itemPane = gef.getArrayPane("itemList", strCurrentScreen, pageContext
+          .getRequest(), pageContext.getSession());
+      itemPane.setVisibleLineNumber(20);
+      itemPane.setTitle(strPaneTitle);
+      itemPane.addArrayColumn(resource.getString("GML.name"));
+      itemPane.addArrayColumn(resource.getString("GML.type"));
+      itemPane.addArrayColumn(resource.getString("workflowDesigner.readonly"));
+      itemPane.addArrayColumn(resource.getString("workflowDesigner.computed"));
+      itemPane.addArrayColumn(resource
+          .getString("workflowDesigner.directoryEntry")); // mapTo
+      column = itemPane.addArrayColumn(resource.getString("GML.operations"));
+      column.setSortable(false);
+
+      if (items != null) {
+        IconPane iconPane;
+        Icon updateIcon;
+        Icon delIcon;
+        Item item;
+        Iterator iterItem = items.iterateItem();
+
+        while (iterItem.hasNext()) {
+          item = (Item) iterItem.next();
+          strContextEncoded = URLEncoder.encode(strContext + "/"
+              + item.getName(), "UTF-8");
+          strEditURL = "ModifyItem?context=" + strContextEncoded;
+
+          // Create the remove link
+          //
+          sb.setLength(0);
+          sb.append("javascript:confirmRemove('RemoveItem?context=");
+          sb.append(strContextEncoded);
+          sb.append("', '");
+          sb.append(resource.getString("workflowDesigner.confirmRemoveJS"));
+          sb.append(" ");
+          sb.append(Encode.javaStringToJsString(item.getName()));
+          sb.append(" ?');");
+
+          iconPane = gef.getIconPane();
+          updateIcon = iconPane.addIcon();
+          delIcon = iconPane.addIcon();
+          updateIcon.setProperties(resource
+              .getIcon("workflowDesigner.smallUpdate"), resource
+              .getString("GML.modify"), strEditURL);
+          delIcon.setProperties(resource
+              .getIcon("workflowDesigner.smallDelete"), resource
+              .getString("GML.delete"), sb.toString());
+          iconPane.setSpacing("30px");
+
+          row = itemPane.addArrayLine();
+          row.addArrayCellLink(item.getName(), strEditURL);
+          row.addArrayCellLink(item.getType() == null ? "" : item.getType(),
+              strEditURL);
+          row.addArrayCellLink(resource.getString(item.isReadonly() ? "GML.yes"
+              : "GML.no"), strEditURL);
+          row.addArrayCellLink(resource.getString(item.isComputed() ? "GML.yes"
+              : "GML.no"), strEditURL);
+          row.addArrayCellLink(item.getMapTo() == null ? "" : item.getMapTo(),
+              strEditURL);
+          row.addArrayCellIconPane(iconPane);
         }
-        return super.doStartTag();
-    }
+      }
 
-    /**
-     * @return the context
-     */
-    public String getContext()
-    {
-        return strContext;
+      pageContext.getOut().println(itemPane.print());
+    } catch (IOException e) {
+      throw new JspException("Error when printing the Items", e);
     }
+    return super.doStartTag();
+  }
 
-    /**
-     * @param context the context to set
-     */
-    public void setContext(String context)
-    {
-        strContext = context;
-    }
+  /**
+   * @return the context
+   */
+  public String getContext() {
+    return strContext;
+  }
 
-    /**
-     * @return the currentScreen
-     */
-    public String getCurrentScreen()
-    {
-        return strCurrentScreen;
-    }
+  /**
+   * @param context
+   *          the context to set
+   */
+  public void setContext(String context) {
+    strContext = context;
+  }
 
-    /**
-     * @param currentScreen the currentScreen to set
-     */
-    public void setCurrentScreen(String currentScreen)
-    {
-        this.strCurrentScreen = currentScreen;
-    }
+  /**
+   * @return the currentScreen
+   */
+  public String getCurrentScreen() {
+    return strCurrentScreen;
+  }
 
-    /**
-     * @return the items
-     */
-    public DataFolder getItems()
-    {
-        return items;
-    }
+  /**
+   * @param currentScreen
+   *          the currentScreen to set
+   */
+  public void setCurrentScreen(String currentScreen) {
+    this.strCurrentScreen = currentScreen;
+  }
 
-    /**
-     * @param items the items to set
-     */
-    public void setItems(DataFolder items)
-    {
-        this.items = items;
-    }
+  /**
+   * @return the items
+   */
+  public DataFolder getItems() {
+    return items;
+  }
 
-    /**
-     * @return the paneTitleKey
-     */
-    public String getPaneTitleKey()
-    {
-        return strPaneTitleKey;
-    }
+  /**
+   * @param items
+   *          the items to set
+   */
+  public void setItems(DataFolder items) {
+    this.items = items;
+  }
 
-    /**
-     * @param paneTitleKey the paneTitleKey to set
-     */
-    public void setPaneTitleKey(String paneTitleKey)
-    {
-        strPaneTitleKey = paneTitleKey;
-    }
+  /**
+   * @return the paneTitleKey
+   */
+  public String getPaneTitleKey() {
+    return strPaneTitleKey;
+  }
+
+  /**
+   * @param paneTitleKey
+   *          the paneTitleKey to set
+   */
+  public void setPaneTitleKey(String paneTitleKey) {
+    strPaneTitleKey = paneTitleKey;
+  }
 }

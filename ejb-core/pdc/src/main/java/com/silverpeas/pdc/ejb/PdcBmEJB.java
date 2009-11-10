@@ -210,7 +210,8 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
 
     instanceId = ""; // reinitialisation
 
-    // une fois la liste des instanceId définie, on parcourt cette liste pour en
+    // une fois la liste des instanceId définie, on parcourt cette liste pour
+    // en
     // retirer les SilverContentIds
     // propre à chaque instanceId.
     List allSilverContentIds = (List) new ArrayList();
@@ -234,7 +235,8 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
             c);
       }
 
-      // une fois les SilverContentId de l'instanceId récupérés, on ne garde que
+      // une fois les SilverContentId de l'instanceId récupérés, on ne garde
+      // que
       // ceux qui sont
       // dans la liste résultat (alSilverContentIds).
       allSilverContentIds.retainAll(silverContentIds);
@@ -279,7 +281,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   }
 
   /*
-   *
+   * 
    * @return a List of GlobalSilverContent
    */
   private List transformSilverContentsToGlobalSilverContents(

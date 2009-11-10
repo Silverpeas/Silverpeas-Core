@@ -46,12 +46,12 @@ public class JournalDAO {
   private static final String JOURNALCOLUMNNAMES = "CalendarJournal.id, CalendarJournal.name, CalendarJournal.delegatorId, CalendarJournal.description, CalendarJournal.priority, "
       + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
 
-  private static final String INSERT_JOURNAL =  "INSERT INTO CalendarJournal ("
-          + COLUMNNAMES + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  private static final String INSERT_JOURNAL = "INSERT INTO CalendarJournal ("
+      + COLUMNNAMES + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-  private static final String UPDATE_JOURNAL = "UPDATE CalendarJournal SET name = ?, " +
-          "delegatorId = ?, description = ?, priority = ?, classification = ?, " +
-          "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? WHERE id = ?";
+  private static final String UPDATE_JOURNAL = "UPDATE CalendarJournal SET name = ?, "
+      + "delegatorId = ?, description = ?, priority = ?, classification = ?, "
+      + "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? WHERE id = ?";
   private static final String DELETE_JOURNAL = "DELETE FROM CalendarJournal WHERE id = ?";
 
   public static String addJournal(Connection con, JournalHeader journal)

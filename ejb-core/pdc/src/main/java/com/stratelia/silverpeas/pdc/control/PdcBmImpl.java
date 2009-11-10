@@ -279,8 +279,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PdcBmImpl implements PdcBm, ContainerInterface {
@@ -313,8 +313,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public PdcBmImpl() {
@@ -329,7 +329,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a list of axes sorted in according to the axe type.
-   *
+   * 
    * @param type
    *          - the whished type of the axe.
    * @return a sorted list.
@@ -390,7 +390,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a list of axes sorted.
-   *
+   * 
    * @return a list sorted or null otherwise
    */
   public List getAxis() throws PdcException {
@@ -409,7 +409,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the number of axe for one type.
-   *
+   * 
    * @return the number of axe
    */
   public int getNbAxisByType(String type) throws PdcException {
@@ -418,7 +418,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the number of axe.
-   *
+   * 
    * @return the number of axe
    */
   public int getNbAxis() throws PdcException {
@@ -427,7 +427,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the max number of axis.
-   *
+   * 
    * @return the max number of axis
    */
   public int getNbMaxAxis() throws PdcException {
@@ -436,7 +436,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Create an axe into the data base.
-   *
+   * 
    * @param axisHeader
    *          - the object which contains all data about an axe
    * @return 1 if the maximun of axe is atteignable, 2 if the axe already exist,
@@ -459,7 +459,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       try {
         int order = axisHeader.getAxisOrder();
         String type = axisHeader.getAxisType();
-        // recupere les axes de meme type ordonnés qui ont un numéro d'ordre >=
+        // recupere les axes de meme type ordonnés qui ont un numéro d'ordre
+        // >=
         // à celui de l'axe à inserer
         String whereClause = "AxisType = '" + type + "' and AxisOrder >= "
             + order + " ORDER BY AxisOrder ASC";
@@ -519,7 +520,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update an axe into the data base.
-   *
+   * 
    * @param axisHeader
    *          - the object which contains all data about an axe
    * @return 2 if the axe already exist, 0 otherwise
@@ -723,7 +724,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * delete the axe from the data base and all its subtrees.
-   *
+   * 
    * @param axisId
    *          - the id of the selected axe
    */
@@ -764,7 +765,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a detail axe (header,values).
-   *
+   * 
    * @param axisId
    *          - the id of the selected axe.
    * @return the Axis Object
@@ -805,7 +806,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a value from an axe.
-   *
+   * 
    * @param valueId
    *          - the id of the selected value
    * @return the Value object
@@ -832,7 +833,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a value from an axe.
-   *
+   * 
    * @param valueId
    *          - the id of the selected value
    * @return the Value object
@@ -857,15 +858,15 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return a list of axis values having the value name in parameter
-   *
-   *
+   * 
+   * 
    * @param valueName
    *          - the name of the value.
-   *
+   * 
    * @return List
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public List getAxisValuesByName(String valueName) throws PdcException {
@@ -889,15 +890,15 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * Return a list of String corresponding to the valueId of the value in
    * parameter
-   *
-   *
+   * 
+   * 
    * @param axisId
    * @param valueId
-   *
+   * 
    * @return List of String
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see getDaughters
    */
   public List getDaughterValues(String axisId, String valueId)
@@ -928,15 +929,15 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * Return a list of String corresponding to the valueId of the value in
    * parameter
-   *
-   *
+   * 
+   * 
    * @param axisId
    * @param valueId
-   *
+   * 
    * @return List of String
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see getDaughters
    */
   public List getFilteredAxisValues(String rootId, AxisFilter filter)
@@ -963,14 +964,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the Value corresponding to the axis done
-   *
-   *
+   * 
+   * 
    * @param axisId
-   *
+   * 
    * @return com.stratelia.silverpeas.pdc.model.Value
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public com.stratelia.silverpeas.pdc.model.Value getRoot(String axisId)
@@ -997,7 +998,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns all values from an axe.
-   *
+   * 
    * @param axeId
    *          - the id of the selected axe
    * @return a list of values
@@ -1027,7 +1028,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * insert a value which is defined like a mother value
-   *
+   * 
    * @param valueToInsert
    *          - a Value object
    * @param refValue
@@ -1087,7 +1088,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Move a value under a new father
-   *
+   * 
    * @param axis
    *          : l'axe concerné
    * @param valueToMove
@@ -1145,9 +1146,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   *
+   * 
    * retourne les droits hérités sur la valeur
-   *
+   * 
    * @param current
    *          value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
@@ -1183,9 +1184,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   *
+   * 
    * retourne les droits sur la valeur
-   *
+   * 
    * @param current
    *          value
    * @return List(List userIds, List groupIds)
@@ -1253,9 +1254,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   *
+   * 
    * met à jour les droits sur la valeur
-   *
+   * 
    * @param ArrayList
    *          ( ArrayList UsersId, ArrayList GroupsId), current value
    * @return
@@ -1299,7 +1300,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Supprime les droits associés au userid
-   *
+   * 
    * @param userId
    * @throws SQLException
    */
@@ -1317,7 +1318,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Supprime les droits associés au groupid
-   *
+   * 
    * @param groupId
    * @throws SQLException
    */
@@ -1335,7 +1336,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return tree where the root value is the refValue.
-   *
+   * 
    * @param con
    *          - the connection to the database
    * @param refValue
@@ -1370,14 +1371,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param valueToInsert
    * @param refValue
    * @param axisId
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   private void insertMotherValueToRootValue(Connection con,
@@ -1395,15 +1396,15 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param valueToInsert
    * @param refValue
-   *
+   * 
    * @return
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   private int insertMotherValueToValue(Connection con,
@@ -1431,7 +1432,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * insert a value which is defined like a daughter value
-   *
+   * 
    * @param valueToInsert
    *          - a Value object
    * @param refValue
@@ -1468,7 +1469,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update the selected value
-   *
+   * 
    * @param value
    *          - a Value object
    * @return 1 if the name already exist 0 otherwise
@@ -1510,7 +1511,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Delete a value and it's sub tree
-   *
+   * 
    * @param valueId
    *          - the id of the select value
    */
@@ -1592,7 +1593,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * Delete the selected value. If a daughter of the selected value is named
    * like a sister of her mother the delete is not possible.
-   *
+   * 
    * @param valueId
    *          - the id of the select value
    * @return null if the delete is possible, the name of her daughter else.
@@ -1669,7 +1670,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns the full path of the value
-   *
+   * 
    * @param valueId
    *          - the id of the selected value (value is not empty)
    * @return the complet path - It's a List of ArrayList. Each ArrayList
@@ -1700,7 +1701,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * This method searches if a name of axes is alreadey used !
-   *
+   * 
    * @param axis
    *          - a list of axes
    * @param name
@@ -1731,7 +1732,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * This method searches if a name of values is alreadey used !
-   *
+   * 
    * @param values
    *          - a list of values
    * @param name
@@ -1762,7 +1763,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * This method searches if one name of valuesToCheck is alreadey used !
-   *
+   * 
    * @param values
    *          - a list of values
    * @param valuesToCheck
@@ -1788,7 +1789,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns an AxisHeader Object.
-   *
+   * 
    * @param axisId
    *          - the id of the selected axe
    * @return an AxisHeader
@@ -1796,11 +1797,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /*
    * public AxisHeader getAxisHeader(String axisId) { AxisHeader axisHeader =
    * null;
-   *
+   * 
    * try { axisHeader = (AxisHeader) dao.findByPrimaryKey(new AxisPK(axisId)); }
    * catch (PersistenceException err_select) { SilverTrace.info("PDC",
    * "PdcBmImpl.getAxisHeader", "Pdc.CANNOT_RETRIEVE_HEADER_AXE", err_select); }
-   *
+   * 
    * return axisHeader; }
    */
 
@@ -1840,7 +1841,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * Returns an AxisHeader Object. (pass the connection WORK AROUND FOR THE
    * connection BUG !!!!!!!)
-   *
+   * 
    * @param axisId
    *          - the id of the selected axe
    * @return an AxisHeader
@@ -1862,7 +1863,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a list of Value Object.
-   *
+   * 
    * @param con
    *          - a connection
    * @param refValue
@@ -1919,7 +1920,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Creates a list of Value objects with a list of treeNodes objects
-   *
+   * 
    * @param treeNodes
    *          - a list of TreeNode objects
    * @return a Value list
@@ -1937,7 +1938,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Creates a Value object with a TreeNode object
-   *
+   * 
    * @param treeNode
    *          - a TreeNode Object
    * @return a Value Object
@@ -1973,14 +1974,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param instanceId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException {
@@ -1989,14 +1990,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param usedAxis
-   *
+   * 
    * @return
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public int addUsedAxis(UsedAxis usedAxis) throws PdcException {
@@ -2009,14 +2010,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param usedAxis
-   *
+   * 
    * @return
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public int updateUsedAxis(UsedAxis usedAxis) throws PdcException {
@@ -2025,15 +2026,18 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     // obtain the treeId.
     String treeId = new Integer(axisHeader.getRootId()).toString();
 
-    // on recherche si la nouvelle valeur de base est une valeur ascendante à la
+    // on recherche si la nouvelle valeur de base est une valeur ascendante à
+    // la
     // valeur de base originelle
     // si c'est le cas alors on peut faire un update.
     // sinon, il faut vérifier qu'aucune valeur fille de cet axe n'est
     // positionnée.
-    // si une valeur fille est positionnée, on ne peut pas modifier la valeur de
+    // si une valeur fille est positionnée, on ne peut pas modifier la valeur
+    // de
     // base du UsedAxis
 
-    // on récupère la valeur de base que l'on veut modifier de l'objet UsedAxis
+    // on récupère la valeur de base que l'on veut modifier de l'objet
+    // UsedAxis
     String id = usedAxis.getPK().getId();
     UsedAxis currentUsedAxis = pdcUtilizationBm.getUsedAxis(id);
 
@@ -2063,7 +2067,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * recherche si la valeur de base de l'axe est une valeur ascendante par
    * rapport aux valeurs se trouvant dans SB_Classify...
-   *
+   * 
    * @param objectIdList
    *          - une list d'objets se trouvant dans une instance donnée
    * @param usedAxis
@@ -2081,7 +2085,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update a base value from the PdcUtilization table
-   *
+   * 
    * @param valueId
    *          - the base value that must be updated
    */
@@ -2104,7 +2108,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update some base values from the PdcUtilization table
-   *
+   * 
    * @param baseValuesToUpdate
    *          - the base values that must be updated
    */
@@ -2147,12 +2151,12 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param usedAxisId
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public void deleteUsedAxis(String usedAxisId) throws PdcException {
@@ -2161,12 +2165,12 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param usedAxisIds
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException {
@@ -2220,7 +2224,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see com.stratelia.silverpeas.pdc.control.PdcBm#copyPositions(int,
    * java.lang.String, int, java.lang.String)
    */
@@ -2280,7 +2284,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * From the usedAxis, retrieve the UsedAxis corresponding to axisId
-   *
+   * 
    * @param usedAxis
    *          a List of UsedAxis
    * @param axisId
@@ -2834,7 +2838,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * To know if classifying is mandatory on a given component
-   *
+   * 
    * @param componentId
    *          - id of the component to test
    * @return true if at least one axis has been selected on component AND at
@@ -2888,10 +2892,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private Connection openConnection() throws PdcException {
@@ -2908,10 +2912,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private void closeConnection(Connection con) {
@@ -2927,10 +2931,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private Connection openConnection(boolean autoCommit) {
@@ -2947,10 +2951,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private void rollbackConnection(Connection con) {
@@ -2966,10 +2970,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private void commitConnection(Connection con) {

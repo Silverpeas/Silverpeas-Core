@@ -174,14 +174,14 @@ public class AttachmentImportExport {
    * importAttachement(String,String,AttachmentDetail)
    * 
    * @param componentId
-   *          - id du composant contenant la publication � laquelle est destin�
-   *          l'attachement
+   *          - id du composant contenant la publication � laquelle est
+   *          destin� l'attachement
    * @param a_Detail
    *          - objet contenant les informations sur le fichier � copier
    * @param path
    *          - chemin o� doit �tre copi� le fichier
-   * @return renvoie l'objet des informations sur le fichier � copier compl�t�
-   *         par les nouvelles donn�es issues de la copie
+   * @return renvoie l'objet des informations sur le fichier � copier
+   *         compl�t� par les nouvelles donn�es issues de la copie
    * @throws AttachmentException
    */
   public AttachmentDetail copyFile(String componentId,
@@ -271,8 +271,8 @@ public class AttachmentImportExport {
    * @param componentId
    *          - id du composant contenant la publication
    * @param a_Detail
-   *          - obejt contenant les informations n�c�ssaire � la cr�ation de
-   *          l'attachment
+   *          - obejt contenant les informations n�c�ssaire � la
+   *          cr�ation de l'attachment
    * @return AttachmentDetail cr��
    */
   private AttachmentDetail addAttachmentToPublication(String pubId,
@@ -298,7 +298,8 @@ public class AttachmentImportExport {
         "AttachmentImportExport.addAttachmentToPublication()",
         "root.MSG_GEN_PARAM_VALUE", "updateRule=" + updateRule);
 
-    // V�rification s'il existe un attachment de m�me nom, si oui, ajout d'un
+    // V�rification s'il existe un attachment de m�me nom, si oui, ajout
+    // d'un
     // suffixe au nouveau fichier
     while (i < attachments.size()) {
       ad_toCreate = (AttachmentDetail) attachments.get(i);
@@ -317,7 +318,8 @@ public class AttachmentImportExport {
                 + logicalName.substring(Extposition, logicalName.length());
           else
             logicalName += "_" + (++incrementSuffixe);
-          // On reprend la boucle au d�but pour v�rifier que le nom g�n�r� n est
+          // On reprend la boucle au d�but pour v�rifier que le nom
+          // g�n�r� n est
           // pas lui meme un autre nom d'attachment de la publication
           i = 0;
         } else {// on efface l'ancien fichier joint et on stoppe la boucle
@@ -342,8 +344,8 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode de r�cup�ration des attachements et de copie des fichiers dans le
-   * dossier d'exportation
+   * M�thode de r�cup�ration des attachements et de copie des fichiers
+   * dans le dossier d'exportation
    * 
    * @param pk
    *          - PrimaryKey de l'obijet dont on veut les attachments?
@@ -360,7 +362,8 @@ public class AttachmentImportExport {
     Vector listAttachment = AttachmentController
         .searchAttachmentByCustomerPK(pk);
     Vector listToReturn = new Vector();
-    if ((listAttachment != null) && (listAttachment.size() == 0))// Si on re�oit
+    if ((listAttachment != null) && (listAttachment.size() == 0))// Si on
+                                                                 // re�oit
       // une liste
       // vide, on
       // retourne
@@ -429,12 +432,12 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode r�cup�rant le chemin d'acc�s au dossier de stockage des fichiers
-   * import�s dans un composant.
+   * M�thode r�cup�rant le chemin d'acc�s au dossier de stockage des
+   * fichiers import�s dans un composant.
    * 
    * @param componentId
-   *          - id du composant dont on veut r�cuperer le chemin de stockage de
-   *          ses fichiers import�s
+   *          - id du composant dont on veut r�cuperer le chemin de stockage
+   *          de ses fichiers import�s
    * @return le chemin recherch�
    */
   private String getPath(String componentId) {

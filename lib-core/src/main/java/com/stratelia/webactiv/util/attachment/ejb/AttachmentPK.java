@@ -66,17 +66,17 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AttachmentPK extends WAPrimaryKey implements Serializable {
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param id
-   *
+   * 
    * @see
    */
   public AttachmentPK(String id) {
@@ -85,12 +85,12 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param id
    * @param spaceId
    * @param componentId
-   *
+   * 
    * @see
    */
   public AttachmentPK(String id, String spaceId, String componentId) {
@@ -103,11 +103,11 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param id
    * @param pk
-   *
+   * 
    * @see
    */
   public AttachmentPK(String id, WAPrimaryKey pk) {
@@ -124,10 +124,10 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String getTableName() {
@@ -136,12 +136,12 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param other
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public boolean equals(Object other) {
@@ -154,10 +154,10 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public String toString() {
@@ -165,9 +165,9 @@ public class AttachmentPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   *
+   * 
    * Returns a hash code for the key
-   *
+   * 
    * @return A hash code for this object
    */
   public int hashCode() {

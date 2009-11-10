@@ -31,7 +31,6 @@ public class SilverContentVisibility extends Object {
   private String endDate = "9999/99/99";
   private boolean isVisible = true;
 
-
   public SilverContentVisibility(String beginDate, String endDate,
       boolean isVisible) {
     setVisibilityAttributes(beginDate, endDate);

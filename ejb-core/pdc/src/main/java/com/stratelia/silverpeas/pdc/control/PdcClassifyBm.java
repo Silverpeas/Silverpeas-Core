@@ -39,7 +39,7 @@ public interface PdcClassifyBm {
 
   /**
    * Check if the object is already classified on the position
-   *
+   * 
    * @param silverObjectId
    * @param position
    * @return the positionId if the object is already classified, -1 otherwise.
@@ -50,34 +50,34 @@ public interface PdcClassifyBm {
 
   /**
    * Add new position for an object
-   *
+   * 
    * @param silverObjectId
    *          - id of the object to classify
    * @param position
    *          - the position of the object
-   *
+   * 
    * @return 0 position is OK, insertion have been done. 1 if variant constraint
    *         not respected
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    */
   public int addPosition(int silverObjectId, ClassifyPosition position,
       String sComponentId) throws PdcException;
 
   /**
    * Update the position of an object
-   *
+   * 
    * @param silverObjectId
    *          - id of the object
    * @param position
    *          - the position of the object
-   *
+   * 
    * @return 0 position is OK, insertion have been done. 1 if variant constraint
    *         not respected
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    */
   public int updatePosition(ClassifyPosition position) throws PdcException;
 
@@ -86,29 +86,29 @@ public interface PdcClassifyBm {
 
   /**
    * Delete the position of an object
-   *
+   * 
    * @param silverObjectId
    *          - id of the object
    * @param position
    *          - the id of the position
-   *
-   *
+   * 
+   * 
    * @throws PdcException
-   *
+   * 
    */
   public void deletePosition(int positionId, String sComponentId)
       throws PdcException;
 
   /**
    * Returns all positions of an object
-   *
+   * 
    * @param silverObjectId
    *          - id of the object
-   *
+   * 
    * @return a Position List
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    */
   public List getPositions(int silverObjectId, String sComponentId)
       throws PdcException;
@@ -174,7 +174,7 @@ public interface PdcClassifyBm {
   /*
    * recherche tous les objets classés sur l'axe axisId selon le searchContext
    * et le JoinStatement
-   *
+   * 
    * @return une List de ObjectValuePair
    */
   public List getObjectValuePairs(SearchContext searchContext, int axisId,

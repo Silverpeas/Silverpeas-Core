@@ -232,7 +232,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   /**
    * Create two lists of Value. Then, we replace the first Value list by the
    * second
-   *
+   * 
    * @param con
    *          - a connection to the database
    * @param axisId
@@ -299,7 +299,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * search a defined position for one usedAxis
-   *
+   * 
    * @param usedAxis
    *          - the UsedAxis object
    * @return true if for one UsedAxis, a position exists, false otherwise

@@ -162,14 +162,14 @@ public class SMTPListener extends AbstractListener {
         // For the moment, send the email without attachment
         sendEmail(tmpFromString, p_Message.getTargetReceipt(),
             tmpSubjectString, body, false);
-        }
+      }
     }
   }
 
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API
    * (compliant with MIME format).
-   *
+   * 
    * @param pFrom
    *          : from field that will appear in the email header.
    * @param pTo
@@ -281,7 +281,7 @@ public class SMTPListener extends AbstractListener {
 
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API.
-   *
+   * 
    * @param pFrom
    *          : from field that will appear in the email header.
    * @param pTo
@@ -302,39 +302,39 @@ public class SMTPListener extends AbstractListener {
    * String pMessage, String pAttachmentId, String pAttachmentName) throws
    * NotificationServerException { //retrieves system properties and set up
    * Delivery Status Notification //@see RFC1891
-   *
+   * 
    * Properties properties; javax.mail.Session session; InternetAddress
    * fromAddress; InternetAddress[] toAddress; MimeMessage email; Transport
    * transport = null;
-   *
+   * 
    * properties = System.getProperties(); properties.put("mail.smtp.host",
    * m_Host); session = javax.mail.Session.getInstance(properties, null); try{
    * fromAddress = new InternetAddress(pFrom); //use InternetAddress structure.
    * toAddress = null;
-   *
+   * 
    * //parsing destination address for compliance with RFC822 try { toAddress =
    * InternetAddress.parse(pTo, false); } catch (AddressException e) { throw new
    * NotificationServerException(e, "Invalid Address"); }
-   *
+   * 
    * email = new MimeMessage( session ); email.setFrom( fromAddress );
    * email.setRecipients( javax.mail.Message.RecipientType.TO, toAddress );
    * email.setSubject( pSubject ); email.setText( pMessage );
-   *
+   * 
    * // create the message part MimeBodyPart messageBodyPart = new
    * MimeBodyPart(); Multipart multipart = new MimeMultipart();
    * multipart.addBodyPart(messageBodyPart);
-   *
+   * 
    * // Part two is attachment messageBodyPart = new MimeBodyPart(); DataSource
    * source = new
    * FileDataSource("C:\\Dev\\web\\Upload\\D"+pAttachmentId+"\\"+pAttachmentName
    * ); messageBodyPart.setDataHandler( new DataHandler(source));
    * messageBodyPart.setFileName(pAttachmentName);
    * multipart.addBodyPart(messageBodyPart);
-   *
+   * 
    * // Put parts in message email.setContent(multipart);
-   *
+   * 
    * // set the Date: header email.setSentDate(new Date());
-   *
+   * 
    * //create a Transport connection (TCP) transport =
    * session.getTransport("smtp"); //redefine the TransportListener interface.
    * TransportListener transportListener = new TransportListener() { public void
@@ -342,7 +342,7 @@ public class SMTPListener extends AbstractListener {
    * SMTP server. } public void messageNotDelivered(TransportEvent e) { //catch
    * all messages NOT delivered to the SMTP server. } public void
    * messagePartiallyDelivered(TransportEvent e) { } };
-   *
+   * 
    * //add Transport Listener to the transport connection.
    * transport.addTransportListener(transportListener); transport.connect();
    * transport.sendMessage(email,toAddress); } catch (Exception e) { throw new

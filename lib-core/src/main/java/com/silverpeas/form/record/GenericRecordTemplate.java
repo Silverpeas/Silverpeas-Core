@@ -46,7 +46,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   /**
    * A GenericRecordTemplate is built empty : use addFieldTemplate for each
    * field.
-   *
+   * 
    * @see addFieldTemplate
    */
   public GenericRecordTemplate() {
@@ -107,7 +107,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the FieldTemplate of the named field.
-   *
+   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -124,7 +124,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the field index of the named field.
-   *
+   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {

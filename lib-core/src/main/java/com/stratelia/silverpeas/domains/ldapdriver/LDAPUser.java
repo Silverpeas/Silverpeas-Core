@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 /**
  * This class reads user infos from the LDAP DB and translate it into the
  * UserDetail format
- *
+ * 
  * @author tleroi
  */
 
@@ -57,7 +57,7 @@ public class LDAPUser extends Object {
 
   /**
    * Initialize the settings from the read ones
-   *
+   * 
    * @param driverSettings
    *          the settings retreived from the property file
    */
@@ -86,7 +86,7 @@ public class LDAPUser extends Object {
 
   /**
    * Return all users found in the baseDN tree
-   *
+   * 
    * @param ld
    *          the LDAP connection
    * @return all founded users
@@ -149,7 +149,7 @@ public class LDAPUser extends Object {
   /**
    * Return a UserDetail object filled with the infos of the user having ID = id
    * NOTE : the DomainID and the ID are not set.
-   *
+   * 
    * @param ld
    *          the LDAP connection
    * @param id
@@ -180,7 +180,7 @@ public class LDAPUser extends Object {
   /**
    * Return a UserDetail object filled with the infos of the user having ID = id
    * NOTE : the DomainID and the ID are not set.
-   *
+   * 
    * @param ld
    *          the LDAP connection
    * @param id
@@ -220,7 +220,7 @@ public class LDAPUser extends Object {
   /**
    * Translate a LDAP user entry into a UserDetail structure. NOTE : the
    * DomainID and the ID are not set.
-   *
+   * 
    * @param userEntry
    *          the LDAP user object
    * @return the user object
@@ -306,7 +306,7 @@ public class LDAPUser extends Object {
   /**
    * Translate a LDAP user entry into a UserDetail structure. NOTE : the
    * DomainID and the ID are not set.
-   *
+   * 
    * @param userEntry
    *          the LDAP user object
    * @return the user object

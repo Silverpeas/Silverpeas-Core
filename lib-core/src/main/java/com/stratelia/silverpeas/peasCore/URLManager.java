@@ -32,8 +32,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author t.leroi
  */
 public class URLManager {
@@ -154,7 +154,7 @@ public class URLManager {
 
   /**
    * Retourne l'URL pour les nouveaux composants lors de la recherche globale
-   *
+   * 
    * @param spaceId
    *          - l'id de l'espace (WA151)
    * @param componentId
@@ -168,7 +168,7 @@ public class URLManager {
 
   /**
    * Construit une chaine que l'on concatène à la fin de la nouvelle URL
-   *
+   * 
    * @param spaceId
    *          - l'id de l'espace (WA151)
    * @param componentId
@@ -183,7 +183,7 @@ public class URLManager {
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
-   *
+   * 
    * @param componentName
    *          - le nom du jobPeas
    * @param sSpace

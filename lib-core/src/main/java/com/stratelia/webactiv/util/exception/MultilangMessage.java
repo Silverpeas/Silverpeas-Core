@@ -34,7 +34,8 @@ public class MultilangMessage {
    * un paramètre. Exemple : message = "util.MSG_EJB_INTROUVABLE", param1 =
    * "ejb/NodeHome". Traduction dans fichier properties francais
    * "util.MSG_EJB_INTROUVABLE = L'ejb nommé %1 est introuvable". %1 est le
-   * premier paramètre. On imprimera "L'ejb nommé ejb/NodeHome est introuvable".
+   * premier paramètre. On imprimera
+   * "L'ejb nommé ejb/NodeHome est introuvable".
    */
   public MultilangMessage(String message, String param1) {
     this.message = message;
@@ -65,7 +66,7 @@ public class MultilangMessage {
 
   /**
    * codage du message multilangue et de ses paramètre sous forme d'une String
-   *
+   * 
    * @return la chaine encodée, qq chose comme [message,param1,param2]
    */
   public String toString() {

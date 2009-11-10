@@ -67,7 +67,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * @author neysseri
- *
+ * 
  */
 public class VersioningImportExport {
 
@@ -96,7 +96,7 @@ public class VersioningImportExport {
   }
 
   /**
-   *
+   * 
    * @param objectId
    * @param componentId
    * @param attachments
@@ -189,7 +189,7 @@ public class VersioningImportExport {
   }
 
   /**
-   *
+   * 
    * @param pk
    * @param exportPath
    * @param relativeExportPath

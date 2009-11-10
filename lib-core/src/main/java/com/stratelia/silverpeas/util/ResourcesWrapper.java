@@ -81,8 +81,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class ResourcesWrapper {
@@ -146,7 +146,7 @@ public class ResourcesWrapper {
 
   /**
    * Return the ResourceBundle for usage in JSTL.
-   *
+   * 
    * @return the ResourceBundle under the ResourceLocator.
    */
   public ResourceBundle getMultilangBundle() {
@@ -155,7 +155,7 @@ public class ResourcesWrapper {
 
   /**
    * Return the icons ResourceBundle for usage in JSTL.
-   *
+   * 
    * @return the icons ResourceBundle under the ResourceLocator.
    */
   public ResourceBundle getIconsBundle() {
@@ -228,7 +228,7 @@ public class ResourcesWrapper {
 
   /**
    * We look at the key in the specific settings file.
-   *
+   * 
    * @param key
    *          - key in the settings file
    * @return the value of the key if the key exists and if a value is specified.

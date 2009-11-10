@@ -240,9 +240,9 @@ public class PublicationsTypeManager {
             dbModelContent.setListImageParts(listImageParts);
           }
           modelDetail = gedIE.getModelDetail(dbModelContent.getId()); // used to
-                                                                      // display
-                                                                      // model's
-                                                                      // content
+          // display
+          // model's
+          // content
         } else if (wysiwygContent != null) {
           String wysiwygFileName = wysiwygContent.getPath();
           gedIE.copyWysiwygImageForExport(pubId, componentId,

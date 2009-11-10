@@ -45,7 +45,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Classe gérant la manipulation des axes du pdc pour le module d'importExport.
- *
+ * 
  * @author sdevolder
  */
 public class PdcImportExport {
@@ -57,7 +57,7 @@ public class PdcImportExport {
   /**
    * Méthodes créant les liens entre les silverObjectId et les positions
    * définies dans un xml mappé dans la classe PdcPositionsType.
-   *
+   * 
    * @param silverObjectId
    *          - id de l'objet à lier au pdc
    * @param componentId
@@ -195,8 +195,9 @@ public class PdcImportExport {
   }
 
   /**
-   * Méthode de récupération des position pdc pour un objet silverpeas donné.
-   *
+   * Méthode de récupération des position pdc pour un objet silverpeas
+   * donné.
+   * 
    * @param silverObjectId
    * @param sComponentId
    * @return - liste de ClassifyPosition
@@ -215,9 +216,9 @@ public class PdcImportExport {
   }
 
   /**
-   * Méthodes récupérant la totalité des axes utilisés par les positions de la
-   * liste en paramètre
-   *
+   * Méthodes récupérant la totalité des axes utilisés par les positions de
+   * la liste en paramètre
+   * 
    * @param listClassifyPosition
    *          - liste des positions dont on veut les axes
    * @return un objet PdcType contenant les axes recherchés
@@ -263,8 +264,9 @@ public class PdcImportExport {
   }
 
   /**
-   * Méthode récursive utilisée par la méthode getPdc de récupération d'axes.
-   *
+   * Méthode récursive utilisée par la méthode getPdc de récupération
+   * d'axes.
+   * 
    * @param axisId
    *          - id de l'axe que l'on veut récupéré
    * @param fatherValueId

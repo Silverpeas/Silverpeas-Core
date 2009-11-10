@@ -50,7 +50,7 @@ import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 
 /**
  * An IndexManager manage all the web'activ's index.
- *
+ * 
  * An IndexManager is NOT thread safe : to share an IndexManager between several
  * threads use an IndexerThread.
  */
@@ -182,7 +182,8 @@ public class IndexManager {
    */
   public void removeIndexEntry(IndexEntryPK indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
-    IndexWriter writer = getIndexWriter(indexPath, "");;
+    IndexWriter writer = getIndexWriter(indexPath, "");
+    ;
     if (writer != null) {
       removeIndexEntry(writer, indexEntry);
     } else {
@@ -228,10 +229,10 @@ public class IndexManager {
   /**
    * Return the analyzer used to parse indexed texts and queries in the given
    * language.
-   *
+   * 
    * @param language
    *          the language used in a document or a query.
-   *
+   * 
    * @return the analyzer for the required language or a default analyzer.
    */
   public Analyzer getAnalyzer(String language) {
@@ -305,14 +306,14 @@ public class IndexManager {
 
   /**
    * Returns an IndexWriter to the index stored at the given path.
-   *
+   * 
    * The index directory and files are created if not found.
-   *
+   * 
    * @param path
    *          the path to the index root directory
    * @param language
    *          the language of the indexed documents.
-   *
+   * 
    * @return an IndexWriter or null if the index can't be found or create or
    *         read.
    */
@@ -357,7 +358,7 @@ public class IndexManager {
 
   /**
    * Method declaration
-   *
+   * 
    * @param writer
    * @param indexEntry
    */

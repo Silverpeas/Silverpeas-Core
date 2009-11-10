@@ -75,7 +75,7 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 /**
  * Question Business Manager See QuestionBmBusinessSkeleton for methods
  * documentation
- *
+ * 
  * @author neysseri
  */
 public class QuestionBmEJB implements javax.ejb.SessionBean,

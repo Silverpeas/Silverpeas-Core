@@ -33,6 +33,7 @@ public class SILVERMAILMessage {
   }
 
   private long m_Id;
+
   public void setId(long value) {
     m_Id = value;
   }

@@ -24,7 +24,6 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;

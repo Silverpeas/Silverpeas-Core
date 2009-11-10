@@ -32,11 +32,11 @@ import org.apache.lucene.analysis.TokenStream;
 /**
  * Remove apostrophe from tokens extracted with StandardFilter. Used in french
  * to remove first part of token such as: "l'amour" to "amour" "d'ailleurs" to
- * "ailleurs" "c'est" to "est" "m'avait" to "avait" "n'avez" to "avez" "s'était"
- * to "était" "t'étais" to "étais"
- *
+ * "ailleurs" "c'est" to "est" "m'avait" to "avait" "n'avez" to "avez"
+ * "s'était" to "était" "t'étais" to "étais"
+ * 
  * @author neysseri
- *
+ * 
  */
 public final class ApostropheFilter extends TokenFilter {
   public ApostropheFilter(TokenStream in) {

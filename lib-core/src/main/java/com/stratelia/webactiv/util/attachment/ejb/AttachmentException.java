@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.util.attachment.ejb;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 /**
  * Class declaration
  * 

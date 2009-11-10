@@ -65,22 +65,22 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Interface declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param userId
    * @param node
    * @param pub
    * @deprecated : utiliser la fonction addStat(String userId, ForeignPK
    *             foreignPK, int action, String objectType)
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void addReading(String userId, NodePK node, PublicationPK pub)
@@ -88,11 +88,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param userId
    * @param foreignPK
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void addStat(String userId, ForeignPK foreignPK, int action,
@@ -100,12 +100,12 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param pub
    * @deprecated : utiliser la fonction getHistoryByAction(ForeignPK foreignPK)
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getReadingHistoryByPublication(PublicationPK pub)
@@ -113,11 +113,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPK
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getHistoryByAction(ForeignPK foreignPK, int action,
@@ -131,11 +131,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPK
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
@@ -143,24 +143,24 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param fatherPK
    * @deprecated : A SUPPRIMER APRES TESTS
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public Collection getNodesUsage(NodePK fatherPK) throws RemoteException;
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPKs
    * @param action
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public int getCount(List foreignPKs, int action, String objectType)
@@ -168,12 +168,12 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPK
    * @param action
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public int getCount(ForeignPK foreignPK, int action, String objectType)
@@ -181,11 +181,11 @@ public interface StatisticBm extends EJBObject {
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPK
    * @return
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public int getCount(ForeignPK foreignPK, String objectType)

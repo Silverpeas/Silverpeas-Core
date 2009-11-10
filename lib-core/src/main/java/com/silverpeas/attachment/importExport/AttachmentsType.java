@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
- *
+ * 
  * @author sdevolder
  */
 public class AttachmentsType {

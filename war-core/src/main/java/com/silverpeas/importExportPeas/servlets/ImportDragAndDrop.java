@@ -135,7 +135,7 @@ public class ImportDragAndDrop extends HttpServlet {
         if (fullFileName != null && parentPath != null
             && !parentPath.equals("")) {
           if (parentPath.endsWith(":\\")) // special case for file on root of
-                                          // disk
+          // disk
           {
             parentPath = parentPath.substring(0, parentPath.indexOf(":") + 1);
           }

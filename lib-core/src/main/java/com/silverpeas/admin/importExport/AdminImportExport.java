@@ -50,12 +50,13 @@ public class AdminImportExport {
    *         paramètre est vide
    */
   public ComponentsType getComponents(List listComponentId) {
-    ComponentsType componentsType =  new ComponentsType();
+    ComponentsType componentsType = new ComponentsType();
     List listComponentInst = new ArrayList();
     Iterator itListComponentId = listComponentId.iterator();
     while (itListComponentId.hasNext()) {
       String componentId = (String) itListComponentId.next();
-      ComponentInst componentInst = getAdminController().getComponentInst(componentId);
+      ComponentInst componentInst = getAdminController().getComponentInst(
+          componentId);
       listComponentInst.add(componentInst);
     }
     componentsType.setListComponentInst(listComponentInst);

@@ -50,10 +50,10 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
   /**
    * Simple decode for cookie value
-   *
+   * 
    * @param key
    *          : la chaine à décoder
-   *
+   * 
    */
   public String decode(String encodedText) {
     SilverTrace.info("authentication", "AuthenticationEncrypt.decode()",
@@ -77,7 +77,7 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
   /**
    * XOR Decrypt for authent param values
-   *
+   * 
    * @param str
    *          : String to decode
    * @param key

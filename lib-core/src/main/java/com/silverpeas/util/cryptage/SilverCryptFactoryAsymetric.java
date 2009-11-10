@@ -60,7 +60,8 @@ public class SilverCryptFactoryAsymetric {
       // Chiffrement du document
       CMSEnvelopedDataGenerator gen = new CMSEnvelopedDataGenerator();
       // La variable cert correspond au certificat du destinataire
-      // La clé publique de ce certificat servira à chiffrer la clé symétrique
+      // La clé publique de ce certificat servira à chiffrer la clé
+      // symétrique
       gen.addKeyTransRecipient((java.security.cert.X509Certificate) this
           .getKeys(fileName).getCert());
 
@@ -99,7 +100,8 @@ public class SilverCryptFactoryAsymetric {
 
       KeyTransRecipientInformation rinfo = (KeyTransRecipientInformation) recip
           .iterator().next();
-      // privatekey est la clé privée permettant de déchiffrer la clé secrète
+      // privatekey est la clé privée permettant de déchiffrer la clé
+      // secrète
       // (symétrique)
       byte[] contents = rinfo.getContent(
           this.getKeys(fileName).getPrivatekey(), "BC");

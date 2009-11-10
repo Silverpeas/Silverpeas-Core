@@ -28,7 +28,6 @@ package com.stratelia.silverpeas.notificationserver.channel;
 
 import com.stratelia.silverpeas.notificationserver.*;
 
-
 public interface INotificationServerChannel {
 
   /**

@@ -65,8 +65,8 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class AttachmentInstanciator extends SQLRequest {
@@ -85,10 +85,10 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @param fullPathName
-   *
+   * 
    * @see
    */
   public AttachmentInstanciator(String fullPathName) {
@@ -114,7 +114,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Creates an attachment directory for the upload files
-   *
+   * 
    * @param spaceId
    *          (String) the id of the silverpeas space
    * @param componentId
@@ -145,15 +145,15 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   *
+   * 
    * @throws InstanciationException
-   *
+   * 
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,
@@ -166,7 +166,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * deletes the attachment directory
-   *
+   * 
    * @param spaceId
    *          (String) the id of the silverpeas space
    * @param componentId
@@ -196,7 +196,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Delete all data from the attachment table.
-   *
+   * 
    * @param con
    *          (Connection) the connection to the data base
    * @param componentId

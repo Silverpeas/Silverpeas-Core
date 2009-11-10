@@ -24,7 +24,6 @@
 
 package com.silverpeas.util.csv;
 
-
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 

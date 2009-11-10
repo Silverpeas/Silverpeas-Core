@@ -107,8 +107,8 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PdcUtilizationDAO {
@@ -118,8 +118,8 @@ public class PdcUtilizationDAO {
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public PdcUtilizationDAO() {
@@ -127,15 +127,15 @@ public class PdcUtilizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param instanceId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static List getUsedAxisByInstanceId(Connection con, String instanceId)
@@ -195,7 +195,7 @@ public class PdcUtilizationDAO {
 
   /**
    * Update a base value from the PdcUtilizationDAO
-   *
+   * 
    * @param con
    *          - the connection to the database
    * @param valueId
@@ -237,7 +237,7 @@ public class PdcUtilizationDAO {
   /**
    * Test if the base value can be updated. No new sisters ou new "niece"s are
    * used in the utilisation
-   *
+   * 
    * @param con
    *          - the connection to the database
    * @param baseValue
@@ -303,17 +303,17 @@ public class PdcUtilizationDAO {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
    * @param instanceId
    * @param axisId
    * @param baseValue
-   *
+   * 
    * @return
-   *
+   * 
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public static boolean isAlreadyAdded(Connection con, String instanceId,
@@ -408,7 +408,7 @@ public class PdcUtilizationDAO {
   /**
    * Updates into the SB_Pdc_Utilization table all usedAxis. Set the mandatory
    * and variant values
-   *
+   * 
    * @param con
    *          - the connection to the database
    * @param usedAxis
@@ -560,7 +560,7 @@ public class PdcUtilizationDAO {
   /**
    * Returns all basevalue from the SB_Pdc_Utilization table for an axis and an
    * instance of the component
-   *
+   * 
    * @param con
    *          - The connection to the database
    * @param usedAxisId
@@ -611,7 +611,7 @@ public class PdcUtilizationDAO {
 
   /**
    * Returns all daughter values of the selected values
-   *
+   * 
    * @param con
    *          - the connection to the database
    * @param forbiddenValues

@@ -46,7 +46,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
- *
+ * 
  * @author tleroi
  */
 
@@ -83,14 +83,14 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param driverSettings
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static public String openConnection(LDAPSettings driverSettings)
@@ -111,14 +111,14 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param connectionId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static public LDAPConnection getConnection(String connectionId)
@@ -128,15 +128,15 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param connectionId
    * @param ex
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static public boolean recoverConnection(String connectionId, LDAPException ex)
@@ -177,12 +177,12 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param connectionId
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static public void closeConnection(String connectionId) throws AdminException {
@@ -192,12 +192,12 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param connectionId
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static private void InternalOpenConnection(String connectionId)
@@ -242,12 +242,12 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param connectionId
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static private void InternalCloseConnection(String connectionId)
@@ -270,7 +270,7 @@ public class LDAPUtility extends Object {
   /**
    * Returns the first value of a specific attribute from an entry. If this
    * attribute have multiple values, only the first is returned
-   *
+   * 
    * @param theEntry
    *          the LDAP entry
    * @param attributeName
@@ -293,7 +293,7 @@ public class LDAPUtility extends Object {
   /**
    * Search and returns the first Entry that match the parameters baseDN, scope
    * and filter
-   *
+   * 
    * @param ld
    *          the LDAP connection
    * @param baseDN
@@ -367,7 +367,7 @@ public class LDAPUtility extends Object {
 
   /**
    * Reads the values of an attribute and return the strings
-   *
+   * 
    * @param theEntry
    *          entry to read the attribute
    * @param theAttributeName
@@ -479,18 +479,18 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param lds
    * @param baseDN
    * @param scope
    * @param filter
    * @param varToSort
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   static public LDAPEntry[] search1000Plus(String lds, String baseDN,
@@ -558,11 +558,11 @@ public class LDAPUtility extends Object {
                 // res.next();
                 notTheFirst = false;
               } else {
-                SynchroReport.debug("LDAPUtility.search1000Plus()", "élément #"
-                    + nbReaded + " : " + entry.getDN(), null);
+                SynchroReport.debug("LDAPUtility.search1000Plus()",
+                    "élément #" + nbReaded + " : " + entry.getDN(), null);
                 SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded + " : "
-                        + entry.getDN());
+                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded
+                        + " : " + entry.getDN());
                 entriesVector.add(entry);
                 nbReaded++;
               }
@@ -590,7 +590,7 @@ public class LDAPUtility extends Object {
                       + le.getLDAPErrorMessage(), le);
             }
           }
-         if (sizeLimitReached
+          if (sizeLimitReached
               || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
             notTheFirst = true;
             sizeLimitReached = false;

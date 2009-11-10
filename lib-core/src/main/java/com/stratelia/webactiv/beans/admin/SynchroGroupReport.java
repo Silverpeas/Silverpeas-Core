@@ -97,7 +97,7 @@ public class SynchroGroupReport {
   static synchronized public void setState(int iStateCours) {
     if ((iState < STATE_WAITSTART) || (iStateCours != STATE_WAITSTART)) {
       iState = iStateCours;
-    } 
+    }
   }
 
   /**

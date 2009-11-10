@@ -75,8 +75,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class VersioningRuntimeException extends SilverpeasRuntimeException {

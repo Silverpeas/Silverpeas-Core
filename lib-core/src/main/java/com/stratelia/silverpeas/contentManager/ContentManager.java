@@ -48,7 +48,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 /**
  * This class represents the ContentManager API It is the gateway to all the
  * silverpeas contents (documentation, ....)
- *
+ * 
  */
 public class ContentManager extends Object implements java.io.Serializable {
   // Container peas
@@ -155,7 +155,7 @@ public class ContentManager extends Object implements java.io.Serializable {
   /**
    * When a generic component is instanciate, this function is called to
    * register the association between container and content
-   *
+   * 
    */
   public int registerNewContentInstance(Connection connection,
       String sComponentId, String sContainerType, String sContentType)
@@ -221,7 +221,7 @@ public class ContentManager extends Object implements java.io.Serializable {
   /**
    * When a generic component is uninstanciate, this function is called to
    * unregister the association between container and content
-   *
+   * 
    */
   public void unregisterNewContentInstance(Connection connection,
       String sComponentId, String sContainerType, String sContentType)
@@ -271,7 +271,7 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given componentId
-   *
+   * 
    */
   public ContentPeas getContentPeas(String sComponentId)
       throws ContentManagerException {
@@ -287,8 +287,9 @@ public class ContentManager extends Object implements java.io.Serializable {
       if (((ContentPeas) s_acContentPeas.get(nI)).getType()
           .equals(sContentType)) {
         SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-            "Type Trouvé= " + ((ContentPeas) s_acContentPeas.get(nI)).getType()
-                + "   " + sContentType);
+            "Type Trouvé= "
+                + ((ContentPeas) s_acContentPeas.get(nI)).getType() + "   "
+                + sContentType);
         return (ContentPeas) s_acContentPeas.get(nI);
       }
     }
@@ -314,7 +315,7 @@ public class ContentManager extends Object implements java.io.Serializable {
   /**
    * Return a list of URLIcones corresponding to the rights of the given roles
    * It is the gateway to all the silverpeas contents (documentation, ....)
-   *
+   * 
    */
   public List getContentURLIcones(String sContentType, List asUserContentRoles) {
     // !!!!!!! HARD CODED FOR THE MOMENT (call th econtentPeas instead)
@@ -862,7 +863,7 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   /**
    * Return the content instance Id corresponding to the componentId
-   *
+   * 
    */
   public int getContentInstanceId(String sComponentId)
       throws ContentManagerException {
@@ -1033,7 +1034,7 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   /**
    * retourne une liste d'instanceID a partir d'une Liste de silvercontentId
-   *
+   * 
    * @param alSilverContentId
    *          - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
@@ -1091,7 +1092,7 @@ public class ContentManager extends Object implements java.io.Serializable {
   /**
    * Cette méthode retourne une liste de SilverContentId qui se trouve sous une
    * instance de jobPeas.
-   *
+   * 
    * @param instanceId
    *          - l'id de l'instance (trucsAstuces978)
    * @return une liste de silvercontentId

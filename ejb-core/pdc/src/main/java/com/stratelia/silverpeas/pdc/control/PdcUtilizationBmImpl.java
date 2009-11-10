@@ -112,8 +112,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PdcUtilizationBmImpl implements PdcUtilizationBm {
@@ -136,7 +136,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns an axis used by an instance
-   *
+   * 
    * @param usedAxisId
    *          - the whished used axis.
    * @return an UsedAxis
@@ -155,7 +155,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of used axis sorted.
-   *
+   * 
    * @return a list sorted or null otherwise
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException {
@@ -176,7 +176,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of axis header sorted.
-   *
+   * 
    * @return a list sorted or null otherwise
    */
   public List getAxisHeaderUsedByInstanceId(String instanceId)
@@ -211,7 +211,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns the usedAxis based on a defined axis
-   *
+   * 
    * @param axisId
    *          - the id of the axis
    */
@@ -232,7 +232,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Create an used axis into the data base.
-   *
+   * 
    * @param usedAxis
    *          - the object which contains all data about utilization of an axis
    * @return usedAxisId
@@ -264,7 +264,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update an used axis into the data base.
-   *
+   * 
    * @param usedAxis
    *          - the object which contains all data about utilization of the axis
    */
@@ -299,7 +299,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * delete the used axis from the data base
-   *
+   * 
    * @param usedAxisId
    *          - the id of the used axe
    */
@@ -314,12 +314,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param usedAxisIds
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException {
@@ -341,12 +341,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param axisId
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   public void deleteUsedAxisByAxisId(Connection con, String axisId)
@@ -361,12 +361,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param valueId
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
   private void deleteUsedAxisByValueId(Connection con, int valueId, int axisId)
@@ -382,12 +382,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param valueId
-   *
+   * 
    * @throws PdcException
-   *
+   * 
    * @see
    */
 
@@ -406,7 +406,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update a base value from the PdcUtilizationDAO
-   *
+   * 
    * @param valueId
    *          - the base value that must be updated
    */
@@ -483,10 +483,10 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private Connection openConnection() throws PdcException {
@@ -502,10 +502,10 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private void closeConnection(Connection con) {

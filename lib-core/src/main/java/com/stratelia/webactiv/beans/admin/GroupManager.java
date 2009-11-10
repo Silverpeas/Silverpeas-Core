@@ -214,7 +214,7 @@ public class GroupManager {
 
   /**
    * Check if the given group exists
-   *
+   * 
    * @return true if a group with the given name
    */
   public boolean isGroupExist(DomainDriverManager ddManager, String sName)
@@ -459,8 +459,9 @@ public class GroupManager {
                 + groups[nI].getSpecificId() + ", desc. : "
                 + groups[nI].getDescription(), null);
       }
-      SynchroReport.info("GroupManager.getGroupsOfDomain()", "Récupération de "
-          + grs.length + " groupes du domaine LDAP dans la base", null);
+      SynchroReport.info("GroupManager.getGroupsOfDomain()",
+          "Récupération de " + grs.length
+              + " groupes du domaine LDAP dans la base", null);
       return groups;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getGroupsOfDomain",
@@ -776,7 +777,7 @@ public class GroupManager {
 
   /**
    * Get Silverpeas admin organization
-   *
+   * 
    * @Return an array of AdminGroupInst containing the organization
    */
   public AdminGroupInst[] getAdminOrganization(DomainDriverManager ddManager)

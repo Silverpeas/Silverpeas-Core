@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * (with the attribute 'member') : member cn=user1,ou=people,o=stratelia member
  * cn=user2,ou=people,o=stratelia .... THOSE GROUPS ARE ALL CONSIDERED AS ROOT
  * GROUPS ALL DESCENDENT USERS ARE PUT IN FIRST LEVEL USERS
- *
+ * 
  * @author tleroi
  */
 
@@ -133,15 +133,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param lds
    * @param groupEntry
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -242,15 +242,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   *
-   *
+   * 
+   * 
    * @param lds
    * @param parentId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -296,15 +296,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   *
-   *
+   * 
+   * 
    * @param lds
    * @param parentId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   protected Vector getTRUEChildGroupsEntry(String lds, String parentId,

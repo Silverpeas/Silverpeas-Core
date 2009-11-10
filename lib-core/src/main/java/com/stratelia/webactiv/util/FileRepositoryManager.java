@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
- *
+ * 
  * @author Norbert CHAIX
  * @version
  */
@@ -75,7 +75,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * @deprecated
-   *
+   * 
    * @param sSpaceId
    * @param sComponentId
    * @return
@@ -106,7 +106,7 @@ public class FileRepositoryManager extends Object {
   }
 
   /**
-   *
+   * 
    * @param sSpaceId
    * @param sComponentId
    * @param sDirectoryName
@@ -237,7 +237,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get File icon
-   *
+   * 
    * @param extension
    * @param isReadOnly
    * @return
@@ -278,7 +278,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the file size with the suitable unit
-   *
+   * 
    * @deprecated use formatFileSize method
    * @param long : size
    * @return String
@@ -289,7 +289,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the file size with the suitable unit
-   *
+   * 
    * @param long : size
    * @return String
    */
@@ -313,7 +313,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the size of a file (in bytes)
-   *
+   * 
    * @param String
    *          (sourceFile)
    * @return int
@@ -345,7 +345,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the estimated download time
-   *
+   * 
    * @param long (fileSize)
    * @return String
    */
@@ -365,7 +365,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Copy a contents from a file to another one
-   *
+   * 
    * @author Seb
    * @param from
    *          The name of the source file, the one to copy.
@@ -403,7 +403,7 @@ public class FileRepositoryManager extends Object {
   /**
    * to create the array of the string this array represents the repertories
    * where the files must be stored.
-   *
+   * 
    * @param str
    *          : type String: the string of repertories
    * @param token

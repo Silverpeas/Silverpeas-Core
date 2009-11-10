@@ -36,7 +36,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * contains an attribute that point to each users and sub-groups DN Example
  * (with the attribute 'member') : member cn=user1,ou=people,o=stratelia member
  * cn=user2,ou=people,o=stratelia ....
- *
+ * 
  * @author tleroi
  */
 
@@ -95,15 +95,15 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param lds
    * @param groupEntry
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -152,15 +152,15 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
   /**
    * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
    * RUNNING
-   *
-   *
+   * 
+   * 
    * @param lds
    * @param parentId
-   *
+   * 
    * @return
-   *
+   * 
    * @throws AdminException
-   *
+   * 
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,

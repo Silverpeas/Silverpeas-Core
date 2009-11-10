@@ -172,7 +172,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         messageBody_en = new StringBuffer();
       }
 
-      // 2. rechercher la liste des fichiers ayant dépassé la date d'expiration
+      // 2. rechercher la liste des fichiers ayant dépassé la date
+      // d'expiration
       Date libDate;
       calendar = Calendar.getInstance(Locale.FRENCH);
       libDate = calendar.getTime();

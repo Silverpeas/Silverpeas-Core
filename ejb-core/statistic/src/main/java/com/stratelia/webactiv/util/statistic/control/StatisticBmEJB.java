@@ -102,8 +102,8 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class StatisticBmEJB implements SessionBean {
@@ -116,7 +116,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   *
+   * 
    * @see
    */
   public StatisticBmEJB() {
@@ -124,9 +124,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private Connection getConnection() {
@@ -142,9 +142,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param con
-   *
+   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -160,11 +160,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param fatherPK
    * @deprecated : A SUPPRIMER APRES TESTS
    * @return
-   *
+   * 
    * @see
    */
   public Collection getNodesUsage(NodePK fatherPK) {
@@ -189,7 +189,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param userId
    * @param nodePK
    * @param pubPK
@@ -217,10 +217,10 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param userId
    * @param foreignPK
-   *
+   * 
    * @see
    */
   public void addStat(String userId, ForeignPK foreignPK, int actionType,
@@ -245,11 +245,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param pubPK
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Collection getReadingHistoryByPublication(PublicationPK pubPK) {
@@ -263,7 +263,8 @@ public class StatisticBmEJB implements SessionBean {
       // Collection result =
       // HistoryNodePublicationActorDAO.getHistoryDetailByPublication(con,
       // historyRootTableName, pubPK);
-      // ne plus récupérer dans la table historyRootTableName, mais récupérer
+      // ne plus récupérer dans la table historyRootTableName, mais
+      // récupérer
       // dans la nouvelle historyTableName
       ForeignPK foreignPK = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
       Collection result = HistoryObjectDAO.getHistoryDetailByPublication(con,
@@ -320,11 +321,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPK
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public Collection getHistoryByAction(ForeignPK foreignPK, int action,
@@ -462,11 +463,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param foreignPK
-   *
+   * 
    * @return
-   *
+   * 
    * @see
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
@@ -491,9 +492,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @throws CreateException
-   *
+   * 
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -501,7 +502,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @see
    */
   public void ejbRemove() {
@@ -509,7 +510,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @see
    */
   public void ejbActivate() {
@@ -517,7 +518,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @see
    */
   public void ejbPassivate() {
@@ -525,9 +526,9 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
+   * 
    * @param sc
-   *
+   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {

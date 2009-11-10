@@ -47,10 +47,10 @@ import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 public class QueryDescription implements Serializable {
   /**
    * The no parameters constructor builds an empty query.
-   *
+   * 
    * The setQuery and addSpaceComponentPair() methods should be called to
    * initialize the query.
-   *
+   * 
    * Other criterium (language, creation date ...) can be set before the request
    * is sent to the searchEngine.
    */
@@ -59,10 +59,10 @@ public class QueryDescription implements Serializable {
 
   /**
    * The constructor set only the query string.
-   *
+   * 
    * The addSpaceComponentPair() method should be called to set the components
    * instances whose documents will be searched.
-   *
+   * 
    * Other criterium (language, creation date ...) can be set before the request
    * is sent to the searchEngine.
    */
@@ -137,7 +137,7 @@ public class QueryDescription implements Serializable {
   /**
    * Return the set of all the component's instances whose the documents must be
    * searched.
-   *
+   * 
    * The return Set is a set of SpaceComponentPair.
    */
   public Set getSpaceComponentPairSet() {
@@ -258,7 +258,7 @@ public class QueryDescription implements Serializable {
   /**
    * Find and replace used for the AND OR NOT lucene's keyword in the search
    * engine query.
-   *
+   * 
    * 26/01/2004
    */
   private String findAndReplace(String source, String find, String replace) {
@@ -276,7 +276,7 @@ public class QueryDescription implements Serializable {
   /**
    * Function to get the substitute char for the current language. (Same
    * function used for the Indexer)
-   *
+   * 
    * PHiL 29/01/2004
    */
 
@@ -318,7 +318,7 @@ public class QueryDescription implements Serializable {
 
   /**
    * The query defaults to the empty query.
-   *
+   * 
    * This is an error to set the query to null : a query is needed to perform
    * the search.
    */
@@ -326,7 +326,7 @@ public class QueryDescription implements Serializable {
 
   /**
    * The searchingUser defaults to the empty query.
-   *
+   * 
    * This is an error to set the user to null : a search is done for a given
    * user.
    */
@@ -334,10 +334,10 @@ public class QueryDescription implements Serializable {
 
   /**
    * The others criterium default to null.
-   *
+   * 
    * When the requestedAuthor is null, documents of any author are returned
    * (even if the author is unknown).
-   *
+   * 
    * When the requested Date range is null, all documents are returned even if
    * the creation dates are unknown.
    */

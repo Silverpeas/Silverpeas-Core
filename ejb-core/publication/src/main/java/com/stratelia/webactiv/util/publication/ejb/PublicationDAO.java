@@ -54,2211 +54,2145 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
  * @author Nicolas Eysseric
  */
 public class PublicationDAO {
-	// the date format used in database to represent a date
-	private static SimpleDateFormat formatter = new SimpleDateFormat(
-			"yyyy/MM/dd");
-
-	// the date format used in database to represent a date
-	private static SimpleDateFormat hourFormatter = new SimpleDateFormat(
-			"HH:mm");
-
-	// if beginDate is null, it will be replace in database with it
-	private static String nullBeginDate = new String("0000/00/00");
-	// if endDate is null, it will be replace in database with it
-	private static String nullEndDate = new String("9999/99/99");
-
-	// if beginHour is null, it will be replace in database with it
-	private static String nullBeginHour = new String("00:00");
-	// if endDate is null, it will be replace in database with it
-	private static String nullEndHour = new String("23:59");
-
-	// this object caches last publications availables
-	// used only for kmelia
-	// keys : componentId
-	// values : Collection of PublicationDetail
-	private static Hashtable lastPublis = new Hashtable();
-
-	private static String publicationTableName = "SB_Publication_Publi";
-	private static String publicationFatherTableName = "SB_Publication_PubliFather";
-	private static String nodeTableName = "SB_Node_Node";
-
-	/**
-	 * This class must not be instanciated
-	 * 
-	 * @since 1.0
-	 */
-	public PublicationDAO() {
-	}
-
-	/**
-	 * Invalidate last publications for a given instance
-	 */
-	public static void invalidateLastPublis(String instanceId) {
-		lastPublis.remove(instanceId);
-	}
-
-	private static void cacheLastPublis(String instanceId,
-			Collection lastPublications) {
-		lastPublis.put(instanceId, lastPublications);
-	}
-
-	private static Collection getLastPublis(String instanceId) {
-		Collection listLastPublisCache = (Collection) lastPublis
-				.get(instanceId);
-		if (listLastPublisCache != null && listLastPublisCache.size() > 0) {// certaines
-			// publi
-			// du
-			// cache
-			// ne
-			// sont
-			// peut-etre
-			// plus
-			// visible,
-			// il
-			// faut
-			// les
-			// retirer
-			// du
-			// cache
-			ArrayList listLastPublisCacheMAJ = new ArrayList();
-			Iterator i = listLastPublisCache.iterator();
-			PublicationDetail pubDetail = null;
-			java.util.Date date = new java.util.Date();
-			Calendar cDateHeureNow = Calendar.getInstance();
-			cDateHeureNow.setTime(date);
-			int hourNow = cDateHeureNow.get(Calendar.HOUR_OF_DAY) * 100
-					+ cDateHeureNow.get(Calendar.MINUTE);
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-					"yyyy-MM-dd");
-			String sDate = simpleDateFormat.format(date);
-			java.util.Date theDateFormat = null;
-			try {
-				theDateFormat = simpleDateFormat.parse(sDate);
-			} catch (ParseException e) {
-				theDateFormat = java.sql.Date.valueOf(new Integer(cDateHeureNow
-						.get(Calendar.YEAR)).toString()
-						+ "-"
-						+ new Integer(cDateHeureNow.get(Calendar.MONTH))
-								.toString()
-						+ "-"
-						+ new Integer(cDateHeureNow.get(Calendar.DATE))
-								.toString());
-			}
-			Calendar cDateNow = Calendar.getInstance();
-			cDateNow.setTime(theDateFormat);
-			Calendar cDateBegin = Calendar.getInstance();
-			Calendar cDateEnd = Calendar.getInstance();
-			String sBeginHour = null;
-			String sEndHour = null;
-			int beginHour = 0;
-			int endHour = 0;
-			while (i.hasNext()) {
-				pubDetail = (PublicationDetail) i.next();
-				if (pubDetail.getBeginDate() != null) {
-					cDateBegin.setTime(pubDetail.getBeginDate());
-				} else {
-					cDateBegin.setTime(java.sql.Date.valueOf("0000-01-01"));
-				}
-				if (pubDetail.getEndDate() != null) {
-					cDateEnd.setTime(pubDetail.getEndDate());
-				} else {
-					cDateEnd.setTime(java.sql.Date.valueOf("9999-12-31"));
-				}
-				sBeginHour = pubDetail.getBeginHour();// exemple 10:04
-				beginHour = new Integer(sBeginHour.substring(0, 2)).intValue() * 100;// 1000
-				beginHour += new Integer(sBeginHour.substring(3)).intValue();// 1004
-				sEndHour = pubDetail.getEndHour();
-				endHour = new Integer(sEndHour.substring(0, 2)).intValue() * 100;
-				endHour += new Integer(sEndHour.substring(3)).intValue();
-
-				if ((cDateNow.after(cDateBegin) && cDateNow.before(cDateEnd))
-						|| (cDateNow.equals(cDateBegin)
-								&& cDateNow.before(cDateEnd) && hourNow > beginHour)
-						|| (cDateNow.after(cDateBegin)
-								&& cDateNow.equals(cDateEnd) && hourNow < endHour)
-						|| (cDateNow.equals(cDateBegin)
-								&& cDateNow.equals(cDateEnd)
-								&& hourNow > beginHour && hourNow < endHour))
-					listLastPublisCacheMAJ.add(pubDetail);
-			}
-			lastPublis.put(instanceId, listLastPublisCacheMAJ);
-		}
-		return (Collection) lastPublis.get(instanceId);
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param fatherPKs
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static int getNbPubInFatherPKs(Connection con, Collection fatherPKs)
-			throws SQLException {
-		ResultSet rs = null;
-		int result = 0;
-		NodePK nodePK = null;
-		PublicationPK pubPK = null;
-		String nodeId = null;
-
-		if (fatherPKs.isEmpty()) {
-			return 0;
-		} else {
-			Iterator iterator = fatherPKs.iterator();
-
-			if (iterator.hasNext()) {
-				nodePK = (NodePK) iterator.next();
-				pubPK = new PublicationPK("unknown", nodePK);
-				nodeId = nodePK.getId();
-			}
-
-			StringBuffer selectStatement = new StringBuffer(128);
-			selectStatement.append("select count(F.pubId) from ").append(
-					pubPK.getTableName()).append("Father F, ").append(
-					pubPK.getTableName()).append(" P ");
-			selectStatement.append(" where F.pubId = P.pubId ");
-			selectStatement.append(" and (");
-			selectStatement
-					.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
-			selectStatement
-					.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
-			selectStatement
-					.append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
-			selectStatement
-					.append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
-			selectStatement.append(" ) ");
-			selectStatement.append(" and ( F.nodeId = ").append(nodeId);
-
-			while (iterator.hasNext()) {
-				nodePK = (NodePK) iterator.next();
-				nodeId = nodePK.getId();
-				selectStatement.append(" or F.nodeId = ").append(nodeId);
-			}
-			selectStatement.append(" )");
-
-			PreparedStatement prepStmt = null;
-			try {
-				java.util.Date now = new java.util.Date();
-				String dateNow = null;
-				synchronized (formatter) {
-					dateNow = formatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.getNbPubInFatherPKs()",
-							"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-				}
-				String hourNow = null;
-				synchronized (hourFormatter) {
-					hourNow = hourFormatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.getNbPubInFatherPKs()",
-							"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-				}
-
-				prepStmt = con.prepareStatement(selectStatement.toString());
-
-				prepStmt.setString(1, dateNow);
-				prepStmt.setString(2, dateNow);
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, hourNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, dateNow);
-				prepStmt.setString(8, hourNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, dateNow);
-				prepStmt.setString(11, hourNow);
-				prepStmt.setString(12, hourNow);
-
-				rs = prepStmt.executeQuery();
-				if (rs.next()) {
-					result = rs.getInt(1);
-				}
-			} finally {
-				DBUtil.close(rs, prepStmt);
-			}
-			return result;
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param fatherPK
-	 * @param fatherPath
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
-			String fatherPath) throws SQLException {
-		int result = 0;
-		PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-
-		if (fatherPath.length() <= 0) {
-			return 0;
-		} else {
-			StringBuffer selectStatement = new StringBuffer(128);
-			selectStatement.append("select count(F.pubId) from ").append(
-					pubPK.getTableName()).append("Father F, ").append(
-					pubPK.getTableName()).append(" P, ").append(
-					fatherPK.getTableName()).append(" N ");
-			selectStatement.append(" where F.pubId = P.pubId ");
-			selectStatement.append(" and F.nodeId = N.nodeId ");
-			selectStatement.append(" and P.instanceId = ? ");
-			selectStatement.append(" and N.instanceId  = ? ");
-			selectStatement.append(" and (");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-			selectStatement.append(" ) ");
-			selectStatement.append(" and (N.nodePath like '")
-					.append(fatherPath).append("/").append(fatherPK.getId())
-					.append("%' or N.nodeId = ").append(fatherPK.getId())
-					.append(")");
-
-			PreparedStatement prepStmt = null;
-			ResultSet rs = null;
-			try {
-				java.util.Date now = new java.util.Date();
-				String dateNow = null;
-				synchronized (formatter) {
-					dateNow = formatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.getNbPubByFatherPath()",
-							"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-				}
-				String hourNow = null;
-				synchronized (hourFormatter) {
-					hourNow = hourFormatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.getNbPubByFatherPath()",
-							"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-				}
-
-				prepStmt = con.prepareStatement(selectStatement.toString());
-
-				prepStmt.setString(1, fatherPK.getComponentName());
-				prepStmt.setString(2, fatherPK.getComponentName());
-
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, dateNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, hourNow);
-				prepStmt.setString(8, dateNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, hourNow);
-				prepStmt.setString(11, dateNow);
-				prepStmt.setString(12, dateNow);
-				prepStmt.setString(13, hourNow);
-				prepStmt.setString(14, hourNow);
-
-				rs = prepStmt.executeQuery();
-				if (rs.next()) {
-					result = rs.getInt(1);
-				}
-				return result;
-			} finally {
-				DBUtil.close(rs, prepStmt);
-			}
-		}
-	}
-
-	public static Hashtable getDistribution(Connection con, String instanceId,
-			String statusSubQuery, boolean checkVisibility) throws SQLException {
-		Hashtable result = new Hashtable();
-
-		StringBuffer selectStatement = new StringBuffer(128);
-
-		selectStatement
-				.append("SELECT N.nodeId, N.nodePath, COUNT(P.pubName) ");
-		selectStatement.append("FROM ").append(publicationFatherTableName)
-				.append(" F, ").append(publicationTableName).append(" P, ")
-				.append(nodeTableName).append(" N ");
-		selectStatement
-				.append("Where F.pubId = P.pubId AND F.nodeId = N.nodeId ");
-		// selectStatement.append("AND N.instanceId = ? AND P.instanceId = ? ");
-		selectStatement.append("AND N.instanceId = ? ");
-		selectStatement.append("AND F.instanceId = ? ");
-		if (statusSubQuery != null)
-			selectStatement.append(statusSubQuery);
-		if (checkVisibility) {
-			selectStatement.append(" and (");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-			selectStatement.append(" ) ");
-		}
-		selectStatement.append(" GROUP BY N.nodeId, N.nodePath");
-
-		SilverTrace.info("publication", "PublicationDAO.getDistribution()",
-				"root.MSG_GEN_PARAM_VALUE", "sqlStatement = "
-						+ selectStatement.toString());
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-		try {
-			java.util.Date now = new java.util.Date();
-			String dateNow = null;
-			synchronized (formatter) {
-				dateNow = formatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.getDistribution()",
-						"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-			}
-			String hourNow = null;
-			synchronized (hourFormatter) {
-				hourNow = hourFormatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.getDistribution()",
-						"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-			}
-
-			prepStmt = con.prepareStatement(selectStatement.toString());
-
-			prepStmt.setString(1, instanceId);
-			prepStmt.setString(2, instanceId);
-
-			if (checkVisibility) {
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, dateNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, hourNow);
-				prepStmt.setString(8, dateNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, hourNow);
-				prepStmt.setString(11, dateNow);
-				prepStmt.setString(12, dateNow);
-				prepStmt.setString(13, hourNow);
-				prepStmt.setString(14, hourNow);
-			}
-
-			rs = prepStmt.executeQuery();
-			while (rs.next()) {
-				int nodeId = rs.getInt(1);
-				String nodePath = rs.getString(2);
-				int nbPublis = rs.getInt(3);
-
-				// This is a fix ! Some path may be not correct...
-				if (!nodePath.endsWith("/"))
-					nodePath += "/";
-
-				result.put(nodePath + nodeId + "/", new Integer(nbPublis));
-			}
-			return result;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param detail
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static void insertRow(Connection con, PublicationDetail detail)
-			throws SQLException {
-		StringBuffer insertStatement = new StringBuffer(128);
-		insertStatement.append("insert into ").append(
-				detail.getPK().getTableName());
-		insertStatement
-				.append(" (pubId, infoId, pubName, pubDescription, pubCreationDate,");
-		insertStatement
-				.append(" pubBeginDate, pubEndDate, pubCreatorId, pubImportance, pubVersion, pubKeywords,");
-		insertStatement
-				.append(" pubContent, pubStatus, pubImage, pubImageMimeType, pubUpdateDate,");
-		insertStatement
-				.append(" instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour,");
-		insertStatement
-				.append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) ");
-		insertStatement
-				.append(" values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
-		PreparedStatement prepStmt = null;
-
-		try {
-			int id = new Integer(detail.getPK().getId()).intValue();
-			String infoId = "0";
-			if (StringUtil.isDefined(detail.getInfoId()))
-				infoId = detail.getInfoId();
-
-			prepStmt = con.prepareStatement(insertStatement.toString());
-			prepStmt.setInt(1, id);
-			prepStmt.setString(2, infoId);
-			SilverTrace.info("publication", "PublicationDAO.insertRow()",
-					"root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
-			prepStmt.setString(3, detail.getName());
-			prepStmt.setString(4, detail.getDescription());
-			if (detail.getCreationDate() == null) {
-				prepStmt.setString(5, DateUtil.today2SQLDate());
-			} else {
-				synchronized (formatter) {
-					prepStmt.setString(5, formatter.format(detail
-							.getCreationDate()));
-				}
-			}
-			if (detail.getBeginDate() == null) {
-				prepStmt.setString(6, nullBeginDate);
-			} else {
-				synchronized (formatter) {
-					prepStmt.setString(6, formatter.format(detail
-							.getBeginDate()));
-				}
-			}
-			if (detail.getEndDate() == null) {
-				prepStmt.setString(7, nullEndDate);
-			} else {
-				synchronized (formatter) {
-					prepStmt
-							.setString(7, formatter.format(detail.getEndDate()));
-				}
-			}
-			prepStmt.setString(8, detail.getCreatorId());
-			prepStmt.setInt(9, detail.getImportance());
-			prepStmt.setString(10, detail.getVersion());
-			prepStmt.setString(11, detail.getKeywords());
-			prepStmt.setString(12, detail.getContent());
-			prepStmt.setString(13, detail.getStatus());
-			prepStmt.setString(14, detail.getImage());
-			prepStmt.setString(15, detail.getImageMimeType());
-			if (detail.getCreationDate() == null) {
-				prepStmt.setString(16, DateUtil.today2SQLDate());
-			} else {
-				synchronized (formatter) {
-					prepStmt.setString(16, formatter.format(detail
-							.getCreationDate()));
-				}
-			}
-			prepStmt.setString(17, detail.getPK().getComponentName());
-			prepStmt.setString(18, detail.getCreatorId());
-			if ("Valid".equals(detail.getStatus())) {
-				prepStmt.setString(20, detail.getCreatorId());
-				synchronized (formatter) {
-					prepStmt.setString(19, formatter.format(detail
-							.getCreationDate()));
-				}
-			} else {
-				prepStmt.setString(19, null);
-				prepStmt.setString(20, null);
-			}
-			if (isUndefined(detail.getBeginHour())) {
-				prepStmt.setString(21, nullBeginHour);
-			} else {
-				prepStmt.setString(21, detail.getBeginHour());
-			}
-			if (isUndefined(detail.getEndHour())) {
-				prepStmt.setString(22, nullEndHour);
-			} else {
-				prepStmt.setString(22, detail.getEndHour());
-			}
-			if (isUndefined(detail.getAuthor()))
-				prepStmt.setString(23, null);
-			else
-				prepStmt.setString(23, detail.getAuthor());
-
-			prepStmt.setString(24, detail.getTargetValidatorId());
-
-			if (isUndefined(detail.getCloneId()))
-				prepStmt.setInt(25, -1);
-			else
-				prepStmt.setInt(25, Integer.parseInt(detail.getCloneId()));
-
-			prepStmt.setString(26, detail.getCloneStatus());
-
-			if (isUndefined(detail.getLanguage()))
-				prepStmt.setNull(27, Types.VARCHAR);
-			else
-				prepStmt.setString(27, detail.getLanguage());
-
-			SilverTrace.info("publication", "PublicationDAO.insertRow()",
-					"root.MSG_GEN_PARAM_VALUE", "pubDetail = "
-							+ detail.toString());
-
-			prepStmt.executeUpdate();
-		} finally {
-			DBUtil.close(prepStmt);
-		}
-		invalidateLastPublis(detail.getPK().getComponentName());
-	}
-
-	private static boolean isUndefined(String object) {
-		return !StringUtil.isDefined(object);
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pk
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static void deleteRow(Connection con, PublicationPK pk)
-			throws SQLException {
-		PublicationFatherDAO.removeAllFather(con, pk); // Delete associations
-		// between pub and nodes
-		StringBuffer deleteStatement = new StringBuffer(128);
-		deleteStatement.append("delete from ").append(pk.getTableName())
-				.append(" where pubId = ").append(pk.getId());
-		Statement stmt = null;
-
-		try {
-			stmt = con.createStatement();
-			stmt.executeUpdate(deleteStatement.toString());
-		} finally {
-			DBUtil.close(stmt);
-		}
-
-		invalidateLastPublis(pk.getComponentName());
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param primaryKey
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static PublicationPK selectByPrimaryKey(Connection con,
-			PublicationPK primaryKey) throws SQLException {
-		PublicationDetail detail = loadRow(con, primaryKey);
-		PublicationPK primary = new PublicationPK(primaryKey.getId(), detail
-				.getPK().getInstanceId());
-
-		primary.pubDetail = detail;
-		return primary;
-	}
-
-	public static PublicationPK selectByPublicationName(Connection con,
-			PublicationPK primaryKey, String name) throws SQLException {
-		PublicationPK primary = null;
-		PublicationDetail detail = selectByName(con, primaryKey, name);
-		if (detail != null) {
-			primary = new PublicationPK(detail.getPK().getId(), primaryKey);
-			primary.pubDetail = detail;
-		}
-		return primary;
-	}
-
-	public static PublicationPK selectByPublicationNameAndNodeId(
-			Connection con, PublicationPK primaryKey, String name, int nodeId)
-			throws SQLException {
-		PublicationPK primary = null;
-		PublicationDetail detail = selectByNameAndNodeId(con, primaryKey, name,
-				nodeId);
-		if (detail != null) {
-			primary = new PublicationPK(detail.getPK().getId(), primaryKey);
-			primary.pubDetail = detail;
-		}
-		return primary;
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param rs
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
-			PublicationPK pubPK) throws SQLException {
-		// SilverTrace.debug("publication",
-		// "PublicationDAO.resultSet2PublicationDetail()",
-		// "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
-		PublicationDetail pub = null;
-		int id = rs.getInt(1);
-		String componentId = rs.getString(17);
-		PublicationPK pk = new PublicationPK(String.valueOf(id), componentId);
-		String infoId = rs.getString(2);
-		SilverTrace.info("publication",
-				"PublicationDAO.resultSet2PublicationDetail()",
-				"root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
-		String name = rs.getString(3);
-		SilverTrace.info("publication",
-				"PublicationDAO.resultSet2PublicationDetail()",
-				"root.MSG_GEN_PARAM_VALUE", "name = " + name);
-		String description = rs.getString(4);
-		if (description == null)
-			description = "";
-		java.util.Date creationDate;
-		try {
-			synchronized (formatter) {
-				creationDate = formatter.parse(rs.getString(5));
-			}
-		} catch (java.text.ParseException e) {
-			throw new SQLException(
-					"PublicationDAO : resultSet2PublicationDetail() : internal error : "
-							+ "creationDate format unknown for publication.pk = "
-							+ pk + " : " + e.toString());
-		}
-		java.util.Date beginDate;
-		String d = rs.getString(6);
-
-		if (d.equals(nullBeginDate)) {
-			beginDate = null;
-		} else {
-			try {
-				synchronized (formatter) {
-					beginDate = formatter.parse(d);
-				}
-			} catch (java.text.ParseException e) {
-				throw new SQLException(
-						"PublicationDAO : resultSet2PublicationDetail() : internal error : "
-								+ "beginDate format unknown for publication.pk = "
-								+ pk.toString() + " : " + e.toString());
-			}
-		}
-		java.util.Date endDate;
-
-		d = rs.getString(7);
-		if (d.equals(nullEndDate)) {
-			endDate = null;
-		} else {
-			try {
-				synchronized (formatter) {
-					endDate = formatter.parse(d);
-				}
-			} catch (java.text.ParseException e) {
-				throw new SQLException(
-						"PublicationDAO : resultSet2PublicationDetail() : internal error : "
-								+ "endDate format unknown for publication.pk = "
-								+ pk.toString() + " : " + e.toString());
-			}
-		}
-		String creatorId = rs.getString(8);
-		int importance = rs.getInt(9);
-		String version = rs.getString(10);
-		String keywords = rs.getString(11);
-		String content = rs.getString(12);
-		String status = rs.getString(13);
-		String image = rs.getString(14);
-		String imageMimeType = rs.getString(15);
-
-		java.util.Date updateDate;
-		String u = rs.getString(16);
-		if (u != null) {
-			try {
-				synchronized (formatter) {
-					updateDate = formatter.parse(u);
-				}
-			} catch (java.text.ParseException e) {
-				throw new SQLException(
-						"PublicationDAO : resultSet2PublicationDetail() : internal error : updateDate format unknown for publication.pk = "
-								+ pk + " : " + e.toString());
-			}
-		} else {
-			updateDate = creationDate;
-		}
-		String updaterId;
-		String v = rs.getString(18);
-		if (v != null)
-			updaterId = v;
-		else
-			updaterId = creatorId;
-
-		java.util.Date validateDate = null;
-		String strValDate = rs.getString(19);
-		if (strValDate != null) {
-			try {
-				synchronized (formatter) {
-					validateDate = formatter.parse(strValDate);
-				}
-			} catch (java.text.ParseException e) {
-				throw new SQLException(
-						"PublicationDAO : resultSet2PublicationDetail() : internal error : validateDate format unknown for publication.pk = "
-								+ pk + " : " + e.toString());
-			}
-		}
-		String validatorId = rs.getString(20);
-
-		String beginHour = rs.getString(21);
-		String endHour = rs.getString(22);
-		String author = rs.getString(23);
-		String targetValidatorId = rs.getString(24);
-		int tempPubId = rs.getInt(25);
-		String cloneStatus = rs.getString(26);
-		String lang = rs.getString(27);
-		pub = new PublicationDetail(pk, name, description, creationDate,
-				beginDate, endDate, creatorId, importance, version, keywords,
-				content, status, image, imageMimeType, updateDate, updaterId,
-				validateDate, validatorId, author);
-		pub.setInfoId(infoId);
-		pub.setBeginHour(beginHour);
-		pub.setEndHour(endHour);
-		pub.setTargetValidatorId(targetValidatorId);
-		pub.setCloneId(Integer.toString(tempPubId));
-		pub.setCloneStatus(cloneStatus);
-		pub.setLanguage(lang);
-		return pub;
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param fatherPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-
-	public static Collection selectByFatherPK(Connection con, NodePK fatherPK)
-			throws SQLException {
-		return selectByFatherPK(con, fatherPK, null);
-	}
-
-	public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
-			boolean filterOnVisibilityPeriod) throws SQLException {
-		return selectByFatherPK(con, fatherPK, null, filterOnVisibilityPeriod);
-	}
-
-	public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
-			String sorting, boolean filterOnVisibilityPeriod)
-			throws SQLException {
-		return selectByFatherPK(con, fatherPK, sorting,
-				filterOnVisibilityPeriod, null);
-	}
-
-	public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
-			String sorting, boolean filterOnVisibilityPeriod, String userId)
-			throws SQLException {
-		PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-		String selectStatement = QueryStringFactory.getSelectByFatherPK(pubPK
-				.getTableName(), filterOnVisibilityPeriod);
-
-		if (userId != null) {
-			selectStatement += " AND (P.pubUpdaterId = " + userId
-					+ " OR P.pubCreatorId = " + userId + ")";
-		}
-		selectStatement += " order by F.pubOrder asc";
-		if (sorting != null) {
-			selectStatement += ", " + sorting;
-		}
-
-		SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
-				"root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-						+ selectStatement);
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-		try {
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setString(1, pubPK.getComponentName());
-			prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
-
-			if (filterOnVisibilityPeriod) {
-				java.util.Date now = new java.util.Date();
-				String dateNow = null;
-				synchronized (formatter) {
-					dateNow = formatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.selectByFatherPK()",
-							"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-				}
-				String hourNow = null;
-				synchronized (hourFormatter) {
-					hourNow = hourFormatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.selectByFatherPK()",
-							"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-				}
-
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, dateNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, hourNow);
-				prepStmt.setString(8, dateNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, hourNow);
-				prepStmt.setString(11, dateNow);
-				prepStmt.setString(12, dateNow);
-				prepStmt.setString(13, hourNow);
-				prepStmt.setString(14, hourNow);
-			}
-
-			rs = prepStmt.executeQuery();
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
-			String sorting) throws SQLException {
-		return selectByFatherPK(con, fatherPK, sorting, true, null);
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param fatherPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-
-	public static Collection selectNotInFatherPK(Connection con, NodePK fatherPK)
-			throws SQLException {
-		return selectNotInFatherPK(con, fatherPK, null);
-	}
-
-	public static Collection selectNotInFatherPK(Connection con,
-			NodePK fatherPK, String sorting) throws SQLException {
-		PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-		String selectStatement = QueryStringFactory
-				.getSelectNotInFatherPK(pubPK.getTableName());
-
-		if (sorting != null) {
-			selectStatement += " order by " + sorting;
-		}
-
-		SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
-				"root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-						+ selectStatement);
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-		try {
-			java.util.Date now = new java.util.Date();
-			String dateNow = null;
-			synchronized (formatter) {
-				dateNow = formatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectNotInFatherPK()",
-						"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-			}
-			String hourNow = null;
-			synchronized (hourFormatter) {
-				hourNow = hourFormatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectNotInFatherPK()",
-						"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-			}
-
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setString(1, pubPK.getComponentName());
-			prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
-
-			prepStmt.setString(3, dateNow);
-			prepStmt.setString(4, dateNow);
-			prepStmt.setString(5, dateNow);
-			prepStmt.setString(6, dateNow);
-			prepStmt.setString(7, hourNow);
-			prepStmt.setString(8, dateNow);
-			prepStmt.setString(9, dateNow);
-			prepStmt.setString(10, hourNow);
-			prepStmt.setString(11, dateNow);
-			prepStmt.setString(12, dateNow);
-			prepStmt.setString(13, hourNow);
-			prepStmt.setString(14, hourNow);
-
-			rs = prepStmt.executeQuery();
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param fatherIds
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static ArrayList selectByFatherIds(Connection con,
-			ArrayList fatherIds, PublicationPK pubPK, String sorting,
-			ArrayList status, boolean filterOnVisibilityPeriod)
-			throws SQLException {
-		ArrayList list = new ArrayList();
-		ResultSet rs = null;
-		PublicationDetail pub = null;
-
-		String fatherId = "";
-		StringBuffer whereClause = new StringBuffer(128);
-
-		if (fatherIds != null) {
-			Iterator it = fatherIds.iterator();
-
-			whereClause.append("(");
-			while (it.hasNext()) {
-				fatherId = (String) it.next();
-				whereClause.append(" F.nodeId = ").append(fatherId);
-				if (it.hasNext()) {
-					whereClause.append(" or ");
-				} else {
-					whereClause.append(" ) ");
-				}
-			}
-		}
-
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement
-				.append("select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-		selectStatement
-				.append("         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-		selectStatement
-				.append("		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
-		selectStatement.append("from ").append(pubPK.getTableName()).append(
-				" P, ").append(pubPK.getTableName()).append("Father F ");
-		selectStatement.append("where ").append(whereClause.toString());
-
-		if (filterOnVisibilityPeriod) {
-			selectStatement.append(" and (");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-			selectStatement.append(" ) ");
-		}
-		selectStatement.append(" and F.pubId = P.pubId ");
-		selectStatement.append(" and P.instanceId='").append(
-				pubPK.getComponentName()).append("'");
-
-		if (status != null && status.size() > 0) {
-			StringBuffer statusBuffer = new StringBuffer();
-			Iterator it = status.iterator();
-
-			statusBuffer.append("(");
-			String sStatus = null;
-			while (it.hasNext()) {
-				sStatus = (String) it.next();
-				statusBuffer.append(" P.pubStatus = '").append(sStatus).append(
-						"'");
-				if (it.hasNext()) {
-					statusBuffer.append(" or ");
-				} else {
-					statusBuffer.append(" ) ");
-				}
-			}
-			selectStatement.append(" and ").append(statusBuffer.toString());
-		}
-
-		if (sorting != null) {
-			selectStatement.append(" order by ").append(sorting);
-		}
-
-		PreparedStatement prepStmt = null;
-
-		try {
-			java.util.Date now = new java.util.Date();
-			String dateNow = null;
-			synchronized (formatter) {
-				dateNow = formatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByFatherIds()",
-						"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-			}
-			String hourNow = null;
-			synchronized (hourFormatter) {
-				hourNow = hourFormatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByFatherIds()",
-						"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-			}
-
-			prepStmt = con.prepareStatement(selectStatement.toString());
-
-			if (filterOnVisibilityPeriod) {
-				prepStmt.setString(1, dateNow);
-				prepStmt.setString(2, dateNow);
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, hourNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, dateNow);
-				prepStmt.setString(8, hourNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, dateNow);
-				prepStmt.setString(11, hourNow);
-				prepStmt.setString(12, hourNow);
-			}
-
-			rs = prepStmt.executeQuery();
-
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-
-		return list;
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param publicationPKs
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection selectByPublicationPKs(Connection con,
-			Collection publicationPKs) throws SQLException {
-		ArrayList publications = new ArrayList();
-		Iterator iterator = publicationPKs.iterator();
-
-		while (iterator.hasNext()) {
-			PublicationPK pubPK = (PublicationPK) iterator.next();
-			PublicationDetail pub = loadRow(con, pubPK);
-
-			publications.add(pub);
-		}
-		return publications;
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * @param status
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection selectByStatus(Connection con,
-			PublicationPK pubPK, String status) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName());
-		selectStatement.append(" where pubStatus like '").append(status)
-				.append("' ");
-		selectStatement.append(" and instanceId ='").append(
-				pubPK.getComponentName()).append(
-				"' order by pubUpdateDate desc, pubId desc");
-		Statement stmt = null;
-		ResultSet rs = null;
-
-		try {
-			PublicationDetail pub = null;
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(selectStatement.toString());
-			ArrayList list = new ArrayList();
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, stmt);
-		}
-	}
-
-	public static Collection selectByStatus(Connection con, List componentIds,
-			String status) throws SQLException {
-		ArrayList list = new ArrayList();
-		if (componentIds != null && componentIds.size() > 0) {
-			StringBuffer selectStatement = new StringBuffer(128);
-			selectStatement
-					.append("select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-			selectStatement
-					.append("         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-			selectStatement
-					.append("		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
-			selectStatement.append("from ").append(publicationTableName)
-					.append(" P, ").append(publicationTableName).append(
-							"Father F ");
-			selectStatement.append("where P.pubStatus = '").append(status)
-					.append("'");
-			selectStatement.append(" and F.nodeId <> 1 ");
-			selectStatement.append(" and (");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-			selectStatement.append(" ) ");
-			selectStatement.append(" and F.pubId = P.pubId ");
-			selectStatement.append(" and (");
-
-			String componentId = null;
-			for (int c = 0; c < componentIds.size(); c++) {
-				componentId = (String) componentIds.get(c);
-				if (c != 0)
-					selectStatement.append(" OR ");
-				selectStatement.append("P.instanceId ='").append(componentId)
-						.append("'");
-			}
-			selectStatement.append(")");
-			selectStatement
-					.append(" order by P.pubUpdateDate desc, P.pubId desc");
-
-			SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-					"root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-							+ selectStatement.toString());
-
-			PreparedStatement prepStmt = null;
-			ResultSet rs = null;
-
-			try {
-				java.util.Date now = new java.util.Date();
-				String dateNow = null;
-				synchronized (formatter) {
-					dateNow = formatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.selectByStatus()",
-							"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-				}
-				String hourNow = null;
-				synchronized (hourFormatter) {
-					hourNow = hourFormatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.selectByStatus()",
-							"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-				}
-
-				prepStmt = con.prepareStatement(selectStatement.toString());
-
-				prepStmt.setString(1, dateNow);
-				prepStmt.setString(2, dateNow);
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, hourNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, dateNow);
-				prepStmt.setString(8, hourNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, dateNow);
-				prepStmt.setString(11, hourNow);
-				prepStmt.setString(12, hourNow);
-
-				rs = prepStmt.executeQuery();
-
-				PublicationPK pubPK = new PublicationPK("unknown", "useless",
-						"unknown");
-				PublicationDetail pub = null;
-				while (rs.next()) {
-					componentId = rs.getString(17);
-					pubPK.setComponentName(componentId);
-
-					pub = resultSet2PublicationDetail(rs, pubPK);
-					list.add(pub);
-				}
-			} finally {
-				DBUtil.close(rs, prepStmt);
-			}
-		}
-		return list;
-	}
-
-	public static Collection selectPKsByStatus(Connection con,
-			List componentIds, String status) throws SQLException {
-		ArrayList list = new ArrayList();
-		if (componentIds != null && componentIds.size() > 0) {
-			StringBuffer selectStatement = new StringBuffer(128);
-			selectStatement
-					.append("select  distinct(P.pubId), P.instanceId, P.pubUpdateDate ");
-			selectStatement.append("from ").append(publicationTableName)
-					.append(" P, ").append(publicationTableName).append(
-							"Father F ");
-			selectStatement.append("where P.pubStatus = '").append(status)
-					.append("'");
-			selectStatement.append(" and F.nodeId <> 1 ");
-			selectStatement.append(" and (");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-			selectStatement
-					.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-			selectStatement
-					.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-			selectStatement.append(" ) ");
-			selectStatement.append(" and F.pubId = P.pubId ");
-			selectStatement.append(" and P.instanceId IN (");
-
-			String componentId = null;
-			for (int c = 0; c < componentIds.size(); c++) {
-				componentId = (String) componentIds.get(c);
-				if (c != 0)
-					selectStatement.append(", ");
-				selectStatement.append("'").append(componentId).append("'");
-			}
-			selectStatement.append(")");
-			selectStatement
-					.append(" order by P.pubUpdateDate desc, P.pubId desc");
-
-			SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-					"root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-							+ selectStatement.toString());
-
-			PreparedStatement prepStmt = null;
-			ResultSet rs = null;
-
-			try {
-				java.util.Date now = new java.util.Date();
-				String dateNow = null;
-				synchronized (formatter) {
-					dateNow = formatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.selectByStatus()",
-							"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-				}
-				String hourNow = null;
-				synchronized (hourFormatter) {
-					hourNow = hourFormatter.format(now);
-					SilverTrace.info("publication",
-							"PublicationDAO.selectByStatus()",
-							"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-				}
-
-				prepStmt = con.prepareStatement(selectStatement.toString());
-
-				prepStmt.setString(1, dateNow);
-				prepStmt.setString(2, dateNow);
-				prepStmt.setString(3, dateNow);
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, hourNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, dateNow);
-				prepStmt.setString(8, hourNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, dateNow);
-				prepStmt.setString(11, hourNow);
-				prepStmt.setString(12, hourNow);
-
-				rs = prepStmt.executeQuery();
-
-				PublicationPK pubPK = null;
-				while (rs.next()) {
-					pubPK = new PublicationPK(String.valueOf(rs.getInt(1)), rs
-							.getString(2));
-					list.add(pubPK);
-				}
-			} finally {
-				DBUtil.close(rs, prepStmt);
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection selectAllPublications(Connection con,
-			PublicationPK pubPK) throws SQLException {
-		return selectAllPublications(con, pubPK, null);
-	}
-
-	public static Collection selectAllPublications(Connection con,
-			PublicationPK pubPK, String sorting) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName())
-				.append(" P where P.instanceId='").append(
-						pubPK.getComponentName()).append("'");
-
-		if (sorting != null) {
-			selectStatement.append(" order by ").append(sorting);
-		}
-
-		Statement stmt = null;
-		ResultSet rs = null;
-
-		try {
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(selectStatement.toString());
-
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, stmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * @param status
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection selectByBeginDateDescAndStatus(Connection con,
-			PublicationPK pubPK, String status) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName());
-		selectStatement.append(" where pubStatus like '").append(status)
-				.append("' ");
-		selectStatement.append(" and instanceId = ? ");
-		selectStatement.append(" and (");
-		selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
-		selectStatement
-				.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
-		selectStatement
-				.append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
-		selectStatement
-				.append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
-		selectStatement.append(" ) ");
-		selectStatement
-				.append(" order by pubCreationDate DESC, pubBeginDate DESC, pubId DESC");
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-
-		try {
-			java.util.Date now = new java.util.Date();
-			String dateNow = null;
-			synchronized (formatter) {
-				dateNow = formatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByBeginDateDescAndStatus()",
-						"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-			}
-			String hourNow = null;
-			synchronized (hourFormatter) {
-				hourNow = hourFormatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByBeginDateDescAndStatus()",
-						"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-			}
-
-			prepStmt = con.prepareStatement(selectStatement.toString());
-
-			prepStmt.setString(1, pubPK.getComponentName());
-
-			prepStmt.setString(2, dateNow);
-			prepStmt.setString(3, dateNow);
-			prepStmt.setString(4, dateNow);
-			prepStmt.setString(5, dateNow);
-			prepStmt.setString(6, hourNow);
-			prepStmt.setString(7, dateNow);
-			prepStmt.setString(8, dateNow);
-			prepStmt.setString(9, hourNow);
-			prepStmt.setString(10, dateNow);
-			prepStmt.setString(11, dateNow);
-			prepStmt.setString(12, hourNow);
-			prepStmt.setString(13, hourNow);
-
-			rs = prepStmt.executeQuery();
-
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * @param status
-	 * @param fatherId
-	 * @param fetchSize
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
-			Connection con, PublicationPK pubPK, String status,
-			String fatherId, int fetchSize) throws SQLException {
-		Collection lastPublis = getLastPublis(pubPK.getComponentName());
-		if (lastPublis != null) {
-			return lastPublis;
-		} else {
-			String selectStatement = QueryStringFactory
-					.getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK
-							.getTableName());
-
-			PreparedStatement prepStmt = null;
-			ResultSet rs = null;
-
-			try {
-				java.util.Date now = new java.util.Date();
-				String dateNow = null;
-				synchronized (formatter) {
-					dateNow = formatter.format(now);
-					SilverTrace
-							.info(
-									"publication",
-									"PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId()",
-									"root.MSG_GEN_PARAM_VALUE", "dateNow = "
-											+ dateNow);
-				}
-				String hourNow = null;
-				synchronized (hourFormatter) {
-					hourNow = hourFormatter.format(now);
-					SilverTrace
-							.info(
-									"publication",
-									"PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId()",
-									"root.MSG_GEN_PARAM_VALUE", "hourNow = "
-											+ hourNow);
-				}
-
-				prepStmt = con.prepareStatement(selectStatement);
-
-				prepStmt.setString(1, pubPK.getComponentName());
-				prepStmt.setInt(2, new Integer(fatherId).intValue());
-				prepStmt.setString(3, status);
-
-				prepStmt.setString(4, dateNow);
-				prepStmt.setString(5, dateNow);
-				prepStmt.setString(6, dateNow);
-				prepStmt.setString(7, dateNow);
-				prepStmt.setString(8, hourNow);
-				prepStmt.setString(9, dateNow);
-				prepStmt.setString(10, dateNow);
-				prepStmt.setString(11, hourNow);
-				prepStmt.setString(12, dateNow);
-				prepStmt.setString(13, dateNow);
-				prepStmt.setString(14, hourNow);
-				prepStmt.setString(15, hourNow);
-
-				rs = prepStmt.executeQuery();
-
-				int nbFetch = 0;
-				ArrayList list = new ArrayList();
-				PublicationDetail pub = null;
-				while (rs.next() && nbFetch < fetchSize) {
-					pub = resultSet2PublicationDetail(rs, pubPK);
-					list.add(pub);
-					nbFetch++;
-				}
-				cacheLastPublis(pubPK.getComponentName(), list);
-				return list;
-			} finally {
-				DBUtil.close(rs, prepStmt);
-			}
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection selectByBeginDateDesc(Connection con,
-			PublicationPK pubPK) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName());
-		selectStatement.append(" where instanceId = ? ");
-		selectStatement.append(" and (");
-		selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
-		selectStatement
-				.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
-		selectStatement
-				.append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
-		selectStatement
-				.append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
-		selectStatement.append(" ) ");
-		selectStatement
-				.append(" order by pubCreationDate DESC, pubBeginDate DESC");
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-
-		try {
-			java.util.Date now = new java.util.Date();
-			String dateNow = null;
-			synchronized (formatter) {
-				dateNow = formatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByBeginDateDesc()",
-						"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-			}
-			String hourNow = null;
-			synchronized (hourFormatter) {
-				hourNow = hourFormatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByBeginDateDesc()",
-						"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-			}
-
-			prepStmt = con.prepareStatement(selectStatement.toString());
-
-			prepStmt.setString(1, pubPK.getComponentName());
-			prepStmt.setString(2, dateNow);
-			prepStmt.setString(3, dateNow);
-			prepStmt.setString(4, dateNow);
-			prepStmt.setString(5, dateNow);
-			prepStmt.setString(6, hourNow);
-			prepStmt.setString(7, dateNow);
-			prepStmt.setString(8, dateNow);
-			prepStmt.setString(9, hourNow);
-			prepStmt.setString(10, dateNow);
-			prepStmt.setString(11, dateNow);
-			prepStmt.setString(12, hourNow);
-			prepStmt.setString(13, hourNow);
-
-			rs = prepStmt.executeQuery();
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection getOrphanPublications(Connection con,
-			PublicationPK pubPK) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName());
-		selectStatement.append(" where pubId NOT IN (Select pubId from ")
-				.append(pubPK.getTableName()).append("Father) ");
-		selectStatement.append(" and instanceId='").append(
-				pubPK.getComponentName()).append("'");
-
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(selectStatement.toString());
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, stmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection getNotOrphanPublications(Connection con,
-			PublicationPK pubPK) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName());
-		selectStatement.append(" where pubId IN (Select pubId from ").append(
-				pubPK.getTableName()).append("Father) ");
-		selectStatement.append(" and instanceId='").append(
-				pubPK.getComponentName()).append("' ");
-		selectStatement.append(" and (");
-		selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
-		selectStatement
-				.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
-		selectStatement
-				.append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
-		selectStatement
-				.append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
-		selectStatement.append(" ) ");
-		selectStatement.append(" order by pubUpdateDate DESC ");
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-		try {
-			java.util.Date now = new java.util.Date();
-			String dateNow = null;
-			synchronized (formatter) {
-				dateNow = formatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByBeginDateDescAndStatus()",
-						"root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
-			}
-			String hourNow = null;
-			synchronized (hourFormatter) {
-				hourNow = hourFormatter.format(now);
-				SilverTrace.info("publication",
-						"PublicationDAO.selectByBeginDateDescAndStatus()",
-						"root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-			}
-
-			prepStmt = con.prepareStatement(selectStatement.toString());
-
-			prepStmt.setString(1, dateNow);
-			prepStmt.setString(2, dateNow);
-			prepStmt.setString(3, dateNow);
-			prepStmt.setString(4, dateNow);
-			prepStmt.setString(5, hourNow);
-			prepStmt.setString(6, dateNow);
-			prepStmt.setString(7, dateNow);
-			prepStmt.setString(8, hourNow);
-			prepStmt.setString(9, dateNow);
-			prepStmt.setString(10, dateNow);
-			prepStmt.setString(11, hourNow);
-			prepStmt.setString(12, hourNow);
-
-			rs = prepStmt.executeQuery();
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * @param creatorId
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static void deleteOrphanPublicationsByCreatorId(Connection con,
-			PublicationPK pubPK, String creatorId) throws SQLException {
-		StringBuffer deleteStatement = new StringBuffer(128);
-		deleteStatement.append("delete from ").append(pubPK.getTableName());
-		deleteStatement.append(" where pubCreatorId=").append(creatorId);
-		deleteStatement.append(" and pubId NOT IN (Select pubId from ").append(
-				pubPK.getTableName()).append("Father ) ");
-		deleteStatement.append(" and instanceId='").append(
-				pubPK.getComponentName()).append("'");
-
-		Statement stmt = null;
-
-		try {
-			stmt = con.createStatement();
-			stmt.executeUpdate(deleteStatement.toString());
-		} finally {
-			DBUtil.close(stmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pubPK
-	 * @param publisherId
-	 * @param nodeId
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection getUnavailablePublicationsByPublisherId(
-			Connection con, PublicationPK pubPK, String publisherId,
-			String nodeId) throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(pubPK.getTableName())
-				.append(" P, ").append(pubPK.getTableName())
-				.append("Father F ");
-		selectStatement.append(" where P.instanceId = ? ");
-		selectStatement.append(" and F.pubId = P.pubId ");
-		selectStatement.append(" AND (F.nodeId = ").append(nodeId);
-		selectStatement.append(" OR ( ? < pubBeginDate ) ");
-		selectStatement.append(" OR ( pubBeginDate = ? AND ? < pubBeginHour )");
-		selectStatement.append(" OR ( ? > pubEndDate ) ");
-		selectStatement.append(" OR ( pubEndDate = ? AND ? > pubEndHour))");
-		if (publisherId != null)
-			selectStatement.append(" and P.pubCreatorId = ? ");
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-		try {
-			prepStmt = con.prepareStatement(selectStatement.toString());
-			prepStmt.setString(1, pubPK.getComponentName());
-			java.util.Date now = new java.util.Date();
-			String formattedDate = null;
-			synchronized (formatter) {
-				formattedDate = formatter.format(now);
-			}
-			String formattedHour = null;
-			synchronized (hourFormatter) {
-				formattedHour = hourFormatter.format(now);
-			}
-			prepStmt.setString(2, formattedDate);
-			prepStmt.setString(3, formattedDate);
-			prepStmt.setString(4, formattedHour);
-			prepStmt.setString(5, formattedDate);
-			prepStmt.setString(6, formattedDate);
-			prepStmt.setString(7, formattedHour);
-			if (publisherId != null)
-				prepStmt.setString(8, publisherId);
-
-			rs = prepStmt.executeQuery();
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
-
-	/*
-	 * @deprecated
-	 */
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param query
-	 * @param pubPK
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static Collection searchByKeywords(Connection con, String query,
-			PublicationPK pubPK) throws SQLException {
-		ArrayList result = new ArrayList();
-		return result;
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param pk
-	 * 
-	 * @return
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static PublicationDetail loadRow(Connection con, PublicationPK pk)
-			throws SQLException {
-		String selectStatement = QueryStringFactory.getLoadRow(pk
-				.getTableName());
-		SilverTrace.info("publication", "PublicationDAO.loadRow()",
-				"root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-						+ selectStatement);
-
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			PublicationDetail pub = null;
-			stmt = con.prepareStatement(selectStatement);
-			stmt.setInt(1, new Integer(pk.getId()).intValue());
-			rs = stmt.executeQuery();
-			if (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pk);
-				return pub;
-			} else {
-				throw new PublicationRuntimeException(
-						"PublicationDAO.loadRow()",
-						SilverpeasRuntimeException.ERROR,
-						"root.EX_CANT_LOAD_ENTITY_ATTRIBUTES",
-						"PublicationId = " + pk.getId()
-								+ " not found in database !");
-			}
-		} finally {
-			DBUtil.close(rs, stmt);
-		}
-	}
-
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @param con
-	 * @param detail
-	 * 
-	 * @throws SQLException
-	 * 
-	 * @see
-	 */
-	public static void changeInstanceId(Connection con, PublicationPK pubPK,
-			String newInstanceId) throws SQLException {
-		SilverTrace.info("publication", "PublicationDAO.changeInstanceId()",
-				"root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-						+ ", newInstanceId = " + newInstanceId);
-		int rowCount = 0;
-
-		StringBuffer updateQuery = new StringBuffer(128);
-		updateQuery.append("update ").append(
-				PublicationDAO.publicationTableName);
-		updateQuery.append(" set instanceId = ? ");
-		updateQuery.append(" where pubId = ? ");
-		PreparedStatement prepStmt = null;
-
-		try {
-			prepStmt = con.prepareStatement(updateQuery.toString());
-			prepStmt.setString(1, newInstanceId);
-			prepStmt.setInt(2, Integer.parseInt(pubPK.getId()));
-
-			rowCount = prepStmt.executeUpdate();
-		} finally {
-			DBUtil.close(prepStmt);
-		}
-
-		invalidateLastPublis(pubPK.getInstanceId());
-		invalidateLastPublis(newInstanceId);
-
-		if (rowCount == 0) {
-			throw new PublicationRuntimeException(
-					"PublicationDAO.changeInstanceId()",
-					SilverpeasRuntimeException.ERROR,
-					"root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "PublicationId = "
-							+ pubPK.getId());
-		}
-	}
-
-	public static void storeRow(Connection con, PublicationDetail detail)
-			throws SQLException {
-		int rowCount = 0;
-
-		StringBuffer updateQuery = new StringBuffer(128);
-		updateQuery.append("update ").append(detail.getPK().getTableName());
-		updateQuery
-				.append(" set infoId = ? , pubName = ? , pubDescription = ? , pubCreationDate = ? , pubBeginDate = ? , pubEndDate = ? , pubCreatorId = ? , pubImportance = ? , pubVersion = ? , pubKeywords = ? , pubContent = ? , pubStatus = ? , pubImage = ? , pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ? , pubAuthor = ? , pubTargetValidatorId = ? , pubCloneId = ? , pubCloneStatus = ? , lang = ? ");
-		updateQuery.append(" where pubId = ? ");
-		PreparedStatement prepStmt = null;
-
-		try {
-			prepStmt = con.prepareStatement(updateQuery.toString());
-			prepStmt.setString(1, detail.getInfoId());
-			SilverTrace.info("publication", "PublicationDAO.storeRow()",
-					"root.MSG_GEN_PARAM_VALUE", "InfoId = "
-							+ detail.getInfoId());
-			prepStmt.setString(2, detail.getName());
-			prepStmt.setString(3, detail.getDescription());
-			synchronized (formatter) {
-				prepStmt.setString(4, formatter
-						.format(detail.getCreationDate()));
-			}
-			if (detail.getBeginDate() == null) {
-				prepStmt.setString(5, nullBeginDate);
-			} else {
-				synchronized (formatter) {
-					prepStmt.setString(5, formatter.format(detail
-							.getBeginDate()));
-				}
-			}
-			if (detail.getEndDate() == null) {
-				prepStmt.setString(6, nullEndDate);
-			} else {
-				synchronized (formatter) {
-					prepStmt
-							.setString(6, formatter.format(detail.getEndDate()));
-				}
-			}
-			prepStmt.setString(7, detail.getCreatorId());
-			prepStmt.setInt(8, detail.getImportance());
-			prepStmt.setString(9, detail.getVersion());
-			prepStmt.setString(10, detail.getKeywords());
-			prepStmt.setString(11, detail.getContent());
-			prepStmt.setString(12, detail.getStatus());
-			prepStmt.setString(13, detail.getImage());
-			prepStmt.setString(14, detail.getImageMimeType());
-			if (detail.getUpdateDate() == null)
-				prepStmt.setString(15, formatter.format(detail
-						.getCreationDate()));
-			else
-				synchronized (formatter) {
-					prepStmt.setString(15, formatter.format(detail
-							.getUpdateDate()));
-				}
-			if (detail.getUpdaterId() == null)
-				prepStmt.setString(16, detail.getCreatorId());
-			else
-				prepStmt.setString(16, detail.getUpdaterId());
-			prepStmt.setString(17, detail.getPK().getComponentName());
-
-			prepStmt.setString(18, detail.getValidatorId());
-			if (detail.getValidateDate() != null) {
-				synchronized (formatter) {
-					prepStmt.setString(19, formatter.format(detail
-							.getValidateDate()));
-				}
-			} else {
-				prepStmt.setString(19, null);
-			}
-
-			if (isUndefined(detail.getBeginHour())) {
-				prepStmt.setString(20, nullBeginHour);
-			} else {
-				prepStmt.setString(20, detail.getBeginHour());
-			}
-
-			if (isUndefined(detail.getEndHour())) {
-				prepStmt.setString(21, nullEndHour);
-			} else {
-				prepStmt.setString(21, detail.getEndHour());
-			}
-
-			if (isUndefined(detail.getAuthor()))
-				prepStmt.setString(22, null);
-			else
-				prepStmt.setString(22, detail.getAuthor());
-
-			prepStmt.setString(23, detail.getTargetValidatorId());
-
-			if (isUndefined(detail.getCloneId()))
-				prepStmt.setInt(24, -1);
-			else
-				prepStmt.setInt(24, Integer.parseInt(detail.getCloneId()));
-
-			prepStmt.setString(25, detail.getCloneStatus());
-
-			prepStmt.setString(26, detail.getLanguage());
-
-			prepStmt.setInt(27, new Integer(detail.getPK().getId()).intValue());
-
-			rowCount = prepStmt.executeUpdate();
-		} finally {
-			DBUtil.close(prepStmt);
-		}
-
-		invalidateLastPublis(detail.getPK().getComponentName());
-
-		if (rowCount == 0) {
-			throw new PublicationRuntimeException("PublicationDAO.storeRow()",
-					SilverpeasRuntimeException.ERROR,
-					"root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "PublicationId = "
-							+ detail.getPK().getId());
-		}
-	}
-
-	// Added by ney - 23/08/2001
-
-	public static PublicationDetail selectByName(Connection con,
-			PublicationPK pubPK, String name) throws SQLException {
-		ResultSet rs = null;
-		PublicationDetail pub = null;
-		String selectStatement = QueryStringFactory.getSelectByName(pubPK
-				.getTableName());
-		PreparedStatement prepStmt = null;
-
-		try {
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setString(1, name);
-			prepStmt.setString(2, pubPK.getComponentName());
-
-			rs = prepStmt.executeQuery();
-			if (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-			}
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-
-		return pub;
-	}
-
-	public static PublicationDetail selectByNameAndNodeId(Connection con,
-			PublicationPK pubPK, String name, int nodeId) throws SQLException {
-		SilverTrace.info("publication",
-				"PublicationDAO.selectByNameAndNodeId()",
-				"root.MSG_GEN_ENTER_METHOD", "componentId = "
-						+ pubPK.getComponentName() + ", name = '" + name
-						+ "', nodeId = " + nodeId);
-		ResultSet rs = null;
-		PublicationDetail pub = null;
-		String selectStatement = QueryStringFactory.getSelectByNameAndNodeId();
-		PreparedStatement prepStmt = null;
-
-		try {
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setString(1, name);
-			prepStmt.setString(2, pubPK.getComponentName());
-			prepStmt.setInt(3, nodeId);
-
-			rs = prepStmt.executeQuery();
-			if (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, pubPK);
-			}
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-
-		return pub;
-	}
-
-	public static Collection selectBetweenDate(Connection con,
-			String beginDate, String endDate, String instanceId)
-			throws SQLException {
-		StringBuffer selectStatement = new StringBuffer(128);
-		selectStatement.append("select * from ").append(publicationTableName);
-		selectStatement.append(" where instanceId = ? ");
-		selectStatement.append(" and (");
-		selectStatement
-				.append("( ? <= pubCreationDate AND ? >= pubCreationDate ) ");
-		selectStatement.append(" ) ");
-		selectStatement.append(" order by pubCreationDate DESC, pubId DESC");
-
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-
-		try {
-			prepStmt = con.prepareStatement(selectStatement.toString());
-
-			prepStmt.setString(1, instanceId);
-			prepStmt.setString(2, beginDate);
-			prepStmt.setString(3, endDate);
-
-			rs = prepStmt.executeQuery();
-			ArrayList list = new ArrayList();
-			PublicationDetail pub = null;
-			while (rs.next()) {
-				pub = resultSet2PublicationDetail(rs, null);
-				list.add(pub);
-			}
-			return list;
-		} finally {
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+  // the date format used in database to represent a date
+  private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+
+  // the date format used in database to represent a date
+  private static SimpleDateFormat hourFormatter = new SimpleDateFormat("HH:mm");
+
+  // if beginDate is null, it will be replace in database with it
+  private static String nullBeginDate = new String("0000/00/00");
+  // if endDate is null, it will be replace in database with it
+  private static String nullEndDate = new String("9999/99/99");
+
+  // if beginHour is null, it will be replace in database with it
+  private static String nullBeginHour = new String("00:00");
+  // if endDate is null, it will be replace in database with it
+  private static String nullEndHour = new String("23:59");
+
+  // this object caches last publications availables
+  // used only for kmelia
+  // keys : componentId
+  // values : Collection of PublicationDetail
+  private static Hashtable lastPublis = new Hashtable();
+
+  private static String publicationTableName = "SB_Publication_Publi";
+  private static String publicationFatherTableName = "SB_Publication_PubliFather";
+  private static String nodeTableName = "SB_Node_Node";
+
+  /**
+   * This class must not be instanciated
+   * 
+   * @since 1.0
+   */
+  public PublicationDAO() {
+  }
+
+  /**
+   * Invalidate last publications for a given instance
+   */
+  public static void invalidateLastPublis(String instanceId) {
+    lastPublis.remove(instanceId);
+  }
+
+  private static void cacheLastPublis(String instanceId,
+      Collection lastPublications) {
+    lastPublis.put(instanceId, lastPublications);
+  }
+
+  private static Collection getLastPublis(String instanceId) {
+    Collection listLastPublisCache = (Collection) lastPublis.get(instanceId);
+    if (listLastPublisCache != null && listLastPublisCache.size() > 0) {// certaines
+      // publi
+      // du
+      // cache
+      // ne
+      // sont
+      // peut-etre
+      // plus
+      // visible,
+      // il
+      // faut
+      // les
+      // retirer
+      // du
+      // cache
+      ArrayList listLastPublisCacheMAJ = new ArrayList();
+      Iterator i = listLastPublisCache.iterator();
+      PublicationDetail pubDetail = null;
+      java.util.Date date = new java.util.Date();
+      Calendar cDateHeureNow = Calendar.getInstance();
+      cDateHeureNow.setTime(date);
+      int hourNow = cDateHeureNow.get(Calendar.HOUR_OF_DAY) * 100
+          + cDateHeureNow.get(Calendar.MINUTE);
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+      String sDate = simpleDateFormat.format(date);
+      java.util.Date theDateFormat = null;
+      try {
+        theDateFormat = simpleDateFormat.parse(sDate);
+      } catch (ParseException e) {
+        theDateFormat = java.sql.Date.valueOf(new Integer(cDateHeureNow
+            .get(Calendar.YEAR)).toString()
+            + "-"
+            + new Integer(cDateHeureNow.get(Calendar.MONTH)).toString()
+            + "-" + new Integer(cDateHeureNow.get(Calendar.DATE)).toString());
+      }
+      Calendar cDateNow = Calendar.getInstance();
+      cDateNow.setTime(theDateFormat);
+      Calendar cDateBegin = Calendar.getInstance();
+      Calendar cDateEnd = Calendar.getInstance();
+      String sBeginHour = null;
+      String sEndHour = null;
+      int beginHour = 0;
+      int endHour = 0;
+      while (i.hasNext()) {
+        pubDetail = (PublicationDetail) i.next();
+        if (pubDetail.getBeginDate() != null) {
+          cDateBegin.setTime(pubDetail.getBeginDate());
+        } else {
+          cDateBegin.setTime(java.sql.Date.valueOf("0000-01-01"));
+        }
+        if (pubDetail.getEndDate() != null) {
+          cDateEnd.setTime(pubDetail.getEndDate());
+        } else {
+          cDateEnd.setTime(java.sql.Date.valueOf("9999-12-31"));
+        }
+        sBeginHour = pubDetail.getBeginHour();// exemple 10:04
+        beginHour = new Integer(sBeginHour.substring(0, 2)).intValue() * 100;// 1000
+        beginHour += new Integer(sBeginHour.substring(3)).intValue();// 1004
+        sEndHour = pubDetail.getEndHour();
+        endHour = new Integer(sEndHour.substring(0, 2)).intValue() * 100;
+        endHour += new Integer(sEndHour.substring(3)).intValue();
+
+        if ((cDateNow.after(cDateBegin) && cDateNow.before(cDateEnd))
+            || (cDateNow.equals(cDateBegin) && cDateNow.before(cDateEnd) && hourNow > beginHour)
+            || (cDateNow.after(cDateBegin) && cDateNow.equals(cDateEnd) && hourNow < endHour)
+            || (cDateNow.equals(cDateBegin) && cDateNow.equals(cDateEnd)
+                && hourNow > beginHour && hourNow < endHour))
+          listLastPublisCacheMAJ.add(pubDetail);
+      }
+      lastPublis.put(instanceId, listLastPublisCacheMAJ);
+    }
+    return (Collection) lastPublis.get(instanceId);
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param fatherPKs
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static int getNbPubInFatherPKs(Connection con, Collection fatherPKs)
+      throws SQLException {
+    ResultSet rs = null;
+    int result = 0;
+    NodePK nodePK = null;
+    PublicationPK pubPK = null;
+    String nodeId = null;
+
+    if (fatherPKs.isEmpty()) {
+      return 0;
+    } else {
+      Iterator iterator = fatherPKs.iterator();
+
+      if (iterator.hasNext()) {
+        nodePK = (NodePK) iterator.next();
+        pubPK = new PublicationPK("unknown", nodePK);
+        nodeId = nodePK.getId();
+      }
+
+      StringBuffer selectStatement = new StringBuffer(128);
+      selectStatement.append("select count(F.pubId) from ").append(
+          pubPK.getTableName()).append("Father F, ").append(
+          pubPK.getTableName()).append(" P ");
+      selectStatement.append(" where F.pubId = P.pubId ");
+      selectStatement.append(" and (");
+      selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
+      selectStatement
+          .append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
+      selectStatement
+          .append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
+      selectStatement
+          .append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
+      selectStatement.append(" ) ");
+      selectStatement.append(" and ( F.nodeId = ").append(nodeId);
+
+      while (iterator.hasNext()) {
+        nodePK = (NodePK) iterator.next();
+        nodeId = nodePK.getId();
+        selectStatement.append(" or F.nodeId = ").append(nodeId);
+      }
+      selectStatement.append(" )");
+
+      PreparedStatement prepStmt = null;
+      try {
+        java.util.Date now = new java.util.Date();
+        String dateNow = null;
+        synchronized (formatter) {
+          dateNow = formatter.format(now);
+          SilverTrace.info("publication",
+              "PublicationDAO.getNbPubInFatherPKs()",
+              "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        }
+        String hourNow = null;
+        synchronized (hourFormatter) {
+          hourNow = hourFormatter.format(now);
+          SilverTrace.info("publication",
+              "PublicationDAO.getNbPubInFatherPKs()",
+              "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        }
+
+        prepStmt = con.prepareStatement(selectStatement.toString());
+
+        prepStmt.setString(1, dateNow);
+        prepStmt.setString(2, dateNow);
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, hourNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, dateNow);
+        prepStmt.setString(8, hourNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, dateNow);
+        prepStmt.setString(11, hourNow);
+        prepStmt.setString(12, hourNow);
+
+        rs = prepStmt.executeQuery();
+        if (rs.next()) {
+          result = rs.getInt(1);
+        }
+      } finally {
+        DBUtil.close(rs, prepStmt);
+      }
+      return result;
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param fatherPK
+   * @param fatherPath
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
+      String fatherPath) throws SQLException {
+    int result = 0;
+    PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
+
+    if (fatherPath.length() <= 0) {
+      return 0;
+    } else {
+      StringBuffer selectStatement = new StringBuffer(128);
+      selectStatement.append("select count(F.pubId) from ").append(
+          pubPK.getTableName()).append("Father F, ").append(
+          pubPK.getTableName()).append(" P, ").append(fatherPK.getTableName())
+          .append(" N ");
+      selectStatement.append(" where F.pubId = P.pubId ");
+      selectStatement.append(" and F.nodeId = N.nodeId ");
+      selectStatement.append(" and P.instanceId = ? ");
+      selectStatement.append(" and N.instanceId  = ? ");
+      selectStatement.append(" and (");
+      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
+      selectStatement.append(" ) ");
+      selectStatement.append(" and (N.nodePath like '").append(fatherPath)
+          .append("/").append(fatherPK.getId()).append("%' or N.nodeId = ")
+          .append(fatherPK.getId()).append(")");
+
+      PreparedStatement prepStmt = null;
+      ResultSet rs = null;
+      try {
+        java.util.Date now = new java.util.Date();
+        String dateNow = null;
+        synchronized (formatter) {
+          dateNow = formatter.format(now);
+          SilverTrace.info("publication",
+              "PublicationDAO.getNbPubByFatherPath()",
+              "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        }
+        String hourNow = null;
+        synchronized (hourFormatter) {
+          hourNow = hourFormatter.format(now);
+          SilverTrace.info("publication",
+              "PublicationDAO.getNbPubByFatherPath()",
+              "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        }
+
+        prepStmt = con.prepareStatement(selectStatement.toString());
+
+        prepStmt.setString(1, fatherPK.getComponentName());
+        prepStmt.setString(2, fatherPK.getComponentName());
+
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, dateNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, hourNow);
+        prepStmt.setString(8, dateNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, hourNow);
+        prepStmt.setString(11, dateNow);
+        prepStmt.setString(12, dateNow);
+        prepStmt.setString(13, hourNow);
+        prepStmt.setString(14, hourNow);
+
+        rs = prepStmt.executeQuery();
+        if (rs.next()) {
+          result = rs.getInt(1);
+        }
+        return result;
+      } finally {
+        DBUtil.close(rs, prepStmt);
+      }
+    }
+  }
+
+  public static Hashtable getDistribution(Connection con, String instanceId,
+      String statusSubQuery, boolean checkVisibility) throws SQLException {
+    Hashtable result = new Hashtable();
+
+    StringBuffer selectStatement = new StringBuffer(128);
+
+    selectStatement.append("SELECT N.nodeId, N.nodePath, COUNT(P.pubName) ");
+    selectStatement.append("FROM ").append(publicationFatherTableName).append(
+        " F, ").append(publicationTableName).append(" P, ").append(
+        nodeTableName).append(" N ");
+    selectStatement.append("Where F.pubId = P.pubId AND F.nodeId = N.nodeId ");
+    // selectStatement.append("AND N.instanceId = ? AND P.instanceId = ? ");
+    selectStatement.append("AND N.instanceId = ? ");
+    selectStatement.append("AND F.instanceId = ? ");
+    if (statusSubQuery != null)
+      selectStatement.append(statusSubQuery);
+    if (checkVisibility) {
+      selectStatement.append(" and (");
+      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
+      selectStatement.append(" ) ");
+    }
+    selectStatement.append(" GROUP BY N.nodeId, N.nodePath");
+
+    SilverTrace.info("publication", "PublicationDAO.getDistribution()",
+        "root.MSG_GEN_PARAM_VALUE", "sqlStatement = "
+            + selectStatement.toString());
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      java.util.Date now = new java.util.Date();
+      String dateNow = null;
+      synchronized (formatter) {
+        dateNow = formatter.format(now);
+        SilverTrace.info("publication", "PublicationDAO.getDistribution()",
+            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+      }
+      String hourNow = null;
+      synchronized (hourFormatter) {
+        hourNow = hourFormatter.format(now);
+        SilverTrace.info("publication", "PublicationDAO.getDistribution()",
+            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+      }
+
+      prepStmt = con.prepareStatement(selectStatement.toString());
+
+      prepStmt.setString(1, instanceId);
+      prepStmt.setString(2, instanceId);
+
+      if (checkVisibility) {
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, dateNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, hourNow);
+        prepStmt.setString(8, dateNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, hourNow);
+        prepStmt.setString(11, dateNow);
+        prepStmt.setString(12, dateNow);
+        prepStmt.setString(13, hourNow);
+        prepStmt.setString(14, hourNow);
+      }
+
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        int nodeId = rs.getInt(1);
+        String nodePath = rs.getString(2);
+        int nbPublis = rs.getInt(3);
+
+        // This is a fix ! Some path may be not correct...
+        if (!nodePath.endsWith("/"))
+          nodePath += "/";
+
+        result.put(nodePath + nodeId + "/", new Integer(nbPublis));
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param detail
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static void insertRow(Connection con, PublicationDetail detail)
+      throws SQLException {
+    StringBuffer insertStatement = new StringBuffer(128);
+    insertStatement.append("insert into ")
+        .append(detail.getPK().getTableName());
+    insertStatement
+        .append(" (pubId, infoId, pubName, pubDescription, pubCreationDate,");
+    insertStatement
+        .append(" pubBeginDate, pubEndDate, pubCreatorId, pubImportance, pubVersion, pubKeywords,");
+    insertStatement
+        .append(" pubContent, pubStatus, pubImage, pubImageMimeType, pubUpdateDate,");
+    insertStatement
+        .append(" instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour,");
+    insertStatement
+        .append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) ");
+    insertStatement
+        .append(" values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
+    PreparedStatement prepStmt = null;
+
+    try {
+      int id = new Integer(detail.getPK().getId()).intValue();
+      String infoId = "0";
+      if (StringUtil.isDefined(detail.getInfoId()))
+        infoId = detail.getInfoId();
+
+      prepStmt = con.prepareStatement(insertStatement.toString());
+      prepStmt.setInt(1, id);
+      prepStmt.setString(2, infoId);
+      SilverTrace.info("publication", "PublicationDAO.insertRow()",
+          "root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
+      prepStmt.setString(3, detail.getName());
+      prepStmt.setString(4, detail.getDescription());
+      if (detail.getCreationDate() == null) {
+        prepStmt.setString(5, DateUtil.today2SQLDate());
+      } else {
+        synchronized (formatter) {
+          prepStmt.setString(5, formatter.format(detail.getCreationDate()));
+        }
+      }
+      if (detail.getBeginDate() == null) {
+        prepStmt.setString(6, nullBeginDate);
+      } else {
+        synchronized (formatter) {
+          prepStmt.setString(6, formatter.format(detail.getBeginDate()));
+        }
+      }
+      if (detail.getEndDate() == null) {
+        prepStmt.setString(7, nullEndDate);
+      } else {
+        synchronized (formatter) {
+          prepStmt.setString(7, formatter.format(detail.getEndDate()));
+        }
+      }
+      prepStmt.setString(8, detail.getCreatorId());
+      prepStmt.setInt(9, detail.getImportance());
+      prepStmt.setString(10, detail.getVersion());
+      prepStmt.setString(11, detail.getKeywords());
+      prepStmt.setString(12, detail.getContent());
+      prepStmt.setString(13, detail.getStatus());
+      prepStmt.setString(14, detail.getImage());
+      prepStmt.setString(15, detail.getImageMimeType());
+      if (detail.getCreationDate() == null) {
+        prepStmt.setString(16, DateUtil.today2SQLDate());
+      } else {
+        synchronized (formatter) {
+          prepStmt.setString(16, formatter.format(detail.getCreationDate()));
+        }
+      }
+      prepStmt.setString(17, detail.getPK().getComponentName());
+      prepStmt.setString(18, detail.getCreatorId());
+      if ("Valid".equals(detail.getStatus())) {
+        prepStmt.setString(20, detail.getCreatorId());
+        synchronized (formatter) {
+          prepStmt.setString(19, formatter.format(detail.getCreationDate()));
+        }
+      } else {
+        prepStmt.setString(19, null);
+        prepStmt.setString(20, null);
+      }
+      if (isUndefined(detail.getBeginHour())) {
+        prepStmt.setString(21, nullBeginHour);
+      } else {
+        prepStmt.setString(21, detail.getBeginHour());
+      }
+      if (isUndefined(detail.getEndHour())) {
+        prepStmt.setString(22, nullEndHour);
+      } else {
+        prepStmt.setString(22, detail.getEndHour());
+      }
+      if (isUndefined(detail.getAuthor()))
+        prepStmt.setString(23, null);
+      else
+        prepStmt.setString(23, detail.getAuthor());
+
+      prepStmt.setString(24, detail.getTargetValidatorId());
+
+      if (isUndefined(detail.getCloneId()))
+        prepStmt.setInt(25, -1);
+      else
+        prepStmt.setInt(25, Integer.parseInt(detail.getCloneId()));
+
+      prepStmt.setString(26, detail.getCloneStatus());
+
+      if (isUndefined(detail.getLanguage()))
+        prepStmt.setNull(27, Types.VARCHAR);
+      else
+        prepStmt.setString(27, detail.getLanguage());
+
+      SilverTrace.info("publication", "PublicationDAO.insertRow()",
+          "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + detail.toString());
+
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+    invalidateLastPublis(detail.getPK().getComponentName());
+  }
+
+  private static boolean isUndefined(String object) {
+    return !StringUtil.isDefined(object);
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pk
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static void deleteRow(Connection con, PublicationPK pk)
+      throws SQLException {
+    PublicationFatherDAO.removeAllFather(con, pk); // Delete associations
+    // between pub and nodes
+    StringBuffer deleteStatement = new StringBuffer(128);
+    deleteStatement.append("delete from ").append(pk.getTableName()).append(
+        " where pubId = ").append(pk.getId());
+    Statement stmt = null;
+
+    try {
+      stmt = con.createStatement();
+      stmt.executeUpdate(deleteStatement.toString());
+    } finally {
+      DBUtil.close(stmt);
+    }
+
+    invalidateLastPublis(pk.getComponentName());
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param primaryKey
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static PublicationPK selectByPrimaryKey(Connection con,
+      PublicationPK primaryKey) throws SQLException {
+    PublicationDetail detail = loadRow(con, primaryKey);
+    PublicationPK primary = new PublicationPK(primaryKey.getId(), detail
+        .getPK().getInstanceId());
+
+    primary.pubDetail = detail;
+    return primary;
+  }
+
+  public static PublicationPK selectByPublicationName(Connection con,
+      PublicationPK primaryKey, String name) throws SQLException {
+    PublicationPK primary = null;
+    PublicationDetail detail = selectByName(con, primaryKey, name);
+    if (detail != null) {
+      primary = new PublicationPK(detail.getPK().getId(), primaryKey);
+      primary.pubDetail = detail;
+    }
+    return primary;
+  }
+
+  public static PublicationPK selectByPublicationNameAndNodeId(Connection con,
+      PublicationPK primaryKey, String name, int nodeId) throws SQLException {
+    PublicationPK primary = null;
+    PublicationDetail detail = selectByNameAndNodeId(con, primaryKey, name,
+        nodeId);
+    if (detail != null) {
+      primary = new PublicationPK(detail.getPK().getId(), primaryKey);
+      primary.pubDetail = detail;
+    }
+    return primary;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param rs
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
+      PublicationPK pubPK) throws SQLException {
+    // SilverTrace.debug("publication",
+    // "PublicationDAO.resultSet2PublicationDetail()",
+    // "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
+    PublicationDetail pub = null;
+    int id = rs.getInt(1);
+    String componentId = rs.getString(17);
+    PublicationPK pk = new PublicationPK(String.valueOf(id), componentId);
+    String infoId = rs.getString(2);
+    SilverTrace.info("publication",
+        "PublicationDAO.resultSet2PublicationDetail()",
+        "root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
+    String name = rs.getString(3);
+    SilverTrace.info("publication",
+        "PublicationDAO.resultSet2PublicationDetail()",
+        "root.MSG_GEN_PARAM_VALUE", "name = " + name);
+    String description = rs.getString(4);
+    if (description == null)
+      description = "";
+    java.util.Date creationDate;
+    try {
+      synchronized (formatter) {
+        creationDate = formatter.parse(rs.getString(5));
+      }
+    } catch (java.text.ParseException e) {
+      throw new SQLException(
+          "PublicationDAO : resultSet2PublicationDetail() : internal error : "
+              + "creationDate format unknown for publication.pk = " + pk
+              + " : " + e.toString());
+    }
+    java.util.Date beginDate;
+    String d = rs.getString(6);
+
+    if (d.equals(nullBeginDate)) {
+      beginDate = null;
+    } else {
+      try {
+        synchronized (formatter) {
+          beginDate = formatter.parse(d);
+        }
+      } catch (java.text.ParseException e) {
+        throw new SQLException(
+            "PublicationDAO : resultSet2PublicationDetail() : internal error : "
+                + "beginDate format unknown for publication.pk = "
+                + pk.toString() + " : " + e.toString());
+      }
+    }
+    java.util.Date endDate;
+
+    d = rs.getString(7);
+    if (d.equals(nullEndDate)) {
+      endDate = null;
+    } else {
+      try {
+        synchronized (formatter) {
+          endDate = formatter.parse(d);
+        }
+      } catch (java.text.ParseException e) {
+        throw new SQLException(
+            "PublicationDAO : resultSet2PublicationDetail() : internal error : "
+                + "endDate format unknown for publication.pk = "
+                + pk.toString() + " : " + e.toString());
+      }
+    }
+    String creatorId = rs.getString(8);
+    int importance = rs.getInt(9);
+    String version = rs.getString(10);
+    String keywords = rs.getString(11);
+    String content = rs.getString(12);
+    String status = rs.getString(13);
+    String image = rs.getString(14);
+    String imageMimeType = rs.getString(15);
+
+    java.util.Date updateDate;
+    String u = rs.getString(16);
+    if (u != null) {
+      try {
+        synchronized (formatter) {
+          updateDate = formatter.parse(u);
+        }
+      } catch (java.text.ParseException e) {
+        throw new SQLException(
+            "PublicationDAO : resultSet2PublicationDetail() : internal error : updateDate format unknown for publication.pk = "
+                + pk + " : " + e.toString());
+      }
+    } else {
+      updateDate = creationDate;
+    }
+    String updaterId;
+    String v = rs.getString(18);
+    if (v != null)
+      updaterId = v;
+    else
+      updaterId = creatorId;
+
+    java.util.Date validateDate = null;
+    String strValDate = rs.getString(19);
+    if (strValDate != null) {
+      try {
+        synchronized (formatter) {
+          validateDate = formatter.parse(strValDate);
+        }
+      } catch (java.text.ParseException e) {
+        throw new SQLException(
+            "PublicationDAO : resultSet2PublicationDetail() : internal error : validateDate format unknown for publication.pk = "
+                + pk + " : " + e.toString());
+      }
+    }
+    String validatorId = rs.getString(20);
+
+    String beginHour = rs.getString(21);
+    String endHour = rs.getString(22);
+    String author = rs.getString(23);
+    String targetValidatorId = rs.getString(24);
+    int tempPubId = rs.getInt(25);
+    String cloneStatus = rs.getString(26);
+    String lang = rs.getString(27);
+    pub = new PublicationDetail(pk, name, description, creationDate, beginDate,
+        endDate, creatorId, importance, version, keywords, content, status,
+        image, imageMimeType, updateDate, updaterId, validateDate, validatorId,
+        author);
+    pub.setInfoId(infoId);
+    pub.setBeginHour(beginHour);
+    pub.setEndHour(endHour);
+    pub.setTargetValidatorId(targetValidatorId);
+    pub.setCloneId(Integer.toString(tempPubId));
+    pub.setCloneStatus(cloneStatus);
+    pub.setLanguage(lang);
+    return pub;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param fatherPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+
+  public static Collection selectByFatherPK(Connection con, NodePK fatherPK)
+      throws SQLException {
+    return selectByFatherPK(con, fatherPK, null);
+  }
+
+  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+      boolean filterOnVisibilityPeriod) throws SQLException {
+    return selectByFatherPK(con, fatherPK, null, filterOnVisibilityPeriod);
+  }
+
+  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+      String sorting, boolean filterOnVisibilityPeriod) throws SQLException {
+    return selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod,
+        null);
+  }
+
+  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+      String sorting, boolean filterOnVisibilityPeriod, String userId)
+      throws SQLException {
+    PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
+    String selectStatement = QueryStringFactory.getSelectByFatherPK(pubPK
+        .getTableName(), filterOnVisibilityPeriod);
+
+    if (userId != null) {
+      selectStatement += " AND (P.pubUpdaterId = " + userId
+          + " OR P.pubCreatorId = " + userId + ")";
+    }
+    selectStatement += " order by F.pubOrder asc";
+    if (sorting != null) {
+      selectStatement += ", " + sorting;
+    }
+
+    SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
+        "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setString(1, pubPK.getComponentName());
+      prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+
+      if (filterOnVisibilityPeriod) {
+        java.util.Date now = new java.util.Date();
+        String dateNow = null;
+        synchronized (formatter) {
+          dateNow = formatter.format(now);
+          SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
+              "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        }
+        String hourNow = null;
+        synchronized (hourFormatter) {
+          hourNow = hourFormatter.format(now);
+          SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
+              "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        }
+
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, dateNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, hourNow);
+        prepStmt.setString(8, dateNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, hourNow);
+        prepStmt.setString(11, dateNow);
+        prepStmt.setString(12, dateNow);
+        prepStmt.setString(13, hourNow);
+        prepStmt.setString(14, hourNow);
+      }
+
+      rs = prepStmt.executeQuery();
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+      String sorting) throws SQLException {
+    return selectByFatherPK(con, fatherPK, sorting, true, null);
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param fatherPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+
+  public static Collection selectNotInFatherPK(Connection con, NodePK fatherPK)
+      throws SQLException {
+    return selectNotInFatherPK(con, fatherPK, null);
+  }
+
+  public static Collection selectNotInFatherPK(Connection con, NodePK fatherPK,
+      String sorting) throws SQLException {
+    PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
+    String selectStatement = QueryStringFactory.getSelectNotInFatherPK(pubPK
+        .getTableName());
+
+    if (sorting != null) {
+      selectStatement += " order by " + sorting;
+    }
+
+    SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
+        "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      java.util.Date now = new java.util.Date();
+      String dateNow = null;
+      synchronized (formatter) {
+        dateNow = formatter.format(now);
+        SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
+            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+      }
+      String hourNow = null;
+      synchronized (hourFormatter) {
+        hourNow = hourFormatter.format(now);
+        SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
+            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+      }
+
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setString(1, pubPK.getComponentName());
+      prepStmt.setInt(2, new Integer(fatherPK.getId()).intValue());
+
+      prepStmt.setString(3, dateNow);
+      prepStmt.setString(4, dateNow);
+      prepStmt.setString(5, dateNow);
+      prepStmt.setString(6, dateNow);
+      prepStmt.setString(7, hourNow);
+      prepStmt.setString(8, dateNow);
+      prepStmt.setString(9, dateNow);
+      prepStmt.setString(10, hourNow);
+      prepStmt.setString(11, dateNow);
+      prepStmt.setString(12, dateNow);
+      prepStmt.setString(13, hourNow);
+      prepStmt.setString(14, hourNow);
+
+      rs = prepStmt.executeQuery();
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param fatherIds
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static ArrayList selectByFatherIds(Connection con,
+      ArrayList fatherIds, PublicationPK pubPK, String sorting,
+      ArrayList status, boolean filterOnVisibilityPeriod) throws SQLException {
+    ArrayList list = new ArrayList();
+    ResultSet rs = null;
+    PublicationDetail pub = null;
+
+    String fatherId = "";
+    StringBuffer whereClause = new StringBuffer(128);
+
+    if (fatherIds != null) {
+      Iterator it = fatherIds.iterator();
+
+      whereClause.append("(");
+      while (it.hasNext()) {
+        fatherId = (String) it.next();
+        whereClause.append(" F.nodeId = ").append(fatherId);
+        if (it.hasNext()) {
+          whereClause.append(" or ");
+        } else {
+          whereClause.append(" ) ");
+        }
+      }
+    }
+
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement
+        .append("select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
+    selectStatement
+        .append("         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
+    selectStatement
+        .append("		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
+    selectStatement.append("from ").append(pubPK.getTableName()).append(" P, ")
+        .append(pubPK.getTableName()).append("Father F ");
+    selectStatement.append("where ").append(whereClause.toString());
+
+    if (filterOnVisibilityPeriod) {
+      selectStatement.append(" and (");
+      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
+      selectStatement.append(" ) ");
+    }
+    selectStatement.append(" and F.pubId = P.pubId ");
+    selectStatement.append(" and P.instanceId='").append(
+        pubPK.getComponentName()).append("'");
+
+    if (status != null && status.size() > 0) {
+      StringBuffer statusBuffer = new StringBuffer();
+      Iterator it = status.iterator();
+
+      statusBuffer.append("(");
+      String sStatus = null;
+      while (it.hasNext()) {
+        sStatus = (String) it.next();
+        statusBuffer.append(" P.pubStatus = '").append(sStatus).append("'");
+        if (it.hasNext()) {
+          statusBuffer.append(" or ");
+        } else {
+          statusBuffer.append(" ) ");
+        }
+      }
+      selectStatement.append(" and ").append(statusBuffer.toString());
+    }
+
+    if (sorting != null) {
+      selectStatement.append(" order by ").append(sorting);
+    }
+
+    PreparedStatement prepStmt = null;
+
+    try {
+      java.util.Date now = new java.util.Date();
+      String dateNow = null;
+      synchronized (formatter) {
+        dateNow = formatter.format(now);
+        SilverTrace.info("publication", "PublicationDAO.selectByFatherIds()",
+            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+      }
+      String hourNow = null;
+      synchronized (hourFormatter) {
+        hourNow = hourFormatter.format(now);
+        SilverTrace.info("publication", "PublicationDAO.selectByFatherIds()",
+            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+      }
+
+      prepStmt = con.prepareStatement(selectStatement.toString());
+
+      if (filterOnVisibilityPeriod) {
+        prepStmt.setString(1, dateNow);
+        prepStmt.setString(2, dateNow);
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, hourNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, dateNow);
+        prepStmt.setString(8, hourNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, dateNow);
+        prepStmt.setString(11, hourNow);
+        prepStmt.setString(12, hourNow);
+      }
+
+      rs = prepStmt.executeQuery();
+
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+
+    return list;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param publicationPKs
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection selectByPublicationPKs(Connection con,
+      Collection publicationPKs) throws SQLException {
+    ArrayList publications = new ArrayList();
+    Iterator iterator = publicationPKs.iterator();
+
+    while (iterator.hasNext()) {
+      PublicationPK pubPK = (PublicationPK) iterator.next();
+      PublicationDetail pub = loadRow(con, pubPK);
+
+      publications.add(pub);
+    }
+    return publications;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * @param status
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection selectByStatus(Connection con, PublicationPK pubPK,
+      String status) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName());
+    selectStatement.append(" where pubStatus like '").append(status).append(
+        "' ");
+    selectStatement.append(" and instanceId ='").append(
+        pubPK.getComponentName()).append(
+        "' order by pubUpdateDate desc, pubId desc");
+    Statement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      PublicationDetail pub = null;
+      stmt = con.createStatement();
+      rs = stmt.executeQuery(selectStatement.toString());
+      ArrayList list = new ArrayList();
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+
+  public static Collection selectByStatus(Connection con, List componentIds,
+      String status) throws SQLException {
+    ArrayList list = new ArrayList();
+    if (componentIds != null && componentIds.size() > 0) {
+      StringBuffer selectStatement = new StringBuffer(128);
+      selectStatement
+          .append("select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
+      selectStatement
+          .append("         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
+      selectStatement
+          .append("		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
+      selectStatement.append("from ").append(publicationTableName).append(
+          " P, ").append(publicationTableName).append("Father F ");
+      selectStatement.append("where P.pubStatus = '").append(status)
+          .append("'");
+      selectStatement.append(" and F.nodeId <> 1 ");
+      selectStatement.append(" and (");
+      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
+      selectStatement.append(" ) ");
+      selectStatement.append(" and F.pubId = P.pubId ");
+      selectStatement.append(" and (");
+
+      String componentId = null;
+      for (int c = 0; c < componentIds.size(); c++) {
+        componentId = (String) componentIds.get(c);
+        if (c != 0)
+          selectStatement.append(" OR ");
+        selectStatement.append("P.instanceId ='").append(componentId).append(
+            "'");
+      }
+      selectStatement.append(")");
+      selectStatement.append(" order by P.pubUpdateDate desc, P.pubId desc");
+
+      SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+          "root.MSG_GEN_PARAM_VALUE", "selectStatement = "
+              + selectStatement.toString());
+
+      PreparedStatement prepStmt = null;
+      ResultSet rs = null;
+
+      try {
+        java.util.Date now = new java.util.Date();
+        String dateNow = null;
+        synchronized (formatter) {
+          dateNow = formatter.format(now);
+          SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+              "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        }
+        String hourNow = null;
+        synchronized (hourFormatter) {
+          hourNow = hourFormatter.format(now);
+          SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+              "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        }
+
+        prepStmt = con.prepareStatement(selectStatement.toString());
+
+        prepStmt.setString(1, dateNow);
+        prepStmt.setString(2, dateNow);
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, hourNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, dateNow);
+        prepStmt.setString(8, hourNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, dateNow);
+        prepStmt.setString(11, hourNow);
+        prepStmt.setString(12, hourNow);
+
+        rs = prepStmt.executeQuery();
+
+        PublicationPK pubPK = new PublicationPK("unknown", "useless", "unknown");
+        PublicationDetail pub = null;
+        while (rs.next()) {
+          componentId = rs.getString(17);
+          pubPK.setComponentName(componentId);
+
+          pub = resultSet2PublicationDetail(rs, pubPK);
+          list.add(pub);
+        }
+      } finally {
+        DBUtil.close(rs, prepStmt);
+      }
+    }
+    return list;
+  }
+
+  public static Collection selectPKsByStatus(Connection con, List componentIds,
+      String status) throws SQLException {
+    ArrayList list = new ArrayList();
+    if (componentIds != null && componentIds.size() > 0) {
+      StringBuffer selectStatement = new StringBuffer(128);
+      selectStatement
+          .append("select  distinct(P.pubId), P.instanceId, P.pubUpdateDate ");
+      selectStatement.append("from ").append(publicationTableName).append(
+          " P, ").append(publicationTableName).append("Father F ");
+      selectStatement.append("where P.pubStatus = '").append(status)
+          .append("'");
+      selectStatement.append(" and F.nodeId <> 1 ");
+      selectStatement.append(" and (");
+      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
+      selectStatement.append(" ) ");
+      selectStatement.append(" and F.pubId = P.pubId ");
+      selectStatement.append(" and P.instanceId IN (");
+
+      String componentId = null;
+      for (int c = 0; c < componentIds.size(); c++) {
+        componentId = (String) componentIds.get(c);
+        if (c != 0)
+          selectStatement.append(", ");
+        selectStatement.append("'").append(componentId).append("'");
+      }
+      selectStatement.append(")");
+      selectStatement.append(" order by P.pubUpdateDate desc, P.pubId desc");
+
+      SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+          "root.MSG_GEN_PARAM_VALUE", "selectStatement = "
+              + selectStatement.toString());
+
+      PreparedStatement prepStmt = null;
+      ResultSet rs = null;
+
+      try {
+        java.util.Date now = new java.util.Date();
+        String dateNow = null;
+        synchronized (formatter) {
+          dateNow = formatter.format(now);
+          SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+              "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        }
+        String hourNow = null;
+        synchronized (hourFormatter) {
+          hourNow = hourFormatter.format(now);
+          SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+              "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        }
+
+        prepStmt = con.prepareStatement(selectStatement.toString());
+
+        prepStmt.setString(1, dateNow);
+        prepStmt.setString(2, dateNow);
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, hourNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, dateNow);
+        prepStmt.setString(8, hourNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, dateNow);
+        prepStmt.setString(11, hourNow);
+        prepStmt.setString(12, hourNow);
+
+        rs = prepStmt.executeQuery();
+
+        PublicationPK pubPK = null;
+        while (rs.next()) {
+          pubPK = new PublicationPK(String.valueOf(rs.getInt(1)), rs
+              .getString(2));
+          list.add(pubPK);
+        }
+      } finally {
+        DBUtil.close(rs, prepStmt);
+      }
+    }
+    return list;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection selectAllPublications(Connection con,
+      PublicationPK pubPK) throws SQLException {
+    return selectAllPublications(con, pubPK, null);
+  }
+
+  public static Collection selectAllPublications(Connection con,
+      PublicationPK pubPK, String sorting) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName())
+        .append(" P where P.instanceId='").append(pubPK.getComponentName())
+        .append("'");
+
+    if (sorting != null) {
+      selectStatement.append(" order by ").append(sorting);
+    }
+
+    Statement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      stmt = con.createStatement();
+      rs = stmt.executeQuery(selectStatement.toString());
+
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * @param status
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection selectByBeginDateDescAndStatus(Connection con,
+      PublicationPK pubPK, String status) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName());
+    selectStatement.append(" where pubStatus like '").append(status).append(
+        "' ");
+    selectStatement.append(" and instanceId = ? ");
+    selectStatement.append(" and (");
+    selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
+    selectStatement
+        .append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
+    selectStatement
+        .append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
+    selectStatement
+        .append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
+    selectStatement.append(" ) ");
+    selectStatement
+        .append(" order by pubCreationDate DESC, pubBeginDate DESC, pubId DESC");
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    try {
+      java.util.Date now = new java.util.Date();
+      String dateNow = null;
+      synchronized (formatter) {
+        dateNow = formatter.format(now);
+        SilverTrace.info("publication",
+            "PublicationDAO.selectByBeginDateDescAndStatus()",
+            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+      }
+      String hourNow = null;
+      synchronized (hourFormatter) {
+        hourNow = hourFormatter.format(now);
+        SilverTrace.info("publication",
+            "PublicationDAO.selectByBeginDateDescAndStatus()",
+            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+      }
+
+      prepStmt = con.prepareStatement(selectStatement.toString());
+
+      prepStmt.setString(1, pubPK.getComponentName());
+
+      prepStmt.setString(2, dateNow);
+      prepStmt.setString(3, dateNow);
+      prepStmt.setString(4, dateNow);
+      prepStmt.setString(5, dateNow);
+      prepStmt.setString(6, hourNow);
+      prepStmt.setString(7, dateNow);
+      prepStmt.setString(8, dateNow);
+      prepStmt.setString(9, hourNow);
+      prepStmt.setString(10, dateNow);
+      prepStmt.setString(11, dateNow);
+      prepStmt.setString(12, hourNow);
+      prepStmt.setString(13, hourNow);
+
+      rs = prepStmt.executeQuery();
+
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * @param status
+   * @param fatherId
+   * @param fetchSize
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
+      Connection con, PublicationPK pubPK, String status, String fatherId,
+      int fetchSize) throws SQLException {
+    Collection lastPublis = getLastPublis(pubPK.getComponentName());
+    if (lastPublis != null) {
+      return lastPublis;
+    } else {
+      String selectStatement = QueryStringFactory
+          .getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK
+              .getTableName());
+
+      PreparedStatement prepStmt = null;
+      ResultSet rs = null;
+
+      try {
+        java.util.Date now = new java.util.Date();
+        String dateNow = null;
+        synchronized (formatter) {
+          dateNow = formatter.format(now);
+          SilverTrace
+              .info(
+                  "publication",
+                  "PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId()",
+                  "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        }
+        String hourNow = null;
+        synchronized (hourFormatter) {
+          hourNow = hourFormatter.format(now);
+          SilverTrace
+              .info(
+                  "publication",
+                  "PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId()",
+                  "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        }
+
+        prepStmt = con.prepareStatement(selectStatement);
+
+        prepStmt.setString(1, pubPK.getComponentName());
+        prepStmt.setInt(2, new Integer(fatherId).intValue());
+        prepStmt.setString(3, status);
+
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, dateNow);
+        prepStmt.setString(6, dateNow);
+        prepStmt.setString(7, dateNow);
+        prepStmt.setString(8, hourNow);
+        prepStmt.setString(9, dateNow);
+        prepStmt.setString(10, dateNow);
+        prepStmt.setString(11, hourNow);
+        prepStmt.setString(12, dateNow);
+        prepStmt.setString(13, dateNow);
+        prepStmt.setString(14, hourNow);
+        prepStmt.setString(15, hourNow);
+
+        rs = prepStmt.executeQuery();
+
+        int nbFetch = 0;
+        ArrayList list = new ArrayList();
+        PublicationDetail pub = null;
+        while (rs.next() && nbFetch < fetchSize) {
+          pub = resultSet2PublicationDetail(rs, pubPK);
+          list.add(pub);
+          nbFetch++;
+        }
+        cacheLastPublis(pubPK.getComponentName(), list);
+        return list;
+      } finally {
+        DBUtil.close(rs, prepStmt);
+      }
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection selectByBeginDateDesc(Connection con,
+      PublicationPK pubPK) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName());
+    selectStatement.append(" where instanceId = ? ");
+    selectStatement.append(" and (");
+    selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
+    selectStatement
+        .append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
+    selectStatement
+        .append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
+    selectStatement
+        .append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
+    selectStatement.append(" ) ");
+    selectStatement.append(" order by pubCreationDate DESC, pubBeginDate DESC");
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    try {
+      java.util.Date now = new java.util.Date();
+      String dateNow = null;
+      synchronized (formatter) {
+        dateNow = formatter.format(now);
+        SilverTrace.info("publication",
+            "PublicationDAO.selectByBeginDateDesc()",
+            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+      }
+      String hourNow = null;
+      synchronized (hourFormatter) {
+        hourNow = hourFormatter.format(now);
+        SilverTrace.info("publication",
+            "PublicationDAO.selectByBeginDateDesc()",
+            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+      }
+
+      prepStmt = con.prepareStatement(selectStatement.toString());
+
+      prepStmt.setString(1, pubPK.getComponentName());
+      prepStmt.setString(2, dateNow);
+      prepStmt.setString(3, dateNow);
+      prepStmt.setString(4, dateNow);
+      prepStmt.setString(5, dateNow);
+      prepStmt.setString(6, hourNow);
+      prepStmt.setString(7, dateNow);
+      prepStmt.setString(8, dateNow);
+      prepStmt.setString(9, hourNow);
+      prepStmt.setString(10, dateNow);
+      prepStmt.setString(11, dateNow);
+      prepStmt.setString(12, hourNow);
+      prepStmt.setString(13, hourNow);
+
+      rs = prepStmt.executeQuery();
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection getOrphanPublications(Connection con,
+      PublicationPK pubPK) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName());
+    selectStatement.append(" where pubId NOT IN (Select pubId from ").append(
+        pubPK.getTableName()).append("Father) ");
+    selectStatement.append(" and instanceId='")
+        .append(pubPK.getComponentName()).append("'");
+
+    Statement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = con.createStatement();
+      rs = stmt.executeQuery(selectStatement.toString());
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection getNotOrphanPublications(Connection con,
+      PublicationPK pubPK) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName());
+    selectStatement.append(" where pubId IN (Select pubId from ").append(
+        pubPK.getTableName()).append("Father) ");
+    selectStatement.append(" and instanceId='")
+        .append(pubPK.getComponentName()).append("' ");
+    selectStatement.append(" and (");
+    selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
+    selectStatement
+        .append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
+    selectStatement
+        .append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
+    selectStatement
+        .append("( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
+    selectStatement.append(" ) ");
+    selectStatement.append(" order by pubUpdateDate DESC ");
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      java.util.Date now = new java.util.Date();
+      String dateNow = null;
+      synchronized (formatter) {
+        dateNow = formatter.format(now);
+        SilverTrace.info("publication",
+            "PublicationDAO.selectByBeginDateDescAndStatus()",
+            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+      }
+      String hourNow = null;
+      synchronized (hourFormatter) {
+        hourNow = hourFormatter.format(now);
+        SilverTrace.info("publication",
+            "PublicationDAO.selectByBeginDateDescAndStatus()",
+            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+      }
+
+      prepStmt = con.prepareStatement(selectStatement.toString());
+
+      prepStmt.setString(1, dateNow);
+      prepStmt.setString(2, dateNow);
+      prepStmt.setString(3, dateNow);
+      prepStmt.setString(4, dateNow);
+      prepStmt.setString(5, hourNow);
+      prepStmt.setString(6, dateNow);
+      prepStmt.setString(7, dateNow);
+      prepStmt.setString(8, hourNow);
+      prepStmt.setString(9, dateNow);
+      prepStmt.setString(10, dateNow);
+      prepStmt.setString(11, hourNow);
+      prepStmt.setString(12, hourNow);
+
+      rs = prepStmt.executeQuery();
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * @param creatorId
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static void deleteOrphanPublicationsByCreatorId(Connection con,
+      PublicationPK pubPK, String creatorId) throws SQLException {
+    StringBuffer deleteStatement = new StringBuffer(128);
+    deleteStatement.append("delete from ").append(pubPK.getTableName());
+    deleteStatement.append(" where pubCreatorId=").append(creatorId);
+    deleteStatement.append(" and pubId NOT IN (Select pubId from ").append(
+        pubPK.getTableName()).append("Father ) ");
+    deleteStatement.append(" and instanceId='")
+        .append(pubPK.getComponentName()).append("'");
+
+    Statement stmt = null;
+
+    try {
+      stmt = con.createStatement();
+      stmt.executeUpdate(deleteStatement.toString());
+    } finally {
+      DBUtil.close(stmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pubPK
+   * @param publisherId
+   * @param nodeId
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection getUnavailablePublicationsByPublisherId(
+      Connection con, PublicationPK pubPK, String publisherId, String nodeId)
+      throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(pubPK.getTableName())
+        .append(" P, ").append(pubPK.getTableName()).append("Father F ");
+    selectStatement.append(" where P.instanceId = ? ");
+    selectStatement.append(" and F.pubId = P.pubId ");
+    selectStatement.append(" AND (F.nodeId = ").append(nodeId);
+    selectStatement.append(" OR ( ? < pubBeginDate ) ");
+    selectStatement.append(" OR ( pubBeginDate = ? AND ? < pubBeginHour )");
+    selectStatement.append(" OR ( ? > pubEndDate ) ");
+    selectStatement.append(" OR ( pubEndDate = ? AND ? > pubEndHour))");
+    if (publisherId != null)
+      selectStatement.append(" and P.pubCreatorId = ? ");
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement.toString());
+      prepStmt.setString(1, pubPK.getComponentName());
+      java.util.Date now = new java.util.Date();
+      String formattedDate = null;
+      synchronized (formatter) {
+        formattedDate = formatter.format(now);
+      }
+      String formattedHour = null;
+      synchronized (hourFormatter) {
+        formattedHour = hourFormatter.format(now);
+      }
+      prepStmt.setString(2, formattedDate);
+      prepStmt.setString(3, formattedDate);
+      prepStmt.setString(4, formattedHour);
+      prepStmt.setString(5, formattedDate);
+      prepStmt.setString(6, formattedDate);
+      prepStmt.setString(7, formattedHour);
+      if (publisherId != null)
+        prepStmt.setString(8, publisherId);
+
+      rs = prepStmt.executeQuery();
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /*
+   * @deprecated
+   */
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param query
+   * @param pubPK
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static Collection searchByKeywords(Connection con, String query,
+      PublicationPK pubPK) throws SQLException {
+    ArrayList result = new ArrayList();
+    return result;
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param pk
+   * 
+   * @return
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static PublicationDetail loadRow(Connection con, PublicationPK pk)
+      throws SQLException {
+    String selectStatement = QueryStringFactory.getLoadRow(pk.getTableName());
+    SilverTrace.info("publication", "PublicationDAO.loadRow()",
+        "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
+
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      PublicationDetail pub = null;
+      stmt = con.prepareStatement(selectStatement);
+      stmt.setInt(1, new Integer(pk.getId()).intValue());
+      rs = stmt.executeQuery();
+      if (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pk);
+        return pub;
+      } else {
+        throw new PublicationRuntimeException("PublicationDAO.loadRow()",
+            SilverpeasRuntimeException.ERROR,
+            "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "PublicationId = "
+                + pk.getId() + " not found in database !");
+      }
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param con
+   * @param detail
+   * 
+   * @throws SQLException
+   * 
+   * @see
+   */
+  public static void changeInstanceId(Connection con, PublicationPK pubPK,
+      String newInstanceId) throws SQLException {
+    SilverTrace.info("publication", "PublicationDAO.changeInstanceId()",
+        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
+            + ", newInstanceId = " + newInstanceId);
+    int rowCount = 0;
+
+    StringBuffer updateQuery = new StringBuffer(128);
+    updateQuery.append("update ").append(PublicationDAO.publicationTableName);
+    updateQuery.append(" set instanceId = ? ");
+    updateQuery.append(" where pubId = ? ");
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(updateQuery.toString());
+      prepStmt.setString(1, newInstanceId);
+      prepStmt.setInt(2, Integer.parseInt(pubPK.getId()));
+
+      rowCount = prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+
+    invalidateLastPublis(pubPK.getInstanceId());
+    invalidateLastPublis(newInstanceId);
+
+    if (rowCount == 0) {
+      throw new PublicationRuntimeException(
+          "PublicationDAO.changeInstanceId()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "PublicationId = "
+              + pubPK.getId());
+    }
+  }
+
+  public static void storeRow(Connection con, PublicationDetail detail)
+      throws SQLException {
+    int rowCount = 0;
+
+    StringBuffer updateQuery = new StringBuffer(128);
+    updateQuery.append("update ").append(detail.getPK().getTableName());
+    updateQuery
+        .append(" set infoId = ? , pubName = ? , pubDescription = ? , pubCreationDate = ? , pubBeginDate = ? , pubEndDate = ? , pubCreatorId = ? , pubImportance = ? , pubVersion = ? , pubKeywords = ? , pubContent = ? , pubStatus = ? , pubImage = ? , pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ? , pubAuthor = ? , pubTargetValidatorId = ? , pubCloneId = ? , pubCloneStatus = ? , lang = ? ");
+    updateQuery.append(" where pubId = ? ");
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(updateQuery.toString());
+      prepStmt.setString(1, detail.getInfoId());
+      SilverTrace.info("publication", "PublicationDAO.storeRow()",
+          "root.MSG_GEN_PARAM_VALUE", "InfoId = " + detail.getInfoId());
+      prepStmt.setString(2, detail.getName());
+      prepStmt.setString(3, detail.getDescription());
+      synchronized (formatter) {
+        prepStmt.setString(4, formatter.format(detail.getCreationDate()));
+      }
+      if (detail.getBeginDate() == null) {
+        prepStmt.setString(5, nullBeginDate);
+      } else {
+        synchronized (formatter) {
+          prepStmt.setString(5, formatter.format(detail.getBeginDate()));
+        }
+      }
+      if (detail.getEndDate() == null) {
+        prepStmt.setString(6, nullEndDate);
+      } else {
+        synchronized (formatter) {
+          prepStmt.setString(6, formatter.format(detail.getEndDate()));
+        }
+      }
+      prepStmt.setString(7, detail.getCreatorId());
+      prepStmt.setInt(8, detail.getImportance());
+      prepStmt.setString(9, detail.getVersion());
+      prepStmt.setString(10, detail.getKeywords());
+      prepStmt.setString(11, detail.getContent());
+      prepStmt.setString(12, detail.getStatus());
+      prepStmt.setString(13, detail.getImage());
+      prepStmt.setString(14, detail.getImageMimeType());
+      if (detail.getUpdateDate() == null)
+        prepStmt.setString(15, formatter.format(detail.getCreationDate()));
+      else
+        synchronized (formatter) {
+          prepStmt.setString(15, formatter.format(detail.getUpdateDate()));
+        }
+      if (detail.getUpdaterId() == null)
+        prepStmt.setString(16, detail.getCreatorId());
+      else
+        prepStmt.setString(16, detail.getUpdaterId());
+      prepStmt.setString(17, detail.getPK().getComponentName());
+
+      prepStmt.setString(18, detail.getValidatorId());
+      if (detail.getValidateDate() != null) {
+        synchronized (formatter) {
+          prepStmt.setString(19, formatter.format(detail.getValidateDate()));
+        }
+      } else {
+        prepStmt.setString(19, null);
+      }
+
+      if (isUndefined(detail.getBeginHour())) {
+        prepStmt.setString(20, nullBeginHour);
+      } else {
+        prepStmt.setString(20, detail.getBeginHour());
+      }
+
+      if (isUndefined(detail.getEndHour())) {
+        prepStmt.setString(21, nullEndHour);
+      } else {
+        prepStmt.setString(21, detail.getEndHour());
+      }
+
+      if (isUndefined(detail.getAuthor()))
+        prepStmt.setString(22, null);
+      else
+        prepStmt.setString(22, detail.getAuthor());
+
+      prepStmt.setString(23, detail.getTargetValidatorId());
+
+      if (isUndefined(detail.getCloneId()))
+        prepStmt.setInt(24, -1);
+      else
+        prepStmt.setInt(24, Integer.parseInt(detail.getCloneId()));
+
+      prepStmt.setString(25, detail.getCloneStatus());
+
+      prepStmt.setString(26, detail.getLanguage());
+
+      prepStmt.setInt(27, new Integer(detail.getPK().getId()).intValue());
+
+      rowCount = prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+
+    invalidateLastPublis(detail.getPK().getComponentName());
+
+    if (rowCount == 0) {
+      throw new PublicationRuntimeException("PublicationDAO.storeRow()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "PublicationId = "
+              + detail.getPK().getId());
+    }
+  }
+
+  // Added by ney - 23/08/2001
+
+  public static PublicationDetail selectByName(Connection con,
+      PublicationPK pubPK, String name) throws SQLException {
+    ResultSet rs = null;
+    PublicationDetail pub = null;
+    String selectStatement = QueryStringFactory.getSelectByName(pubPK
+        .getTableName());
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setString(1, name);
+      prepStmt.setString(2, pubPK.getComponentName());
+
+      rs = prepStmt.executeQuery();
+      if (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+
+    return pub;
+  }
+
+  public static PublicationDetail selectByNameAndNodeId(Connection con,
+      PublicationPK pubPK, String name, int nodeId) throws SQLException {
+    SilverTrace.info("publication", "PublicationDAO.selectByNameAndNodeId()",
+        "root.MSG_GEN_ENTER_METHOD", "componentId = "
+            + pubPK.getComponentName() + ", name = '" + name + "', nodeId = "
+            + nodeId);
+    ResultSet rs = null;
+    PublicationDetail pub = null;
+    String selectStatement = QueryStringFactory.getSelectByNameAndNodeId();
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setString(1, name);
+      prepStmt.setString(2, pubPK.getComponentName());
+      prepStmt.setInt(3, nodeId);
+
+      rs = prepStmt.executeQuery();
+      if (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, pubPK);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+
+    return pub;
+  }
+
+  public static Collection selectBetweenDate(Connection con, String beginDate,
+      String endDate, String instanceId) throws SQLException {
+    StringBuffer selectStatement = new StringBuffer(128);
+    selectStatement.append("select * from ").append(publicationTableName);
+    selectStatement.append(" where instanceId = ? ");
+    selectStatement.append(" and (");
+    selectStatement
+        .append("( ? <= pubCreationDate AND ? >= pubCreationDate ) ");
+    selectStatement.append(" ) ");
+    selectStatement.append(" order by pubCreationDate DESC, pubId DESC");
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    try {
+      prepStmt = con.prepareStatement(selectStatement.toString());
+
+      prepStmt.setString(1, instanceId);
+      prepStmt.setString(2, beginDate);
+      prepStmt.setString(3, endDate);
+
+      rs = prepStmt.executeQuery();
+      ArrayList list = new ArrayList();
+      PublicationDetail pub = null;
+      while (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, null);
+        list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 }

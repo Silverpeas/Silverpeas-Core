@@ -89,8 +89,8 @@ import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
 public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
@@ -108,8 +108,8 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Constructor declaration
-   *
-   *
+   * 
+   * 
    * @see
    */
   public PersonalizationBmEJB() {
@@ -117,12 +117,12 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param user
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void setActor(String userId) throws RemoteException {
@@ -131,10 +131,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @see
    */
   private Connection getConnection() {
@@ -179,14 +179,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   private PersonalizeDetail getPersonalizeDetail() throws RemoteException {
@@ -218,14 +218,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param languages
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setLanguages(Vector languages) throws RemoteException {
@@ -247,14 +247,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public Vector getLanguages() throws RemoteException {
@@ -292,14 +292,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public String getFavoriteLanguage() throws RemoteException {
@@ -319,14 +319,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public String getFavoriteLook() throws RemoteException {
@@ -356,14 +356,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param look
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setFavoriteLook(String look) throws RemoteException {
@@ -424,14 +424,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public boolean getThesaurusStatus() throws RemoteException {
@@ -461,14 +461,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param thesaurusStatus
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setThesaurusStatus(boolean thesaurusStatus)
@@ -494,14 +494,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public boolean getDragAndDropStatus() throws RemoteException {
@@ -531,14 +531,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param dragAndDropStatus
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setDragAndDropStatus(boolean dragAndDropStatus)
@@ -564,14 +564,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public boolean getOnlineEditingStatus() throws RemoteException {
@@ -602,14 +602,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param onlineEditingStatus
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public void setOnlineEditingStatus(boolean onlineEditingStatus)
@@ -636,14 +636,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @return
-   *
+   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   *
+   * 
    * @see
    */
   public boolean getWebdavEditingStatus() throws RemoteException {
@@ -674,12 +674,12 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @param webdavEditingStatus
-   *
+   * 
    * @throws RemoteException
-   *
+   * 
    * @see
    */
   public void setWebdavEditingStatus(boolean webdavEditingStatus)
@@ -714,11 +714,11 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
-   *
+   * 
    * @see
    */
   public void ejbRemove() throws javax.ejb.EJBException,
@@ -729,11 +729,11 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
-   *
+   * 
    * @see
    */
   public void ejbActivate() throws javax.ejb.EJBException,
@@ -744,11 +744,11 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   *
-   *
+   * 
+   * 
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
-   *
+   * 
    * @see
    */
   public void ejbPassivate() throws javax.ejb.EJBException,

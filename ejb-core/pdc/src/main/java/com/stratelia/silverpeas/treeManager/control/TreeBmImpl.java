@@ -107,7 +107,8 @@ public class TreeBmImpl implements TreeBm {
     String nodeId = node.getPK().getId();
     String treeId = node.getTreeId();
     int order = node.getOrderNumber();
-    // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à celui
+    // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
+    // celui
     // du noeud à modifier
     String whereClause = "path = (SELECT path FROM SB_Tree_Tree WHERE treeId = "
         + treeId
@@ -400,7 +401,8 @@ public class TreeBmImpl implements TreeBm {
         List list = getDescendants(con, root, filter);
 
         // 1 - On parcours la liste list
-        // pour chaque élément on le place correctement dans la liste ordonnée
+        // pour chaque élément on le place correctement dans la liste
+        // ordonnée
         if (list != null && list.size() > 0) {
           // Premier élément de la liste est l'élément racine
           TreeNodePersistence rootPers = (TreeNodePersistence) list.get(0);
@@ -860,7 +862,8 @@ public class TreeBmImpl implements TreeBm {
               + " following the alphabetic order");
     }
 
-    // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à celui
+    // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
+    // celui
     // du noeud à modifier
     String whereClause = "treeId = " + treeId + " and fatherId = "
         + father.getPK().getId() + " and orderNumber >= " + order

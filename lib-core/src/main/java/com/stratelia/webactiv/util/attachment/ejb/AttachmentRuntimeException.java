@@ -26,7 +26,6 @@ package com.stratelia.webactiv.util.attachment.ejb;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-
 public class AttachmentRuntimeException extends SilverpeasRuntimeException {
 
   /**

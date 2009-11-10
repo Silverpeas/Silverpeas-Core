@@ -112,7 +112,7 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         destination = "/jobManagerPeas/jsp/jobManager.jsp";
       } else if (function.startsWith("TopBarManager"))// lors du permier
-                                                      // accès=>
+      // accès=>
       // via jobManager.jsp
       {
         // set le service actif par le service par defaut; active aussi une

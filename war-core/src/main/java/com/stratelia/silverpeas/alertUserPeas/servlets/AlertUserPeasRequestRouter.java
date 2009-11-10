@@ -96,7 +96,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
       {
         destination = scc.initSelection();
       } else if (function.startsWith("FromSelection")) // récupère les users
-                                                       // et
+      // et
       // groupes selectionnés
       // au travers de
       // selectionPeas et les
