@@ -117,7 +117,10 @@ Definition des class de style Silverpeas
 .textePetitBold                   { font-size: 11px; font-weight: bold; color: #000000}
 .textePetitBoldVert                   { font-size: 11px; font-weight: bold; color: #661666}
 .textePetitBold2                  { font-size: 11px; font-weight: bold; color: #666666}
-.txtpetitblanc                    { font-size: 11px; font-weight: bold; color: #FFFFFF}
+.txtpetitblanc {
+  font-size: 11px;
+  font-weight: bold;
+  color: #FFFFFF}
 .txtGrandBlanc                    { font-size: 13pt; font-weight: bold; color: #FFFFFF}
 .txtlibform { 
   font-size: 8pt;
