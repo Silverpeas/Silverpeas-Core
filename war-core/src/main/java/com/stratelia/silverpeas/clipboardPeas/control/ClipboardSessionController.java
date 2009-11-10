@@ -289,16 +289,7 @@ public class ClipboardSessionController extends
     return str.toString();
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Method getMessageError
-   * 
-   * 
-   * @return
-   * 
-   * @see
-   */
-  public String getMessageError() {
+  public synchronized String getMessageError() {
     String message = null;
     Exception exc = null;
     ClipboardBm clipboard = getClipboard();
@@ -321,15 +312,10 @@ public class ClipboardSessionController extends
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Return the list of object (IndexEntry
-   * format) in clipbord.
-   * 
-   * @return
-   * 
-   * @see
+   *Return the list of object (IndexEntry format) in clipboard.
+   * @return the list of object (IndexEntry format) in clipboard. 
    */
-  public Collection getIndexEntryObjects() throws java.rmi.RemoteException {
+  public synchronized Collection getIndexEntryObjects() throws java.rmi.RemoteException {
     SilverTrace.info("clipboardPeas",
         "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -366,14 +352,10 @@ public class ClipboardSessionController extends
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Return the list of object in clipbord.
-   * 
-   * @return
-   * 
-   * @see
+   * Return the list of object in clipboard.
+   * @return the list of object in clipboard.
    */
-  public Collection getObjects() throws java.rmi.RemoteException,
+  public synchronized Collection getObjects() throws java.rmi.RemoteException,
       javax.naming.NamingException, java.sql.SQLException {
     ClipboardBm clipboard = getClipboard();
     ArrayList result = new ArrayList();
@@ -388,11 +370,8 @@ public class ClipboardSessionController extends
     return result;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   * 
-   */
+
+  @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
       settings = new ResourceLocator(
@@ -402,8 +381,8 @@ public class ClipboardSessionController extends
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Returns the label of the given domain/space
+   * Returns the label of the given domain/space
+   * @return the label of the given domain/space
    */
   public String getSpaceLabel(String spaceId) {
     SpaceInst spaceInst = getOrganizationController().getSpaceInstById(spaceId);

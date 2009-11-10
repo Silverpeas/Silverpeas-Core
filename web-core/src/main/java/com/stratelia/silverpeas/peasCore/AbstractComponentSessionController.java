@@ -22,13 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
+---*/
 /**
  * @author nicolas eysseric et didier wenzek
  * @version 1.0
  */
-
 package com.stratelia.silverpeas.peasCore;
 
 import java.net.URLEncoder;
@@ -47,10 +45,10 @@ import com.stratelia.webactiv.util.ResourceLocator;
 /**
  * Base class for all component session controller.
  */
-
 public class AbstractComponentSessionController implements
     ComponentSessionController {
   // Main sessioncontroller management
+
   private MainSessionController controller = null;
   private ComponentContext context = null;
   private String rootName = null;
@@ -77,8 +75,7 @@ public class AbstractComponentSessionController implements
     this.controller = controller;
     // this.messageLanguage = controller.getFavoriteLanguage();
     this.context = controller.createComponentContext(spaceId, componentId);
-    setComponentRootName(URLManager
-        .getComponentNameFromComponentId(componentId));
+    setComponentRootName(URLManager.getComponentNameFromComponentId(componentId));
   }
 
   /**
@@ -110,8 +107,8 @@ public class AbstractComponentSessionController implements
     this.controller = controller;
     // this.messageLanguage = controller.getFavoriteLanguage();
     this.context = context;
-    setComponentRootName(URLManager
-        .getComponentNameFromComponentId(getComponentId()));
+    setComponentRootName(URLManager.getComponentNameFromComponentId(
+        getComponentId()));
     setResourceFileName(resourceFileName);
   }
 
@@ -120,8 +117,8 @@ public class AbstractComponentSessionController implements
     this.controller = controller;
     // this.messageLanguage = controller.getFavoriteLanguage();
     this.context = context;
-    setComponentRootName(URLManager
-        .getComponentNameFromComponentId(getComponentId()));
+    setComponentRootName(URLManager.getComponentNameFromComponentId(
+        getComponentId()));
     setMultilangFileName(multilangFileName);
     setIconFileName(iconFileName);
   }
@@ -131,8 +128,8 @@ public class AbstractComponentSessionController implements
       String settingsFileName) {
     this.controller = controller;
     this.context = context;
-    setComponentRootName(URLManager
-        .getComponentNameFromComponentId(getComponentId()));
+    setComponentRootName(URLManager.getComponentNameFromComponentId(
+        getComponentId()));
     setMultilangFileName(multilangFileName);
     setIconFileName(iconFileName);
     this.settingsFile = settingsFileName;
@@ -142,7 +139,7 @@ public class AbstractComponentSessionController implements
     SilverTrace.info("peasCore",
         "AbstractComponentSessionController.getMultilang()",
         "root.MSG_GEN_ENTER_METHOD", "Current Language="
-            + controller.getFavoriteLanguage());
+        + controller.getFavoriteLanguage());
     if (message != null
         && !message.getLanguage().equals(controller.getFavoriteLanguage())) {
       // the resourcelocator language doesn't match with the current language
@@ -189,7 +186,7 @@ public class AbstractComponentSessionController implements
         SilverTrace.error("peasCore",
             "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
-                + "|Language=" + getLanguage(), e);
+            + "|Language=" + getLanguage(), e);
         message = new ResourceLocator(messageFile, "fr");
         // Une erreur s'est produite : on se rabat sur la langue par defaut.
         // Cependant, messageLanguage doit rester a la bonne valeur et ne pas
@@ -223,7 +220,7 @@ public class AbstractComponentSessionController implements
         SilverTrace.error("peasCore",
             "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
-                + "|Language=" + getLanguage(), e);
+            + "|Language=" + getLanguage(), e);
         icon = new ResourceLocator(iconFile, "fr");
         // Une erreur s'est produite : on se rabat sur la langue par defaut.
         // Cependant, messageLanguage doit rester a la bonne valeur et ne pas
@@ -260,7 +257,7 @@ public class AbstractComponentSessionController implements
         SilverTrace.error("peasCore",
             "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
-                + "|Language=" + getLanguage(), e);
+            + "|Language=" + getLanguage(), e);
         message = new ResourceLocator(messageFile, "fr");
         // Une erreur s'est produite : on se rabat sur la langue par defaut.
         // Cependant, messageLanguage doit rester a la bonne valeur et ne pas
@@ -320,6 +317,7 @@ public class AbstractComponentSessionController implements
    * 
    * @see
    */
+  @Override
   public OrganizationController getOrganizationController() {
     return getMainSessionController().getOrganizationController();
   }
@@ -327,6 +325,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the user language
    */
+  @Override
   public String getLanguage() {
     return getMainSessionController().getFavoriteLanguage();
   }
@@ -362,6 +361,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the UserDetail of the current user
    */
+  @Override
   public UserDetail getUserDetail() {
     return getMainSessionController().getCurrentUserDetail();
   }
@@ -373,6 +373,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the UserId of the current user
    */
+  @Override
   public String getUserId() {
     return getUserDetail().getId();
   }
@@ -380,6 +381,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the space label (as known by the user)
    */
+  @Override
   public String getSpaceLabel() {
     return context.getCurrentSpaceName();
   }
@@ -387,6 +389,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the space id
    */
+  @Override
   public String getSpaceId() {
     return context.getCurrentSpaceId();
   }
@@ -507,14 +510,18 @@ public class AbstractComponentSessionController implements
   /**
    * Return the name of the user's roles
    */
+  @Override
   public ClipboardBm getClipboard() {
-    return getMainSessionController().getClipboard();
+    synchronized (this) {
+      return getMainSessionController().getClipboard();
+    }
   }
 
   public void initClipboard() {
     getMainSessionController().initClipboard();
   }
 
+  @Override
   public synchronized PersonalizationBm getPersonalization() {
     return getMainSessionController().getPersonalization();
   }
@@ -590,6 +597,6 @@ public class AbstractComponentSessionController implements
         + URLEncoder.encode(getUserDetail().getLogin())
         + "&password="
         + URLEncoder.encode(controller.getOrganizationController().getUserFull(
-            getUserId()).getPassword());
+        getUserId()).getPassword());
   }
 }
