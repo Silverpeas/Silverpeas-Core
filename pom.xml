@@ -14,26 +14,6 @@
     <url>https://repository.silverpeas.org/redmine/repositories/show/silverpeas-core</url>
   </scm>
 
-  <distributionManagement>
-    <repository>
-      <id>silverpeas</id>
-      <name>Repository Silverpeas</name>
-      <layout>default</layout>
-      <url>dav:http://repository.silverpeas.org/nexus/content/repositories/releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>silverpeas-snapshots</id>
-      <name>Snapshots Repository Silverpeas</name>
-      <layout>default</layout>
-      <url>dav:http://repository.silverpeas.org/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-    <site>
-      <id>silverpeas.org</id>
-      <url>scp://repository.silverpeas.org/var/www/docs</url>
-    </site>
-  </distributionManagement>
-
-
   <repositories>
     <repository>
       <id>NexusSilverpeas</id>
