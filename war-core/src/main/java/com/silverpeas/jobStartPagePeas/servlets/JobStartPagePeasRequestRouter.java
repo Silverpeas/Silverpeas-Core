@@ -76,6 +76,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
    * returns the session control bean name to be put in the request object ex :
    * for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "jobStartPagePeas";
   }
@@ -86,7 +87,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       HttpServletRequest request) throws RemoteException {
     String destination = null;
 
-    if (jobStartPageSC.getClipboard().getSelectedObjects().size() > 0) {
+    if (jobStartPageSC.getClipboardSelectedObjects().size() > 0) {
       request.setAttribute("ObjectsSelectedInClipboard", "true");
     }
 

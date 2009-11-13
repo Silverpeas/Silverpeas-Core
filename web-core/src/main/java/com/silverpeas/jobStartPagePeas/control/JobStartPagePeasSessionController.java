@@ -1447,9 +1447,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     ComponentSelection compoSelect = new ComponentSelection(componentInst);
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasSessionController.copyComponent()",
-        "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboard().getName() + "' count=" + getClipboard().
-        getCount());
-    getClipboard().add((ClipboardSelection) compoSelect);
+        "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+    addClipboardSelection((ClipboardSelection) compoSelect);
   }
 
   /**
@@ -1461,9 +1460,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     try {
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSessionController.pasteComponent()",
-          "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboard().getName() + " count=" + getClipboard().
-          getCount());
-      Collection clipObjects = getClipboard().getSelectedObjects();
+          "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
+      Collection clipObjects = getClipboardSelectedObjects();
       Iterator clipObjectIterator = clipObjects.iterator();
       while (clipObjectIterator.hasNext()) {
         ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.
@@ -1482,8 +1480,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           "JobStartPagePeasSessionController.pasteComponent()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
     }
-
-    getClipboard().PasteDone();
+    clipboardPasteDone();
   }
 
   /**

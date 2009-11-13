@@ -28,12 +28,13 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import java.util.List;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
+import java.util.Collection;
 
 /**
  * The interface for all component session controllers.
@@ -86,9 +87,7 @@ public interface ComponentSessionController {
   public String[] getUserRoles();
 
   /** Return the higher user's role (admin, publisher or user) */
-  public String getUserRoleLevel();
-
-  public ClipboardBm getClipboard();
+  public String getUserRoleLevel();  
 
   public PersonalizationBm getPersonalization();
 
@@ -106,5 +105,29 @@ public interface ComponentSessionController {
   public boolean isSpaceInMaintenance(String spaceId);
 
   public void setSpaceModeMaintenance(String spaceId, boolean mode);
+
+  public Collection getClipboardSelectedObjects() throws Exception;
+
+   public String getClipboardErrorMessage() throws Exception;
+
+   public Exception getClipboardExceptionError() throws Exception;
+
+  public Collection getClipboardObjects() throws Exception;
+
+  public void addClipboardSelection(ClipboardSelection selection) throws Exception;
+
+  public String getClipboardName() throws Exception;
+
+  public Integer getClipboardCount() throws Exception;
+
+  public void clipboardPasteDone() throws Exception;
+
+  public void setClipboardSelectedElement(int index, boolean selected) throws Exception;
+
+   public int getClipboardSize() throws Exception;
+
+   public void removeClipboardElement(int index) throws Exception;
+
+   public void setClipboardError(String messageId, Exception ex) throws Exception;
 
 }

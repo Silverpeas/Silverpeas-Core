@@ -23,9 +23,11 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -44,6 +46,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
 import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
@@ -53,13 +56,13 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /*
- This object is used by all the components jsp that have access to the session.
- It is initialized given a login and a password which is authenticated.
- It provides functions to get information about the logged user (which is unique).
- It is also used to update the current environnement of the user (current domain, current component).
+This object is used by all the components jsp that have access to the session.
+It is initialized given a login and a password which is authenticated.
+It provides functions to get information about the logged user (which is unique).
+It is also used to update the current environnement of the user (current domain, current component).
  */
+public class MainSessionController extends AdminReference implements Clipboard {
 
-public class MainSessionController extends AdminReference {
   ClipboardBm m_ClipboardBm = null;
   PersonalizationBm m_PersonalizationBm = null;
   Object m_ComponentSOFactory = null;
@@ -74,17 +77,13 @@ public class MainSessionController extends AdminReference {
   Selection m_selection = null;
   private String userSpace = null;
   AlertUser m_alertUser = null;
-
   private String serverName = null;
   private String serverPort = null;
-
   String m_CurrentSpaceId = null;
   String m_CurrentComponentId = null;
-
   /** Maintenance Mode **/
   static boolean appInMaintenance = false;
   static ArrayList spacesInMaintenance = new ArrayList();
-
   // Last results from search engine
   private List lastResults = null;
   private boolean allowPasswordChange;
@@ -104,7 +103,7 @@ public class MainSessionController extends AdminReference {
     SilverTrace.info("peasCore",
         "MainSessionController.isSpaceInMaintenance()",
         "root.MSG_GEN_PARAM_VALUE", "mode="
-            + new Boolean(spacesInMaintenance.contains(spaceId)).toString());
+        + new Boolean(spacesInMaintenance.contains(spaceId)).toString());
     return spacesInMaintenance.contains(spaceId);
   }
 
@@ -112,13 +111,15 @@ public class MainSessionController extends AdminReference {
     SilverTrace.info("peasCore",
         "MainSessionController.setSpaceModeMaintenance()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + " mode="
-            + new Boolean(mode).toString());
+        + new Boolean(mode).toString());
     if (mode) {
-      if (!spacesInMaintenance.contains(spaceId))
+      if (!spacesInMaintenance.contains(spaceId)) {
         spacesInMaintenance.add(spaceId);
+      }
     } else {
-      if (spacesInMaintenance.contains(spaceId))
+      if (spacesInMaintenance.contains(spaceId)) {
         spacesInMaintenance.remove(spacesInMaintenance.indexOf(spaceId));
+      }
     }
   }
 
@@ -128,7 +129,7 @@ public class MainSessionController extends AdminReference {
   public MainSessionController(String sKey, String sSessionId) throws Exception {
     SilverTrace.info("peasCore", "MainSessionController.constructor()",
         "root.MSG_GEN_PARAM_VALUE", "sKey = " + sKey + " sSessionId="
-            + sSessionId);
+        + sSessionId);
     try {
       // Authenticate the user
       m_sUserId = m_Admin.authenticate(sKey, sSessionId, isAppInMaintenance());
@@ -163,7 +164,6 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- Connexion Functions -----------------------------
-
   public synchronized void setUserLoginBegin(Date d) {
     userLoginBegin = d;
   }
@@ -181,7 +181,6 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- Generic Panel Functions -----------------------------
-
   public void setGenericPanel(String panelKey, GenericPanel panel) {
     m_genericPanels.put(panelKey, panel);
   }
@@ -191,7 +190,6 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- Selection Functions -----------------------------
-
   public Selection getSelection() {
     if (m_selection == null) {
       m_selection = new Selection();
@@ -200,7 +198,6 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- AlertUser Functions -----------------------------
-
   public AlertUser getAlertUser() {
     if (m_alertUser == null) {
       m_alertUser = new AlertUser();
@@ -209,7 +206,6 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- Clipboard Functions -----------------------------
-
   public synchronized void initClipboard() {
     m_ClipboardBm = null;
   }
@@ -221,8 +217,8 @@ public class MainSessionController extends AdminReference {
           "root.MSG_GEN_ENTER_METHOD");
       try {
         m_ClipboardBm = ((ClipboardBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class))
-            .create("MainClipboard");
+            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class)).create(
+            "MainClipboard");
       } catch (Exception e) {
         throw new PeasCoreRuntimeException(
             "MainSessionController.getClipboard()", SilverpeasException.ERROR,
@@ -235,7 +231,6 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- Personalization Functions -----------------------------
-
   public synchronized void initPersonalization() {
     m_PersonalizationBm = null;
   }
@@ -247,9 +242,9 @@ public class MainSessionController extends AdminReference {
       // "MainSessionController.getPersonalization()",
       // "root.MSG_GEN_ENTER_METHOD");
       try {
-        PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-                PersonalizationBmHome.class);
+        PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
+            getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+            PersonalizationBmHome.class);
         m_PersonalizationBm = personalizationBmHome.create();
         m_PersonalizationBm.setActor(getUserId());
       } catch (Exception e) {
@@ -375,10 +370,10 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- Other functions -----------------------------
-
   public OrganizationController getOrganizationController() {
-    if (organizationController == null)
+    if (organizationController == null) {
       organizationController = new OrganizationController();
+    }
     return organizationController;
   }
 
@@ -457,8 +452,8 @@ public class MainSessionController extends AdminReference {
       if (user.getAccessLevel().equals("A") || m_sUserId.equals("0")) {
         return m_Admin.getClientSpaceIds(m_Admin.getAllSpaceIds());
       } else {
-        return m_Admin.getClientSpaceIds(m_Admin
-            .getUserManageableSpaceIds(m_sUserId));
+        return m_Admin.getClientSpaceIds(m_Admin.getUserManageableSpaceIds(
+            m_sUserId));
       }
     } catch (Exception e) {
       SilverTrace.error("peasCore",
@@ -470,8 +465,8 @@ public class MainSessionController extends AdminReference {
 
   public boolean isBackOfficeVisible() {
     return (getCurrentUserDetail().isBackOfficeVisible()
-        || getUserManageableSpaceIds().length > 0 || getUserManageableGroupIds()
-        .size() > 0);
+        || getUserManageableSpaceIds().length > 0 || getUserManageableGroupIds().
+        size() > 0);
   }
 
   public List getUserManageableGroupIds() {
@@ -522,7 +517,7 @@ public class MainSessionController extends AdminReference {
       SilverTrace.error("peasCore",
           "MainSessionController.createComponentContext",
           "peasCore.EX_CANT_CREATE_COMPONENT_CONTEXT", "sSpaceId=" + sSpaceId
-              + " | sComponent=" + sComponent, e);
+          + " | sComponent=" + sComponent, e);
     }
     return newInfos;
   }
@@ -550,7 +545,6 @@ public class MainSessionController extends AdminReference {
   // ---------------------------------
   // Profile functions
   // ---------------------------------
-
   /**
    * 
    * @deprecated
@@ -576,11 +570,11 @@ public class MainSessionController extends AdminReference {
   }
 
   // ------------------- ContentManager Functions -----------------------------
-
   public ContentManager getContentManager() {
     try {
-      if (contentManager == null)
+      if (contentManager == null) {
         contentManager = new ContentManager();
+      }
     } catch (Exception e) {
       SilverTrace.error("peasCore", "MainSessionController.getContentManager",
           "peasCore.EX_UNABLE_TO_GET_CONTENTMANAGER", e);
@@ -611,8 +605,9 @@ public class MainSessionController extends AdminReference {
 
   public void close() {
     try {
-      if (m_PersonalizationBm != null)
+      if (m_PersonalizationBm != null) {
         m_PersonalizationBm.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("peasCore", "MainSessionController.close",
           "peasCore.EX_UNABLE_TO_REMOVE_EJB", e);
@@ -622,8 +617,9 @@ public class MainSessionController extends AdminReference {
     }
 
     try {
-      if (m_ClipboardBm != null)
+      if (m_ClipboardBm != null) {
         m_ClipboardBm.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("peasCore", "MainSessionController.close",
           "peasCore.EX_UNABLE_TO_REMOVE_EJB", e);
@@ -656,4 +652,143 @@ public class MainSessionController extends AdminReference {
     return allowPasswordChange;
   }
 
+  @Override
+  public void add(ClipboardSelection clipObject) throws
+      RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.add(clipObject);
+    }
+  }
+
+  @Override
+  public ClipboardSelection getObject() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getObject();
+    }
+  }
+
+  @Override
+  public void PasteDone() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.PasteDone();
+    }
+  }
+
+  @Override
+  public Collection getSelectedObjects() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getSelectedObjects();
+    }
+  }
+
+  @Override
+  public Collection getObjects() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getObjects();
+    }
+  }
+
+  @Override
+  public int size() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.size();
+    }
+  }
+
+  @Override
+  public ClipboardSelection getObject(int index) throws
+      RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getObject(index);
+    }
+  }
+
+  @Override
+  public void setSelected(int index, boolean setIt) throws
+      RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.setSelected(index, setIt);
+    }
+  }
+
+  @Override
+  public void remove(int index) throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.remove(index);
+    }
+  }
+
+  @Override
+  public void clear() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.clear();
+    }
+  }
+
+  @Override
+  public void setMultiClipboard() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.setMultiClipboard();
+    }
+  }
+
+  @Override
+  public void setSingleClipboard() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.setSingleClipboard();
+    }
+  }
+
+  @Override
+  public String getName() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getName();
+    }
+  }
+
+  @Override
+  public Integer getCount() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getCount();
+    }
+  }
+
+  @Override
+  public String getMessageError() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getMessageError();
+    }
+  }
+
+  @Override
+  public Exception getExceptionError() throws RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      return clipboard.getExceptionError();
+    }
+  }
+
+  @Override
+  public void setMessageError(String messageID, Exception e) throws
+      RemoteException {
+    ClipboardBm clipboard = getClipboard();
+    synchronized (clipboard) {
+      clipboard.setMessageError(messageID, e);
+    }
+  }
 }

@@ -21,14 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
-/**
- * @author nicolas eysseric et didier wenzek
- * @version 1.0
- */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -36,19 +31,19 @@ import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.rmi.RemoteException;
+import java.util.Collection;
 
 /**
  * Base class for all component session controller.
  */
 public class AbstractComponentSessionController implements
     ComponentSessionController {
-  // Main sessioncontroller management
-
   private MainSessionController controller = null;
   private ComponentContext context = null;
   private String rootName = null;
@@ -442,6 +437,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the parameters for this component instance
    */
+  @Override
   public List getComponentParameters() {
     return getMainSessionController().getComponentParameters(getComponentId());
   }
@@ -450,6 +446,7 @@ public class AbstractComponentSessionController implements
    * Return the parameter value for this component instance and the given
    * parameter name
    */
+  @Override
   public String getComponentParameterValue(String parameterName) {
     return getMainSessionController().getComponentParameterValue(
         getComponentId(), parameterName);
@@ -458,6 +455,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the user's available components Ids list
    */
+  @Override
   public String[] getUserAvailComponentIds() {
     return getMainSessionController().getUserAvailComponentIds();
   }
@@ -465,6 +463,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the user's available space Ids list
    */
+  @Override
   public String[] getUserAvailSpaceIds() {
     return getMainSessionController().getUserAvailSpaceIds();
   }
@@ -484,6 +483,7 @@ public class AbstractComponentSessionController implements
   /**
    * Return the name of the user's roles
    */
+  @Override
   public String[] getUserRoles() {
     return context.getCurrentProfile();
   }
@@ -491,35 +491,23 @@ public class AbstractComponentSessionController implements
   /**
    * Return the highest user's role (admin, publisher or user)
    */
+  @Override
   public String getUserRoleLevel() {
     String[] profiles = getUserRoles();
-    String flag = "user";
+    String flag = SilverpeasRole.user.toString();
 
     for (int i = 0; i < profiles.length; i++) {
       // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
+      if (SilverpeasRole.admin == SilverpeasRole.valueOf(profiles[i])) {
         return profiles[i];
       }
-      if (profiles[i].equals("publisher")) {
+      if (SilverpeasRole.publisher == SilverpeasRole.valueOf(profiles[i])) {
         flag = profiles[i];
       }
     }
     return flag;
   }
 
-  /**
-   * Return the name of the user's roles
-   */
-  @Override
-  public ClipboardBm getClipboard() {
-    synchronized (this) {
-      return getMainSessionController().getClipboard();
-    }
-  }
-
-  public void initClipboard() {
-    getMainSessionController().initClipboard();
-  }
 
   @Override
   public synchronized PersonalizationBm getPersonalization() {
@@ -551,18 +539,22 @@ public class AbstractComponentSessionController implements
   }
 
   // Maintenance Mode
+  @Override
   public boolean isAppInMaintenance() {
     return getMainSessionController().isAppInMaintenance();
   }
 
+  @Override
   public void setAppModeMaintenance(boolean mode) {
     getMainSessionController().setAppModeMaintenance(mode);
   }
 
+  @Override
   public boolean isSpaceInMaintenance(String spaceId) {
     return getMainSessionController().isSpaceInMaintenance(spaceId);
   }
 
+  @Override
   public void setSpaceModeMaintenance(String spaceId, boolean mode) {
     getMainSessionController().setSpaceModeMaintenance(spaceId, mode);
   }
@@ -598,5 +590,65 @@ public class AbstractComponentSessionController implements
         + "&password="
         + URLEncoder.encode(controller.getOrganizationController().getUserFull(
         getUserId()).getPassword());
+  }
+
+  @Override
+  public Collection getClipboardSelectedObjects() throws RemoteException {
+    return controller.getSelectedObjects();
+  }
+
+  @Override
+  public String getClipboardErrorMessage() throws RemoteException {
+    return controller.getMessageError();
+  }
+
+  @Override
+  public Exception getClipboardExceptionError() throws RemoteException {
+    return controller.getExceptionError();
+  }
+
+  @Override
+  public Collection getClipboardObjects() throws RemoteException {
+    return controller.getObjects();
+  }
+
+  @Override
+  public void addClipboardSelection(ClipboardSelection selection) throws RemoteException {
+    controller.add(selection);
+  }
+
+  @Override
+  public String getClipboardName() throws RemoteException {
+    return controller.getName();
+  }
+
+  @Override
+  public Integer getClipboardCount() throws RemoteException {
+    return controller.getCount();
+  }
+
+  @Override
+  public void clipboardPasteDone() throws RemoteException {
+    controller.PasteDone();
+  }
+
+  @Override
+  public void setClipboardSelectedElement(int index, boolean selected) throws RemoteException {
+    controller.setSelected(index, selected);
+  }
+
+  @Override
+   public int getClipboardSize() throws RemoteException {
+    return controller.size();
+  }
+
+  @Override
+   public void removeClipboardElement(int index) throws RemoteException {
+    controller.remove(index);
+  }
+
+  @Override
+   public void setClipboardError(String messageId, Exception ex) throws RemoteException {
+    controller.setMessageError(messageId, ex);
   }
 }

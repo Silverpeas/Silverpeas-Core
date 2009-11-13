@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.clipboardPeas.control;
 
@@ -45,12 +43,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
-
-// import com.stratelia.webactiv.util.publication.model.*;
 
 /**
  * A servlet ClipboardSessionControler acts as a proxy for a ClipboardBm EJB.
@@ -141,7 +136,7 @@ public class ClipboardSessionController extends
    */
   public String getHF_JavaScriptTask(HttpServletRequest request) {
     String message = request.getParameter("message");
-    StringBuffer str = new StringBuffer("");
+    StringBuilder str = new StringBuilder();
 
     if (message != null) {
       SilverTrace.info("clipboardPeas",
@@ -150,8 +145,7 @@ public class ClipboardSessionController extends
 
       if (message.equals("SHOWCLIPBOARD")) {
         // portage netscape
-        str
-            .append("top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
+        str.append("top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
         str.append("top.ClipboardWindow.focus();");
       } else if (message.equals("REFRESHCLIPBOARD")) {
         // portage netscape
@@ -290,17 +284,14 @@ public class ClipboardSessionController extends
   }
 
   public synchronized String getMessageError() {
-    String message = null;
-    Exception exc = null;
-    ClipboardBm clipboard = getClipboard();
-
+    String errorMessage = null;
     try {
-      message = clipboard.getMessageError();
-      if (message != null) {
-        message = getString(message);
-        exc = clipboard.getExceptionError();
+      errorMessage = getClipboardErrorMessage();
+      if (errorMessage != null) {
+        errorMessage = getString(errorMessage);
+        Exception exc = getClipboardExceptionError();
         if (exc != null) {
-          message = message + exc.getMessage();
+          errorMessage = errorMessage + exc.getMessage();
         }
       }
     } catch (Exception e) {
@@ -308,7 +299,7 @@ public class ClipboardSessionController extends
           "ClipboardSessionController.getMessageError()",
           "clipboardPeas.EX_CANT_GET_MESSAGE", "", e);
     }
-    return message;
+    return errorMessage;
   }
 
   /**
@@ -319,18 +310,13 @@ public class ClipboardSessionController extends
     SilverTrace.info("clipboardPeas",
         "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_ENTER_METHOD");
-    ClipboardBm clipboard = getClipboard();
     ArrayList result = new ArrayList();
-    Collection clipObjects = clipboard.getObjects();
-    Iterator qi = clipObjects.iterator();
-
+    Iterator qi  = getClipboardObjects().iterator();
     while (qi.hasNext()) {
       Transferable clipObject = (Transferable) qi.next();
 
       if ((clipObject != null)
           && (clipObject.isDataFlavorSupported(ClipboardSelection.IndexFlavor))) {
-        // ce qu'il faut faire
-        // (clipObject.isDataFlavorSupported (StrateliaSelection.urlFlavor))) {
         try {
           IndexEntry indexEntry;
 
@@ -357,14 +343,10 @@ public class ClipboardSessionController extends
    */
   public synchronized Collection getObjects() throws java.rmi.RemoteException,
       javax.naming.NamingException, java.sql.SQLException {
-    ClipboardBm clipboard = getClipboard();
     ArrayList result = new ArrayList();
-    Collection clipObjects = clipboard.getObjects();
-    Iterator qi = clipObjects.iterator();
-
+    Iterator qi =  getClipboardObjects().iterator();
     while (qi.hasNext()) {
       ClipboardSelection clipObject = (ClipboardSelection) qi.next();
-
       result.add(clipObject);
     }
     return result;
