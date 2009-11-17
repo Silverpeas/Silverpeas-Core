@@ -10,7 +10,7 @@ Objectif: Ce mode opératoire vous permet de personnaliser l'éditeur wysiwyg de v
 
     <fileset root="${SILVERPEAS_HOME}/silverpeas/properties/com/stratelia/silverpeas/">
 			<configfile name="wysiwyg/settings/wysiwygSettings.properties">
-				<parameter key="configFile">http://<votre serveur>/weblib/customWysiwyg/myconfig.js</parameter>
+				<parameter key="configFile">/weblib/customWysiwyg/myconfig.js</parameter>
 			</configfile>
     </fileset>
 
@@ -21,7 +21,12 @@ Objectif: Ce mode opératoire vous permet de personnaliser l'éditeur wysiwyg de v
 Les plugins s'activent avec la commande :
 
 FCKConfig.Plugins.Add( 'imgmap', 'fr,en') ;
+
+// Plugin flvPalyer: ajouter flvPlayer dans la toolbar
 //FCKConfig.Plugins.Add( 'flvPlayer','en,fr') ;
+
+// Plugin infobulle: ajouter Infobulle dans la toolbar
+//FCKConfig.Plugins.Add( 'infobulle') ;			
 
 Ci dessus, le plugin imgmap est activé, mais flvPlaye est désactivé.
 
@@ -33,7 +38,7 @@ FCKConfig.ToolbarSets["Default"] = [
 ['Cut','Copy','Paste','PasteText','PasteWord'],
 ['Undo','Redo','-','Find','Replace'],
 ['Link','Unlink','Anchor'],
-['Image','imgmapPopup','flvPlayer','Flash','Table','Rule','SpecialChar'],
+['Image','imgmapPopup','Flash','Table','Rule','SpecialChar'],
 
 Exemple: imgmapPopup et flvPlayer permet d'activer les 2 icones des plugins imgmap et flvplayer
 
