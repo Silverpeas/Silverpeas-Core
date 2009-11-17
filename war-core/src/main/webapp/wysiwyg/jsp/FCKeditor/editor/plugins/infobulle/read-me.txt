@@ -1,0 +1,39 @@
+PLug-in permettant d'ajouter des textes avec infobulles utilisant une CSS.
+-------------------------------------------------------------------------
+
+1/ Dans fckconfig.js ou myconfig.js, ajouter le plugin :
+
+FCKConfig.Plugins.Add( 'infobulle') ;
+
+
+2/ Dans les barres d'outils, ajouter 'Infobulle'
+
+3/ La classe Css associée doit s'appeler infotexte et est définie comme ceci :
+
+.infotexte {
+ border: 1px solid #8e002a;
+ border-left: 10px solid #8e002a;
+ background:white;
+ font-weight:normal; font-style:normal; font-family:sans-serif;
+ font-size:12px;line-height:normal; text-decoration:none;
+ position:absolute; margin-top:1em;
+ margin-left:-999em;
+}
+
+.infotexte span {
+ border-bottom: 3px double;
+ text-decoration: none;	
+	}
+
+a .infotexte 	{
+ border-bottom: 3px double;
+ color: black;
+ text-decoration: none;	
+}
+
+a:visited .infotexte {
+ color: black;
+}
+a:hover .infotexte {margin-left:-1em;
+    text-decoration: none;
+}
