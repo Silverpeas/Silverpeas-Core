@@ -1,17 +1,13 @@
 <!--Wrap each ticker content inside <div class="message"> tag -->
 
 <div class="message">
-<a href="http://www.javascriptkit.com" target="_new"><b><font color="red">JavaScript Kit :</font></b></a> Comprehensive JavaScript tutorials and over 400+ free scripts!
+Welcome to <font color="green"><b>Silverpeas V5</b></font> !
 </div>
 
 <div class="message">
-<a href="http://www.codingforums.com">Coding Forums</a> Web coding and development forums.
+Find all information on our website : www.silverpeas.com
 </div>
 
 <div class="message">
-<a href="http://www.cssdrive.com">CSS Drive</a> Categorized CSS gallery and examples.
-</div>
-
-<div class="message">
-<a href="http://www.javascriptkit.com/domref/">DOM Reference</a> This is a no-nonsense, easy to follow DOM reference for JavaScript.
+Note: You can easily change these messages by editing the files in the directory %SILVERPEAS_HOME%/data/weblib/ticker
 </div>

@@ -1,13 +1,13 @@
 <!--Wrap each ticker content inside <div class="message"> tag -->
 
 <div class="message">
-<font color="red">Attention ! </font> Indisponibilit&eacute; de l'extranet le 4 novembre entre 10h et 12h
+Bienvenue sur <font color="green"><b>Silverpeas V5</b></font> !
 </div>
 
 <div class="message">
-Cause de l'interruption : Installation de Silverpeas v4.10
+Retrouvez toutes les infos sur notre site web : www.silverpeas.com
 </div>
 
 <div class="message">
-sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec. sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec.
+Nota bene : Vous pouvez facilement modifier ces messages en &eacute;ditant les fichiers du r&eacute;pertoire %SILVERPEAS_HOME%/data/weblib/ticker
 </div>
