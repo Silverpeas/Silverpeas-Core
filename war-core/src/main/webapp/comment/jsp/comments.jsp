@@ -35,7 +35,7 @@
 <%@ include file="checkComment.jsp" %>
 <%@ include file="graphicUtil.jsp.inc"%>
 <%!
-    void displayComments( ResourceLocator messages, String id, String component_id, String user_id, String profile, String hLineSrc, String modif_icon, String delete_icon, String language, JspWriter out) throws IOException, CreateException, SQLException, NamingException, RemoteException, FinderException {
+    void displayComments( ResourceLocator messages, String id, String component_id, String user_id, String profile, String hLineSrc, String modif_icon, String delete_icon, boolean adminAllowedToUpdate, String language, JspWriter out) throws IOException, CreateException, SQLException, NamingException, RemoteException, FinderException {
           out.println("<TABLE border=\"0\" cellPadding=\"0\" cellSpacing=\"3\" align=\"center\" width=\"100%\"><tr><td>");
           out.println("<TR><TD colspan=\"6\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+
                         "\" width=\"100%\" height=\"1\"></TD></TR>");
@@ -75,10 +75,18 @@
             out.println("<td align=\"left\" valign=\"top\">"+creation_date+"</td>");
             out.println("<td align=\"left\" valign=\"top\">"+modification_date+"</td>");
             owner_id = String.valueOf(comment.getOwnerId());
-            if ( is_admin || owner_id.equals(user_id) )
+            if (owner_id.equals(user_id))
             {
                 out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:updateComment("+comment_id+")\"><IMG SRC=\""+modif_icon+"\" border=\"0\" alt=\""+messages.getString("modify")+"\" title=\""+messages.getString("modify")+"\"></A></td>");
                 out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:removeComment("+comment_id+")\"><IMG SRC=\""+delete_icon+"\" border=\"0\" alt=\""+messages.getString("delete")+"\" title=\""+messages.getString("delete")+"\"></A></td>");
+            }
+            else if (is_admin)
+            {
+            	if (adminAllowedToUpdate) 
+            	{
+            		out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:updateComment("+comment_id+")\"><IMG SRC=\""+modif_icon+"\" border=\"0\" alt=\""+messages.getString("modify")+"\" title=\""+messages.getString("modify")+"\"></A></td>");
+            	}
+                out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:removeComment("+comment_id+")\"><IMG SRC=\""+delete_icon+"\" border=\"0\" alt=\""+messages.getString("delete")+"\" title=\""+messages.getString("delete")+"\"></A></td>");            	
             }
             else
             {
@@ -103,14 +111,19 @@
     
     if (indexIt == null || "null".equals(indexIt) || indexIt.length()==0)
   		indexIt = "1";
+    
+    boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
+    ResourceLocator commentSettings = new ResourceLocator("com.stratelia.webactiv.util.comment.Comment","");
+	boolean adminAllowedToUpdate = commentSettings.getBoolean("AdminAllowedToUpdate", true);
 
     Board board = gef.getBoard();
     out.println(board.printBefore());
-    displayComments(messages, id, component_id, user_id, profile, hLineSrc, modif_icon, delete_icon, language, out);
+    displayComments(messages, id, component_id, user_id, profile, hLineSrc, modif_icon, delete_icon, adminAllowedToUpdate, language, out);
     out.println(board.printAfter());
     ButtonPane buttonPane = gef.getButtonPane();
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<% if (!isUserGuest) { %>
 <script language="Javascript">
 function addComment()
 {
@@ -145,3 +158,4 @@ function commentCallBack()
 <input type="hidden" name="url" value="<%=url%>">
 <input type="hidden" name="pub_id" value="<%=id%>">
 </form>
+<% } %>
