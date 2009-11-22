@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SilverpeasExchange targetComponentId="kmelia621" xmlns="http://intranoo.oevo.com/websilverpeas/exchange/v5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://intranoo.oevo.com/websilverpeas/exchange/v308 http://intranoo.oevo.com/websilverpeas/exchange/v5/SilverpeasExchange.xsd">
+	<repositories>
+		<repository path="\\Silver-fs\documents\tests\lot4\" componentId="kmelia621" topicId="289" massiveType="RECURSIVE_REPLICATE"/>
+	</repositories>
+</SilverpeasExchange>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SilverpeasExchange xmlns="http://intranoo.oevo.com/websilverpeas/exchange/v5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://intranoo.oevo.com/websilverpeas/exchange/v5 file:///opt/Silverpeas/SilverpeasExchange.xsd">
+	<topicTrees>
+		<topicTree componentId="kmelia16">
+			<topic id="678">
+				<name>1-Informations aux INTERNES</name>
+				<description>Informations aux INTERNES</description>
+				<topic id="679">
+					<name>2-Test</name>
+					<description>Test</description>
+				</topic>
+				<topic id="680">
+					<name>3-Test</name>
+					<description>Test</description>
+				</topic>
+			</topic>
+		</topicTree>
+		<topicTree componentId="kmelia16">
+			<topic id="681">
+				<name>2-Informations aux EXTERNES</name>
+				<description>Informations aux EXTERNES</description>
+				<topic id="681">
+					<name>AAA</name>
+					<description></description>
+				</topic>
+				<topic id="682">
+					<name>BBB</name>
+					<description></description>
+				</topic>
+			</topic>
+		</topicTree>
+	</topicTrees>	
+</SilverpeasExchange>

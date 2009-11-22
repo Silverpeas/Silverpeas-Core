@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SilverpeasExchange targetComponentId="kmelia621" xmlns="http://intranoo.oevo.com/websilverpeas/exchange/v308" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://intranoo.oevo.com/websilverpeas/exchange/v5 http://intranoo.oevo.com/websilverpeas/exchange/v5/SilverpeasExchange.xsd">
+	<publications>
+		<publication>
+			<publicationHeader>
+				<name>Publication import�e</name>
+				<description>la description de la publication xml</description>
+				<creationDate>2005-01-01</creationDate>
+				<beginDate>2005-01-02</beginDate>
+				<endDate>2006-01-03</endDate>
+				<creatorId>98</creatorId>
+				<importance>1</importance>
+				<version>1.0</version>
+				<keywords>publication castor xml</keywords>
+				<status>Valid</status>
+				<vignette>\\Silver-fs\documents\tests\lot2\logo_silverpeas.gif</vignette>	
+			</publicationHeader>
+			<attachments>
+				<attachment path="\\Silver-fs\documents\tests\lot2\dossier1\sousdossier\Tryptique.doc"/>
+				<attachment path="\\Silver-fs\documents\tests\lot2\dossier2\MANUEL BDD.xls"/>
+				<attachment path="\\Silver-fs\documents\tests\lot2\dossier2\logo_silverpeas.gif"/>
+			</attachments>
+			<topicPositions>
+				<topicPosition topicId="289"/>
+				<topicPosition topicId="290"/>
+			</topicPositions>
+			<pdcPositions>
+				<pdcPosition>
+					<axisPosition axisId="3" pdcValuePath="/0/2/9/"/>
+					<axisPosition axisId="4" pdcValuePath="/0/1/"/>
+				</pdcPosition>
+				<pdcPosition>
+					<axisPosition axisId="3" pdcValuePath="/0/1/4/6/"/>
+					<axisPosition axisId="4" pdcValuePath="/0/3/"/>
+				</pdcPosition>
+			</pdcPositions>
+		</publication>
+	</publications>
+</SilverpeasExchange>

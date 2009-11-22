@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SilverpeasExchange targetComponentId="kmelia621" xmlns="http://intranoo.oevo.com/websilverpeas/exchange/v308" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://intranoo.oevo.com/websilverpeas/exchange/v5 http://intranoo.oevo.com/websilverpeas/exchange/v5/SilverpeasExchange.xsd">
+	<publications>
+		<publication>
+			<attachments>
+				<attachment path="\\Silver-fs\documents\tests\lot1\dossier1\sousdossier\Tryptique.doc"/>
+				<attachment path="\\Silver-fs\documents\tests\lot1\dossier2\MANUEL BDD.xls"/>
+				<attachment path="\\Silver-fs\documents\tests\lot1\dossier2\logo_silverpeas.gif"/>
+			</attachments>
+			<topicPositions>
+				<topicPosition topicId="289"/>
+				<topicPosition topicId="290"/>
+			</topicPositions>
+		</publication>
+	</publications>
+</SilverpeasExchange>
+
