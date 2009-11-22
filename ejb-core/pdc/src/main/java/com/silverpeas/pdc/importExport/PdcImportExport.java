@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -224,10 +225,10 @@ public class PdcImportExport {
    * @return un objet PdcType contenant les axes recherchés
    * @throws PdcException
    */
-  public PdcType getPdc(ArrayList listClassifyPosition) throws PdcException {
+  public PdcType getPdc(List listClassifyPosition) throws PdcException {
 
     // On construit une liste des axes à exporter
-    HashSet set = new HashSet();
+    Set set = new HashSet();
     Iterator itListClassifyPosition = listClassifyPosition.iterator();
     while (itListClassifyPosition.hasNext()) {
       ClassifyPosition classPos = (ClassifyPosition) itListClassifyPosition
@@ -242,7 +243,7 @@ public class PdcImportExport {
 
     // On parcours la liste des axes à exporter
     PdcType pdcType = new PdcType();
-    ArrayList listAxisType = new ArrayList();
+    List listAxisType = new ArrayList();
     pdcType.setListAxisType(listAxisType);
     Iterator itSet = set.iterator();
     while (itSet.hasNext()) {
@@ -256,7 +257,7 @@ public class PdcImportExport {
       listAxisType.add(axisType);
       // Récupération de la totalité de l'arbre de l'axe avec la méthode
       // récursive getValueTree
-      ArrayList listPdcValueType = getValueTree(axisId, valueRoot.getPK()
+      List listPdcValueType = getValueTree(axisId, valueRoot.getPK()
           .getId());
       axisType.setListPdcValueType(listPdcValueType);
     }
