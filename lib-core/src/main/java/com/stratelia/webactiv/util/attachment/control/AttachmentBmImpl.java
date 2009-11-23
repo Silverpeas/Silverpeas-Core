@@ -323,7 +323,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     try {
       SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()",
           "root.MSG_GEN_EXIT_METHOD", " senderId = " + senderId
-              + " componentId = " + componentId);
+          + " componentId = " + componentId);
       notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null
           || notifMetaData.getSender().length() == 0)

@@ -41,18 +41,15 @@ import org.apache.log4j.Priority;
 import org.apache.log4j.net.SMTPAppender;
 
 /**
- * SilverLog is the trace tool used in silverpeas to log the users' connexions.
- * This is a 'fully' static class. All functions could be called directly and is
- * thread-safe. The log function is : log.
- * 
+ * SilverLog is the trace tool used in silverpeas to log the users' connexions. This is a 'fully'
+ * static class. All functions could be called directly and is thread-safe. The log function is :
+ * log.
  * @author Marc Guillemin
- * 
  */
 public class SilverLog {
 
   /**
    * Used in setTraceLevel to reset a level trace
-   * 
    * @see #setTraceLevel
    * @see #getTraceLevel
    */
@@ -60,7 +57,6 @@ public class SilverLog {
 
   /**
    * Debug-level traces
-   * 
    * @see #setTraceLevel
    * @see #getTraceLevel
    */
@@ -68,7 +64,6 @@ public class SilverLog {
 
   /**
    * Info-level traces
-   * 
    * @see #setTraceLevel
    * @see #getTraceLevel
    */
@@ -76,7 +71,6 @@ public class SilverLog {
 
   /**
    * Warning-level traces
-   * 
    * @see #setTraceLevel
    * @see #getTraceLevel
    */
@@ -84,7 +78,6 @@ public class SilverLog {
 
   /**
    * Error-level traces
-   * 
    * @see #setTraceLevel
    * @see #getTraceLevel
    */
@@ -92,7 +85,6 @@ public class SilverLog {
 
   /**
    * Fatal-level traces
-   * 
    * @see #setTraceLevel
    * @see #getTraceLevel
    */
@@ -100,7 +92,6 @@ public class SilverLog {
 
   /**
    * Appender sending informations on console
-   * 
    * @see #addAppenderConsole
    * @see #removeAppender
    */
@@ -108,7 +99,6 @@ public class SilverLog {
 
   /**
    * Appender sending informations on file
-   * 
    * @see #addAppenderFile
    * @see #removeAppender
    */
@@ -116,7 +106,6 @@ public class SilverLog {
 
   /**
    * Appender sending informations on rolling file
-   * 
    * @see #addAppenderRollingFile
    * @see #removeAppender
    * @see #ROLLING_MODE_MOUNTH
@@ -128,7 +117,6 @@ public class SilverLog {
 
   /**
    * Appender sending informations mail
-   * 
    * @see #addAppenderMail
    * @see #removeAppender
    */
@@ -136,15 +124,12 @@ public class SilverLog {
 
   /**
    * Used to remove all appenders attached to this module
-   * 
    * @see #removeAppender
    */
   public static final int APPENDER_ALL = 0xFFFFFFFF;
 
   /**
-   * HTML layout : Display "Time / Thread / Priority / Category / Message" into
-   * a TABLE
-   * 
+   * HTML layout : Display "Time / Thread / Priority / Category / Message" into a TABLE
    * @see #addAppenderConsole
    * @see #addAppenderFile
    * @see #addAppenderRollingFile
@@ -154,7 +139,6 @@ public class SilverLog {
 
   /**
    * Short layout : Display "Time / Priority / Message"
-   * 
    * @see #addAppenderConsole
    * @see #addAppenderFile
    * @see #addAppenderRollingFile
@@ -163,9 +147,7 @@ public class SilverLog {
   public static String LAYOUT_SHORT = "LAYOUT_SHORT";
 
   /**
-   * Detailed layout : Display
-   * "Time / Priority / Calling Class and module / Message"
-   * 
+   * Detailed layout : Display "Time / Priority / Calling Class and module / Message"
    * @see #addAppenderConsole
    * @see #addAppenderFile
    * @see #addAppenderRollingFile
@@ -176,7 +158,6 @@ public class SilverLog {
   /**
    * Fully detailed layout : Display
    * "Tic count / Time / Priority / Thread / Calling Class and module / Message"
-   * 
    * @see #addAppenderConsole
    * @see #addAppenderFile
    * @see #addAppenderRollingFile
@@ -186,37 +167,32 @@ public class SilverLog {
 
   /**
    * The trace file will be copied every 1st day of a mounth with the name :
-   * FileName.ext.year-mounth A new file named FileName.ext is the created and
-   * will contains the next mounth's traces Example : MyFile.txt.2001-07
-   * 
+   * FileName.ext.year-mounth A new file named FileName.ext is the created and will contains the
+   * next mounth's traces Example : MyFile.txt.2001-07
    * @see #addAppenderRollingFile
    */
   public static String ROLLING_MODE_MOUNTH = "'.'yyyy-MM";
 
   /**
-   * The trace file will be copied every 1st day of a week with the name :
-   * FileName.ext.year-week A new file named FileName.ext is the created and
-   * will contains the next week's traces Example : MyFile.txt.2001-34
-   * 
+   * The trace file will be copied every 1st day of a week with the name : FileName.ext.year-week A
+   * new file named FileName.ext is the created and will contains the next week's traces Example :
+   * MyFile.txt.2001-34
    * @see #addAppenderRollingFile
    */
   public static String ROLLING_MODE_WEEK = "'.'yyyy-ww";
 
   /**
    * The trace file will be copied every day at midnight with the name :
-   * FileName.ext.year-mounth-day A new file named FileName.ext is the created
-   * and will contains the next day's traces Example : MyFile.txt.2001-07-23
-   * 
+   * FileName.ext.year-mounth-day A new file named FileName.ext is the created and will contains the
+   * next day's traces Example : MyFile.txt.2001-07-23
    * @see #addAppenderRollingFile
    */
   public static String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
 
   /**
-   * The trace file will be copied every hour with the name :
-   * FileName.ext.year-mounth-day-hour A new file named FileName.ext is the
-   * created and will contains the next hour's traces Example :
+   * The trace file will be copied every hour with the name : FileName.ext.year-mounth-day-hour A
+   * new file named FileName.ext is the created and will contains the next hour's traces Example :
    * MyFile.txt.2001-07-23-18
-   * 
    * @see #addAppenderRollingFile
    */
   public static String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
@@ -231,7 +207,8 @@ public class SilverLog {
   // protected static String layoutDetailed =
   // "%d{dd/MM/yy-HH:mm:SSS} - %-5p : %m%n";
   protected static String layoutDetailed = "%d{dd/MM/yy-HH:mm:SSS},%m%n";
-  protected static String layoutFullDebug = "%-15.15r [%-26.26t] - %d{dd/MM/yy-HH:mm:SSS} - %-5p : %m%n";
+  protected static String layoutFullDebug =
+      "%-15.15r [%-26.26t] - %d{dd/MM/yy-HH:mm:SSS} - %-5p : %m%n";
 
   // Initialisation
   static {
@@ -242,14 +219,9 @@ public class SilverLog {
 
   /**
    * Log connexion informations.
-   * 
-   * @param message
-   *          login/logout
-   * @param adresseIP
-   *          of the connected client
-   * @param userLogin
-   *          of the connected client
-   * 
+   * @param message login/logout
+   * @param adresseIP of the connected client
+   * @param userLogin of the connected client
    */
   static public void logConnexion(String message, String adresseIP,
       String userLogin) {
@@ -295,10 +267,7 @@ public class SilverLog {
 
   /**
    * Loads the configuration from the resource given in argument.
-   * 
-   * 
-   * @param fileProperties
-   *          the properties to merge with the current configuration
+   * @param fileProperties the properties to merge with the current configuration
    */
   static public void initFromBundle(ResourceBundle resource) {
 
@@ -351,12 +320,9 @@ public class SilverLog {
 
   /**
    * Read appender information from a property file and attach it to it's module
-   * 
-   * 
    * @param fileProperties
    * @param appenderNumber
    * @param appenderType
-   * 
    */
   static protected void addAppenderFromBundle(ResourceBundle resource,
       int appenderNumber, int appenderType) {
@@ -428,16 +394,11 @@ public class SilverLog {
   }
 
   /**
-   * Add a new console appender. If an appender with the same type have been
-   * previously set, delete it and replace it with the new created one.
-   * 
-   * 
-   * @param patternLayout
-   *          the things displayed in this appender, could be one of the
-   *          LAYOUT_... constants
-   * @param consoleName
-   *          Name of the console output. If null or "", "system.out" is used
-   * 
+   * Add a new console appender. If an appender with the same type have been previously set, delete
+   * it and replace it with the new created one.
+   * @param patternLayout the things displayed in this appender, could be one of the LAYOUT_...
+   * constants
+   * @param consoleName Name of the console output. If null or "", "system.out" is used
    */
   static protected void addAppenderConsole(String patternLayout,
       String consoleName) {
@@ -456,25 +417,19 @@ public class SilverLog {
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderConsole()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "Console " + ","
-                + patternLayout + "," + consoleName, e);
+            + patternLayout + "," + consoleName, e);
       }
     }
   }
 
   /**
-   * Add a new file appender. If an appender with the same type have been
-   * previously set, delete it and replace it with the new created one.
-   * 
-   * 
-   * @param patternLayout
-   *          the things displayed in this appender, could be one of the
-   *          LAYOUT_... constants
-   * @param fileName
-   *          full-path name of the file where the trace are written
-   * @param appendOnFile
-   *          true to append at the end of the existing file (if ther is one),
-   *          false to remove old file before writting
-   * 
+   * Add a new file appender. If an appender with the same type have been previously set, delete it
+   * and replace it with the new created one.
+   * @param patternLayout the things displayed in this appender, could be one of the LAYOUT_...
+   * constants
+   * @param fileName full-path name of the file where the trace are written
+   * @param appendOnFile true to append at the end of the existing file (if ther is one), false to
+   * remove old file before writting
    */
   static protected void addAppenderFile(String patternLayout, String fileName,
       boolean appendOnFile) {
@@ -492,25 +447,19 @@ public class SilverLog {
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderFile()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "File " + patternLayout + ","
-                + fileName, e);
+            + fileName, e);
       }
     }
   }
 
   /**
-   * Add a new rolling file appender. If an appender with the same type have
-   * been previously set, delete it and replace it with the new created one.
-   * 
-   * 
-   * @param patternLayout
-   *          the things displayed in this appender, could be one of the
-   *          LAYOUT_... constants
-   * @param fileName
-   *          full-path name of the file where the trace are written
-   * @param rollingMode
-   *          frequency of the rolling file, could be one of the
-   *          ROLLING_MODE_... constants
-   * 
+   * Add a new rolling file appender. If an appender with the same type have been previously set,
+   * delete it and replace it with the new created one.
+   * @param patternLayout the things displayed in this appender, could be one of the LAYOUT_...
+   * constants
+   * @param fileName full-path name of the file where the trace are written
+   * @param rollingMode frequency of the rolling file, could be one of the ROLLING_MODE_...
+   * constants
    */
   static protected void addAppenderRollingFile(String patternLayout,
       String fileName, String rollingMode) {
@@ -525,31 +474,22 @@ public class SilverLog {
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderRollingFile()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "RollingFile " + ","
-                + patternLayout + "," + fileName, e);
+            + patternLayout + "," + fileName, e);
       }
     }
   }
 
   /**
-   * Add a new mail appender. If an appender with the same type have been
-   * previously set, delete it and replace it with the new created one. How it
-   * works : mails are only sent when an ERROR or FATAL occur. The mail contains
-   * the error and the 512 last traces taken into account (ie, higher than the
-   * trace level).
-   * 
-   * 
-   * @param patternLayout
-   *          the things displayed in this appender, could be one of the
-   *          LAYOUT_... constants
-   * @param mailHost
-   *          host name
-   * @param mailFrom
-   *          email of the sender
-   * @param mailTo
-   *          target email, could be multiple targets separeted with comas
-   * @param mailSubject
-   *          subject of the mail
-   * 
+   * Add a new mail appender. If an appender with the same type have been previously set, delete it
+   * and replace it with the new created one. How it works : mails are only sent when an ERROR or
+   * FATAL occur. The mail contains the error and the 512 last traces taken into account (ie, higher
+   * than the trace level).
+   * @param patternLayout the things displayed in this appender, could be one of the LAYOUT_...
+   * constants
+   * @param mailHost host name
+   * @param mailFrom email of the sender
+   * @param mailTo target email, could be multiple targets separeted with comas
+   * @param mailSubject subject of the mail
    */
   static protected void addAppenderMail(String patternLayout, String mailHost,
       String mailFrom, String mailTo, String mailSubject) {
@@ -569,20 +509,15 @@ public class SilverLog {
       } catch (Exception e) {
         SilverTrace.error("silvertrace", "SilverLog.addAppenderMail()",
             "silvertrace.ERR_CANT_ADD_APPENDER", "SMTP " + "," + patternLayout
-                + "," + mailHost, e);
+            + "," + mailHost, e);
       }
     }
   }
 
   /**
-   * Remove appender(s). typeOfAppender could be one value or a mask of multiple
-   * appender types
-   * 
-   * 
-   * @param typeOfAppender
-   *          could be a mask of APPENDER_... values or APPENDER_ALL to remove
-   *          all appenders attached to the module
-   * 
+   * Remove appender(s). typeOfAppender could be one value or a mask of multiple appender types
+   * @param typeOfAppender could be a mask of APPENDER_... values or APPENDER_ALL to remove all
+   * appenders attached to the module
    */
   static protected void removeAppender(int typeOfAppender) {
     if (logCategory != null) {
@@ -603,11 +538,7 @@ public class SilverLog {
 
   /**
    * Format the trace message to send to log4j
-   * 
-   * 
-   * 
    * @return the built message
-   * 
    */
   static protected String formatTraceMessage(String message, String adresseIP,
       String userLogin) {
@@ -628,9 +559,7 @@ public class SilverLog {
 
   /**
    * Translate the @ErrorDir@ into the real value
-   * 
    * @param fileName
-   * 
    */
   static protected String translateFileName(String fileName) {
     String valret = fileName;
@@ -650,12 +579,8 @@ public class SilverLog {
 
   /**
    * Return the layout object depending on it's name
-   * 
-   * 
    * @param patternLayout
-   * 
    * @return
-   * 
    */
   static protected Layout getLayout(String patternLayout) {
     if (patternLayout.equalsIgnoreCase(LAYOUT_HTML)) {
@@ -674,12 +599,8 @@ public class SilverLog {
 
   /**
    * Return the name of the appender depending on it's attached module and type
-   * 
-   * 
    * @param typeOfAppender
-   * 
    * @return
-   * 
    */
   static protected String getAppenderName(int typeOfAppender) {
     if ((typeOfAppender & APPENDER_CONSOLE) == APPENDER_CONSOLE) {

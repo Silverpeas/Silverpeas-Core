@@ -125,7 +125,7 @@ public class OOParser implements Parser {
           Element currentElement = (Element) childrenElements.next();
           SilverTrace.debug("indexEngine", "OOParser.parse()",
               "Current Element = " + currentElement.getName() + " - "
-                  + currentElement.getText());
+              + currentElement.getText());
           parsingResult.append(" ").append(currentElement.getText());
         }
       }
@@ -197,7 +197,7 @@ public class OOParser implements Parser {
               || entry.getName().equals("content.xml")) {
             copyInputStream(zipFile.getInputStream(entry),
                 new BufferedOutputStream(new FileOutputStream(dest
-                    + File.separator + entry.getName())));
+                + File.separator + entry.getName())));
             destLs.add(dest.getAbsolutePath() + File.separator
                 + entry.getName());
           }

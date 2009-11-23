@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author EDurand
  * @version 1.0
  */
@@ -38,8 +37,6 @@ public class TestInitialize implements IInitialize {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TestInitialize() {
@@ -47,10 +44,7 @@ public class TestInitialize implements IInitialize {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean Initialize() {

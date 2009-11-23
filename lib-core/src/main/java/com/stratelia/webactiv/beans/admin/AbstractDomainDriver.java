@@ -50,109 +50,91 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * No possible actions Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_NONE = 0x00000000;
   /**
    * Read Users' infos action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_READ_USER = 0x00000001;
   /**
    * Read Groups' infos action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_READ_GROUP = 0x00000002;
   /**
    * Update Users' infos action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_UPDATE_USER = 0x00000004;
   /**
    * Update Groups' infos action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_UPDATE_GROUP = 0x00000008;
   /**
    * Create User action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_CREATE_USER = 0x00000010;
   /**
    * Create Group action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_CREATE_GROUP = 0x00000020;
   /**
    * Delete User action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_DELETE_USER = 0x00000040;
   /**
    * Delete Group action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_DELETE_GROUP = 0x00000080;
   /**
    * Add/Remove User from group action Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_EDIT_USER_IN_GROUP = 0x00000100;
   /**
    * Add a user in Silverpeas DB by synchronization with a reference LDAP DB
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_IMPORT_USER = 0x00000200;
   /**
    * Updates user Silverpeas infos from LDAP DB
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_SYNCHRO_USER = 0x00000400;
   /**
    * Remove user entry from Silverpeas
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_REMOVE_USER = 0x00000800;
   /**
    * Add a group in Silverpeas DB by synchronization with a reference LDAP DB
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_IMPORT_GROUP = 0x00001000;
   /**
    * Updates group Silverpeas infos from LDAP DB
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_SYNCHRO_GROUP = 0x00002000;
   /**
    * Remove group entry from Silverpeas
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_REMOVE_GROUP = 0x00004000;
   /**
    * Create a x509 certificate and store it in server's truststore
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_X509_USER = 0x00008000;
   /**
    * All available actions Mask
-   * 
    * @see #getDriverActions
    */
   final static public long ACTION_MASK_ALL = 0xFFFFFFFF;
@@ -172,16 +154,12 @@ abstract public class AbstractDomainDriver extends Object {
       | ACTION_EDIT_USER_IN_GROUP;
 
   /**
-   * Initialize the domain driver with the initialization parameter stocked in
-   * table This parameter could be a table name or a ressource file name or
-   * whatever specified by the domain driver Default : ressource file name
-   * 
-   * @param domainId
-   *          id of domain
-   * @param initParam
-   *          name of resource file
-   * @param authenticationServer
-   *          name of the authentication server (no more used yet)
+   * Initialize the domain driver with the initialization parameter stocked in table This parameter
+   * could be a table name or a ressource file name or whatever specified by the domain driver
+   * Default : ressource file name
+   * @param domainId id of domain
+   * @param initParam name of resource file
+   * @param authenticationServer name of the authentication server (no more used yet)
    * @throws Exception
    */
   public void init(int domainId, String initParam, String authenticationServer)
@@ -309,11 +287,9 @@ abstract public class AbstractDomainDriver extends Object {
   }
 
   /**
-   * Virtual method that performs extra initialization from a properties file.
-   * To overload by the class who need it.
-   * 
-   * @param rs
-   *          name of resource file
+   * Virtual method that performs extra initialization from a properties file. To overload by the
+   * class who need it.
+   * @param rs name of resource file
    */
   public void initFromProperties(ResourceLocator rs) throws Exception {
   }
@@ -387,10 +363,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Called when Admin ends the synchronization
-   * 
-   * @param cancelSynchro
-   *          true if the synchronization is cancelled, false if it ends
-   *          normally
+   * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
   public String endSynchronization(boolean cancelSynchro) throws Exception {
     synchroInProcess = false;
@@ -399,9 +372,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Import a given user in Database from the reference
-   * 
-   * @param userLogin
-   *          The User Login to import
+   * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
   public UserDetail importUser(String userLogin) throws Exception {
@@ -412,9 +383,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Remove a given user from database
-   * 
-   * @param userId
-   *          The user id To remove synchro
+   * @param userId The user id To remove synchro
    */
   public void removeUser(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.removeUser",
@@ -424,9 +393,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Update user information in database
-   * 
-   * @param userId
-   *          The User Id to synchronize
+   * @param userId The User Id to synchronize
    * @return The User object that contain new user information
    */
   public UserDetail synchroUser(String userId) throws Exception {
@@ -437,9 +404,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Create a given user in Database
-   * 
-   * @param m_User
-   *          The User object that contain new user information@return String
+   * @param m_User The User object that contain new user information@return String
    * @return The user id as stored in the database
    */
   public String createUser(UserDetail user) throws Exception {
@@ -450,9 +415,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Delete a given user from database
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    */
   public void deleteUser(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.deleteUser",
@@ -462,9 +425,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Update user information in database
-   * 
-   * @param m_User
-   *          The User object that contain user information
+   * @param m_User The User object that contain user information
    */
   public void updateUserFull(UserFull user) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateUser",
@@ -474,9 +435,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Update user information in database
-   * 
-   * @param m_User
-   *          The User object that contain user information
+   * @param m_User The User object that contain user information
    */
   public void updateUserDetail(UserDetail user) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateUser",
@@ -486,9 +445,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve user information from database
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
   public UserDetail getUser(String userId) throws Exception {
@@ -499,18 +456,14 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve user information from database
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    * @return The full User object that contain ALL user informations
    */
   abstract public UserFull getUserFull(String userId) throws Exception;
 
   /**
    * Retrieve user's groups
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
   public String[] getUserMemberGroupIds(String userId) throws Exception {
@@ -521,7 +474,6 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve all users from the database
-   * 
    * @return User[] An array of User Objects that contain users information
    */
   public UserDetail[] getAllUsers() throws Exception {
@@ -545,9 +497,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Import a given group in Database from the reference
-   * 
-   * @param groupName
-   *          The group name to import
+   * @param groupName The group name to import
    * @return The group object that contain new group information
    */
   public Group importGroup(String groupName) throws Exception {
@@ -558,9 +508,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Remove a given group from database
-   * 
-   * @param groupId
-   *          The group id To remove synchro
+   * @param groupId The group id To remove synchro
    */
   public void removeGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.removeGroup",
@@ -570,9 +518,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Update group information in database
-   * 
-   * @param groupId
-   *          The group Id to synchronize
+   * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
   public Group synchroGroup(String groupId) throws Exception {
@@ -583,9 +529,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Create a given group in database
-   * 
-   * @param m_Group
-   *          New group information
+   * @param m_Group New group information
    * @return The group id as stored in the database
    */
   public String createGroup(Group m_Group) throws Exception {
@@ -596,9 +540,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Delete a given group from database
-   * 
-   * @param groupId
-   *          The group id as stored in the database
+   * @param groupId The group id as stored in the database
    */
   public void deleteGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.deleteGroup",
@@ -608,9 +550,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Update group information in database
-   * 
-   * @param m_Group
-   *          The Group object that contains user information
+   * @param m_Group The Group object that contains user information
    */
   public void updateGroup(Group m_Group) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateGroup",
@@ -620,9 +560,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve group information from database
-   * 
-   * @param groupId
-   *          The group id as stored in the database
+   * @param groupId The group id as stored in the database
    * @return The Group object that contains group information
    */
   public Group getGroup(String groupId) throws Exception {
@@ -633,9 +571,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve group information from database
-   * 
-   * @param groupName
-   *          The group name as stored in the database
+   * @param groupName The group name as stored in the database
    * @return The Group object that contains group information
    */
   public Group getGroupByName(String groupName) throws Exception {
@@ -646,9 +582,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve all groups contained in the given group
-   * 
-   * @param groupId
-   *          The group id as stored in the database
+   * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
   public Group[] getGroups(String groupId) throws Exception {
@@ -659,7 +593,6 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve all groups from the database
-   * 
    * @return Group[] An array of Group Objects that contain groups information
    */
   public Group[] getAllGroups() throws Exception {
@@ -670,7 +603,6 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve all root groups from the database
-   * 
    * @return Group[] An array of Group Objects that contain groups information
    */
   public Group[] getAllRootGroups() throws Exception {
@@ -681,9 +613,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Retrieve group's parents
-   * 
-   * @param groupId
-   *          The group id as stored in the database
+   * @param groupId The group id as stored in the database
    * @return The Group's parents specific Ids
    */
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
@@ -694,10 +624,8 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Start a new transaction
-   * 
-   * @param bAutoCommit
-   *          Specifies is transaction is automatically committed (without
-   *          explicit 'commit' statement)
+   * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
+   * 'commit' statement)
    */
   public void startTransaction(boolean bAutoCommit) throws Exception {
     throw new AdminException("AbstractDomainDriver.startTransaction",
@@ -727,9 +655,7 @@ abstract public class AbstractDomainDriver extends Object {
   // ---------------
   /**
    * Convert String Id to int Id
-   * 
-   * @param id
-   *          id to convert
+   * @param id id to convert
    */
   static protected int idAsInt(String id) {
     if (id == null || id.length() == 0)
@@ -744,9 +670,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Convert int Id to String Id
-   * 
-   * @param id
-   *          id to convert
+   * @param id id to convert
    */
   static protected String idAsString(int id) {
     return Integer.toString(id);

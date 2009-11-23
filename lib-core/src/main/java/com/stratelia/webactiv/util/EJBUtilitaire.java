@@ -35,7 +35,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * This class provides different EJB services.
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -44,16 +43,11 @@ public class EJBUtilitaire {
   private static Hashtable<String, Object> homeFetcher = new Hashtable<String, Object>();
 
   /**
-   * Return a remote object Using example : PublicationHome pubHome =
-   * (PublicationHome)
-   * EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATION_EJBHOME,
-   * PublicationHome.class);
-   * 
+   * Return a remote object Using example : PublicationHome pubHome = (PublicationHome)
+   * EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATION_EJBHOME, PublicationHome.class);
    * @return a remote object
-   * @param name
-   *          the JNDI name of the object
-   * @param classObj
-   *          the class file name of the object
+   * @param name the JNDI name of the object
+   * @param classObj the class file name of the object
    * @since 1.0
    */
   public static java.lang.Object getEJBObjectRef(String name, Class<?> classObj)

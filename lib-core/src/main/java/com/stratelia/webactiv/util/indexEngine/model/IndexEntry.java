@@ -33,33 +33,25 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
- * IndexEntry is the base class for all the entries which are indexed in the
- * web'activ index.
- * 
- * A IndexEntry is create by a web'activ's component when it creates a new
- * element or document. This IndexEntry will be return later when the document
- * matchs a query.
+ * IndexEntry is the base class for all the entries which are indexed in the web'activ index. A
+ * IndexEntry is create by a web'activ's component when it creates a new element or document. This
+ * IndexEntry will be return later when the document matchs a query.
  */
 
 public class IndexEntry implements Serializable {
   /**
-   * This constructor set the key part of the IndexEntry but leave empty the
-   * object type.
-   * 
-   * This constructor can be used by any component which indexes only one kind
-   * of entities and then doesn't need to tag them with a type.
+   * This constructor set the key part of the IndexEntry but leave empty the object type. This
+   * constructor can be used by any component which indexes only one kind of entities and then
+   * doesn't need to tag them with a type.
    */
   public IndexEntry(WAPrimaryKey key) {
     this(new IndexEntryPK(key.componentName, "", key.id));
   }
 
   /**
-   * This constructor set the key part of the IndexEntry from WAPrimaryKey
-   * completed with a type given as a String.
-   * 
-   * When the indexed document will be retrieved, this type will be used to
-   * distinguish the real type of the document between all the indexed document
-   * kind.
+   * This constructor set the key part of the IndexEntry from WAPrimaryKey completed with a type
+   * given as a String. When the indexed document will be retrieved, this type will be used to
+   * distinguish the real type of the document between all the indexed document kind.
    */
   public IndexEntry(WAPrimaryKey key, String type) {
     this(new IndexEntryPK(key.componentName, type, key.id));
@@ -67,7 +59,6 @@ public class IndexEntry implements Serializable {
 
   /**
    * The constructor only set the key part of the IndexEntry.
-   * 
    * @deprecated - parameter space is no more used
    */
   public IndexEntry(String space, String component, String objectType,
@@ -87,8 +78,7 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Returns as a string the key part of the indexEntry. the key part of the
-   * IndexEntry
+   * Returns as a string the key part of the indexEntry. the key part of the IndexEntry
    */
   @Override
   public String toString() {
@@ -103,9 +93,7 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Return the space of the indexed document or the userId if the space is a
-   * private working space.
-   * 
+   * Return the space of the indexed document or the userId if the space is a private working space.
    * @deprecated - to use this method is forbidden
    */
   public String getSpace() {
@@ -120,8 +108,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Return the type of the indexed document. The meaning of this type is
-   * uniquely determined by the component handling the object.
+   * Return the type of the indexed document. The meaning of this type is uniquely determined by the
+   * component handling the object.
    */
   public String getObjectType() {
     return pk.getObjectType();
@@ -135,8 +123,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Set the title of the index entry as it will be displayed to the user if the
-   * indexed document match his query.
+   * Set the title of the index entry as it will be displayed to the user if the indexed document
+   * match his query.
    */
   public void setTitle(String title) {
     setTitle(title, null);
@@ -149,8 +137,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Return the title of the index entry as it will be displayed to the user if
-   * the indexed document match his query.
+   * Return the title of the index entry as it will be displayed to the user if the indexed document
+   * match his query.
    */
   public String getTitle() {
     if (getTitle(null) != null) {
@@ -191,8 +179,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Set a pre-view text for the index entry as it will be displayed at the user
-   * when the document will be retrieved.
+   * Set a pre-view text for the index entry as it will be displayed at the user when the document
+   * will be retrieved.
    */
   public void setPreView(String preview) {
     setPreview(preview, null);
@@ -205,8 +193,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Return the pre-view text for the index entry as it will be displayed at the
-   * user when the document will be retrieved.
+   * Return the pre-view text for the index entry as it will be displayed at the user when the
+   * document will be retrieved.
    */
   public String getPreView() {
     if (getPreview(null) != null) {
@@ -230,7 +218,7 @@ public class IndexEntry implements Serializable {
    * Return the language of the indexed document.
    */
   public String getLang() {
-    if (lang != null)  {
+    if (lang != null) {
       return lang;
     }
     return "";
@@ -261,18 +249,16 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Set the author of the indexed document.
-   * 
-   * This is the full name of the user (and not his login or user_id).
+   * Set the author of the indexed document. This is the full name of the user (and not his login or
+   * user_id).
    */
   public void setCreationUser(String creationUser) {
     this.creationUser = creationUser;
   }
 
   /**
-   * Return the author of the indexed document.
-   * 
-   * This is the full name of the user (and not his login or user_id).
+   * Return the author of the indexed document. This is the full name of the user (and not his login
+   * or user_id).
    */
   public String getCreationUser() {
     if (creationUser != null) {
@@ -289,15 +275,13 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * The start date defaults to 0000/00/00 so the document is visible as soon as
-   * published.
+   * The start date defaults to 0000/00/00 so the document is visible as soon as published.
    */
   static public final String STARTDATE_DEFAULT = "0000/00/00";
 
   /**
-   * Get the start date from which the document will be displayed.
-   * 
-   * Returns 0000/00/00 if the start date is not set.
+   * Get the start date from which the document will be displayed. Returns 0000/00/00 if the start
+   * date is not set.
    */
   public String getStartDate() {
     if (startDate != null)
@@ -307,8 +291,7 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * The end date defaults to 9999/99/99 so the document will be visible for
-   * ever.
+   * The end date defaults to 9999/99/99 so the document will be visible for ever.
    */
   static public final String ENDDATE_DEFAULT = "9999/99/99";
 
@@ -320,9 +303,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Get the end date until which the document will be displayed.
-   * 
-   * Returns 9999/99/99 if the end date is not set.
+   * Get the end date until which the document will be displayed. Returns 9999/99/99 if the end date
+   * is not set.
    */
   public String getEndDate() {
     if (endDate != null)
@@ -332,10 +314,8 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * To be equal two IndexEntry must have the same PK.
-   * 
-   * The equals method is redefined so IndexEntry objects can be put in a Set or
-   * used as Map key.
+   * To be equal two IndexEntry must have the same PK. The equals method is redefined so IndexEntry
+   * objects can be put in a Set or used as Map key.
    */
   @Override
   public boolean equals(Object o) {
@@ -347,13 +327,9 @@ public class IndexEntry implements Serializable {
   }
 
   /**
-   * Returns the hash code of the indexEntry.
-   * 
-   * The hashCode method is redefined so IndexEntry objects can be put in a Set
-   * or used as Map key.
-   * 
-   * Only the primary key is used to compute the hash code, as only the primary
-   * key is used to compare two entries.
+   * Returns the hash code of the indexEntry. The hashCode method is redefined so IndexEntry objects
+   * can be put in a Set or used as Map key. Only the primary key is used to compute the hash code,
+   * as only the primary key is used to compare two entries.
    */
   @Override
   public int hashCode() {
@@ -366,13 +342,9 @@ public class IndexEntry implements Serializable {
   private final IndexEntryPK pk;
 
   /**
-   * The IndexEntry attributes are null by default.
-   * 
-   * The title should been set in order to display the entry to the user when
-   * the document match his query.
-   * 
-   * The index engine may set with a default value any of this attributes if
-   * null.
+   * The IndexEntry attributes are null by default. The title should been set in order to display
+   * the entry to the user when the document match his query. The index engine may set with a
+   * default value any of this attributes if null.
    */
   private String lang = null;
   private String creationDate = null;

@@ -44,14 +44,11 @@ public class WysiwygInstanciator extends SQLRequest {
 
   /**
    * Method declaration call the method create AttachmentInstanciator class.
-   * 
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   * 
    * @throws InstanciationException
-   * 
    * @see
    */
   public void create(Connection con, String spaceId, String componentId,
@@ -69,14 +66,11 @@ public class WysiwygInstanciator extends SQLRequest {
 
   /**
    * Method declaration call the method delete AttachmentInstanciator class.
-   * 
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   * 
    * @throws InstanciationException
-   * 
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,

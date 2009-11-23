@@ -27,28 +27,23 @@ import java.io.Serializable;
 import java.util.StringTokenizer;
 
 /**
- * An IndexEntryPK uniquely identify an entry in the web'activ index.
- * 
- * An IndexEntryPK is set at the index entry creation time : when a web'activ's
- * component adds a new element or document. This IndexEntryPK will be return
- * later when the document matchs a query.
- * 
- * A web'activ document is uniquely identified by :
+ * An IndexEntryPK uniquely identify an entry in the web'activ index. An IndexEntryPK is set at the
+ * index entry creation time : when a web'activ's component adds a new element or document. This
+ * IndexEntryPK will be return later when the document matchs a query. A web'activ document is
+ * uniquely identified by :
  * <UL>
- * <LI>the space name where the element has been created. This space name may be
- * a user id : when the space is the private working space of this user.</LI>
- * <LI>The component name which handles the element. This component name may be
- * an instance name when several instances of the same component live in the
- * same space.</LI>
- * <LI>The object type. The meaning of this type is uniquely determined by the
- * component which handles the object.</LI>
+ * <LI>the space name where the element has been created. This space name may be a user id : when
+ * the space is the private working space of this user.</LI>
+ * <LI>The component name which handles the element. This component name may be an instance name
+ * when several instances of the same component live in the same space.</LI>
+ * <LI>The object type. The meaning of this type is uniquely determined by the component which
+ * handles the object.</LI>
  * <LI>The object id.</LI>
  * </UL>
  */
 public final class IndexEntryPK implements Serializable {
   /**
    * The constructor set in a row all the parts of the key.
-   * 
    * @deprecated - parameter space is no more used
    */
   public IndexEntryPK(String space, String component, String objectType,
@@ -66,9 +61,7 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * Return the space of the indexed document or the userId if the space is a
-   * private working space.
-   * 
+   * Return the space of the indexed document or the userId if the space is a private working space.
    * @deprecated - to use this method is forbidden
    */
   public String getSpace() {
@@ -83,8 +76,8 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * Return the type of the indexed document. The meaning of this type is
-   * uniquely determined by the component handling the object.
+   * Return the type of the indexed document. The meaning of this type is uniquely determined by the
+   * component handling the object.
    */
   public String getObjectType() {
     return objectType;
@@ -98,9 +91,7 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * Returns a string which can be used later to recontruct the key with the
-   * create method.
-   * 
+   * Returns a string which can be used later to recontruct the key with the create method.
    */
   public String toString() {
     // return space +SEP+ component +SEP+ objectType +SEP+ objectId;
@@ -108,11 +99,8 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * To be equal two IndexEntryPK must have the same four parts (space,
-   * component, type, id).
-   * 
-   * The equals method is redefined so IndexEntryPK objects can be put in a Set
-   * or used as Map key.
+   * To be equal two IndexEntryPK must have the same four parts (space, component, type, id). The
+   * equals method is redefined so IndexEntryPK objects can be put in a Set or used as Map key.
    */
   public boolean equals(Object o) {
     if (o instanceof IndexEntryPK) {
@@ -123,19 +111,15 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * Returns the hash code of the String representation.
-   * 
-   * The hashCode method is redefined so IndexEntryPK objects can be put in a
-   * Set or used as Map key.
+   * Returns the hash code of the String representation. The hashCode method is redefined so
+   * IndexEntryPK objects can be put in a Set or used as Map key.
    */
   public int hashCode() {
     return toString().hashCode();
   }
 
   /**
-   * Create a new IndexEntry from s.
-   * 
-   * We must have :
+   * Create a new IndexEntry from s. We must have :
    * 
    * <PRE>
    * create(s).toString().equals(s)
@@ -143,9 +127,7 @@ public final class IndexEntryPK implements Serializable {
    */
   static public IndexEntryPK create(String s) {
     /*
-     * The Tokenizer must return the separators SEP as a missing field must be
-     * parsed correctly :
-     * 
+     * The Tokenizer must return the separators SEP as a missing field must be parsed correctly :
      * SPACE|COMPO||ID must give (SPACE, COMP, "" , ID).
      */
     StringTokenizer Stk = new StringTokenizer(s, SEP, true);
@@ -155,8 +137,8 @@ public final class IndexEntryPK implements Serializable {
     String objId = "";
 
     /*
-     * if (Stk.hasMoreTokens()) spa = Stk.nextToken(); if (spa.equals(SEP))
-     * spa=""; else if (Stk.hasMoreTokens()) Stk.nextToken(); // skip one SEP
+     * if (Stk.hasMoreTokens()) spa = Stk.nextToken(); if (spa.equals(SEP)) spa=""; else if
+     * (Stk.hasMoreTokens()) Stk.nextToken(); // skip one SEP
      */
 
     if (Stk.hasMoreTokens())
@@ -181,8 +163,7 @@ public final class IndexEntryPK implements Serializable {
   }
 
   /**
-   * The four parts of an IndexEntryPK are private and fixed at construction
-   * time.
+   * The four parts of an IndexEntryPK are private and fixed at construction time.
    */
 
   // private final String space;

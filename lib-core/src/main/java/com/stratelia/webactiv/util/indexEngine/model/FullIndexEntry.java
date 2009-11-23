@@ -31,15 +31,13 @@ import java.util.List;
 import com.stratelia.webactiv.util.indexEngine.DateFormatter;
 
 /**
- * A FullIndexEntry is an IndexEntry completed with data usefull uniquely at the
- * index creation time (mainly all the data contents which must be indexed but
- * which is useless at retrieve time). This extra-content is indexed but not
- * stored in the index.
+ * A FullIndexEntry is an IndexEntry completed with data usefull uniquely at the index creation time
+ * (mainly all the data contents which must be indexed but which is useless at retrieve time). This
+ * extra-content is indexed but not stored in the index.
  */
 public class FullIndexEntry extends IndexEntry implements Serializable {
   /**
    * The constructor only set the key part of the IndexEntry.
-   * 
    * @deprecated - parameter space is no more used
    */
   public FullIndexEntry(String space, String component, String objectType,
@@ -52,10 +50,8 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * Add a text fragment to be indexed.
-   * 
-   * All this text fragments will be indexed but not stored in the index. They
-   * may be added in any order.
+   * Add a text fragment to be indexed. All this text fragments will be indexed but not stored in
+   * the index. They may be added in any order.
    */
   public void addTextContent(String text) {
     addTextContent(text, null);
@@ -66,18 +62,15 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * Add a file to be indexed.
-   * 
-   * We need :
+   * Add a file to be indexed. We need :
    * <UL>
    * <LI>the path to the file</LI>
    * <LI>the encoding of the file</LI>
    * <LI>the format of the file</LI>
    * <LI>the language of the file</LI>
    * </UL>
-   * 
-   * All this files will be parsed and then indexed but not stored in the index.
-   * They may be added in any order.
+   * All this files will be parsed and then indexed but not stored in the index. They may be added
+   * in any order.
    */
   public void addFileContent(String path, String encoding, String format,
       String lang) {
@@ -94,8 +87,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * @deprecated use addField(String fieldName, String value, String language)
-   *             instead
+   * @deprecated use addField(String fieldName, String value, String language) instead
    */
   public void addXMLField(String fieldName, String value, String language) {
     getFields().add(new FieldDescription(fieldName, value, language));
@@ -116,20 +108,18 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   public void addField(String fieldName, Date value, String language) {
     getFields().add(
         new FieldDescription(fieldName, DateFormatter.date2IndexFormat(value),
-            language));
+        language));
   }
 
   /**
-   * Return the List of all the added texts. The returned List is a list of
-   * String.
+   * Return the List of all the added texts. The returned List is a list of String.
    */
   public List getTextContentList() {
     return getTextList();
   }
 
   /**
-   * Return the List of all the added files. The returned List is a list of
-   * FileDescription.
+   * Return the List of all the added files. The returned List is a list of FileDescription.
    */
   public List getFileContentList() {
     return getFileList();
@@ -161,10 +151,8 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * All the added texts and files are collected in two lists to be later
-   * retrieved by the index engine.
-   * 
-   * textList is a list of String. fileList is a list of FileDescription.
+   * All the added texts and files are collected in two lists to be later retrieved by the index
+   * engine. textList is a list of String. fileList is a list of FileDescription.
    */
   private List textList = null;
   private List fileList = null;

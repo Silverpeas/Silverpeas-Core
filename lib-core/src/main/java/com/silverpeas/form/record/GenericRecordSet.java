@@ -39,9 +39,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 /**
- * The GenericRecordSet manage DataRecord built on a RecordTemplate and saved by
- * the GenericRecordSetManager.
- * 
+ * The GenericRecordSet manage DataRecord built on a RecordTemplate and saved by the
+ * GenericRecordSetManager.
  * @see DataRecord
  */
 public class GenericRecordSet implements RecordSet, Serializable {
@@ -62,11 +61,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   /**
-   * Returns an empty DataRecord built on the RecordTemplate.
-   * 
-   * This record is not yet managed by this RecordSet. This is only an empty
-   * record which must be filled and saved in order to become a DataRecord of
-   * this RecordSet.
+   * Returns an empty DataRecord built on the RecordTemplate. This record is not yet managed by this
+   * RecordSet. This is only an empty record which must be filled and saved in order to become a
+   * DataRecord of this RecordSet.
    */
   public DataRecord getEmptyRecord() throws FormException {
     return recordTemplate.getEmptyRecord();
@@ -74,7 +71,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String recordId) throws FormException {
@@ -83,7 +79,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String recordId, String language)
@@ -96,7 +91,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Inserts the given DataRecord and set its id.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a not null id.
    * @throw FormException when the insert fail.
@@ -108,7 +102,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Updates the given DataRecord.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a null or unknown id.
    * @throw FormException when the update fail.
@@ -119,14 +112,10 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   /**
-   * Save the given DataRecord.
-   * 
-   * If the record id is null then the record is inserted in this RecordSet.
-   * Else the record is updated.
-   * 
+   * Save the given DataRecord. If the record id is null then the record is inserted in this
+   * RecordSet. Else the record is updated.
    * @see insert
    * @see update
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the insert or update fail.
@@ -142,7 +131,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
       FullIndexEntry indexEntry, String language) throws FormException {
     SilverTrace.info("form", "GenericRecordSet.index()",
         "root.MSG_GEN_ENTER_METHOD", "recordId = " + recordId + ", language = "
-            + language);
+        + language);
     DataRecord data = getRecord(recordId, language);
     if (data != null) {
       String[] fieldNames = data.getFieldNames();
@@ -181,23 +170,21 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
   }
 
-  public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry) throws FormException
-  {
-	  if (!I18NHelper.isI18N)
-		  indexRecord(recordId, formName, indexEntry, null);
-	  else
-	  {
-		  List<String> languages = GenericRecordSetManager.getLanguagesOfRecord(recordTemplate, recordId);
-		  for (int l=0; l<languages.size(); l++)
-		  {
-			  indexRecord(recordId, formName, indexEntry, languages.get(l)); 
-		  }
-	  }
+  public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
+      throws FormException {
+    if (!I18NHelper.isI18N)
+      indexRecord(recordId, formName, indexEntry, null);
+    else {
+      List<String> languages =
+          GenericRecordSetManager.getLanguagesOfRecord(recordTemplate, recordId);
+      for (int l = 0; l < languages.size(); l++) {
+        indexRecord(recordId, formName, indexEntry, languages.get(l));
+      }
+    }
   }
 
   /**
    * Deletes the given DataRecord and set to null its id.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the delete fail.

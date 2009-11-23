@@ -31,8 +31,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class IndexEngineInitialize implements IInitialize {
@@ -42,13 +40,12 @@ public class IndexEngineInitialize implements IInitialize {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.stratelia.silverpeas.silverpeasinitialize.IInitialize#Initialize()
    */
   /**
-   * Since version 1.3 of Lucene, lock files are stored in the java.io.tmpdir
-   * system's property By default on Windows, it's C:\Documents and
-   * Settings\neysseri\Local Settings\TEMP and /tmp on Unix
+   * Since version 1.3 of Lucene, lock files are stored in the java.io.tmpdir system's property By
+   * default on Windows, it's C:\Documents and Settings\neysseri\Local Settings\TEMP and /tmp on
+   * Unix
    */
   public boolean Initialize() {
     // Remove all remaining *.lock files in index path
@@ -87,19 +84,17 @@ public class IndexEngineInitialize implements IInitialize {
         } else {
           SilverTrace.debug("indexEngine",
               "IndexEngineInitialize.removeLockFiles", "Lock "
-                  + theFile.getPath() + " removed.");
+              + theFile.getPath() + " removed.");
         }
       }
     }
   }
 
   /**
-   * Since version 1.3 of Lucene, lock files have names that start with
-   * "lucene-" followed by an MD5 hash of the index directory path. Since
-   * version 2.3 of Lucene, lock files are in index dirs and named "write.lock"
-   * 
-   * @param fileName
-   *          - the file to test
+   * Since version 1.3 of Lucene, lock files have names that start with "lucene-" followed by an MD5
+   * hash of the index directory path. Since version 2.3 of Lucene, lock files are in index dirs and
+   * named "write.lock"
+   * @param fileName - the file to test
    * @return true if the file is a lucene's lock file, false otherwise.
    */
   protected boolean isLockFile(String fileName) {

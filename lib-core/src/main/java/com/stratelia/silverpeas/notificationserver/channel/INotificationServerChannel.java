@@ -32,12 +32,8 @@ public interface INotificationServerChannel {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param p_Message
-   * 
    * @throws NotificationServerException
-   * 
    * @see
    */
   void send(NotificationData p_Message) throws NotificationServerException;

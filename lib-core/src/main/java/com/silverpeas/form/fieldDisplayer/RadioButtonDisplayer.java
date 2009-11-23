@@ -41,10 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A RadioButtonDisplayer is an object which can display a radio button in HTML
- * the content of a radio button to a end user
- * and can retrieve via HTTP any updated value.
- *
+ * A RadioButtonDisplayer is an object which can display a radio button in HTML the content of a
+ * radio button to a end user and can retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -68,18 +66,13 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the javascripts which will be used to control
-   * the new value given to the named field.
-   *
-   * The error messages may be adapted to a local language.
-   * The FieldTemplate gives the field type and constraints.
-   * The FieldTemplate gives the local labeld too.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the javascripts which will be used to control the new value given to the named field.
+   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
+   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
+   * log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the fieldName is unknown by the template.
-   * <LI> the field type is not a managed type.
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void displayScripts(PrintWriter out,
@@ -89,7 +82,8 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
     String language = PagesContext.getLanguage();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "RadioButtonDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "RadioButtonDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
@@ -97,12 +91,14 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
       int fin = currentIndex + getNbHtmlObjectsDisplayed(template, PagesContext);
       out.println("	var checked = false;\n");
       out.println("	for (var i = " + currentIndex + "; i < " + fin + "; i++) {\n");
-      out.println("		if (document.forms[" + PagesContext.getFormIndex() + "].elements[i].checked) {\n");
+      out.println("		if (document.forms[" + PagesContext.getFormIndex() +
+          "].elements[i].checked) {\n");
       out.println("			checked = true;\n");
       out.println("		}\n");
       out.println("	}\n");
       out.println("	if(checked == false) {\n");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString("GML.MustBeFilled",
+      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
+          Util.getString("GML.MustBeFilled",
           language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
@@ -112,16 +108,11 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the HTML value of the field.
-   * The displayed value must be updatable by the end user.
-   *
-   * The value format may be adapted to a local language.
-   * The fieldName must be used to name the html form input.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the field type is not a managed type.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void display(PrintWriter out,
@@ -142,7 +133,8 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
     Map parameters = template.getParameters(language);
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "RadioButtonDisplayer.display", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "RadioButtonDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     if (!field.isNull()) {
@@ -162,7 +154,8 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
         cols = (Integer.valueOf((String) parameters.get("cols"))).intValue();
       }
     } catch (NumberFormatException nfe) {
-      SilverTrace.error("form", "RadioButtonDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
+      SilverTrace.error("form", "RadioButtonDisplayer.display",
+          "form.EX_ERR_ILLEGAL_PARAMETER_COL",
           (String) parameters.get("cols"));
       cols = 1;
     }
@@ -212,7 +205,9 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
 
-        html += "<INPUT type=\"radio\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" + optKey + "\" ";
+        html +=
+            "<INPUT type=\"radio\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
+            optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled ";
@@ -222,22 +217,23 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
           html += " checked ";
         }
 
-        //last radio button must be checked if others are not !
-				/*if (!checked && i==nbTokens-1 && template.isMandatory())
-        {
-        html += " checked ";
-        }*/
+        // last radio button must be checked if others are not !
+        /*
+         * if (!checked && i==nbTokens-1 && template.isMandatory()) { html += " checked "; }
+         */
 
         html += ">&nbsp;" + optValue;
 
         if (i == nbTokens - 1) {
-          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.isHidden() && pageContext.
+          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
+              !template.isHidden() && pageContext.
               useMandatory()) {
-            html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+            html +=
+                "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
           }
         }
 
-        //html += "\n";
+        // html += "\n";
         html += "</td>";
 
         if (col == cols) {
@@ -256,31 +252,21 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Updates the value of the field.
-   *
-   * The fieldName must be used to retrieve the HTTP parameter from the request.
-   *
+   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  /*public void update(HttpServletRequest request,
-  Field field,
-  FieldTemplate template,
-  PagesContext PagesContext)
-  throws FormException {
-
-  if (! field.getTypeName().equals(TextField.TYPE))
-  throw new FormException("TextAreaFieldDisplayer.update","form.EX_NOT_CORRECT_TYPE",TextField.TYPE);
-
-
-  String newValue = request.getParameter(template.getFieldName());
-
-  if (field.acceptValue(newValue, PagesContext.getLanguage()))
-  field.setValue(newValue, PagesContext.getLanguage());
-  else
-  throw new FormException("TextAreaFieldDisplayer.update","form.EX_NOT_CORRECT_VALUE",TextField.TYPE);
-
-  }*/
+  /*
+   * public void update(HttpServletRequest request, Field field, FieldTemplate template,
+   * PagesContext PagesContext) throws FormException { if (!
+   * field.getTypeName().equals(TextField.TYPE)) throw new
+   * FormException("TextAreaFieldDisplayer.update","form.EX_NOT_CORRECT_TYPE",TextField.TYPE);
+   * String newValue = request.getParameter(template.getFieldName()); if
+   * (field.acceptValue(newValue, PagesContext.getLanguage())) field.setValue(newValue,
+   * PagesContext.getLanguage()); else throw new
+   * FormException("TextAreaFieldDisplayer.update","form.EX_NOT_CORRECT_VALUE",TextField.TYPE); }
+   */
   public List<String> update(String newValue,
       Field field,
       FieldTemplate template,
@@ -288,12 +274,14 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
       throws FormException {
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", TextField.TYPE);
+      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
     if (field.acceptValue(newValue, PagesContext.getLanguage())) {
       field.setValue(newValue, PagesContext.getLanguage());
     } else {
-      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
+      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
     }
     return new ArrayList<String>();
   }

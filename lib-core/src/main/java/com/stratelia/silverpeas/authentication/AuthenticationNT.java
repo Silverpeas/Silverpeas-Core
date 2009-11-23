@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class performs the NT authentification by calling the NTRIS service
- * 
  * @author tleroi
  * @version
  */
@@ -83,7 +82,7 @@ public class AuthenticationNT extends Authentication {
       throw new AuthenticationHostException(
           "AuthenticationNT.openConnection()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_OPEN_FAILED", "Host=" + m_Host + ";Port="
-              + Integer.toString(m_Port), ex);
+          + Integer.toString(m_Port), ex);
     }
   }
 
@@ -99,7 +98,7 @@ public class AuthenticationNT extends Authentication {
       throw new AuthenticationHostException(
           "AuthenticationNT.closeConnection()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
-              + Integer.toString(m_Port), ex);
+          + Integer.toString(m_Port), ex);
     }
   }
 

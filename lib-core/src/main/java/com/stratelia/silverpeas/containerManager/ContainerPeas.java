@@ -30,7 +30,6 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * This class represents one container descriptor in memory (read from the xml)
- * 
  */
 public class ContainerPeas extends Object {
   String m_sType = null; // The container type (unique among all containers)

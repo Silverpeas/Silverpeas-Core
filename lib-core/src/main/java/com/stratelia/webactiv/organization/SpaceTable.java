@@ -42,7 +42,8 @@ public class SpaceTable extends Table {
     this.organization = organization;
   }
 
-  static final private String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look";
+  static final private String SPACE_COLUMNS =
+      "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look";
 
   /**
    * Fetch the current space row from a resultSet.
@@ -99,7 +100,6 @@ public class SpaceTable extends Table {
 
   /**
    * Tests if a space with given space id exists
-   * 
    * @return true if the given space instance name is an existing space
    */
   public boolean isSpaceInstExist(int id) throws AdminPersistenceException {
@@ -209,9 +209,8 @@ public class SpaceTable extends Table {
   }
 
   /*
-   * static final private String SELECT_ALL_USER_SPACES =
-   * "select "+SPACE_COLUMNS + " from ST_Space,ST_UserSet_User_Rel" +
-   * " where id=userSetId and userSetType='S' and userId=?" +
+   * static final private String SELECT_ALL_USER_SPACES = "select "+SPACE_COLUMNS +
+   * " from ST_Space,ST_UserSet_User_Rel" + " where id=userSetId and userSetType='S' and userId=?" +
    * " order by ST_Space.orderNum";
    */
 
@@ -274,7 +273,8 @@ public class SpaceTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_FATHER_SPACE_IDS = "select superSetId from ST_UserSet_UserSet_Rel"
+  static final private String SELECT_ALL_FATHER_SPACE_IDS =
+      "select superSetId from ST_UserSet_UserSet_Rel"
       + " where superSetType='S' and subSetType='S'" + " and subSetId = ?";
 
   /**
@@ -388,9 +388,9 @@ public class SpaceTable extends Table {
       + " domainFatherId = ?," + " name = ?," + " description = ?,"
       + " createdBy = ?," + " firstPageType = ?," + " firstPageExtraParam = ?,"
       + " orderNum = ?,"
-      // + " createTime = ?,"
+        // + " createTime = ?,"
       + " updateTime = ?," + " updatedBy = ?,"
-      // + " removeTime = ?,"
+            // + " removeTime = ?,"
       + " spaceStatus = ?," + " lang = ?," + " isInheritanceBlocked = ?,"
       + " look = ? " + " where id = ?";
 
@@ -474,7 +474,8 @@ public class SpaceTable extends Table {
     }
   }
 
-  static final private String SEND_SPACE_IN_BASKET = "update ST_Space set name = ?, removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
+  static final private String SEND_SPACE_IN_BASKET =
+      "update ST_Space set name = ?, removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
    * Remove the space from the basket Space will be available again
@@ -497,7 +498,8 @@ public class SpaceTable extends Table {
     }
   }
 
-  static final private String REMOVE_SPACE_FROM_BASKET = "update ST_Space set removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
+  static final private String REMOVE_SPACE_FROM_BASKET =
+      "update ST_Space set removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
    * Returns the Space of a given space user role.

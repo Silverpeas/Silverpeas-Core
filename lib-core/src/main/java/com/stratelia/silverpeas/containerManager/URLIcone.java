@@ -24,9 +24,8 @@
 package com.stratelia.silverpeas.containerManager;
 
 /**
- * This is the data structure that represents a link links between icone and
- * action (use in JSP ActionBar)
- * 
+ * This is the data structure that represents a link links between icone and action (use in JSP
+ * ActionBar)
  */
 public class URLIcone {
   private String sIconePath = ""; // path on the icone to show in the JSP

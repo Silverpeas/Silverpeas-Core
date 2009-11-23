@@ -28,7 +28,6 @@ import java.util.List;
 
 /**
  * This class represents one content descriptor in memory (read from the xml)
- * 
  */
 public class ContentPeas extends Object {
   String m_sType = null; // The content type (unique among all contents)

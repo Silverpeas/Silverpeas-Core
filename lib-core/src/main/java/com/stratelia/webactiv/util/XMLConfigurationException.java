@@ -30,7 +30,6 @@
 package com.stratelia.webactiv.util;
 
 /**
- * 
  * @author jpouyadou
  * @version
  */

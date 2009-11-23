@@ -30,20 +30,15 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SelectionException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public SelectionException(String callingClass, int errorLevel, String message) {
@@ -52,13 +47,10 @@ public class SelectionException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public SelectionException(String callingClass, int errorLevel,
@@ -68,13 +60,10 @@ public class SelectionException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public SelectionException(String callingClass, int errorLevel,
@@ -84,14 +73,11 @@ public class SelectionException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public SelectionException(String callingClass, int errorLevel,
@@ -101,10 +87,7 @@ public class SelectionException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

@@ -25,7 +25,6 @@ package com.stratelia.silverpeas.silverpeasinitialize;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author TLE
  * @version 1.0
  */

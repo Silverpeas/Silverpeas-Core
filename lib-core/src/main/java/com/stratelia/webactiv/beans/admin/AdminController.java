@@ -42,8 +42,7 @@ import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
  It should be used only by a client that has the administrator rights
  */
 
-public class AdminController extends AdminReference implements
-    java.io.Serializable {
+public class AdminController extends AdminReference implements java.io.Serializable {
   String m_UserId = null;
 
   public AdminController(String sUserId) {
@@ -176,8 +175,7 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Return the space Instance corresponding to the given space id : FORMAT EX :
-   * 123
+   * Return the space Instance corresponding to the given space id : FORMAT EX : 123
    */
   public String[] getUserManageableSpaceIds(String sUserId) {
     SilverTrace.info("admin", "AdminController.getUserManageableSpaceIds",
@@ -192,8 +190,7 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Return the space Instance corresponding to the given space id : FORMAT EX :
-   * WA123
+   * Return the space Instance corresponding to the given space id : FORMAT EX : WA123
    */
   /** If user is Admin, return all space Ids */
   public String[] getUserManageableSpaceClientIds(String sUserId) {
@@ -242,8 +239,7 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Update the space Instance corresponding to the given space name wuth the
-   * given SpaceInst
+   * Update the space Instance corresponding to the given space name wuth the given SpaceInst
    */
   public String updateSpaceInst(SpaceInst spaceInstNew) {
     SilverTrace.info("admin", "AdminController.updateSpaceInst",
@@ -324,13 +320,12 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Return all the sub spaces Id available for the given user and the given
-   * fatherDomainId
+   * Return all the sub spaces Id available for the given user and the given fatherDomainId
    */
   public String[] getAllSubSpaceIds(String sDomainFatherId, String userId) {
     SilverTrace.info("admin", "AdminController.getAllSubSpaceIds",
         "root.MSG_GEN_ENTER_METHOD", "sDomainFatherId = " + sDomainFatherId
-            + ", userId = " + userId);
+        + ", userId = " + userId);
     try {
       return m_Admin.getAllSubSpaceIds(sDomainFatherId, userId);
     } catch (Exception e) {
@@ -446,8 +441,8 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Update the component Instance corresponding to the given space component
-   * with the given ComponentInst
+   * Update the component Instance corresponding to the given space component with the given
+   * ComponentInst
    */
   public String updateComponentInst(ComponentInst componentInst) {
     SilverTrace.info("admin", "AdminController.updateComponentInst",
@@ -475,8 +470,7 @@ public class AdminController extends AdminReference implements
   // NEWF DLE
 
   /**
-   * Return the component ids available for the cuurent user Id in the given
-   * space id
+   * Return the component ids available for the cuurent user Id in the given space id
    */
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
     SilverTrace.info("admin", "AdminController.getAvailCompoIds",
@@ -672,8 +666,7 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Update the Profile Instance corresponding to the given space Profile with
-   * the given ProfileInst
+   * Update the Profile Instance corresponding to the given space Profile with the given ProfileInst
    */
   public String updateProfileInst(ProfileInst profileInst) {
     return updateProfileInst(profileInst, null);
@@ -703,7 +696,7 @@ public class AdminController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getProfileLabelfromName",
           "admin.MSG_ERR_GET_PROFILE_LABEL_FROM_NAME", "component name: "
-              + sComponentName + ", profile name: " + sProfileName, e);
+          + sComponentName + ", profile name: " + sProfileName, e);
       return new String("");
     }
   }
@@ -715,7 +708,6 @@ public class AdminController extends AdminReference implements
   // JCC 10/04/2002 ajout de getProfileIds
   /**
    * All the profiles to which the user belongs
-   * 
    * @return an array of profile IDs
    */
   public String[] getProfileIds(String sUserId) {
@@ -737,7 +729,6 @@ public class AdminController extends AdminReference implements
   // JCC 10/04/2002 ajout de getProfileIdsOfGroup
   /**
    * All the profiles to which the group belongs
-   * 
    * @return an array of profile IDs
    */
   public String[] getProfileIdsOfGroup(String sGroupId) {
@@ -952,8 +943,7 @@ public class AdminController extends AdminReference implements
   // Space Profile related functions
   // ----------------------------------------------
   /**
-   * Return the space profile Instance corresponding to the given space profile
-   * id
+   * Return the space profile Instance corresponding to the given space profile id
    */
   public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
     SilverTrace.info("admin", "AdminController.getSpaceProfileInst",
@@ -982,8 +972,7 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Delete the Space Profile Instance corresponding to the given Space Profile
-   * id
+   * Delete the Space Profile Instance corresponding to the given Space Profile id
    */
   public String deleteSpaceProfileInst(String sSpaceProfileId, String userId) {
     SilverTrace.info("admin", "AdminController.deleteSpaceProfileInst",
@@ -998,8 +987,8 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Update the Space Profile Instance corresponding to the given space Profile
-   * with the given SpaceProfileInst
+   * Update the Space Profile Instance corresponding to the given space Profile with the given
+   * SpaceProfileInst
    */
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       String userId) {
@@ -1118,7 +1107,6 @@ public class AdminController extends AdminReference implements
 
   /**
    * The spaces that can be managed by the given group
-   * 
    * @return the array of space IDs
    */
   public String[] getGroupManageableSpaceIds(String sGroupId) {
@@ -1241,7 +1229,7 @@ public class AdminController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.warn("admin", "AdminController.getUserIdByLoginAndDomain",
           "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = "
-              + sDomainId, e);
+          + sDomainId, e);
       return null;
     }
   }
@@ -1302,8 +1290,8 @@ public class AdminController extends AdminReference implements
   }
 
   /**
-   * Update the silverpeas specific infos of a synchronized user. For the moment
-   * : same as updateUser
+   * Update the silverpeas specific infos of a synchronized user. For the moment : same as
+   * updateUser
    */
   public String updateSynchronizedUser(UserDetail userDetail) {
     SilverTrace.info("admin", "AdminController.updateSynchronizedUser",
@@ -1474,9 +1462,7 @@ public class AdminController extends AdminReference implements
 
   /**
    * Synchronize users and groups between cache and domain's datastore
-   * 
-   * @param domainId
-   *          Id of domain to synchronize
+   * @param domainId Id of domain to synchronize
    * @return String to show as the report of synchronization
    */
   public String synchronizeSilverpeasWithDomain(String domainId) {

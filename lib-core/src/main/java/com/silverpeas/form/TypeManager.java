@@ -37,7 +37,6 @@ import java.util.Set;
 
 /**
  * The TypeManager gives all the known field and displayer type
- * 
  * @see Field
  * @see FieldDisplayer
  */
@@ -53,9 +52,7 @@ public class TypeManager {
 
   /**
    * Returns the class field implementation of the named type.
-   * 
-   * @throws FormException
-   *           if the type name is unknown.
+   * @throws FormException if the type name is unknown.
    */
   static public Class getFieldImplementation(String typeName)
       throws FormException {
@@ -70,9 +67,7 @@ public class TypeManager {
 
   /**
    * Returns the name of the default FieldDisplayer of the named type.
-   * 
-   * @throws FormException
-   *           if the type name is unknown.
+   * @throws FormException if the type name is unknown.
    */
   static public String getDisplayerName(String typeName) throws FormException {
     List displayerNames = (List) typeName2displayerNames.get(typeName);
@@ -85,11 +80,8 @@ public class TypeManager {
   }
 
   /**
-   * Returns the names of all the FieldDisplayers which can be used with the
-   * named type.
-   * 
-   * @throws FormException
-   *           if the type name is unknown.
+   * Returns the names of all the FieldDisplayers which can be used with the named type.
+   * @throws FormException if the type name is unknown.
    */
   static public String[] getDisplayerNames(String typeName)
       throws FormException {
@@ -104,13 +96,9 @@ public class TypeManager {
 
   /**
    * Returns the named FieldDisplayer of the named field.
-   * 
-   * @throws FormException
-   *           if the type name is unknown.
-   * @throws FormException
-   *           if the displayer name is unknown.
-   * @throws FormException
-   *           if the displayer and the type are not compatible.
+   * @throws FormException if the type name is unknown.
+   * @throws FormException if the displayer name is unknown.
+   * @throws FormException if the displayer and the type are not compatible.
    */
   static public FieldDisplayer getDisplayer(String typeName,
       String displayerName) throws FormException {
@@ -176,8 +164,8 @@ public class TypeManager {
   }
 
   /**
-   * Extracts the typeName from a class identifier typeName.implementation
-   * typeName.displayer typeName.displayer.displayerName
+   * Extracts the typeName from a class identifier typeName.implementation typeName.displayer
+   * typeName.displayer.displayerName
    */
   static private String extractTypeName(String identifier) {
     int dot = identifier.indexOf(".");
@@ -188,8 +176,8 @@ public class TypeManager {
   }
 
   /**
-   * Extracts the default extension from a class identifier
-   * typeName.implementation typeName.displayer typeName.displayer.displayerName
+   * Extracts the default extension from a class identifier typeName.implementation
+   * typeName.displayer typeName.displayer.displayerName
    */
   static private String extractClassKind(String identifier) {
     int dot = identifier.indexOf(".");
@@ -206,8 +194,8 @@ public class TypeManager {
   }
 
   /**
-   * Extracts the displayerName from a class identifier :
-   * typeName.implementation typeName.displayer typeName.displayer.displayerName
+   * Extracts the displayerName from a class identifier : typeName.implementation typeName.displayer
+   * typeName.displayer.displayerName
    */
   static private String extractDisplayerName(String identifier) {
     int dot = identifier.indexOf(".");
@@ -311,9 +299,8 @@ public class TypeManager {
   }
 
   /**
-   * Init the Maps from the com.silverpeas.form.settings.types properties file.
-   * (typeName -> List(displayerName)) (the first is the default). (displayerId
-   * -> displayerClass).
+   * Init the Maps from the com.silverpeas.form.settings.types properties file. (typeName ->
+   * List(displayerName)) (the first is the default). (displayerId -> displayerClass).
    */
   static private void init() throws FormException {
     String identifier;

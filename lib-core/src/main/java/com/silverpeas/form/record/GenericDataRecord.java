@@ -74,18 +74,14 @@ public class GenericDataRecord implements DataRecord, Serializable {
   }
 
   /**
-   * Returns the data record id.
-   * 
-   * The record is known by its external id.
+   * Returns the data record id. The record is known by its external id.
    */
   public String getId() {
     return externalId;
   }
 
   /**
-   * Gives an id to the record.
-   * 
-   * Caution ! the record is known by its external id.
+   * Gives an id to the record. Caution ! the record is known by its external id.
    */
   public void setId(String id) {
     // if (this.externalId == null)
@@ -101,7 +97,6 @@ public class GenericDataRecord implements DataRecord, Serializable {
 
   /**
    * Returns the named field.
-   * 
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException {
@@ -122,14 +117,13 @@ public class GenericDataRecord implements DataRecord, Serializable {
     }
     SilverTrace.warn("form", "GenericDataRecord.getField",
         "form.EXP_UNKNOWN_FIELD", "fieldName '" + fieldName
-            + "' in DB not found in XML descriptor");
+        + "' in DB not found in XML descriptor");
     return null;
     // throw new FormException("DataRecord", "form.EXP_UNKNOWN_FIELD");
   }
 
   /**
    * Returns the field at the index position in the record.
-   * 
    * @throw FormException when the fieldIndex is unknown.
    */
   public Field getField(int fieldIndex) throws FormException {
@@ -148,18 +142,14 @@ public class GenericDataRecord implements DataRecord, Serializable {
   }
 
   /**
-   * Gets the internal id.
-   * 
-   * May be used only by a package class !
+   * Gets the internal id. May be used only by a package class !
    */
   int getInternalId() {
     return id;
   }
 
   /**
-   * Sets the internal id.
-   * 
-   * May be used only by a package class !
+   * Sets the internal id. May be used only by a package class !
    */
   void setInternalId(int id) {
     // if (this.id == -1)

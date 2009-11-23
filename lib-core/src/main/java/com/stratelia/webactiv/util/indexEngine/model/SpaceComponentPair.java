@@ -52,8 +52,8 @@ public final class SpaceComponentPair implements Serializable {
   }
 
   /**
-   * The equals method is re-defined so that a SpaceComponentPair can be added
-   * in a Set or used as a Map key.
+   * The equals method is re-defined so that a SpaceComponentPair can be added in a Set or used as a
+   * Map key.
    */
   public boolean equals(Object o) {
     if (o != null && o instanceof SpaceComponentPair) {
@@ -64,8 +64,8 @@ public final class SpaceComponentPair implements Serializable {
   }
 
   /**
-   * The hashCode method is re-defined so that a SpaceComponentPair can be added
-   * in a Set or used as a Map key.
+   * The hashCode method is re-defined so that a SpaceComponentPair can be added in a Set or used as
+   * a Map key.
    */
   public int hashCode() {
     String s = "*";
@@ -80,8 +80,7 @@ public final class SpaceComponentPair implements Serializable {
   }
 
   /**
-   * The two parts of an SpaceComponentName are private and fixed at
-   * construction time.
+   * The two parts of an SpaceComponentName are private and fixed at construction time.
    */
   private final String space;
   private final String component;

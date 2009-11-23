@@ -189,11 +189,8 @@ public class Instanciateur extends Object {
   }
 
   /**
-   * Method reads the WAComponent descriptor files again and rebuild the
-   * component descriptor cache
-   * 
-   * @throws InstanciationException
-   *           when something goes wrong
+   * Method reads the WAComponent descriptor files again and rebuild the component descriptor cache
+   * @throws InstanciationException when something goes wrong
    */
   public static void rebuildWAComponentCache() throws InstanciationException {
     // Synchronised on WAComponents because
@@ -240,14 +237,13 @@ public class Instanciateur extends Object {
       String fullPath = xmlPackage + File.separator + componentName + ".xml";
       SilverTrace.info("admin", "Instanciateur.buildWAComponentList",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "component name: '"
-              + componentName + "', full path: '" + fullPath + "'");
+          + componentName + "', full path: '" + fullPath + "'");
       WAComponents.put(componentName, new WAComponent(fullPath));
     }
   }
 
   /**
    * Get the directory where the component descriptors are stored
-   * 
    * @return the path to the directory
    */
   public static String getXMLPackage() {

@@ -28,15 +28,13 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 public class EncryptionFactory {
   /**
-   * --------------------------------------------------------------------------
-   * constructor
+   * -------------------------------------------------------------------------- constructor
    */
   public EncryptionFactory() {
   }
 
   /**
    * Get standard Encryption class
-   * 
    * @return
    */
   public EncryptionInterface getEncryption() {
@@ -48,7 +46,6 @@ public class EncryptionFactory {
 
   /**
    * Get custom Encryption class
-   * 
    * @return
    */
   private EncryptionInterface getCustomEncryption() {

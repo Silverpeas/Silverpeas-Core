@@ -35,11 +35,8 @@ public class Emphaser {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param beginEmphase
    * @param endEmphase
-   * 
    * @see
    */
   public Emphaser(String beginEmphase, String endEmphase) {
@@ -91,13 +88,9 @@ public class Emphaser {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param query
    * @param language
-   * 
    * @return
-   * 
    * @see
    */
   private Set getQueryWords(String query, String language) {
@@ -118,12 +111,8 @@ public class Emphaser {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param word
-   * 
    * @return
-   * 
    * @see
    */
   public String emphaseWord(String word) {

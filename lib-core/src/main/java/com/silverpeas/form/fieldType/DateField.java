@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.DateUtil;
 
 /**
  * A TextField stores a text value.
- * 
  * @see Field
  * @see FieldDisplayer
  */
@@ -74,8 +73,7 @@ public abstract class DateField implements Field {
     if ((value != null) && (!value.equals(""))) {
       try {
         /*
-         * Date valueBD = formatterBD.parse(value); value =
-         * formatter.format(valueBD);
+         * Date valueBD = formatterBD.parse(value); value = formatter.format(valueBD);
          */
         value = DateUtil.getInputDate(value, language);
       } catch (ParseException pe) {
@@ -92,9 +90,8 @@ public abstract class DateField implements Field {
     String dateBD = null;
     try {
       /*
-       * Date date = null; if ((newValue != null)&&(!newValue.equals(""))) date
-       * = formatter.parse(newValue); if (date != null) dateBD =
-       * formatterBD.format(date);
+       * Date date = null; if ((newValue != null)&&(!newValue.equals(""))) date =
+       * formatter.parse(newValue); if (date != null) dateBD = formatterBD.format(date);
        */
       dateBD = DateUtil.date2SQLDate(newValue, language);
     } catch (ParseException pe) {
@@ -121,7 +118,6 @@ public abstract class DateField implements Field {
 
   /**
    * Set this field value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the value is not a String.
    */

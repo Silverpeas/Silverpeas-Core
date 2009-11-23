@@ -32,8 +32,6 @@ import java.util.Properties;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SilverpeasKeyData implements Serializable {
@@ -50,7 +48,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public SilverpeasKeyData() {
     m_KeyData = new Properties();
@@ -59,7 +56,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setTitle(String Title) {
     m_KeyData.setProperty(kTitleKEY, Title);
@@ -68,7 +64,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setAuthor(String Author) {
     m_KeyData.setProperty(kAuthorKEY, Author);
@@ -77,7 +72,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setCreationDate(Date date) {
     m_CreationDate = date;
@@ -86,7 +80,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setDesc(String Desc) {
     m_KeyData.setProperty(kDescKEY, Desc);
@@ -95,7 +88,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setText(String Text) {
     m_KeyData.setProperty(kTextKEY, Text);
@@ -104,7 +96,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setProperty(String key, String value) throws SKDException {
     if (m_KeyData.containsKey(key)) {
@@ -119,7 +110,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getTitle() {
     return m_KeyData.getProperty(kTitleKEY);
@@ -128,7 +118,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getAuthor() {
     return m_KeyData.getProperty(kAuthorKEY);
@@ -137,7 +126,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public Date getCreationDate() {
     return m_CreationDate;
@@ -146,7 +134,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getDesc() {
     return m_KeyData.getProperty(kDescKEY);
@@ -155,7 +142,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getText() {
     return m_KeyData.getProperty(kTextKEY);
@@ -164,7 +150,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getProperty(String key) {
     return m_KeyData.getProperty(key);
@@ -173,7 +158,6 @@ public class SilverpeasKeyData implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void toDOM() {
   }

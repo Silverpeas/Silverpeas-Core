@@ -55,10 +55,8 @@ public class ConnectionPool {
   }
 
   /**
-   * permet de recuperer une connection depuis un pool de connection libre. On
-   * libere la connection en la fermant (connection.close()), elle revient alors
-   * toute seule dans le pool.
-   * 
+   * permet de recuperer une connection depuis un pool de connection libre. On libere la connection
+   * en la fermant (connection.close()), elle revient alors toute seule dans le pool.
    * @return Une connection BDD vers la base de donn�e silverpeas.
    */
   public static Connection getConnection() throws SQLException {

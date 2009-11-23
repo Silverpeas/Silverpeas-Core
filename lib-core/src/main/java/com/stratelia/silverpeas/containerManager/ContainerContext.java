@@ -26,9 +26,8 @@ package com.stratelia.silverpeas.containerManager;
 import java.util.List;
 
 /**
- * This is the interfcae on data structure that the content JSP is going to use
- * (built by the container router)
- * 
+ * This is the interfcae on data structure that the content JSP is going to use (built by the
+ * container router)
  */
 public interface ContainerContext {
   /* Get the URL to get Back on the container */
@@ -46,8 +45,7 @@ public interface ContainerContext {
       int nSilverContentId, String sComponentId);
 
   /*
-   * Get All the SilverContentIds corresponding to the given position in the
-   * given Components
+   * Get All the SilverContentIds corresponding to the given position in the given Components
    */
   public List getSilverContentIdByPosition(
       ContainerPositionInterface containerPosition, List alComponentIds);

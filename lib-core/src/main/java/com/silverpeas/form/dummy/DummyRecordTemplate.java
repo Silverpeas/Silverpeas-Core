@@ -62,7 +62,6 @@ public class DummyRecordTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
@@ -77,8 +76,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   }
 
   /**
-   * Returns true if the data record is built on this template and all the
-   * constraints are ok.
+   * Returns true if the data record is built on this template and all the constraints are ok.
    */
   public boolean checkDataRecord(DataRecord record) {
     return true;

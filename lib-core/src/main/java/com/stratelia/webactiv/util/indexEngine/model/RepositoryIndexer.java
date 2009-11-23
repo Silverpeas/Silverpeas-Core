@@ -33,9 +33,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * An RepositoryIndexer allow to index files in a whole repository except the
- * directories
- * 
+ * An RepositoryIndexer allow to index files in a whole repository except the directories
  */
 public class RepositoryIndexer {
   private String spaceId = null;
@@ -48,7 +46,7 @@ public class RepositoryIndexer {
   public RepositoryIndexer(String spaceId, String componentId) {
     SilverTrace.debug("indexEngine", "RepositoryIndexer.RepositoryIndexer()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId + " ComponentId="
-            + componentId);
+        + componentId);
     setSpaceId(spaceId);
     setComponentId(componentId);
     resource = new ResourceLocator(
@@ -94,21 +92,15 @@ public class RepositoryIndexer {
 
     SilverTrace.info("indexEngine", "RepositoryIndexer.pathIndexer()",
         "root.MSG_GEN_PARAM_VALUE", "Fichiers à indexer="
-            + new Integer(count).toString());
+        + new Integer(count).toString());
   }
 
   /**
-   * Recursive function which covers directories. For each file, the file is
-   * indexed.
-   * 
-   * @param fileList
-   *          an array which contains directories and files
-   * @param path
-   *          the current path
-   * @param currentDirectoryName
-   *          the current directory name
-   * @param massiveReport
-   *          the report to enrich by each upload
+   * Recursive function which covers directories. For each file, the file is indexed.
+   * @param fileList an array which contains directories and files
+   * @param path the current path
+   * @param currentDirectoryName the current directory name
+   * @param massiveReport the report to enrich by each upload
    * @return a MassiveReport
    */
   private void processFileList(File dir, String creationDate, String creatorId,
@@ -156,31 +148,23 @@ public class RepositoryIndexer {
     files = null;
 
     /*
-     * File[] fileList = dir.listFiles();
-     * 
-     * File currentFile = null; //String fileName = null; for (int i=0; fileList
-     * != null && i<fileList.length; i++) { //SilverTrace.debug("indexEngine",
+     * File[] fileList = dir.listFiles(); File currentFile = null; //String fileName = null; for
+     * (int i=0; fileList != null && i<fileList.length; i++) { //SilverTrace.debug("indexEngine",
      * "RepositoryIndexer.processFileList()", "root.MSG_GEN_PARAM_VALUE",
-     * "fileList["+i+"]="+fileList[i]); //fileName = fileList[i]; //currentFile
-     * = new File(path + separator + fileName); currentFile = fileList[i];
-     * //SilverTrace.debug("indexEngine", "RepositoryIndexer.processFileList()",
-     * "root.MSG_GEN_PARAM_VALUE", "currentFile="+currentFile.getPath());
-     * 
-     * if (!currentFile.isDirectory()) { //SilverTrace.debug("indexEngine",
+     * "fileList["+i+"]="+fileList[i]); //fileName = fileList[i]; //currentFile = new File(path +
+     * separator + fileName); currentFile = fileList[i]; //SilverTrace.debug("indexEngine",
      * "RepositoryIndexer.processFileList()", "root.MSG_GEN_PARAM_VALUE",
-     * "(IsDirectory false) path+fileName="
-     * +path+fileName+", action="+action+", currentFile="
-     * +currentFile.getPath()); //It's a document, index or remove it !
-     * indexFile(action, creationDate, creatorId, currentFile, false); } else {
-     * indexDirectory(action, creationDate, creatorId, currentFile);
-     * 
-     * // recursive call to get the current object
+     * "currentFile="+currentFile.getPath()); if (!currentFile.isDirectory()) {
      * //SilverTrace.debug("indexEngine", "RepositoryIndexer.processFileList()",
-     * "root.MSG_GEN_PARAM_VALUE",
+     * "root.MSG_GEN_PARAM_VALUE", "(IsDirectory false) path+fileName="
+     * +path+fileName+", action="+action+", currentFile=" +currentFile.getPath()); //It's a
+     * document, index or remove it ! indexFile(action, creationDate, creatorId, currentFile,
+     * false); } else { indexDirectory(action, creationDate, creatorId, currentFile); // recursive
+     * call to get the current object //SilverTrace.debug("indexEngine",
+     * "RepositoryIndexer.processFileList()", "root.MSG_GEN_PARAM_VALUE",
      * "RecursiveCall: (IsDirectory true): path+fileName"+path+fileName);
-     * processFileList(currentFile, creationDate, creatorId, action); }
-     * 
-     * currentFile = null; } fileList = null;
+     * processFileList(currentFile, creationDate, creatorId, action); } currentFile = null; }
+     * fileList = null;
      */
   }
 

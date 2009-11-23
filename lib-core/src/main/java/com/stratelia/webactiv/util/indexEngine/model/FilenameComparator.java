@@ -41,7 +41,6 @@ public class FilenameComparator implements Comparator {
 
   /**
    * This comparator equals self only.
-   * 
    */
   public boolean equals(Object o) {
     return o == this;

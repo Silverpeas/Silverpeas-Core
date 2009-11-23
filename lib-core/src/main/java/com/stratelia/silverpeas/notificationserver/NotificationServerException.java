@@ -28,8 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class NotificationServerException extends SilverpeasException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public NotificationServerException(String callingClass, int errorLevel,
       String message) {
@@ -38,13 +38,10 @@ public class NotificationServerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public NotificationServerException(String callingClass, int errorLevel,
@@ -54,13 +51,10 @@ public class NotificationServerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public NotificationServerException(String callingClass, int errorLevel,
@@ -70,14 +64,11 @@ public class NotificationServerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public NotificationServerException(String callingClass, int errorLevel,
@@ -86,8 +77,7 @@ public class NotificationServerException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "notificationServer";

@@ -30,32 +30,24 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Standard SilverpeasSettings parent class
- * 
- * 
  * @author
  */
 public class SilverpeasSettings {
   /*
    * Successors should declare a static initialisation like :
-   * -------------------------------------------------------- public static int
-   * m_UsersByPage = 10; public static int m_GroupsByPage = 10;
-   * 
-   * static { ResourceLocator rs = new
-   * ResourceLocator("com.stratelia.efb.mailSender.settings.jobDomainPeasSettings"
-   * , ""); m_UsersByPage = readInt(rs, "UsersByPage", 10); m_GroupsByPage =
-   * readInt(rs, "GroupsByPage", 10); }
+   * -------------------------------------------------------- public static int m_UsersByPage = 10;
+   * public static int m_GroupsByPage = 10; static { ResourceLocator rs = new
+   * ResourceLocator("com.stratelia.efb.mailSender.settings.jobDomainPeasSettings" , "");
+   * m_UsersByPage = readInt(rs, "UsersByPage", 10); m_GroupsByPage = readInt(rs, "GroupsByPage",
+   * 10); }
    */
 
   /**
    * Read an int from a Settings-file
-   * 
-   * 
    * @param rs
    * @param propName
    * @param defaultValue
-   * 
    * @return
-   * 
    * @see
    */
   static public int readInt(ResourceLocator rs, String propName,
@@ -82,14 +74,10 @@ public class SilverpeasSettings {
 
   /**
    * Read a String from a Settings-file
-   * 
-   * 
    * @param rs
    * @param propName
    * @param defaultValue
-   * 
    * @return
-   * 
    * @see
    */
   static public String readString(ResourceLocator rs, String propName,
@@ -99,14 +87,10 @@ public class SilverpeasSettings {
 
   /**
    * Read a boolean from a Settings-file
-   * 
-   * 
    * @param rs
    * @param propName
    * @param defaultValue
-   * 
    * @return
-   * 
    * @see
    */
   static public boolean readBoolean(ResourceLocator rs, String propName,
@@ -133,19 +117,14 @@ public class SilverpeasSettings {
   }
 
   /**
-   * Read a String-List from a Settings-file with indexes from 1 to n If max is
-   * -1, the functions reads until the propertie's Id is not founded. If max >=
-   * 1, the functions returns an array of 'max' elements (the elements not
-   * founded are set to "")
-   * 
+   * Read a String-List from a Settings-file with indexes from 1 to n If max is -1, the functions
+   * reads until the propertie's Id is not founded. If max >= 1, the functions returns an array of
+   * 'max' elements (the elements not founded are set to "")
    * @param rs
    * @param propNamePrefix
    * @param propNameSufix
-   * @param max
-   *          the maximum index (-1 for no maximum value)
-   * 
+   * @param max the maximum index (-1 for no maximum value)
    * @return
-   * 
    * @see
    */
   static public String[] readStringArray(ResourceLocator rs,

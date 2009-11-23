@@ -71,13 +71,12 @@ public class ProfileInstManager extends Object {
       throw new AdminException("ProfileInstManager.createProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_PROFILE",
           "profile name: '" + profileInst.getName()
-              + "', father component Id: '" + sFatherCompoId + "'", e);
+          + "', father component Id: '" + sFatherCompoId + "'", e);
     }
   }
 
   /**
-   * Get Profileinformation from database with the given id and creates a new
-   * Profile instance
+   * Get Profileinformation from database with the given id and creates a new Profile instance
    */
   public ProfileInst getProfileInst(DomainDriverManager ddManager,
       String sProfileId, String sFatherId) throws AdminException {
@@ -93,7 +92,7 @@ public class ProfileInstManager extends Object {
         throw new AdminException("ProfileInstManager.getProfileInst",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE",
             "profile Id: '" + sProfileId + "', father component Id: '"
-                + sFatherId + "'", e);
+            + sFatherId + "'", e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -152,7 +151,7 @@ public class ProfileInstManager extends Object {
       throw new AdminException("ProfileInstManager.setProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_PROFILE",
           "profile Id: '" + sProfileId + "', father component Id: '"
-              + sFatherId + "'", e);
+          + sFatherId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }

@@ -54,10 +54,8 @@ public abstract class Table {
   }
 
   /**
-   * Builds an aliased columns list from a row alias and a columns list.
-   * 
-   * Returns "u.id,u.firstName,u.lastName" for row alias "u" columns list
-   * "id,firstName,lastName".
+   * Builds an aliased columns list from a row alias and a columns list. Returns
+   * "u.id,u.firstName,u.lastName" for row alias "u" columns list "id,firstName,lastName".
    */
   static public String aliasColumns(String rowAlias, String columnList) {
     StringBuffer result = new StringBuffer();
@@ -107,38 +105,31 @@ public abstract class Table {
   }
 
   /**
-   * Builds a new row object which values are retrieved from the given
-   * ResultSet.
+   * Builds a new row object which values are retrieved from the given ResultSet.
    */
   abstract protected Object fetchRow(ResultSet rs) throws SQLException;
 
   /**
-   * Set all the parameters of the insert PreparedStatement built from the
-   * insertQuery in order to insert the given row.
+   * Set all the parameters of the insert PreparedStatement built from the insertQuery in order to
+   * insert the given row.
    */
   abstract protected void prepareInsert(String insertQuery,
       PreparedStatement insert, Object row) throws SQLException;
 
   /**
-   * Set all the parameters of the update PreparedStatement built from the
-   * updateQuery in order to update the given row.
+   * Set all the parameters of the update PreparedStatement built from the updateQuery in order to
+   * update the given row.
    */
   abstract protected void prepareUpdate(String updateQuery,
       PreparedStatement update, Object row) throws SQLException;
 
   /**
-   * Returns the unique row referenced by the given query and id.
-   * 
-   * Returns null if no rows match the id. Throws a AdminPersistenceException if
-   * more then one row match the id.
-   * 
+   * Returns the unique row referenced by the given query and id. Returns null if no rows match the
+   * id. Throws a AdminPersistenceException if more then one row match the id.
    * @return the requiered row or null.
-   * 
-   * @param query
-   *          the sql query string must be like
-   *          "select * from ... where ... id=?" where id is an int column.
-   * @param id
-   *          references an unique row.
+   * @param query the sql query string must be like "select * from ... where ... id=?" where id is
+   * an int column.
+   * @param id references an unique row.
    */
   protected Object getUniqueRow(String query, int id)
       throws AdminPersistenceException {
@@ -164,18 +155,12 @@ public abstract class Table {
   }
 
   /**
-   * Returns the unique row referenced by the given query and id.
-   * 
-   * Returns null if no rows match the id. Throws a AdminPersistenceException if
-   * more then one row match the id.
-   * 
+   * Returns the unique row referenced by the given query and id. Returns null if no rows match the
+   * id. Throws a AdminPersistenceException if more then one row match the id.
    * @return the requiered row or null.
-   * 
-   * @param query
-   *          the sql query string must be like
-   *          "select * from ... where ... id=?" where id is an String column.
-   * @param id
-   *          references an unique row.
+   * @param query the sql query string must be like "select * from ... where ... id=?" where id is
+   * an String column.
+   * @param id references an unique row.
    */
   protected Object getUniqueRow(String query, String id)
       throws AdminPersistenceException {
@@ -277,8 +262,7 @@ public abstract class Table {
   }
 
   /**
-   * Returns the rows described by the given query with id and String
-   * parameters.
+   * Returns the rows described by the given query with id and String parameters.
    */
   protected ArrayList getIds(String query, int[] ids, String[] params)
       throws AdminPersistenceException {
@@ -416,8 +400,7 @@ public abstract class Table {
   }
 
   /**
-   * Returns the rows described by the given query with id and String
-   * parameters.
+   * Returns the rows described by the given query with id and String parameters.
    */
   protected ArrayList getRows(String query, int[] ids, String[] params)
       throws AdminPersistenceException {
@@ -684,18 +667,12 @@ public abstract class Table {
   }
 
   /**
-   * Returns the rows like a sample row.
-   * 
-   * The sample is build from a matchColumns names list and a matchValues list
-   * of values. For each matchColumn with a non null matchValue is added a
-   * criterium : where matchColumn like 'matchValue'
-   * 
-   * The wildcard caracters %, must be set by the caller : so we can choose and
-   * do queries as "login like 'exactlogin'" and queries as
-   * "lastName like 'Had%'" or "lastName like '%addo%'".
-   * 
-   * The returned rows are given by the returnedColumns parameter which is of
-   * the form 'col1, col2, ..., colN'.
+   * Returns the rows like a sample row. The sample is build from a matchColumns names list and a
+   * matchValues list of values. For each matchColumn with a non null matchValue is added a
+   * criterium : where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
+   * caller : so we can choose and do queries as "login like 'exactlogin'" and queries as
+   * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
+   * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
    */
   protected ArrayList getMatchingRows(String returnedColumns,
       String[] matchColumns, String[] matchValues)
@@ -716,10 +693,8 @@ public abstract class Table {
   }
 
   /**
-   * Returns the integer of the single row, single column resultset returned by
-   * the given query with id parameters.
-   * 
-   * Returns null if the result set was empty.
+   * Returns the integer of the single row, single column resultset returned by the given query with
+   * id parameters. Returns null if the result set was empty.
    */
   protected Integer getInteger(String query, int[] ids)
       throws AdminPersistenceException {

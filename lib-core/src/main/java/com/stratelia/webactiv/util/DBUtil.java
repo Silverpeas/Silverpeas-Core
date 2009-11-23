@@ -49,8 +49,7 @@ import com.stratelia.webactiv.util.pool.ConnectionPool;
 public class DBUtil {
 
   /**
-   * TextFieldLength is the maximum length to store an html textfield input in
-   * db.
+   * TextFieldLength is the maximum length to store an html textfield input in db.
    */
   public static int TextFieldLength = 1000;
   /**
@@ -58,10 +57,9 @@ public class DBUtil {
    */
   public static int TextAreaLength = 2000;
   /**
-   * TextMaxiLength is the maximum length to store in db. This length is to use
-   * with fields that can contain a lot of information. This is the case of
-   * publication's model for exemple. TODO : In the near future, these fields
-   * will have to be put in BLOB (Binary Large OBject).
+   * TextMaxiLength is the maximum length to store in db. This length is to use with fields that can
+   * contain a lot of information. This is the case of publication's model for exemple. TODO : In
+   * the near future, these fields will have to be put in BLOB (Binary Large OBject).
    */
   public static int TextMaxiLength = 4000;
   /**
@@ -74,9 +72,7 @@ public class DBUtil {
 
   /**
    * fabrique une nouvelle connection
-   *
-   * @param dbName
-   *          le nom de la base de donnée
+   * @param dbName le nom de la base de donnée
    */
   public static Connection makeConnection(String dbName) throws UtilException {
     SilverTrace.debug("util", "DBUtil makeConnection",

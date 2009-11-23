@@ -29,9 +29,8 @@ public class GSCCreationDateComparatorAsc implements Comparator {
   static public GSCCreationDateComparatorAsc comparator = new GSCCreationDateComparatorAsc();
 
   /**
-   * A matching index entry is greater another if his score is higher.
-   * 
-   * This result is reversed as we want a descending sort.
+   * A matching index entry is greater another if his score is higher. This result is reversed as we
+   * want a descending sort.
    */
   public int compare(Object o1, Object o2) {
     GlobalSilverContent gsc1 = (GlobalSilverContent) o1;
@@ -48,10 +47,8 @@ public class GSCCreationDateComparatorAsc implements Comparator {
   }
 
   /**
-   * This comparator equals self only.
-   * 
-   * Use the shared comparator GSCDateComparatorAsc.comparator if multiples
-   * comparators are used.
+   * This comparator equals self only. Use the shared comparator GSCDateComparatorAsc.comparator if
+   * multiples comparators are used.
    */
   public boolean equals(Object o) {
     return o == this;

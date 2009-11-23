@@ -135,18 +135,18 @@ public class CSVReader extends SilverpeasSettings {
       if (listErrors.length() > 0) {
         throw new UtilTrappedException("CSVReader.parseStream",
             SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors
-                .toString());
+            .toString());
       }
 
       return (Variant[][]) valret.toArray(new Variant[0][0]);
     } catch (IOException e) {
       throw new UtilTrappedException("CSVReader.parseStream",
           SilverpeasException.ERROR, "util.EX_TRANSMITING_CSV", m_utilMessages
-              .getString("util.ligne")
-              + " = "
-              + Integer.toString(lineNumber)
-              + "\n"
-              + listErrors.toString(), e);
+          .getString("util.ligne")
+          + " = "
+          + Integer.toString(lineNumber)
+          + "\n"
+          + listErrors.toString(), e);
     }
   }
 
@@ -187,8 +187,8 @@ public class CSVReader extends SilverpeasSettings {
             + Integer.toString(i + 1) + ", ");
         listErrors
             .append(m_utilMessages.getString("util.errorType")
-                + m_utilMessages.getString("util.valeur") + " = " + theValue
-                + ", ");
+            + m_utilMessages.getString("util.valeur") + " = " + theValue
+            + ", ");
         listErrors.append(m_utilMessages.getString("util.type") + " = "
             + m_colTypes[i] + "<BR>");
       }
@@ -247,8 +247,8 @@ public class CSVReader extends SilverpeasSettings {
             + Integer.toString(j + 1) + ", ");
         listErrors
             .append(m_utilMessages.getString("util.errorType")
-                + m_utilMessages.getString("util.valeur") + " = " + theValue
-                + ", ");
+            + m_utilMessages.getString("util.valeur") + " = " + theValue
+            + ", ");
         listErrors.append(m_utilMessages.getString("util.type") + " = "
             + m_specificColTypes[i] + "<BR>");
       }
@@ -300,7 +300,7 @@ public class CSVReader extends SilverpeasSettings {
     if (listErrors.length() > 0) {
       throw new UtilTrappedException("CSVReader.parseLine",
           SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors
-              .toString());
+          .toString());
     }
     return valret;
   }
@@ -382,8 +382,7 @@ public class CSVReader extends SilverpeasSettings {
   }
 
   /**
-   * @param cols
-   *          The m_specificNbCols to set.
+   * @param cols The m_specificNbCols to set.
    */
   public void setM_specificNbCols(int cols) {
     m_specificNbCols = cols;

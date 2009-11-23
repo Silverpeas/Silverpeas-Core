@@ -46,7 +46,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
- * 
  * @author tleroi
  */
 
@@ -83,14 +82,9 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param driverSettings
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static public String openConnection(LDAPSettings driverSettings)
@@ -111,14 +105,9 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connectionId
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static public LDAPConnection getConnection(String connectionId)
@@ -128,15 +117,10 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connectionId
    * @param ex
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static public boolean recoverConnection(String connectionId, LDAPException ex)
@@ -167,7 +151,7 @@ public class LDAPUtility extends Object {
             nbRetry++;
             SilverTrace.warn("admin", "LDAPUtility.recoverConnection",
                 "admin.EX_ERR_LDAP_GENERAL", "Retry#="
-                    + Integer.toString(nbRetry), e);
+                + Integer.toString(nbRetry), e);
           }
         }
       }
@@ -177,12 +161,8 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connectionId
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static public void closeConnection(String connectionId) throws AdminException {
@@ -192,12 +172,8 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connectionId
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static private void InternalOpenConnection(String connectionId)
@@ -227,27 +203,23 @@ public class LDAPUtility extends Object {
         SilverTrace.error("admin", "LDAPUtility.openConnection",
             "admin.EX_ERR_LDAP_GENERAL",
             "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId
-                + " Error LDAP #" + Integer.toString(e.getResultCode()) + " "
-                + e.getLDAPErrorMessage(), ee);
+            + " Error LDAP #" + Integer.toString(e.getResultCode()) + " "
+            + e.getLDAPErrorMessage(), ee);
       }
       throw new AdminException("LDAPUtility.openConnection",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "Host : "
-              + driverSettings.getLDAPHost() + " Port : "
-              + Integer.toString(driverSettings.getLDAPPort())
-              + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN()
-              + " ProtocolVer : "
-              + Integer.toString(driverSettings.getLDAPProtocolVer()), e);
+          + driverSettings.getLDAPHost() + " Port : "
+          + Integer.toString(driverSettings.getLDAPPort())
+          + " LDAPLogin : " + driverSettings.getLDAPAccessLoginDN()
+          + " ProtocolVer : "
+          + Integer.toString(driverSettings.getLDAPProtocolVer()), e);
     }
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connectionId
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static private void InternalCloseConnection(String connectionId)
@@ -261,20 +233,17 @@ public class LDAPUtility extends Object {
         throw new AdminException("LDAPUtility.closeConnection",
             SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL",
             "ConnectionId=" + connectionId + " Error LDAP #"
-                + Integer.toString(e.getResultCode()) + " "
-                + e.getLDAPErrorMessage(), e);
+            + Integer.toString(e.getResultCode()) + " "
+            + e.getLDAPErrorMessage(), e);
       }
     }
   }
 
   /**
-   * Returns the first value of a specific attribute from an entry. If this
-   * attribute have multiple values, only the first is returned
-   * 
-   * @param theEntry
-   *          the LDAP entry
-   * @param attributeName
-   *          the name of the attribute to retreive
+   * Returns the first value of a specific attribute from an entry. If this attribute have multiple
+   * values, only the first is returned
+   * @param theEntry the LDAP entry
+   * @param attributeName the name of the attribute to retreive
    * @return the first value as a string
    * @throws LDAPException
    */
@@ -291,22 +260,15 @@ public class LDAPUtility extends Object {
   }
 
   /**
-   * Search and returns the first Entry that match the parameters baseDN, scope
-   * and filter
-   * 
-   * @param ld
-   *          the LDAP connection
-   * @param baseDN
-   *          the base DN for the search
-   * @param scope
-   *          the scope (LDAPConnection.SCOPE_BASE, LDAPConnection.SCOPE_ONE or
-   *          LDAPConnection.SCOPE_SUB)
-   * @param filter
-   *          the filter for the search (if null, use '(objectClass=*)' )
+   * Search and returns the first Entry that match the parameters baseDN, scope and filter
+   * @param ld the LDAP connection
+   * @param baseDN the base DN for the search
+   * @param scope the scope (LDAPConnection.SCOPE_BASE, LDAPConnection.SCOPE_ONE or
+   * LDAPConnection.SCOPE_SUB)
+   * @param filter the filter for the search (if null, use '(objectClass=*)' )
    * @return the first entry found
    * @throws LDAPException
-   * @throws LDAPReferralException
-   *           if a referral problem occur
+   * @throws LDAPReferralException if a referral problem occur
    */
   static public LDAPEntry getFirstEntryFromSearch(String lds, String baseDN,
       int scope, String filter, String[] attrs) throws AdminException {
@@ -327,7 +289,7 @@ public class LDAPUtility extends Object {
       sc.setMaxResults(1);
       SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
           "LDAP query", "BaseDN=" + baseDN + " scope="
-              + Integer.toString(scope) + " Filter=" + sureFilter);
+          + Integer.toString(scope) + " Filter=" + sureFilter);
       // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
       // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
       // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
@@ -345,16 +307,16 @@ public class LDAPUtility extends Object {
     } catch (LDAPReferralException re) {
       throw new AdminException("LDAPUtility.getFirstEntryFromSearch",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
-              + Integer.toString(re.getResultCode()) + " "
-              + re.getLDAPErrorMessage(), re);
+          + Integer.toString(re.getResultCode()) + " "
+          + re.getLDAPErrorMessage(), re);
     } catch (LDAPException e) {
       if (LDAPUtility.recoverConnection(lds, e)) {
         return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
       } else {
         throw new AdminException("LDAPUtility.getFirstEntryFromSearch",
             SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "#"
-                + Integer.toString(e.getResultCode()) + " "
-                + e.getLDAPErrorMessage(), e);
+            + Integer.toString(e.getResultCode()) + " "
+            + e.getLDAPErrorMessage(), e);
       }
     }
     return theEntry;
@@ -367,14 +329,10 @@ public class LDAPUtility extends Object {
 
   /**
    * Reads the values of an attribute and return the strings
-   * 
-   * @param theEntry
-   *          entry to read the attribute
-   * @param theAttributeName
-   *          name of the attribute to retreive
+   * @param theEntry entry to read the attribute
+   * @param theAttributeName name of the attribute to retreive
    * @return the attribute's values as string
-   * @throws LDAPException
-   *           , AdminException
+   * @throws LDAPException , AdminException
    */
   static public String[] getAttributeValues(LDAPEntry theEntry,
       String theAttributeName) {
@@ -389,12 +347,12 @@ public class LDAPUtility extends Object {
       if (theAttr == null) {
         SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
             "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
-                + " is null !!!");
+            + " is null !!!");
         return new String[0];
       } else {
         SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
             "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
-                + " size = " + Integer.toString(theAttr.size()));
+            + " size = " + Integer.toString(theAttr.size()));
         if (isAGuid(theAttributeName)) {
           byte[][] allBytes = theAttr.getByteValueArray();
           byte[] asBytes;
@@ -422,7 +380,7 @@ public class LDAPUtility extends Object {
             valret[j] = theStr.toString();
             SilverTrace.info("admin", "LDAPUtility.getAttributeValues()",
                 "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
-                    + " PARSED VALUE = " + theStr);
+                + " PARSED VALUE = " + theStr);
           }
           return valret;
         } else
@@ -479,18 +437,13 @@ public class LDAPUtility extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lds
    * @param baseDN
    * @param scope
    * @param filter
    * @param varToSort
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   static public LDAPEntry[] search1000Plus(String lds, String baseDN,
@@ -513,7 +466,7 @@ public class LDAPUtility extends Object {
       LDAPSettings driverSettings = ((LDAPConnectInfos) connectInfos.get(lds)).driverSettings;
       SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
           "root.MSG_GEN_PARAM_VALUE", "LDAPImpl = "
-              + driverSettings.getLDAPImpl());
+          + driverSettings.getLDAPImpl());
       if (args != null)
         SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
             "root.MSG_GEN_PARAM_VALUE", "args = " + args.toString());
@@ -542,12 +495,12 @@ public class LDAPUtility extends Object {
         while (theFullFilter != null) {
           SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
               "LDAP query", "BaseDN=" + baseDNs[j] + " scope="
-                  + Integer.toString(scope) + " Filter=" + theFullFilter);
+              + Integer.toString(scope) + " Filter=" + theFullFilter);
           SynchroReport.debug("LDAPUtility.search1000Plus()",
               "Requête sur le domaine LDAP distant (protocole v"
-                  + ld.getProtocolVersion() + "), BaseDN=" + baseDNs[j]
-                  + " scope=" + Integer.toString(scope) + " Filter="
-                  + theFullFilter, null);
+              + ld.getProtocolVersion() + "), BaseDN=" + baseDNs[j]
+              + " scope=" + Integer.toString(scope) + " Filter="
+              + theFullFilter, null);
 
           try {
             res = ld
@@ -562,7 +515,7 @@ public class LDAPUtility extends Object {
                     "élément #" + nbReaded + " : " + entry.getDN(), null);
                 SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
                     "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded
-                        + " : " + entry.getDN());
+                    + " : " + entry.getDN());
                 entriesVector.add(entry);
                 nbReaded++;
               }
@@ -582,12 +535,12 @@ public class LDAPUtility extends Object {
                   "Time Limit Reached (#" + nbRetryTimeLimit + ")", null);
               SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
                   "root.MSG_GEN_PARAM_VALUE", "Time Limit Reached (#"
-                      + nbRetryTimeLimit + ")");
+                  + nbRetryTimeLimit + ")");
             } else {
               SilverTrace.error("admin", "LDAPUtility.search1000Plus",
                   "admin.EX_ERR_LDAP_REFERRAL", "#"
-                      + Integer.toString(le.getResultCode()) + " "
-                      + le.getLDAPErrorMessage(), le);
+                  + Integer.toString(le.getResultCode()) + " "
+                  + le.getLDAPErrorMessage(), le);
             }
           }
           if (sizeLimitReached
@@ -599,7 +552,7 @@ public class LDAPUtility extends Object {
                 + LDAPUtility.getFirstAttributeValue(entry, varToSort) + "))";
             SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
                 "root.MSG_GEN_PARAM_VALUE", "SIZE LIMIT REACHED : "
-                    + theFullFilter);
+                + theFullFilter);
           } else if (timeLimitReached
               && (nbRetryTimeLimit > MAX_NB_RETRY_TIMELIMIT)) {
             throw lastException;
@@ -614,22 +567,22 @@ public class LDAPUtility extends Object {
           "Référence (referral) retournée mais pas suivie !", re);
       throw new AdminException("LDAPUtility.search1000Plus",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
-              + Integer.toString(re.getResultCode()) + " "
-              + re.getLDAPErrorMessage(), re);
+          + Integer.toString(re.getResultCode()) + " "
+          + re.getLDAPErrorMessage(), re);
     } catch (LDAPException e) {
       SynchroReport.debug("LDAPUtility.search1000Plus()",
           "Une exception générale est survenue : #" + e.getResultCode() + " "
-              + e.getLDAPErrorMessage(), null);
+          + e.getLDAPErrorMessage(), null);
       SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
           "Une exception générale est survenue : #" + e.getResultCode() + " "
-              + e.getLDAPErrorMessage());
+          + e.getLDAPErrorMessage());
       if (LDAPUtility.recoverConnection(lds, e)) {
         return search1000Plus(lds, baseDN, scope, filter, varToSort, args);
       } else {
         throw new AdminException("LDAPUtility.search1000Plus",
             SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "#"
-                + Integer.toString(e.getResultCode()) + " "
-                + e.getLDAPErrorMessage(), e);
+            + Integer.toString(e.getResultCode()) + " "
+            + e.getLDAPErrorMessage(), e);
       }
     }
     return (LDAPEntry[]) entriesVector.toArray(new LDAPEntry[0]);
@@ -654,7 +607,7 @@ public class LDAPUtility extends Object {
           .newLDAPTimeStamp(getFirstAttributeValue(theEntries[0], timeStampVar));
       AbstractLDAPTimeStamp lastVal = driverSettings
           .newLDAPTimeStamp(getFirstAttributeValue(
-              theEntries[theEntries.length - 1], timeStampVar));
+          theEntries[theEntries.length - 1], timeStampVar));
       if (firstVal.compareTo(lastVal) >= 0) {
         return firstVal;
       } else {

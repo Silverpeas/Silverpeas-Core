@@ -100,7 +100,7 @@ public class ComponentHelper {
             "ComponentHelper.createComponentNode()",
             InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
             "Node name = " + componentId + "/" + componentType
-                + " already exists");
+            + " already exists");
       }
       session.getRootNode().addNode(componentId, componentType);
       session.save();

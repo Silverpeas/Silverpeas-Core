@@ -23,8 +23,7 @@
  */
 package com.stratelia.webactiv.util.exception;
 
-public class UtilRuntimeException extends SilverpeasRuntimeException implements
-    FromModule {
+public class UtilRuntimeException extends SilverpeasRuntimeException implements FromModule {
 
   public UtilRuntimeException(String message) {
     super(message);

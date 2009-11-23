@@ -51,9 +51,9 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class FileFolderManager {
 
   /**
-   * getAllSubFolder : retourne une Collection d'objets File qui representent
-   * les repertoires (et seulement les repertoires, pas les fichiers) contenus
-   * dans le repertoire passe en parametre Param = chemin du repertoire
+   * getAllSubFolder : retourne une Collection d'objets File qui representent les repertoires (et
+   * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
+   * Param = chemin du repertoire
    */
   public static Collection getAllSubFolder(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
@@ -82,9 +82,9 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllFile : retourne une Collection d'objets File qui representent les
-   * fichiers (et seulement les fichiers, pas les repertoires) contenus dans le
-   * repertoire passe en parametre Param = chemin du repertoire
+   * getAllFile : retourne une Collection d'objets File qui representent les fichiers (et seulement
+   * les fichiers, pas les repertoires) contenus dans le repertoire passe en parametre Param =
+   * chemin du repertoire
    */
   public static Collection getAllFile(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
@@ -113,9 +113,8 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllImages : retourne une Collection d'objets File qui representent les
-   * fichiers images (type GIF ou JPEG) contenus dans le repertoire passe en
-   * parametre Param = chemin du repertoire
+   * getAllImages : retourne une Collection d'objets File qui representent les fichiers images (type
+   * GIF ou JPEG) contenus dans le repertoire passe en parametre Param = chemin du repertoire
    */
   public static Collection getAllImages(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
@@ -160,9 +159,9 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllWebPages : retourne une Collection d'objets File qui representent les
-   * fichiers du site web contenus dans le repertoire passe en parametre et ses
-   * sous repertoires Param = chemin du repertoire du site
+   * getAllWebPages : retourne une Collection d'objets File qui representent les fichiers du site
+   * web contenus dans le repertoire passe en parametre et ses sous repertoires Param = chemin du
+   * repertoire du site
    */
   public static Collection getAllWebPages(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
@@ -177,11 +176,10 @@ public class FileFolderManager {
       while (list != null && i < list.length) {
         if (list[i].isFile()) {
           /*
-           * NEWD CBO 22/06/2007 String fichier = list[i].getName(); int
-           * indexPoint = fichier.lastIndexOf("."); String type =
-           * fichier.substring(indexPoint + 1); if (type.equals("htm") ||
-           * type.equals("HTM") || type.equals("html") || type.equals("HTML"))
-           * NEWF CBO
+           * NEWD CBO 22/06/2007 String fichier = list[i].getName(); int indexPoint =
+           * fichier.lastIndexOf("."); String type = fichier.substring(indexPoint + 1); if
+           * (type.equals("htm") || type.equals("HTM") || type.equals("html") ||
+           * type.equals("HTML")) NEWF CBO
            */
           resultat.add(list[i]);
         } else if (list[i].isDirectory()) {
@@ -206,9 +204,9 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllWebPages2 : retourne une Collection d'objets File qui representent
-   * les fichiers web (type HTML) contenus dans le repertoire passe en parametre
-   * et seulement dans ce repertoire Param = chemin du repertoire du site
+   * getAllWebPages2 : retourne une Collection d'objets File qui representent les fichiers web (type
+   * HTML) contenus dans le repertoire passe en parametre et seulement dans ce repertoire Param =
+   * chemin du repertoire du site
    */
   public static Collection getAllWebPages2(String chemin) throws Exception {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
@@ -268,8 +266,7 @@ public class FileFolderManager {
   }
 
   /**
-   * renameFolder : modification du nom d'un repertoire Param = chemin du
-   * repertoire
+   * renameFolder : modification du nom d'un repertoire Param = chemin du repertoire
    */
   public static void renameFolder(String cheminRep, String newCheminRep)
       throws UtilException {
@@ -282,10 +279,10 @@ public class FileFolderManager {
       if (!directory.renameTo(newDirectory)) {
         SilverTrace.error("util", "FileFolderManager.renameFolder",
             "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
-                + newCheminRep.toString());
+            + newCheminRep.toString());
         throw new UtilException("FileFolderManager.renameFolder",
             "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
-                + newCheminRep.toString());
+            + newCheminRep.toString());
       }
     }
 
@@ -298,22 +295,21 @@ public class FileFolderManager {
   }
 
   /**
-   * deleteFolder : destruction d'un repertoire et de tout ce qu'il contient
-   * (fichiers et ss-repertoires) Param = chemin du repertoire
+   * deleteFolder : destruction d'un repertoire et de tout ce qu'il contient (fichiers et
+   * ss-repertoires) Param = chemin du repertoire
    */
   public static void deleteFolder(String chemin) throws Exception {
     deleteFolder(chemin, false);
   }
 
   /**
-   * deleteFolder : destruction d'un repertoire et de tout ce qu'il contient
-   * (fichiers et ss-repertoires) Param = chemin du repertoire
+   * deleteFolder : destruction d'un repertoire et de tout ce qu'il contient (fichiers et
+   * ss-repertoires) Param = chemin du repertoire
    */
   public static void deleteFolder(String chemin, boolean throwException)
       throws UtilException {
     /*
-     * ex chemin =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder
+     * ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder
      */
 
     File directory = new File(chemin);
@@ -348,9 +344,8 @@ public class FileFolderManager {
 
   /**
    * createFile : creation d'un fichier Param = cheminFichier =
-   * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2
-   * nomFichier = index.html contenuFichier = code du fichier :
-   * "<HTML><TITLE>...."
+   * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
+   * contenuFichier = code du fichier : "<HTML><TITLE>...."
    */
   public static void createFile(String cheminFichier, String nomFichier,
       String contenuFichier) throws UtilException {
@@ -394,10 +389,10 @@ public class FileFolderManager {
       if (!file.renameTo(newFile)) {
         SilverTrace.error("util", "FileFolderManager.renameFile",
             "util.EX_RENAME_FILE_ERROR", name + " en " + cheminRep + "\\"
-                + newName);
+            + newName);
         throw new UtilException("FileFolderManager.renameFile",
             "util.EX_RENAME_FILE_ERROR", name + " en " + cheminRep + "\\"
-                + newName);
+            + newName);
       }
     }
 
@@ -414,9 +409,7 @@ public class FileFolderManager {
    */
   public static void deleteFile(String chemin) throws UtilException {
     /*
-     * ex chemin =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder
-     * \\File.html
+     * ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder \\File.html
      */
 
     File file = new File(chemin);
@@ -432,8 +425,7 @@ public class FileFolderManager {
 
   /**
    * getCode : Récupération du contenu d'un fichier Param = cheminFichier =
-   * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2
-   * nomFichier = index.html
+   * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
    */
   public static String getCode(String cheminFichier, String nomFichier)
       throws UtilException {

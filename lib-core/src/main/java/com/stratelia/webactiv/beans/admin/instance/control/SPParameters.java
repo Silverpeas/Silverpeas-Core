@@ -233,7 +233,7 @@ public class SPParameters implements Serializable {
                     "ParameterOption");
                 SilverTrace.info("admin", "SPParameters.SPParameters",
                     "root.MSG_GEN_PARAM_VALUE", "nParameterOption="
-                        + nParameterOption);
+                    + nParameterOption);
                 if (nParameterOption != null) {
                   Node nParameterOptionName = WADOMUtil.findNode(options
                       .item(nH), "Name");
@@ -248,10 +248,10 @@ public class SPParameters implements Serializable {
                         .getNodeValue());
                     SilverTrace.info("admin", "SPParameters.SPParameters",
                         "root.MSG_GEN_PARAM_VALUE", "sParameterName="
-                            + sParameterOption.get(0));
+                        + sParameterOption.get(0));
                     SilverTrace.info("admin", "SPParameters.SPParameters",
                         "root.MSG_GEN_PARAM_VALUE", "sParameterValue="
-                            + sParameterOption.get(1));
+                        + sParameterOption.get(1));
                     sParameterOptions.add(sParameterOption);
                   }
                 }
@@ -278,7 +278,7 @@ public class SPParameters implements Serializable {
         // Le parametre existe en base mais plus dans le xmlComponent
         SilverTrace.info("admin", "SPParameters.mergeWith",
             "root.MSG_GEN_PARAM_VALUE", "dbParameter '"
-                + parameterToMerge.getName() + "' is no more use !");
+            + parameterToMerge.getName() + "' is no more use !");
       } else {
         parameter.setValue(parameterToMerge.getValue());
       }

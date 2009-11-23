@@ -215,10 +215,8 @@ public class PagesContext {
   }
 
   /**
-   * Used by Form. If parameter equals true, encapsulated border (around the
-   * form) will be written. Else no border will be displayed. Default value =
-   * true.
-   * 
+   * Used by Form. If parameter equals true, encapsulated border (around the form) will be written.
+   * Else no border will be displayed. Default value = true.
    * @param b
    */
   public void setBorderPrinted(boolean b) {

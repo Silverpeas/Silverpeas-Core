@@ -46,12 +46,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 
 /**
- * A TextFieldDisplayer is an object which can display a TextFiel in HTML
- * the content of a TextFiel to a end user
- * and can retrieve via HTTP any updated value.
- * 
- * 
- *
+ * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
+ * to a end user and can retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -69,22 +65,17 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[]{TextField.TYPE};
+    return new String[] { TextField.TYPE };
   }
 
   /**
-   * Prints the javascripts which will be used to control
-   * the new value given to the named field.
-   *
-   * The error messages may be adapted to a local language.
-   * The FieldTemplate gives the field type and constraints.
-   * The FieldTemplate gives the local labeld too.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the javascripts which will be used to control the new value given to the named field.
+   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
+   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
+   * log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the fieldName is unknown by the template.
-   * <LI> the field type is not a managed type.
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
@@ -93,12 +84,14 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     String label = template.getLabel(language);
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("			errorMsg+=\"  - '" + label + "' " + Util.getString("GML.MustBeFilled", language) + "\\n\";");
+      out.println("			errorMsg+=\"  - '" + label + "' " +
+          Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("			errorNb++;");
       out.println("		}");
     }
@@ -109,14 +102,17 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
       if (contentType.equals(TextField.CONTENT_TYPE_INT)) {
         out.println("		if (field.value != \"\" && !(/^-?\\d+$/.test(field.value))) {");
         out.println(
-            "			errorMsg+=\"  - '" + label + "' " + Util.getString("GML.MustContainsNumber", language) + "\\n\";");
+            "			errorMsg+=\"  - '" + label + "' " +
+            Util.getString("GML.MustContainsNumber", language) + "\\n\";");
         out.println("			errorNb++;");
         out.println("		}");
       } else if (contentType.equals(TextField.CONTENT_TYPE_FLOAT)) {
         out.println("		field.value = field.value.replace(\",\", \".\")");
-        out.println(
+        out
+            .println(
             "		if (field.value != \"\" && !(/^([+-]?(((\\d+(\\.)?)|(\\d*\\.\\d+))([eE][+-]?\\d+)?))$/.test(field.value))) {");
-        out.println("			errorMsg+=\"  - '" + label + "' " + Util.getString("GML.MustContainsFloat", language) + "\\n\";");
+        out.println("			errorMsg+=\"  - '" + label + "' " +
+            Util.getString("GML.MustContainsFloat", language) + "\\n\";");
         out.println("			errorNb++;");
         out.println("		}");
       }
@@ -125,7 +121,8 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     String nbMaxCar = (parameters.containsKey("maxLength")
         ? (String) parameters.get("maxLength") : Util.getSetting("nbMaxCar"));
     out.println("		if (! isValidText(field, " + nbMaxCar + ")) {");
-    out.println("			errorMsg+=\"  - '" + label + "' " + Util.getString("ContainsTooLargeText", language)
+    out.println("			errorMsg+=\"  - '" + label + "' " +
+        Util.getString("ContainsTooLargeText", language)
         + nbMaxCar + " " + Util.getString("Characters", language) + "\\n\";");
     out.println("			errorNb++;");
     out.println("		}");
@@ -134,14 +131,9 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the HTML value of the field. The displayed value must be updatable
-   * by the end user.
-   *
-   * The value format may be adapted to a local language. The fieldName must
-   * be used to name the html form input.
-   *
-   * Never throws an Exception but log a silvertrace and writes an empty
-   * string when :
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
@@ -153,23 +145,28 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "TextFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     String fieldName = template.getFieldName();
 
     Map parameters = template.getParameters(pageContext.getLanguage());
 
-    //Suggestions used ?
-    String paramSuggestions = parameters.containsKey("suggestions") ? (String) parameters.get("suggestions") : "false";
+    // Suggestions used ?
+    String paramSuggestions =
+        parameters.containsKey("suggestions") ? (String) parameters.get("suggestions") : "false";
     boolean useSuggestions = Boolean.valueOf(paramSuggestions).booleanValue();
     List suggestions = null;
     if (useSuggestions) {
       TextFieldImpl textField = (TextFieldImpl) field;
-      suggestions = textField.getSuggestions(fieldName, template.getTemplateName(), pageContext.getComponentId());
+      suggestions =
+          textField.getSuggestions(fieldName, template.getTemplateName(), pageContext
+          .getComponentId());
     }
 
-    String defaultValue = (parameters.containsKey("default") ? (String) parameters.get("default") : "");
+    String defaultValue =
+        (parameters.containsKey("default") ? (String) parameters.get("default") : "");
     if (pageContext.isIgnoreDefaultValues()) {
       defaultValue = "";
     }
@@ -183,7 +180,8 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     input.setID(template.getFieldName());
     input.setValue(EncodeHelper.javaStringToHtmlString(value));
     input.setType(template.isHidden() ? Input.hidden : Input.text);
-    input.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength") : "1000");
+    input.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength")
+        : "1000");
     input.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "50");
     if (parameters.containsKey("border")) {
       input.setBorder(Integer.parseInt((String) parameters.get("border")));
@@ -195,7 +193,8 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     IMG img = null;
-    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.isHidden() && pageContext.
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
+        !template.isHidden() && pageContext.
         useMandatory()) {
       img = new IMG();
       img.setSrc(Util.getIcon("mandatoryField"));
@@ -232,15 +231,18 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
   }
 
-  public List<String> update(String newValue, Field field, FieldTemplate template, PagesContext pagesContext)
+  public List<String> update(String newValue, Field field, FieldTemplate template,
+      PagesContext pagesContext)
       throws FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", TextField.TYPE);
+      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
+      throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
     }
     return new ArrayList<String>();
   }

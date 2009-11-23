@@ -30,10 +30,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * The DomainSPSchemaPool class manages a pool of DomainSPSchema shared by all
- * the client (admin classes).
- * 
- * All the public methods are static and the calls are deferred to a singleton.
+ * The DomainSPSchemaPool class manages a pool of DomainSPSchema shared by all the client (admin
+ * classes). All the public methods are static and the calls are deferred to a singleton.
  */
 public class DomainSPSchemaPool extends SchemaPool {
   /**
@@ -42,16 +40,13 @@ public class DomainSPSchemaPool extends SchemaPool {
   static private DomainSPSchemaPool singleton = new DomainSPSchemaPool();
 
   /**
-   * The constructor is private, so we can ensure that only one pool will be
-   * created in the JVM.
+   * The constructor is private, so we can ensure that only one pool will be created in the JVM.
    */
   private DomainSPSchemaPool() {
   }
 
   /**
-   * Returns an DomainSPSchemaPool.
-   * 
-   * The returned schema must be released after use.
+   * Returns an DomainSPSchemaPool. The returned schema must be released after use.
    */
   static public DomainSPSchema getDomainSPSchema()
       throws AdminPersistenceException {

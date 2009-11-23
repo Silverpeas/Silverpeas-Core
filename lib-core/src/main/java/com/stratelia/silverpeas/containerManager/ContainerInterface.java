@@ -27,8 +27,8 @@ import java.sql.Connection;
 import java.util.*;
 
 /**
- * The interface for all the containers (PDC, ..) Every container have to
- * implement this interface and declare it in the containerDescriptor (xml)
+ * The interface for all the containers (PDC, ..) Every container have to implement this interface
+ * and declare it in the containerDescriptor (xml)
  */
 public interface ContainerInterface {
   /** Return the parameters for the HTTP call on the classify */

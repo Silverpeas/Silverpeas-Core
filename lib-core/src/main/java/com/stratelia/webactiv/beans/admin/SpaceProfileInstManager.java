@@ -59,7 +59,7 @@ public class SpaceProfileInstManager {
       for (int nI = 0; nI < spaceProfileInst.getNumUser(); nI++)
         DDManager.organization.spaceUserRole
             .addUserInSpaceUserRole(idAsInt(spaceProfileInst.getUser(nI)),
-                idAsInt(sSpaceProfileNodeId));
+            idAsInt(sSpaceProfileNodeId));
 
       return sSpaceProfileNodeId;
     } catch (Exception e) {
@@ -70,8 +70,7 @@ public class SpaceProfileInstManager {
   }
 
   /**
-   * Get Space profile information with given id and creates a new
-   * SpaceProfileInst
+   * Get Space profile information with given id and creates a new SpaceProfileInst
    */
   public SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
       String sSpaceProfileId, String sFatherId) throws AdminException {
@@ -87,7 +86,7 @@ public class SpaceProfileInstManager {
         throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
             "space profile Id: '" + sSpaceProfileId + "', space Id: '"
-                + sFatherId + "'", e);
+            + sFatherId + "'", e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -103,8 +102,7 @@ public class SpaceProfileInstManager {
   }
 
   /**
-   * get information for given id and store it in the given SpaceProfileInst
-   * object
+   * get information for given id and store it in the given SpaceProfileInst object
    */
   public void setSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       DomainDriverManager ddManager, String sSpaceProfileId, String sFatherId)
@@ -144,7 +142,7 @@ public class SpaceProfileInstManager {
       throw new AdminException("SpaceProfileInstManager.setSpaceProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
           "space profile Id: '" + sSpaceProfileId + "', space Id: '"
-              + sFatherId + "'", e);
+          + sFatherId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -160,13 +158,13 @@ public class SpaceProfileInstManager {
       for (int nI = 0; nI < spaceProfileInst.getNumGroup(); nI++)
         ddManager.organization.spaceUserRole.removeGroupFromSpaceUserRole(
             idAsInt(spaceProfileInst.getGroup(nI)), idAsInt(spaceProfileInst
-                .getId()));
+            .getId()));
 
       // delete the node link SpaceProfile_User
       for (int nI = 0; nI < spaceProfileInst.getNumUser(); nI++)
         ddManager.organization.spaceUserRole.removeUserFromSpaceUserRole(
             idAsInt(spaceProfileInst.getUser(nI)), idAsInt(spaceProfileInst
-                .getId()));
+            .getId()));
 
       // delete the spaceProfile node
       ddManager.organization.spaceUserRole
@@ -224,7 +222,7 @@ public class SpaceProfileInstManager {
         // Create the links between the spaceProfile and the group
         ddManager.organization.spaceUserRole.addGroupInSpaceUserRole(
             idAsInt((String) alAddGroup.get(nI)), idAsInt(spaceProfileInst
-                .getId()));
+            .getId()));
       }
 
       // Remove the removed groups
@@ -232,7 +230,7 @@ public class SpaceProfileInstManager {
         // delete the node link SpaceProfile_Group
         ddManager.organization.spaceUserRole.removeGroupFromSpaceUserRole(
             idAsInt((String) alRemGroup.get(nI)), idAsInt(spaceProfileInst
-                .getId()));
+            .getId()));
       }
 
       // Compute the Old spaceProfile User list
@@ -262,7 +260,7 @@ public class SpaceProfileInstManager {
         // Create the links between the spaceProfile and the User
         ddManager.organization.spaceUserRole.addUserInSpaceUserRole(
             idAsInt((String) alAddUser.get(nI)), idAsInt(spaceProfileInst
-                .getId()));
+            .getId()));
       }
 
       // Remove the removed Users
@@ -270,7 +268,7 @@ public class SpaceProfileInstManager {
         // delete the node link SpaceProfile_User
         ddManager.organization.spaceUserRole.removeUserFromSpaceUserRole(
             idAsInt((String) alRemUser.get(nI)), idAsInt(spaceProfileInst
-                .getId()));
+            .getId()));
       }
 
       // update the spaceProfile node

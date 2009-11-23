@@ -95,7 +95,7 @@ public class GroupUserRoleTable extends Table {
       throw new AdminPersistenceException(
           "GroupUserRoleTable.getGroupUserRole", SilverpeasException.ERROR,
           "admin.EX_ERR_GROUPUSERROLE_NAME_GROUPID_FOUND_TWICE", "group id : '"
-              + groupId + "', group userrole name: '" + roleName + "'");
+          + groupId + "', group userrole name: '" + roleName + "'");
     }
   }
 
@@ -136,7 +136,8 @@ public class GroupUserRoleTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_GROUP_USERROLE_IDS = "select id from ST_GroupUserRole where groupId = ?";
+  static final private String SELECT_ALL_GROUP_USERROLE_IDS =
+      "select id from ST_GroupUserRole where groupId = ?";
 
   /**
    * Returns all the GroupUserRoles of an user.
@@ -160,7 +161,8 @@ public class GroupUserRoleTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_USER_GROUPUSERROLE_IDS = "select id from ST_GroupUserRole,ST_UserSet_User_Rel"
+  static final private String SELECT_ALL_USER_GROUPUSERROLE_IDS =
+      "select id from ST_GroupUserRole,ST_UserSet_User_Rel"
       + " where id=userSetId and userSetType='H' and userId=?";
 
   /**
@@ -209,17 +211,14 @@ public class GroupUserRoleTable extends Table {
       + " where id = groupUserRoleId" + " and   groupId = ?";
 
   /**
-   * Returns the GroupUserRole whose fields match those of the given sample
-   * GroupUserRole fields.
+   * Returns the GroupUserRole whose fields match those of the given sample GroupUserRole fields.
    */
   /*
-   * public GroupUserRoleRow[] getAllMatchingGroupUserRoles(GroupUserRoleRow
-   * sampleGroupUserRole) throws AdminPersistenceException { String[] columns =
-   * new String[] { "name", "description"}; String[] values = new String[] {
-   * sampleGroupUserRole.name, sampleGroupUserRole.description};
-   * 
-   * return (GroupUserRoleRow[]) getMatchingRows(GROUPUSERROLE_COLUMNS, columns,
-   * values) .toArray(new GroupUserRoleRow[0]); }
+   * public GroupUserRoleRow[] getAllMatchingGroupUserRoles(GroupUserRoleRow sampleGroupUserRole)
+   * throws AdminPersistenceException { String[] columns = new String[] { "name", "description"};
+   * String[] values = new String[] { sampleGroupUserRole.name, sampleGroupUserRole.description};
+   * return (GroupUserRoleRow[]) getMatchingRows(GROUPUSERROLE_COLUMNS, columns, values)
+   * .toArray(new GroupUserRoleRow[0]); }
    */
 
   /**
@@ -232,7 +231,7 @@ public class GroupUserRoleTable extends Table {
       throw new AdminPersistenceException(
           "GroupUserRoleTable.createGroupUserRole", SilverpeasException.ERROR,
           "admin.EX_ERR_GROUP_NOT_FOUND", "group id : '"
-              + groupUserRole.groupId + "'");
+          + groupUserRole.groupId + "'");
     }
 
     insertRow(INSERT_GROUPUSERROLE, groupUserRole);
@@ -262,21 +261,16 @@ public class GroupUserRoleTable extends Table {
    */
   /*
    * public void updateGroupUserRole(GroupUserRoleRow groupUserRole) throws
-   * AdminPersistenceException { updateRow(UPDATE_GROUPUSERROLE, groupUserRole);
-   * }
-   * 
-   * static final private String UPDATE_GROUPUSERROLE =
-   * "update ST_GroupUserRole set" + " name = ?," + " description = ?" +
-   * " where id = ?";
+   * AdminPersistenceException { updateRow(UPDATE_GROUPUSERROLE, groupUserRole); } static final
+   * private String UPDATE_GROUPUSERROLE = "update ST_GroupUserRole set" + " name = ?," +
+   * " description = ?" + " where id = ?";
    */
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
     /*
-     * GroupUserRoleRow s = (GroupUserRoleRow) row;
-     * 
-     * update.setString(1, truncate(s.name,100)); update.setString(2,
-     * truncate(s.description,500)); update.setInt(3, s.id);
+     * GroupUserRoleRow s = (GroupUserRoleRow) row; update.setString(1, truncate(s.name,100));
+     * update.setString(2, truncate(s.description,500)); update.setInt(3, s.id);
      */
   }
 
@@ -318,7 +312,8 @@ public class GroupUserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_USERSET_USER_REL = "select linksCount from ST_UserSet_User_Rel"
+  static final private String SELECT_COUNT_USERSET_USER_REL =
+      "select linksCount from ST_UserSet_User_Rel"
       + " where userId = ? and userSetId = ? and userSetType='H'";
 
   /**
@@ -335,7 +330,8 @@ public class GroupUserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_GROUPUSERROLE_USER_REL = "select count(*) from ST_GroupUserRole_User_Rel"
+  static final private String SELECT_COUNT_GROUPUSERROLE_USER_REL =
+      "select count(*) from ST_GroupUserRole_User_Rel"
       + " where userId = ? and groupUserRoleId = ?";
 
   /**
@@ -367,7 +363,8 @@ public class GroupUserRoleTable extends Table {
     organization.userSet.addUserInUserSet(userId, "H", groupUserRoleId);
   }
 
-  static final private String INSERT_A_GROUPUSERROLE_USER_REL = "insert into ST_GroupUserRole_User_Rel(groupUserRoleId, userId) values(?,?)";
+  static final private String INSERT_A_GROUPUSERROLE_USER_REL =
+      "insert into ST_GroupUserRole_User_Rel(groupUserRoleId, userId) values(?,?)";
 
   /**
    * Removes an user from a groupUserRole.
@@ -379,25 +376,26 @@ public class GroupUserRoleTable extends Table {
           "GroupUserRoleTable.removeUserFromGroupUserRole",
           SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP_USERROLE",
           "group userrole id: '" + groupUserRoleId + "', user id: '" + userId
-              + "'");
+          + "'");
     }
 
     SynchroReport.debug("GroupUserRoleTable.removeUserFromGroupUserRole()",
         "Retrait (ou décrément) de la relation entre l'utilisateur d'ID "
-            + userId + " et l'egroup d'ID " + groupUserRoleId
-            + " dans la table ST_UserSet_User_Rel", null);
+        + userId + " et l'egroup d'ID " + groupUserRoleId
+        + " dans la table ST_UserSet_User_Rel", null);
     organization.userSet.removeUserFromUserSet(userId, "H", groupUserRoleId);
 
     int[] params = new int[] { groupUserRoleId, userId };
     SynchroReport
         .debug("GroupUserRoleTable.removeUserFromGroupUserRole()",
-            "Retrait de l'utilisateur d'ID " + userId
-                + " de role d'egroup d'ID " + groupUserRoleId + ", requête : "
-                + DELETE_GROUPUSERROLE_USER_REL, null);
+        "Retrait de l'utilisateur d'ID " + userId
+        + " de role d'egroup d'ID " + groupUserRoleId + ", requête : "
+        + DELETE_GROUPUSERROLE_USER_REL, null);
     updateRelation(DELETE_GROUPUSERROLE_USER_REL, params);
   }
 
-  static final private String DELETE_GROUPUSERROLE_USER_REL = "delete from ST_GroupUserRole_User_Rel where groupUserRoleId = ? and userId = ?";
+  static final private String DELETE_GROUPUSERROLE_USER_REL =
+      "delete from ST_GroupUserRole_User_Rel where groupUserRoleId = ? and userId = ?";
 
   /**
    * Tests if a group has a given role (recursive).
@@ -413,7 +411,8 @@ public class GroupUserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_USERSET_GROUP_REL = "select linksCount from ST_UserSet_UserSet_Rel"
+  static final private String SELECT_COUNT_USERSET_GROUP_REL =
+      "select linksCount from ST_UserSet_UserSet_Rel"
       + " where subSetType='G' and subSetId=?"
       + " and   superSetType='H' and superSetId = ?";
 
@@ -431,7 +430,8 @@ public class GroupUserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_GROUPUSERROLE_GROUP_REL = "select count(*) from ST_GroupUserRole_Group_Rel"
+  static final private String SELECT_COUNT_GROUPUSERROLE_GROUP_REL =
+      "select count(*) from ST_GroupUserRole_Group_Rel"
       + " where groupId = ? and groupUserRoleId = ?";
 
   /**
@@ -465,7 +465,8 @@ public class GroupUserRoleTable extends Table {
         .addUserSetInUserSet("G", groupId, "H", groupUserRoleId);
   }
 
-  static final private String INSERT_A_GROUPUSERROLE_GROUP_REL = "insert into ST_GroupUserRole_Group_Rel(groupUserRoleId, groupId) values(?,?)";
+  static final private String INSERT_A_GROUPUSERROLE_GROUP_REL =
+      "insert into ST_GroupUserRole_Group_Rel(groupUserRoleId, groupId) values(?,?)";
 
   /**
    * Removes a group from a groupUserRole.
@@ -477,13 +478,13 @@ public class GroupUserRoleTable extends Table {
           "GroupUserRoleTable.removeGroupFromGroupUserRole",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GROUP_NOT_IN_GROUP_USERROLE", "group userrole id: '"
-              + groupUserRoleId + "', group id: '" + groupId + "'");
+          + groupUserRoleId + "', group id: '" + groupId + "'");
     }
 
     SynchroReport.debug("GroupUserRoleTable.removeGroupFromGroupUserRole()",
         "Suppression (ou décrément) des relations liant le groupe d'ID "
-            + groupId + " et l'egroup d'ID " + groupUserRoleId
-            + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
+        + groupId + " et l'egroup d'ID " + groupUserRoleId
+        + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         null);
     organization.userSet.removeUserSetFromUserSet("G", groupId, "H",
         groupUserRoleId);
@@ -491,12 +492,13 @@ public class GroupUserRoleTable extends Table {
     int[] params = new int[] { groupUserRoleId, groupId };
     SynchroReport.debug("GroupUserRoleTable.removeGroupFromGroupUserRole()",
         "Retrait du groupe d'ID " + groupId + " de l'espace d'ID "
-            + groupUserRoleId + ", requête : "
-            + DELETE_GROUPUSERROLE_GROUP_REL, null);
+        + groupUserRoleId + ", requête : "
+        + DELETE_GROUPUSERROLE_GROUP_REL, null);
     updateRelation(DELETE_GROUPUSERROLE_GROUP_REL, params);
   }
 
-  static final private String DELETE_GROUPUSERROLE_GROUP_REL = "delete from ST_GroupUserRole_Group_Rel where groupUserRoleId = ? and groupId = ?";
+  static final private String DELETE_GROUPUSERROLE_GROUP_REL =
+      "delete from ST_GroupUserRole_Group_Rel where groupUserRoleId = ? and groupId = ?";
 
   /**
    * Fetch the current groupUserRole row from a resultSet.

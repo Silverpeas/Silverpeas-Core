@@ -49,7 +49,7 @@ public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
 
     LDAPEntry[] theEntries = LDAPUtility.search1000Plus(lds, baseDN,
         driverSettings.getScope(), "(&(" + driverSettings.getTimeStampVar()
-            + ">=" + timeStamp + ")" + filter + ")", fallbackSortBy, ttv);
+        + ">=" + timeStamp + ")" + filter + ")", fallbackSortBy, ttv);
     SilverTrace.info("admin", "LDAPTimeStampNDS.initFromServer()",
         "root.MSG_GEN_PARAM_VALUE", "# entries = " + theEntries.length);
 

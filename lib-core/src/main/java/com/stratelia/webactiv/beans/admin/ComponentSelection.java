@@ -31,8 +31,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
-public class ComponentSelection extends ClipboardSelection implements
-    Serializable {
+public class ComponentSelection extends ClipboardSelection implements Serializable {
   static public DataFlavor ComponentDetailFlavor;
   static {
     try {
@@ -49,7 +48,6 @@ public class ComponentSelection extends ClipboardSelection implements
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Constructor
-   * 
    */
   public ComponentSelection(ComponentInst component) {
     super();
@@ -60,7 +58,6 @@ public class ComponentSelection extends ClipboardSelection implements
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
@@ -80,7 +77,6 @@ public class ComponentSelection extends ClipboardSelection implements
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry = new IndexEntry(componentInst.getId(), "Component",
@@ -91,8 +87,7 @@ public class ComponentSelection extends ClipboardSelection implements
 
   /**
    * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en
-   * SilverpeasKeyData
+   * ------------------------------ Tranformation obligatoire en SilverpeasKeyData
    */
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();

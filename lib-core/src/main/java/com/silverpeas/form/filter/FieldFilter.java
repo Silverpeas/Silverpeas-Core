@@ -27,7 +27,6 @@ import com.silverpeas.form.*;
 
 /**
  * FieldFilter
- * 
  * @see Field
  * @see RecordFilter
  */

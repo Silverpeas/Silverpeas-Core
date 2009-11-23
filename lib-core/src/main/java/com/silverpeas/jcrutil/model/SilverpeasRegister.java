@@ -50,9 +50,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class SilverpeasRegister {
   /**
    * Register Silverpeas node types in Jackrabbit
-   * 
-   * @param cndFileName
-   *          the file containing the nodes definitions.
+   * @param cndFileName the file containing the nodes definitions.
    * @throws NamespaceException
    * @throws UnsupportedRepositoryOperationException
    * @throws AccessDeniedException
@@ -87,7 +85,7 @@ public class SilverpeasRegister {
         ws.getNamespaceRegistry().registerNamespace(
             JcrConstants.SILVERPEAS_PREFIX,
             cndReader.getNamespaceMapping().getURI(
-                JcrConstants.SILVERPEAS_PREFIX));
+            JcrConstants.SILVERPEAS_PREFIX));
       } catch (NamespaceException e) {
         // The namespace may be already registred
         SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
@@ -105,9 +103,9 @@ public class SilverpeasRegister {
           ntreg.registerNodeType(ntd);
         } catch (InvalidNodeTypeDefException e) {
           // The node type may be already registred
-          if(! reRegisterNodeType(ntreg, ntd)) {
-          SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
-              "RepositoryAccessServlet error", e);
+          if (!reRegisterNodeType(ntreg, ntd)) {
+            SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+                "RepositoryAccessServlet error", e);
           }
         }
       }

@@ -43,10 +43,8 @@ import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
 /**
- * A CheckBoxDisplayer is an object which can display a checkbox in HTML
- * the content of a checkbox to a end user
- * and can retrieve via HTTP any updated value.
- *
+ * A CheckBoxDisplayer is an object which can display a checkbox in HTML the content of a checkbox
+ * to a end user and can retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -70,18 +68,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the javascripts which will be used to control
-   * the new value given to the named field.
-   *
-   * The error messages may be adapted to a local language.
-   * The FieldTemplate gives the field type and constraints.
-   * The FieldTemplate gives the local labeld too.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the javascripts which will be used to control the new value given to the named field.
+   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
+   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
+   * log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the fieldName is unknown by the template.
-   * <LI> the field type is not a managed type.
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   @Override
@@ -91,7 +84,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     String language = pagesContext.getLanguage();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "CheckBoxDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "CheckBoxDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
@@ -99,12 +93,14 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       int fin = currentIndex + getNbHtmlObjectsDisplayed(template, pagesContext);
       out.println("	var checked = false;\n");
       out.println("	for (var i = " + currentIndex + "; i < " + fin + "; i++) {\n");
-      out.println("		if (document.forms[" + pagesContext.getFormIndex() + "].elements[i].checked) {\n");
+      out.println("		if (document.forms[" + pagesContext.getFormIndex() +
+          "].elements[i].checked) {\n");
       out.println("			checked = true;\n");
       out.println("		}\n");
       out.println("	}\n");
       out.println("	if(checked == false) {\n");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString("GML.MustBeFilled",
+      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
+          Util.getString("GML.MustBeFilled",
           language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
@@ -114,16 +110,11 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the HTML value of the field.
-   * The displayed value must be updatable by the end user.
-   *
-   * The value format may be adapted to a local language.
-   * The fieldName must be used to name the html form input.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the field type is not a managed type.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   @Override
@@ -145,7 +136,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     Map parameters = template.getParameters(language);
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "CheckBoxDisplayer.display", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "CheckBoxDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     if (!field.isNull()) {
@@ -170,7 +162,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
         cols = (Integer.valueOf((String) parameters.get("cols"))).intValue();
       }
     } catch (NumberFormatException nfe) {
-      SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL", (String) parameters.
+      SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
+          (String) parameters.
           get("cols"));
       cols = 1;
     }
@@ -208,7 +201,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
 
-        html += "<INPUT type=\"checkbox\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" + optKey + "\" ";
+        html +=
+            "<INPUT type=\"checkbox\" id=\"" + fieldName + "\" name=\"" + fieldName +
+            "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled ";
@@ -220,11 +215,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
         html += ">&nbsp;" + optValue;
 
-        //last checkBox
+        // last checkBox
         if (i == nbTokens - 1) {
-          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.isHidden() && PagesContext.
+          if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
+              !template.isHidden() && PagesContext.
               useMandatory()) {
-            html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+            html +=
+                "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
           }
         }
 
@@ -246,7 +243,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+      PagesContext pageContext) throws
       FormException {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
         "parameterName = " + template.getFieldName());
@@ -264,8 +262,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     }
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_EXIT_METHOD",
         "parameterValue = " + value);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-			return new ArrayList<String>();
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
+        !StringUtil.isDefined(value)) {
+      return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
   }
@@ -278,7 +277,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       throws FormException {
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE", TextField.TYPE);
+      throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     String valuesToInsert = values;
@@ -286,7 +286,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     if (field.acceptValue(valuesToInsert, PagesContext.getLanguage())) {
       field.setValue(valuesToInsert, PagesContext.getLanguage());
     } else {
-      throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
+      throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
     }
     return new ArrayList<String>();
   }

@@ -32,8 +32,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AttachmentDetailI18N extends Translation implements Serializable {
@@ -72,7 +70,6 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Constructor
-   * 
    * @author Nicolas EYSSERIC
    * @version
    */
@@ -95,10 +92,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPhysicalName() {
@@ -107,10 +101,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param physicalName
-   * 
    * @see
    */
   public void setPhysicalName(String physicalName) {
@@ -119,10 +110,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLogicalName() {
@@ -131,10 +119,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param logicalName
-   * 
    * @see
    */
   public void setLogicalName(String logicalName) {
@@ -145,10 +130,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getType() {
@@ -157,10 +139,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param type
-   * 
    * @see
    */
   public void setType(String type) {
@@ -169,10 +148,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public long getSize() {
@@ -181,10 +157,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param size
-   * 
    * @see
    */
   public void setSize(long size) {
@@ -193,8 +166,6 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Methode declaration
-   * 
-   * 
    * @see
    */
   public Date getCreationDate() {
@@ -203,10 +174,7 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
 
   /**
    * Methode declaration
-   * 
-   * 
    * @param fileDate
-   * 
    * @see
    */
   public void setCreationDate(Date creationDate) {

@@ -31,11 +31,9 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 
 /**
- * The class ComponentInstLight is the representation in memory of a component
- * instance
+ * The class ComponentInstLight is the representation in memory of a component instance
  */
-public class ComponentInstLight extends AbstractI18NBean implements
-    Serializable {
+public class ComponentInstLight extends AbstractI18NBean implements Serializable {
   /* Unique identifier of the instance */
   private String m_sId;
 
@@ -108,7 +106,6 @@ public class ComponentInstLight extends AbstractI18NBean implements
 
   /**
    * Get the space id
-   * 
    * @return the requested space id
    */
   public String getId() {
@@ -124,9 +121,7 @@ public class ComponentInstLight extends AbstractI18NBean implements
 
   /**
    * Get the domain father id
-   * 
-   * @return the space father id. If space has no father, returns an empty
-   *         string.
+   * @return the space father id. If space has no father, returns an empty string.
    */
   public String getDomainFatherId() {
     return m_sDomainFatherId;
@@ -134,7 +129,6 @@ public class ComponentInstLight extends AbstractI18NBean implements
 
   /**
    * Get the space name
-   * 
    * @return the space name
    */
   public String getName() {
@@ -143,7 +137,6 @@ public class ComponentInstLight extends AbstractI18NBean implements
 
   /**
    * Get the component type
-   * 
    * @return the component type
    */
   public String getLabel() {
@@ -156,7 +149,6 @@ public class ComponentInstLight extends AbstractI18NBean implements
 
   /**
    * Get the component description
-   * 
    * @return the component description
    */
   public String getDescription() {
@@ -236,7 +228,6 @@ public class ComponentInstLight extends AbstractI18NBean implements
 
   /**
    * I18N
-   * 
    */
   public String getLabel(String language) {
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);

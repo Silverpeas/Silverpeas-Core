@@ -30,14 +30,13 @@
 package com.stratelia.silverpeas.authentication;
 
 /**
- * 
  * @author tleroi
  * @version
  */
 public class AuthenticationPwdNotAvailException extends AuthenticationException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public AuthenticationPwdNotAvailException(String callingClass,
       int errorLevel, String message) {

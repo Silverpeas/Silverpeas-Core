@@ -34,9 +34,8 @@ import com.stratelia.silverpeas.silvertrace.*;
 import com.stratelia.silverpeas.util.JoinStatement;
 
 /**
- * This class represents the ContainerManager API It is the gateway to all the
- * silverpeas containers (PDC, ....)
- * 
+ * This class represents the ContainerManager API It is the gateway to all the silverpeas containers
+ * (PDC, ....)
  */
 public class ContainerManager extends Object implements java.io.Serializable {
   // Container peas
@@ -65,8 +64,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public ContainerManager() throws ContainerManagerException {
@@ -88,16 +85,14 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
     // Load the instanceId-componentId cache
     /*
-     * if (s_asAssoInstanceId == null && s_asAssoComponentId == null) {
-     * s_asAssoInstanceId = new ArrayList(); s_asAssoComponentId = new
-     * ArrayList(); this.loadAsso(null); }
+     * if (s_asAssoInstanceId == null && s_asAssoComponentId == null) { s_asAssoInstanceId = new
+     * ArrayList(); s_asAssoComponentId = new ArrayList(); this.loadAsso(null); }
      */
   }
 
   /**
-   * When a generic component is instanciate, this function is called to
-   * register the association between container and content
-   * 
+   * When a generic component is instanciate, this function is called to register the association
+   * between container and content
    */
   public int registerNewContainerInstance(Connection connection,
       String sComponentId, String sContainerType, String sContentType)
@@ -146,7 +141,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_REGISTER_CONTAINER_INSTANCE",
           "sComponentId: " + sComponentId + "    sContainerType: "
-              + sContainerType, e);
+          + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -155,9 +150,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * When a generic component is uninstanciate, this function is called to
-   * unregister the association between container and content
-   * 
+   * When a generic component is uninstanciate, this function is called to unregister the
+   * association between container and content
    */
   public void unregisterNewContainerInstance(Connection connection,
       String sComponentId, String sContainerType, String sContentType)
@@ -199,7 +193,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_UNREGISTER_CONTAINER_INSTANCE",
           "sComponentId: " + sComponentId + "    sContainerType: "
-              + sContainerType, e);
+          + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -209,7 +203,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Return the containerPeas corresponding to the given componentId
-   * 
    */
   public ContainerPeas getContainerPeas(String sComponentId)
       throws ContainerManagerException {
@@ -231,14 +224,9 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param componentId
-   * 
    * @return
-   * 
    * @throws ContainerManagerException
-   * 
    * @see
    */
   private String getContainerType(String componentId)
@@ -257,15 +245,10 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connection
    * @param nContainerInstanceId
-   * 
    * @return
-   * 
    * @throws Exception
-   * 
    * @see
    */
   private ContainerPeas getContainerPeas(Connection connection,
@@ -301,14 +284,9 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sContainerType
-   * 
    * @return
-   * 
    * @throws ContainerManagerException
-   * 
    * @see
    */
   public ContainerPeas getContainerPeasByType(String sContainerType)
@@ -326,7 +304,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Return the container instance Id corresponding to the componentId
-   * 
    */
   public int getContainerInstanceId(String sComponentId)
       throws ContainerManagerException {
@@ -339,9 +316,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
     // of a container
 
     /*
-     * for (nIndex = 0; nIndex < s_asAssoComponentId.size(); nIndex++) { if
-     * (((String) s_asAssoComponentId.get(nIndex)).equals(sComponentId)) {
-     * containerInstanceId = ((Integer)
+     * for (nIndex = 0; nIndex < s_asAssoComponentId.size(); nIndex++) { if (((String)
+     * s_asAssoComponentId.get(nIndex)).equals(sComponentId)) { containerInstanceId = ((Integer)
      * s_asAssoInstanceId.get(nIndex)).intValue(); break; } }
      */
 
@@ -361,12 +337,10 @@ public class ContainerManager extends Object implements java.io.Serializable {
     }
 
     /*
-     * SilverTrace.info("containerManager",
-     * "ContainerManager.getContainerInstanceId", "root.MSG_GEN_PARAM_VALUE",
-     * "s_asAssoComponentId.size() = " + s_asAssoComponentId.size());
-     * SilverTrace.info("containerManager",
-     * "ContainerManager.getContainerInstanceId", "root.MSG_GEN_PARAM_VALUE",
-     * "s_asAssoInstanceId.size() = " + s_asAssoInstanceId.size());
+     * SilverTrace.info("containerManager", "ContainerManager.getContainerInstanceId",
+     * "root.MSG_GEN_PARAM_VALUE", "s_asAssoComponentId.size() = " + s_asAssoComponentId.size());
+     * SilverTrace.info("containerManager", "ContainerManager.getContainerInstanceId",
+     * "root.MSG_GEN_PARAM_VALUE", "s_asAssoInstanceId.size() = " + s_asAssoInstanceId.size());
      */
     SilverTrace.info("containerManager",
         "ContainerManager.getContainerInstanceId", "root.MSG_GEN_PARAM_VALUE",
@@ -394,8 +368,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   private Hashtable getAsso() throws ContainerManagerException {
     /*
-     * synchronized (assoComponentIdInstanceId) { if
-     * (assoComponentIdInstanceId.isEmpty())
+     * synchronized (assoComponentIdInstanceId) { if (assoComponentIdInstanceId.isEmpty())
      * assoComponentIdInstanceId.putAll(loadAsso(null)); }
      */
 
@@ -418,9 +391,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Load the cache instanceId-componentId
-   * 
    * @param connection
-   * 
    * @throws ContainerManagerException
    */
   private static Hashtable loadAsso(Connection connection)
@@ -474,9 +445,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * A SilverContent is removed, the containerManager is called to do all the
-   * necessary actions
-   * 
+   * A SilverContent is removed, the containerManager is called to do all the necessary actions
    * Assumption : the nSilverContentId is unique among all the SilverContent
    */
   public void silverContentIsRemoved(Connection connection,
@@ -531,8 +500,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.silverContentIsRemoved", SilverpeasException.ERROR,
           "containerManager.EX_CANT_REMOVE_SILVERCONTENT", "nSilverContentId: "
-              + nSilverContentId + "   nContainerInstanceId: "
-              + nContainerInstanceId, e);
+          + nSilverContentId + "   nContainerInstanceId: "
+          + nContainerInstanceId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -542,14 +511,10 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sComponentId
    * @param sContainerType
    * @param sContentType
-   * 
    * @throws ContainerManagerException
-   * 
    * @see
    */
   private void checkParameters(String sComponentId, String sContainerType,
@@ -584,12 +549,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sComponentId
-   * 
    * @throws ContainerManagerException
-   * 
    * @see
    */
   private void checkComponentId(String sComponentId)
@@ -609,14 +570,9 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sSQLStatement
-   * 
    * @return
-   * 
    * @throws ContainerManagerException
-   * 
    * @see
    */
   private String getFirstStringValue(String sSQLStatement)
@@ -647,7 +603,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.getFirstStringValue", SilverpeasException.ERROR,
           "containerManager.EX_CANT_QUERY_DATABASE", "sSQLStatement: "
-              + sSQLStatement, e);
+          + sSQLStatement, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -655,8 +611,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Add a link between a position (in the classify engine) and a container
-   * intance Called when a content is referenced in a container
+   * Add a link between a position (in the classify engine) and a container intance Called when a
+   * content is referenced in a container
    */
   public void addContainerContentInstanceLink(Connection connection,
       int nPositionId, String sComponentId) throws ContainerManagerException {
@@ -689,8 +645,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Remove a link between a position (in the classify engine) and a container
-   * intance Called when a content is unreferenced in a container
+   * Remove a link between a position (in the classify engine) and a container intance Called when a
+   * content is unreferenced in a container
    */
   public void removeContainerContentInstanceLink(Connection connection,
       int nPositionId, String sComponentId) throws ContainerManagerException {
@@ -723,8 +679,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Remove all the links for the given positionIds Ex: Called when empty
-   * positions are removed from the ClassifyEngine
+   * Remove all the links for the given positionIds Ex: Called when empty positions are removed from
+   * the ClassifyEngine
    */
   public void removeAllPositionIdsLink(Connection connection, List alPositionIds)
       throws ContainerManagerException {
@@ -761,8 +717,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Return the statement to get only the positions that belongs to the given
-   * componentId
+   * Return the statement to get only the positions that belongs to the given componentId
    */
   public JoinStatement getFilterPositionsByComponentIdStatement(
       List alPositions, List alComponentId) throws ContainerManagerException {
@@ -830,17 +785,15 @@ public class ContainerManager extends Object implements java.io.Serializable {
     }
     // works on the componentId List
     /*
-     * if (alComponentId != null && alComponentId.size() > 0) {
-     * sSQLStatement.append(" AND ( "); String oneComponent = ""; for (int nI =
-     * 0; nI < alComponentId.size(); nI++) { oneComponent = (String)
-     * alComponentId.get(nI); if (!notUsedComponents.contains(oneComponent)) {
-     * sSQLStatement.append("CMI.componentId = '" + oneComponent + "'"); if (nI
-     * < alComponentId.size() - 1) { sSQLStatement.append(" OR "); } else {
-     * sSQLStatement.append(")"); } } } // retire le dernier " OR )" s'il existe
-     * !! et le remplace par " ) " String strSQLStatement =
-     * sSQLStatement.toString(); int len = sSQLStatement.length(); if
-     * (strSQLStatement.endsWith(" OR ")) { sSQLStatement.replace(len - 3, len,
-     * ")"); // ajoute une parenthese } }
+     * if (alComponentId != null && alComponentId.size() > 0) { sSQLStatement.append(" AND ( ");
+     * String oneComponent = ""; for (int nI = 0; nI < alComponentId.size(); nI++) { oneComponent =
+     * (String) alComponentId.get(nI); if (!notUsedComponents.contains(oneComponent)) {
+     * sSQLStatement.append("CMI.componentId = '" + oneComponent + "'"); if (nI <
+     * alComponentId.size() - 1) { sSQLStatement.append(" OR "); } else { sSQLStatement.append(")");
+     * } } } // retire le dernier " OR )" s'il existe !! et le remplace par " ) " String
+     * strSQLStatement = sSQLStatement.toString(); int len = sSQLStatement.length(); if
+     * (strSQLStatement.endsWith(" OR ")) { sSQLStatement.replace(len - 3, len, ")"); // ajoute une
+     * parenthese } }
      */
     notUsedComponents = null;
     joinStatement.setWhere(sSQLStatement.toString());
@@ -852,9 +805,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Return only the positions that belongs to the given componentId ATTENTION:
-   * this function is slow, use it only for a few positions (for one
-   * SilverContentId)
+   * Return only the positions that belongs to the given componentId ATTENTION: this function is
+   * slow, use it only for a few positions (for one SilverContentId)
    */
   public List filterPositionsByComponentId(List alPositions, String sComponentId)
       throws ContainerManagerException {
@@ -906,7 +858,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.filterPositionsByComponentId",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_FILTER_POSITIONS", "sComponentId: "
-              + sComponentId, e);
+          + sComponentId, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -918,41 +870,27 @@ public class ContainerManager extends Object implements java.io.Serializable {
    */
 
   /*
-   * public List filterSilverContentIdsByComponentId(List alDoubleIds, String
-   * sComponentId) throws ContainerManagerException { try { List alPositionIds =
-   * (List) alDoubleIds.get(0); List alObjectIds = (List) alDoubleIds.get(1);
-   * 
-   * // Filter by positions List alFilteredPositionIds =
-   * this.filterPositionsByComponentId(alPositionIds, sComponentId);
-   * 
-   * // Build the return list of FilteredSilverContentIds (Group By objectId)
-   * int nObjectsDone = 0; int[] anObjectsDone = new
-   * int[alFilteredPositionIds.size()]; List alFilteredObjectIds = new
-   * ArrayList(); for(int nI=0; alFilteredPositionIds!= null && nI <
-   * alFilteredPositionIds.size(); nI++) for(int nJ=0; alPositionIds != null &&
-   * nJ < alPositionIds.size(); nJ++)
+   * public List filterSilverContentIdsByComponentId(List alDoubleIds, String sComponentId) throws
+   * ContainerManagerException { try { List alPositionIds = (List) alDoubleIds.get(0); List
+   * alObjectIds = (List) alDoubleIds.get(1); // Filter by positions List alFilteredPositionIds =
+   * this.filterPositionsByComponentId(alPositionIds, sComponentId); // Build the return list of
+   * FilteredSilverContentIds (Group By objectId) int nObjectsDone = 0; int[] anObjectsDone = new
+   * int[alFilteredPositionIds.size()]; List alFilteredObjectIds = new ArrayList(); for(int nI=0;
+   * alFilteredPositionIds!= null && nI < alFilteredPositionIds.size(); nI++) for(int nJ=0;
+   * alPositionIds != null && nJ < alPositionIds.size(); nJ++)
    * if(((Integer)alFilteredPositionIds.get(nI)).intValue() ==
    * ((Integer)alPositionIds.get(nJ)).intValue())
-   * if(this.notIn(((Integer)alObjectIds.get(nJ)).intValue(), anObjectsDone,
-   * nObjectsDone)) { alFilteredObjectIds.add(alObjectIds.get(nJ));
-   * anObjectsDone[nObjectsDone++] = ((Integer)alObjectIds.get(nJ)).intValue();
-   * }
-   * 
-   * 
-   * return alFilteredObjectIds; } catch(Exception e) { throw new
-   * ContainerManagerException
-   * ("ContainerManager.filterSilverContentIdsByComponentId"
-   * ,SilverpeasException.
-   * ERROR,"containerManager.EX_CANT_FILTER_SILVERCONTENTIDS", "sComponentId: "
-   * + sComponentId , e); } }
+   * if(this.notIn(((Integer)alObjectIds.get(nJ)).intValue(), anObjectsDone, nObjectsDone)) {
+   * alFilteredObjectIds.add(alObjectIds.get(nJ)); anObjectsDone[nObjectsDone++] =
+   * ((Integer)alObjectIds.get(nJ)).intValue(); } return alFilteredObjectIds; } catch(Exception e) {
+   * throw new ContainerManagerException ("ContainerManager.filterSilverContentIdsByComponentId"
+   * ,SilverpeasException. ERROR,"containerManager.EX_CANT_FILTER_SILVERCONTENTIDS",
+   * "sComponentId: " + sComponentId , e); } }
    */
 
   /**
    * Method declaration
-   * 
-   * 
    * @param connection
-   * 
    * @see
    */
   private void rollbackConnection(Connection connection) {

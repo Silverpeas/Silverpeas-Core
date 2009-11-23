@@ -65,10 +65,8 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   }
 
   /**
-   * Builds a GenericFieldTemplate from a field name and a field type name. The
-   * type name must be known by the type manager.
-   * 
-   * You must use the set and add methods to change any default value.
+   * Builds a GenericFieldTemplate from a field name and a field type name. The type name must be
+   * known by the type manager. You must use the set and add methods to change any default value.
    */
   public GenericFieldTemplate(String fieldName, String typeName)
       throws FormException {
@@ -79,9 +77,8 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   }
 
   /**
-   * Builds a GenericFieldTemplate from a field name and a field implementation.
-   * 
-   * You must use the set and add methods to change any default value.
+   * Builds a GenericFieldTemplate from a field name and a field implementation. You must use the
+   * set and add methods to change any default value.
    */
   public GenericFieldTemplate(String fieldName, Class fieldImpl)
       throws FormException {

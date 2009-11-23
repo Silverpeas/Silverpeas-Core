@@ -26,9 +26,7 @@ package com.stratelia.silverpeas.containerManager;
 import java.util.*;
 
 /**
- * This is the data structure that the container JSP is going to use (built by
- * the container router)
- * 
+ * This is the data structure that the container JSP is going to use (built by the container router)
  */
 public class ContainerWorkspace {
   private List asContainerUserRoles = null; // container roles for the logged

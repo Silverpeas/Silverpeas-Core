@@ -43,7 +43,8 @@ public class ComponentInstanceTable extends Table {
     this.organization = organization;
   }
 
-  static final private String INSTANCE_COLUMNS = "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime,removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang,isInheritanceBlocked";
+  static final private String INSTANCE_COLUMNS =
+      "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime,removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang,isInheritanceBlocked";
 
   /**
    * Fetch the current instance row from a resultSet.
@@ -113,7 +114,7 @@ public class ComponentInstanceTable extends Table {
       + aliasColumns("i", INSTANCE_COLUMNS)
       + " from ST_ComponentInstance i, ST_UserRole us"
       + " where i.id = us.instanceId"
-      // + " and componentStatus is null"
+        // + " and componentStatus is null"
       + " and us.id = ?";
 
   /**
@@ -153,7 +154,8 @@ public class ComponentInstanceTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_SPACE_INSTANCE_IDS = "select id from ST_ComponentInstance where spaceId = ?"
+  static final private String SELECT_ALL_SPACE_INSTANCE_IDS =
+      "select id from ST_ComponentInstance where spaceId = ?"
       + " and componentStatus is null" + " order by orderNum";
 
   /**
@@ -175,17 +177,14 @@ public class ComponentInstanceTable extends Table {
    */
   /*
    * public String[] getAvailCompoIdsInSpace(int spaceId, int userId) throws
-   * AdminPersistenceException { int[] ids = new int[2]; ids[0] = spaceId;
-   * ids[1] = userId; return (String[]) getIds(SELECT_AVAIL_COMPO_IDS_IN_SPACE,
-   * ids) .toArray(new String[0]); }
-   * 
-   * static final private String SELECT_AVAIL_COMPO_IDS_IN_SPACE =
-   * "SELECT userSetId" +
+   * AdminPersistenceException { int[] ids = new int[2]; ids[0] = spaceId; ids[1] = userId; return
+   * (String[]) getIds(SELECT_AVAIL_COMPO_IDS_IN_SPACE, ids) .toArray(new String[0]); } static final
+   * private String SELECT_AVAIL_COMPO_IDS_IN_SPACE = "SELECT userSetId" +
    * " FROM ST_UserSet_UserSet_Rel, ST_UserSet_User_Rel, ST_ComponentInstance" +
-   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId"
-   * + " and componentStatus is null" +
-   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" +
-   * " AND userId = ?" + " order by ST_ComponentInstance.orderNum";
+   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId" +
+   * " and componentStatus is null" +
+   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" + " AND userId = ?" +
+   * " order by ST_ComponentInstance.orderNum";
    */
 
   /**
@@ -202,27 +201,37 @@ public class ComponentInstanceTable extends Table {
   }
 
   /*
-   * static final private String SELECT_AVAIL_COMPO_IN_SPACE =
-   * "SELECT "+INSTANCE_COLUMNS +
+   * static final private String SELECT_AVAIL_COMPO_IN_SPACE = "SELECT "+INSTANCE_COLUMNS +
    * " FROM ST_UserSet_UserSet_Rel, ST_UserSet_User_Rel, ST_ComponentInstance" +
-   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId"
-   * + " and componentStatus is null" +
-   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" +
-   * " AND userId = ?" + " order by ST_ComponentInstance.orderNum";
+   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId" +
+   * " and componentStatus is null" +
+   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" + " AND userId = ?" +
+   * " order by ST_ComponentInstance.orderNum";
    */
 
-  static final private String SELECT_AVAIL_COMPO_IN_SPACE = "SELECT "
-      + INSTANCE_COLUMNS
-      + " FROM ST_UserSet_UserSet_Rel R, ST_UserSet_User_Rel U, ST_ComponentInstance C"
-      + " WHERE C.componentStatus is null"
-      + " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND R.subSetId = U.userSetId AND C.id = U.userSetId AND U.userSetType='I' AND U.userId = ?"
-      + " UNION"
-      + " SELECT "
-      + INSTANCE_COLUMNS
-      + " FROM ST_UserSet_UserSet_Rel R, ST_ComponentInstance C"
-      + " WHERE C.componentStatus is null"
-      + " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND C.isPublic = 1"
-      + " order by orderNum";
+  static final private String SELECT_AVAIL_COMPO_IN_SPACE =
+      "SELECT "
+          +
+          INSTANCE_COLUMNS
+          +
+          " FROM ST_UserSet_UserSet_Rel R, ST_UserSet_User_Rel U, ST_ComponentInstance C"
+          +
+          " WHERE C.componentStatus is null"
+          +
+          " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND R.subSetId = U.userSetId AND C.id = U.userSetId AND U.userSetType='I' AND U.userId = ?"
+          +
+          " UNION"
+          +
+          " SELECT "
+          +
+          INSTANCE_COLUMNS
+          +
+          " FROM ST_UserSet_UserSet_Rel R, ST_ComponentInstance C"
+          +
+          " WHERE C.componentStatus is null"
+          +
+          " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND C.isPublic = 1"
+          + " order by orderNum";
 
   /**
    * Returns available components for given user in given space
@@ -258,25 +267,29 @@ public class ComponentInstanceTable extends Table {
   }
 
   /*
-   * static final private String SELECT_AVAIL_COMPO_IDS_IN_SPACE_AT_ROOT =
-   * "SELECT userSetId" +
+   * static final private String SELECT_AVAIL_COMPO_IDS_IN_SPACE_AT_ROOT = "SELECT userSetId" +
    * " FROM ST_UserSet_UserSet_Rel, ST_UserSet_User_Rel, ST_ComponentInstance" +
-   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId"
-   * + " AND componentStatus is null" +
-   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" +
-   * " AND userId = ?" + " AND ST_ComponentInstance.spaceid = ?" +
-   * " order by ST_ComponentInstance.orderNum";
+   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId" +
+   * " AND componentStatus is null" +
+   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" + " AND userId = ?" +
+   * " AND ST_ComponentInstance.spaceid = ?" + " order by ST_ComponentInstance.orderNum";
    */
 
-  static final private String SELECT_AVAIL_COMPO_IN_SPACE_AT_ROOT = "SELECT "
-      + INSTANCE_COLUMNS
-      + " FROM ST_UserSet_UserSet_Rel R, ST_UserSet_User_Rel U, ST_ComponentInstance C"
-      + " WHERE C.componentStatus is null"
-      + " AND C.spaceid = ?"
-      + " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND R.subSetId = U.userSetId AND C.id = U.userSetId AND U.userSetType='I' AND U.userId = ?"
-      + " UNION" + " SELECT " + INSTANCE_COLUMNS
-      + " FROM ST_ComponentInstance C" + " WHERE C.componentStatus is null"
-      + " AND C.spaceid = ?" + " AND C.isPublic = 1" + " order by orderNum";
+  static final private String SELECT_AVAIL_COMPO_IN_SPACE_AT_ROOT =
+      "SELECT "
+          +
+          INSTANCE_COLUMNS
+          +
+          " FROM ST_UserSet_UserSet_Rel R, ST_UserSet_User_Rel U, ST_ComponentInstance C"
+          +
+          " WHERE C.componentStatus is null"
+          +
+          " AND C.spaceid = ?"
+          +
+          " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND R.subSetId = U.userSetId AND C.id = U.userSetId AND U.userSetType='I' AND U.userId = ?"
+          + " UNION" + " SELECT " + INSTANCE_COLUMNS
+          + " FROM ST_ComponentInstance C" + " WHERE C.componentStatus is null"
+          + " AND C.spaceid = ?" + " AND C.isPublic = 1" + " order by orderNum";
 
   /**
    * Returns available components for given user
@@ -320,23 +333,18 @@ public class ComponentInstanceTable extends Table {
       + " order by orderNum";
 
   /*
-   * public String[] getAvailableComponentIds(int userId, String componentName)
-   * throws AdminPersistenceException { int[] ids = new int[1]; ids[0] = userId;
-   * String[] params = new String[1]; params[0] = componentName; return
-   * (String[]) getIds(SELECT_AVAIL_COMPO_IDS_BY_NAME, ids, params).toArray(new
-   * String[0]); }
-   * 
-   * static final private String SELECT_AVAIL_COMPO_IDS_BY_NAME =
-   * "SELECT U.userSetId" +
+   * public String[] getAvailableComponentIds(int userId, String componentName) throws
+   * AdminPersistenceException { int[] ids = new int[1]; ids[0] = userId; String[] params = new
+   * String[1]; params[0] = componentName; return (String[]) getIds(SELECT_AVAIL_COMPO_IDS_BY_NAME,
+   * ids, params).toArray(new String[0]); } static final private String
+   * SELECT_AVAIL_COMPO_IDS_BY_NAME = "SELECT U.userSetId" +
    * " FROM ST_UserSet_User_Rel U, ST_ComponentInstance C" +
    * " WHERE U.userSetType='I' AND C.id = userSetId" + " AND U.userId = ?" +
-   * " AND C.componentName = ?" + " AND C.componentStatus is null" +
-   * " order by C.orderNum";
+   * " AND C.componentName = ?" + " AND C.componentStatus is null" + " order by C.orderNum";
    */
 
   /**
-   * Returns the ComponentInstance whose fields match those of the given sample
-   * instance fields.
+   * Returns the ComponentInstance whose fields match those of the given sample instance fields.
    */
   public ComponentInstanceRow[] getAllMatchingComponentInstances(
       ComponentInstanceRow sampleInstance) throws AdminPersistenceException {
@@ -443,10 +451,10 @@ public class ComponentInstanceTable extends Table {
       + " description = ?,"
       + " createdBy = ?,"
       + " orderNum = ?,"
-      // + " createTime = ?,"
+        // + " createTime = ?,"
       + " updateTime = ?,"
       + " updatedBy = ?,"
-      // + " removeTime = ?,"
+            // + " removeTime = ?,"
       + " componentStatus = ?,"
       + " isPublic = ?,"
       + " isHidden = ?,"
@@ -476,7 +484,8 @@ public class ComponentInstanceTable extends Table {
     }
   }
 
-  static final private String SEND_COMPONENT_IN_BASKET = "update ST_ComponentInstance set name = ?, removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
+  static final private String SEND_COMPONENT_IN_BASKET =
+      "update ST_ComponentInstance set name = ?, removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
 
   /**
    * Remove the space from the basket Space will be available again
@@ -501,7 +510,8 @@ public class ComponentInstanceTable extends Table {
     }
   }
 
-  static final private String RESTORE_COMPONENT_FROM_BASKET = "update ST_ComponentInstance set removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
+  static final private String RESTORE_COMPONENT_FROM_BASKET =
+      "update ST_ComponentInstance set removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
 
   // NEWD DLE
   /**

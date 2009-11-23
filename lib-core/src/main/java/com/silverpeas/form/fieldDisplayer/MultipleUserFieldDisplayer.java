@@ -45,9 +45,8 @@ import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
 /**
- * A MultipleUserFieldDisplayer is an object which can display a
- * MultipleUserField in HTML and can retrieve via HTTP any updated value.
- * 
+ * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can
+ * retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -55,201 +54,191 @@ import org.apache.commons.fileupload.FileItem;
  */
 public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 
-	static final private String ROWS_DEFAULT_VALUE = "5";
-	static final private String COLS_DEFAULT_VALUE = "100";
-	
-	/**
-	 * Returns the name of the managed types.
-	 */
-	public String[] getManagedTypes() {
-		String[] s = new String[0];
+  static final private String ROWS_DEFAULT_VALUE = "5";
+  static final private String COLS_DEFAULT_VALUE = "100";
 
-		s[0] = MultipleUserField.TYPE;
-		return s;
-	}
+  /**
+   * Returns the name of the managed types.
+   */
+  public String[] getManagedTypes() {
+    String[] s = new String[0];
 
-	/**
-	 * Prints the javascripts which will be used to control the new value given
-	 * to the named field.
-	 * 
-	 * The error messages may be adapted to a local language. The FieldTemplate
-	 * gives the field type and constraints. The FieldTemplate gives the local
-	 * labeld too.
-	 * 
-	 * Never throws an Exception but log a silvertrace and writes an empty
-	 * string when :
-	 * <UL>
-	 * <LI>the fieldName is unknown by the template.
-	 * <LI>the field type is not a managed type.
-	 * </UL>
-	 */
-	public void displayScripts(PrintWriter out, FieldTemplate template,
-			PagesContext PagesContext) throws java.io.IOException {
-		String language = PagesContext.getLanguage();
+    s[0] = MultipleUserField.TYPE;
+    return s;
+  }
 
-		String fieldName = template.getFieldName();
+  /**
+   * Prints the javascripts which will be used to control the new value given to the named field.
+   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
+   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
+   * log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
+   * </UL>
+   */
+  public void displayScripts(PrintWriter out, FieldTemplate template,
+      PagesContext PagesContext) throws java.io.IOException {
+    String language = PagesContext.getLanguage();
 
-		if (!template.getTypeName().equals(MultipleUserField.TYPE)) {
-			SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
-					"form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
+    String fieldName = template.getFieldName();
 
-		}
-		if (template.isMandatory()) {
-			StringBuffer html = new StringBuffer(); 
-			html.append("   if (isWhitespace(stripInitialWhitespace(document.forms['")
-							.append(PagesContext.getFormName())
-							.append("'].elements['")
-							.append(fieldName)
-							.append(MultipleUserField.PARAM_NAME_SUFFIX)
-							.append("'].value))) {");
-			
-			html.append("      errorMsg+=\"  - '")
-					.append(EncodeHelper.javaStringToJsString(template.getLabel(language)))
-					.append( "' ").append(Util.getString("GML.MustBeFilled", language))
-					.append("\\n \";");
-			
-			html.append("      errorNb++;");
-			html.append("   }");
-			
-			out.println(html.toString());
-		}
+    if (!template.getTypeName().equals(MultipleUserField.TYPE)) {
+      SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
+          "form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
 
-	}
+    }
+    if (template.isMandatory()) {
+      StringBuffer html = new StringBuffer();
+      html.append("   if (isWhitespace(stripInitialWhitespace(document.forms['")
+          .append(PagesContext.getFormName())
+          .append("'].elements['")
+          .append(fieldName)
+          .append(MultipleUserField.PARAM_NAME_SUFFIX)
+          .append("'].value))) {");
 
-	/**
-	 * Prints the HTML value of the field. The displayed value must be updatable
-	 * by the end user.
-	 * 
-	 * The value format may be adapted to a local language. The fieldName must
-	 * be used to name the html form input.
-	 * 
-	 * Never throws an Exception but log a silvertrace and writes an empty
-	 * string when :
-	 * <UL>
-	 * <LI>the field type is not a managed type.
-	 * </UL>
-	 */
-	public void display(PrintWriter out, Field field, FieldTemplate template,
-			PagesContext PagesContext) throws FormException {
-		SilverTrace.info("form", "UserFieldDisplayer.display",
-				"root.MSG_GEN_ENTER_METHOD", "fieldName = "
-						+ template.getFieldName() + ", value = "
-						+ field.getValue() + ", fieldType = "
-						+ field.getTypeName());
+      html.append("      errorMsg+=\"  - '")
+          .append(EncodeHelper.javaStringToJsString(template.getLabel(language)))
+          .append("' ").append(Util.getString("GML.MustBeFilled", language))
+          .append("\\n \";");
 
-		String language = PagesContext.getLanguage();
-		String mandatoryImg = Util.getIcon("mandatoryField");
-		String selectUserImg = Util.getIcon("userPanel");
-		String selectUserLab = Util.getString("userPanel", language);
+      html.append("      errorNb++;");
+      html.append("   }");
 
-		Map parameters = template.getParameters(PagesContext.getLanguage());
-		String rows = (parameters.containsKey("rows")) ? (String) parameters.get("rows") : ROWS_DEFAULT_VALUE;
-		String cols = (parameters.containsKey("cols")) ? (String) parameters.get("cols") : COLS_DEFAULT_VALUE;
-		boolean usersOfInstanceOnly = (parameters.containsKey("usersOfInstanceOnly") && "Yes".equals(parameters.get("usersOfInstanceOnly")));
-		
-		String userNames = "";
-		String userIds = "";
-		StringBuffer html = new StringBuffer();
+      out.println(html.toString());
+    }
 
-		String fieldName = template.getFieldName();
+  }
 
-		if (!field.getTypeName().equals(MultipleUserField.TYPE)) {
-			SilverTrace.info("form", "UserFieldDisplayer.display",
-					"form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
-		} else {
-			userIds = ((MultipleUserField) field).getStringValue();
-		}
-		if (!field.isNull()) {
-			userNames = field.getValue();
-		}
-		html.append("<INPUT type=\"hidden\" name=\"").append(fieldName)
-				.append(MultipleUserField.PARAM_NAME_SUFFIX).append("\" value=\"")
-				.append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" >");
+  /**
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the field type is not a managed type.
+   * </UL>
+   */
+  public void display(PrintWriter out, Field field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
+    SilverTrace.info("form", "UserFieldDisplayer.display",
+        "root.MSG_GEN_ENTER_METHOD", "fieldName = "
+        + template.getFieldName() + ", value = "
+        + field.getValue() + ", fieldType = "
+        + field.getTypeName());
 
-		if (!template.isHidden()) {
-			html.append("<TEXTAREA name=\"").append(fieldName)
-					.append("$$name\" disabled rows=\"").append(rows).append("\" cols=\"").append(cols).append("\">")
-					.append(EncodeHelper.javaStringToHtmlString(userNames)).append("</TEXTAREA>");
-		}
+    String language = PagesContext.getLanguage();
+    String mandatoryImg = Util.getIcon("mandatoryField");
+    String selectUserImg = Util.getIcon("userPanel");
+    String selectUserLab = Util.getString("userPanel", language);
 
-		if (!template.isHidden() && !template.isDisabled()
-				&& !template.isReadOnly()) {
-			html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
-					.append(URLManager.getApplicationURL())
-					.append("/RselectionPeasWrapper/jsp/open?formName=").append(PagesContext.getFormName())
-					.append("&elementId=").append(fieldName).append(MultipleUserField.PARAM_NAME_SUFFIX)
-					.append("&elementName=").append(fieldName).append("$$name")
-					.append("&selectedUsers=").append(((userIds == null) ? "" : userIds))
-					.append( (usersOfInstanceOnly) ? "&instanceId="+PagesContext.getComponentId() : "" )
-					.append("&selectionMultiple=true")
-					.append("','selectUser',800,600,'');\" >");
-			
-			html.append("<img src=\"").append(selectUserImg).append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"")
-					.append(selectUserLab).append("\" align=\"absmiddle\" title=\"").append(selectUserLab).append("\"></a>");
+    Map parameters = template.getParameters(PagesContext.getLanguage());
+    String rows =
+        (parameters.containsKey("rows")) ? (String) parameters.get("rows") : ROWS_DEFAULT_VALUE;
+    String cols =
+        (parameters.containsKey("cols")) ? (String) parameters.get("cols") : COLS_DEFAULT_VALUE;
+    boolean usersOfInstanceOnly =
+        (parameters.containsKey("usersOfInstanceOnly") && "Yes".equals(parameters
+        .get("usersOfInstanceOnly")));
 
-			if (template.isMandatory()) {
-				html.append("&nbsp;<img src=\"").append(mandatoryImg).append("\" width=\"5\" height=\"5\" border=\"0\">");
-			}
-		}
+    String userNames = "";
+    String userIds = "";
+    StringBuffer html = new StringBuffer();
 
-		out.println(html.toString());
-	}
+    String fieldName = template.getFieldName();
 
-	/**
-	 * Updates the value of the field.
-	 * 
-	 * The fieldName must be used to retrieve the HTTP parameter from the
-	 * request.
-	 * 
-	 * @throw FormException if the field type is not a managed type.
-	 * @throw FormException if the field doesn't accept the new value.
-	 */
-	public List<String> update(String newIds, Field field, FieldTemplate template,
-			PagesContext pagesContext) throws FormException {
-		if (field.getTypeName().equals(MultipleUserField.TYPE)) {
-			if (newIds == null || newIds.trim().equals("")) {
-				field.setNull();
-			} else {
-				((MultipleUserField) field).setStringValue(newIds);
-			}
-		} else {
-			throw new FormException("UserFieldDisplayer.update",
-					"form.EX_NOT_CORRECT_VALUE", UserField.TYPE);
-		}
+    if (!field.getTypeName().equals(MultipleUserField.TYPE)) {
+      SilverTrace.info("form", "UserFieldDisplayer.display",
+          "form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
+    } else {
+      userIds = ((MultipleUserField) field).getStringValue();
+    }
+    if (!field.isNull()) {
+      userNames = field.getValue();
+    }
+    html.append("<INPUT type=\"hidden\" name=\"").append(fieldName)
+        .append(MultipleUserField.PARAM_NAME_SUFFIX).append("\" value=\"")
+        .append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" >");
+
+    if (!template.isHidden()) {
+      html.append("<TEXTAREA name=\"").append(fieldName)
+          .append("$$name\" disabled rows=\"").append(rows).append("\" cols=\"").append(cols)
+          .append("\">")
+          .append(EncodeHelper.javaStringToHtmlString(userNames)).append("</TEXTAREA>");
+    }
+
+    if (!template.isHidden() && !template.isDisabled()
+        && !template.isReadOnly()) {
+      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
+          .append(URLManager.getApplicationURL())
+          .append("/RselectionPeasWrapper/jsp/open?formName=").append(PagesContext.getFormName())
+          .append("&elementId=").append(fieldName).append(MultipleUserField.PARAM_NAME_SUFFIX)
+          .append("&elementName=").append(fieldName).append("$$name")
+          .append("&selectedUsers=").append(((userIds == null) ? "" : userIds))
+          .append((usersOfInstanceOnly) ? "&instanceId=" + PagesContext.getComponentId() : "")
+          .append("&selectionMultiple=true")
+          .append("','selectUser',800,600,'');\" >");
+
+      html.append("<img src=\"").append(selectUserImg).append(
+          "\" width=\"15\" height=\"15\" border=\"0\" alt=\"")
+          .append(selectUserLab).append("\" align=\"absmiddle\" title=\"").append(selectUserLab)
+          .append("\"></a>");
+
+      if (template.isMandatory()) {
+        html.append("&nbsp;<img src=\"").append(mandatoryImg).append(
+            "\" width=\"5\" height=\"5\" border=\"0\">");
+      }
+    }
+
+    out.println(html.toString());
+  }
+
+  /**
+   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
+   * @throw FormException if the field type is not a managed type.
+   * @throw FormException if the field doesn't accept the new value.
+   */
+  public List<String> update(String newIds, Field field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
+    if (field.getTypeName().equals(MultipleUserField.TYPE)) {
+      if (newIds == null || newIds.trim().equals("")) {
+        field.setNull();
+      } else {
+        ((MultipleUserField) field).setStringValue(newIds);
+      }
+    } else {
+      throw new FormException("UserFieldDisplayer.update",
+          "form.EX_NOT_CORRECT_VALUE", UserField.TYPE);
+    }
     return new ArrayList<String>();
-	}
+  }
 
-  public List<String> update(List<FileItem> items, Field field, FieldTemplate template, PagesContext pageContext) throws FormException
-  {
+  public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
+      PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName() + MultipleUserField.PARAM_NAME_SUFFIX;
     String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES && !StringUtil.isDefined(value)) {
-			return new ArrayList<String>();
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
+        !StringUtil.isDefined(value)) {
+      return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
   }
 
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @return
-	 * 
-	 */
-	public boolean isDisplayedMandatory() {
-		return true;
-	}
+  /**
+   * Method declaration
+   * @return
+   */
+  public boolean isDisplayedMandatory() {
+    return true;
+  }
 
-	/**
-	 * Method declaration
-	 * 
-	 * 
-	 * @return
-	 * 
-	 */
-	public int getNbHtmlObjectsDisplayed(FieldTemplate template,
-			PagesContext pagesContext) {
-		return 2;
-	}
+  /**
+   * Method declaration
+   * @return
+   */
+  public int getNbHtmlObjectsDisplayed(FieldTemplate template,
+      PagesContext pagesContext) {
+    return 2;
+  }
 
 }

@@ -48,9 +48,8 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * A Form is an object which can display in HTML the content of a DataRecord to
- * a end user and can retrieve via HTTP any updated values.
- * 
+ * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
+ * retrieve via HTTP any updated values.
  * @see DataRecord
  * @see RecordTemplate
  * @see FieldDisplayer
@@ -73,15 +72,10 @@ public class XmlSearchForm extends AbstractForm {
   }
 
   /**
-   * Prints the javascripts which will be used to control the new values given
-   * to the data record fields.
-   * 
-   * The error messages may be adapted to a local language. The RecordTemplate
-   * gives the field type and constraints. The RecordTemplate gives the local
-   * label too.
-   * 
-   * Never throws an Exception but log a silvertrace and writes an empty string
-   * when :
+   * Prints the javascripts which will be used to control the new values given to the data record
+   * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
+   * field type and constraints. The RecordTemplate gives the local label too. Never throws an
+   * Exception but log a silvertrace and writes an empty string when :
    * <UL>
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.
@@ -91,13 +85,9 @@ public class XmlSearchForm extends AbstractForm {
   }
 
   /**
-   * Prints the HTML layout of the dataRecord using the RecordTemplate to
-   * extract labels and extra informations.
-   * 
-   * The value formats may be adapted to a local language.
-   * 
-   * Never throws an Exception but log a silvertrace and writes an empty string
-   * when :
+   * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
+   * informations. The value formats may be adapted to a local language. Never throws an Exception
+   * but log a silvertrace and writes an empty string when :
    * <UL>
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.
@@ -251,20 +241,16 @@ public class XmlSearchForm extends AbstractForm {
       // jw.write(sw.toString());
     }
     /*
-     * } catch (java.io.IOException fe) { SilverTrace.error("form",
-     * "XmlSearchForm.toString", "form.EXP_CANT_WRITE", null, fe); }
+     * } catch (java.io.IOException fe) { SilverTrace.error("form", "XmlSearchForm.toString",
+     * "form.EXP_CANT_WRITE", null, fe); }
      */
     return sw.getBuffer().toString();
   }
 
   /**
-   * Prints the HTML layout of the dataRecord using the RecordTemplate to
-   * extract labels and extra informations.
-   * 
-   * The value formats may be adapted to a local language.
-   * 
-   * Never throws an Exception but log a silvertrace and writes an empty string
-   * when :
+   * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
+   * informations. The value formats may be adapted to a local language. Never throws an Exception
+   * but log a silvertrace and writes an empty string when :
    * <UL>
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.

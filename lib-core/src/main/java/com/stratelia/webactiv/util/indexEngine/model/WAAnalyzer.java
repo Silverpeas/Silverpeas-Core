@@ -45,14 +45,12 @@ import com.stratelia.webactiv.util.indexEngine.analysis.ElisionFilter;
 import com.stratelia.webactiv.util.indexEngine.analysis.SilverTokenizer;
 
 /**
- * Extends lucene Analyzer : prunes from a tokens stream all the meaningless
- * words and prunes all the special characters.
+ * Extends lucene Analyzer : prunes from a tokens stream all the meaningless words and prunes all
+ * the special characters.
  */
 public final class WAAnalyzer extends Analyzer {
   /**
-   * Returns the analyzer to be used with texts of the given language.
-   * 
-   * The analyzers are cached.
+   * Returns the analyzer to be used with texts of the given language. The analyzers are cached.
    */
   static public Analyzer getAnalyzer(String language) {
     Analyzer analyzer = (Analyzer) languageMap.get(language);
@@ -80,17 +78,15 @@ public final class WAAnalyzer extends Analyzer {
     // result = new ApostropheFilter(result); //remove [cdlmnst]' from token
     result = new ISOLatin1AccentFilter(result);
     /*
-     * if (charReplacer != null) { result = new CharFilter(result,
-     * charReplacer); //unaccent terms }
+     * if (charReplacer != null) { result = new CharFilter(result, charReplacer); //unaccent terms }
      */
 
     /*
      * try { Token token = (Token) result.next(); while (token != null) {
-     * SilverTrace.debug("indexEngine", "WAAnalyzer",
-     * "root.MSG_GEN_PARAM_VALUE", "token = "+token.termText()); token = (Token)
-     * result.next(); } } catch (IOException ioe) {
-     * SilverTrace.debug("indexEngine", "WAAnalyzer",
-     * "root.MSG_GEN_PARAM_VALUE", "ioe = "+ioe.toString()); }
+     * SilverTrace.debug("indexEngine", "WAAnalyzer", "root.MSG_GEN_PARAM_VALUE",
+     * "token = "+token.termText()); token = (Token) result.next(); } } catch (IOException ioe) {
+     * SilverTrace.debug("indexEngine", "WAAnalyzer", "root.MSG_GEN_PARAM_VALUE",
+     * "ioe = "+ioe.toString()); }
      */
 
     return result;
@@ -137,9 +133,8 @@ public final class WAAnalyzer extends Analyzer {
   }
 
   /**
-   * Returns an object which while replace all the special characters.
-   * 
-   * Returns null if the replacer do nothing.
+   * Returns an object which while replace all the special characters. Returns null if the replacer
+   * do nothing.
    */
   private CharReplacer getCharReplacer(String language) {
     CharReplacer replacer = new CharReplacer();

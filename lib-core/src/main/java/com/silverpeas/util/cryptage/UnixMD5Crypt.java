@@ -44,14 +44,14 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 /**
- * This class implements the popular MD5Crypt function as used by BSD and most
- * modern Un*x systems. It was basically converted from the C code write by
- * Poul-Henning Kamp.
+ * This class implements the popular MD5Crypt function as used by BSD and most modern Un*x systems.
+ * It was basically converted from the C code write by Poul-Henning Kamp.
  */
 public class UnixMD5Crypt {
 
   public static final String MAGIC = "$1$";
-  public static final byte[] ITOA64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  public static final byte[] ITOA64 =
+      "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
       .getBytes();
 
   public static void to64(StringBuffer sb, int n, int nCount) {

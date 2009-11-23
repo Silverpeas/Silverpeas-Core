@@ -46,9 +46,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class represents the ContentManager API It is the gateway to all the
- * silverpeas contents (documentation, ....)
- * 
+ * This class represents the ContentManager API It is the gateway to all the silverpeas contents
+ * (documentation, ....)
  */
 public class ContentManager extends Object implements java.io.Serializable {
   // Container peas
@@ -138,9 +137,8 @@ public class ContentManager extends Object implements java.io.Serializable {
 
     // Load the instanceId-componentId cache
     /*
-     * if (s_asAssoInstanceId == null && s_asAssoComponentId == null) {
-     * s_asAssoInstanceId = new ArrayList(); s_asAssoComponentId = new
-     * ArrayList(); this.loadAsso(null); }
+     * if (s_asAssoInstanceId == null && s_asAssoComponentId == null) { s_asAssoInstanceId = new
+     * ArrayList(); s_asAssoComponentId = new ArrayList(); this.loadAsso(null); }
      */
 
     try {
@@ -153,9 +151,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * When a generic component is instanciate, this function is called to
-   * register the association between container and content
-   * 
+   * When a generic component is instanciate, this function is called to register the association
+   * between container and content
    */
   public int registerNewContentInstance(Connection connection,
       String sComponentId, String sContainerType, String sContentType)
@@ -200,7 +197,7 @@ public class ContentManager extends Object implements java.io.Serializable {
           "ContentManager.registerNewContentInstance",
           SilverpeasException.ERROR,
           "contentManager.EX_CANT_REGISTER_CONTENT_INSTANCE", "sComponentId: "
-              + sComponentId + "    sContentType: " + sContentType, e);
+          + sComponentId + "    sContentType: " + sContentType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -219,9 +216,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * When a generic component is uninstanciate, this function is called to
-   * unregister the association between container and content
-   * 
+   * When a generic component is uninstanciate, this function is called to unregister the
+   * association between container and content
    */
   public void unregisterNewContentInstance(Connection connection,
       String sComponentId, String sContainerType, String sContentType)
@@ -271,7 +267,6 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   /**
    * Return the ContentPeas corresponding to the given componentId
-   * 
    */
   public ContentPeas getContentPeas(String sComponentId)
       throws ContentManagerException {
@@ -288,14 +283,14 @@ public class ContentManager extends Object implements java.io.Serializable {
           .equals(sContentType)) {
         SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
             "Type Trouvé= "
-                + ((ContentPeas) s_acContentPeas.get(nI)).getType() + "   "
-                + sContentType);
+            + ((ContentPeas) s_acContentPeas.get(nI)).getType() + "   "
+            + sContentType);
         return (ContentPeas) s_acContentPeas.get(nI);
       }
     }
     SilverTrace.info("contentManager", "ContentManager.getContentPeas",
         "contentManager.EX_UNKNOWN_CONTENT_PEAS", "sComponentId: "
-            + sComponentId);
+        + sComponentId);
     return null;
   }
 
@@ -313,9 +308,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Return a list of URLIcones corresponding to the rights of the given roles
-   * It is the gateway to all the silverpeas contents (documentation, ....)
-   * 
+   * Return a list of URLIcones corresponding to the rights of the given roles It is the gateway to
+   * all the silverpeas contents (documentation, ....)
    */
   public List getContentURLIcones(String sContentType, List asUserContentRoles) {
     // !!!!!!! HARD CODED FOR THE MOMENT (call th econtentPeas instead)
@@ -568,8 +562,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Add a silver content Called when a content add a document and register it
-   * to get its SilverContentId in return
+   * Add a silver content Called when a content add a document and register it to get its
+   * SilverContentId in return
    */
   public int addSilverContent(Connection connection, String sInternalContentId,
       String sComponentId, String sAuthorId) throws ContentManagerException {
@@ -578,8 +572,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Add a silver content Called when a content add a document and register it
-   * to get its SilverContentId in return
+   * Add a silver content Called when a content add a document and register it to get its
+   * SilverContentId in return
    */
   public int addSilverContent(Connection connection, String sInternalContentId,
       String sComponentId, String sAuthorId, SilverContentVisibility scv)
@@ -611,7 +605,7 @@ public class ContentManager extends Object implements java.io.Serializable {
 
       SilverTrace.info("contentManager", "ContentManager.addSilverContent",
           "root.MSG_GEN_PARAM_VALUE", "nContentInstanceId= "
-              + nContentInstanceId);
+          + nContentInstanceId);
 
       // Compute the next silverContentId
       int newSilverContentId = DBUtil.getNextId(m_sSilverContentTable,
@@ -619,12 +613,15 @@ public class ContentManager extends Object implements java.io.Serializable {
 
       SilverTrace.info("contentManager", "ContentManager.addSilverContent",
           "root.MSG_GEN_PARAM_VALUE", "newSilverContentId= "
-              + newSilverContentId);
+          + newSilverContentId);
 
       // Insert the silverContent
-      String sSQLStatement = "INSERT INTO "
-          + m_sSilverContentTable
-          + "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, beginDate, endDate, isVisible) ";
+      String sSQLStatement =
+          "INSERT INTO "
+              +
+              m_sSilverContentTable
+              +
+              "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, beginDate, endDate, isVisible) ";
       sSQLStatement += "VALUES (" + newSilverContentId + ",'"
           + sInternalContentId + "'," + nContentInstanceId + ","
           + new Integer(sAuthorId).intValue() + ",?, ? , ? , ? )";
@@ -644,7 +641,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       throw new ContentManagerException("ContentManager.addSilverContent",
           SilverpeasException.ERROR,
           "contentManager.EX_CANT_ADD_SILVER_CONTENT", "sInternalContentId: "
-              + sInternalContentId + "    sComponentId: " + sComponentId, e);
+          + sInternalContentId + "    sComponentId: " + sComponentId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -676,7 +673,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       throw new ContentManagerException("ContentManager.removeSilverContent",
           SilverpeasException.ERROR,
           "contentManager.EX_CANT_REMOVE_SILVER_CONTENT", "nSilverContentId: "
-              + nSilverContentId + "   sComponentId: " + sComponentId, e);
+          + nSilverContentId + "   sComponentId: " + sComponentId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -721,8 +718,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Return the SilverContentId corresponding to the given internalContentId
-   * Called when a content remove a document
+   * Return the SilverContentId corresponding to the given internalContentId Called when a content
+   * remove a document
    */
   public int getSilverContentId(String sInternalContentId, String sComponentId)
       throws ContentManagerException {
@@ -741,7 +738,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       throw new ContentManagerException("ContentManager.getSilverContentId",
           SilverpeasException.ERROR,
           "contentManager.EX_CANT_GET_SILVERCONTENTID", "sComponentId: "
-              + sComponentId + "    sInternalContentId: " + sInternalContentId,
+          + sComponentId + "    sInternalContentId: " + sInternalContentId,
           e);
     } finally {
       DBUtil.close(stmt);
@@ -750,9 +747,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Return the sorted list containing SilverContentIds corresponding to the
-   * list containing id et instanceId The list is not null and not empty !!
-   * Called when a content remove a document
+   * Return the sorted list containing SilverContentIds corresponding to the list containing id et
+   * instanceId The list is not null and not empty !! Called when a content remove a document
    */
   public SortedSet getSilverContentId(List documentFeature)
       throws ContentManagerException {
@@ -789,7 +785,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       throw new ContentManagerException("ContentManager.getSilverContentId",
           SilverpeasException.ERROR,
           "contentManager.EX_CANT_GET_SILVERCONTENTID", "sComponentId: "
-              + sComponentId + "    sInternalContentId: " + sInternalContentId,
+          + sComponentId + "    sInternalContentId: " + sInternalContentId,
           e);
     } finally {
       try {
@@ -816,8 +812,8 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Return the InternalContentId corresponding to the given SilverContentId
-   * Called when a content remove a document
+   * Return the InternalContentId corresponding to the given SilverContentId Called when a content
+   * remove a document
    */
   public String getInternalContentId(int nSilverContentId)
       throws ContentManagerException {
@@ -863,7 +859,6 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   /**
    * Return the content instance Id corresponding to the componentId
-   * 
    */
   public int getContentInstanceId(String sComponentId)
       throws ContentManagerException {
@@ -871,11 +866,9 @@ public class ContentManager extends Object implements java.io.Serializable {
 
     // Find the index of the component in the cache
     /*
-     * int nIndex = 0; for (nIndex = 0; nIndex < s_asAssoComponentId.size();
-     * nIndex++) { if (((String)
-     * s_asAssoComponentId.get(nIndex)).equals(sComponentId)) {
-     * contentInstanceId = ((Integer)
-     * s_asAssoInstanceId.get(nIndex)).intValue(); break; } }
+     * int nIndex = 0; for (nIndex = 0; nIndex < s_asAssoComponentId.size(); nIndex++) { if
+     * (((String) s_asAssoComponentId.get(nIndex)).equals(sComponentId)) { contentInstanceId =
+     * ((Integer) s_asAssoInstanceId.get(nIndex)).intValue(); break; } }
      */
 
     String sContentInstanceId = getInstanceId(sComponentId);
@@ -899,8 +892,8 @@ public class ContentManager extends Object implements java.io.Serializable {
       // The container must be registered too.
       /*
        * ContainerManager containerManager = new ContainerManager();
-       * containerManager.registerNewContainerInstance(null, sComponentId,
-       * "containerPDC", componentName);
+       * containerManager.registerNewContainerInstance(null, sComponentId, "containerPDC",
+       * componentName);
        */
 
       // loadAsso(null);
@@ -1034,9 +1027,7 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   /**
    * retourne une liste d'instanceID a partir d'une Liste de silvercontentId
-   * 
-   * @param alSilverContentId
-   *          - la liste de silvercontentId silvercontentId
+   * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
   public List getInstanceId(List alSilverContentId)
@@ -1066,7 +1057,7 @@ public class ContentManager extends Object implements java.io.Serializable {
         prepStmt.setInt(1, oneSilverContentId.intValue());
         SilverTrace.info("contentManager", "ContentManager.getInstanceId",
             "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
-                + " silverContentId=" + oneSilverContentId);
+            + " silverContentId=" + oneSilverContentId);
         resSet = prepStmt.executeQuery();
         if (resSet.next())
           instanceId = resSet.getString(1);
@@ -1090,11 +1081,9 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   /**
-   * Cette méthode retourne une liste de SilverContentId qui se trouve sous une
-   * instance de jobPeas.
-   * 
-   * @param instanceId
-   *          - l'id de l'instance (trucsAstuces978)
+   * Cette méthode retourne une liste de SilverContentId qui se trouve sous une instance de
+   * jobPeas.
+   * @param instanceId - l'id de l'instance (trucsAstuces978)
    * @return une liste de silvercontentId
    */
   public List getSilverContentIdByInstanceId(String instanceId)
@@ -1116,7 +1105,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       SilverTrace.info("contentManager",
           "ContentManager.getSilverContentIdByInstanceId",
           "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
-              + " instranceId=" + instanceId);
+          + " instranceId=" + instanceId);
       prepStmt = con.prepareStatement(sSQLStatement);
       prepStmt.setString(1, instanceId);
 
@@ -1162,7 +1151,8 @@ public class ContentManager extends Object implements java.io.Serializable {
             + ((Integer) alSilverContentIds.get(sizeOfIds - 1)).toString());
       }
 
-      String sSQLStatement = "select silverContentName, silverContentDescription, silverContentUrl from "
+      String sSQLStatement =
+          "select silverContentName, silverContentDescription, silverContentUrl from "
           + m_sSilverContentTable;
       sSQLStatement += " where " + where.toString();
 

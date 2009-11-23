@@ -54,8 +54,8 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * Virtual method that performs extra initialization from a properties file.
-   * To overload by the class who need it.
+   * Virtual method that performs extra initialization from a properties file. To overload by the
+   * class who need it.
    */
   public void initFromProperties(ResourceLocator rs) throws Exception {
     passwordEncryption = rs.getString("database.SQLPasswordEncryption");
@@ -73,7 +73,7 @@ public class SQLDriver extends AbstractDomainDriver {
         Class.forName(drvSettings.getClassName());
         openedConnection = DriverManager.getConnection(
             drvSettings.getJDBCUrl(), drvSettings.getAccessLogin(), drvSettings
-                .getAccessPasswd());
+            .getAccessPasswd());
       } catch (Exception e) {
         throw new AdminException("SQLDriver.openConnection",
             SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
@@ -113,7 +113,7 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.createUser",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", ud.getFirstName()
-              + " " + ud.getLastName(), e);
+          + " " + ud.getLastName(), e);
     } finally {
       this.closeConnection();
     }
@@ -130,7 +130,7 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "userId : "
-              + userId, e);
+          + userId, e);
     } finally {
       this.closeConnection();
     }
@@ -177,8 +177,8 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateUserFull",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", uf
-              .getFirstName()
-              + " " + uf.getLastName(), e);
+          .getFirstName()
+          + " " + uf.getLastName(), e);
     } finally {
       this.closeConnection();
     }
@@ -194,8 +194,8 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateUserDetail",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud
-              .getFirstName()
-              + " " + ud.getLastName(), e);
+          .getFirstName()
+          + " " + ud.getLastName(), e);
     } finally {
       this.closeConnection();
     }
@@ -230,7 +230,7 @@ public class SQLDriver extends AbstractDomainDriver {
           uf.setPasswordAvailable(true);
           uf
               .setPassword(localUserMgr.getUserPassword(openedConnection,
-                  userId));
+              userId));
           uf.setPasswordValid(localUserMgr.getUserPasswordValid(
               openedConnection, userId));
         }
@@ -344,7 +344,7 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.deleteGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "groupId : "
-              + groupId, e);
+          + groupId, e);
     } finally {
       this.closeConnection();
     }
@@ -391,7 +391,7 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "groupId : "
-              + group.getSpecificId(), e);
+          + group.getSpecificId(), e);
     } finally {
       this.closeConnection();
     }
@@ -432,7 +432,7 @@ public class SQLDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SQLDriver.getGroupByName",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "groupName : "
-              + groupName, e);
+          + groupName, e);
     } finally {
       this.closeConnection();
     }

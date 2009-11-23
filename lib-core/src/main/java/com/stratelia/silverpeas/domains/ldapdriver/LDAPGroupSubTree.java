@@ -37,18 +37,13 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class manage groups that are described as follows : The group object are
- * root to their childs
- * 
- * Method used to retreive users and groups that are direct childs of a given
- * group : GroupG (i.e. childs that have no groups between group node to their
- * node) : 1) Search all child groups of GroupG 2) Sort the result by DN 3)
- * Remove from the search all the groups that are not directly under GroupG
- * (i.e. there is another group between) => Those groups are the direct childs
- * of GroupG (result of "getChildGroupsEntryByLDAPEntry" call) 4) Performs a
- * search of the users that have for baseDN GroupG's DN and that have NOT : (DN
- * substring of any direct child groups' DN)
- * 
+ * This class manage groups that are described as follows : The group object are root to their
+ * childs Method used to retreive users and groups that are direct childs of a given group : GroupG
+ * (i.e. childs that have no groups between group node to their node) : 1) Search all child groups
+ * of GroupG 2) Sort the result by DN 3) Remove from the search all the groups that are not directly
+ * under GroupG (i.e. there is another group between) => Those groups are the direct childs of
+ * GroupG (result of "getChildGroupsEntryByLDAPEntry" call) 4) Performs a search of the users that
+ * have for baseDN GroupG's DN and that have NOT : (DN substring of any direct child groups' DN)
  * @author tleroi
  */
 
@@ -65,7 +60,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
     SilverTrace.info("admin", "LDAPGroupSubTree.getMemberGroupIds()",
         "root.MSG_GEN_ENTER_METHOD", "MemberId=" + memberId + ", isGroup="
-            + isGroup);
+        + isGroup);
     if (isGroup) {
       memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
           .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
@@ -112,15 +107,10 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lds
    * @param groupEntry
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -134,7 +124,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     theEntries = LDAPUtility.search1000Plus(lds, groupEntry.getDN(),
         LDAPConnection.SCOPE_ONE, driverSettings.getUsersFullFilter(),
         driverSettings.getUsersLoginField(), driverSettings
-            .getGroupAttributes());
+        .getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
       String userSpecificId = LDAPUtility.getFirstAttributeValue(theEntries[i],
           driverSettings.getUsersIdField());
@@ -151,15 +141,10 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lds
    * @param parentId
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -198,15 +183,10 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lds
    * @param parentEntry
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   private LDAPEntry[] getChildGroupsEntryByLDAPEntry(String lds,
@@ -234,18 +214,18 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     for (i = 0; i < sortResult.length; i++) {
       SilverTrace
           .info("admin", "LDAPGroupSubTree.getChildGroupsEntryByLDAPEntry()",
-              "root.MSG_GEN_PARAM_VALUE", "GROUP Found  : "
-                  + sortResult[i].getDN());
+          "root.MSG_GEN_PARAM_VALUE", "GROUP Found  : "
+          + sortResult[i].getDN());
       if ((sortResult[i].getDN().equalsIgnoreCase(searchDN) == false)
           && ((sortResult[i].getDN().endsWith(previousDN) == false) || (previousDN
-              .length() <= 0))) {
+          .length() <= 0))) {
         includeGroup = true;
         if (driverSettings.getGroupsIncludeEmptyGroups() == false) {
           try {
             theFirstEntry = LDAPUtility.getFirstEntryFromSearch(lds,
                 sortResult[i].getDN(), driverSettings.getScope(),
                 driverSettings.getUsersFullFilter(), driverSettings
-                    .getGroupAttributes());
+                .getGroupAttributes());
             if (theFirstEntry == null) {
               includeGroup = false;
             }
@@ -269,14 +249,9 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param res
-   * 
    * @return
-   * 
    * @throws LDAPException
-   * 
    * @see
    */
   private LDAPEntry[] sortReversedDN(LDAPEntry[] theEntries) {

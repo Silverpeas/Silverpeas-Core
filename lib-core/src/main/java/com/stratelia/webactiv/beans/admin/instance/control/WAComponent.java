@@ -349,29 +349,29 @@ public class WAComponent {
       throw new InstanciationException("WAComponent.writeToXml",
           SilverpeasException.ERROR, "admin.EX_ERR_CASTOR_LOAD_XML_MAPPING",
           "Mapping file name : "
-              + (strMappingFileName == null ? "<null>" : strMappingFileName),
+          + (strMappingFileName == null ? "<null>" : strMappingFileName),
           me);
     } catch (MarshalException me) {
       throw new InstanciationException("WAComponent.writeToXml",
           SilverpeasException.ERROR,
           "admin.EX_ERR_CASTOR_MARSHALL_COMPONENT_DESCRIPTOR",
           "Component descriptor file name : "
-              + (strDescriptorFileName == null ? "<null>"
-                  : strDescriptorFileName), me);
+          + (strDescriptorFileName == null ? "<null>"
+          : strDescriptorFileName), me);
     } catch (ValidationException ve) {
       throw new InstanciationException("WAComponent.writeToXml",
           SilverpeasException.ERROR,
           "admin.EX_ERR_CASTOR_INVALID_XML_COMPONENT_DESCRIPTOR",
           "Component descriptor file name : "
-              + (strDescriptorFileName == null ? "<null>"
-                  : strDescriptorFileName), ve);
+          + (strDescriptorFileName == null ? "<null>"
+          : strDescriptorFileName), ve);
     } catch (IOException ioe) {
       throw new InstanciationException("WAComponent.writeToXml",
           SilverpeasException.ERROR,
           "admin.EX_ERR_CASTOR_SAVE_COMPONENT_DESCRIPTOR",
           "Component descriptor file name : "
-              + (strDescriptorFileName == null ? "<null>"
-                  : strDescriptorFileName), ioe);
+          + (strDescriptorFileName == null ? "<null>"
+          : strDescriptorFileName), ioe);
     }
   }
 
@@ -386,8 +386,8 @@ public class WAComponent {
   protected boolean stringToBoolean(String s) {
     if ((s != null)
         && ((s.equalsIgnoreCase("no")) || (s.equalsIgnoreCase("n"))
-            || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
-            .equalsIgnoreCase("false")))) {
+        || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
+        .equalsIgnoreCase("false")))) {
       return false;
     } else {
       return true;

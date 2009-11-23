@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * This is the data structure that represents one part of a Join Statement
- * 
  */
 public class JoinStatement {
   private String sTable = "";

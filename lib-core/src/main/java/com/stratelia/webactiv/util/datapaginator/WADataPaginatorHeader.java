@@ -32,20 +32,18 @@ package com.stratelia.webactiv.util.datapaginator;
 import java.util.Vector;
 
 /**
- * The WADataPaginatorHeader is used by presentation components such as the
- * ViewGenerator to help them manage their user interface. The hold all
- * information that are needed by the rendering object to present table headers,
- * namely: <br>
- * <li>Flags to help sorting data <li>Default sork jey <li>Routing address, that
- * is, script code to which the column headers of data displayed are bound to
+ * The WADataPaginatorHeader is used by presentation components such as the ViewGenerator to help
+ * them manage their user interface. The hold all information that are needed by the rendering
+ * object to present table headers, namely: <br>
+ * <li>Flags to help sorting data <li>Default sork jey <li>Routing address, that is, script code to
+ * which the column headers of data displayed are bound to
  * <p>
- * This object is actually a collection of {@link FieldDescriptor} objects. One
- * thus first creates an empty WADataPaginatorHeader, and then call the
- * {@link #addField} method as many times as there are columns to display. <br>
- * The rendering process, on the other hand, will get this list of fields back,
- * and will, depending on the flags returned by the {@link #getFlags()} routine,
- * output the header information of each field.
- * 
+ * This object is actually a collection of {@link FieldDescriptor} objects. One thus first creates
+ * an empty WADataPaginatorHeader, and then call the {@link #addField} method as many times as there
+ * are columns to display. <br>
+ * The rendering process, on the other hand, will get this list of fields back, and will, depending
+ * on the flags returned by the {@link #getFlags()} routine, output the header information of each
+ * field.
  * @author jpouyadou
  * @version 1.0
  */
@@ -53,10 +51,9 @@ public class WADataPaginatorHeader extends Object {
   /** sortable flag. This flag is set if the given column is sortable. */
   public static final int FLAGS_SORTABLE = 0x0001;
   /**
-   * ascending flag. If the FLAGS_SORTABLE is set, this is set also if the
-   * column data is sorted in ascending order, and unset otherwise. THis flags
-   * must be preset by the creator or the object, and could be toggled by the
-   * rendering process
+   * ascending flag. If the FLAGS_SORTABLE is set, this is set also if the column data is sorted in
+   * ascending order, and unset otherwise. THis flags must be preset by the creator or the object,
+   * and could be toggled by the rendering process
    */
   public static final int FLAGS_ASCENDING = 0x0002;
   /**
@@ -73,9 +70,8 @@ public class WADataPaginatorHeader extends Object {
   }
 
   /**
-   * This method retuns the count of fields in this header. It should match the
-   * number of times the {@link #addField} succeeded
-   * 
+   * This method retuns the count of fields in this header. It should match the number of times the
+   * {@link #addField} succeeded
    * @see #addField()
    */
   public int getFieldCount() {
@@ -84,25 +80,16 @@ public class WADataPaginatorHeader extends Object {
 
   /**
    * This method adds a field at the end of list of fields for this header
-   * 
-   * @param field
-   *          The internal field name, presumably meaningful to the
-   *          DataPaginator.
-   * @param displayName
-   *          The display name of the field, that would typically be output on
-   *          the rendering device by presentation objects (in short, thisis the
-   *          label of the column)
-   * @param flags
-   *          A combination of flags suchs as {@link #FLAGS_SORTABLE},
-   *          {@link #FLAGS_ASCENDING} and so on.
-   * @param routingAddress
-   *          A specification of the callback method used when the user selects
-   *          this field If this value is NULL, the rendering device uses
-   *          whatever is suitable for its default behaviour. If this value is
-   *          empty, the rendering device should NOT associate a routing address
-   *          to this field. In other words, this field will not be 'clickable'.
-   *          In all other cases, the rendering process will use the value.
-   *          Typically, one would use an URL as a routingAddress.
+   * @param field The internal field name, presumably meaningful to the DataPaginator.
+   * @param displayName The display name of the field, that would typically be output on the
+   * rendering device by presentation objects (in short, thisis the label of the column)
+   * @param flags A combination of flags suchs as {@link #FLAGS_SORTABLE}, {@link #FLAGS_ASCENDING}
+   * and so on.
+   * @param routingAddress A specification of the callback method used when the user selects this
+   * field If this value is NULL, the rendering device uses whatever is suitable for its default
+   * behaviour. If this value is empty, the rendering device should NOT associate a routing address
+   * to this field. In other words, this field will not be 'clickable'. In all other cases, the
+   * rendering process will use the value. Typically, one would use an URL as a routingAddress.
    */
 
   public void addField(String field, String displayName, int flags,

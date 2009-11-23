@@ -30,15 +30,13 @@
 package com.stratelia.silverpeas.authentication;
 
 /**
- * 
  * @author tleroi
  * @version
  */
-public class AuthenticationPasswordAboutToExpireException extends
-    AuthenticationException {
+public class AuthenticationPasswordAboutToExpireException extends AuthenticationException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public AuthenticationPasswordAboutToExpireException(String callingClass,
       int errorLevel, String message) {

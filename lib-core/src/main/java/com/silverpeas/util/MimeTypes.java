@@ -39,11 +39,14 @@ public interface MimeTypes {
   public final String PLAIN_TEXT_MIME_TYPE = "text/plain";
   public final String ARCHIVE_MIME_TYPE = "application/x-zip-compressed";
   public final String JAVA_ARCHIVE_MIME_TYPE = "application/java-archive";
-  
-  public final String WORD_2007_MIME_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  public final String EXCEL_2007_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-  public final String POWERPOINT_2007_MIME_TYPE = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-    
+
+  public final String WORD_2007_MIME_TYPE =
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  public final String EXCEL_2007_MIME_TYPE =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  public final String POWERPOINT_2007_MIME_TYPE =
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
   public final String JAR_EXTENSION = "jar";
   public final String WAR_EXTENSION = "war";
   public final String EAR_EXTENSION = "ear";
@@ -70,14 +73,14 @@ public interface MimeTypes {
 
   public static final Set<String> MS_OFFICE_MIME_TYPES = new HashSet<String>(Arrays
       .asList(new String[] { WORD_MIME_TYPE, EXCEL_MIME_TYPE1,
-          EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2 }));
+      EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2 }));
 
   public static final Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<String>(Arrays
       .asList(new String[] { WORD_MIME_TYPE, WORD_2007_MIME_TYPE,
-    		  EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE,
-    		  POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
-    		  MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
-    		  MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS,
-    		  MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA, MIME_TYPE_OO_DB,
-    		  MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER }));
+      EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE,
+      POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
+      MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
+      MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS,
+      MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA, MIME_TYPE_OO_DB,
+      MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER }));
 }

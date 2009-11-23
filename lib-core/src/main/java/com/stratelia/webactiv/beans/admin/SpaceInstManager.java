@@ -126,15 +126,13 @@ public class SpaceInstManager {
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.createSpaceInst",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_SPACE", "space name : '"
-              + spaceInst.getName() + "'", e);
+          + spaceInst.getName() + "'", e);
     }
   }
 
   /**
    * Get the space instance with the given space id
-   * 
-   * @param sSpaceInstId
-   *          driver space id
+   * @param sSpaceInstId driver space id
    * @return Space information as SpaceInst object
    */
   public SpaceInst getSpaceInstById(DomainDriverManager ddManager,
@@ -149,7 +147,7 @@ public class SpaceInstManager {
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getSpaceInstById",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE", "space Id : '"
-              + sSpaceInstId + "'", e);
+          + sSpaceInstId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -157,9 +155,7 @@ public class SpaceInstManager {
 
   /**
    * Get the space instance with the given space id
-   * 
-   * @param sSpaceInstId
-   *          driver space id
+   * @param sSpaceInstId driver space id
    * @return Space information as SpaceInst object
    */
   public SpaceInstLight getSpaceInstLightById(DomainDriverManager ddManager,
@@ -183,7 +179,7 @@ public class SpaceInstManager {
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getSpaceInstLightById",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE", "space Id = "
-              + spaceId, e);
+          + spaceId, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -313,7 +309,7 @@ public class SpaceInstManager {
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.setSpaceInstById",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE", "space Id : '"
-              + sSpaceInstId + "'", e);
+          + sSpaceInstId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -469,7 +465,6 @@ public class SpaceInstManager {
 
   /**
    * Return subspaces of a space for a given user
-   * 
    * @return a List of SpaceInstLight
    */
   public List getSubSpacesOfUser(DomainDriverManager ddManager, String userId,
@@ -633,8 +628,8 @@ public class SpaceInstManager {
       SilverTrace.debug("admin",
           this.getClass().getName() + ".updateSpaceInst",
           "root.MSG_GEN_PARAM_VALUE", "remove = "
-              + spaceInstNew.isRemoveTranslation() + ", translationId = "
-              + spaceInstNew.getTranslationId());
+          + spaceInstNew.isRemoveTranslation() + ", translationId = "
+          + spaceInstNew.getTranslationId());
 
       if (spaceInstNew.isRemoveTranslation()) {
         if (oldSpace.lang.equalsIgnoreCase(spaceInstNew.getLanguage())) {
@@ -707,7 +702,6 @@ public class SpaceInstManager {
 
   /**
    * Tests if a space with given space id exists
-   * 
    * @return true if the given space instance name is an existing space
    */
   public boolean isSpaceInstExist(DomainDriverManager ddManager,
@@ -726,8 +720,8 @@ public class SpaceInstManager {
   }
 
   /**
-   * Move first given space under the second one if second space is null, move
-   * the space as a root space
+   * Move first given space under the second one if second space is null, move the space as a root
+   * space
    */
   public void moveSpace(DomainDriverManager ddManager, String sSpaceId,
       String sFatherSpaceId, SpaceInst space) throws AdminException {
@@ -751,7 +745,7 @@ public class SpaceInstManager {
       throw new AdminException("SpaceInstManager.moveSpace",
           SilverpeasException.ERROR, "admin.EX_ERR_MOVE_SPACE",
           "move space Id : '" + sSpaceId + "', under space Id : '"
-              + sFatherSpaceId + "'", e);
+          + sFatherSpaceId + "'", e);
     }
   }
 

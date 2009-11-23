@@ -43,8 +43,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.WADOMUtil;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SpaceTemplate {
@@ -60,11 +58,8 @@ public class SpaceTemplate {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param filename
    * @param allComponentsModels
-   * 
    * @see
    */
   public SpaceTemplate(String filename, Hashtable allComponentsModels) {
@@ -102,7 +97,7 @@ public class SpaceTemplate {
             if (listProfiles.item(nJ).getAttributes() != null
                 && listProfiles.item(nJ).getAttributes().getNamedItem("name") != null
                 && listProfiles.item(nJ).getAttributes().getNamedItem("name")
-                    .getNodeValue() != null)
+                .getNodeValue() != null)
               sProfileName = listProfiles.item(nJ).getAttributes()
                   .getNamedItem("name").getNodeValue();
             if (sProfileName != null && sProfileName.length() > 0) {
@@ -157,8 +152,8 @@ public class SpaceTemplate {
             }
             SilverTrace.info("admin", "SpaceTemplate.SpaceTemplate",
                 "root.MSG_GEN_PARAM_VALUE", "ComponentName: " + sComponentName
-                    + "   label: " + sComponentLabel + "   for space: "
-                    + this.templateName);
+                + "   label: " + sComponentLabel + "   for space: "
+                + this.templateName);
 
             WAComponent wac = (WAComponent) allComponentsModels
                 .get(sComponentName);
@@ -186,9 +181,9 @@ public class SpaceTemplate {
                         .getFirstChild().getNodeValue();
                     if (listParameters.item(nJ).getAttributes() != null
                         && listParameters.item(nJ).getAttributes()
-                            .getNamedItem("name") != null
+                        .getNamedItem("name") != null
                         && listParameters.item(nJ).getAttributes()
-                            .getNamedItem("name").getNodeValue() != null) {
+                        .getNamedItem("name").getNodeValue() != null) {
                       sComponentParameterName = listParameters.item(nJ)
                           .getAttributes().getNamedItem("name").getNodeValue();
                       parameters.setParameterValue(sComponentParameterName,
@@ -212,16 +207,16 @@ public class SpaceTemplate {
                         .getFirstChild().getNodeValue();
                     if (listMatchingProfiles.item(nJ).getAttributes() != null
                         && listMatchingProfiles.item(nJ).getAttributes()
-                            .getNamedItem("name") != null
+                        .getNamedItem("name") != null
                         && listMatchingProfiles.item(nJ).getAttributes()
-                            .getNamedItem("name").getNodeValue() != null)
+                        .getNamedItem("name").getNodeValue() != null)
                       sTemplateName = listMatchingProfiles.item(nJ)
                           .getAttributes().getNamedItem("name").getNodeValue();
                     SilverTrace.info("admin", "SpaceTemplate.SpaceTemplate",
                         "root.MSG_GEN_PARAM_VALUE", "Compo label: -"
-                            + sComponentLabel + "- Compo PRofile : -"
-                            + sComponentProfileName + "- TemplateProfile : -"
-                            + sTemplateName);
+                        + sComponentLabel + "- Compo PRofile : -"
+                        + sComponentProfileName + "- TemplateProfile : -"
+                        + sTemplateName);
                     if (sTemplateName != null && sTemplateName.length() > 0
                         && sComponentProfileName != null
                         && sComponentProfileName.length() > 0) {
@@ -255,10 +250,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTemplateName() {
@@ -267,10 +259,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @see
    */
   public void setTemplateName(String s) {
@@ -279,10 +268,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDefaultName() {
@@ -291,10 +277,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @see
    */
   public void setDefaultName(String s) {
@@ -303,10 +286,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDescription() {
@@ -315,10 +295,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @see
    */
   public void setDescription(String s) {
@@ -327,10 +304,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isReadOnly() {
@@ -339,10 +313,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param b
-   * 
    * @see
    */
   public void setReadOnly(boolean b) {
@@ -351,10 +322,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayList getComponents() {
@@ -363,10 +331,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param ar
-   * 
    * @see
    */
   public void setComponents(ArrayList ar) {
@@ -375,10 +340,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {
@@ -388,12 +350,8 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param templateName
-   * 
    * @return
-   * 
    * @see
    */
   public SpaceInst makeSpaceInst() {
@@ -408,7 +366,7 @@ public class SpaceTemplate {
     }
     SilverTrace.info("admin", "SpaceTemplate.makeSpaceInst",
         "root.MSG_GEN_PARAM_VALUE", "defaultSpaceName : " + defaultName
-            + " NbCompo: " + valret.getNumComponentInst());
+        + " NbCompo: " + valret.getNumComponentInst());
     return valret;
   }
 
@@ -418,12 +376,8 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param b
-   * 
    * @return
-   * 
    * @see
    */
   protected String booleanToString(boolean b) {
@@ -436,19 +390,15 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @return
-   * 
    * @see
    */
   protected boolean stringToBoolean(String s) {
     if ((s != null)
         && ((s.equalsIgnoreCase("no")) || (s.equalsIgnoreCase("n"))
-            || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
-            .equalsIgnoreCase("false")))) {
+        || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
+        .equalsIgnoreCase("false")))) {
       return false;
     } else {
       return true;

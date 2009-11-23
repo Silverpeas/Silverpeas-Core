@@ -78,7 +78,7 @@ public class Simpleparser {
     } catch (SAXParseException err) {
       SilverTrace.error("admin", "Simpleparser.main",
           "admin.EX_ERR_PARSING_ERROR", "line " + err.getLineNumber()
-              + ", uri " + err.getSystemId(), err);
+          + ", uri " + err.getSystemId(), err);
     } catch (SAXException e) {
       SilverTrace.error("admin", "Simpleparser.main",
           "admin.EX_ERR_PARSING_ERROR", e);

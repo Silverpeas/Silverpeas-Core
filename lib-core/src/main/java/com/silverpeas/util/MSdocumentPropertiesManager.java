@@ -50,10 +50,8 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return SummaryInformation of an Office document
-   * 
    * @param file
    * @return SummaryInformation
-   * 
    */
   public SummaryInformation getSummaryInformation(String fileName) {
     InputStream inputStream = null;
@@ -94,7 +92,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return DocumentSummaryInformation of an Office document
-   * 
    * @param file
    * @return DocumentSummaryInformation
    */
@@ -134,7 +131,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Title of an Office document
-   * 
    * @param File
    * @return String
    */
@@ -144,7 +140,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Subject of an Office document
-   * 
    * @param File
    * @return String
    */
@@ -154,7 +149,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Author of an Office document
-   * 
    * @param File
    * @return String
    */
@@ -164,7 +158,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Comments of an Office document
-   * 
    * @param File
    * @return String
    */
@@ -174,7 +167,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Security of an Office document
-   * 
    * @param File
    * @return String
    */
@@ -184,7 +176,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return Keywords of an Office document
-   * 
    * @param File
    * @return String
    */
@@ -194,7 +185,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return SILVERID of an Office document
-   * 
    * @param String
    * @return String
    */
@@ -204,7 +194,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return SILVERNAME of an Office document
-   * 
    * @param String
    * @return String
    */
@@ -214,7 +203,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return LastSaveDateTime of an Office document
-   * 
    * @param String
    * @return Date
    */
@@ -224,7 +212,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return CreateDateTime of an Office document
-   * 
    * @param String
    * @return Date
    */
@@ -234,7 +221,6 @@ public class MSdocumentPropertiesManager {
 
   /**
    * Return if an Office document has a SummaryInformation
-   * 
    * @param SummaryInformation
    * @return boolean
    */
@@ -249,11 +235,8 @@ public class MSdocumentPropertiesManager {
   /**
    * Return The value of a personalizable Property of an Office document
    * (DocumentSummaryInformation)
-   * 
-   * @param File
-   *          - The Office document
-   * @param String
-   *          - The name of the property
+   * @param File - The Office document
+   * @param String - The name of the property
    * @return String - The Value of the property
    */
   public String getPropertyValue(String fileName, String propertyName) {

@@ -34,11 +34,8 @@ public class SPProfile implements Serializable {
 
   /**
    * Constructs and initialises the object
-   * 
-   * @param strName
-   *          name
-   * @param strLabel
-   *          label
+   * @param strName name
+   * @param strLabel label
    */
   public SPProfile(String strName, String strLabel) {
     m_strName = strName;
@@ -53,8 +50,7 @@ public class SPProfile implements Serializable {
   }
 
   /**
-   * @param strName
-   *          the name to set
+   * @param strName the name to set
    */
   public void setName(String strName) {
     m_strName = strName;
@@ -68,8 +64,7 @@ public class SPProfile implements Serializable {
   }
 
   /**
-   * @param strLabel
-   *          the label to set
+   * @param strLabel the label to set
    */
   public void setLabel(String strLabel) {
     m_strLabel = strLabel;

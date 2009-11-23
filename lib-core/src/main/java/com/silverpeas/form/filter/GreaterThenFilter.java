@@ -27,7 +27,6 @@ import com.silverpeas.form.Field;
 
 /**
  * A GreaterThenFilter test if a given field is greater then a reference field.
- * 
  * @see Field
  * @see FieldDisplayer
  */

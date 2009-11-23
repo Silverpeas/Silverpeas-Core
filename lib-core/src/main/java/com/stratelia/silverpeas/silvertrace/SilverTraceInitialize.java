@@ -53,16 +53,12 @@ import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SilverTraceInitialize implements IInitialize {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SilverTraceInitialize() {
@@ -70,10 +66,7 @@ public class SilverTraceInitialize implements IInitialize {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean Initialize() {

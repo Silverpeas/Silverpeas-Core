@@ -36,7 +36,6 @@ import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 
 /**
  * a pptParser uses POI to extract the text wich will be indexed
- * 
  * @author $Author: neysseri $
  */
 public class PptParserPOI implements Parser {

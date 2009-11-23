@@ -159,7 +159,6 @@ public class LoginPasswordAuthentication {
 
   /**
    * Get list of domains
-   * 
    * @return hashtable object (keys=domain ids, values=domain name)
    */
   public Hashtable getAllDomains() {
@@ -221,13 +220,9 @@ public class LoginPasswordAuthentication {
 
   /**
    * Main method that authenticates given user and return an authantication key
-   * 
-   * @param login
-   *          User login
-   * @param password
-   *          User password
-   * @param domainId
-   *          User domain Id
+   * @param login User login
+   * @param password User password
+   * @param domainId User domain Id
    * @return authentication key used by LoginServlet
    */
   public String authenticate(String login, String password, String domainId,
@@ -269,7 +264,7 @@ public class LoginPasswordAuthentication {
       SilverTrace.warn("authentication",
           "LoginPasswordAuthentication.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-              + login, ex);
+          + login, ex);
       String errorCause = "Error_2";
       Exception nested = ex.getNested();
       if (nested != null) {
@@ -290,13 +285,10 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Method that authenticates given user and return an authentication key Used
-   * in case of ntlm authentication
-   * 
-   * @param login
-   *          User login
-   * @param domainId
-   *          User domain Id
+   * Method that authenticates given user and return an authentication key Used in case of ntlm
+   * authentication
+   * @param login User login
+   * @param domainId User domain Id
    * @return authentication key used by LoginServlet
    */
   public String authenticate(String login, String domainId,
@@ -328,7 +320,7 @@ public class LoginPasswordAuthentication {
       SilverTrace.warn("authentication",
           "LoginPasswordAuthentication.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-              + login, ex);
+          + login, ex);
       String errorCause = "Error_2";
       return errorCause;
     } finally {
@@ -346,7 +338,7 @@ public class LoginPasswordAuthentication {
         SilverTrace.warn("authentication",
             "LoginPasswordAuthentication.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId="
-                + domainId + ";User=" + login, e);
+            + domainId + ";User=" + login, e);
         String errorCause = "Error_2";
         return errorCause;
       }
@@ -357,15 +349,10 @@ public class LoginPasswordAuthentication {
 
   /**
    * Main method that change user password
-   * 
-   * @param login
-   *          User login
-   * @param oldPassword
-   *          User old password
-   * @param newPassword
-   *          User new password
-   * @param domainId
-   *          User domain Id
+   * @param login User login
+   * @param oldPassword User old password
+   * @param newPassword User new password
+   * @param domainId User domain Id
    * @throws AuthenticationException
    */
   public void changePassword(String login, String oldPassword,
@@ -395,7 +382,7 @@ public class LoginPasswordAuthentication {
       SilverTrace.error("authentication",
           "LoginPasswordAuthentication.changePassword()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-              + login, ex);
+          + login, ex);
       throw ex;
     } finally {
       closeConnection(m_Connection);
@@ -404,9 +391,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Get the Authentication Server name for the given domain
-   * 
-   * @param domainId
-   *          Domain Id
+   * @param domainId Domain Id
    * @return authentication server name
    */
   private String getAuthenticationServerName(Connection con, String domainId)
@@ -450,13 +435,9 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Build a random authentication key, store it in Silverpeas database and
-   * return it.
-   * 
-   * @param login
-   *          user login
-   * @param domainId
-   *          user domain id
+   * Build a random authentication key, store it in Silverpeas database and return it.
+   * @param login user login
+   * @param domainId user domain id
    * @return generated authentication key
    */
   public String getAuthenticationKey(String login, String domainId)
@@ -501,7 +482,7 @@ public class LoginPasswordAuthentication {
       SilverTrace.error("authentication",
           "LoginPasswordAuthentication.storeAuthenticationKey()",
           "authentication.EX_WRITE_KEY_ERROR", "User=" + login + " exception="
-              + ex.getSQLState());
+          + ex.getSQLState());
     } finally {
       DBUtil.close(stmt);
       closeConnection(m_Connection);

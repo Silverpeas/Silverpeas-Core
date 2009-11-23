@@ -46,13 +46,10 @@ public class AttachmentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public AttachmentRuntimeException(String callingClass, int errorLevel,
@@ -62,13 +59,10 @@ public class AttachmentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public AttachmentRuntimeException(String callingClass, int errorLevel,
@@ -78,14 +72,11 @@ public class AttachmentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public AttachmentRuntimeException(String callingClass, int errorLevel,

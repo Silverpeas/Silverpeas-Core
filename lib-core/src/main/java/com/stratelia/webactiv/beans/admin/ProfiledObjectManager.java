@@ -51,7 +51,7 @@ public class ProfiledObjectManager {
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getProfiles",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE", "objectId = "
-              + objectId + ", componentId = " + componentId, e);
+          + objectId + ", componentId = " + componentId, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -84,8 +84,8 @@ public class ProfiledObjectManager {
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getUserProfileNames",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE", "objectId = "
-              + objectId + ", componentId = " + componentId + ", userId = "
-              + userId, e);
+          + objectId + ", componentId = " + componentId + ", userId = "
+          + userId, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -102,7 +102,7 @@ public class ProfiledObjectManager {
       throw new AdminException("ComponentInstManager.isComponentAvailable",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "userId = " + userId
-              + ", componentId = " + componentId + ", objectId = " + objectId,
+          + ", componentId = " + componentId + ", objectId = " + objectId,
           e);
     } finally {
       ddManager.releaseOrganizationSchema();

@@ -28,25 +28,20 @@ import java.util.*;
 import java.lang.reflect.*;
 
 /**
- * This class extends the class 'SchedulerJob' for the functionality of a
- * scheduled execution of a class method.
+ * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
+ * class method.
  */
 public class SchedulerMethodJob extends SchedulerJob {
   Object methodOwner;
   Method executionMethod;
 
   /**
-   * The constructor has proteceted access, because the generation of jobs
-   * should be done in a central way by the class 'SimpleScheduler'
-   * 
-   * @param aController
-   *          The controller, that controls all job executions
-   * @param aOwner
-   *          The owner of the job
-   * @param aJobName
-   *          The name of the job
-   * @param aLogBaseFile
-   *          The log file for the job
+   * The constructor has proteceted access, because the generation of jobs should be done in a
+   * central way by the class 'SimpleScheduler'
+   * @param aController The controller, that controls all job executions
+   * @param aOwner The owner of the job
+   * @param aJobName The name of the job
+   * @param aLogBaseFile The log file for the job
    */
   protected SchedulerMethodJob(SimpleScheduler theJobController,
       SchedulerEventHandler theJobOwner, String theJobName)
@@ -55,14 +50,11 @@ public class SchedulerMethodJob extends SchedulerJob {
   }
 
   /**
-   * This method sets the execution parameter. The given execution method have
-   * to handle two parameter (PrintStream, Date)
-   * 
-   * @param aMethodOwner
-   *          The owner object of the execution method
-   * @param aExecutionMethodName
-   *          The name of a method for the execution logic (Arguments must be
-   *          PrintStream and Date)
+   * This method sets the execution parameter. The given execution method have to handle two
+   * parameter (PrintStream, Date)
+   * @param aMethodOwner The owner object of the execution method
+   * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
+   * PrintStream and Date)
    */
   protected synchronized void setExecutionParameter(Object aMethodOwner,
       String aExecutionMethodName) throws SchedulerException {
@@ -94,18 +86,15 @@ public class SchedulerMethodJob extends SchedulerJob {
     } catch (Exception aException) {
       throw new SchedulerException(
           "SchedulerMethodJob.setExecutionParameter: Getting the execution method fails (Msg: "
-              + aException.toString() + ")");
+          + aException.toString() + ")");
     }
   }
 
   /**
-   * This method implements the abstract method of the base class. It only
-   * routes the parameter the the stored execution method.
-   * 
-   * @param log
-   *          A PrintStream for text writings in the log file for this job
-   * @param theExecutionDate
-   *          The date of the execution
+   * This method implements the abstract method of the base class. It only routes the parameter the
+   * the stored execution method.
+   * @param log A PrintStream for text writings in the log file for this job
+   * @param theExecutionDate The date of the execution
    */
   protected void execute(Date theExecutionDate) throws SchedulerException {
     Object parameters[] = { theExecutionDate };

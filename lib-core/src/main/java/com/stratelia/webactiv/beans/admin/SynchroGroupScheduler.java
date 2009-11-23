@@ -61,13 +61,13 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("admin",
             "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("admin",
             "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:

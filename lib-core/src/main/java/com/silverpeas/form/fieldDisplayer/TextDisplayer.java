@@ -44,12 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A TextFieldDisplayer is an object which can display a TextFiel in HTML
- * the content of a TextFiel to a end user
- * and can retrieve via HTTP any updated value.
- * 
- * 
- *
+ * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
+ * to a end user and can retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -74,18 +70,13 @@ public class TextDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the javascripts which will be used to control
-   * the new value given to the named field.
-   *
-   * The error messages may be adapted to a local language.
-   * The FieldTemplate gives the field type and constraints.
-   * The FieldTemplate gives the local labeld too.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the javascripts which will be used to control the new value given to the named field.
+   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
+   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
+   * log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the fieldName is unknown by the template.
-   * <LI> the field type is not a managed type.
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void displayScripts(PrintWriter out,
@@ -94,16 +85,11 @@ public class TextDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the HTML value of the field.
-   * The displayed value must be updatable by the end user.
-   *
-   * The value format may be adapted to a local language.
-   * The fieldName must be used to name the html form input.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the field type is not a managed type.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void display(PrintWriter out,
@@ -130,7 +116,8 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       try {
         value = DateUtil.getOutputDate(field.getValue(), PagesContext.getLanguage());
       } catch (Exception e) {
-        SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE", "value = " + field.getValue(),
+        SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+            "value = " + field.getValue(),
             e);
       }
     }
@@ -146,7 +133,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       Hashtable keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(language);
       String newValue = "";
       if (value.indexOf("##") != -1) {
-        //Try to display a checkbox list
+        // Try to display a checkbox list
         StringTokenizer tokenizer = new StringTokenizer(value, "##");
         String t = null;
         while (tokenizer.hasMoreTokens()) {
@@ -169,7 +156,8 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       html += "<span " + classe + ">";
     }
 
-    if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor") || parameters.containsKey("fontFace")) {
+    if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor") ||
+        parameters.containsKey("fontFace")) {
       html += "<font";
     }
 
@@ -213,15 +201,12 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       html += "</span>";
     }
 
-
     out.println(html);
   }
 
   /**
-   * Updates the value of the field.
-   *
-   * The fieldName must be used to retrieve the HTTP parameter from the request.
-   *
+   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */

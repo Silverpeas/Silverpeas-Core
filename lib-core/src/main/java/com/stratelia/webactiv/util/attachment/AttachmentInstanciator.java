@@ -65,8 +65,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AttachmentInstanciator extends SQLRequest {
@@ -85,10 +83,7 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param fullPathName
-   * 
    * @see
    */
   public AttachmentInstanciator(String fullPathName) {
@@ -100,10 +95,9 @@ public class AttachmentInstanciator extends SQLRequest {
    */
 
   /*
-   * public void create(Connection con, String spaceId, String componentId,
-   * String userId) throws InstanciationException { Debug.debug(600,
-   * "AttachmentInstanciator.create()", "enter with: space=" + spaceId +
-   * " componentId=" + componentId, null, null);
+   * public void create(Connection con, String spaceId, String componentId, String userId) throws
+   * InstanciationException { Debug.debug(600, "AttachmentInstanciator.create()",
+   * "enter with: space=" + spaceId + " componentId=" + componentId, null, null);
    * createAttachmentDirectory(spaceId, componentId); Debug.debug(600,
    * "AttachmentInstanciator.create()", "finished", null, null); }
    */
@@ -114,11 +108,8 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Creates an attachment directory for the upload files
-   * 
-   * @param spaceId
-   *          (String) the id of the silverpeas space
-   * @param componentId
-   *          (String) the id of the instance of the job'Peas
+   * @param spaceId (String) the id of the silverpeas space
+   * @param componentId (String) the id of the instance of the job'Peas
    * @throws InstanciationException
    */
 
@@ -145,15 +136,11 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   * 
    * @throws InstanciationException
-   * 
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,
@@ -166,11 +153,8 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * deletes the attachment directory
-   * 
-   * @param spaceId
-   *          (String) the id of the silverpeas space
-   * @param componentId
-   *          (String) the id of the instance of the job'Peas
+   * @param spaceId (String) the id of the silverpeas space
+   * @param componentId (String) the id of the instance of the job'Peas
    * @throws InstanciationException
    */
   private void deleteAttachmentDirectory(String spaceId, String componentId)
@@ -196,13 +180,9 @@ public class AttachmentInstanciator extends SQLRequest {
 
   /**
    * Delete all data from the attachment table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

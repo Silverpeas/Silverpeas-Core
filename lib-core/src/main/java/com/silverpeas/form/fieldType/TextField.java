@@ -28,7 +28,6 @@ import com.silverpeas.form.FormException;
 
 /**
  * A TextField stores a text value.
- * 
  * @see Field
  * @see FieldDisplayer
  */
@@ -62,10 +61,8 @@ public abstract class TextField implements Field {
   }
 
   /**
-   * Returns the local value of this field.
-   * 
-   * There is no local format for a text field, so the language parameter is
-   * unused.
+   * Returns the local value of this field. There is no local format for a text field, so the
+   * language parameter is unused.
    */
   public String getValue(String language) {
     return getStringValue();
@@ -73,7 +70,6 @@ public abstract class TextField implements Field {
 
   /**
    * Set this field value from a local string value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the string value is ill formed.
    */
@@ -82,11 +78,8 @@ public abstract class TextField implements Field {
   }
 
   /**
-   * Set this field value from a local string value.
-   * 
-   * There is no local format for a text field, so the language parameter is
-   * unused.
-   * 
+   * Set this field value from a local string value. There is no local format for a text field, so
+   * the language parameter is unused.
    * @throw FormException when the field is readOnly.
    * @throw FormException when the string value is ill formed.
    */
@@ -95,27 +88,24 @@ public abstract class TextField implements Field {
   }
 
   /**
-   * Returns true if the value isn't ill formed and this field isn't read only.
-   * 
-   * Here any string value is accepted unless the field is read only.
+   * Returns true if the value isn't ill formed and this field isn't read only. Here any string
+   * value is accepted unless the field is read only.
    */
   public boolean acceptValue(String value) {
     return !isReadOnly();
   }
 
   /**
-   * Returns true if the value isn't ill formed and this field isn't read only.
-   * 
-   * Here any string value is accepted unless the field is read only.
+   * Returns true if the value isn't ill formed and this field isn't read only. Here any string
+   * value is accepted unless the field is read only.
    */
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
 
   /**
-   * Returns true if the value isn't ill formed and this field isn't read only.
-   * 
-   * Here any string value is accepted unless the field is read only.
+   * Returns true if the value isn't ill formed and this field isn't read only. Here any string
+   * value is accepted unless the field is read only.
    */
   public boolean acceptValue(String value, String language) {
     return !isReadOnly();
@@ -130,7 +120,6 @@ public abstract class TextField implements Field {
 
   /**
    * Set this field value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the value is not a String.
    */
@@ -165,7 +154,6 @@ public abstract class TextField implements Field {
 
   /**
    * Set to null this field.
-   * 
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */

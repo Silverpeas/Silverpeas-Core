@@ -27,7 +27,6 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 /**
  * A RecordSet manages a set of DataRecord built on a same RecordTemplate.
- * 
  * @see DataRecord
  * @see RecordTemplate
  */
@@ -38,17 +37,14 @@ public interface RecordSet {
   public RecordTemplate getRecordTemplate();
 
   /**
-   * Returns an empty DataRecord built on the RecordTemplate.
-   * 
-   * This record is not yet managed by this RecordSet. This is only an empty
-   * record which must be filled and saved in order to become a DataRecord of
-   * this RecordSet.
+   * Returns an empty DataRecord built on the RecordTemplate. This record is not yet managed by this
+   * RecordSet. This is only an empty record which must be filled and saved in order to become a
+   * DataRecord of this RecordSet.
    */
   public DataRecord getEmptyRecord() throws FormException;
 
   /**
    * Returns the DataRecord with the given id.
-   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String id) throws FormException;
@@ -58,7 +54,6 @@ public interface RecordSet {
 
   /**
    * Inserts the given DataRecord and set its id.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a not null id.
    * @throw FormException when the insert fail.
@@ -67,7 +62,6 @@ public interface RecordSet {
 
   /**
    * Updates the given DataRecord.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a null or unknown id.
    * @throw FormException when the update fail.
@@ -75,14 +69,10 @@ public interface RecordSet {
   // public void update(DataRecord record) throws FormException;
 
   /**
-   * Save the given DataRecord.
-   * 
-   * If the record id is null then the record is inserted in this RecordSet.
-   * Else the record is updated.
-   * 
+   * Save the given DataRecord. If the record id is null then the record is inserted in this
+   * RecordSet. Else the record is updated.
    * @see insert
    * @see update
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the insert or update fail.
@@ -90,9 +80,8 @@ public interface RecordSet {
   public void save(DataRecord record) throws FormException;
 
   /**
-   * Index the given DataRecord into the indexEntry. formName looks like
-   * allFields (ie template filename allFields.xml without extension)
-   * 
+   * Index the given DataRecord into the indexEntry. formName looks like allFields (ie template
+   * filename allFields.xml without extension)
    * @param data
    * @param formName
    * @param indexEntry
@@ -103,7 +92,6 @@ public interface RecordSet {
 
   /**
    * Deletes the given DataRecord and set to null its id.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the delete fail.
@@ -111,8 +99,7 @@ public interface RecordSet {
   public void delete(DataRecord record) throws FormException;
 
   /**
-   * Clones the given DataRecord. Set to cloneExternalId its externalId and
-   * insert it.
+   * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.
    */
   public void clone(String originalExternalId, String cloneExternalId)
       throws FormException;

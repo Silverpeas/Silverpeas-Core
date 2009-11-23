@@ -33,8 +33,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class NotificationManagerCallBack extends CallBack {
@@ -57,7 +55,7 @@ public class NotificationManagerCallBack extends CallBack {
       SilverTrace.info("notificationManager",
           "NotificationManagerCallBack.doInvoke()",
           "root.MSG_GEN_ENTER_METHOD", CallBackManager.getInvokeString(action,
-              iParam, sParam, extraParam));
+          iParam, sParam, extraParam));
       if (action == CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT) {
         schema.notifPreference.dereferenceComponentInstanceId(iParam);
       } else if (action == CallBackManager.ACTION_BEFORE_REMOVE_USER) {
@@ -70,7 +68,7 @@ public class NotificationManagerCallBack extends CallBack {
       SilverTrace.error("notificationManager",
           "NotificationManagerCallBack.doInvoke()",
           "notificationManager.EX_GENERAL", CallBackManager.getInvokeString(
-              action, iParam, sParam, extraParam), e);
+          action, iParam, sParam, extraParam), e);
       try {
         if (schema != null) {
           schema.rollback();
@@ -78,9 +76,9 @@ public class NotificationManagerCallBack extends CallBack {
       } catch (Exception ex) {
         SilverTrace
             .warn("notificationManager",
-                "NotificationManagerCallBack.doInvoke()",
-                "root.EX_ERR_ROLLBACK", CallBackManager.getInvokeString(action,
-                    iParam, sParam, extraParam), ex);
+            "NotificationManagerCallBack.doInvoke()",
+            "root.EX_ERR_ROLLBACK", CallBackManager.getInvokeString(action,
+            iParam, sParam, extraParam), ex);
       }
     } finally {
       try {
@@ -91,7 +89,7 @@ public class NotificationManagerCallBack extends CallBack {
         SilverTrace.warn("notificationManager",
             "NotificationManagerCallBack.doInvoke()",
             "notificationManager.EX_CANT_CLOSE_SCHEMA", CallBackManager
-                .getInvokeString(action, iParam, sParam, extraParam), e);
+            .getInvokeString(action, iParam, sParam, extraParam), e);
       }
     }
   }

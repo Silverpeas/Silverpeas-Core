@@ -76,7 +76,7 @@ public class NotificationServerUtil {
           + "</RECEIPT>");
       xml.append("		<PARAM>"
           + EncodeHelper.javaStringToXmlString(packKeyValues(p_Data
-              .getTargetParam())) + "</PARAM>");
+          .getTargetParam())) + "</PARAM>");
       xml.append("	</TARGET>");
       xml.append("	<PRIORITY SPEED=\""
           + EncodeHelper.javaStringToXmlString(p_Data.getPrioritySpeed())
@@ -168,12 +168,8 @@ public class NotificationServerUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param theValue
-   * 
    * @return
-   * 
    * @see
    */
   static protected String doubleSeparators(String theValue) {
@@ -238,7 +234,7 @@ public class NotificationServerUtil {
         if (success) {
           sb
               .append(doubleSeparators(theKey) + "="
-                  + doubleSeparators(keyValue));
+              + doubleSeparators(keyValue));
           bNotTheFirst = true;
         }
       }

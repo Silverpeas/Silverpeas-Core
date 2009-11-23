@@ -46,7 +46,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
  * @author eDurand
  * @version 1.0
  */
@@ -75,10 +74,7 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public NotificationData getNotificationData() {
@@ -115,12 +111,8 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pFileName
-   * 
    * @throws NotificationServerException
-   * 
    * @see
    */
   public void ParseXML(String pFileName) throws NotificationServerException {
@@ -136,12 +128,8 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pInputSource
-   * 
    * @throws NotificationServerException
-   * 
    * @see
    */
   public void ParseXML(InputSource pInputSource)
@@ -152,14 +140,12 @@ public class NotificationDataXML implements DocumentHandler {
       throw new NotificationServerException("NotificationDataXML.ParseXML()",
           SilverpeasException.ERROR,
           "notificationServer.EX_ERROR_IN_XML_PARSING", "inputSource="
-              + pInputSource.toString(), e);
+          + pInputSource.toString(), e);
     }
   }
 
   /**
    * Class declaration
-   * 
-   * 
    * @author
    * @version %I%, %G%
    */
@@ -167,12 +153,8 @@ public class NotificationDataXML implements DocumentHandler {
 
     /**
      * Method declaration
-     * 
-     * 
      * @param e
-     * 
      * @throws SAXParseException
-     * 
      * @see
      */
     public void error(SAXParseException e) throws SAXParseException {
@@ -181,12 +163,8 @@ public class NotificationDataXML implements DocumentHandler {
 
     /**
      * Method declaration
-     * 
-     * 
      * @param err
-     * 
      * @throws SAXParseException
-     * 
      * @see
      */
     public void warning(SAXParseException err) throws SAXParseException {
@@ -196,10 +174,7 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param l
-   * 
    * @see
    */
   public void setDocumentLocator(Locator l) {
@@ -207,10 +182,7 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void startDocument() throws SAXException {
@@ -226,10 +198,7 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void endDocument() throws SAXException {
@@ -239,13 +208,9 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param tag
    * @param attrs
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void startElement(String tag, AttributeList attrs) throws SAXException {
@@ -297,8 +262,8 @@ public class NotificationDataXML implements DocumentHandler {
                         .getReportToSenderStatus() != null ? (mData
                         .getReportToSenderStatus() + ";") : "")
                         + EncodeHelper
-                            .htmlStringToJavaString(mCurrentAttributeList
-                                .getValue(i)));
+                        .htmlStringToJavaString(mCurrentAttributeList
+                        .getValue(i)));
                   }
                 }
               }
@@ -308,7 +273,7 @@ public class NotificationDataXML implements DocumentHandler {
                   if (CHANNEL.equals(mCurrentAttributeList.getName(i))) {
                     mData.setReportToSenderTargetChannel(EncodeHelper
                         .htmlStringToJavaString(mCurrentAttributeList
-                            .getValue(i)));
+                        .getValue(i)));
                   }
                 }
               }
@@ -320,11 +285,11 @@ public class NotificationDataXML implements DocumentHandler {
                   if (NAME.equals(mCurrentAttributeList.getName(i))) {
                     mData
                         .setReportToLogStatus((mData.getReportToLogStatus() != null ? (mData
-                            .getReportToLogStatus() + ";")
-                            : "")
-                            + EncodeHelper
-                                .htmlStringToJavaString(mCurrentAttributeList
-                                    .getValue(i)));
+                        .getReportToLogStatus() + ";")
+                        : "")
+                        + EncodeHelper
+                        .htmlStringToJavaString(mCurrentAttributeList
+                        .getValue(i)));
                   }
                 }
               }
@@ -337,12 +302,8 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param name
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void endElement(String name) throws SAXException {
@@ -406,14 +367,10 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param buf
    * @param offset
    * @param len
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void characters(char buf[], int offset, int len) throws SAXException {
@@ -422,14 +379,10 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param buf
    * @param offset
    * @param len
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void ignorableWhitespace(char buf[], int offset, int len)
@@ -438,13 +391,9 @@ public class NotificationDataXML implements DocumentHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param target
    * @param data
-   * 
    * @throws SAXException
-   * 
    * @see
    */
   public void processingInstruction(String target, String data)

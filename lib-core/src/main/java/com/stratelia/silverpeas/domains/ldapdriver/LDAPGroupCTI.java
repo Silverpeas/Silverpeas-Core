@@ -39,14 +39,11 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class manage groups that are described as follows : The group object
- * contains an attribute that point to each users and sub-groups DN Example
- * (with the attribute 'member') : member cn=user1,ou=people,o=stratelia member
- * cn=user2,ou=people,o=stratelia .... THOSE GROUPS ARE ALL CONSIDERED AS ROOT
- * GROUPS ALL DESCENDENT USERS ARE PUT IN FIRST LEVEL USERS
- * 
- * For CTI : Add new functionality : - Build Name from path (dn) - Use dn as key
- * 
+ * This class manage groups that are described as follows : The group object contains an attribute
+ * that point to each users and sub-groups DN Example (with the attribute 'member') : member
+ * cn=user1,ou=people,o=stratelia member cn=user2,ou=people,o=stratelia .... THOSE GROUPS ARE ALL
+ * CONSIDERED AS ROOT GROUPS ALL DESCENDENT USERS ARE PUT IN FIRST LEVEL USERS For CTI : Add new
+ * functionality : - Build Name from path (dn) - Use dn as key
  * @author tleroi
  */
 
@@ -63,7 +60,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
 
     SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
         "root.MSG_GEN_ENTER_METHOD", "MemberId=" + memberId + ", isGroup="
-            + isGroup);
+        + isGroup);
     if (isGroup) {
       memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, memberId,
           driverSettings.getScope(), driverSettings.getGroupsFullFilter(),
@@ -84,7 +81,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         + driverSettings.getGroupsMemberField() + "="
         + LDAPUtility.dblBackSlashesForDNInFilters(memberEntry.getDN()) + "))",
         driverSettings.getGroupsNameField(), driverSettings
-            .getGroupAttributes());
+        .getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
       SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
           "root.MSG_GEN_PARAM_VALUE", "GroupFound=" + theEntries[i].getDN());
@@ -126,15 +123,10 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lds
    * @param groupEntry
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -216,7 +208,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
       } catch (AdminException e) {
         SilverTrace.error("admin", "LDAPGroupAllRoot.getTRUEUserIds()",
             "admin.MSG_ERR_LDAP_GENERAL", "USER NOT FOUND : "
-                + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
+            + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
       }
     }
     stringVals = null;
@@ -231,17 +223,11 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   }
 
   /**
-   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
-   * RUNNING
-   * 
-   * 
+   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
    * @param lds
    * @param parentId
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -264,7 +250,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings
             .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
             theFilter, driverSettings.getGroupsNameField(), driverSettings
-                .getGroupAttributes());
+            .getGroupAttributes());
         SynchroReport.debug("LDAPGroupAllRoot.getChildGroupsEntry()",
             "Récupération de " + theEntries.length + " groupes racine", null);
       } catch (AdminException e) {
@@ -284,17 +270,11 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   }
 
   /**
-   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
-   * RUNNING
-   * 
-   * 
+   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
    * @param lds
    * @param parentId
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected Vector getTRUEChildGroupsEntry(String lds, String parentId,
@@ -319,13 +299,13 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         try {
           childGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds,
               stringVals[i], driverSettings.getScope(), driverSettings
-                  .getGroupsFullFilter(), driverSettings.getGroupAttributes());
+              .getGroupsFullFilter(), driverSettings.getGroupAttributes());
           entryVector.add(childGroupEntry);
         } catch (AdminException e) {
           SilverTrace.error("admin",
               "LDAPGroupAllRoot.getTRUEChildGroupsEntry()",
               "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : "
-                  + stringVals[i], e);
+              + stringVals[i], e);
         }
       }
 
@@ -361,10 +341,10 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
         les = LDAPUtility.search1000Plus(lds, driverSettings
             .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
             "(&" + driverSettings.getGroupsFullFilter() + "("
-                + driverSettings.getGroupsMemberField() + "="
-                + LDAPUtility.dblBackSlashesForDNInFilters(theGroup.getDN())
-                + "))", driverSettings.getGroupsNameField(), driverSettings
-                .getGroupAttributes());
+            + driverSettings.getGroupsMemberField() + "="
+            + LDAPUtility.dblBackSlashesForDNInFilters(theGroup.getDN())
+            + "))", driverSettings.getGroupsNameField(), driverSettings
+            .getGroupAttributes());
         for (i = 0; i < les.length; i++) {
           SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
               "root.MSG_GEN_PARAM_VALUE", "GroupFound=" + les[i].getDN());
@@ -427,7 +407,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
             + groupInfos.getName() + "\n");
         SynchroReport.error("AbstractLDAPGroup.translateGroup()",
             "Pb de récupération des membres utilisateurs du groupe "
-                + groupInfos.getSpecificId(), e);
+            + groupInfos.getSpecificId(), e);
       } else {
         throw e;
       }
@@ -454,8 +434,7 @@ public class LDAPGroupCTI extends AbstractLDAPGroup {
   }
 
   /**
-   * Called when Admin starts the synchronization overidded to manage local
-   * cache
+   * Called when Admin starts the synchronization overidded to manage local cache
    */
   public void beginSynchronization() throws Exception {
     super.beginSynchronization();

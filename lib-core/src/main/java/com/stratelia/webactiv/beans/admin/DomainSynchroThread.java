@@ -83,7 +83,7 @@ public class DomainSynchroThread extends Thread {
       for (i = 0; (i < m_Domains.size()) && (!m_mustStop); i++) {
         SilverTrace.info("admin", "DomainSynchroThread.run",
             "root.MSG_GEN_PARAM_VALUE", "------------DEBUT SYNCHRO DOMAINE #"
-                + (String) m_Domains.get(i) + "-----------");
+            + (String) m_Domains.get(i) + "-----------");
         try {
           m_theAdmin.difSynchro((String) m_Domains.get(i));
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class DomainSynchroThread extends Thread {
         }
         SilverTrace.info("admin", "DomainSynchroThread.run",
             "root.MSG_GEN_PARAM_VALUE", "------------FIN SYNCHRO DOMAINE #"
-                + (String) m_Domains.get(i) + "-----------");
+            + (String) m_Domains.get(i) + "-----------");
       }
       if (!m_mustStop && (m_Domains.size() > 0)) {
         try {

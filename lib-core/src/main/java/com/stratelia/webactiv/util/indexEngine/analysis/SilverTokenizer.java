@@ -34,22 +34,19 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 /**
  * A grammar-based tokenizer constructed with JFlex
- * 
  * <p>
  * This should be a good tokenizer for most European-language documents:
- * 
  * <ul>
- * <li>Splits words at punctuation characters, removing punctuation. However, a
- * dot that's not followed by whitespace is considered part of a token.
- * <li>Splits words at hyphens, unless there's a number in the token, in which
- * case the whole token is interpreted as a product number and is not split.
+ * <li>Splits words at punctuation characters, removing punctuation. However, a dot that's not
+ * followed by whitespace is considered part of a token.
+ * <li>Splits words at hyphens, unless there's a number in the token, in which case the whole token
+ * is interpreted as a product number and is not split.
  * <li>Recognizes email addresses and internet hostnames as one token.
  * </ul>
- * 
  * <p>
- * Many applications have specific tokenizer needs. If this tokenizer does not
- * suit your application, please consider copying this source code directory to
- * your project and maintaining your own grammar-based tokenizer.
+ * Many applications have specific tokenizer needs. If this tokenizer does not suit your
+ * application, please consider copying this source code directory to your project and maintaining
+ * your own grammar-based tokenizer.
  */
 
 public class SilverTokenizer extends Tokenizer {
@@ -57,11 +54,10 @@ public class SilverTokenizer extends Tokenizer {
   private final SilverTokenizerImpl scanner;
 
   /**
-   * Specifies whether deprecated acronyms should be replaced with HOST type.
-   * This is false by default to support backward compatibility.
+   * Specifies whether deprecated acronyms should be replaced with HOST type. This is false by
+   * default to support backward compatibility.
    *<p/>
    * See http://issues.apache.org/jira/browse/LUCENE-1068
-   * 
    * @deprecated this should be removed in the next release (3.0).
    */
   private boolean replaceInvalidAcronym = false;
@@ -85,8 +81,8 @@ public class SilverTokenizer extends Tokenizer {
   }
 
   /**
-   * Creates a new instance of the {@link StandardTokenizer}. Attaches the
-   * <code>input</code> to a newly created JFlex scanner.
+   * Creates a new instance of the {@link StandardTokenizer}. Attaches the <code>input</code> to a
+   * newly created JFlex scanner.
    */
   public SilverTokenizer(Reader input) {
     this.input = input;
@@ -94,16 +90,11 @@ public class SilverTokenizer extends Tokenizer {
   }
 
   /**
-   * Creates a new instance of the
-   * {@link org.apache.lucene.analysis.standard.StandardTokenizer}. Attaches the
-   * <code>input</code> to the newly created JFlex scanner.
-   * 
-   * @param input
-   *          The input reader
-   * @param replaceInvalidAcronym
-   *          Set to true to replace mischaracterized acronyms with HOST.
-   * 
-   *          See http://issues.apache.org/jira/browse/LUCENE-1068
+   * Creates a new instance of the {@link org.apache.lucene.analysis.standard.StandardTokenizer}.
+   * Attaches the <code>input</code> to the newly created JFlex scanner.
+   * @param input The input reader
+   * @param replaceInvalidAcronym Set to true to replace mischaracterized acronyms with HOST. See
+   * http://issues.apache.org/jira/browse/LUCENE-1068
    */
   public SilverTokenizer(Reader input, boolean replaceInvalidAcronym) {
     this.replaceInvalidAcronym = replaceInvalidAcronym;
@@ -113,7 +104,6 @@ public class SilverTokenizer extends Tokenizer {
 
   /*
    * (non-Javadoc)
-   * 
    * @see org.apache.lucene.analysis.TokenStream#next()
    */
   public Token next(Token result) throws IOException {
@@ -158,7 +148,6 @@ public class SilverTokenizer extends Tokenizer {
 
   /*
    * (non-Javadoc)
-   * 
    * @see org.apache.lucene.analysis.TokenStream#reset()
    */
   public void reset() throws IOException {
@@ -172,13 +161,9 @@ public class SilverTokenizer extends Tokenizer {
   }
 
   /**
-   * Prior to https://issues.apache.org/jira/browse/LUCENE-1068,
-   * StandardTokenizer mischaracterized as acronyms tokens like www.abc.com when
-   * they should have been labeled as hosts instead.
-   * 
-   * @return true if StandardTokenizer now returns these tokens as Hosts,
-   *         otherwise false
-   * 
+   * Prior to https://issues.apache.org/jira/browse/LUCENE-1068, StandardTokenizer mischaracterized
+   * as acronyms tokens like www.abc.com when they should have been labeled as hosts instead.
+   * @return true if StandardTokenizer now returns these tokens as Hosts, otherwise false
    * @deprecated Remove in 3.X and make true the only valid value
    */
   public boolean isReplaceInvalidAcronym() {
@@ -186,12 +171,9 @@ public class SilverTokenizer extends Tokenizer {
   }
 
   /**
-   * 
-   * @param replaceInvalidAcronym
-   *          Set to true to replace mischaracterized acronyms as HOST.
-   * @deprecated Remove in 3.X and make true the only valid value
-   * 
-   *             See https://issues.apache.org/jira/browse/LUCENE-1068
+   * @param replaceInvalidAcronym Set to true to replace mischaracterized acronyms as HOST.
+   * @deprecated Remove in 3.X and make true the only valid value See
+   * https://issues.apache.org/jira/browse/LUCENE-1068
    */
   public void setReplaceInvalidAcronym(boolean replaceInvalidAcronym) {
     this.replaceInvalidAcronym = replaceInvalidAcronym;

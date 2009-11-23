@@ -30,10 +30,8 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.indexEngine.DateFormatter;
 
 /**
- * A FieldDescription pack all the needed information to parse and index a
- * generic field (xml field, iptc field)
- * 
- * We need :
+ * A FieldDescription pack all the needed information to parse and index a generic field (xml field,
+ * iptc field) We need :
  * <UL>
  * <LI>the name of the field</LI>
  * <LI>its content</LI>

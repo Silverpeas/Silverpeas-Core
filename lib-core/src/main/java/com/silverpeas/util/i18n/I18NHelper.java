@@ -43,7 +43,8 @@ public class I18NHelper {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
-  public static Hashtable<String, List<I18NLanguage>> allLanguages = new Hashtable<String, List<I18NLanguage>>();
+  public static Hashtable<String, List<I18NLanguage>> allLanguages =
+      new Hashtable<String, List<I18NLanguage>>();
 
   private static int nbLanguages = 0;
   public static boolean isI18N = false;

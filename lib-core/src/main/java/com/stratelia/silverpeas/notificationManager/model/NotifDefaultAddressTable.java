@@ -138,14 +138,14 @@ public class NotifDefaultAddressTable extends AbstractTable {
   }
 
   /**
-   * Deletes theNotifDefaultAddressRow. after having removed all the reference
-   * to it.
+   * Deletes theNotifDefaultAddressRow. after having removed all the reference to it.
    */
   public void delete(int id) throws UtilException {
     updateRelation(DELETE_NOTIFDEFAULTADDRESS, id);
   }
 
-  static final private String DELETE_NOTIFDEFAULTADDRESS = "delete from ST_NotifDefaultAddress where id=?";
+  static final private String DELETE_NOTIFDEFAULTADDRESS =
+      "delete from ST_NotifDefaultAddress where id=?";
 
   /**
    * Removes a reference to UserId

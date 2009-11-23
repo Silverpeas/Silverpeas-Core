@@ -66,18 +66,15 @@ public class FormException extends SilverpeasException {
   }
 
   /**
-   * Set the caller, the level and the error message.
-   * 
-   * Used only by the FatalFormException
+   * Set the caller, the level and the error message. Used only by the FatalFormException
    */
   protected FormException(String caller, int level, String message) {
     super(caller, level, message);
   }
 
   /**
-   * Set the caller, the level, the error message and the nested exception.
-   * 
-   * Used only by the FatalFormException
+   * Set the caller, the level, the error message and the nested exception. Used only by the
+   * FatalFormException
    */
   protected FormException(String caller, int level, String message,
       Exception nestedException) {
@@ -85,19 +82,15 @@ public class FormException extends SilverpeasException {
   }
 
   /**
-   * Set the caller, the level, the error message and infos.
-   * 
-   * Used only by the FatalFormException
+   * Set the caller, the level, the error message and infos. Used only by the FatalFormException
    */
   protected FormException(String caller, int level, String message, String infos) {
     super(caller, level, message);
   }
 
   /**
-   * Set the caller, the level, the error message, infos and the nested
-   * exception.
-   * 
-   * Used only by the FatalFormException
+   * Set the caller, the level, the error message, infos and the nested exception. Used only by the
+   * FatalFormException
    */
   protected FormException(String caller, int level, String message,
       String infos, Exception nestedException) {

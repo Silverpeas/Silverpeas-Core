@@ -25,8 +25,7 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
 
-abstract public class AbstractLDAPTimeStamp extends Object implements
-    Comparable {
+abstract public class AbstractLDAPTimeStamp extends Object implements Comparable {
   LDAPSettings driverSettings = null;
   String timeStamp;
 

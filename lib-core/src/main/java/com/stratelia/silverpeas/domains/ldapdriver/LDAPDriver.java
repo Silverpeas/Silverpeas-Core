@@ -37,10 +37,9 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * Domain driver for LDAP access. Could be used to access any type of LDAP DB
- * (even exchange) IMPORTANT : For the moment, this is a read-only driver (not
- * possible to add, remove or update a group or a user.
- * 
+ * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
+ * IMPORTANT : For the moment, this is a read-only driver (not possible to add, remove or update a
+ * group or a user.
  * @author tleroi
  */
 public class LDAPDriver extends AbstractDomainDriver {
@@ -51,11 +50,9 @@ public class LDAPDriver extends AbstractDomainDriver {
   boolean synchroInProcess = false;
 
   /**
-   * Virtual method that performs extra initialization from a properties file.
-   * To overload by the class who need it.
-   * 
-   * @param rs
-   *          name of resource file
+   * Virtual method that performs extra initialization from a properties file. To overload by the
+   * class who need it.
+   * @param rs name of resource file
    */
   public void initFromProperties(ResourceLocator rs) throws Exception {
     driverSettings.initFromProperties(rs);
@@ -113,40 +110,40 @@ public class LDAPDriver extends AbstractDomainDriver {
   public boolean isSynchroOnLoginEnabled() {
     SilverTrace.info("admin", "LDAPDriver.isSynchroOnLoginEnabled",
         "root.MSG_GEN_ENTER_METHOD", "Enabled = "
-            + driverSettings.isSynchroAutomatic() + " - Synchro In Process = "
-            + synchroInProcess);
+        + driverSettings.isSynchroAutomatic() + " - Synchro In Process = "
+        + synchroInProcess);
     return driverSettings.isSynchroAutomatic();
   }
 
   public boolean isSynchroOnLoginRecursToGroups() {
     SilverTrace.info("admin", "LDAPDriver.isSynchroOnLoginRecursToGroups",
         "root.MSG_GEN_ENTER_METHOD", "RecursToGroups = "
-            + driverSettings.isSynchroRecursToGroups()
-            + " - Synchro In Process = " + synchroInProcess);
+        + driverSettings.isSynchroRecursToGroups()
+        + " - Synchro In Process = " + synchroInProcess);
     return driverSettings.isSynchroRecursToGroups();
   }
 
   public boolean isGroupsInheritProfiles() {
     SilverTrace.info("admin", "LDAPDriver.isGroupsInheritProfiles",
         "root.MSG_GEN_ENTER_METHOD", "GroupsInheritProfiles = "
-            + driverSettings.isGroupsInheritProfiles()
-            + " - Synchro In Process = " + synchroInProcess);
+        + driverSettings.isGroupsInheritProfiles()
+        + " - Synchro In Process = " + synchroInProcess);
     return driverSettings.isGroupsInheritProfiles();
   }
 
   public boolean mustImportUsers() {
     SilverTrace.info("admin", "LDAPDriver.mustImportUsers",
         "root.MSG_GEN_ENTER_METHOD", "MustImportUsers = "
-            + driverSettings.mustImportUsers() + " - Synchro In Process = "
-            + synchroInProcess);
+        + driverSettings.mustImportUsers() + " - Synchro In Process = "
+        + synchroInProcess);
     return driverSettings.mustImportUsers();
   }
 
   public boolean isSynchroThreaded() {
     SilverTrace.info("admin", "LDAPDriver.isGroupsInheritProfiles",
         "root.MSG_GEN_ENTER_METHOD", "GroupsInheritProfiles = "
-            + driverSettings.isGroupsInheritProfiles()
-            + " - Synchro In Process = " + synchroInProcess);
+        + driverSettings.isGroupsInheritProfiles()
+        + " - Synchro In Process = " + synchroInProcess);
     return driverSettings.isSynchroThreaded();
   }
 
@@ -162,7 +159,7 @@ public class LDAPDriver extends AbstractDomainDriver {
         timeStampG = groupTranslator.getMaxTimeStamp(ld, minTimeStamp);
         SilverTrace.info("admin", "LDAPDriver.getTimeStamp",
             "root.MSG_GEN_PARAM_VALUE", "timeStampU=" + timeStampU
-                + " AND timeStampG=" + timeStampG);
+            + " AND timeStampG=" + timeStampG);
         if (timeStampU.compareTo(timeStampG) >= 0) {
           return timeStampU.toString();
         } else {
@@ -258,9 +255,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given user in Database from the reference
-   * 
-   * @param userLogin
-   *          The User Login to import
+   * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
   public UserDetail importUser(String userLogin) throws Exception {
@@ -279,9 +274,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given user from database
-   * 
-   * @param userId
-   *          The user id To remove synchro
+   * @param userId The user id To remove synchro
    */
   public void removeUser(String userId) throws Exception {
     // In this driver, do nothing
@@ -289,9 +282,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update user information in database
-   * 
-   * @param userId
-   *          The User Id to synchronize
+   * @param userId The User Id to synchronize
    * @return The User object that contain new user information
    */
   public UserDetail synchroUser(String userId) throws Exception {
@@ -302,9 +293,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
   public UserFull getUserFull(String userId) throws Exception {
@@ -323,9 +312,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
   public UserDetail getUser(String userId) throws Exception {
@@ -344,7 +331,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all users from the database
-   * 
    * @return User[] An array of User Objects that contain users information
    */
   public UserDetail[] getAllUsers() throws Exception {
@@ -402,9 +388,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user's groups
-   * 
-   * @param userId
-   *          The user id as stored in the database
+   * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
   public String[] getUserMemberGroupIds(String userId) throws Exception {
@@ -423,9 +407,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Import a given group in Database from the reference
-   * 
-   * @param groupName
-   *          The group name to import
+   * @param groupName The group name to import
    * @return The group object that contain new group information
    */
   public Group importGroup(String groupName) throws Exception {
@@ -444,9 +426,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Remove a given group from database
-   * 
-   * @param groupId
-   *          The group id To remove synchro
+   * @param groupId The group id To remove synchro
    */
   public void removeGroup(String groupId) throws Exception {
     // In this driver, do nothing
@@ -454,9 +434,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Update group information in database
-   * 
-   * @param groupId
-   *          The group Id to synchronize
+   * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
   public Group synchroGroup(String groupId) throws Exception {
@@ -467,9 +445,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve group information from database
-   * 
-   * @param groupId
-   *          The group id as stored in the database
+   * @param groupId The group id as stored in the database
    * @return The Group object that contains user information
    */
   public Group getGroup(String groupId) throws Exception {
@@ -488,9 +464,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups contained in the given group
-   * 
-   * @param groupId
-   *          The group id as stored in the database
+   * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
   public Group[] getGroups(String groupId) throws Exception {
@@ -509,7 +483,6 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all groups from the database
-   * 
    * @return Group[] An array of Group Objects that contain groups information
    */
   public Group[] getAllGroups() throws Exception {
@@ -528,9 +501,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve all root groups from the database
-   * 
-   * @return Group[] An array of Group Objects that contain root groups
-   *         information
+   * @return Group[] An array of Group Objects that contain root groups information
    */
   public Group[] getAllRootGroups() throws Exception {
     String ld = LDAPUtility.openConnection(driverSettings);
@@ -562,10 +533,8 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Start a new transaction
-   * 
-   * @param bAutoCommit
-   *          Specifies is transaction is automatically committed (without
-   *          explicit 'commit' statement)
+   * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
+   * 'commit' statement)
    */
   public void startTransaction(boolean bAutoCommit) throws Exception {
     // Access in read only -> no need to support transaction mode

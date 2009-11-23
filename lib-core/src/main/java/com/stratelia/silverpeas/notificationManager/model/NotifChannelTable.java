@@ -43,7 +43,8 @@ public class NotifChannelTable extends AbstractTable {
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFCHANNEL_COLUMNS = "id,name,description,couldBeAdded,fromAvailable,subjectAvailable";
+  static final protected String NOTIFCHANNEL_COLUMNS =
+      "id,name,description,couldBeAdded,fromAvailable,subjectAvailable";
 
   /**
    * Returns the unique NotifChannel row having a given id

@@ -29,10 +29,9 @@ import java.util.*;
 import com.stratelia.silverpeas.silvertrace.*;
 
 /**
- * This is the base class of all scheduler job classes. This class is abstract.
- * If you will implement your own special job class, you have to overrite the
- * method 'execute' and add your own job generation method in the class
- * 'SimpleScheduler'
+ * This is the base class of all scheduler job classes. This class is abstract. If you will
+ * implement your own special job class, you have to overrite the method 'execute' and add your own
+ * job generation method in the class 'SimpleScheduler'
  */
 abstract public class SchedulerJob extends Thread {
   // Environment variables
@@ -62,7 +61,6 @@ abstract public class SchedulerJob extends Thread {
 
   /**
    * This method returns the owner (or creator) of the job
-   * 
    * @return The owner of the job
    */
   public SchedulerEventHandler getOwner() {
@@ -82,7 +80,6 @@ abstract public class SchedulerJob extends Thread {
 
   /**
    * This method returns the name of the job
-   * 
    * @return The name of the job
    */
   public String getJobName() {
@@ -91,7 +88,6 @@ abstract public class SchedulerJob extends Thread {
 
   /**
    * This method handles the thread execution
-   * 
    */
   public void run() {
     long sleepTime;
@@ -102,21 +98,19 @@ abstract public class SchedulerJob extends Thread {
 
     SilverTrace.info("scheduler", "SchedulerJob.run",
         "root.MSG_GEN_PARAM_VALUE", ": Job '" + sJobName
-            + "' starts without errors.");
+        + "' starts without errors.");
     SilverTrace.info("scheduler", "SchedulerJob.run",
         "root.MSG_GEN_PARAM_VALUE", ": Next schedule time: "
-            + logDateFormat.format(new Date(nextTimeStamp)));
+        + logDateFormat.format(new Date(nextTimeStamp)));
     /*
-     * // Write a header into the log file try { logStream = new PrintStream
-     * (new FileOutputStream (theLogBaseFile.getAbsolutePath () +
-     * System.getProperties ().getProperty ("file.separator") + sJobName +
-     * ".log", true)); logStream.println (logDateFormat.format (new Date ()) +
-     * ": Job '" + sJobName + "' starts without errors."); logStream.println
-     * (logDateFormat.format (new Date ()) + ": Next schedule time: " +
-     * logDateFormat.format (new Date (nextTimeStamp)) + "\n"); logStream.close
-     * (); } catch (Exception aException) { System.out.println
-     * ("SchedulerJob.run: Exception while writing the log header occured (Reason: "
-     * + aException.toString () + ")"); }
+     * // Write a header into the log file try { logStream = new PrintStream (new FileOutputStream
+     * (theLogBaseFile.getAbsolutePath () + System.getProperties ().getProperty ("file.separator") +
+     * sJobName + ".log", true)); logStream.println (logDateFormat.format (new Date ()) + ": Job '"
+     * + sJobName + "' starts without errors."); logStream.println (logDateFormat.format (new Date
+     * ()) + ": Next schedule time: " + logDateFormat.format (new Date (nextTimeStamp)) + "\n");
+     * logStream.close (); } catch (Exception aException) { System.out.println
+     * ("SchedulerJob.run: Exception while writing the log header occured (Reason: " +
+     * aException.toString () + ")"); }
      */
 
     while (bRunnable) {
@@ -135,10 +129,9 @@ abstract public class SchedulerJob extends Thread {
         }
       } catch (InterruptedException aException) {
         /*
-         * // Suppress mesages while shutdown if (bRunnable) {
-         * System.out.println(
-         * "SchedulerJob.run: InterruptedException while sleeping occured (Reason: "
-         * + aException.toString () + ")"); }
+         * // Suppress mesages while shutdown if (bRunnable) { System.out.println(
+         * "SchedulerJob.run: InterruptedException while sleeping occured (Reason: " +
+         * aException.toString () + ")"); }
          */
       }
 
@@ -146,15 +139,13 @@ abstract public class SchedulerJob extends Thread {
         try {
           SilverTrace.info("scheduler", "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": ---------------- Start of job '"
-                  + sJobName + "' -------------------");
+              + sJobName + "' -------------------");
           // Open a new Stream to the log file
           /*
-           * logStream = new PrintStream (new FileOutputStream
-           * (theLogBaseFile.getAbsolutePath () + System.getProperties
-           * ().getProperty ("file.separator") + sJobName + ".log", true));
+           * logStream = new PrintStream (new FileOutputStream (theLogBaseFile.getAbsolutePath () +
+           * System.getProperties ().getProperty ("file.separator") + sJobName + ".log", true));
            * logStream.println (logDateFormat.format (new Date ()) +
-           * ": ---------------- Start of job '" + sJobName +
-           * "' -------------------");
+           * ": ---------------- Start of job '" + sJobName + "' -------------------");
            */
 
           // Execute the functionality of the job and gets a new schedule time
@@ -172,16 +163,15 @@ abstract public class SchedulerJob extends Thread {
 
           SilverTrace.info("scheduler", "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": ---------------- End of job '"
-                  + sJobName + "' -------------------");
+              + sJobName + "' -------------------");
           SilverTrace.info("scheduler", "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": Next schedule time: "
-                  + logDateFormat.format(new Date(nextTimeStamp)));
+              + logDateFormat.format(new Date(nextTimeStamp)));
           /*
            * logStream.println (logDateFormat.format (new Date ()) +
-           * ": ---------------- End of job '" + sJobName +
-           * "' -------------------"); logStream.println (logDateFormat.format
-           * (new Date ()) + ": Next schedule time: " + logDateFormat.format
-           * (new Date (nextTimeStamp)) + ".\n"); logStream.close ();
+           * ": ---------------- End of job '" + sJobName + "' -------------------");
+           * logStream.println (logDateFormat.format (new Date ()) + ": Next schedule time: " +
+           * logDateFormat.format (new Date (nextTimeStamp)) + ".\n"); logStream.close ();
            */
         } catch (Exception aException) {
           // System.out.println
@@ -194,14 +184,13 @@ abstract public class SchedulerJob extends Thread {
     }
 
     /*
-     * // Write a footer into the log file try { logStream = new PrintStream
-     * (new FileOutputStream (theLogBaseFile.getAbsolutePath () +
-     * System.getProperties ().getProperty ("file.separator") + sJobName +
-     * ".log", true)); logStream.println (logDateFormat.format (new Date ()) +
-     * ": Job '" + sJobName + "' terminates without errors.\n\n");
-     * logStream.close (); } catch (Exception aException) { System.out.println
-     * ("SchedulerJob.run: Exception while writing the log footer occured (Reason: "
-     * + aException.toString () + ")"); }
+     * // Write a footer into the log file try { logStream = new PrintStream (new FileOutputStream
+     * (theLogBaseFile.getAbsolutePath () + System.getProperties ().getProperty ("file.separator") +
+     * sJobName + ".log", true)); logStream.println (logDateFormat.format (new Date ()) + ": Job '"
+     * + sJobName + "' terminates without errors.\n\n"); logStream.close (); } catch (Exception
+     * aException) { System.out.println
+     * ("SchedulerJob.run: Exception while writing the log footer occured (Reason: " +
+     * aException.toString () + ")"); }
      */
 
     theOwner = null;
@@ -217,29 +206,20 @@ abstract public class SchedulerJob extends Thread {
   }
 
   /**
-   * This method holds the logic of the job. It has to be overwriten in
-   * subclasses of this class
-   * 
-   * @param log
-   *          A PrintStream for text writings in the log file for this job
-   * @param theExecutionDate
-   *          The date of the execution
+   * This method holds the logic of the job. It has to be overwriten in subclasses of this class
+   * @param log A PrintStream for text writings in the log file for this job
+   * @param theExecutionDate The date of the execution
    */
   abstract protected void execute(Date theExecutionDate)
       throws SchedulerException;
 
   /**
-   * The constructor has proteceted access, because the generation of jobs
-   * should be done in a central way by the class 'SimpleScheduler'
-   * 
-   * @param aController
-   *          The controller, that controls all job executions
-   * @param aOwner
-   *          The owner of the job
-   * @param aJobName
-   *          The name of the job
-   * @param aLogBaseFile
-   *          The log file for the job
+   * The constructor has proteceted access, because the generation of jobs should be done in a
+   * central way by the class 'SimpleScheduler'
+   * @param aController The controller, that controls all job executions
+   * @param aOwner The owner of the job
+   * @param aJobName The name of the job
+   * @param aLogBaseFile The log file for the job
    */
   protected SchedulerJob(SimpleScheduler aController,
       SchedulerEventHandler aOwner, String aJobName) throws SchedulerException {
@@ -270,10 +250,9 @@ abstract public class SchedulerJob extends Thread {
     vDaysOfWeek = new Vector();
 
     /*
-     * currentMinute = new Integer (0); currentHour = new Integer (0);
-     * currentDayOfMonth = new Integer (1); currentMonth = new Integer (0);
-     * currentYear = new Integer ((Calendar.getInstance ()).get
-     * (Calendar.YEAR));
+     * currentMinute = new Integer (0); currentHour = new Integer (0); currentDayOfMonth = new
+     * Integer (1); currentMonth = new Integer (0); currentYear = new Integer ((Calendar.getInstance
+     * ()).get (Calendar.YEAR));
      */
 
     // Instead
@@ -308,20 +287,14 @@ abstract public class SchedulerJob extends Thread {
   }
 
   /**
-   * This method sets the scheduling parameter. The time settings are given by
-   * vectors. Each vector holds a list of Integer objects (currently ordered).
-   * Every Integer represents a element of a timestamp (cron like).
-   * 
-   * @param startMinutes
-   *          A list of minutes (0-59)
-   * @param startHours
-   *          A list of hours (0-23)
-   * @param startDaysOfMonth
-   *          A list of days of a month (1-31)
-   * @param startMonths
-   *          A list of months (1-12; starts with 1 for January)
-   * @param startDaysOfWeek
-   *          A list of day of a week (0-6; starts with 0 for Sunday)
+   * This method sets the scheduling parameter. The time settings are given by vectors. Each vector
+   * holds a list of Integer objects (currently ordered). Every Integer represents a element of a
+   * timestamp (cron like).
+   * @param startMinutes A list of minutes (0-59)
+   * @param startHours A list of hours (0-23)
+   * @param startDaysOfMonth A list of days of a month (1-31)
+   * @param startMonths A list of months (1-12; starts with 1 for January)
+   * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
    */
   protected synchronized void setSchedulingParameter(Vector startMinutes,
       Vector startHours, Vector startDaysOfMonth, Vector startMonths,
@@ -475,15 +448,12 @@ abstract public class SchedulerJob extends Thread {
   }
 
   /**
-   * This method sets the scheduling parameter. It is given by a cron like
-   * string (currently ranges are not allowed). So the string '* 3,21 * 3 0'
-   * starts the execution every Sunday in March on 03:00 and 21:00. The allowed
-   * ranges are: minutes (0-59), hours (0-23), days of a month (1-31), months
-   * (1-12; starts with 1 for January), day of a week (0-6; starts with 0 for
-   * Sunday). Currently the parsing of the cron string ist not done by a state
-   * machine but by StringTokenizers so this method is <B>very</B> sensitive for
-   * syntax failures!
-   * 
+   * This method sets the scheduling parameter. It is given by a cron like string (currently ranges
+   * are not allowed). So the string '* 3,21 * 3 0' starts the execution every Sunday in March on
+   * 03:00 and 21:00. The allowed ranges are: minutes (0-59), hours (0-23), days of a month (1-31),
+   * months (1-12; starts with 1 for January), day of a week (0-6; starts with 0 for Sunday).
+   * Currently the parsing of the cron string ist not done by a state machine but by
+   * StringTokenizers so this method is <B>very</B> sensitive for syntax failures!
    */
   protected synchronized void setSchedulingParameter(String aCronString)
       throws SchedulerException {
@@ -711,8 +681,8 @@ abstract public class SchedulerJob extends Thread {
 
     SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
         "Current TimeStamp: "
-            + logDateFormat.format(new Date(
-                getMillisecondsOfCalendar(calcCalendar))));
+        + logDateFormat.format(new Date(
+        getMillisecondsOfCalendar(calcCalendar))));
 
     currentTime = getMillisecondsOfCalendar(calcCalendar);
 
@@ -724,8 +694,8 @@ abstract public class SchedulerJob extends Thread {
 
     SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
         "Start TimeStamp: "
-            + logDateFormat.format(new Date(
-                getMillisecondsOfCalendar(calcCalendar))));
+        + logDateFormat.format(new Date(
+        getMillisecondsOfCalendar(calcCalendar))));
 
     // !!!!!! The values must be ordered ascend !!!!!
     validTimeStamp = false;
@@ -740,12 +710,10 @@ abstract public class SchedulerJob extends Thread {
       if (vMinutes.size() == 0) // Default ('*') -> Hit every minute
       {
         /*
-         * if (currentMinute.intValue () < calcCalendar.getActualMaximum
-         * (Calendar.MINUTE)) { currentMinute = new Integer
-         * (currentMinute.intValue () + 1); carryMinute = false; carryHour =
-         * false; carryDayOfMonth = false; carryMonth = false; } else {
-         * currentMinute = new Integer (calcCalendar.getActualMinimum
-         * (Calendar.MINUTE)); carryMinute = true; }
+         * if (currentMinute.intValue () < calcCalendar.getActualMaximum (Calendar.MINUTE)) {
+         * currentMinute = new Integer (currentMinute.intValue () + 1); carryMinute = false;
+         * carryHour = false; carryDayOfMonth = false; carryMonth = false; } else { currentMinute =
+         * new Integer (calcCalendar.getActualMinimum (Calendar.MINUTE)); carryMinute = true; }
          */
 
         // If the cron setting for minutes is *, we don't have to care about
@@ -904,9 +872,9 @@ abstract public class SchedulerJob extends Thread {
         // Prevent Check for the 'ever carry' of one element lists
         if ((!firstYearAccess)
             || ((currentMinute.intValue() == 0)
-                && (currentHour.intValue() == 0)
-                && (currentDayOfMonth.intValue() == 1) && (currentMonth
-                .intValue() == 0))) {
+            && (currentHour.intValue() == 0)
+            && (currentDayOfMonth.intValue() == 1) && (currentMonth
+            .intValue() == 0))) {
           // Hit every year
           currentYear = new Integer(currentYear.intValue() + 1);
           calcCalendar.set(Calendar.YEAR, currentYear.intValue());
@@ -953,8 +921,8 @@ abstract public class SchedulerJob extends Thread {
 
     SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
         "New TimeStamp: "
-            + logDateFormat.format(new Date(
-                getMillisecondsOfCalendar(calcCalendar))));
+        + logDateFormat.format(new Date(
+        getMillisecondsOfCalendar(calcCalendar))));
     return getMillisecondsOfCalendar(calcCalendar);
   }
 
@@ -966,8 +934,8 @@ abstract public class SchedulerJob extends Thread {
   }
 
   /**
-   * Sorts the internal cron vectors nad remove doubled entries. This is
-   * necessary to calculate the correct schedule time
+   * Sorts the internal cron vectors nad remove doubled entries. This is necessary to calculate the
+   * correct schedule time
    */
   private void sortCronVectors() {
     Collections.sort(vMinutes);

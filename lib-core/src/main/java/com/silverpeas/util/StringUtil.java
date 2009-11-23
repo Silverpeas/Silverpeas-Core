@@ -35,7 +35,8 @@ public class StringUtil {
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
-  private static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
+  private static final String EMAIL_PATTERN =
+      "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
 
   public static boolean isDefined(String parameter) {
     return (parameter != null && parameter.length() > 0 && !parameter
@@ -60,15 +61,12 @@ public class StringUtil {
   }
 
   /**
-   * Format a string by extending the principle of the the method format() of
-   * the class java.text.MessageFormat to string arguments. For instance, the
-   * string '{key}' contained in the original string to format will be replaced
-   * by the value corresponding to this key contained into the values map.
-   * 
-   * @param label
-   *          The string to format
-   * @param values
-   *          The values to insert into the string
+   * Format a string by extending the principle of the the method format() of the class
+   * java.text.MessageFormat to string arguments. For instance, the string '{key}' contained in the
+   * original string to format will be replaced by the value corresponding to this key contained
+   * into the values map.
+   * @param label The string to format
+   * @param values The values to insert into the string
    * @return The formatted string, filled with values of the map.
    */
   public static String format(String label, Map<String, ?> values) {
@@ -101,14 +99,11 @@ public class StringUtil {
   }
 
   /**
-   * @param text
-   *          The string to truncate if its size is greater than the maximum
-   *          length given as parameter.
-   * @param maxLength
-   *          The maximum length required.
-   * @return The truncated string followed by '...' if needed. Returns the
-   *         string itself if its length is smaller than the required maximum
-   *         length.
+   * @param text The string to truncate if its size is greater than the maximum length given as
+   * parameter.
+   * @param maxLength The maximum length required.
+   * @return The truncated string followed by '...' if needed. Returns the string itself if its
+   * length is smaller than the required maximum length.
    */
   public static String truncate(String text, int maxLength) {
     if (text == null || text.length() <= maxLength) {
@@ -122,23 +117,19 @@ public class StringUtil {
 
   /**
    * Validate the form of an email address.
-   * 
    * <P>
    * Return <tt>true</tt> only if
    *<ul>
    * <li> <tt>aEmailAddress</tt> can successfully construct an
    * {@link javax.mail.internet.InternetAddress}
-   * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two
-   * tokens which satisfy {@link hirondelle.web4j.util.Util#textHasContent}.
+   * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which satisfy
+   * {@link hirondelle.web4j.util.Util#textHasContent}.
    *</ul>
-   * 
-   *<P>
-   * The second condition arises since local email addresses, simply of the form
-   * "<tt>albert</tt>", for example, are valid for
-   * {@link javax.mail.internet.InternetAddress}, but almost always undesired.
-   * 
-   * @param aEmailAddress
-   *          the address to be validated
+   * <P>
+   * The second condition arises since local email addresses, simply of the form "<tt>albert</tt>",
+   * for example, are valid for {@link javax.mail.internet.InternetAddress}, but almost always
+   * undesired.
+   * @param aEmailAddress the address to be validated
    * @return true is the address is a valid email address - false otherwise.
    */
   public static boolean isValidEmailAddress(String aEmailAddress) {
@@ -158,8 +149,8 @@ public class StringUtil {
   public static final String convertToEncoding(String toConvert, String encoding) {
     try {
       return new String(toConvert.getBytes(System.getProperty("file.encoding")), encoding);
-    }catch(UnsupportedEncodingException ex) {
-     return toConvert;
+    } catch (UnsupportedEncodingException ex) {
+      return toConvert;
     }
   }
 

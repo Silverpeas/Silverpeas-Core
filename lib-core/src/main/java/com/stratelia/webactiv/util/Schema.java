@@ -106,7 +106,7 @@ public abstract class Schema {
       } catch (SQLException se) {
         throw new UtilException("Schema.createConnection",
             SilverpeasException.ERROR, "can't get connection for dataSource "
-                + JNDINames.DIRECT_DATASOURCE, se);
+            + JNDINames.DIRECT_DATASOURCE, se);
       }
     } catch (SQLException e) {
       throw new UtilException("Schema.createConnection",
@@ -187,9 +187,8 @@ public abstract class Schema {
     SilverTrace.info("util", "Schema.getStatement()",
         "root.MSG_GEN_ENTER_METHOD", query);
     /*
-     * PreparedStatement statement =(PreparedStatement)
-     * statementsMap.get(query); if (statement == null) { statement =
-     * connection.prepareStatement(query); statementsMap.put(query, statement);
+     * PreparedStatement statement =(PreparedStatement) statementsMap.get(query); if (statement ==
+     * null) { statement = connection.prepareStatement(query); statementsMap.put(query, statement);
      * } return statement;
      */
     PreparedStatement statement = getConnection().prepareStatement(query);

@@ -79,7 +79,6 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of spaces loaded in cache
-   * 
    * @return int representing the number of spaces stored in cache
    */
   public int getNbSpacesInCache() {
@@ -88,7 +87,6 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of components loaded in cache
-   * 
    * @return int representing the number of components stored in cache
    */
   public int getNbComponentsInCache() {
@@ -97,7 +95,6 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of profiles loaded in cache
-   * 
    * @return int representing the number of profiles stored in cache
    */
   public int getNbProfilesInCache() {
@@ -243,8 +240,8 @@ public class AdminCache extends Object {
     if (m_bUseCache && m_bUseComponentInstCache) {
       SilverTrace
           .debug("admin", "AdminCache.putComponentInst",
-              "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
-                  + componentInst.getId());
+          "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
+          + componentInst.getId());
       m_hComponentInstCache.put(componentInst.getId(), componentInst);
     }
   }
@@ -253,8 +250,8 @@ public class AdminCache extends Object {
     if (m_bUseCache && m_bUseComponentInstCache) {
       SilverTrace
           .debug("admin", "AdminCache.removeComponentInst",
-              "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
-                  + componentInst.getId());
+          "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
+          + componentInst.getId());
       m_hComponentInstCache.remove(componentInst.getId());
     }
   }
@@ -450,7 +447,7 @@ public class AdminCache extends Object {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
       SilverTrace.debug("admin", "AdminCache.putAvailCompoIds",
           "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
-              + userId);
+          + userId);
       Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable == null) {
         spaceTable = new Hashtable();
@@ -464,7 +461,7 @@ public class AdminCache extends Object {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
       SilverTrace.debug("admin", "AdminCache.removeAvailCompoIds",
           "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
-              + userId);
+          + userId);
       Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable != null) {
         spaceTable.remove(userId);
@@ -538,8 +535,7 @@ public class AdminCache extends Object {
 
   /*
    * ----------------------------------------------------------------------------
-   * --------------------------------------------------- Operations
-   * --------------
+   * --------------------------------------------------- Operations --------------
    * --------------------------------------------------------------
    * ---------------------------------------------------
    */

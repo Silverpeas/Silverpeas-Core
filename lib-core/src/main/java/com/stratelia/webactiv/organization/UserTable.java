@@ -44,7 +44,8 @@ public class UserTable extends Table {
     this.organization = schema;
   }
 
-  static final private String USER_COLUMNS = "id,specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel";
+  static final private String USER_COLUMNS =
+      "id,specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel";
 
   /**
    * Fetch the current user row from a resultSet.
@@ -105,7 +106,7 @@ public class UserTable extends Table {
       throw new AdminPersistenceException("Usertable.getUserBySpecificId",
           SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_FOUND_TWICE",
           "domain id : '" + domainId + "', user specific Id: '" + specificId
-              + "'");
+          + "'");
     }
   }
 
@@ -147,8 +148,8 @@ public class UserTable extends Table {
 
     SynchroReport.debug("UserTable.getUserByLogin()",
         "Vérification que le login" + login + " du domaine no " + domainId
-            + " n'est pas présent dans la base, requête : "
-            + SELECT_USER_BY_DOMAINID_AND_LOGIN, null);
+        + " n'est pas présent dans la base, requête : "
+        + SELECT_USER_BY_DOMAINID_AND_LOGIN, null);
     if (users.length == 0)
       return null;
     else if (users.length == 1)
@@ -181,7 +182,8 @@ public class UserTable extends Table {
     return (String[]) getIds(SELECT_ALL_USER_IDS).toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_USER_IDS = "select id from ST_User where accessLevel <> 'R' order by lastName";
+  static final private String SELECT_ALL_USER_IDS =
+      "select id from ST_User where accessLevel <> 'R' order by lastName";
 
   /**
    * Returns all the Admin ids.
@@ -202,9 +204,11 @@ public class UserTable extends Table {
     }
   }
 
-  static final private String SELECT_ALL_ADMIN_IDS_TRUE = "select id from ST_User where accessLevel='A' order by lastName";
+  static final private String SELECT_ALL_ADMIN_IDS_TRUE =
+      "select id from ST_User where accessLevel='A' order by lastName";
 
-  static final private String SELECT_ALL_ADMIN_IDS_DOMAIN = "select id from ST_User where ((accessLevel='A') or (accessLevel='D')) and (domainId = ?) order by lastName";
+  static final private String SELECT_ALL_ADMIN_IDS_DOMAIN =
+      "select id from ST_User where ((accessLevel='A') or (accessLevel='D')) and (domainId = ?) order by lastName";
 
   /**
    * Returns all the User ids.
@@ -218,7 +222,8 @@ public class UserTable extends Table {
         params).toArray(new String[0]);
   }
 
-  static final private String SELECT_USER_IDS_BY_ACCESS_LEVEL = "select id from ST_User where accessLevel=? order by lastName";
+  static final private String SELECT_USER_IDS_BY_ACCESS_LEVEL =
+      "select id from ST_User where accessLevel=? order by lastName";
 
   /**
    * Returns all the User ids.
@@ -235,7 +240,8 @@ public class UserTable extends Table {
         domainIds, params).toArray(new String[0]);
   }
 
-  static final private String SELECT_USER_IDS_BY_ACCESS_LEVEL_AND_DOMAIN = "select id from ST_User where domainId = ? AND accessLevel=? order by lastName";
+  static final private String SELECT_USER_IDS_BY_ACCESS_LEVEL_AND_DOMAIN =
+      "select id from ST_User where domainId = ? AND accessLevel=? order by lastName";
 
   /**
    * Returns all the Users which compose a group.
@@ -258,7 +264,7 @@ public class UserTable extends Table {
       throws AdminPersistenceException {
     SynchroReport.debug("UserTable.getDirectUserIdsOfGroup()",
         "Recherche des utilisateurs inclus directement dans le groupe d'ID "
-            + groupId + ", requête : " + SELECT_USER_IDS_IN_GROUP, null);
+        + groupId + ", requête : " + SELECT_USER_IDS_IN_GROUP, null);
     return (String[]) getIds(SELECT_USER_IDS_IN_GROUP, groupId).toArray(
         new String[0]);
   }
@@ -305,7 +311,8 @@ public class UserTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_USER_IDS_IN_USERROLE = "select id from ST_User,ST_UserRole_User_Rel"
+  static final private String SELECT_USER_IDS_IN_USERROLE =
+      "select id from ST_User,ST_UserRole_User_Rel"
       + " where id = userId and userRoleId = ? and accessLevel <> 'R'"
       + " order by lastName";
 
@@ -320,7 +327,7 @@ public class UserTable extends Table {
       throws AdminPersistenceException {
     SynchroReport.debug("UserTable.getAllUserOfDomain()",
         "Recherche de l'ensemble des utilisateurs du domaine LDAP dans la base (ID "
-            + domainId + "), requête : " + SELECT_ALL_USERS_IN_DOMAIN, null);
+        + domainId + "), requête : " + SELECT_ALL_USERS_IN_DOMAIN, null);
     return (UserRow[]) getRows(SELECT_ALL_USERS_IN_DOMAIN, domainId).toArray(
         new UserRow[0]);
   }
@@ -338,7 +345,8 @@ public class UserTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_USER_IDS_IN_DOMAIN = "select id from ST_User where domainId=? and accessLevel <> 'R' order by lastName";
+  static final private String SELECT_ALL_USER_IDS_IN_DOMAIN =
+      "select id from ST_User where domainId=? and accessLevel <> 'R' order by lastName";
 
   /**
    * Returns all the Users having recursively a given role.
@@ -363,7 +371,8 @@ public class UserTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_USER_IDS_IN_USERROLE = "select id from ST_User,ST_UserSet_User_Rel"
+  static final private String SELECT_ALL_USER_IDS_IN_USERROLE =
+      "select id from ST_User,ST_UserSet_User_Rel"
       + " where id=userId and userSetType='R' and userSetId=? and accessLevel <> 'R'";
 
   /**
@@ -388,7 +397,8 @@ public class UserTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_USER_IDS_IN_SPACEUSERROLE = "select id from ST_User,ST_SpaceUserRole_User_Rel"
+  static final private String SELECT_USER_IDS_IN_SPACEUSERROLE =
+      "select id from ST_User,ST_SpaceUserRole_User_Rel"
       + " where id = userId and spaceUserRoleId = ? and accessLevel <> 'R'";
 
   /**
@@ -413,7 +423,8 @@ public class UserTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_USER_IDS_IN_GROUPUSERROLE = "select id from ST_User, ST_GroupUserRole_User_Rel"
+  static final private String SELECT_USER_IDS_IN_GROUPUSERROLE =
+      "select id from ST_User, ST_GroupUserRole_User_Rel"
       + " where id = userId and groupUserRoleId = ? and accessLevel <> 'R'";
 
   /**
@@ -424,7 +435,8 @@ public class UserTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_SPACE_IDS = "select userSetId from ST_UserSet_User_Rel, ST_Space"
+  static final private String SELECT_ALL_SPACE_IDS =
+      "select userSetId from ST_UserSet_User_Rel, ST_Space"
       + " where userSetType='S' and ST_Space.id = userSetId"
       + " and spaceStatus is null"
       + " and userId = ?"
@@ -462,7 +474,8 @@ public class UserTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_ROOTSPACE_IDS = "select userSetId from ST_UserSet_User_Rel, ST_Space"
+  static final private String SELECT_ALL_ROOTSPACE_IDS =
+      "select userSetId from ST_UserSet_User_Rel, ST_Space"
       + " where userSetType='S' and ST_Space.id = userSetId"
       + " and userId = ?"
       + " and ST_Space.domainFatherId is null"
@@ -477,16 +490,17 @@ public class UserTable extends Table {
         new int[] { userId, parentSpaceId }).toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_MANAGEABLE_SUB_SPACE_IDS = "select distinct ST_SpaceUserRole.spaceId, ST_Space.orderNum from ST_UserSet_User_Rel, ST_SpaceUserRole, ST_Space, ST_UserSet_UserSet_Rel"
-      + " where ST_UserSet_User_Rel.userSetType='M'"
-      + " and ST_SpaceUserRole.id=ST_UserSet_User_Rel.userSetId"
-      + " and ST_SpaceUserRole.spaceId = ST_Space.id"
-      + " and ST_UserSet_User_Rel.userId = ?"
-      + " and ST_UserSet_UserSet_Rel.superSetType = 'S'"
-      + " and ST_UserSet_UserSet_Rel.superSetId = ?"
-      + " and ST_UserSet_UserSet_Rel.subSetType = 'S'"
-      + " and ST_UserSet_UserSet_Rel.subSetId = ST_Space.id"
-      + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
+  static final private String SELECT_ALL_MANAGEABLE_SUB_SPACE_IDS =
+      "select distinct ST_SpaceUserRole.spaceId, ST_Space.orderNum from ST_UserSet_User_Rel, ST_SpaceUserRole, ST_Space, ST_UserSet_UserSet_Rel"
+          + " where ST_UserSet_User_Rel.userSetType='M'"
+          + " and ST_SpaceUserRole.id=ST_UserSet_User_Rel.userSetId"
+          + " and ST_SpaceUserRole.spaceId = ST_Space.id"
+          + " and ST_UserSet_User_Rel.userId = ?"
+          + " and ST_UserSet_UserSet_Rel.superSetType = 'S'"
+          + " and ST_UserSet_UserSet_Rel.superSetId = ?"
+          + " and ST_UserSet_UserSet_Rel.subSetType = 'S'"
+          + " and ST_UserSet_UserSet_Rel.subSetId = ST_Space.id"
+          + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
 
   /**
    * Returns all the space ids manageable by the given user.
@@ -497,12 +511,13 @@ public class UserTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_MANAGEABLE_SPACE_IDS = "select distinct spaceId, ST_Space.orderNum from ST_UserSet_User_Rel, ST_SpaceUserRole, ST_Space"
-      + " where userSetType='M'"
-      + " and ST_SpaceUserRole.id=userSetId"
-      + " and userId = ?"
-      + " and spaceId = ST_Space.id"
-      + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
+  static final private String SELECT_ALL_MANAGEABLE_SPACE_IDS =
+      "select distinct spaceId, ST_Space.orderNum from ST_UserSet_User_Rel, ST_SpaceUserRole, ST_Space"
+          + " where userSetType='M'"
+          + " and ST_SpaceUserRole.id=userSetId"
+          + " and userId = ?"
+          + " and spaceId = ST_Space.id"
+          + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
 
   /**
    * Returns all the group ids manageable by the given user.
@@ -512,7 +527,8 @@ public class UserTable extends Table {
     return getIds(SELECT_ALL_MANAGEABLE_GROUP_IDS, userId);
   }
 
-  static final private String SELECT_ALL_MANAGEABLE_GROUP_IDS = "select distinct ST_Group.id from ST_UserSet_User_Rel, ST_GroupUserRole, ST_Group"
+  static final private String SELECT_ALL_MANAGEABLE_GROUP_IDS =
+      "select distinct ST_Group.id from ST_UserSet_User_Rel, ST_GroupUserRole, ST_Group"
       + " where userSetType='H'"
       + " and ST_GroupUserRole.id=userSetId"
       + " and userId = ?" + " and groupId = ST_Group.id";
@@ -593,20 +609,24 @@ public class UserTable extends Table {
         (String[]) params.toArray(new String[0])).toArray(new String[0]);
   }
 
-  static final private String SELECT_SEARCH_USERSID = "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
+  static final private String SELECT_SEARCH_USERSID =
+      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User";
 
   /*
-   * static final private String SELECT_SEARCH_USERSID_IN_GROUP =
-   * "select ST_User.id " + "from ST_User,ST_Group_User_Rel";
+   * static final private String SELECT_SEARCH_USERSID_IN_GROUP = "select ST_User.id " +
+   * "from ST_User,ST_Group_User_Rel";
    */
-  static final private String SELECT_SEARCH_USERSID_IN_GROUP = "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
+  static final private String SELECT_SEARCH_USERSID_IN_GROUP =
+      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User,ST_UserSet_User_Rel";
 
-  static final private String SELECT_SEARCH_USERSID_IN_COMPONENT = "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
+  static final private String SELECT_SEARCH_USERSID_IN_COMPONENT =
+      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User,ST_UserSet_User_Rel";
 
-  static final private String SELECT_SEARCH_USERSID_IN_ROLE = "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
+  static final private String SELECT_SEARCH_USERSID_IN_ROLE =
+      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User,ST_UserSet_User_Rel";
 
   /**
@@ -674,8 +694,7 @@ public class UserTable extends Table {
       + " where id=userId and userSetType='M' and userSetId=?";
 
   /**
-   * Returns the users whose fields match those of the given sample space
-   * fields.
+   * Returns the users whose fields match those of the given sample space fields.
    */
   public UserRow[] getAllMatchingUsers(UserRow sampleUser)
       throws AdminPersistenceException {

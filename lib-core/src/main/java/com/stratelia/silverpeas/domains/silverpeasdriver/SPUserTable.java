@@ -145,8 +145,7 @@ public class SPUserTable extends Table {
       + " where id = userId and groupId = ?";
 
   /**
-   * Returns the users whose fields match those of the given sample space
-   * fields.
+   * Returns the users whose fields match those of the given sample space fields.
    */
   public SPUserRow[] getAllMatchingUsers(SPUserRow sampleUser)
       throws AdminPersistenceException {

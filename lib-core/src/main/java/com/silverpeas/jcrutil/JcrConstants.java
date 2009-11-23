@@ -26,10 +26,8 @@ package com.silverpeas.jcrutil;
 // ESCA-JAVA0257:
 /**
  * Constants used in Silverpeas JCR implementation.
- * 
  * @author Emmanuel Hugonnet
  * @version $revision$
- * 
  */
 public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
   /**
@@ -138,8 +136,7 @@ public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
   String SLV_OWNABLE_MIXIN = "slv:ownable";
 
   /**
-   * Translation node 's name prefix. A translation's name should be
-   * TRANSLATION_NAME_PREFIX+ lang.
+   * Translation node 's name prefix. A translation's name should be TRANSLATION_NAME_PREFIX+ lang.
    */
   String TRANSLATION_NAME_PREFIX = "traduction_";
 

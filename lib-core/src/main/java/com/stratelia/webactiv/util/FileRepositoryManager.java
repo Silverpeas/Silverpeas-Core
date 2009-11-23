@@ -38,7 +38,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
- * 
  * @author Norbert CHAIX
  * @version
  */
@@ -75,7 +74,6 @@ public class FileRepositoryManager extends Object {
 
   /**
    * @deprecated
-   * 
    * @param sSpaceId
    * @param sComponentId
    * @return
@@ -106,7 +104,6 @@ public class FileRepositoryManager extends Object {
   }
 
   /**
-   * 
    * @param sSpaceId
    * @param sComponentId
    * @param sDirectoryName
@@ -119,9 +116,9 @@ public class FileRepositoryManager extends Object {
     for (int k = 0; k < lg; k++) {
       SilverTrace
           .debug(
-              "util",
-              "FileRepositoryManager.getAbsolutePath",
-              ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
+          "util",
+          "FileRepositoryManager.getAbsolutePath",
+          ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
       path = path + sDirectoryName[k] + File.separatorChar;
     }
     return path;
@@ -137,7 +134,7 @@ public class FileRepositoryManager extends Object {
     for (int k = 1; k < lg; k++) {
       SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
           "concat: path = " + path + " sDirectoryName[" + k + "]="
-              + sDirectoryName[k]);
+          + sDirectoryName[k]);
       path = path.concat(sDirectoryName[k]);
       path = path.concat(File.separator);
     }
@@ -160,10 +157,10 @@ public class FileRepositoryManager extends Object {
       String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",
         "particularSpace = " + particularSpace + " sComponentId= "
-            + sComponentId);
+        + sComponentId);
     if (particularSpace != null
         && (particularSpace.startsWith("user@") || particularSpace
-            .equals("transverse")))
+        .equals("transverse")))
       return s_sIndexUpLoadPath + File.separator + particularSpace
           + File.separator + sComponentId + File.separator + "index";
     else
@@ -237,7 +234,6 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get File icon
-   * 
    * @param extension
    * @param isReadOnly
    * @return
@@ -278,7 +274,6 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the file size with the suitable unit
-   * 
    * @deprecated use formatFileSize method
    * @param long : size
    * @return String
@@ -289,7 +284,6 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the file size with the suitable unit
-   * 
    * @param long : size
    * @return String
    */
@@ -313,9 +307,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the size of a file (in bytes)
-   * 
-   * @param String
-   *          (sourceFile)
+   * @param String (sourceFile)
    * @return int
    */
   static public int getFileSize(String sourceFile) {
@@ -345,7 +337,6 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the estimated download time
-   * 
    * @param long (fileSize)
    * @return String
    */
@@ -365,12 +356,9 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Copy a contents from a file to another one
-   * 
    * @author Seb
-   * @param from
-   *          The name of the source file, the one to copy.
-   * @param to
-   *          The name of the destination file, where to paste data.
+   * @param from The name of the source file, the one to copy.
+   * @param to The name of the destination file, where to paste data.
    */
   static public void copyFile(String from, String to)
       throws FileNotFoundException, IOException {
@@ -401,13 +389,10 @@ public class FileRepositoryManager extends Object {
   }
 
   /**
-   * to create the array of the string this array represents the repertories
-   * where the files must be stored.
-   * 
-   * @param str
-   *          : type String: the string of repertories
-   * @param token
-   *          : type String: the token separating the repertories
+   * to create the array of the string this array represents the repertories where the files must be
+   * stored.
+   * @param str : type String: the string of repertories
+   * @param token : type String: the token separating the repertories
    */
   public static String[] getAttachmentContext(String str) {
 

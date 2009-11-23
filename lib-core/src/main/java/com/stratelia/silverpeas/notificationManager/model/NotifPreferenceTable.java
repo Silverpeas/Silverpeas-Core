@@ -43,7 +43,8 @@ public class NotifPreferenceTable extends AbstractTable {
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFPREFERENCE_COLUMNS = "id,notifAddressId,componentInstanceId,userId,messageType";
+  static final protected String NOTIFPREFERENCE_COLUMNS =
+      "id,notifAddressId,componentInstanceId,userId,messageType";
 
   /**
    * Returns the unique NotifPreference row having a given id
@@ -56,8 +57,7 @@ public class NotifPreferenceTable extends AbstractTable {
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference where id = ?";
 
   /**
-   * Returns the unique NotifPreference row having the given
-   * userId,componentInstanceId,messageType
+   * Returns the unique NotifPreference row having the given userId,componentInstanceId,messageType
    */
   public NotifPreferenceRow getByUserIdAndComponentInstanceIdAndMessageType(
       int userId, int componentInstanceId, int messageType)
@@ -68,7 +68,8 @@ public class NotifPreferenceTable extends AbstractTable {
         intArgs);
   }
 
-  static final private String SELECT_NOTIFPREFERENCE_BY_USERID_AND_COMPONENTINSTANCEID_AND_MESSAGETYPE = "select "
+  static final private String SELECT_NOTIFPREFERENCE_BY_USERID_AND_COMPONENTINSTANCEID_AND_MESSAGETYPE =
+      "select "
       + NOTIFPREFERENCE_COLUMNS
       + " from ST_NotifPreference where "
       + "userId=? and componentInstanceId=? and messageType=?";
@@ -165,8 +166,7 @@ public class NotifPreferenceTable extends AbstractTable {
   }
 
   /**
-   * Deletes theNotifPreferenceRow. after having removed all the reference to
-   * it.
+   * Deletes theNotifPreferenceRow. after having removed all the reference to it.
    */
   public void delete(int id) throws UtilException {
     updateRelation(DELETE_NOTIFPREFERENCE, id);
@@ -179,7 +179,8 @@ public class NotifPreferenceTable extends AbstractTable {
    */
   public void dereferenceComponentInstanceId(int componentInstanceId)
       throws UtilException {
-    NotifPreferenceRow[] notifPreferenceToBeDeleted = getAllByComponentInstanceId(componentInstanceId);
+    NotifPreferenceRow[] notifPreferenceToBeDeleted =
+        getAllByComponentInstanceId(componentInstanceId);
     for (int i = 0; i < notifPreferenceToBeDeleted.length; i++) {
       delete(notifPreferenceToBeDeleted[i].getId());
     }
@@ -201,7 +202,7 @@ public class NotifPreferenceTable extends AbstractTable {
   protected Object fetchRow(ResultSet rs) throws SQLException {
     return new NotifPreferenceRow(rs.getInt("id"), rs.getInt("notifAddressId"),
         rs.getInt("componentInstanceId"), rs.getInt("userId"), rs
-            .getInt("messageType"));
+        .getInt("messageType"));
   }
 
   /**

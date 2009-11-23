@@ -143,8 +143,7 @@ public class FilterManager {
   }
 
   /**
-   * Builds a RecordFilter from the criteria record (which must be built with
-   * the criterieTemplate)
+   * Builds a RecordFilter from the criteria record (which must be built with the criterieTemplate)
    */
   public RecordFilter buildRecordFilter(DataRecord criteriaRecord)
       throws FormException {

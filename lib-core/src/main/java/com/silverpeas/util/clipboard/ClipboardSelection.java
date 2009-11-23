@@ -35,12 +35,9 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public abstract class ClipboardSelection implements Serializable,
-    ClipboardOwner, Transferable {
+public abstract class ClipboardSelection implements Serializable, ClipboardOwner, Transferable {
   static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index",
       "Silverpeas index");
   static public DataFlavor SilverpeasKeyDataFlavor = new DataFlavor(
@@ -52,7 +49,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public ClipboardSelection() {
     supportedFlavorsList.add(IndexFlavor);
@@ -62,7 +58,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   protected void addFlavor(DataFlavor parFlavor) {
     supportedFlavorsList.add(parFlavor);
@@ -71,7 +66,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public boolean isDataFlavorSupported(DataFlavor parFlavor) {
     // return parFlavor.equals (IndexFlavor);
@@ -93,7 +87,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public synchronized DataFlavor[] getTransferDataFlavors() {
     return ((DataFlavor[]) (supportedFlavorsList.toArray()));
@@ -102,7 +95,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
@@ -118,7 +110,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public boolean isSelected() {
     return selected;
@@ -127,7 +118,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setSelected(boolean setIt) {
     selected = setIt;
@@ -136,7 +126,6 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void lostOwnership(Clipboard parClipboard, Transferable parTransferable) {
     // System.out.println ("Lost ownership");
@@ -145,14 +134,12 @@ public abstract class ClipboardSelection implements Serializable,
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   abstract protected IndexEntry getIndexEntry();
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   abstract protected SilverpeasKeyData getKeyData();
 

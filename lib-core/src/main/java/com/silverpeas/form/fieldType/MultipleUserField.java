@@ -36,7 +36,6 @@ import com.silverpeas.form.FormException;
 
 /**
  * A UserField stores user references.
- * 
  * @see Field
  * @see FieldDisplayer
  */
@@ -112,10 +111,8 @@ public class MultipleUserField implements Field {
   }
 
   /**
-   * Returns the local value of this field.
-   * 
-   * There is no local format for a user field, so the language parameter is
-   * unused.
+   * Returns the local value of this field. There is no local format for a user field, so the
+   * language parameter is unused.
    */
   public String getValue(String language) {
     return getValue();
@@ -134,16 +131,14 @@ public class MultipleUserField implements Field {
   }
 
   /**
-   * Always returns false since a user reference can't be computed from a user
-   * name.
+   * Always returns false since a user reference can't be computed from a user name.
    */
   public boolean acceptValue(String value) {
     return false;
   }
 
   /**
-   * Always returns false since a user reference can't be computed from a user
-   * name.
+   * Always returns false since a user reference can't be computed from a user name.
    */
   public boolean acceptValue(String value, String language) {
     return false;
@@ -241,7 +236,6 @@ public class MultipleUserField implements Field {
 
   /**
    * Set to null this field.
-   * 
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */

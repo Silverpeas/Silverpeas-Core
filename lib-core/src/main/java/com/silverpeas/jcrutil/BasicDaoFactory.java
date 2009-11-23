@@ -64,9 +64,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * He
- * 
  * @author Emmanuel Hugonnet
- * 
  */
 public class BasicDaoFactory implements ApplicationContextAware {
 
@@ -100,7 +98,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Create a system JCR session
-   * 
    * @return a jcrSession with System rights.
    * @throws LoginException
    * @throws RepositoryException
@@ -113,11 +110,8 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Create a system JCR session
-   * 
-   * @param login
-   *          the user's login.
-   * @param password
-   *          the user's password.
+   * @param login the user's login.
+   * @param password the user's password.
    * @return a jcrSession with user's rights.
    * @throws LoginException
    * @throws RepositoryException
@@ -130,9 +124,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Logout of the JCR session
-   * 
-   * @param session
-   *          the session to be closed.
+   * @param session the session to be closed.
    */
   public static void logout(Session session) {
     if (session != null) {
@@ -141,11 +133,9 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Compute the componentId corresponding to the specified node by checking the
-   * name of the first Ancestor.
-   * 
-   * @param node
-   *          the node whose componentId is required.
+   * Compute the componentId corresponding to the specified node by checking the name of the first
+   * Ancestor.
+   * @param node the node whose componentId is required.
    * @return the componentId of the specified node.
    * @throws ItemNotFoundException
    * @throws AccessDeniedException
@@ -157,15 +147,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Defines the value of a JCR Node's property. If the specified value is null
-   * then the corresponding property is removed from the Node.
-   * 
-   * @param node
-   *          the node whose property is being set.
-   * @param propertyName
-   *          the name of the property being set.
-   * @param value
-   *          the value being set. If it is null then the property is removed.
+   * Defines the value of a JCR Node's property. If the specified value is null then the
+   * corresponding property is removed from the Node.
+   * @param node the node whose property is being set.
+   * @param propertyName the name of the property being set.
+   * @param value the value being set. If it is null then the property is removed.
    * @throws VersionException
    * @throws LockException
    * @throws ConstraintViolationException
@@ -185,15 +171,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Defines the Calendar value of a JCR Node's property. If the specified value
-   * is null then the corresponding property is removed from the Node.
-   * 
-   * @param node
-   *          the node whose property is being set.
-   * @param propertyName
-   *          the name of the property being set.
-   * @param value
-   *          the value being set. If it is null then the property is removed.
+   * Defines the Calendar value of a JCR Node's property. If the specified value is null then the
+   * corresponding property is removed from the Node.
+   * @param node the node whose property is being set.
+   * @param propertyName the name of the property being set.
+   * @param value the value being set. If it is null then the property is removed.
    * @throws VersionException
    * @throws LockException
    * @throws ConstraintViolationException
@@ -215,15 +197,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Defines the Calendar value of a JCR Node's property. If the specified value
-   * is null then the corresponding property is removed from the Node.
-   * 
-   * @param node
-   *          the node whose property is being set.
-   * @param propertyName
-   *          the name of the property being set.
-   * @param value
-   *          the value being set. If it is null then the property is removed.
+   * Defines the Calendar value of a JCR Node's property. If the specified value is null then the
+   * corresponding property is removed from the Node.
+   * @param node the node whose property is being set.
+   * @param propertyName the name of the property being set.
+   * @param value the value being set. If it is null then the property is removed.
    * @throws VersionException
    * @throws LockException
    * @throws ConstraintViolationException
@@ -243,15 +221,10 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Return the property value as String for a JCR Node. If the property doesn't
-   * exist return null.
-   * 
-   * @param node
-   *          the node whose property is required.
-   * @param propertyName
-   *          the name of the property required.
-   * @return the String value of the property - null if the property doesn't
-   *         exist.
+   * Return the property value as String for a JCR Node. If the property doesn't exist return null.
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
+   * @return the String value of the property - null if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
    * @throws VersionException
@@ -269,15 +242,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Return the property value as Calendar for a JCR Node. If the property
-   * doesn't exist return null.
-   * 
-   * @param node
-   *          the node whose property is required.
-   * @param propertyName
-   *          the name of the property required.
-   * @return the Calendar value of the property - null if the property doesn't
-   *         exist.
+   * Return the property value as Calendar for a JCR Node. If the property doesn't exist return
+   * null.
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
+   * @return the Calendar value of the property - null if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
    * @throws VersionException
@@ -295,15 +264,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Return the property value as java.util.Date for a JCR Node. If the property
-   * doesn't exist return null.
-   * 
-   * @param node
-   *          the node whose property is required.
-   * @param propertyName
-   *          the name of the property required.
-   * @return the java.util.Date value of the property - null if the property
-   *         doesn't exist.
+   * Return the property value as java.util.Date for a JCR Node. If the property doesn't exist
+   * return null.
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
+   * @return the java.util.Date value of the property - null if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
    * @throws VersionException
@@ -321,13 +286,9 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Return the property value as an int for a JCR Node. If the property doesn't
-   * exist return 0.
-   * 
-   * @param node
-   *          the node whose property is required.
-   * @param propertyName
-   *          the name of the property required.
+   * Return the property value as an int for a JCR Node. If the property doesn't exist return 0.
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
    * @return the int value of the property - 0 if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
@@ -346,13 +307,9 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Return the property value as an long for a JCR Node. If the property
-   * doesn't exist return 0.
-   * 
-   * @param node
-   *          the node whose property is required.
-   * @param propertyName
-   *          the name of the property required.
+   * Return the property value as an long for a JCR Node. If the property doesn't exist return 0.
+   * @param node the node whose property is required.
+   * @param propertyName the name of the property required.
    * @return the long value of the property - 0 if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
@@ -371,13 +328,10 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Remove a reference from an array of javax.jcr.Value. If the reference is
-   * not found no change is done to the array.
-   * 
-   * @param values
-   *          the array of references
-   * @param uuid
-   *          the reference to be removed
+   * Remove a reference from an array of javax.jcr.Value. If the reference is not found no change is
+   * done to the array.
+   * @param values the array of references
+   * @param uuid the reference to be removed
    * @return the updated arry of references.
    * @throws ValueFormatException
    * @throws IllegalStateException
@@ -398,11 +352,9 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   /**
-   * Compute a unique node name if a node with the same name already exists
-   * under the same parent node.
-   * 
-   * @param tableName
-   *          the name of the column used to stored the id.
+   * Compute a unique node name if a node with the same name already exists under the same parent
+   * node.
+   * @param tableName the name of the column used to stored the id.
    * @return the name of the node.
    * @throws RepositoryException
    * @throws UtilException

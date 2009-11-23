@@ -25,7 +25,8 @@
 package com.stratelia.silverpeas.notificationserver;
 
 public class NotificationServerConstant {
-  public final static String JMS_FACTORY = "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
+  public final static String JMS_FACTORY =
+      "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
   public final static String JMS_QUEUE = "com.stratelia.silverpeas.notificationserver.jms.Queue";
   public final static String JMS_HEADER_CHANNEL = "CHANNEL";
 }

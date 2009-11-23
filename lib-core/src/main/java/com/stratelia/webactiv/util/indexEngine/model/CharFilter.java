@@ -30,17 +30,15 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 
 /**
- * Extends lucene TokenFilter : replaces from each token all the special
- * characters like é or ç.
+ * Extends lucene TokenFilter : replaces from each token all the special characters like é or ç.
  */
 public final class CharFilter extends TokenFilter {
   /**
-   * Constructs a filter which uses the given CharReplacer to change the token
-   * of the stream.
+   * Constructs a filter which uses the given CharReplacer to change the token of the stream.
    */
   /*
-   * public CharFilter(TokenStream stream, CharReplacer replacer) { this.input =
-   * stream; this.replacer = replacer; }
+   * public CharFilter(TokenStream stream, CharReplacer replacer) { this.input = stream;
+   * this.replacer = replacer; }
    */
 
   public CharFilter(TokenStream stream) {

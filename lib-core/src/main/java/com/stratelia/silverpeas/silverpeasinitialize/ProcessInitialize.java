@@ -31,7 +31,6 @@ import java.io.*;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author eDurand
  * @version 1.0
  */
@@ -41,10 +40,7 @@ public class ProcessInitialize implements Runnable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param p_InitializeSettingsFile
-   * 
    * @see
    */
   public ProcessInitialize(File p_InitializeSettingsFile) {
@@ -53,8 +49,6 @@ public class ProcessInitialize implements Runnable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void run() {
@@ -63,8 +57,6 @@ public class ProcessInitialize implements Runnable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   private void processInitializeSettingsFile() {
@@ -111,12 +103,8 @@ public class ProcessInitialize implements Runnable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param fileName
-   * 
    * @return
-   * 
    * @see
    */
   private Properties getPropertiesOfFile(String fileName) {
@@ -138,13 +126,10 @@ public class ProcessInitialize implements Runnable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param obj
    * @param debugLevel
    * @param fct
    * @param msg
-   * 
    * @see
    */
   private static void LogMsg(Object obj, int debugLevel, String fct, String msg) {

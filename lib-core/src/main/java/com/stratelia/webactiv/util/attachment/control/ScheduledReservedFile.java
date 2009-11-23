@@ -70,13 +70,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("Attachment",
             "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("Attachment",
             "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:

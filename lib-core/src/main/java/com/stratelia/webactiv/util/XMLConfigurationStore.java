@@ -55,10 +55,9 @@ import org.xml.sax.SAXParseException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This object implements and extends the ConfigurationStore interface for XML
- * files. As a ConfigurationStore, it imposes a standard structure on the grove
- * that can be mapped 1-1 with properties, but it offers all necessary methods
- * to handle arbitrary XML structures as well.
+ * This object implements and extends the ConfigurationStore interface for XML files. As a
+ * ConfigurationStore, it imposes a standard structure on the grove that can be mapped 1-1 with
+ * properties, but it offers all necessary methods to handle arbitrary XML structures as well.
  * <p>
  * The standard structure is the following:<br>
  * &lt;param&gt;<br>
@@ -72,14 +71,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * <i> parameter description </i><br>
  * &lt;/param-description&gt;<br>
  * <p>
- * The parameter description is any arbitrary string that could be used for
- * instance as a tooltip text or a as a label for a configuration tool that
- * should display the use of the given parameter.
+ * The parameter description is any arbitrary string that could be used for instance as a tooltip
+ * text or a as a label for a configuration tool that should display the use of the given parameter.
  * <p>
- * Note that symbold such as <strong>&lt;</strong> or <strong>&amp;</strong>
- * must be escaped properly when included in the parameter name, value or
- * description.
- * 
+ * Note that symbold such as <strong>&lt;</strong> or <strong>&amp;</strong> must be escaped
+ * properly when included in the parameter name, value or description.
  * @author jpouyadou
  * @version
  */
@@ -134,8 +130,8 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method sets the config file name. Useful when the configuration store
-   * has been created empty, so that is has no associated file.
+   * This method sets the config file name. Useful when the configuration store has been created
+   * empty, so that is has no associated file.
    */
   public void setConfigFileName(String configfilename) {
     m_ConfigFileName = configfilename;
@@ -151,7 +147,7 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
     if (m_XMLConfig == null) {
       throw new Exception(
           "E6000-0025:Cannot create XML document from the configuration file '"
-              + m_ConfigFileName + "'");
+          + m_ConfigFileName + "'");
     }
     // m_XMLConfig.getDocumentElement().normalize();
     ((org.apache.xerces.dom.NodeImpl) (m_XMLConfig)).normalize();
@@ -218,9 +214,9 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns the value of the node <strong>entry</strong>, starting
-   * from the node <strong>n</strong>. It may consist of the concatenation of
-   * various text en entity reference child nodes.
+   * This method returns the value of the node <strong>entry</strong>, starting from the node
+   * <strong>n</strong>. It may consist of the concatenation of various text en entity reference
+   * child nodes.
    * <p>
    * This method returns null if the node wasn't found
    */
@@ -303,9 +299,9 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns the values of the node <strong>entry</strong>, starting
-   * from the node <strong>n</strong>. Each value may consist of the
-   * concatenation of various text en entity reference child nodes.
+   * This method returns the values of the node <strong>entry</strong>, starting from the node
+   * <strong>n</strong>. Each value may consist of the concatenation of various text en entity
+   * reference child nodes.
    * <p>
    * This method returns null if the node wasn't found
    */
@@ -392,13 +388,10 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns the value of an attribute of a given node. If the
-   * attribute cannot be found of if the node is null, this method returns null.
-   * 
-   * @param n
-   *          the node where the attribute is stored
-   * @param attributeName
-   *          the name of the attribute. Case sensitive.
+   * This method returns the value of an attribute of a given node. If the attribute cannot be found
+   * of if the node is null, this method returns null.
+   * @param n the node where the attribute is stored
+   * @param attributeName the name of the attribute. Case sensitive.
    */
   public String getAttributeValue(Node n, String attributeName) {
     if (n == null) {
@@ -479,10 +472,9 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns the value of a standard-format parameter, that is, it
-   * returns the text value of the param-value element that goes with the
-   * param-name for the <strong>key</strong> element. See the description of
-   * standard XML resources for details <br>
+   * This method returns the value of a standard-format parameter, that is, it returns the text
+   * value of the param-value element that goes with the param-name for the <strong>key</strong>
+   * element. See the description of standard XML resources for details <br>
    * If the key os not found, the defaultValue string is returned instead.
    */
   public String getProperty(String key, String defaultValue) {
@@ -531,9 +523,9 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns a long value for the given key. It throws an
-   * XMLConfigurationException with the code KEY_NOT_FOUND if it cannot be
-   * found, or INVALID_VALUE if it cannot be converted to a long value.
+   * This method returns a long value for the given key. It throws an XMLConfigurationException with
+   * the code KEY_NOT_FOUND if it cannot be found, or INVALID_VALUE if it cannot be converted to a
+   * long value.
    */
   public long getLongValue(String key) throws XMLConfigurationException {
     String sv = get(key, null);
@@ -551,9 +543,9 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns a long value for the given key. It throws an
-   * XMLConfigurationException with the code KEY_NOT_FOUND if it cannot be
-   * found, or INVALID_VALUE if it cannot be converted to a long value.
+   * This method returns a long value for the given key. It throws an XMLConfigurationException with
+   * the code KEY_NOT_FOUND if it cannot be found, or INVALID_VALUE if it cannot be converted to a
+   * long value.
    */
   public int getIntValue(String key) throws XMLConfigurationException {
     String sv = get(key, null);
@@ -611,13 +603,12 @@ public class XMLConfigurationStore extends Object implements ConfigurationStore 
   }
 
   /**
-   * This method returns all children nodes (at any depth, that is, children,
-   * grazndchildren, and so on) from the node <strong>node</strong> whose name
-   * matches the <strong>name</strong> string. If <strong>node</strong> is null,
-   * the method returns null<br>
+   * This method returns all children nodes (at any depth, that is, children, grazndchildren, and so
+   * on) from the node <strong>node</strong> whose name matches the <strong>name</strong> string. If
+   * <strong>node</strong> is null, the method returns null<br>
    * If <strong>name</strong> is null or empty, the method returns null<br>
-   * If no children of the node <strong>node</strong> match the
-   * <strong>name</strong> string, the method returns null<br>
+   * If no children of the node <strong>node</strong> match the <strong>name</strong> string, the
+   * method returns null<br>
    */
 
   public Node[] findNodes(Node node, String name) {

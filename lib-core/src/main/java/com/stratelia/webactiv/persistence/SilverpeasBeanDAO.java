@@ -28,20 +28,18 @@ import java.util.*;
 import com.stratelia.webactiv.util.*;
 
 /**
- * SilverpeasBeanDAO is the interface to use for instanciable component
- * persistence. To get a SilverpeasBeanDAO instance, use the SilverpeasBeanDAO
- * factory. A SilverpeasBeanDAO instance is linked with a SilverpeasBean
- * specialisation. The code below show you how to build a SilverpeasBeanDAO,
- * enable to create, update... objects for TrainingDetail class. <CODE>
+ * SilverpeasBeanDAO is the interface to use for instanciable component persistence. To get a
+ * SilverpeasBeanDAO instance, use the SilverpeasBeanDAO factory. A SilverpeasBeanDAO instance is
+ * linked with a SilverpeasBean specialisation. The code below show you how to build a
+ * SilverpeasBeanDAO, enable to create, update... objects for TrainingDetail class. <CODE>
  * // get a dao instance, associated with TrainingDetail bean class
  * SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO("com.stratelia.webactiv.training.model.TrainingDetail");
- * </CODE> Once a dao instance is build, it enables you to create, update,
- * remove and list objects from TrainingDetail. TrainingDetail has to be a
- * SilverpeasBean specialisation. (A SilverpeasBean contains a PK). The
- * persistance mechanism is based on your bean properties. In your bean, you
- * need to have getXXX and setXXX methods for each "column" you want to be
- * persistant. For the moment, SilverpeasBeanDAO is able to work with int,
- * String and Date. This list can grow in the near futur.
+ * </CODE> Once a dao instance is build, it enables you to create, update, remove and list objects
+ * from TrainingDetail. TrainingDetail has to be a SilverpeasBean specialisation. (A SilverpeasBean
+ * contains a PK). The persistance mechanism is based on your bean properties. In your bean, you
+ * need to have getXXX and setXXX methods for each "column" you want to be persistant. For the
+ * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
+ * near futur.
  */
 public interface SilverpeasBeanDAO {
 
@@ -52,9 +50,7 @@ public interface SilverpeasBeanDAO {
 
   /**
    * update the row in db with the new bean properties.
-   * 
-   * @param bean
-   *          the SilverpeasBean to update, with its complete primaryKey.
+   * @param bean the SilverpeasBean to update, with its complete primaryKey.
    */
   public void update(SilverpeasBeanIntf bean) throws PersistenceException;
 
@@ -63,10 +59,8 @@ public interface SilverpeasBeanDAO {
 
   /**
    * create the bean and a row in DB.
-   * 
-   * @param bean
-   *          the SilverpeasBeanIntf to update, with a primaryKey initialized
-   *          with only spaceId and componentId.
+   * @param bean the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
+   * and componentId.
    * @return The complete primary key, with the id.
    */
   public WAPrimaryKey add(SilverpeasBeanIntf bean) throws PersistenceException;
@@ -76,10 +70,8 @@ public interface SilverpeasBeanDAO {
 
   /**
    * remove the row in db represented by the primary key.
-   * 
-   * @param bean
-   *          the SilverpeasBeanIntf to update, with a primaryKey initialized
-   *          with only spaceId and componentId.
+   * @param bean the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
+   * and componentId.
    */
   public void remove(WAPrimaryKey pk) throws PersistenceException;
 
@@ -88,9 +80,7 @@ public interface SilverpeasBeanDAO {
 
   /**
    * remove all row in db represented by the where clause.
-   * 
-   * @param the
-   *          where clause.
+   * @param the where clause.
    */
   public void removeWhere(WAPrimaryKey pk, String p_WhereClause)
       throws PersistenceException;
@@ -100,13 +90,9 @@ public interface SilverpeasBeanDAO {
 
   /**
    * get a bean list, representing a specific row selection.
-   * 
-   * @param pk
-   *          the beans primary key initialized with at least spaceId and
-   *          componentId.
-   * @param whereClause
-   *          The where clause to put in select request. If null, all
-   *          SilverpeasBeanIntfs will be selected (all rows in the table).
+   * @param pk the beans primary key initialized with at least spaceId and componentId.
+   * @param whereClause The where clause to put in select request. If null, all SilverpeasBeanIntfs
+   * will be selected (all rows in the table).
    * @return The list of SilverpeasBeanIntfs corresponding to the where clause
    */
   public Collection findByWhereClause(WAPrimaryKey pk, String whereClause)
@@ -117,9 +103,7 @@ public interface SilverpeasBeanDAO {
 
   /**
    * get a bean representing a row in db from its pk
-   * 
-   * @param pk
-   *          the complete beans primary key
+   * @param pk the complete beans primary key
    * @return The SilverpeasBeanIntfs corresponding to the pk, null if not found
    */
   public SilverpeasBeanIntf findByPrimaryKey(WAPrimaryKey pk)

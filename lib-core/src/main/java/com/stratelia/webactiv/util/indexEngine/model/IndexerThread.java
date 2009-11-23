@@ -29,18 +29,14 @@ import java.util.List;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * A thread IndexerThread index in the background a batch of index requests.
- * 
- * All the public methods are static, so only one thread runs and processes the
- * requests.
+ * A thread IndexerThread index in the background a batch of index requests. All the public methods
+ * are static, so only one thread runs and processes the requests.
  */
 public class IndexerThread extends Thread {
 
   /**
-   * Builds and starts the thread which will process all the requests.
-   * 
-   * This method is synchonized on the requests queue in order to guarantee that
-   * only one IndexerThread is running.
+   * Builds and starts the thread which will process all the requests. This method is synchonized on
+   * the requests queue in order to guarantee that only one IndexerThread is running.
    */
   static public void start(IndexManager indexManager) {
     synchronized (requestList) {
@@ -78,12 +74,9 @@ public class IndexerThread extends Thread {
   }
 
   /**
-   * Process all the requests.
-   * 
-   * When the queue is empty : sends an optimize query to the indexManager.
-   * 
-   * This method should be private but is already declared public in the base
-   * class Thread.
+   * Process all the requests. When the queue is empty : sends an optimize query to the
+   * indexManager. This method should be private but is already declared public in the base class
+   * Thread.
    */
   public void run() {
     Request request = null;
@@ -98,15 +91,15 @@ public class IndexerThread extends Thread {
         synchronized (requestList) {
           SilverTrace.debug("indexEngine", "IndexerThread",
               "root.MSG_GEN_PARAM_VALUE", "# of items to index = "
-                  + requestList.size());
+              + requestList.size());
           if (!requestList.isEmpty()) {
             request = (Request) requestList.remove(0);
           }
         }
 
         /*
-         * Each request is processed out of the synchronized block so the others
-         * threads (which put the requests) will not be blocked.
+         * Each request is processed out of the synchronized block so the others threads (which put
+         * the requests) will not be blocked.
          */
         if (request != null) {
           request.process(indexManager);
@@ -120,8 +113,8 @@ public class IndexerThread extends Thread {
       indexManager.optimize();
 
       /*
-       * Finally, unless a new request has been made while optimisation, we wait
-       * the notification of a new request to be processed.
+       * Finally, unless a new request has been made while optimisation, we wait the notification of
+       * a new request to be processed.
        */
       try {
         synchronized (requestList) {
@@ -137,11 +130,9 @@ public class IndexerThread extends Thread {
   }
 
   /**
-   * The requests are stored in a shared list of Requests.
-   * 
-   * In order to guarantee serial access, all access will be synchronized on
-   * this list. Futhermore this list is used to synchronize the providers and
-   * the consumers of the list :
+   * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
+   * access will be synchronized on this list. Futhermore this list is used to synchronize the
+   * providers and the consumers of the list :
    * 
    * <PRE>
    * // provider
@@ -162,9 +153,8 @@ public class IndexerThread extends Thread {
   static private final List requestList = new ArrayList();
 
   /**
-   * All the requests are processed by a single background thread.
-   * 
-   * This thread is built and started by the start method.
+   * All the requests are processed by a single background thread. This thread is built and started
+   * by the start method.
    */
   static private IndexerThread indexerThread = null;
 
@@ -174,8 +164,7 @@ public class IndexerThread extends Thread {
   private final IndexManager indexManager;
 
   /**
-   * The constructor is private : only one IndexerThread will be created to
-   * process all the request.
+   * The constructor is private : only one IndexerThread will be created to process all the request.
    */
   private IndexerThread(IndexManager indexManager) {
     this.indexManager = indexManager;
@@ -184,17 +173,14 @@ public class IndexerThread extends Thread {
 }
 
 /**
- * Each request must define a method called process which will process the
- * request with a given IndexManager.
+ * Each request must define a method called process which will process the request with a given
+ * IndexManager.
  */
 interface Request {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param indexManager
-   * 
    */
   public void process(IndexManager indexManager);
 }
@@ -206,10 +192,7 @@ class AddIndexEntryRequest implements Request {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param indexEntry
-   * 
    */
   public AddIndexEntryRequest(FullIndexEntry indexEntry) {
     this.indexEntry = indexEntry;
@@ -217,10 +200,7 @@ class AddIndexEntryRequest implements Request {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param indexManager
-   * 
    */
   public void process(IndexManager indexManager) {
     SilverTrace.debug("indexEngine", "IndexerThread",
@@ -238,10 +218,7 @@ class RemoveIndexEntryRequest implements Request {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param indexEntry
-   * 
    */
   public RemoveIndexEntryRequest(IndexEntryPK indexEntry) {
     this.indexEntry = indexEntry;
@@ -249,10 +226,7 @@ class RemoveIndexEntryRequest implements Request {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param indexManager
-   * 
    */
   public void process(IndexManager indexManager) {
     SilverTrace.debug("indexEngine", "IndexerThread",

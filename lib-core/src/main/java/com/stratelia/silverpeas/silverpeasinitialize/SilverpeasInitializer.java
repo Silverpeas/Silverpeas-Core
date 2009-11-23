@@ -32,7 +32,6 @@ import java.security.Security;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author EDurand
  * @version 1.0
  */
@@ -44,8 +43,6 @@ public class SilverpeasInitializer {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SilverpeasInitializer() {
@@ -66,8 +63,8 @@ public class SilverpeasInitializer {
       // Add properties
       _silverpeasinitializeSettings = java.util.ResourceBundle
           .getBundle(
-              "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
-              new Locale("fr", ""));
+          "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
+          new Locale("fr", ""));
       if (_silverpeasinitializeSettings.getString("initialize")
           .equalsIgnoreCase("true") == true) {
 
@@ -103,10 +100,7 @@ public class SilverpeasInitializer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private File[] getListInitializeSettingsFile() {
@@ -128,10 +122,7 @@ public class SilverpeasInitializer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param initializeSettingsFile
-   * 
    * @see
    */
   private void processInitializeSettingsFile(File initializeSettingsFile) {
@@ -142,8 +133,6 @@ public class SilverpeasInitializer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   private void initPropertySystem() {
@@ -172,8 +161,8 @@ public class SilverpeasInitializer {
           if (systemProperties.getProperty(key) != null) {
             System.out
                 .println("_SilverpeasInitialize : override system property ["
-                    + key + "] = " + "(" + systemProperties.getProperty(key)
-                    + ") -> (" + systemFileProperties.getProperty(key) + ")");
+                + key + "] = " + "(" + systemProperties.getProperty(key)
+                + ") -> (" + systemFileProperties.getProperty(key) + ")");
           }
           systemProperties.put(key, systemFileProperties.getProperty(key));
         }
@@ -181,7 +170,7 @@ public class SilverpeasInitializer {
       } catch (FileNotFoundException e) {
         LogMsg(this, LOG_ERROR, "initPropertySystem",
             "File systemSettings.properties in directory " + pathInitialize
-                + " not found.");
+            + " not found.");
       } catch (IOException e) {
         LogMsg(this, LOG_ERROR, "initPropertySystem",
             "Unable to read systemSettings.properties.");
@@ -194,13 +183,10 @@ public class SilverpeasInitializer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param obj
    * @param debugLevel
    * @param fct
    * @param msg
-   * 
    * @see
    */
   private static void LogMsg(Object obj, int debugLevel, String fct, String msg) {

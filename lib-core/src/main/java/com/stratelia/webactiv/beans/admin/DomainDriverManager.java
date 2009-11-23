@@ -137,8 +137,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.createUser",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", user
-              .getFirstName()
-              + " " + user.getLastName(), e);
+          .getFirstName()
+          + " " + user.getLastName(), e);
     }
   }
 
@@ -155,16 +155,14 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.createUser",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", user
-              .getFirstName()
-              + " " + user.getLastName(), e);
+          .getFirstName()
+          + " " + user.getLastName(), e);
     }
   }
 
   /**
    * Delete given user from Silverpeas
-   * 
-   * @param userId
-   *          user Id
+   * @param userId user Id
    */
   public void deleteUser(String userId) throws Exception {
     try {
@@ -186,7 +184,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "user Id: '"
-              + userId + "'", e);
+          + userId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -206,8 +204,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", user
-              .getFirstName()
-              + " " + user.getLastName(), e);
+          .getFirstName()
+          + " " + user.getLastName(), e);
     }
   }
 
@@ -225,8 +223,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", user
-              .getFirstName()
-              + " " + user.getLastName(), e);
+          .getFirstName()
+          + " " + user.getLastName(), e);
     }
   }
 
@@ -253,7 +251,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       } catch (AdminException e) {
         SilverTrace.error("admin", "DomainDriverManager.getUser",
             "admin.MSG_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '"
-                + ur.domainId + "'", e);
+            + ur.domainId + "'", e);
         uf = new UserFull(domainDriver);
         uf.setLogin(ur.login);
         uf.setFirstName(ur.firstName);
@@ -269,7 +267,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
-              + userId + "', domain Id: '" + userId + "'", e);
+          + userId + "', domain Id: '" + userId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -303,7 +301,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       } catch (AdminException e) {
         SilverTrace.error("admin", "DomainDriverManager.getUser",
             "admin.MSG_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '"
-                + ur.domainId + "'", e);
+            + ur.domainId + "'", e);
         ud = new UserDetail();
         ud.setLogin(ur.login);
         ud.setFirstName(ur.firstName);
@@ -319,7 +317,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
-              + userId + "', domain Id: '" + userId + "'", e);
+          + userId + "', domain Id: '" + userId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -410,7 +408,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.createGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "group Id: '"
-              + group.getId() + "'", e);
+          + group.getId() + "'", e);
     }
   }
 
@@ -437,7 +435,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "group Id: '"
-              + groupId + "'", e);
+          + groupId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -445,7 +443,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Update given group in specific domain
-   * 
    * @param group
    */
   public void updateGroup(Group group) throws Exception {
@@ -483,13 +480,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.updateGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "group Id: '"
-              + group.getId() + "'", e);
+          + group.getId() + "'", e);
     }
   }
 
   /**
    * return group with given id (contains list of user ids for this group)
-   * 
    * @param groupId
    * @return Group
    */
@@ -520,7 +516,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Id: '"
-              + groupId + "'", e);
+          + groupId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -529,7 +525,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * return group with given group name in domain
-   * 
    * @param groupName
    * @return Group
    */
@@ -551,7 +546,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getGroupByNameInDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Name: '"
-              + groupName + "'", e);
+          + groupName + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -702,7 +697,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       if (ksr == null)
         throw new AdminException("DomainDriverManager.authenticate",
             SilverpeasException.ERROR, "admin.EX_ERR_KEY_NOT_FOUND", "key: '"
-                + sKey + "'");
+            + sKey + "'");
 
       loginDomainId.put("login", ksr.login);
       loginDomainId.put("domainId", idAsString(ksr.domainId));
@@ -722,7 +717,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       throw new AdminException("DomainDriverManager.authenticate",
           SilverpeasException.ERROR, "admin.EX_ERR_AUTHENTICATE", "key: '"
-              + sKey + "'", e);
+          + sKey + "'", e);
     }
   }
 
@@ -877,7 +872,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
       throw new AdminException("DomainDriverManager.createDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_DOMAIN", "domain id: '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -911,7 +906,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (AdminPersistenceException e) {
       throw new AdminException("DomainDriverManager.getDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain id: '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -986,10 +981,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * Called when Admin ends the synchronization
-   * 
-   * @param cancelSynchro
-   *          true if the synchronization is cancelled, false if it ends
-   *          normally
+   * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
   public String endSynchronization(String sdomainId, boolean cancelSynchro)
       throws Exception {
@@ -1071,7 +1063,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("DomainDriverManager.commit",
           SilverpeasException.ERROR, "root.EX_ERR_COMMIT", "domain Id: '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -1089,7 +1081,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("DomainDriverManager.rollback",
           SilverpeasException.ERROR, "root.EX_ERR_ROLLBACK", "domain Id: '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 

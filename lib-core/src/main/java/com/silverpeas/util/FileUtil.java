@@ -57,9 +57,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Extract the mime-type from the file name.
-   * 
-   * @param fileName
-   *          the name of the file.
+   * @param fileName the name of the file.
    * @return the mime-type as a String.
    */
   public static String getMimeType(String fileName) {
@@ -93,20 +91,17 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * to create the array of the string this array represents the repertories
-   * where the files must be stored.
-   * 
-   * @param str
-   *          : type String: the string of repertories
-   * @param token
-   *          : type String: the token separating the repertories
+   * to create the array of the string this array represents the repertories where the files must be
+   * stored.
+   * @param str : type String: the string of repertories
+   * @param token : type String: the token separating the repertories
    */
   public static String[] getAttachmentContext(String context) {
     if (context == null || "".equals(context)) {
       return new String[] { BASE_CONTEXT };
     }
     StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
-    List<String>folders = new ArrayList<String>(10);
+    List<String> folders = new ArrayList<String>(10);
     folders.add(BASE_CONTEXT);
     while (strToken.hasMoreElements()) {
       folders.add(strToken.nextToken().trim());
@@ -116,9 +111,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Read the content of a file in a byte array.
-   * 
-   * @param file
-   *          the file to be read.
+   * @param file the file to be read.
    * @return the bytes array containing the content of the file.
    * @throws IOException
    */
@@ -146,11 +139,8 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Write a stream into a file.
-   * 
-   * @param file
-   *          the file to be written.
-   * @param data
-   *          the data to be written.
+   * @param file the file to be written.
+   * @param data the data to be written.
    * @throws IOException
    */
   public static void writeFile(File file, InputStream data) throws IOException {
@@ -176,11 +166,8 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Write a stream into a file.
-   * 
-   * @param file
-   *          the file to be written.
-   * @param data
-   *          the data to be written.
+   * @param file the file to be written.
+   * @param data the data to be written.
    * @throws IOException
    */
   public static void writeFile(File file, Reader data) throws IOException {

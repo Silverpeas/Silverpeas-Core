@@ -32,16 +32,12 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AdminInitialize implements IInitialize {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AdminInitialize() {
@@ -49,10 +45,7 @@ public class AdminInitialize implements IInitialize {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean Initialize() {

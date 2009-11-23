@@ -116,7 +116,8 @@ public class ComponentInstanceI18NTable extends Table {
     updateRelation(DELETE_TRANSLATION, id);
   }
 
-  static final private String DELETE_TRANSLATION = "delete from ST_ComponentInstanceI18N where id = ?";
+  static final private String DELETE_TRANSLATION =
+      "delete from ST_ComponentInstanceI18N where id = ?";
 
   /**
    * Delete all component's translations.
@@ -126,7 +127,8 @@ public class ComponentInstanceI18NTable extends Table {
     updateRelation(DELETE_TRANSLATIONS, componentId);
   }
 
-  static final private String DELETE_TRANSLATIONS = "delete from ST_ComponentInstanceI18N where componentId = ?";
+  static final private String DELETE_TRANSLATIONS =
+      "delete from ST_ComponentInstanceI18N where componentId = ?";
 
   /**
    * Fetch the current component row from a resultSet.

@@ -44,12 +44,9 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class AttachmentDetail extends AbstractI18NBean implements Serializable,
-    MimeTypes {
+public class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes {
   public static final String ATTACHMENTS_FOLDER = "attachments";
   transient public static final int GROUP_FILE = 0;
   transient public static final int GROUP_FILE_LINK = 1;
@@ -102,7 +99,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Constructor
-   * 
    * @author Jean-Claude Groccia
    * @version
    */
@@ -111,9 +107,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Constructor
-   * 
-   * @param foreignKey
-   *          : type WAPrimaryKey: the key of custumer object
+   * @param foreignKey : type WAPrimaryKey: the key of custumer object
    * @see com.stratelia.util.WAPrimaryKey
    * @author Jean-Claude Groccia
    * @version
@@ -127,23 +121,14 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Constructor
-   * 
-   * @param attachPK
-   *          : type AttachmentPK: the primary key of AttachmentDetail
-   * @param logicalName
-   *          :type String: the name file
-   * @param physicalName
-   *          : type String: the name file stored in the server
-   * @param description
-   *          : type String: the description of file, size=4000 character
-   * @param type
-   *          : type String: the mime type of file
-   * @param context
-   *          : type String: the context or the file is recorded
-   * @param fileDate
-   *          : type Date: the date where the file was added
-   * @param foreignKey
-   *          : type WAPrimaryKey: the key of custumer object
+   * @param attachPK : type AttachmentPK: the primary key of AttachmentDetail
+   * @param logicalName :type String: the name file
+   * @param physicalName : type String: the name file stored in the server
+   * @param description : type String: the description of file, size=4000 character
+   * @param type : type String: the mime type of file
+   * @param context : type String: the context or the file is recorded
+   * @param fileDate : type Date: the date where the file was added
+   * @param foreignKey : type WAPrimaryKey: the key of custumer object
    * @see com.stratelia.util.WAPrimaryKey
    * @author Jean-Claude Groccia
    * @version
@@ -213,26 +198,16 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   }
 
   /**
-   * @param attachPK
-   *          : type AttachmentPK: the primary key of AttachmentDetail
-   * @param logicalName
-   *          :type String: the name file
-   * @param physicalName
-   *          : type String: the name file stored in the server
-   * @param description
-   *          : type String: the description of file, size=4000 character
-   * @param type
-   *          : type String: the mime type of file
-   * @param context
-   *          : type String: the context or the file is recorded
-   * @param fileDate
-   *          : type Date: the date where the file was added
-   * @param foreignKey
-   *          : type WAPrimaryKey: the key of custumer object
-   * @param String
-   *          author
-   * @param String
-   *          title
+   * @param attachPK : type AttachmentPK: the primary key of AttachmentDetail
+   * @param logicalName :type String: the name file
+   * @param physicalName : type String: the name file stored in the server
+   * @param description : type String: the description of file, size=4000 character
+   * @param type : type String: the mime type of file
+   * @param context : type String: the context or the file is recorded
+   * @param fileDate : type Date: the date where the file was added
+   * @param foreignKey : type WAPrimaryKey: the key of custumer object
+   * @param String author
+   * @param String title
    * @author dlesimple
    * @see com.stratelia.util.WAPrimaryKey
    */
@@ -262,9 +237,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Constructors
-   * 
-   * @param AttachmentPK
-   *          , the primary key of AttachmentDetail
+   * @param AttachmentPK , the primary key of AttachmentDetail
    * @see com.stratelia.webactiv.util.attachment.ejb.AttachmentPK
    * @author Jean-Claude Groccia
    * @version
@@ -285,10 +258,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
-   * 
    * @see
    */
   public void setPK(AttachmentPK pk) {
@@ -305,10 +275,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPhysicalName() {
@@ -328,10 +295,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param physicalName
-   * 
    * @see
    */
   public void setPhysicalName(String physicalName) {
@@ -340,10 +304,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLogicalName() {
@@ -363,10 +324,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param logicalName
-   * 
    * @see
    */
   public void setLogicalName(String logicalName) {
@@ -377,10 +335,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDescription() {
@@ -389,10 +344,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param desc
-   * 
    * @see
    */
   public void setDescription(String desc) {
@@ -401,10 +353,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getType() {
@@ -427,10 +376,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param type
-   * 
    * @see
    */
   /**
@@ -443,10 +389,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public long getSize() {
@@ -466,10 +409,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param size
-   * 
    * @see
    */
   public void setSize(long size) {
@@ -478,8 +418,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Methode declaration
-   * 
-   * 
    * @see
    */
   public Date getCreationDate() {
@@ -499,10 +437,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Methode declaration
-   * 
-   * 
    * @param fileDate
-   * 
    * @see
    */
   public void setCreationDate(Date creationDate) {
@@ -511,10 +446,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param context
-   * 
    * @see
    */
   public void setContext(String context) {
@@ -526,10 +458,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getContext() {
@@ -538,10 +467,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param foreignKey
-   * 
    * @see
    */
   public void setForeignKey(WAPrimaryKey foreignKey) {
@@ -551,10 +477,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public WAPrimaryKey getForeignKey() {
@@ -636,7 +559,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Set the use who's working on the document
-   * 
    * @param workerId
    */
   public void setWorkerId(String workerId) {
@@ -645,7 +567,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Get the current user who's working on the document
-   * 
    * @return
    */
   public String getWorkerId() {
@@ -653,9 +574,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   }
 
   /**
-   * Retourne le group auquel appartient l'attachment. Ce groupe est deduit du
-   * champ description
-   * 
+   * Retourne le group auquel appartient l'attachment. Ce groupe est deduit du champ description
    * @see
    */
   public int getAttachmentGroup() {
@@ -676,9 +595,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   }
 
   /**
-   * Retourne l'URL de l'attachment. Cette URL est construite a partir des
-   * autres informations
-   * 
+   * Retourne l'URL de l'attachment. Cette URL est construite a partir des autres informations
    * @see
    */
   public String getAttachmentURL(String language) {
@@ -815,9 +732,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   }
 
   /**
-   * Retourne l'URL de l'attachment pour l'utilisation externe (web). Cette URL
-   * est construite a partir des autres informations
-   * 
+   * Retourne l'URL de l'attachment pour l'utilisation externe (web). Cette URL est construite a
+   * partir des autres informations
    * @see
    */
   public String getWebURL() {
@@ -831,9 +747,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   }
 
   /**
-   * Retourne l'URL de l'attachment afin que le téléchargement soit
-   * enregistré. Cette URL est construite a partir des autres informations
-   * 
+   * Retourne l'URL de l'attachment afin que le téléchargement soit enregistré. Cette URL est
+   * construite a partir des autres informations
    * @see
    */
   public String getAttachmentURLToMemorize(String userId, String fatherId) {
@@ -846,13 +761,13 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
       if ((attGr == GROUP_FILE) || (attGr == GROUP_DIR)) {
         String theContext = FileRepositoryManager
             .getRelativePath(FileRepositoryManager
-                .getAttachmentContext(context));
+            .getAttachmentContext(context));
         int nodeId = 0;
         if (fatherId == null)
           nodeId = new Integer(fatherId).intValue();
         valret = FileServerUtils.getUrl(pk.getSpace(), pk.getComponentName(),
             userId, logicalName, physicalName, type, true, new Integer(
-                foreignKey.getId()).intValue(), nodeId, theContext);
+            foreignKey.getId()).intValue(), nodeId, theContext);
         SilverTrace.info("attachment",
             "AttachmentDetail.getAttachmentURLToMemorize",
             "root.MSG_GEN_PARAM_VALUE",
@@ -887,7 +802,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Retourne l'extension de l'icone de l'attachment.
-   * 
    * @see
    */
   public String getAttachmentIcon(String language) {
@@ -910,7 +824,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Retourne la taille du fichier lie sour forme de string.
-   * 
    * @see
    */
   public String getAttachmentFileSize(String language) {
@@ -931,7 +844,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Retourne la taille du fichier lie sour forme de string.
-   * 
    * @see
    */
   public String getAttachmentDownloadEstimation(String language) {
@@ -964,7 +876,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
     if (type != null) {
       SilverTrace.info("attachment", "AttachmentDetail.isOfficeDocument()",
           "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-              + MS_OFFICE_MIME_TYPES.contains(type));
+          + MS_OFFICE_MIME_TYPES.contains(type));
       isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(type);
     }
     return isOfficeDocument;
@@ -972,9 +884,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Return the path to the attachment file.
-   * 
-   * @param language
-   *          the language for the file.
+   * @param language the language for the file.
    * @return the path to the attachment file.
    */
   public String getAttachmentPath(String language) {
@@ -989,22 +899,17 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Check if the attachment is compatible with OpenOffice using the mime type .
-   * 
-   * @return true if the attachment is compatible with OpenOffice false
-   *         otherwise.
+   * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible() {
     return isOpenOfficeCompatible(null);
   }
 
   /**
-   * Check if the attachment for the specified language is compatible with
-   * OpenOffice using the mime type .
-   * 
-   * @param language
-   *          the language of the attachment.
-   * @return true if the attachment is compatible with OpenOffice false
-   *         otherwise.
+   * Check if the attachment for the specified language is compatible with OpenOffice using the mime
+   * type .
+   * @param language the language of the attachment.
+   * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible(String language) {
     String type = getType(language);
@@ -1017,7 +922,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * If 3d document
-   * 
    * @return true or false
    */
   public boolean isSpinfireDocument(String language) {
@@ -1027,7 +931,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
     }
     SilverTrace.info("attachment", "AttachmentDetail.isSpinfireDocument()",
         "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-            + isSpinfireDocument);
+        + isSpinfireDocument);
     return isSpinfireDocument;
   }
 
@@ -1036,7 +940,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
     if (getType() != null) {
       SilverTrace.info("attachment", "AttachmentDetail.isSpinfireDocument()",
           "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-              + getType().equals(SPINFIRE_MIME_TYPE));
+          + getType().equals(SPINFIRE_MIME_TYPE));
       isSpinfireDocument = getType().equals(SPINFIRE_MIME_TYPE);
     }
     return isSpinfireDocument;
@@ -1044,7 +948,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
 
   /**
    * Is the Office file in read-only mode ?
-   * 
    * @param attachmentId
    * @throws AttachmentException
    */
@@ -1139,7 +1042,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable,
   public void checkMimeType() {
     if (logicalName != null
         && (!StringUtil.isDefined(type) || type
-            .equalsIgnoreCase(DEFAULT_MIME_TYPE)))
+        .equalsIgnoreCase(DEFAULT_MIME_TYPE)))
       type = AttachmentController.getMimeType(logicalName);
   }
 

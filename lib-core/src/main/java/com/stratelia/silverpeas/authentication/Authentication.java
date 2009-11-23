@@ -36,9 +36,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class must be extended by all classes that can perform authentication of
- * users.
- * 
+ * This class must be extended by all classes that can perform authentication of users.
  * @author tleroi
  * @version
  */
@@ -64,10 +62,9 @@ public abstract class Authentication extends Object {
       ResourceLocator propFile);
 
   /**
-   * This method authenticates the user with the given (clear text) password. It
-   * returns true if the user is validated, or throws an exception if the
-   * authentication could not be peformed, whatever the reason. If the
-   * authentication could not be performed because the credentials are invalid
+   * This method authenticates the user with the given (clear text) password. It returns true if the
+   * user is validated, or throws an exception if the authentication could not be peformed, whatever
+   * the reason. If the authentication could not be performed because the credentials are invalid
    * (e.g. wrong password), the AuthenticationException code should be set to
    * EXCEPTION_BAD_CREDENTIALS.
    */
@@ -124,16 +121,10 @@ public abstract class Authentication extends Object {
 
   /**
    * Change user password
-   * 
-   * @param login
-   *          user login
-   * @param oldPassword
-   *          user old password
-   * @param newPassword
-   *          user new password
-   * 
+   * @param login user login
+   * @param oldPassword user old password
+   * @param newPassword user new password
    * @return true if succeeded
-   * 
    * @throws AuthenticationException
    * @see internalChangePassword
    */
@@ -161,16 +152,11 @@ public abstract class Authentication extends Object {
   }
 
   /**
-   * This method systematically throws UnsupportedOperationException ! So you
-   * have to override this method to offer password update capabilities
-   * 
-   * @param login
-   *          user login
-   * @param oldPassword
-   *          user old password
-   * @param newPassword
-   *          user new password
-   * 
+   * This method systematically throws UnsupportedOperationException ! So you have to override this
+   * method to offer password update capabilities
+   * @param login user login
+   * @param oldPassword user old password
+   * @param newPassword user new password
    * @throws AuthenticationException
    */
   protected void internalChangePassword(String login, String oldPassword,

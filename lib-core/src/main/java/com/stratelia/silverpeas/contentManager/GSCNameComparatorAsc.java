@@ -36,10 +36,8 @@ public class GSCNameComparatorAsc implements Comparator {
   }
 
   /**
-   * This comparator equals self only.
-   * 
-   * Use the shared comparator GSCNameComparator.comparator if multiples
-   * comparators are used.
+   * This comparator equals self only. Use the shared comparator GSCNameComparator.comparator if
+   * multiples comparators are used.
    */
   public boolean equals(Object o) {
     return o == this;

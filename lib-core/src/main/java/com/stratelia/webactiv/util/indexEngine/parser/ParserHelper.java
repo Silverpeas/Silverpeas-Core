@@ -53,16 +53,12 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author $Author: neysseri $
  */
 public class ParserHelper {
 
   /**
-   * 
    * @return the path to the temp directory or null
-   * 
    */
   static public String getTempDirectory() {
     ResourceLocator resource = null;
@@ -102,7 +98,7 @@ public class ParserHelper {
     } catch (NumberFormatException e) {
       SilverTrace.warn("indexEngine", "ParserHelper",
           "indexEngine.MSG_PARSE_STRING_FAIL", resourceLocator
-              .getString("TimeOutParameter"), e);
+          .getString("TimeOutParameter"), e);
     }
     return timeOutParameter;
   }

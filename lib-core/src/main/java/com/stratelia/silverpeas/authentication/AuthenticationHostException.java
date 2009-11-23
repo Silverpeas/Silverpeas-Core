@@ -30,14 +30,13 @@
 package com.stratelia.silverpeas.authentication;
 
 /**
- * 
  * @author tleroi
  * @version
  */
 public class AuthenticationHostException extends AuthenticationException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public AuthenticationHostException(String callingClass, int errorLevel,
       String message) {

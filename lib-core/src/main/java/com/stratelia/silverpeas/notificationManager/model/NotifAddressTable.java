@@ -43,7 +43,8 @@ public class NotifAddressTable extends AbstractTable {
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFADDRESS_COLUMNS = "id,userId,notifName,notifChannelId,address,usage,priority";
+  static final protected String NOTIFADDRESS_COLUMNS =
+      "id,userId,notifName,notifChannelId,address,usage,priority";
 
   /**
    * Returns the unique NotifAddress row having a given id
@@ -238,7 +239,7 @@ public class NotifAddressTable extends AbstractTable {
     // Remove the preferences that are linked to this Address
     nprs = npt
         .getNotifPreferences("select * from ST_NotifPreference where notifAddressId = "
-            + Integer.toString(notifAddressId));
+        + Integer.toString(notifAddressId));
     for (i = 0; i < nprs.length; i++) {
       npt.delete(nprs[i].getId());
     }
@@ -246,7 +247,7 @@ public class NotifAddressTable extends AbstractTable {
     // Update the Default media that is linked to this Address
     ndars = ndat
         .getNotifDefaultAddresss("select * from ST_NotifDefaultAddress where notifAddressId = "
-            + Integer.toString(notifAddressId));
+        + Integer.toString(notifAddressId));
     for (i = 0; i < ndars.length; i++) {
       ndars[i].setNotifAddressId(defaultAddress);
       ndat.update(ndars[i]);

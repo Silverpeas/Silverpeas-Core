@@ -94,8 +94,8 @@ public class TextFieldImpl extends TextField {
 
       SilverTrace.debug("formTemplate", "TextFieldImpl.getSuggestions",
           "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-              + ", componentId = " + componentId + ", templateName = "
-              + templateName);
+          + ", componentId = " + componentId + ", templateName = "
+          + templateName);
 
       rs = statement.executeQuery();
 
@@ -146,8 +146,8 @@ public class TextFieldImpl extends TextField {
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out
         .println("		z-index:"
-            + zindex
-            + "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
+        + zindex
+        + "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
     out.println("	}\n");
     out.println("	#" + fieldName + " {\n");
     out.println("		_position:absolute; /* abs pos needed for ie quirks */\n");

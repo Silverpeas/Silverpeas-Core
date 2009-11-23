@@ -52,8 +52,6 @@ public class NotificationServer {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public NotificationServer() {
@@ -65,18 +63,14 @@ public class NotificationServer {
 
   /**
    * Description of the method. Method name should begin with a lower case.
-   * 
    * @author Name (Name of the method's creator) facultatif
    * @see ClassName (Link to a related class name) facultatif
    * @see ClassName#member (Link to a related class member) facultatif
    * @see functionName (Link to a related function)facultatif
    * @version Text (Information version) facultatif
-   * 
-   * @param pValue
-   *          Description (parameter name should be prefixed by "p").
+   * @param pValue Description (parameter name should be prefixed by "p").
    * @return Description
-   * @exception MyException
-   *              * Description
+   * @exception MyException * Description
    */
   public long addNotification(NotificationData pData)
       throws NotificationServerException {
@@ -102,7 +96,6 @@ public class NotificationServer {
 
   /**
    * Send the NotificationMessage in a JMS Queue
-   * 
    */
   private static void jmsSendToQueue(String notificationMessage,
       String jmsFactory, String jmsQueue, Hashtable p_JmsHeaders)

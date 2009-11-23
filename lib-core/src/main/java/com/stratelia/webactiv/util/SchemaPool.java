@@ -29,10 +29,8 @@ import java.util.List;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * The SchemaPool class manages a pool of Schema shared by all the client (admin
- * classes).
- * 
- * All the public methods are static and the calls are deferred to a singleton.
+ * The SchemaPool class manages a pool of Schema shared by all the client (admin classes). All the
+ * public methods are static and the calls are deferred to a singleton.
  */
 public abstract class SchemaPool {
   /**
@@ -44,8 +42,7 @@ public abstract class SchemaPool {
   abstract protected Schema newSchema(int connectionLot) throws UtilException;
 
   /**
-   * The constructor is private, so we can ensure that only one pool will be
-   * created in the JVM.
+   * The constructor is private, so we can ensure that only one pool will be created in the JVM.
    */
   protected SchemaPool() {
   }
@@ -58,9 +55,7 @@ public abstract class SchemaPool {
   }
 
   /**
-   * Returns an Shema.
-   * 
-   * The returned schema is removed from the pool : so, if our client forgets to
+   * Returns an Shema. The returned schema is removed from the pool : so, if our client forgets to
    * release this schema we don't keep a useless entry.
    */
   protected Schema getInstance() throws UtilException {
@@ -86,9 +81,8 @@ public abstract class SchemaPool {
   }
 
   /**
-   * Release an Scheme previously returned by the pool.
-   * 
-   * We put the released schema in the pool unless this schema isn't ok.
+   * Release an Scheme previously returned by the pool. We put the released schema in the pool
+   * unless this schema isn't ok.
    */
   protected void release(Schema s) {
     if (s != null && s.isOk()) {

@@ -27,8 +27,8 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 
 public class AdminPersistenceException extends AdminException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public AdminPersistenceException(String callingClass, int errorLevel,
       String message) {

@@ -39,8 +39,7 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 
-public class ComponentInst extends AbstractI18NBean implements Serializable,
-    Cloneable, Comparable {
+public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable, Comparable {
   public final static String STATUS_REMOVED = "R";
 
   private String m_sId;
@@ -318,7 +317,6 @@ public class ComponentInst extends AbstractI18NBean implements Serializable,
 
   /**
    * I18N
-   * 
    */
   public String getLabel(String language) {
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);

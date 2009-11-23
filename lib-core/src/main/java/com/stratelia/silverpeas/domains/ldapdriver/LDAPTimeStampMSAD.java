@@ -55,8 +55,8 @@ public class LDAPTimeStampMSAD extends AbstractLDAPTimeStamp {
         "root.MSG_GEN_ENTER_METHOD");
     LDAPEntry[] theEntries = LDAPUtility.search1000Plus(lds, baseDN,
         driverSettings.getScope(), "(&(" + driverSettings.getTimeStampVar()
-            + ">=" + timeStamp + ")" + filter + ")", driverSettings
-            .getTimeStampVar(), driverSettings.getGroupAttributes());
+        + ">=" + timeStamp + ")" + filter + ")", driverSettings
+        .getTimeStampVar(), driverSettings.getGroupAttributes());
     if (theEntries.length > 0) {
       // Problem is : the search1000Plus function sorts normaly by descending
       // order. BUT most LDAP server can't performs this type of order (like

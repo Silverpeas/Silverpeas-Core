@@ -27,8 +27,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class NotificationManagerException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public NotificationManagerException(String callingClass, int errorLevel,
       String message) {
@@ -51,8 +51,7 @@ public class NotificationManagerException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "notificationManager";

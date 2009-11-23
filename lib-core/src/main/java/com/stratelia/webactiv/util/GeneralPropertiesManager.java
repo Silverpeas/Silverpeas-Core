@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.util;
 
 /**
- * 
  * @author Norbert CHAIX
  * @version
  */
@@ -34,7 +33,8 @@ public class GeneralPropertiesManager extends Object {
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
 
-  public static final String GENERAL_PROPERTIES_FILE = "com.stratelia.webactiv.multilang.generalMultilang";
+  public static final String GENERAL_PROPERTIES_FILE =
+      "com.stratelia.webactiv.multilang.generalMultilang";
 
   static ResourceLocator s_GeneralProperties = null;
   static int dvis = 0;

@@ -45,15 +45,13 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * Classe contenant des méthodes statiques de gestion des fichiers zip
- *
  * @author sdevolder
  */
 public class ZipManager {
 
   /**
-   * Méthode nécéssaire car l api ne gère pas les accents. Elle est publique car
-   * utilisée dans les classes utilisant ZipManager.
-   *
+   * Méthode nécéssaire car l api ne gère pas les accents. Elle est publique car utilisée dans
+   * les classes utilisant ZipManager.
    * @param text
    * @return
    */
@@ -83,13 +81,9 @@ public class ZipManager {
   }
 
   /**
-   * Méthode compressant au format zip un fichier ou un dossier de façon
-   * récursive au format zip
-   *
-   * @param filename
-   *          - fichier ou dossier à compresser
-   * @param outfilename
-   *          - fichier zip à creer
+   * Méthode compressant au format zip un fichier ou un dossier de façon récursive au format zip
+   * @param filename - fichier ou dossier à compresser
+   * @param outfilename - fichier zip à creer
    * @return la taille du fichier zip généré en octets
    * @throws FileNotFoundException
    * @throws IOException
@@ -106,7 +100,7 @@ public class ZipManager {
       // zos.setEncoding("Cp437");
 
       if (file.isFile() || file.list().length == 0) // cas fichier ou cas
-                                                    // dossier vide
+      // dossier vide
       {
         byte[] buf = new byte[4096]; // read buffer
         // Création du flux d'entrée du fichier à compresser
@@ -148,17 +142,11 @@ public class ZipManager {
   }
 
   /**
-   * Méthode récursive utilisée par compress_path pour la création de fichiers
-   * zip
-   *
-   * @param filename
-   *          - path du fichier ou du sous répertoire à compresser
-   * @param fileToCreate
-   *          - path de l'éventuel fichier tel qu on le retrouvera dans le zip
-   * @param outfilename
-   *          - fichier de sortie zip passée par la méthode publique
-   * @param zos
-   *          - ZipOutputStream passée par la méthode publique
+   * Méthode récursive utilisée par compress_path pour la création de fichiers zip
+   * @param filename - path du fichier ou du sous répertoire à compresser
+   * @param fileToCreate - path de l'éventuel fichier tel qu on le retrouvera dans le zip
+   * @param outfilename - fichier de sortie zip passée par la méthode publique
+   * @param zos - ZipOutputStream passée par la méthode publique
    * @throws FileNotFoundException
    * @throws IOException
    */
@@ -202,15 +190,11 @@ public class ZipManager {
   }
 
   /**
-   * Transforme la table des chaines de caractères de nom de fichier en une
-   * liste de fichiers pour le chemin passé en paramètre
-   *
-   * @param listFileName
-   *          - table des nom de fichier sous forme de chaine de caractères.
-   * @param path
-   *          - chemin des fichiers contenu dans les chaines de caractères.
-   * @return renvoie une liste d'objets File pour les noms de fichiers passés en
-   *         paramètres
+   * Transforme la table des chaines de caractères de nom de fichier en une liste de fichiers pour
+   * le chemin passé en paramètre
+   * @param listFileName - table des nom de fichier sous forme de chaine de caractères.
+   * @param path - chemin des fichiers contenu dans les chaines de caractères.
+   * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private static List<File> convertListStringToListFile(String[] listFileName,
       String path) {
@@ -225,16 +209,12 @@ public class ZipManager {
   }
 
   /**
-   * Méthode permettant la création et l'organisation d'un fichier zip en lui
-   * passant directement un flux d'entrée TODO: A TESTER!!
-   *
-   * @param inputStream
-   *          - flux de données à enregistrer dans le zip
-   * @param filePathNameToCreate
-   *          - chemin et nom du fichier porté par les données du flux dans le
-   *          zip
-   * @param outfilename
-   *          - chemin et nom du fichier zip à creer ou compléter
+   * Méthode permettant la création et l'organisation d'un fichier zip en lui passant directement
+   * un flux d'entrée TODO: A TESTER!!
+   * @param inputStream - flux de données à enregistrer dans le zip
+   * @param filePathNameToCreate - chemin et nom du fichier porté par les données du flux dans le
+   * zip
+   * @param outfilename - chemin et nom du fichier zip à creer ou compléter
    * @throws FileNotFoundException
    * @throws IOException
    */
@@ -276,9 +256,7 @@ public class ZipManager {
 
   /**
    * Do the work.
-   *
-   * @exception IOException
-   *              Thrown in unrecoverable error.
+   * @exception IOException Thrown in unrecoverable error.
    */
   public static void extract(File source, File dest) throws UtilException {
     if (source == null) {
@@ -294,11 +272,8 @@ public class ZipManager {
 
   /**
    * Extracting a zip format file
-   *
-   * @param File
-   *          - File to extract
-   * @param File
-   *          - Destination path
+   * @param File - File to extract
+   * @param File - Destination path
    * @return nothing
    */
   @SuppressWarnings("unchecked")
@@ -337,7 +312,7 @@ public class ZipManager {
     } catch (IOException ioe) {
       SilverTrace.warn("util", "ZipManager.extractFile()",
           "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
-              + srcF.getPath(), ioe);
+          + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
@@ -368,7 +343,7 @@ public class ZipManager {
     } catch (IOException ioe) {
       SilverTrace.warn("util", "ZipManager.getNbFiles()",
           "util.EXE_ERROR_WHILE_COUNTING_FILE", "sourceFile = "
-              + srcF.getPath(), ioe);
+          + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {

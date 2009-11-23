@@ -40,7 +40,6 @@ public class ScheduledDBReset implements SchedulerEventHandler {
 
   /**
    * Initialize timeout manager
-   * 
    */
   public void initialize(String cronString) {
     try {
@@ -64,14 +63,13 @@ public class ScheduledDBReset implements SchedulerEventHandler {
 
   /**
    * Scheduler Event handler
-   * 
    */
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("admin", "ScheduledDBReset.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName()
-                + "' was not successfull");
+            + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
@@ -87,16 +85,12 @@ public class ScheduledDBReset implements SchedulerEventHandler {
   }
 
   /**
-   * This method is called periodically by the scheduler, it test for each peas
-   * of type processManager if associated model contains states with timeout
-   * events If so, all the instances of these peas that have the "timeout"
-   * states actives are read to check if timeout interval has been reached. In
-   * that case, the administrator can be notified, the active state and the
+   * This method is called periodically by the scheduler, it test for each peas of type
+   * processManager if associated model contains states with timeout events If so, all the instances
+   * of these peas that have the "timeout" states actives are read to check if timeout interval has
+   * been reached. In that case, the administrator can be notified, the active state and the
    * instance are marked as timeout
-   * 
-   * @param currentDate
-   *          the date when the method is called by the scheduler
-   * 
+   * @param currentDate the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters,
    */
   public void doDBReset(Date date) {

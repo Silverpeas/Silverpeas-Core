@@ -65,17 +65,17 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
         String type = properties[i].getPropertyType().getName();
         SilverTrace
             .info(
-                "persistence",
-                "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-                "root.MSG_GEN_PARAM_VALUE", "new(" + beanClassName
-                    + "), property Name = " + properties[i].getName()
-                    + ", type = " + type);
+            "persistence",
+            "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
+            "root.MSG_GEN_PARAM_VALUE", "new(" + beanClassName
+            + "), property Name = " + properties[i].getName()
+            + ", type = " + type);
         if (isTypeValid(type) == false) {
           SilverTrace
               .warn(
-                  "persistence",
-                  "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-                  "persistence.MSG_WARN_PROPERTIE_NOT_MANAGED", "");
+              "persistence",
+              "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
+              "persistence.MSG_WARN_PROPERTIE_NOT_MANAGED", "");
         }
       }
 
@@ -128,7 +128,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       SilverTrace.info("persistence",
           "SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
           "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
-              + ", id= " + pk.getId());
+          + ", id= " + pk.getId());
 
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       prepStmt.executeUpdate();
@@ -175,10 +175,10 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       prepStmt = con.prepareStatement(updateStatement);
       SilverTrace
           .info(
-              "persistence",
-              "SilverpeasBeanDAOImpl.removeWhere( WAPrimaryKey pk, String p_WhereClause )",
-              "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
-                  + ", id= " + pk.getId() + ", whereClause= " + p_WhereClause);
+          "persistence",
+          "SilverpeasBeanDAOImpl.removeWhere( WAPrimaryKey pk, String p_WhereClause )",
+          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
+          + ", id= " + pk.getId() + ", whereClause= " + p_WhereClause);
 
       prepStmt.executeUpdate();
     } catch (Exception e) {
@@ -223,7 +223,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
         SilverTrace.info("persistence",
             "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
             "root.MSG_GEN_PARAM_VALUE", "property Name = "
-                + properties[i].getName() + ", type = " + type);
+            + properties[i].getName() + ", type = " + type);
 
         if (isTypeValid(type) == true) {
           if (statement == null)
@@ -240,7 +240,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       SilverTrace.info("persistence",
           "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
           "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
-              + ", id= " + bean.getPK().getId());
+          + ", id= " + bean.getPK().getId());
 
       int count = prepareStatementSetProperties(prepStmt, bean);
 
@@ -292,7 +292,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
         SilverTrace.info("persistence",
             "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
             "root.MSG_GEN_PARAM_VALUE", "property Name = "
-                + properties[i].getName() + ", type = " + type);
+            + properties[i].getName() + ", type = " + type);
 
         if (isTypeValid(type) == true) {
           if (columns == null) {
@@ -315,7 +315,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       SilverTrace.info("persistence",
           "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
           "root.MSG_GEN_PARAM_VALUE", "queryStr = " + insertStatement
-              + ", id= " + bean.getPK().getId());
+          + ", id= " + bean.getPK().getId());
 
       int count = prepareStatementSetProperties(prepStmt, bean);
 
@@ -370,7 +370,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       SilverTrace.info("persistence",
           "SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
           "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement
-              + ", id= " + pk.getId());
+          + ", id= " + pk.getId());
       prepStmt = con.prepareStatement(selectStatement);
 
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
@@ -428,10 +428,10 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
 
       SilverTrace
           .info(
-              "persistence",
-              "SilverpeasBeanDAOImpl.findByWhereClause(WAPrimaryKey pk, String whereClause)",
-              "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement
-                  + ", id= " + pk.getId() + ", whereClause= " + whereClause);
+          "persistence",
+          "SilverpeasBeanDAOImpl.findByWhereClause(WAPrimaryKey pk, String whereClause)",
+          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement
+          + ", id= " + pk.getId() + ", whereClause= " + whereClause);
       prepStmt = con.prepareStatement(selectStatement);
 
       rs = prepStmt.executeQuery();
@@ -521,7 +521,7 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       String type = properties[i].getPropertyType().getName();
       SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.getColumnNames()",
           "root.MSG_GEN_PARAM_VALUE", "property Name = "
-              + properties[i].getName() + ", type = " + type);
+          + properties[i].getName() + ", type = " + type);
 
       if (isTypeValid(type) == true) {
         if (statement == null)

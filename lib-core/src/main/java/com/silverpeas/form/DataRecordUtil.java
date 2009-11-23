@@ -57,17 +57,8 @@ public class DataRecordUtil {
   }
 
   /**
-   * Returns :
-   * 
-   * "But who is xoxox ?"
-   * 
-   * for : "But who is ${foo}"
-   * 
-   * when xoxox is the value of the foo field,
-   * 
-   * The resolvedVar is used to detect recursive call like :
-   * 
-   * foo = "${foo}"
+   * Returns : "But who is xoxox ?" for : "But who is ${foo}" when xoxox is the value of the foo
+   * field, The resolvedVar is used to detect recursive call like : foo = "${foo}"
    */
   static public String applySubstitution(String text, DataRecord data,
       String lang) {

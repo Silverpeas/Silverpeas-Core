@@ -150,7 +150,7 @@ public class ComponentInstManager {
           "ComponentInstManager.restoreComponentFromBasket",
           SilverpeasException.ERROR,
           "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = "
-              + componentId, e);
+          + componentId, e);
     }
   }
 
@@ -396,7 +396,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.updateComponentOrder",
           SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE_COMPONENT_INHERITANCE", "Component Id : '"
-              + sComponentId + "'", e);
+          + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -576,7 +576,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.getAvailCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -608,7 +608,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.getAvailCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-              + sUserId + "', componentName = " + componentName, e);
+          + sUserId + "', componentName = " + componentName, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -637,7 +637,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.getAvailCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-              + sUserId + "', componentName = " + componentName, e);
+          + sUserId + "', componentName = " + componentName, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -653,7 +653,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.isComponentAvailable",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-              + sUserId + "', componentId = " + componentId, e);
+          + sUserId + "', componentId = " + componentId, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -681,7 +681,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.getAvailCompoIdsInSpace",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-              + sUserId + "', space Id: '" + spaceId + "'", e);
+          + sUserId + "', space Id: '" + spaceId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -702,7 +702,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.getAvailCompoInSpace",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENTS", "user id: '" + sUserId
-              + "', space Id: '" + spaceId + "'", e);
+          + "', space Id: '" + spaceId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -717,7 +717,7 @@ public class ComponentInstManager {
       ddManager.getOrganizationSchema();
       ComponentInstanceRow[] rows = ddManager.organization.instance
           .getAvailComposInSpaceAtRoot(idAsInt(sClientSpaceId),
-              idAsInt(sUserId));
+          idAsInt(sUserId));
 
       String[] ids = new String[rows.length];
       ComponentInstanceRow row = null;
@@ -732,7 +732,7 @@ public class ComponentInstManager {
           "ComponentInstManager.getAvailCompoIdsInSpaceAtRoot",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-              + sUserId + "', space Id: '" + sClientSpaceId + "'", e);
+          + sUserId + "', space Id: '" + sClientSpaceId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }

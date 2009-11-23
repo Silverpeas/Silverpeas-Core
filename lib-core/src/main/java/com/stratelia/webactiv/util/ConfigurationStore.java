@@ -33,19 +33,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * 
  * @author jpouyadou
  * @version
  */
 public interface ConfigurationStore {
   /*
-   * ConfigurationStore.java
-   * 
-   * Created on 17 novembre 2000, 13:44
+   * ConfigurationStore.java Created on 17 novembre 2000, 13:44
    */
 
   /**
-   * 
    * @author jpouyadou
    * @version
    */

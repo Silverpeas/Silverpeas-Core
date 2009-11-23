@@ -28,10 +28,8 @@ import java.io.Serializable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * @author neysseri
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author neysseri To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class XMLField implements Serializable {
 

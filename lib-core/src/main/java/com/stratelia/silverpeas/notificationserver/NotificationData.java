@@ -32,9 +32,8 @@ import java.util.*;
 import com.stratelia.silverpeas.silvertrace.*;
 
 /**
- * Title: Notification Server Description: contains a Notification structure
- * Copyright: Copyright (c) 2000 Company: Stratelia
- * 
+ * Title: Notification Server Description: contains a Notification structure Copyright: Copyright
+ * (c) 2000 Company: Stratelia
  * @author : eDurand
  * @version 1.0
  */
@@ -62,8 +61,6 @@ public class NotificationData implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public NotificationData() {
@@ -71,7 +68,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mNotificationId
    */
   public long getNotificationId() {
@@ -80,7 +76,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mLoginUser
    */
   public String getLoginUser() {
@@ -89,7 +84,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mLoginPassword
    */
   public String getLoginPassword() {
@@ -98,7 +92,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mMessage
    */
   public String getMessage() {
@@ -107,7 +100,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mComment
    */
   public String getComment() {
@@ -116,7 +108,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mSenderName
    */
   public String getSenderName() {
@@ -125,7 +116,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mSenderId
    */
   public String getSenderId() {
@@ -134,7 +124,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mTargetChannel
    */
   public String getTargetChannel() {
@@ -143,7 +132,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mTargetReceipt
    */
   public String getTargetReceipt() {
@@ -152,7 +140,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mTargetName
    */
   public String getTargetName() {
@@ -161,7 +148,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mTargetParam
    */
   public Hashtable getTargetParam() {
@@ -170,7 +156,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mPrioritySpeed
    */
   public String getPrioritySpeed() {
@@ -179,7 +164,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mReportToSenderStatus
    */
   public String getReportToSenderStatus() {
@@ -188,7 +172,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mReportToSenderTargetChannel
    */
   public String getReportToSenderTargetChannel() {
@@ -197,7 +180,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mReportToSenderTargetReceipt
    */
   public String getReportToSenderTargetReceipt() {
@@ -206,7 +188,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mReportToSenderTargetParam
    */
   public String getReportToSenderTargetParam() {
@@ -215,7 +196,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mReportToLogStatus
    */
   public String getReportToLogStatus() {
@@ -224,7 +204,6 @@ public class NotificationData implements Serializable {
 
   /**
    * getters
-   * 
    * @return mAnswerAllowed
    */
   public boolean isAnswerAllowed() {
@@ -233,7 +212,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pNotificationId
    */
   public void setNotificationId(long pNotificationId) {
@@ -242,7 +220,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pUser
    */
   public void setLoginUser(String pUser) {
@@ -251,7 +228,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pPassword
    */
   public void setLoginPassword(String pPassword) {
@@ -260,7 +236,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pMessage
    */
   public void setMessage(String pMessage) {
@@ -269,7 +244,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pComment
    */
   public void setComment(String pComment) {
@@ -278,7 +252,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pSenderName
    */
   public void setSenderName(String pSenderName) {
@@ -287,7 +260,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pSenderId
    */
   public void setSenderId(String pSenderId) {
@@ -296,7 +268,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pTargetChannel
    */
   public void setTargetChannel(String pTargetChannel) {
@@ -305,7 +276,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pTargetChannel
    */
   public void setTargetReceipt(String pTargetReceipt) {
@@ -314,7 +284,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pTargetName
    */
   public void setTargetName(String pTargetName) {
@@ -323,7 +292,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pTargetParam
    */
   public void setTargetParam(Hashtable pTargetParam) {
@@ -332,7 +300,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pPrioritySpeed
    */
   public void setPrioritySpeed(String pPrioritySpeed) {
@@ -341,7 +308,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pReportToSenderStatus
    */
   public void setReportToSenderStatus(String pReportToSenderStatus) {
@@ -350,7 +316,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pReportToSenderTargetChannel
    */
   public void setReportToSenderTargetChannel(String pReportToSenderTargetChannel) {
@@ -359,7 +324,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pReportToSenderTargetReceipt
    */
   public void setReportToSenderTargetReceipt(String pReportToSenderTargetReceipt) {
@@ -368,7 +332,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pReportToSenderTargetParam
    */
   public void setReportToSenderTargetParam(String pReportToSenderTargetParam) {
@@ -377,7 +340,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param pReportToLogStatus
    */
   public void setReportToLogStatus(String pReportToLogStatus) {
@@ -386,7 +348,6 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * 
    * @param mAnswerAllowed
    */
   public void setAnswerAllowed(boolean answerAllowed) {
@@ -397,37 +358,37 @@ public class NotificationData implements Serializable {
     if (SilverTrace.getTraceLevel("notificationServer", true) <= SilverTrace.TRACE_LEVEL_INFO) {
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "LoginUser : "
-              + mLoginUser);
+          + mLoginUser);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Message : " + mMessage);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "NotificationId : "
-              + Long.toString(mNotificationId));
+          + Long.toString(mNotificationId));
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderId : " + mSenderId);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Answer allowed : "
-              + mAnswerAllowed);
+          + mAnswerAllowed);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderName : "
-              + mSenderName);
+          + mSenderName);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Comment : " + mComment);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetChannel : "
-              + mTargetChannel);
+          + mTargetChannel);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetReceipt : "
-              + mTargetReceipt);
+          + mTargetReceipt);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetName : "
-              + mTargetName);
+          + mTargetName);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "PrioritySpeed : "
-              + mPrioritySpeed);
+          + mPrioritySpeed);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "ReportToSenderStatus : "
-              + mReportToSenderStatus);
+          + mReportToSenderStatus);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "ReportToSenderTargetChannel : " + mReportToSenderTargetChannel);
@@ -439,7 +400,7 @@ public class NotificationData implements Serializable {
           "ReportToSenderTargetParam : " + mReportToSenderTargetParam);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "ReportToLogStatus : "
-              + mReportToLogStatus);
+          + mReportToLogStatus);
     }
   }
 

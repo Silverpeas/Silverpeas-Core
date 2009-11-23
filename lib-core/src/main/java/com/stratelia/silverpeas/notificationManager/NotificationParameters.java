@@ -32,9 +32,7 @@ import java.util.Date;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This class contents all needed parameters to send a notification with the
- * NotificationManager
- * 
+ * This class contents all needed parameters to send a notification with the NotificationManager
  * @author Thierry Leroi
  * @version %I%, %G%
  */
@@ -156,7 +154,7 @@ public class NotificationParameters {
           SilverTrace.info("notificationManager",
               "NotificationParameters.traceObject",
               "notificationManager.MSG_INFO_DUMPNOTIFICATION", "MediaType : "
-                  + Integer.toString(iMediaType));
+              + Integer.toString(iMediaType));
           break;
       }
       SilverTrace.info("notificationManager",
@@ -169,31 +167,31 @@ public class NotificationParameters {
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Message : "
-              + sMessage);
+          + sMessage);
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "FromUserId : "
-              + Integer.toString(iFromUserId));
+          + Integer.toString(iFromUserId));
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "FromSenderName : "
-              + senderName);
+          + senderName);
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "AnswerAllowed : "
-              + bAnswerAllowed);
+          + bAnswerAllowed);
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Source : "
-              + sSource);
+          + sSource);
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "SessionId : "
-              + sSessionId);
+          + sSessionId);
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Date : "
-              + dDate.toString());
+          + dDate.toString());
 
       if (connection != null)
         SilverTrace.info("notificationManager",

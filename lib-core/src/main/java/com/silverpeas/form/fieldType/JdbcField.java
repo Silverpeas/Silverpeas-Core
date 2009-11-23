@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * A JdbcField stores a value of database field.
- * 
  * @see Field
  * @see FieldDisplayer
  */

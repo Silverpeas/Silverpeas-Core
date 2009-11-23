@@ -70,7 +70,7 @@ public class SpaceInstanciateur extends Object {
       String fullPath = xmlPackage + File.separator + spaceName + ".xml";
       SilverTrace.info("admin", "SpaceInstanciateur.SpaceInstanciateur",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "space name: '" + spaceName
-              + "', full path: '" + fullPath + "'");
+          + "', full path: '" + fullPath + "'");
       spaceTemplates.put(spaceName, new SpaceTemplate(fullPath,
           allComponentsModels));
     }
@@ -87,13 +87,13 @@ public class SpaceInstanciateur extends Object {
       SilverTrace.info("admin",
           "SpaceInstanciateur.getTemplateMappedComponentProfile",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-              + templateName + "' NOT FOUND !!!!!!!!!");
+          + templateName + "' NOT FOUND !!!!!!!!!");
       return new SpaceTemplateProfile[0];
     } else {
       SilverTrace.info("admin",
           "SpaceInstanciateur.getTemplateMappedComponentProfile",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-              + templateName);
+          + templateName);
       return st.getTemplateProfiles();
     }
   }
@@ -104,12 +104,12 @@ public class SpaceInstanciateur extends Object {
     if (st == null) {
       SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-              + templateName + "' NOT FOUND !!!!!!!!!");
+          + templateName + "' NOT FOUND !!!!!!!!!");
       return null;
     } else {
       SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-              + templateName);
+          + templateName);
       return st.makeSpaceInst();
     }
   }

@@ -50,7 +50,6 @@ import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 
 /**
  * A TextParser parse a text file without any processing.
- * 
  * @author $Author: neysseri $
  */
 public class TextParser implements Parser {
@@ -63,11 +62,8 @@ public class TextParser implements Parser {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param path
    * @param encoding
-   * 
    * @return
    */
   public Reader getReader(String path, String encoding) {

@@ -44,10 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The UniqueIdFieldDisplayer displays a unique id as string in a read-only mode
- * Unique id is the result of the new Date().getTime() operation.
- * A suffix can be added by using the "suffix" parameter (value "userid")
- * 
+ * The UniqueIdFieldDisplayer displays a unique id as string in a read-only mode Unique id is the
+ * result of the new Date().getTime() operation. A suffix can be added by using the "suffix"
+ * parameter (value "userid")
  * @author Nicolas EYSSERIC
  * @see Field
  * @see FieldTemplate
@@ -60,13 +59,14 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   public String[] getManagedTypes() {
-    return new String[]{TextField.TYPE};
+    return new String[] { TextField.TYPE };
   }
 
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "UniqueIdFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "UniqueIdFieldDisplayer.displayScripts",
+          "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
@@ -79,7 +79,8 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "UniqueIdFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "UniqueIdFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     String fieldName = template.getFieldName();
@@ -108,15 +109,18 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
     out.println(input.toString());
   }
 
-  public List<String> update(String newValue, Field field, FieldTemplate template, PagesContext pagesContext)
+  public List<String> update(String newValue, Field field, FieldTemplate template,
+      PagesContext pagesContext)
       throws FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", TextField.TYPE);
+      throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {
-      throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
+      throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
     }
     return new ArrayList<String>();
   }

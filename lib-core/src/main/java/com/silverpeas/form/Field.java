@@ -26,17 +26,10 @@ package com.silverpeas.form;
 import java.io.Serializable;
 
 /**
- * A Field is an item of a DataRecord.
- * 
- * The fields of a record may have different types, but they are all managed via
- * this interface.
- * 
- * To be displayed in a jsp page a field must be handled by a specific
- * FieldDisplayer which is aware of the internal data type and format of the
- * field.
- * 
- * The links between Fields and FieldDisplayers are managed by a RecordTemplate.
- * 
+ * A Field is an item of a DataRecord. The fields of a record may have different types, but they are
+ * all managed via this interface. To be displayed in a jsp page a field must be handled by a
+ * specific FieldDisplayer which is aware of the internal data type and format of the field. The
+ * links between Fields and FieldDisplayers are managed by a RecordTemplate.
  * @see DataRecord
  * @see FieldDisplayer
  * @see RecordTemplate
@@ -58,7 +51,6 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value from a normalized string value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the string value is ill formed.
    */
@@ -76,15 +68,13 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value from a local string value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the string value is ill formed.
    */
   public void setValue(String value, String lang) throws FormException;
 
   /**
-   * Returns true if the local value isn't ill formed and this field isn't read
-   * only.
+   * Returns true if the local value isn't ill formed and this field isn't read only.
    */
   public boolean acceptValue(String value, String lang);
 
@@ -95,7 +85,6 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value from a normalized String value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the value is not a normalized.
    */
@@ -113,15 +102,13 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set this field value.
-   * 
    * @throw FormException when the field is readOnly.
    * @throw FormException when the value has a wrong type.
    */
   public void setObjectValue(Object value) throws FormException;
 
   /**
-   * Returns true if the value hasn't a wrong type and this field isn't read
-   * only.
+   * Returns true if the value hasn't a wrong type and this field isn't read only.
    */
   public boolean acceptObjectValue(Object value);
 
@@ -132,7 +119,6 @@ public interface Field extends Serializable, Comparable {
 
   /**
    * Set to null this field.
-   * 
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */

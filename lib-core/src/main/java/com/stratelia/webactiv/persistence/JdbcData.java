@@ -25,7 +25,6 @@ package com.stratelia.webactiv.persistence;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author
  * @version 1.0
  */

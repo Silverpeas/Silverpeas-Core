@@ -24,8 +24,7 @@
 package com.stratelia.silverpeas.scheduler;
 
 /**
- * This exception is thrown by the scheduler framework. Could be used for
- * exception classification.
+ * This exception is thrown by the scheduler framework. Could be used for exception classification.
  */
 public class SchedulerException extends Exception {
   public SchedulerException() {
@@ -33,8 +32,7 @@ public class SchedulerException extends Exception {
   }
 
   /**
-   * @param aMessage
-   *          The exception message
+   * @param aMessage The exception message
    */
   public SchedulerException(String aMessage) {
     super(aMessage);

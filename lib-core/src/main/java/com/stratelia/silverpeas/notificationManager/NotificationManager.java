@@ -65,8 +65,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -96,11 +94,8 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * get the notifications addresses of a user
-   * 
-   * @param aUserId
-   *          : id of the user as in the "id" field of "ST_USER" table.
-   * @return an ArrayList of properties containing "name", "type", "usage" and
-   *         "address" keys
+   * @param aUserId : id of the user as in the "id" field of "ST_USER" table.
+   * @return an ArrayList of properties containing "name", "type", "usage" and "address" keys
    * @throws NotificationManagerException
    */
   public ArrayList getNotificationAddresses(int aUserId)
@@ -115,9 +110,9 @@ public class NotificationManager implements NotificationParameterNames {
       params.iMediaType = NotificationParameters.ADDRESS_BASIC_POPUP;
       adresses
           .add(notifAddressRowToProperties(getNotifAddressRow(params, aUserId,
-              schema), false, false, true, isDefaultAddress(
-              NotificationParameters.ADDRESS_BASIC_POPUP, aUserId, schema),
-              schema));
+          schema), false, false, true, isDefaultAddress(
+          NotificationParameters.ADDRESS_BASIC_POPUP, aUserId, schema),
+          schema));
       params.iMediaType = NotificationParameters.ADDRESS_BASIC_SILVERMAIL;
       adresses.add(notifAddressRowToProperties(getNotifAddressRow(params,
           aUserId, schema), false, false, true, isDefaultAddress(
@@ -131,9 +126,9 @@ public class NotificationManager implements NotificationParameterNames {
       params.iMediaType = NotificationParameters.ADDRESS_BASIC_REMOVE;
       adresses
           .add(notifAddressRowToProperties(getNotifAddressRow(params, aUserId,
-              schema), false, false, false, isDefaultAddress(
-              NotificationParameters.ADDRESS_BASIC_REMOVE, aUserId, schema),
-              schema));
+          schema), false, false, false, isDefaultAddress(
+          NotificationParameters.ADDRESS_BASIC_REMOVE, aUserId, schema),
+          schema));
 
       // Add user's specific medias
       NotifAddressRow[] nar = nat.getAllByUserId(aUserId);
@@ -146,7 +141,7 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.getNotificationAddresses()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_NOTIF_ADDRESSES", "UserId="
-              + Integer.toString(aUserId), e);
+          + Integer.toString(aUserId), e);
     } finally {
       closeSchema(schema);
     }
@@ -155,14 +150,9 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aNotificationAddressId
-   * 
    * @return
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public Properties getNotificationAddress(int aNotificationAddressId,
@@ -184,8 +174,8 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.getNotificationAddress()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_NOTIF_ADDRESS", "UserId="
-              + Integer.toString(aUserId) + ",NotifAddId="
-              + Integer.toString(aNotificationAddressId), e);
+          + Integer.toString(aUserId) + ",NotifAddId="
+          + Integer.toString(aNotificationAddressId), e);
     } finally {
       closeSchema(schema);
     }
@@ -231,7 +221,7 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.getDefaultAddresses()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_DEFAULT_ADDRESSES", "UserId="
-              + Integer.toString(aUserId), e);
+          + Integer.toString(aUserId), e);
     } finally {
       closeSchema(schema);
     }
@@ -240,7 +230,6 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * get All the priorities types
-   * 
    * @return an ArrayList of properties containing "id" and "name" keys
    */
   public ArrayList getNotifPriorities() {
@@ -266,7 +255,6 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * get All the usage types
-   * 
    * @return an ArrayList of properties containing "id" and "name" keys
    */
   public ArrayList getNotifUsages() {
@@ -299,7 +287,6 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * get All the channel types from the database.
-   * 
    * @return an ArrayList of properties containing "id" and "name" keys
    * @throws NotificationManagerException
    */
@@ -336,11 +323,8 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * get the notifications preferences of a user
-   * 
-   * @param aUserId
-   *          : id of the user as in the "id" field of "ST_USER" table.
-   * @return an ArrayList of properties containing "name", "type", "usage" and
-   *         "address" keys
+   * @param aUserId : id of the user as in the "id" field of "ST_USER" table.
+   * @return an ArrayList of properties containing "name", "type", "usage" and "address" keys
    * @throws NotificationManagerException
    */
   public ArrayList getNotifPreferences(int aUserId)
@@ -363,7 +347,7 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.getNotifPreferences()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_NOTIF_PREFS", "UserId="
-              + Integer.toString(aUserId), e);
+          + Integer.toString(aUserId), e);
     } finally {
       closeSchema(schema);
     }
@@ -372,14 +356,9 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @return
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public Properties getNotifPreference(int aPrefId, int aUserId)
@@ -399,8 +378,8 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.getNotifPreference()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_NOTIF_PREF", "UserId="
-              + Integer.toString(aUserId) + ",prefID="
-              + Integer.toString(aPrefId), e);
+          + Integer.toString(aUserId) + ",prefID="
+          + Integer.toString(aPrefId), e);
     } finally {
       closeSchema(schema);
     }
@@ -408,14 +387,9 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aUserId
-   * 
    * @return The user's default address Id
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public int getDefaultAddress(int aUserId) throws NotificationManagerException {
@@ -436,7 +410,7 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.getDefaultAddress()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_DEFAULT_ADDRESS", "UserId="
-              + Integer.toString(aUserId), e);
+          + Integer.toString(aUserId), e);
     } finally {
       closeSchema(schema);
     }
@@ -445,13 +419,9 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aNotificationAddressId
    * @param aUserId
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void setDefaultAddress(int aNotificationAddressId, int aUserId)
@@ -488,8 +458,8 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.setDefaultAddress()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_SET_DEFAULT_ADDRESS", "UserId="
-              + Integer.toString(aUserId) + ",NotifAddId="
-              + Integer.toString(aNotificationAddressId), e);
+          + Integer.toString(aUserId) + ",NotifAddId="
+          + Integer.toString(aNotificationAddressId), e);
     } finally {
       closeSchema(schema);
     }
@@ -497,15 +467,11 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aUserId
    * @param aInstanceId
    * @param aMessageType
    * @param aDestinationId
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void savePreferences(int aUserId, int aInstanceId, int aMessageType,
@@ -520,7 +486,7 @@ public class NotificationManager implements NotificationParameterNames {
       }
       NotifPreferenceRow npr = npt
           .getByUserIdAndComponentInstanceIdAndMessageType(aUserId,
-              aInstanceId, aMessageType);
+          aInstanceId, aMessageType);
 
       // -1 destination par défaut
       if (aDestinationId == -1) {
@@ -557,9 +523,9 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.savePreferences()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_SET_NOTIF_PREF", "UserId="
-              + Integer.toString(aUserId) + ",NotifAddId="
-              + Integer.toString(aDestinationId) + ",CompInstId="
-              + Integer.toString(aInstanceId), e);
+          + Integer.toString(aUserId) + ",NotifAddId="
+          + Integer.toString(aDestinationId) + ",CompInstId="
+          + Integer.toString(aInstanceId), e);
     } finally {
       closeSchema(schema);
     }
@@ -567,17 +533,13 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aNotificationAddressId
    * @param aUserId
    * @param aNotifName
    * @param aChannelId
    * @param aAddress
    * @param aUsage
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void saveNotifAddress(int aNotificationAddressId, int aUserId,
@@ -609,9 +571,9 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.saveNotifAddress()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_SET_NOTIF_ADDRESS", "UserId="
-              + Integer.toString(aUserId) + ",NotifAddId="
-              + Integer.toString(aNotificationAddressId) + ",Name="
-              + aNotifName, e);
+          + Integer.toString(aUserId) + ",NotifAddId="
+          + Integer.toString(aNotificationAddressId) + ",Name="
+          + aNotifName, e);
     } finally {
       closeSchema(schema);
     }
@@ -619,12 +581,8 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aPreferenceId
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void deletePreference(int aPreferenceId)
@@ -650,7 +608,7 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.deletePreference()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_DEL_NOTIF_PREF", "prefID="
-              + Integer.toString(aPreferenceId), e);
+          + Integer.toString(aPreferenceId), e);
     } finally {
       closeSchema(schema);
     }
@@ -658,12 +616,8 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aNotificationAddressId
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void deleteNotifAddress(int aNotificationAddressId)
@@ -690,7 +644,7 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.deleteNotifAddress()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_DEL_NOTIF_ADDRESS", "notifID="
-              + Integer.toString(aNotificationAddressId), e);
+          + Integer.toString(aNotificationAddressId), e);
     } finally {
       closeSchema(schema);
     }
@@ -698,9 +652,7 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Send a test message to the given notification address Id
-   * 
-   * @param id
-   *          of the table ST_NotifAddress row to send notification to.
+   * @param id of the table ST_NotifAddress row to send notification to.
    */
   public void testNotifAddress(int aNotificationAddressId, int aUserId)
       throws NotificationManagerException {
@@ -724,14 +676,14 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.testNotifAddress()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_CREATE_TEST_NOTIFICATION", "UserId="
-              + Integer.toString(aUserId) + ",NotifAddId="
-              + Integer.toString(aNotificationAddressId), e);
+          + Integer.toString(aUserId) + ",NotifAddId="
+          + Integer.toString(aNotificationAddressId), e);
     } catch (NotificationServerException e) {
       throw new NotificationManagerException(
           "NotificationManager.testNotifAddress()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_SEND_TEST_NOTIFICATION", "UserId="
-              + Integer.toString(aUserId) + ",NotifAddId="
-              + Integer.toString(aNotificationAddressId), e);
+          + Integer.toString(aUserId) + ",NotifAddId="
+          + Integer.toString(aNotificationAddressId), e);
     } finally {
       closeSchema(schema);
     }
@@ -739,13 +691,9 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param params
    * @param aUserIds
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void notifyUsers(NotificationParameters params, String[] aUserIds)
@@ -776,7 +724,7 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.notifyUsers()", SilverpeasException.ERROR,
           "notificationManager.EX_TITLE_TOO_LONG", "Max="
-              + Integer.toString(NotificationParameters.MAX_SIZE_TITLE));
+          + Integer.toString(NotificationParameters.MAX_SIZE_TITLE));
     }
     if (params.sMessage == null) {
       params.sMessage = "";
@@ -799,12 +747,12 @@ public class NotificationManager implements NotificationParameterNames {
           throw new NotificationManagerException(
               "NotificationManager.notifyUsers()", SilverpeasException.ERROR,
               "notificationManager.EX_CANT_SEND_USER_NOTIFICATION", "UserId="
-                  + aUserIds[i], e);
+              + aUserIds[i], e);
         } catch (Exception ex) {
           SilverTrace.warn("notificationManager",
               "NotificationManager.notifyUsers()",
               "notificationManager.EX_CANT_SEND_USER_NOTIFICATION", "UserId="
-                  + aUserIds[i], ex);
+              + aUserIds[i], ex);
         }
       }
     } catch (UtilException e) {
@@ -818,14 +766,9 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param groupId
-   * 
    * @return
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public String[] getUsersFromGroup(String groupId)
@@ -845,20 +788,15 @@ public class NotificationManager implements NotificationParameterNames {
       throw new NotificationManagerException(
           "NotificationManager.getUsersFromGroup()", SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_USERS_OF_GROUP", "groupId="
-              + groupId, e);
+          + groupId, e);
     }
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param groupId
-   * 
    * @return
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public String getComponentFullName(String compInst)
@@ -878,7 +816,7 @@ public class NotificationManager implements NotificationParameterNames {
           "NotificationManager.getComponentFullName()",
           SilverpeasException.ERROR,
           "notificationManager.EX_CANT_GET_COMPONENT_FULL_NAME", "CompInstId"
-              + compInst, e);
+          + compInst, e);
     }
   }
 
@@ -897,7 +835,7 @@ public class NotificationManager implements NotificationParameterNames {
         SilverTrace.warn("notificationManager",
             "NotificationManager.getUserEmail()",
             "notificationManager.EX_CANT_GET_USER_EMAIL", "UserId="
-                + Integer.toString(userId), e);
+            + Integer.toString(userId), e);
       }
     }
     return valret;
@@ -918,7 +856,7 @@ public class NotificationManager implements NotificationParameterNames {
         SilverTrace.warn("notificationManager",
             "NotificationManager.getUserAccessLevel()",
             "notificationManager.EX_CANT_GET_USER_FULL_NAME", "UserId="
-                + Integer.toString(userId), e);
+            + Integer.toString(userId), e);
       }
     }
     return valret;
@@ -939,7 +877,7 @@ public class NotificationManager implements NotificationParameterNames {
         SilverTrace.warn("notificationManager",
             "NotificationManager.getUserFullName()",
             "notificationManager.EX_CANT_GET_USER_FULL_NAME", "UserId="
-                + Integer.toString(userId), e);
+            + Integer.toString(userId), e);
       }
     }
     return valret;
@@ -947,8 +885,6 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aUserId
    * @param npr
    * @param canEdit
@@ -956,11 +892,8 @@ public class NotificationManager implements NotificationParameterNames {
    * @param canTest
    * @param isDefault
    * @param schema
-   * 
    * @return
-   * 
    * @throws UtilException
-   * 
    * @see
    */
   protected Properties notifPreferencesRowToProperties(int aUserId,
@@ -995,19 +928,14 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nar
    * @param canEdit
    * @param canDelete
    * @param canTest
    * @param isDefault
    * @param schema
-   * 
    * @return
-   * 
    * @throws UtilException
-   * 
    * @see
    */
   protected Properties notifAddressRowToProperties(NotifAddressRow nar,
@@ -1046,16 +974,11 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param params
    * @param aUserId
    * @param schema
-   * 
    * @return
-   * 
    * @throws UtilException
-   * 
    * @see
    */
   protected NotifAddressRow getNotifAddressRow(NotificationParameters params,
@@ -1066,7 +989,7 @@ public class NotificationManager implements NotificationParameterNames {
     SilverTrace.info("notificationManager",
         "NotificationManager.getNotifAddressRow()",
         "root.MSG_GEN_ENTER_METHOD", "Enter with addressId = "
-            + Integer.toString(addressId));
+        + Integer.toString(addressId));
     if (addressId == NotificationParameters.ADDRESS_COMPONENT_DEFINED) {
       addressId = NotificationParameters.ADDRESS_DEFAULT; // In case of
       // problems, try with
@@ -1076,7 +999,7 @@ public class NotificationManager implements NotificationParameterNames {
 
         npr = schema.notifPreference
             .getByUserIdAndComponentInstanceIdAndMessageType(aUserId,
-                params.iComponentInstance, params.iMessagePriority);
+            params.iComponentInstance, params.iMessagePriority);
         if (npr != null) {
           addressId = npr.getNotifAddressId();
         }
@@ -1102,7 +1025,7 @@ public class NotificationManager implements NotificationParameterNames {
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC POPUP");
         nar = new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_POPUP,
             aUserId, m_Multilang.getString("defaultAddressPOPUP"), 3, Integer
-                .toString(aUserId), NotificationParameters.USAGE_PRO,
+            .toString(aUserId), NotificationParameters.USAGE_PRO,
             params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_REMOVE:
@@ -1120,7 +1043,7 @@ public class NotificationManager implements NotificationParameterNames {
         nar = new NotifAddressRow(
             NotificationParameters.ADDRESS_BASIC_SILVERMAIL, aUserId,
             m_Multilang.getString("defaultAddressSILVERMAIL"), 4, Integer
-                .toString(aUserId), NotificationParameters.USAGE_PRO,
+            .toString(aUserId), NotificationParameters.USAGE_PRO,
             params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_SMTP_MAIL:
@@ -1139,7 +1062,7 @@ public class NotificationManager implements NotificationParameterNames {
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC SERVER");
         nar = new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_SERVER,
             aUserId, m_Multilang.getString("defaultAddressSERVER"), 6, Integer
-                .toString(aUserId), NotificationParameters.USAGE_PRO,
+            .toString(aUserId), NotificationParameters.USAGE_PRO,
             params.iMessagePriority);
         break;
       case NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER:
@@ -1148,14 +1071,14 @@ public class NotificationManager implements NotificationParameterNames {
             "root.MSG_GEN_PARAM_VALUE", "addressId = BASIC COMMUNICATION USER");
         nar = new NotifAddressRow(NotificationParameters.ADDRESS_BASIC_POPUP,
             aUserId, m_Multilang.getString("defaultAddressPOPUP"), 3, Integer
-                .toString(aUserId), NotificationParameters.USAGE_PRO,
+            .toString(aUserId), NotificationParameters.USAGE_PRO,
             params.iMessagePriority);
         break;
       default:
         SilverTrace.info("notificationManager",
             "NotificationManager.getNotifAddressRow()",
             "root.MSG_GEN_PARAM_VALUE", "addressId = "
-                + Integer.toString(addressId));
+            + Integer.toString(addressId));
         nar = schema.notifAddress.getNotifAddress(addressId);
         break;
     }
@@ -1205,16 +1128,11 @@ public class NotificationManager implements NotificationParameterNames {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param params
    * @param aUserId
    * @param schema
-   * 
    * @return
-   * 
    * @throws UtilException
-   * 
    * @see
    */
   protected NotificationData createNotificationData(
@@ -1237,9 +1155,9 @@ public class NotificationManager implements NotificationParameterNames {
     // Set subject parameter
     SilverTrace
         .info("notificationManager",
-            "NotificationManager.createNotificationData()",
-            "root.MSG_GEN_PARAM_VALUE", "params.iFromUserId ="
-                + params.iFromUserId);
+        "NotificationManager.createNotificationData()",
+        "root.MSG_GEN_PARAM_VALUE", "params.iFromUserId ="
+        + params.iFromUserId);
     if ("Y".equalsIgnoreCase(ncr.getSubjectAvailable())) {
       theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
@@ -1279,7 +1197,7 @@ public class NotificationManager implements NotificationParameterNames {
       SilverTrace.info("notificationManager",
           "NotificationManager.createNotificationData()",
           "root.MSG_GEN_PARAM_VALUE", "nd.getUserEmail(params.iFromUserId) ="
-              + getUserEmail(params.iFromUserId));
+          + getUserEmail(params.iFromUserId));
     } else if (FROM_NAME.equalsIgnoreCase(ncr.getFromAvailable())) {
       theExtraParams.put(NotificationParameterNames.FROM, senderName);
     } else {
@@ -1308,7 +1226,7 @@ public class NotificationManager implements NotificationParameterNames {
           SilverTrace.warn("notificationManager",
               "NotificationManager.createNotificationData()",
               "notificationManager.EX_CANT_GET_INSTANCE_INFO", "instanceId = "
-                  + params.iComponentInstance, e);
+              + params.iComponentInstance, e);
         }
       }
     }
@@ -1349,7 +1267,7 @@ public class NotificationManager implements NotificationParameterNames {
     SilverTrace.info("notificationManager",
         "NotificationManager.createNotificationData()",
         "root.MSG_GEN_PARAM_VALUE", "nd.isAnswerAllowed() ="
-            + nd.isAnswerAllowed());
+        + nd.isAnswerAllowed());
     return nd;
   }
 

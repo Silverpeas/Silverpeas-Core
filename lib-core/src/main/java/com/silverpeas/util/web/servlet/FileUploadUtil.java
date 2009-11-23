@@ -84,11 +84,13 @@ public class FileUploadUtil {
   }
 
   /**
-   * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter is not found.
+   * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
+   * is not found.
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
-   * @return the parameter value from the list of FileItems. Returns the defaultValue if the parameter is not found.
+   * @return the parameter value from the list of FileItems. Returns the defaultValue if the
+   * parameter is not found.
    */
   public static String getParameter(List<FileItem> items, String parameterName, String defaultValue) {
     Iterator<FileItem> iter = items.iterator();
@@ -105,7 +107,8 @@ public class FileUploadUtil {
    * Get the parameter value from the list of FileItems. Returns null if the parameter is not found.
    * @param items the items resulting from parsing the request.
    * @param parameterName
-   * @return the parameter value from the list of FileItems. Returns null if the parameter is not found.
+   * @return the parameter value from the list of FileItems. Returns null if the parameter is not
+   * found.
    */
   public static String getParameter(List<FileItem> items, String parameterName) {
     return getParameter(items, parameterName, null);
@@ -158,7 +161,8 @@ public class FileUploadUtil {
     if (fullFileName == null) {
       return "";
     }
-    return fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName.length());
+    return fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName
+        .length());
   }
 
   public static void saveToFile(File file, FileItem item) throws IOException {

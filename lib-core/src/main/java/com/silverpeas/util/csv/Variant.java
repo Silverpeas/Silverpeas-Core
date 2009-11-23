@@ -142,7 +142,7 @@ public class Variant {
     } catch (NumberFormatException e) {
       throw new UtilException("Variant.setValueInteger",
           SilverpeasException.ERROR, "root.EX_INVALID_ARG", "Value=" + value
-              + " Type=" + m_type, e);
+          + " Type=" + m_type, e);
     }
     return m_iValue;
   }
@@ -153,7 +153,7 @@ public class Variant {
     } catch (NumberFormatException e) {
       throw new UtilException("Variant.setValueLong",
           SilverpeasException.ERROR, "root.EX_INVALID_ARG", "Value=" + value
-              + " Type=" + m_type, e);
+          + " Type=" + m_type, e);
     }
     return m_lValue;
   }
@@ -178,7 +178,7 @@ public class Variant {
     if (error) {
       throw new UtilException("Variant.setValueBoolean",
           SilverpeasException.ERROR, "root.EX_INVALID_ARG", "Value=" + value
-              + " Type=" + m_type);
+          + " Type=" + m_type);
     }
     return m_bValue;
   }
@@ -189,7 +189,7 @@ public class Variant {
     } catch (NumberFormatException e) {
       throw new UtilException("Variant.setValueFloat",
           SilverpeasException.ERROR, "root.EX_INVALID_ARG", "Value=" + value
-              + " Type=" + m_type, e);
+          + " Type=" + m_type, e);
     }
     return m_fValue;
   }
@@ -204,7 +204,7 @@ public class Variant {
     } catch (ParseException e) {
       throw new UtilException("Variant.setValueDate",
           SilverpeasException.ERROR, "root.EX_INVALID_ARG", "Value=" + value
-              + " Type=" + m_type, e);
+          + " Type=" + m_type, e);
     }
     return m_dValue;
   }

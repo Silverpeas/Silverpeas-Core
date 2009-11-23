@@ -75,13 +75,15 @@ public class ProxyAccessManager implements AccessManager {
   }
 
   @Override
-  public void init(AMContext context, AccessControlProvider acProvider, WorkspaceAccessManager wspAccessManager)
+  public void init(AMContext context, AccessControlProvider acProvider,
+      WorkspaceAccessManager wspAccessManager)
       throws AccessDeniedException, Exception {
     this.realManager.init(context, acProvider, wspAccessManager);
   }
 
   @Override
-  public void checkPermission(Path path, int permissions) throws AccessDeniedException, RepositoryException {
+  public void checkPermission(Path path, int permissions) throws AccessDeniedException,
+      RepositoryException {
     this.realManager.checkPermission(path, permissions);
   }
 

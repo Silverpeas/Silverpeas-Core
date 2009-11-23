@@ -35,8 +35,8 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 
 /**
- * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map
- * (FieldName -> (index,GenericFieldTemplate))
+ * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map (FieldName ->
+ * (index,GenericFieldTemplate))
  */
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
   private Map fields = new HashMap();
@@ -44,9 +44,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   private String templateName;
 
   /**
-   * A GenericRecordTemplate is built empty : use addFieldTemplate for each
-   * field.
-   * 
+   * A GenericRecordTemplate is built empty : use addFieldTemplate for each field.
    * @see addFieldTemplate
    */
   public GenericRecordTemplate() {
@@ -107,7 +105,6 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -124,7 +121,6 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
@@ -147,8 +143,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   }
 
   /**
-   * Returns true if the data record is built on this template and all the
-   * constraints are ok.
+   * Returns true if the data record is built on this template and all the constraints are ok.
    */
   public boolean checkDataRecord(DataRecord record) {
     return true; // xoxox à implémenter

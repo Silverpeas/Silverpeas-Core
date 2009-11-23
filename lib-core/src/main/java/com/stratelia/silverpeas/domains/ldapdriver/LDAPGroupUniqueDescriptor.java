@@ -32,11 +32,9 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class manage groups that are described as follows : The group object
- * contains an attribute that point to each users and sub-groups DN Example
- * (with the attribute 'member') : member cn=user1,ou=people,o=stratelia member
- * cn=user2,ou=people,o=stratelia ....
- * 
+ * This class manage groups that are described as follows : The group object contains an attribute
+ * that point to each users and sub-groups DN Example (with the attribute 'member') : member
+ * cn=user1,ou=people,o=stratelia member cn=user2,ou=people,o=stratelia ....
  * @author tleroi
  */
 
@@ -50,12 +48,12 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
 
     SilverTrace.info("admin", "LDAPGroupUniqueDescriptor.getMemberGroupIds()",
         "root.MSG_GEN_ENTER_METHOD", "MemberId=" + memberId + ", isGroup="
-            + isGroup);
+        + isGroup);
     if (isGroup) {
       memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
           .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
           driverSettings.getGroupsIdFilter(memberId), driverSettings
-              .getGroupAttributes());
+          .getGroupAttributes());
     } else {
       memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings
           .getLDAPUserBaseDN(), driverSettings.getScope(), driverSettings
@@ -72,7 +70,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         + driverSettings.getGroupsMemberField() + "="
         + LDAPUtility.dblBackSlashesForDNInFilters(memberEntry.getDN()) + "))",
         driverSettings.getGroupsNameField(), driverSettings
-            .getGroupAttributes());
+        .getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
       SilverTrace.info("admin",
           "LDAPGroupUniqueDescriptor.getMemberGroupIds()",
@@ -95,15 +93,10 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lds
    * @param groupEntry
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
@@ -140,7 +133,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
       } catch (AdminException e) {
         SilverTrace.error("admin", "LDAPGroupUniqueDescriptor.getUserIds()",
             "admin.MSG_ERR_LDAP_GENERAL", "USER NOT FOUND : "
-                + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
+            + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
       }
     }
     stringVals = null;
@@ -150,17 +143,11 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
   }
 
   /**
-   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS
-   * RUNNING
-   * 
-   * 
+   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
    * @param lds
    * @param parentId
-   * 
    * @return
-   * 
    * @throws AdminException
-   * 
    * @see
    */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId,
@@ -218,7 +205,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
             SilverTrace.error("admin",
                 "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
                 "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : "
-                    + stringVals[i], e);
+                + stringVals[i], e);
           }
         }
       } else // Retreives the ROOT groups : the groups that are under the base
@@ -236,28 +223,28 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings
             .getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
             theFilter, driverSettings.getGroupsNameField(), driverSettings
-                .getGroupAttributes());
+            .getGroupAttributes());
         SynchroReport.debug("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
             "Récupération de " + theEntries.length
-                + " groupes en tout, recherche des groupes racine...", null);
+            + " groupes en tout, recherche des groupes racine...", null);
         for (i = 0; i < theEntries.length; i++) {
           // Search for groups that have at least one member attribute that
           // point to the group
           try {
             parentGroupEntry = LDAPUtility.getFirstEntryFromSearch(lds,
                 driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings
-                    .getScope(), "(&"
-                    + driverSettings.getGroupsFullFilter()
-                    + "("
-                    + driverSettings.getGroupsMemberField()
-                    + "="
-                    + LDAPUtility.dblBackSlashesForDNInFilters(theEntries[i]
-                        .getDN()) + "))", driverSettings.getGroupAttributes());
+                .getScope(), "(&"
+                + driverSettings.getGroupsFullFilter()
+                + "("
+                + driverSettings.getGroupsMemberField()
+                + "="
+                + LDAPUtility.dblBackSlashesForDNInFilters(theEntries[i]
+                .getDN()) + "))", driverSettings.getGroupAttributes());
           } catch (AdminException e) {
             SilverTrace.error("admin",
                 "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
                 "admin.MSG_ERR_LDAP_GENERAL", "IS ROOT GROUP ? : "
-                    + theEntries[i].getDN(), e);
+                + theEntries[i].getDN(), e);
             parentGroupEntry = null; // If query failed, set this group as a
             // root group
           }
@@ -283,7 +270,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
           SynchroReport.error(
               "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
               "Erreur lors de la récupération des groupes fils du groupe "
-                  + parentId, e);
+              + parentId, e);
       } else {
         throw e;
       }

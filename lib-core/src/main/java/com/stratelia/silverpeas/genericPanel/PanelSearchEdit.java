@@ -41,7 +41,7 @@ public class PanelSearchEdit extends PanelSearchToken {
 
     sb
         .append("<input type=\"text\" size=\"15\" maxlength=\"100\" name=\"filter"
-            + Integer.toString(m_Index) + "\" value=\"" + m_Text + "\"");
+        + Integer.toString(m_Index) + "\" value=\"" + m_Text + "\"");
     if (m_ReadOnly) {
       sb.append(" readonly>");
     } else {

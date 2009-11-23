@@ -27,7 +27,6 @@ import com.silverpeas.form.Field;
 
 /**
  * A EqualityFilter test equality of the given field to a reference field.
- * 
  * @see Field
  * @see FieldDisplayer
  */

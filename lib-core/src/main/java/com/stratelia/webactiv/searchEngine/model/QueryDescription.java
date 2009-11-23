@@ -41,30 +41,21 @@ import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 
 /**
- * A QueryDescription packs a query with the different spaces and components to
- * be searched.
+ * A QueryDescription packs a query with the different spaces and components to be searched.
  */
 public class QueryDescription implements Serializable {
   /**
-   * The no parameters constructor builds an empty query.
-   * 
-   * The setQuery and addSpaceComponentPair() methods should be called to
-   * initialize the query.
-   * 
-   * Other criterium (language, creation date ...) can be set before the request
-   * is sent to the searchEngine.
+   * The no parameters constructor builds an empty query. The setQuery and addSpaceComponentPair()
+   * methods should be called to initialize the query. Other criterium (language, creation date ...)
+   * can be set before the request is sent to the searchEngine.
    */
   public QueryDescription() {
   }
 
   /**
-   * The constructor set only the query string.
-   * 
-   * The addSpaceComponentPair() method should be called to set the components
-   * instances whose documents will be searched.
-   * 
-   * Other criterium (language, creation date ...) can be set before the request
-   * is sent to the searchEngine.
+   * The constructor set only the query string. The addSpaceComponentPair() method should be called
+   * to set the components instances whose documents will be searched. Other criterium (language,
+   * creation date ...) can be set before the request is sent to the searchEngine.
    */
   public QueryDescription(String query) {
     setQuery(query);
@@ -135,10 +126,8 @@ public class QueryDescription implements Serializable {
   }
 
   /**
-   * Return the set of all the component's instances whose the documents must be
-   * searched.
-   * 
-   * The return Set is a set of SpaceComponentPair.
+   * Return the set of all the component's instances whose the documents must be searched. The
+   * return Set is a set of SpaceComponentPair.
    */
   public Set getSpaceComponentPairSet() {
     return spaceComponentPairSet;
@@ -256,9 +245,7 @@ public class QueryDescription implements Serializable {
   }
 
   /**
-   * Find and replace used for the AND OR NOT lucene's keyword in the search
-   * engine query.
-   * 
+   * Find and replace used for the AND OR NOT lucene's keyword in the search engine query.
    * 26/01/2004
    */
   private String findAndReplace(String source, String find, String replace) {
@@ -274,10 +261,8 @@ public class QueryDescription implements Serializable {
   }
 
   /**
-   * Function to get the substitute char for the current language. (Same
-   * function used for the Indexer)
-   * 
-   * PHiL 29/01/2004
+   * Function to get the substitute char for the current language. (Same function used for the
+   * Indexer) PHiL 29/01/2004
    */
 
   private CharReplacer getCharReplacer() {
@@ -310,36 +295,27 @@ public class QueryDescription implements Serializable {
   }
 
   /**
-   * The searched components' instance is built empty. To be searched any space
-   * or component must be explicitly added with the addSpaceComponent() method.
-   * This Set is a set of SpaceComponentPair.
+   * The searched components' instance is built empty. To be searched any space or component must be
+   * explicitly added with the addSpaceComponent() method. This Set is a set of SpaceComponentPair.
    */
   private Set spaceComponentPairSet = new HashSet();
 
   /**
-   * The query defaults to the empty query.
-   * 
-   * This is an error to set the query to null : a query is needed to perform
-   * the search.
+   * The query defaults to the empty query. This is an error to set the query to null : a query is
+   * needed to perform the search.
    */
   private String query = "";
 
   /**
-   * The searchingUser defaults to the empty query.
-   * 
-   * This is an error to set the user to null : a search is done for a given
-   * user.
+   * The searchingUser defaults to the empty query. This is an error to set the user to null : a
+   * search is done for a given user.
    */
   private String searchingUser = "";
 
   /**
-   * The others criterium default to null.
-   * 
-   * When the requestedAuthor is null, documents of any author are returned
-   * (even if the author is unknown).
-   * 
-   * When the requested Date range is null, all documents are returned even if
-   * the creation dates are unknown.
+   * The others criterium default to null. When the requestedAuthor is null, documents of any author
+   * are returned (even if the author is unknown). When the requested Date range is null, all
+   * documents are returned even if the creation dates are unknown.
    */
   private String requestedLang = null;
   private String requestedAuthor = null;

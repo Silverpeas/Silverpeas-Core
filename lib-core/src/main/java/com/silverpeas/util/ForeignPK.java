@@ -28,9 +28,8 @@ import java.io.Serializable;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
- * This PrimaryKey object must be used between two differents and independants
- * modules It avoids circular dependencies
- * 
+ * This PrimaryKey object must be used between two differents and independants modules It avoids
+ * circular dependencies
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -54,7 +53,6 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object root table name
-   * 
    * @return the root table name of the object
    * @since 1.0
    */
@@ -64,7 +62,6 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object table name
-   * 
    * @return the table name of the object
    * @since 1.0
    */
@@ -74,10 +71,8 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Check if an another object is equal to this object
-   * 
    * @return true if other is equals to this object
-   * @param other
-   *          the object to compare to this NodePK
+   * @param other the object to compare to this NodePK
    * @since 1.0
    */
   public boolean equals(Object other) {
@@ -89,7 +84,6 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

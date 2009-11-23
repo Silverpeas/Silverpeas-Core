@@ -24,8 +24,8 @@
 package com.stratelia.silverpeas.scheduler;
 
 /**
- * If a class creates scheduling jobs, it gets scheduler events automaticaly, so
- * it has to implement this interface
+ * If a class creates scheduling jobs, it gets scheduler events automaticaly, so it has to implement
+ * this interface
  */
 public interface SchedulerEventHandler {
   public void handleSchedulerEvent(SchedulerEvent aEvent);

@@ -24,9 +24,7 @@
 package com.silverpeas.form;
 
 /**
- * A RecordTemplate describes DataRecord and gives the field names and type
- * informations.
- * 
+ * A RecordTemplate describes DataRecord and gives the field names and type informations.
  * @see DataRecord
  */
 public interface RecordTemplate {
@@ -42,14 +40,12 @@ public interface RecordTemplate {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException;
 
   /**
    * Returns the Field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException;
@@ -60,8 +56,7 @@ public interface RecordTemplate {
   public DataRecord getEmptyRecord() throws FormException;
 
   /**
-   * Returns true if the data record is built on this template and all the
-   * constraints are ok.
+   * Returns true if the data record is built on this template and all the constraints are ok.
    */
   public boolean checkDataRecord(DataRecord record);
 }

@@ -29,20 +29,18 @@ import java.util.Iterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * SilverpeasRuntimeException est la racine de la hiérarchie des exception
- * runtime silverpeas. Les exceptions Runtime ne sont pas obligatoirement
- * traitées par le développeur. C'est pourquoi leur utilisation doit se faire
- * après reflexion. La principale application des SilverpeasRuntimeException
- * est l'utilisation au sein des EJB. En effet une RuntimeException qui traverse
- * le conteneur annule la transaction en cours, et sera encapsulée dans une
- * RemoteException. Le message que l'on donne à l'exception est très
- * important, il doit etre affiché à l'utilisateur. C'est pourquoi le label
- * est multilangue. Chaque classe heritant de SilverpeasRuntimeException doit
- * surdefinir la fonction getModule qui retourne le nom du module (le meme nom
- * que celui defini dans Silvertrace)
+ * SilverpeasRuntimeException est la racine de la hiérarchie des exception runtime silverpeas. Les
+ * exceptions Runtime ne sont pas obligatoirement traitées par le développeur. C'est pourquoi leur
+ * utilisation doit se faire après reflexion. La principale application des
+ * SilverpeasRuntimeException est l'utilisation au sein des EJB. En effet une RuntimeException qui
+ * traverse le conteneur annule la transaction en cours, et sera encapsulée dans une
+ * RemoteException. Le message que l'on donne à l'exception est très important, il doit etre
+ * affiché à l'utilisateur. C'est pourquoi le label est multilangue. Chaque classe heritant de
+ * SilverpeasRuntimeException doit surdefinir la fonction getModule qui retourne le nom du module
+ * (le meme nom que celui defini dans Silvertrace)
  */
-abstract public class SilverpeasRuntimeException extends RuntimeException
-    implements WithNested, FromModule {
+abstract public class SilverpeasRuntimeException extends RuntimeException implements WithNested,
+    FromModule {
   public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
   public static final int ERROR = SilverTrace.TRACE_LEVEL_ERROR;
   public static final int WARNING = SilverTrace.TRACE_LEVEL_WARN;
@@ -56,13 +54,10 @@ abstract public class SilverpeasRuntimeException extends RuntimeException
   // ------------
 
   /**
-   * Fabriquation d'une exception runtime silverpeas avec un message
-   * multilangue. Il n'y a pas d'exception ayant provoqué celle-ci (getNested()
-   * renvera null).
-   * 
-   * @param message
-   *          Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD".
-   *          Le label est traduit dans des fichiers de properties.
+   * Fabriquation d'une exception runtime silverpeas avec un message multilangue. Il n'y a pas
+   * d'exception ayant provoqué celle-ci (getNested() renvera null).
+   * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
+   * traduit dans des fichiers de properties.
    * @deprecated
    */
   public SilverpeasRuntimeException(String message) {
@@ -70,15 +65,11 @@ abstract public class SilverpeasRuntimeException extends RuntimeException
   }
 
   /**
-   * Fabriquation d'une exception runtime silverpeas avec une exception à
-   * imbriquer. L'exception ne contient pas de message d'erreur. On utilisera ce
-   * constructeur lorsque l'on veut encapsuler une exception (afin de casser une
-   * transaction), mais que l'on n'a pas d'info à ajouter.
-   * 
-   * @param nested
-   *          L'exception qui a provoqué le problème. nested peut etre une
-   *          SilverpeasException ou une exception technique (SQLException,
-   *          RemoteException...)
+   * Fabriquation d'une exception runtime silverpeas avec une exception à imbriquer. L'exception ne
+   * contient pas de message d'erreur. On utilisera ce constructeur lorsque l'on veut encapsuler une
+   * exception (afin de casser une transaction), mais que l'on n'a pas d'info à ajouter.
+   * @param nested L'exception qui a provoqué le problème. nested peut etre une
+   * SilverpeasException ou une exception technique (SQLException, RemoteException...)
    * @deprecated
    */
   public SilverpeasRuntimeException(Exception nested) {
@@ -86,16 +77,12 @@ abstract public class SilverpeasRuntimeException extends RuntimeException
   }
 
   /**
-   * Fabriquation d'une exception runtime silverpeas avec un message multilangue
-   * et une exception à imbriquer.
-   * 
-   * @param message
-   *          Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD".
-   *          Le label est traduit dans des fichiers de properties.
-   * @param nested
-   *          L'exception qui a provoqué le problème. nested peut etre une
-   *          SilverpeasException ou une exception technique (SQLException,
-   *          RemoteException...)
+   * Fabriquation d'une exception runtime silverpeas avec un message multilangue et une exception à
+   * imbriquer.
+   * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
+   * traduit dans des fichiers de properties.
+   * @param nested L'exception qui a provoqué le problème. nested peut etre une
+   * SilverpeasException ou une exception technique (SQLException, RemoteException...)
    * @deprecated
    */
   public SilverpeasRuntimeException(String message, Exception nested) {
@@ -137,11 +124,9 @@ abstract public class SilverpeasRuntimeException extends RuntimeException
   // ------------------
 
   /**
-   * retourne l'exception qui a provoqué la creation de celle-ci. Permet
-   * l'encapsulation des exception technique.
-   * 
-   * @return L'exception précédente qui a provoqué celle-ci, null s'il n'y en
-   *         a pas.
+   * retourne l'exception qui a provoqué la creation de celle-ci. Permet l'encapsulation des
+   * exception technique.
+   * @return L'exception précédente qui a provoqué celle-ci, null s'il n'y en a pas.
    */
   public Exception getNested() {
     return nested;
@@ -210,7 +195,6 @@ abstract public class SilverpeasRuntimeException extends RuntimeException
 
   /**
    * This function must be defined by the Classes that herit from this one
-   * 
    * @return The SilverTrace's module name
    **/
   abstract public String getModule();
@@ -242,7 +226,6 @@ abstract public class SilverpeasRuntimeException extends RuntimeException
 
   /**
    * retourne le niveau de critissicité de l'exception
-   * 
    * @return le niveau d'erreur, FATAL, ERROR, ou WARNING
    */
   public int getErrorLevel() {

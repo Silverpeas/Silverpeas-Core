@@ -32,14 +32,13 @@ package com.stratelia.silverpeas.authentication;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * 
  * @author tleroi
  * @version
  */
 public class AuthenticationException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public AuthenticationException(String callingClass, int errorLevel,
       String message) {
@@ -62,8 +61,7 @@ public class AuthenticationException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "authentication";

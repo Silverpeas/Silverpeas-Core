@@ -27,7 +27,6 @@ import com.silverpeas.form.Field;
 
 /**
  * A LikeFilter test if a given field is less then a reference field.
- * 
  * @see Field
  * @see FieldDisplayer
  */

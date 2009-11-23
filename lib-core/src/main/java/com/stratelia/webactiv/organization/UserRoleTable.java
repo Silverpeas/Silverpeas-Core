@@ -43,7 +43,8 @@ public class UserRoleTable extends Table {
     this.organization = organization;
   }
 
-  static final private String USERROLE_COLUMNS = "id,instanceId,name,roleName,description,isInherited,objectId";
+  static final private String USERROLE_COLUMNS =
+      "id,instanceId,name,roleName,description,isInherited,objectId";
 
   /**
    * Fetch the current userRole row from a resultSet.
@@ -90,7 +91,7 @@ public class UserRoleTable extends Table {
           SilverpeasException.ERROR,
           "admin.EX_ERR_USERROLE_NAME_INSTANCEID_FOUND_TWICE",
           "instance id : '" + instanceId + "', userrole name: '" + roleName
-              + "'");
+          + "'");
     }
   }
 
@@ -130,7 +131,8 @@ public class UserRoleTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_INSTANCE_USERROLE_IDS = "select id from ST_UserRole where instanceId = ? and objectId is null";
+  static final private String SELECT_ALL_INSTANCE_USERROLE_IDS =
+      "select id from ST_UserRole where instanceId = ? and objectId is null";
 
   public String[] getAllObjectUserRoleIdsOfInstance(int instanceId)
       throws AdminPersistenceException {
@@ -138,7 +140,8 @@ public class UserRoleTable extends Table {
         instanceId).toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS = "select id from ST_UserRole where instanceId = ? and objectId is not null";
+  static final private String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS =
+      "select id from ST_UserRole where instanceId = ? and objectId is not null";
 
   /**
    * Returns all the UserRole ids of an object in a given instance.
@@ -151,7 +154,8 @@ public class UserRoleTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_ALL_OBJECT_USERROLE_IDS = "select id from ST_UserRole where instanceId = ? and objectId = ? and objectType = ? ";
+  static final private String SELECT_ALL_OBJECT_USERROLE_IDS =
+      "select id from ST_UserRole where instanceId = ? and objectId = ? and objectType = ? ";
 
   /**
    * Returns all the role names of a user for an object in a given instance.
@@ -194,7 +198,8 @@ public class UserRoleTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_USER_USERROLE_IDS = "select id from ST_UserRole,ST_UserSet_User_Rel"
+  static final private String SELECT_ALL_USER_USERROLE_IDS =
+      "select id from ST_UserRole,ST_UserSet_User_Rel"
       + " where id=userSetId and userSetType='"
       + UserSetRow.RIGHTS
       + "' and userId=? and objectId is null";
@@ -208,7 +213,8 @@ public class UserRoleTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_ALL_GROUP_USERROLE_IDS = "select id from ST_UserRole,ST_UserSet_UserSet_Rel"
+  static final private String SELECT_ALL_GROUP_USERROLE_IDS =
+      "select id from ST_UserRole,ST_UserSet_UserSet_Rel"
       + " where id = superSetId and superSetType='"
       + UserSetRow.RIGHTS
       + "' and subSetType='"
@@ -257,8 +263,7 @@ public class UserRoleTable extends Table {
       + " where id = userRoleId" + " and groupId = ? ";
 
   /**
-   * Returns the UserRole whose fields match those of the given sample UserRole
-   * fields.
+   * Returns the UserRole whose fields match those of the given sample UserRole fields.
    */
   public UserRoleRow[] getAllMatchingUserRoles(UserRoleRow sampleUserRole)
       throws AdminPersistenceException {
@@ -388,7 +393,8 @@ public class UserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_USERSET_USER_REL = "select linksCount from ST_UserSet_User_Rel"
+  static final private String SELECT_COUNT_USERSET_USER_REL =
+      "select linksCount from ST_UserSet_User_Rel"
       + " where userId = ? and userSetId = ? and userSetType='"
       + UserSetRow.RIGHTS + "'";
 
@@ -406,7 +412,8 @@ public class UserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_USERROLE_USER_REL = "select count(*) from ST_UserRole_User_Rel"
+  static final private String SELECT_COUNT_USERROLE_USER_REL =
+      "select count(*) from ST_UserRole_User_Rel"
       + " where userId = ? and userRoleId = ?";
 
   /**
@@ -437,7 +444,8 @@ public class UserRoleTable extends Table {
         .addUserInUserSet(userId, UserSetRow.RIGHTS, userRoleId);
   }
 
-  static final private String INSERT_A_USERROLE_USER_REL = "insert into ST_UserRole_User_Rel(userRoleId, userId) values(?,?)";
+  static final private String INSERT_A_USERROLE_USER_REL =
+      "insert into ST_UserRole_User_Rel(userRoleId, userId) values(?,?)";
 
   /**
    * Removes an user from a userRole.
@@ -448,24 +456,25 @@ public class UserRoleTable extends Table {
       throw new AdminPersistenceException(
           "UserRoleTable.removeUserFromUserRole", SilverpeasException.ERROR,
           "admin.EX_ERR_USER_NOT_IN_USERROLE", "userrole id: '" + userRoleId
-              + "', user id: '" + userId + "'");
+          + "', user id: '" + userId + "'");
     }
 
     SynchroReport.debug("UserRoleTable.removeUserFromUserRole()",
         "Retrait (ou décrément) de la relation entre l'utilisateur d'ID "
-            + userId + " et le role d'ID " + userRoleId
-            + " dans la table ST_UserSet_User_Rel", null);
+        + userId + " et le role d'ID " + userRoleId
+        + " dans la table ST_UserSet_User_Rel", null);
     organization.userSet.removeUserFromUserSet(userId, UserSetRow.RIGHTS,
         userRoleId);
 
     int[] params = new int[] { userRoleId, userId };
     SynchroReport.debug("UserRoleTable.removeUserFromUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " du role d'ID "
-            + userRoleId + ", requête : " + DELETE_USERROLE_USER_REL, null);
+        + userRoleId + ", requête : " + DELETE_USERROLE_USER_REL, null);
     updateRelation(DELETE_USERROLE_USER_REL, params);
   }
 
-  static final private String DELETE_USERROLE_USER_REL = "delete from ST_UserRole_User_Rel where userRoleId = ? and userId = ?";
+  static final private String DELETE_USERROLE_USER_REL =
+      "delete from ST_UserRole_User_Rel where userRoleId = ? and userId = ?";
 
   /**
    * Tests if a group has a given role (recursive).
@@ -481,7 +490,8 @@ public class UserRoleTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_USERSET_GROUP_REL = "select linksCount from ST_UserSet_UserSet_Rel"
+  static final private String SELECT_COUNT_USERSET_GROUP_REL =
+      "select linksCount from ST_UserSet_UserSet_Rel"
       + " where subSetType='"
       + ObjectType.GROUP
       + "' and subSetId=?"
@@ -497,14 +507,15 @@ public class UserRoleTable extends Table {
 
     SilverTrace.debug("admin", "UserRoleTable.isGroupDirectlyInRole()",
         "Le groupe d'ID " + groupId + " et le role d'ID " + userRoleId
-            + " ont un nb de lien = " + result);
+        + " ont un nb de lien = " + result);
     if (result == null)
       return false;
     else
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_USERROLE_GROUP_REL = "select count(*) from ST_UserRole_Group_Rel"
+  static final private String SELECT_COUNT_USERROLE_GROUP_REL =
+      "select count(*) from ST_UserRole_Group_Rel"
       + " where groupId = ? and userRoleId = ?";
 
   /**
@@ -536,7 +547,8 @@ public class UserRoleTable extends Table {
         UserSetRow.RIGHTS, userRoleId);
   }
 
-  static final private String INSERT_A_USERROLE_GROUP_REL = "insert into ST_UserRole_Group_Rel(userRoleId, groupId) values(?,?)";
+  static final private String INSERT_A_USERROLE_GROUP_REL =
+      "insert into ST_UserRole_Group_Rel(userRoleId, groupId) values(?,?)";
 
   /**
    * Removes a group from a userRole.
@@ -547,20 +559,20 @@ public class UserRoleTable extends Table {
       throw new AdminPersistenceException(
           "UserRoleTable.removeGroupFromUserRole", SilverpeasException.ERROR,
           "admin.EX_ERR_GROUP_NOT_IN_USERROLE", "userrole id: '" + userRoleId
-              + "', group id: '" + groupId + "'");
+          + "', group id: '" + groupId + "'");
     }
 
     SilverTrace.debug("admin", "UserRoleTable.removeGroupFromUserRole()",
         "Suppression (ou décrément) des relations liant le groupe d'ID "
-            + groupId + " et le role d'ID " + userRoleId
-            + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
+        + groupId + " et le role d'ID " + userRoleId
+        + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         new AdminPersistenceException("UserRoleTable.removeGroupFromUserRole",
-            SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_IN_USERROLE",
-            "BOB"));
+        SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_IN_USERROLE",
+        "BOB"));
     SynchroReport.debug("UserRoleTable.removeGroupFromUserRole()",
         "Suppression (ou décrément) des relations liant le groupe d'ID "
-            + groupId + " et le role d'ID " + userRoleId
-            + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
+        + groupId + " et le role d'ID " + userRoleId
+        + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
         null);
     organization.userSet.removeUserSetFromUserSet(ObjectType.GROUP, groupId,
         UserSetRow.RIGHTS, userRoleId);
@@ -568,11 +580,12 @@ public class UserRoleTable extends Table {
     int[] params = new int[] { userRoleId, groupId };
     SynchroReport.debug("UserRoleTable.removeGroupFromUserRole()",
         "Retrait du groupe d'ID " + groupId + " du role d'ID " + userRoleId
-            + ", requête : " + DELETE_USERROLE_GROUP_REL, null);
+        + ", requête : " + DELETE_USERROLE_GROUP_REL, null);
     updateRelation(DELETE_USERROLE_GROUP_REL, params);
   }
 
-  static final private String DELETE_USERROLE_GROUP_REL = "delete from ST_UserRole_Group_Rel where userRoleId = ? and groupId = ?";
+  static final private String DELETE_USERROLE_GROUP_REL =
+      "delete from ST_UserRole_Group_Rel where userRoleId = ? and groupId = ?";
 
   public boolean isObjectAvailable(int userId, int componentId, int objectId,
       String objectType) throws AdminPersistenceException {

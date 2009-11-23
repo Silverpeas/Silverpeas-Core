@@ -28,10 +28,8 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 
 /**
- * A PublicationTemplate describes a set of publication records built on a same
- * template.
- * 
- * A PublicationTemplate groups :
+ * A PublicationTemplate describes a set of publication records built on a same template. A
+ * PublicationTemplate groups :
  * <OL>
  * <LI>a RecordTemplate which describes the built records.
  * <LI>a RecordSet of records built on this template,
@@ -52,8 +50,7 @@ public interface PublicationTemplate {
   public RecordSet getRecordSet() throws PublicationTemplateException;
 
   /**
-   * Returns the Form used to create and update the records built from this
-   * template.
+   * Returns the Form used to create and update the records built from this template.
    */
   public Form getUpdateForm() throws PublicationTemplateException;
 

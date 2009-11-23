@@ -39,7 +39,6 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
  * A LdapField stores a value of ldap field.
- * 
  * @see Field
  * @see FieldDisplayer
  */

@@ -109,7 +109,6 @@ public class GenericRecordSetManager {
 
   /**
    * Returns the record set known be its external id.
-   * 
    * @throw FormException when the id is unknown.
    */
   static public RecordSet getRecordSet(String externalId) throws FormException {
@@ -150,7 +149,6 @@ public class GenericRecordSetManager {
 
   /**
    * Removes the record set known by its external id.
-   * 
    * @throw FormException when the id is unknown.
    */
   static public void removeRecordSet(String externalId) throws FormException {
@@ -202,7 +200,6 @@ public class GenericRecordSetManager {
 
   /**
    * Returns the DataRecord registered by the pair (templateId, recordId)
-   * 
    * @throw FormException when the (templateId, recordId) pair is unknown.
    */
   static public DataRecord getRecord(IdentifiedRecordTemplate template,
@@ -214,7 +211,7 @@ public class GenericRecordSetManager {
       String recordId, String language) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
         "root.MSG_GEN_PARAM_VALUE", "recordId = " + recordId + ", language = "
-            + language);
+        + language);
     Connection con = null;
     GenericDataRecord record = null;
 
@@ -253,7 +250,6 @@ public class GenericRecordSetManager {
 
   /**
    * Register the DataRecord with the pair (templateId, recordId)
-   * 
    * @throw FormException when the (templateId, recordId) pair is already known.
    * @throw FormException when the templateId is unknown.
    */
@@ -285,7 +281,7 @@ public class GenericRecordSetManager {
       String recordIdTo, Hashtable fileIds) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
         "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom
-            + ", recordIdTo = " + recordIdTo);
+        + ", recordIdTo = " + recordIdTo);
 
     Iterator languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
@@ -327,7 +323,6 @@ public class GenericRecordSetManager {
 
   /**
    * Saves the DataRecord registered by the pair (templateId, recordId)
-   * 
    * @throw FormException when the (templateId, recordId) pair is unknown.
    */
   static public void updateRecord(IdentifiedRecordTemplate template,
@@ -354,7 +349,6 @@ public class GenericRecordSetManager {
 
   /**
    * Deletes the DataRecord registered by the pair (templateId, recordId)
-   * 
    * @throw FormException when the (templateId, recordId) pair is unknown.
    */
   static public void deleteRecord(IdentifiedRecordTemplate template,
@@ -725,8 +719,8 @@ public class GenericRecordSetManager {
 
       SilverTrace.debug("form", "GenericRecordSetManager.insertRecordRow",
           "root.MSG_GEN_PARAM_VALUE", "internalId = " + internalId
-              + ", templateId = " + templateId + ", externalId = " + externalId
-              + ", language = " + record.getLanguage());
+          + ", templateId = " + templateId + ", externalId = " + externalId
+          + ", language = " + record.getLanguage());
 
       insert = con.prepareStatement(INSERT_RECORD);
       insert.setInt(1, internalId);
@@ -787,7 +781,7 @@ public class GenericRecordSetManager {
       throws SQLException, FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.selectRecordRow",
         "root.MSG_GEN_ENTER_METHOD", "templateId = " + template.getInternalId()
-            + ", externalId = " + externalId + ", language = " + language);
+        + ", externalId = " + externalId + ", language = " + language);
     PreparedStatement select = null;
     ResultSet rs = null;
 
@@ -852,7 +846,7 @@ public class GenericRecordSetManager {
           // We have found a field corresponding to the fieldName
           SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
               "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-                  + ", fieldValue = " + fieldValue);
+              + ", fieldValue = " + fieldValue);
           field.setStringValue(fieldValue);
         } else {
           // We have not found a field corresponding to the fieldName
@@ -1018,7 +1012,8 @@ public class GenericRecordSetManager {
 
   static final private String TEMPLATE_FIELDS_TABLE = "SB_FormTemplate_TemplateField";
 
-  static final private String TEMPLATE_FIELDS_COLUMNS = "templateId,fieldName,fieldIndex,fieldType,isMandatory,isReadOnly,isHidden";
+  static final private String TEMPLATE_FIELDS_COLUMNS =
+      "templateId,fieldName,fieldIndex,fieldType,isMandatory,isReadOnly,isHidden";
 
   static final private String SELECT_TEMPLATE_FIELDS = "select "
       + TEMPLATE_FIELDS_COLUMNS + " from " + TEMPLATE_FIELDS_TABLE

@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class manage the authentication for a given domain
- * 
  * @author tleroi
  * @version
  */
@@ -120,7 +119,7 @@ public class AuthenticationServer extends Object {
           SilverTrace.info("authentication",
               "AuthenticationServer.authenticate",
               "authentication.EX_PWD_NOT_AVAILABLE", "ServerNbr="
-                  + Integer.toString(i) + ";User=" + login, ex);
+              + Integer.toString(i) + ";User=" + login, ex);
           lastException = ex;
         } catch (AuthenticationHostException ex) {
           if (m_FallbackType.equals("none")) {
@@ -129,7 +128,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.authenticate",
                 "authentication.EX_AUTHENTICATION_HOST_ERROR", "ServerNbr="
-                    + Integer.toString(i) + ";User=" + login, ex);
+                + Integer.toString(i) + ";User=" + login, ex);
             lastException = ex;
           }
         } catch (AuthenticationBadCredentialException ex) {
@@ -140,7 +139,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.authenticate",
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "ServerNbr="
-                    + Integer.toString(i) + ";User=" + login, ex);
+                + Integer.toString(i) + ";User=" + login, ex);
             lastException = ex;
           }
         } catch (AuthenticationException ex) {
@@ -196,7 +195,7 @@ public class AuthenticationServer extends Object {
           SilverTrace.info("authentication",
               "AuthenticationServer.changePassword",
               "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE", "ServerNbr="
-                  + Integer.toString(i) + ";User=" + login, ex);
+              + Integer.toString(i) + ";User=" + login, ex);
           lastException = ex;
         } catch (AuthenticationHostException ex) {
           if (m_FallbackType.equals("none")) {
@@ -205,7 +204,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.changePassword",
                 "authentication.EX_AUTHENTICATION_HOST_ERROR", "ServerNbr="
-                    + Integer.toString(i) + ";User=" + login, ex);
+                + Integer.toString(i) + ";User=" + login, ex);
             lastException = ex;
           }
         } catch (AuthenticationBadCredentialException ex) {
@@ -216,7 +215,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.changePassword",
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "ServerNbr="
-                    + Integer.toString(i) + ";User=" + login, ex);
+                + Integer.toString(i) + ";User=" + login, ex);
             lastException = ex;
           }
         } catch (AuthenticationException ex) {

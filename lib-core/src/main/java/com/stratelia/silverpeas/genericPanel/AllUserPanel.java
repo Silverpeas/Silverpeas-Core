@@ -115,8 +115,10 @@ public class AllUserPanel extends PanelProvider {
     }
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text = getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text = getSureString(filters[FILTER_LASTNAME]);
+    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text =
+        getSureString(filters[FILTER_FIRSTNAME]);
+    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text =
+        getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }
 

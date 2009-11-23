@@ -75,13 +75,13 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("Attachment",
             "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("Attachment",
             "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:
@@ -94,7 +94,6 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
 
   /**
    * Publish in Silverpeas 3d files converted by Actify
-   * 
    * @throws IOException
    * @throws Exception
    */
@@ -168,7 +167,6 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
 
   /**
    * Purge native 3D files alreday converted by Actify
-   * 
    * @throws Exception
    */
   public synchronized void doPurgeActify(Date date) throws Exception {

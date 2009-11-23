@@ -33,9 +33,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class read the property file and keep it's values accessible via the get
- * functions
- * 
+ * This class read the property file and keep it's values accessible via the get functions
  * @author tleroi
  * @version 1.0
  */
@@ -99,11 +97,9 @@ public class LDAPSettings extends Object {
   protected boolean ihmImportGroups = true;
 
   /**
-   * Performs initialization from a properties file. The optional properties are
-   * retreive with getSureString.
-   * 
-   * @param rs
-   *          Properties resource file
+   * Performs initialization from a properties file. The optional properties are retreive with
+   * getSureString.
+   * @param rs Properties resource file
    */
   public void initFromProperties(ResourceLocator rs) {
     // Database Settings
@@ -520,13 +516,10 @@ public class LDAPSettings extends Object {
 
   // Local functions
   /**
-   * Use this function to be sure to obtain a string without error, even if the
-   * property is not found. (in that case, returns empty string)
-   * 
-   * @param rs
-   *          the properties file
-   * @param key
-   *          the key value to retreive
+   * Use this function to be sure to obtain a string without error, even if the property is not
+   * found. (in that case, returns empty string)
+   * @param rs the properties file
+   * @param key the key value to retreive
    */
   protected String getSureString(ResourceLocator rs, String key) {
     String valret = null;
@@ -583,7 +576,7 @@ public class LDAPSettings extends Object {
       } catch (Exception e) {
         SilverTrace.error("admin", "LDAPSettings.getUserIds()",
             "admin.MSG_ERR_LDAP_GENERAL", "Int parse error : " + key + " = "
-                + res, e);
+            + res, e);
       }
     }
     return valret;

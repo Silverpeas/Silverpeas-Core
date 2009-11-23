@@ -37,8 +37,6 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PersonalizationDAO {

@@ -27,20 +27,15 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AlertUserException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public AlertUserException(String callingClass, int errorLevel, String message) {
@@ -49,13 +44,10 @@ public class AlertUserException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public AlertUserException(String callingClass, int errorLevel,
@@ -65,13 +57,10 @@ public class AlertUserException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public AlertUserException(String callingClass, int errorLevel,
@@ -81,14 +70,11 @@ public class AlertUserException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public AlertUserException(String callingClass, int errorLevel,
@@ -98,10 +84,7 @@ public class AlertUserException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

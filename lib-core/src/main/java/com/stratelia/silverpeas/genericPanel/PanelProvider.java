@@ -236,8 +236,8 @@ abstract public class PanelProvider {
 
   protected void verifIndexes() {
     /*
-     * if (m_Ids.length <= m_FirstDisplayed) { if (m_Ids.length > 0) {
-     * m_FirstDisplayed = m_Ids.length - 1; } else { m_FirstDisplayed = 0; } }
+     * if (m_Ids.length <= m_FirstDisplayed) { if (m_Ids.length > 0) { m_FirstDisplayed =
+     * m_Ids.length - 1; } else { m_FirstDisplayed = 0; } }
      */
     m_FirstDisplayed = 0;
   }

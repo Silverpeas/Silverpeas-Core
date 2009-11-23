@@ -50,10 +50,7 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
   /**
    * Simple decode for cookie value
-   * 
-   * @param key
-   *          : la chaine à décoder
-   * 
+   * @param key : la chaine à décoder
    */
   public String decode(String encodedText) {
     SilverTrace.info("authentication", "AuthenticationEncrypt.decode()",
@@ -77,13 +74,9 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
   /**
    * XOR Decrypt for authent param values
-   * 
-   * @param str
-   *          : String to decode
-   * @param key
-   *          : key for decoding
-   * @param extraCrypt
-   *          : add simple encode (see decode(String))
+   * @param str : String to decode
+   * @param key : key for decoding
+   * @param extraCrypt : add simple encode (see decode(String))
    */
   public String decode(String str, String key, boolean extraCrypt) {
     // SilverTrace.info("authentication", "AuthenticationEncrypt.decode1()",
@@ -101,7 +94,7 @@ public class AuthenticationEncrypt implements EncryptionInterface {
     StringBuffer stringMult = new StringBuffer();
     stringMult.append(prand.charAt(sPos)).append(prand.charAt(sPos * 2))
         .append(prand.charAt(sPos * 3)).append(prand.charAt(sPos * 4)).append(
-            prand.charAt(sPos * 5));
+        prand.charAt(sPos * 5));
 
     int mult = new Integer(stringMult.toString()).intValue();
 

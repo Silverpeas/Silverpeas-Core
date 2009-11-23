@@ -43,10 +43,9 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * Cette classe est utilisee par les composants pour envoyer une notification a
- * un (ou des) utilisateur(s) (ou groupes) Elle package les appels et appelle la
- * fonction du NotificationManager pour reellement envoyer les notifications
- * 
+ * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
+ * utilisateur(s) (ou groupes) Elle package les appels et appelle la fonction du NotificationManager
+ * pour reellement envoyer les notifications
  * @author Thierry Leroi
  * @version %I%, %G%
  */
@@ -57,9 +56,7 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Constructor for a standard component
-   * 
-   * @param instanceId
-   *          the instance Id of the calling's component
+   * @param instanceId the instance Id of the calling's component
    */
   public NotificationSender(String instanceId) {
     m_instanceId = extractLastNumber(instanceId);
@@ -68,12 +65,8 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param metaData
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public void notifyUser(NotificationMetaData metaData)
@@ -83,12 +76,9 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
    * @param aMediaType
    * @param Metadata
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
 
@@ -175,7 +165,7 @@ public class NotificationSender implements java.io.Serializable {
     }
     SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",
         "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
-            + lang + "' ");
+        + lang + "' ");
     return result;
   }
 
@@ -216,11 +206,8 @@ public class NotificationSender implements java.io.Serializable {
 
   /**
    * Extract the last number from the string
-   * 
-   * @param chaine
-   *          The String to clean
+   * @param chaine The String to clean
    * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
-   * 
    */
   static int extractLastNumber(String chaine) {
     String s = "";

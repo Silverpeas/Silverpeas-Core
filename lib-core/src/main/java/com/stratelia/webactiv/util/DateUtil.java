@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * DateUtil is an helper class for date manipulation.
- * 
  * @author squere
  */
 
@@ -42,8 +41,10 @@ public class DateUtil {
   private static final long millisPerHour = (long) 60 * (long) 60 * (long) 1000;
   private static final long millisPerMinute = (long) 60 * (long) 1000;
 
-  private static Hashtable<String, SimpleDateFormat>outputFormatters = new Hashtable<String, SimpleDateFormat>();
-  private static Hashtable<String, SimpleDateFormat> inputFormatters = new Hashtable<String, SimpleDateFormat>();
+  private static Hashtable<String, SimpleDateFormat> outputFormatters =
+      new Hashtable<String, SimpleDateFormat>();
+  private static Hashtable<String, SimpleDateFormat> inputFormatters =
+      new Hashtable<String, SimpleDateFormat>();
 
   /**
    * Format and parse dates.
@@ -66,11 +67,9 @@ public class DateUtil {
 
   /**
    * Display the date in a language specific standard format.
-   * 
    * @parameter date The date to convert
    * @parameter language The current user's language
-   * @return A String representation of the date in the language specific
-   *         format.
+   * @return A String representation of the date in the language specific format.
    */
   public static String dateToString(Date date, String language) {
     if (date == null) {
@@ -104,13 +103,13 @@ public class DateUtil {
   }
 
   public static String getOutputDateAndHour(String dateDB, String language) throws ParseException {
-	    if (dateDB == null || "".equals(dateDB) || "null".equals(dateDB))
-	        return "";
-	      else {
-	        Date date = parseDateTime(dateDB);
-	        return getOutputDateAndHour(date, language);
-	      }
-	  }
+    if (dateDB == null || "".equals(dateDB) || "null".equals(dateDB))
+      return "";
+    else {
+      Date date = parseDateTime(dateDB);
+      return getOutputDateAndHour(date, language);
+    }
+  }
 
   public static String getOutputDateAndHour(Date date, String language) {
     String result = "";
@@ -150,14 +149,11 @@ public class DateUtil {
 
   /**
    * Parse the date in a language specific standard format.
-   * 
    * @parameter string The String to convert in Date
    * @parameter language The current user's language
-   * @throws java.text.ParseException
-   *           if the input String is null, empty, or just in an incorrect
-   *           format.
-   * @return A Date representation of the String in the language specific
-   *         format.
+   * @throws java.text.ParseException if the input String is null, empty, or just in an incorrect
+   * format.
+   * @return A Date representation of the String in the language specific format.
    */
   public static Date stringToDate(String string, String language)
       throws ParseException {
@@ -227,10 +223,8 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard output format.
-   * 
    * @parameter language The current user's language
-   * @return A SimpleDateFormat initialized with the language specific output
-   *         format.
+   * @return A SimpleDateFormat initialized with the language specific output format.
    */
   public static SimpleDateFormat getDateOutputFormat(String language) {
     return new SimpleDateFormat(getMultilangProperties(language).getString(
@@ -239,10 +233,8 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard input format.
-   * 
    * @parameter language The current user's language
-   * @return A SimpleDateFormat initialized with the language specific input
-   *         format.
+   * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateInputFormat(String language) {
     return new SimpleDateFormat(getMultilangProperties(language).getString(
@@ -251,10 +243,8 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard input format.
-   * 
    * @parameter language The current user's language
-   * @return A SimpleDateFormat initialized with the language specific input
-   *         format.
+   * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String language) {
     return new SimpleDateFormat(getMultilangProperties(language).getString(
@@ -263,11 +253,9 @@ public class DateUtil {
   }
 
   /**
-   * Get all date multilang properties. This properties contains day and month
-   * labels, common date format, and week first day.
-   * 
-   * @param language
-   *          The current user's language.
+   * Get all date multilang properties. This properties contains day and month labels, common date
+   * format, and week first day.
+   * @param language The current user's language.
    * @return The ResourceLocator containing all date multilang properties
    * @author squere
    */
@@ -278,9 +266,7 @@ public class DateUtil {
 
   /**
    * Parse a special String into a Date.
-   * 
-   * @param date
-   *          (String) the format of this date must be yyyy/MM/dd
+   * @param date (String) the format of this date must be yyyy/MM/dd
    * @return a java object Date
    */
   public static Date parse(String date) throws ParseException {
@@ -289,11 +275,8 @@ public class DateUtil {
 
   /**
    * Parse a special String into a Date.
-   * 
-   * @param date
-   *          (String) the format of this date must be yyyy/MM/dd
-   * @param format
-   *          (String) the whished format in according to the date parameter
+   * @param date (String) the format of this date must be yyyy/MM/dd
+   * @param format (String) the whished format in according to the date parameter
    * @return a java object Date
    */
   public static Date parse(String date, String format) throws ParseException {
@@ -303,11 +286,8 @@ public class DateUtil {
 
   /**
    * Test if two dates are equal
-   * 
-   * @param date1
-   *          first date
-   * @param date2
-   *          second date
+   * @param date1 first date
+   * @param date2 second date
    * @return true if both dates defined the same date
    */
   public static boolean datesAreEqual(Date date1, Date date2) {
@@ -410,9 +390,7 @@ public class DateUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
-   * 
-   * @param date
-   *          the String to be parsed.
+   * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
    */
@@ -431,9 +409,7 @@ public class DateUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd hh:mm and return the corresponding Date.
-   * 
-   * @param date
-   *          the String to be parsed.
+   * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
    */
@@ -443,18 +419,16 @@ public class DateUtil {
     }
     Calendar result = Calendar.getInstance();
     result.setTime(DATETIME_FORMATTER.parse(date));
-/*    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0); */
+    /*
+     * result.set(Calendar.HOUR_OF_DAY, 0); result.set(Calendar.MINUTE, 0);
+     * result.set(Calendar.SECOND, 0); result.set(Calendar.MILLISECOND, 0);
+     */
     return result.getTime();
   }
 
   /**
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
-   * 
-   * @param date
-   *          the String to be parsed.
+   * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
    */
@@ -473,9 +447,7 @@ public class DateUtil {
 
   /**
    * Format a Date to a String of format yyyy/MM/dd.
-   * 
-   * @param date
-   *          the date to be formatted.
+   * @param date the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */
@@ -488,9 +460,7 @@ public class DateUtil {
 
   /**
    * Format a Calendar to a String of format yyyy/MM/dd.
-   * 
-   * @param calend
-   *          the date to be formatted.
+   * @param calend the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */
@@ -502,13 +472,10 @@ public class DateUtil {
   }
 
   /**
-   * Parse a String of format HH:mm and set the corresponding hours and minutes
-   * to the specified Calendar.
-   * 
-   * @param time
-   *          the String to be parsed.
-   * @param the
-   *          calendar to be updated.
+   * Parse a String of format HH:mm and set the corresponding hours and minutes to the specified
+   * Calendar.
+   * @param time the String to be parsed.
+   * @param the calendar to be updated.
    * @throws ParseException
    */
   public static void setTime(Calendar calend, String time) {
@@ -531,9 +498,7 @@ public class DateUtil {
 
   /**
    * Format a Date to a String of format HH:mm.
-   * 
-   * @param date
-   *          the date to be formatted.
+   * @param date the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */
@@ -546,9 +511,7 @@ public class DateUtil {
 
   /**
    * Format a Calendar to a String of format HH:mm.
-   * 
-   * @param calend
-   *          the date to be formatted.
+   * @param calend the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */

@@ -29,10 +29,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * The OrganizationSchemaPool class manages a pool of OrganizationSchema shared
- * by all the client (admin classes).
- * 
- * All the public methods are static and the calls are deferred to a singleton.
+ * The OrganizationSchemaPool class manages a pool of OrganizationSchema shared by all the client
+ * (admin classes). All the public methods are static and the calls are deferred to a singleton.
  */
 public class OrganizationSchemaPool extends SchemaPool {
   /**
@@ -41,16 +39,13 @@ public class OrganizationSchemaPool extends SchemaPool {
   static private OrganizationSchemaPool singleton = new OrganizationSchemaPool();
 
   /**
-   * The constructor is private, so we can ensure that only one pool will be
-   * created in the JVM.
+   * The constructor is private, so we can ensure that only one pool will be created in the JVM.
    */
   private OrganizationSchemaPool() {
   }
 
   /**
-   * Returns an Shema.
-   * 
-   * The returned schema must be released after use.
+   * Returns an Shema. The returned schema must be released after use.
    */
   static public OrganizationSchema getOrganizationSchema()
       throws AdminPersistenceException {

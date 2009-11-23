@@ -70,7 +70,7 @@ public class SQLUserTable {
     } catch (Exception e) {
       throw new AdminException("SQLUserTable.createUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -91,7 +91,7 @@ public class SQLUserTable {
     } catch (Exception e) {
       throw new AdminException("SQLUserTable.deleteUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -119,7 +119,7 @@ public class SQLUserTable {
     } catch (Exception e) {
       throw new AdminException("SQLUserTable.updateUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -149,7 +149,7 @@ public class SQLUserTable {
     } catch (Exception e) {
       throw new AdminException("SQLUserTable.createUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -176,7 +176,7 @@ public class SQLUserTable {
       } catch (Exception e) {
         throw new AdminException("SQLUserTable.updateUserPassword",
             SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-                + theQuery, e);
+            + theQuery, e);
       } finally {
         DBUtil.close(statement);
       }
@@ -204,7 +204,7 @@ public class SQLUserTable {
       } catch (Exception e) {
         throw new AdminException("SQLUserTable.updateUserPasswordValid",
             SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-                + theQuery, e);
+            + theQuery, e);
       } finally {
         DBUtil.close(statement);
       }
@@ -240,7 +240,7 @@ public class SQLUserTable {
     } catch (SQLException e) {
       throw new AdminException("SQLUserTable.getDirectGroupIdsOfUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -297,7 +297,7 @@ public class SQLUserTable {
     } catch (SQLException e) {
       throw new AdminException("getUsersBySpecificProperty",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -327,7 +327,7 @@ public class SQLUserTable {
     } catch (SQLException e) {
       throw new AdminException("SQLUserTable.getUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -357,7 +357,7 @@ public class SQLUserTable {
     } catch (SQLException e) {
       throw new AdminException("SQLUserTable.getUserSpecificProperty",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -387,7 +387,7 @@ public class SQLUserTable {
       } catch (SQLException e) {
         throw new AdminException("SQLUserTable.getUserPassword",
             SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-                + theQuery, e);
+            + theQuery, e);
       } finally {
         DBUtil.close(rs, statement);
       }
@@ -422,7 +422,7 @@ public class SQLUserTable {
       } catch (SQLException e) {
         throw new AdminException("SQLUserTable.getUserPasswordValid",
             SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-                + theQuery, e);
+            + theQuery, e);
       } finally {
         DBUtil.close(rs, statement);
       }

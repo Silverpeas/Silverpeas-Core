@@ -141,8 +141,8 @@ public class UserManager extends Object {
         aus[nI] = userRow2UserDetail(urs[nI]);
         SynchroReport.debug("UserManager.getUsersOfDomain()",
             "Utilisateur trouvé no : " + Integer.toString(nI) + ", login : "
-                + aus[nI].getLogin() + ", " + aus[nI].getFirstName() + ", "
-                + aus[nI].getLastName() + ", " + aus[nI].geteMail(), null);
+            + aus[nI].getLogin() + ", " + aus[nI].getFirstName() + ", "
+            + aus[nI].getLastName() + ", " + aus[nI].geteMail(), null);
       }
       SynchroReport.info("UserManager.getUsersOfDomain()", "Récupération de "
           + urs.length + " utilisateurs du domaine LDAP dans la base", null);
@@ -204,7 +204,7 @@ public class UserManager extends Object {
       throw new AdminException("UserManager.getUserIdsOfDomain",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USERS_OF_DOMAIN_BY_ACCESSLEVEL", "domain Id: "
-              + sDomainId + ", AccessLevel = " + accessLevel, e);
+          + sDomainId + ", AccessLevel = " + accessLevel, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -275,7 +275,7 @@ public class UserManager extends Object {
       throw new AdminException("UserManager.getManageableSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId
-              + "'", e);
+          + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -294,7 +294,7 @@ public class UserManager extends Object {
       throw new AdminException("UserManager.getManageableSubSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId
-              + "'", e);
+          + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -380,15 +380,14 @@ public class UserManager extends Object {
     } catch (Exception e) {
       throw new AdminException("UserManager.getUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
   }
 
   /**
-   * Get the Silverpeas user specific id of user qualified by given login and
-   * domain id
+   * Get the Silverpeas user specific id of user qualified by given login and domain id
    */
   public String getUserIdBySpecificIdAndDomainId(DomainDriverManager ddManager,
       String sSpecificId, String sDomainId) throws AdminException {
@@ -401,7 +400,7 @@ public class UserManager extends Object {
       throw new AdminException("UserManager.getUserIdBySpecificIdAndDomainId",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
           "user sSpecificId: '" + sSpecificId + "', domain Id: '" + sDomainId
-              + "'", e);
+          + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -512,23 +511,23 @@ public class UserManager extends Object {
         || userDetail.getDomainId().length() == 0) {
       SilverTrace.error("admin", "UserManager.addUser",
           "admin.MSG_ERR_ADD_USER", userDetail.getFirstName() + " "
-              + userDetail.getLastName()
-              + "domainID, login or lastName is not set");
+          + userDetail.getLastName()
+          + "domainID, login or lastName is not set");
       if (userDetail.getLastName().length() == 0)
         SynchroReport.error("UserManager.addUser()",
             "Problème lors de l'ajout de l'utilisateur "
-                + userDetail.getSpecificId()
-                + " dans la base, cet utilisateur n'a pas de nom", null);
+            + userDetail.getSpecificId()
+            + " dans la base, cet utilisateur n'a pas de nom", null);
       else if (userDetail.getLogin().length() == 0)
         SynchroReport.error("UserManager.addUser()",
             "Problème lors de l'ajout de l'utilisateur "
-                + userDetail.getSpecificId()
-                + " dans la base, login non spécifié", null);
+            + userDetail.getSpecificId()
+            + " dans la base, login non spécifié", null);
       else if (userDetail.getDomainId().length() == 0)
         SynchroReport.error("UserManager.addUser()",
             "Problème lors de l'ajout de l'utilisateur "
-                + userDetail.getSpecificId()
-                + " dans la base, domaine non spécifié", null);
+            + userDetail.getSpecificId()
+            + " dans la base, domaine non spécifié", null);
 
       // SynchroReport.error("UserManager.addUser()", "Utilisateur " +
       // userDetail.getSpecificId() + " non rajouté", null);
@@ -546,11 +545,11 @@ public class UserManager extends Object {
       if (ur != null) {
         SynchroReport
             .error(
-                "UserManager.addUser()",
-                "Utilisateur "
-                    + userDetail.getLogin()
-                    + " déjà présent dans la base avec ce login. Il n'a pas été rajouté",
-                null);
+            "UserManager.addUser()",
+            "Utilisateur "
+            + userDetail.getLogin()
+            + " déjà présent dans la base avec ce login. Il n'a pas été rajouté",
+            null);
         throw new AdminException("UserManager.addUser",
             SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_ALREADY_USED",
             "user login: '" + userDetail.getLogin() + "'");
@@ -573,18 +572,18 @@ public class UserManager extends Object {
       if (isX509Enabled) {
         X509Factory
             .buildP12(sUserId, userDetail.getLogin(), userDetail.getLastName(),
-                userDetail.getFirstName(), userDetail.getDomainId());
+            userDetail.getFirstName(), userDetail.getDomainId());
       }
 
       return sUserId;
     } catch (Exception e) {
       SynchroReport.error("UserManager.addUser()",
           "problème à l'ajout de l'utilisateur " + userDetail.getFirstName()
-              + " " + userDetail.getLastName() + "(specificId:"
-              + userDetail.getSpecificId() + ") - " + e.getMessage(), null);
+          + " " + userDetail.getLastName() + "(specificId:"
+          + userDetail.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.addUser",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", "user login: '"
-              + userDetail.getLogin() + "'", e);
+          + userDetail.getLogin() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -604,7 +603,7 @@ public class UserManager extends Object {
       // Delete the user node from Silverpeas
       SynchroReport.info("UserManager.deleteUser()",
           "Suppression de l'utilisateur " + user.getSpecificId()
-              + " de la base...", null);
+          + " de la base...", null);
       ddManager.organization.user.removeUser(idAsInt(user.getId()));
 
       // X509 ?
@@ -618,11 +617,11 @@ public class UserManager extends Object {
     } catch (Exception e) {
       SynchroReport.error("UserManager.deleteUser()",
           "problème à la suppression de l'utilisateur " + user.getFirstName()
-              + " " + user.getLastName() + "(specificId:"
-              + user.getSpecificId() + ") - " + e.getMessage(), null);
+          + " " + user.getLastName() + "(specificId:"
+          + user.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "user id: '"
-              + user.getId() + "'", e);
+          + user.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -647,11 +646,11 @@ public class UserManager extends Object {
     } catch (Exception e) {
       SynchroReport.error("UserManager.updateUser()",
           "problème lors de la maj de l'utilisateur " + user.getFirstName()
-              + " " + user.getLastName() + "(specificId:"
-              + user.getSpecificId() + ") - " + e.getMessage(), null);
+          + " " + user.getLastName() + "(specificId:"
+          + user.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "user id: '"
-              + user.getId() + "'", e);
+          + user.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }

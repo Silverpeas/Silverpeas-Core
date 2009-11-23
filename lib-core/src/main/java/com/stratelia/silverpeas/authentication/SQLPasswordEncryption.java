@@ -42,7 +42,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class performs the authentification using an SQL table
- * 
  * @author tleroi
  * @version
  */
@@ -77,7 +76,7 @@ public class SQLPasswordEncryption {
         + ".SQLUserPasswordColumnName");
     m_UserPasswordAvailableColumnName = propFile
         .getString(authenticationServerName
-            + ".SQLUserPasswordAvailableColumnName");
+        + ".SQLUserPasswordAvailableColumnName");
     m_PasswordEncryption = propFile.getString(authenticationServerName
         + ".SQLPasswordEncryption");
   }
@@ -117,7 +116,7 @@ public class SQLPasswordEncryption {
         if ((getBooleanProperty(propFile, serverName + ".enabled", true))
             && (className != null)
             && (className
-                .equalsIgnoreCase("com.stratelia.silverpeas.authentication.AuthenticationSQL"))) {
+            .equalsIgnoreCase("com.stratelia.silverpeas.authentication.AuthenticationSQL"))) {
           init(serverName, propFile);
           openConnection();
           cryptPasswords();

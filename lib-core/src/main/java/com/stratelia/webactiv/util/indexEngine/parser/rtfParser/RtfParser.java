@@ -36,14 +36,12 @@ import com.stratelia.webactiv.util.indexEngine.parser.PipedParser;
 
 /**
  * ExcelParser parse an excel file
- * 
  * @author $Author: neysseri $
  */
 
 public class RtfParser extends PipedParser {
   /**
-   * Pattern used to remove {\*\ts...} RTF keywords, which cause NPE in Java
-   * 1.4.
+   * Pattern used to remove {\*\ts...} RTF keywords, which cause NPE in Java 1.4.
    */
   // private static final Pattern TS_REMOVE_PATTERN =
   // Pattern.compile("\\{\\\\\\*\\\\ts[^\\}]*\\}", Pattern.DOTALL);

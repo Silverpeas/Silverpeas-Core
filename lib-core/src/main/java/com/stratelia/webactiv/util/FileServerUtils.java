@@ -30,7 +30,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- *
  * @author NEY
  * @version
  */
@@ -38,10 +37,8 @@ public class FileServerUtils extends Object {
 
   /**
    * Replace chars that have special meanings in url by their http substitute.
-   *
-   * @param toParse
-   *          the string which chars that have special meanings in url by their
-   *          http substitute.
+   * @param toParse the string which chars that have special meanings in url by their http
+   * substitute.
    * @return a string without url meaning chars.
    */
   public static String replaceSpecialChars(String toParse) {
@@ -54,10 +51,7 @@ public class FileServerUtils extends Object {
 
   /**
    * Replace accented chars from a string.
-   *
-   * @param toParse
-   *          the string which accented chars are replaced by non-accented
-   *          chars.
+   * @param toParse the string which accented chars are replaced by non-accented chars.
    * @return a string with all its accented chars replaced.
    */
   public static String replaceAccentChars(String toParse) {
@@ -86,10 +80,7 @@ public class FileServerUtils extends Object {
 
   /**
    * Return the full url to access an attachment from web site
-   *
-   * @param fullContext
-   *          something like serverName:serverPort/context
-   *
+   * @param fullContext something like serverName:serverPort/context
    */
   public static String getWebUrl(String spaceId, String componentId,
       String logicalName, String physicalName, String mimeType,

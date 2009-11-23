@@ -50,14 +50,12 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author n.chaix
  */
 public class ContainerManagerException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public ContainerManagerException(String callingClass, int errorLevel,
       String message) {
@@ -81,10 +79,7 @@ public class ContainerManagerException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

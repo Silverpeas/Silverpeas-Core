@@ -26,9 +26,8 @@ package com.stratelia.webactiv.util;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 
 /**
- * This class is the central location to store the internal JNDI names of
- * various entities. Any change here should also be reflected in the deployment
- * descriptors.
+ * This class is the central location to store the internal JNDI names of various entities. Any
+ * change here should also be reflected in the deployment descriptors.
  */
 public class JNDINames extends SilverpeasSettings {
 
@@ -101,8 +100,10 @@ public class JNDINames extends SilverpeasSettings {
   public static String WEBPUBMANAGER_EJBHOME = "ejb/WebPublicationManagerBm";
 
   /********************************** JNDI names for JMS QUEUE ************************************/
-  public static String SILVERSTATISTICS_JMS_QUEUE = "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE";
-  public static String SILVERSTATISTICS_JMS_FACTORY = "com.stratelia.silverpeas.silverstatistics.jms.QueueConnectionFactory";
+  public static String SILVERSTATISTICS_JMS_QUEUE =
+      "com.stratelia.silverpeas.silverstatistics.jms.SilverStatisticsJMSQUEUE";
+  public static String SILVERSTATISTICS_JMS_FACTORY =
+      "com.stratelia.silverpeas.silverstatistics.jms.QueueConnectionFactory";
 
   /********************************** JNDI names for Data Sources ************************************/
   public static String SILVERPEAS_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
@@ -170,7 +171,8 @@ public class JNDINames extends SilverpeasSettings {
   public static String SECURITY_ADAPTER_CLASSNAME = "java:comp/env/securityAdapterClassName";
   public static String SEND_CONFIRMATION_MAIL = "java:comp/env/sendConfirmationMail";
 
-  public static String JMS_FACTORY = "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
+  public static String JMS_FACTORY =
+      "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
   public static String JMS_QUEUE = "com.stratelia.silverpeas.notificationserver.jms.Queue";
   public static String JMS_HEADER_CHANNEL = "CHANNEL";
 

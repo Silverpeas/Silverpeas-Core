@@ -27,7 +27,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author cbonin
  * @version 1.0
  */
@@ -35,8 +34,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class PersistenceException extends SilverpeasException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public PersistenceException(String callingClass, int errorLevel,
       String message) {
@@ -59,8 +58,7 @@ public class PersistenceException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "persistence";

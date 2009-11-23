@@ -36,8 +36,6 @@ import java.util.ResourceBundle;
 
 /**
  * Class declaration
- * 
- * 
  * @author Thierry Leroi
  * @version %I%, %G%
  */
@@ -49,25 +47,17 @@ public class MsgTrace {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public MsgTrace() {
   }
 
   /**
-   * Initialize all trace messages from a path containing the module's messages
+   * Initialize all trace messages from a path containing the module's messages files
+   * @param filePath the path to the ancestor of the property files that contains modules' messages
    * files
-   * 
-   * 
-   * @param filePath
-   *          the path to the ancestor of the property files that contains
-   *          modules' messages files
-   * @param language
-   *          name of the sub directory containing the error messages (empty =
-   *          default = "en" = english)
-   * 
+   * @param language name of the sub directory containing the error messages (empty = default = "en"
+   * = english)
    * @see
    */
   public void initFromProperties(String filePath, String language) {
@@ -94,20 +84,15 @@ public class MsgTrace {
       } catch (IOException e) {
         SilverTrace.error("silvertrace", "MsgTrace.initFromProperties()",
             "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:["
-                + ((File) theFiles.get(i)).getAbsolutePath() + "]", e);
+            + ((File) theFiles.get(i)).getAbsolutePath() + "]", e);
       }
     }
   }
 
   /**
    * Return the string associated to the message ID
-   * 
-   * 
-   * @param messageID
-   *          looks like "modulename.MSG_..."
-   * 
+   * @param messageID looks like "modulename.MSG_..."
    * @return the message string (could be language dependant)
-   * 
    * @see
    */
   public String getMsgString(String messageID) {
@@ -117,13 +102,8 @@ public class MsgTrace {
 
   /**
    * Return the string associated to the message ID
-   * 
-   * 
-   * @param messageID
-   *          looks like "modulename.MSG_..."
-   * 
+   * @param messageID looks like "modulename.MSG_..."
    * @return the message string (could be language dependant)
-   * 
    * @see
    */
   public String getMsgString(String messageID, String language) {
@@ -150,7 +130,7 @@ public class MsgTrace {
         } catch (IOException e) {
           SilverTrace.error("silvertrace", "MsgTrace.getMsgString()",
               "silvertrace.ERR_TRACE_MESSAGES_FILE_ERROR", "File:[" + fileName
-                  + "]", e);
+              + "]", e);
         }
       }
       return valret;
@@ -159,13 +139,8 @@ public class MsgTrace {
 
   /**
    * Return true if the string is not null and not empty
-   * 
-   * 
-   * @param Str
-   *          the string to test
-   * 
+   * @param Str the string to test
    * @return true if Str not null and not equal to ""
-   * 
    * @see
    */
   protected static boolean stringValid(String Str) {
@@ -179,17 +154,10 @@ public class MsgTrace {
 
   /**
    * Reads a boolean property and return it's boolean value
-   * 
-   * 
-   * @param theProps
-   *          the Properties object
-   * @param propertyName
-   *          the name of the property to test
-   * @param defaultValue
-   *          the default value to set to the property if it doesn't exist
-   * 
+   * @param theProps the Properties object
+   * @param propertyName the name of the property to test
+   * @param defaultValue the default value to set to the property if it doesn't exist
    * @return true/false
-   * 
    * @see
    */
   static public boolean getBooleanProperty(Properties theProps,
@@ -210,17 +178,10 @@ public class MsgTrace {
 
   /**
    * Reads a boolean property and return it's boolean value
-   * 
-   * 
-   * @param resource
-   *          the Resource object
-   * @param propertyName
-   *          the name of the property to test
-   * @param defaultValue
-   *          the default value to set to the property if it doesn't exist
-   * 
+   * @param resource the Resource object
+   * @param propertyName the name of the property to test
+   * @param defaultValue the default value to set to the property if it doesn't exist
    * @return true/false
-   * 
    * @see
    */
   static public boolean getBooleanProperty(ResourceBundle resource,
@@ -241,13 +202,9 @@ public class MsgTrace {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pathFiles
    * @param suffix
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayList getPropertyFiles(String pathFiles, String suffix) {
@@ -261,7 +218,7 @@ public class MsgTrace {
     if (pathMessagesFile == null) {
       SilverTrace.error("silvertrace", "MsgTrace.getPropertyFiles()",
           "silvertrace.ERR_PATH_NOT_FOUND", "FileMessagesPath:[" + pathFiles
-              + "]");
+          + "]");
     } else {
       messageFiles = pathMessagesFile.listFiles();
       if (messageFiles != null) {
@@ -275,7 +232,7 @@ public class MsgTrace {
       } else {
         SilverTrace.error("silvertrace", "MsgTrace.getPropertyFiles()",
             "silvertrace.ERR_NO_PROP_FILES_FOUND", "FileMessagesPath:["
-                + pathFiles + "]");
+            + pathFiles + "]");
       }
     }
     return valret;
@@ -283,12 +240,8 @@ public class MsgTrace {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param language
-   * 
    * @return
-   * 
    * @see
    */
   protected boolean IsDefaultLanguage(String language) {

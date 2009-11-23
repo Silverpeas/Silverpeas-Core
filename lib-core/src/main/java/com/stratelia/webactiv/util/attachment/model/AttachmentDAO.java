@@ -46,9 +46,10 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class AttachmentDAO {
 
   private static String attachmentTableName = "SB_Attachment_Attachment";
-  private static String attachmentTableColumns = " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
-      + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
-      + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
+  private static String attachmentTableColumns =
+      " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
+          + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
+          + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
   private final static int nameMaxLength = 100;
 
   public AttachmentDAO() {
@@ -76,7 +77,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : creationDate format unknown for attachment.pk = "
-                + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else
       attachDetail.setCreationDate(new Date());
@@ -103,7 +105,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : reservationDate format unknown for attachment.pk = "
-                + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else
       attachDetail.setReservationDate(null);
@@ -116,7 +119,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : alertDate format unknown for attachment.pk = "
-                + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else
       attachDetail.setAlertDate(null);
@@ -129,7 +133,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : expiryDate format unknown for attachment.pk = "
-                + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else
       attachDetail.setExpiryDate(null);
@@ -207,13 +212,19 @@ public class AttachmentDAO {
 
   public static void updateRow(Connection con, AttachmentDetail attach)
       throws SQLException {
-    String updateQuery = "update "
-        + attachmentTableName
-        + " set attachmentTitle = ?, attachmentInfo = ?, "
-        + "attachmentPhysicalName = ?, attachmentLogicalName = ?, attachmentDescription = ?, attachmentSize = ?, "
-        + "attachmentType = ?, attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, "
-        + "attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, reservationDate = ? , alertDate = ?, expiryDate = ?, xmlForm = ? "
-        + " where attachmentId = ? ";
+    String updateQuery =
+        "update "
+            +
+            attachmentTableName
+            +
+            " set attachmentTitle = ?, attachmentInfo = ?, "
+            +
+            "attachmentPhysicalName = ?, attachmentLogicalName = ?, attachmentDescription = ?, attachmentSize = ?, "
+            +
+            "attachmentType = ?, attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, "
+            +
+            "attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, reservationDate = ? , alertDate = ?, expiryDate = ?, xmlForm = ? "
+            + " where attachmentId = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateQuery);
@@ -317,7 +328,7 @@ public class AttachmentDAO {
 
       SilverTrace.info("attachment", "AttachmentDAO.loadRow()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString()
-              + " with attachmentId = " + pk.getId());
+          + " with attachmentId = " + pk.getId());
 
       attachDetail = null;
 
@@ -340,15 +351,10 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param foreignKey
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Vector findByForeignKey(Connection con, WAPrimaryKey foreignKey)
@@ -437,17 +443,12 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param foreignKey
    * @param nameAttribut
    * @param valueAttribut
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Vector findByPKAndParam(Connection con,
@@ -490,16 +491,11 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param foreignKey
    * @param context
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Vector findByPKAndContext(Connection con,
@@ -545,7 +541,7 @@ public class AttachmentDAO {
 
       SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
           "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
-              + attachments.size());
+          + attachments.size());
     } finally {
       DBUtil.close(rs, prepStmt);
     }
@@ -718,7 +714,7 @@ public class AttachmentDAO {
 
       SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
           "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
-              + attachments.size());
+          + attachments.size());
     } finally {
       DBUtil.close(rs, prepStmt);
     }
@@ -757,7 +753,7 @@ public class AttachmentDAO {
 
       SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
           "root.MSG_GEN_PARAM_VALUE", "attachments.size() = "
-              + attachments.size());
+          + attachments.size());
     } finally {
       DBUtil.close(rs, prepStmt);
     }

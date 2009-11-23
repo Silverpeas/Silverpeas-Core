@@ -59,8 +59,8 @@ public class X509Factory {
         "com.silverpeas.util.security", "");
     truststoreFile = settings
         .getString(
-            "x509.TruststoreFile",
-            "C:\\Silverpeas\\KMEdition\\Tools\\jboss403\\server\\default\\conf\\server.truststore");
+        "x509.TruststoreFile",
+        "C:\\Silverpeas\\KMEdition\\Tools\\jboss403\\server\\default\\conf\\server.truststore");
     truststorePwd = settings.getString("x509.TruststorePwd", "servercert");
 
     String ou = settings.getString("x509.DN_OU", "silverpeas.com"); // Organizational

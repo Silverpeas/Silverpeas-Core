@@ -26,11 +26,10 @@ package com.stratelia.silverpeas.contentManager;
 import com.silverpeas.util.i18n.Translation;
 
 /**
- * This class allows the result jsp page of the global search to show all
- * features (name, description, location)
+ * This class allows the result jsp page of the global search to show all features (name,
+ * description, location)
  */
-public class SilverContentI18N extends Translation implements
-    java.io.Serializable {
+public class SilverContentI18N extends Translation implements java.io.Serializable {
   private String name = "";
   private String description = "";
 

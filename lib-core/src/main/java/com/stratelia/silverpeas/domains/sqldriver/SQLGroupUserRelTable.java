@@ -66,7 +66,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.getDirectUserIdsOfGroup",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -98,7 +98,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.getDirectGroupIdsOfUser",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -125,7 +125,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.createGroupUserRel",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -151,7 +151,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.removeGroupUserRel",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -174,7 +174,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.removeAllUserRel",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -197,7 +197,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.removeAllGroupRel",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -226,7 +226,7 @@ public class SQLGroupUserRelTable {
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.isUserDirectlyInGroup",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-              + theQuery, e);
+          + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }

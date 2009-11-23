@@ -104,8 +104,7 @@ public class CSVWriter extends SilverpeasSettings {
   }
 
   /**
-   * @param cols
-   *          The m_specificNbCols to set.
+   * @param cols The m_specificNbCols to set.
    */
   public void setM_specificNbCols(int cols) {
     m_specificNbCols = cols;

@@ -32,8 +32,7 @@ import java.io.Writer;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * A piped parser is a Parser which uses a pipe to output the result of his
- * work.
+ * A piped parser is a Parser which uses a pipe to output the result of his work.
  */
 public abstract class PipedParser implements Parser {
 
@@ -44,8 +43,7 @@ public abstract class PipedParser implements Parser {
       throws IOException;
 
   /**
-   * Returns a piped Reader giving the text content extracted by the
-   * outPutContent method.
+   * Returns a piped Reader giving the text content extracted by the outPutContent method.
    */
   public Reader getReader(String path, String encoding) {
     PipedReader pipeIn = null;
@@ -76,22 +74,17 @@ public abstract class PipedParser implements Parser {
   }
 
   /**
-   * Inner class which will run in the background the outPutContent method.
-   * 
-   * Running this thread will provide the character stream of the piped reader
-   * returned by the getReader method and which is used by the main calling
-   * thread.
+   * Inner class which will run in the background the outPutContent method. Running this thread will
+   * provide the character stream of the piped reader returned by the getReader method and which is
+   * used by the main calling thread.
    */
   private class ParserThread extends Thread {
 
     /**
      * Builds a new thread running the command given by the path param.
-     * 
-     * 
      * @param out
      * @param path
      * @param encoding
-     * 
      * @see
      */
     public ParserThread(Writer out, String path, String encoding) // ????
@@ -103,8 +96,6 @@ public abstract class PipedParser implements Parser {
 
     /**
      * Method declaration
-     * 
-     * 
      * @see
      */
     public void run() {

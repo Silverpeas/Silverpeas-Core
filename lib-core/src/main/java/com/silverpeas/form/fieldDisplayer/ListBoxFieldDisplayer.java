@@ -40,10 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A ListBoxFieldDisplayer is an object which can display a listbox in HTML
- * the content of a listbox to a end user
- * and can retrieve via HTTP any updated value.
- *
+ * A ListBoxFieldDisplayer is an object which can display a listbox in HTML the content of a listbox
+ * to a end user and can retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -67,18 +65,13 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the javascripts which will be used to control
-   * the new value given to the named field.
-   *
-   * The error messages may be adapted to a local language.
-   * The FieldTemplate gives the field type and constraints.
-   * The FieldTemplate gives the local labeld too.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the javascripts which will be used to control the new value given to the named field.
+   * The error messages may be adapted to a local language. The FieldTemplate gives the field type
+   * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
+   * log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the fieldName is unknown by the template.
-   * <LI> the field type is not a managed type.
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void displayScripts(PrintWriter out,
@@ -88,12 +81,14 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     String language = PagesContext.getLanguage();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextAreaFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "TextAreaFieldDisplayer.displayScripts",
+          "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString("GML.MustBeFilled",
+      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
+          Util.getString("GML.MustBeFilled",
           language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
@@ -103,16 +98,11 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
   }
 
   /**
-   * Prints the HTML value of the field.
-   * The displayed value must be updatable by the end user.
-   *
-   * The value format may be adapted to a local language.
-   * The fieldName must be used to name the html form input.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
+   * value format may be adapted to a local language. The fieldName must be used to name the html
+   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> the field type is not a managed type.
+   * <LI>the field type is not a managed type.
    * </UL>
    */
   public void display(PrintWriter out,
@@ -131,7 +121,8 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     Map parameters = template.getParameters(language);
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "ListBoxFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+      SilverTrace.info("form", "ListBoxFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
     if (!field.isNull()) {
@@ -183,8 +174,8 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
 
     html += "</SELECT>\n";
 
-
-    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() && !template.isHidden() && PagesContext.
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
+        !template.isHidden() && PagesContext.
         useMandatory()) {
       html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\"/>";
     }
@@ -199,15 +190,17 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
       throws FormException {
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", TextField.TYPE);
+      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+          TextField.TYPE);
     }
 
-    //String newValue = request.getParameter(template.getFieldName());
+    // String newValue = request.getParameter(template.getFieldName());
 
     if (field.acceptValue(newValue, PagesContext.getLanguage())) {
       field.setValue(newValue, PagesContext.getLanguage());
     } else {
-      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", TextField.TYPE);
+      throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          TextField.TYPE);
     }
     return new ArrayList<String>();
   }

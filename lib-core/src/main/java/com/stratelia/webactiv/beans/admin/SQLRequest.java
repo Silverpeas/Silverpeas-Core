@@ -32,11 +32,10 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * The <code> SQLRequest </code> class allows a component to get a SQL request
- * in order by the server type (SQLServer, Oracle, PostgreSQL,...). The role of
- * this class is to read a specific property file (create, delete, update,
- * insert), to extract the specific SQL code with specific tag. And to return
- * the complet rigth SQL code.
+ * The <code> SQLRequest </code> class allows a component to get a SQL request in order by the
+ * server type (SQLServer, Oracle, PostgreSQL,...). The role of this class is to read a specific
+ * property file (create, delete, update, insert), to extract the specific SQL code with specific
+ * tag. And to return the complet rigth SQL code.
  */
 public class SQLRequest {
 
@@ -61,14 +60,14 @@ public class SQLRequest {
   Hashtable internalTag = new Hashtable();
 
   /**
-   * Contains all queries to create multiple tables for one SilverPeas component
-   * or to delete rows or to insert data ...
+   * Contains all queries to create multiple tables for one SilverPeas component or to delete rows
+   * or to insert data ...
    */
   private String allQueries;
 
   /**
-   * Silverpeas Object to read properties files. These files contain the SQL
-   * command to create, delete, insert and update
+   * Silverpeas Object to read properties files. These files contain the SQL command to create,
+   * delete, insert and update
    */
   private ResourceLocator resourceLocation = new ResourceLocator();
 
@@ -136,20 +135,16 @@ public class SQLRequest {
   }
 
   /**
-   * Returns the complete SQL query which allows the administrator to create a
-   * table.
-   * 
-   * @param tableName
-   *          (String) the name of the created table
-   * @param tableType
-   *          (String) the type of the table which must be created (forum,
-   *          rights, message, event, ...)
+   * Returns the complete SQL query which allows the administrator to create a table.
+   * @param tableName (String) the name of the created table
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to create a table
    */
   protected String getCreateQuery(String tableName, String tableType) {
     SilverTrace.info("peasCore", "SQLRequest.getCreateQuery",
         "root.MSG_GEN_PARAM_VALUE", "tableName=" + tableName + " | tableType="
-            + tableType);
+        + tableType);
     // set the value for the tableName tag
     internalTag.put("__tableName__", tableName);
 
@@ -157,14 +152,10 @@ public class SQLRequest {
   }
 
   /**
-   * Returns the complete SQL query which allows the administrator to delete
-   * some rows into table.
-   * 
-   * @param instanceId
-   *          (String) the name of the created table
-   * @param tableType
-   *          (String) the type of the table which must be created (forum,
-   *          rights, message, event, ...)
+   * Returns the complete SQL query which allows the administrator to delete some rows into table.
+   * @param instanceId (String) the name of the created table
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to delete a table
    */
   protected String getDeleteQuery(String instanceId, String tableType) {
@@ -175,21 +166,17 @@ public class SQLRequest {
   }
 
   /**
-   * Returns the complete SQL query which allows the administrator to update a
-   * table.
-   * 
-   * @param instanceId
-   *          (String) the id of the component where their data must be updated
-   *          into tables.
-   * @param tableType
-   *          (String) the type of the table which must be created (forum,
-   *          rights, message, event, ...)
+   * Returns the complete SQL query which allows the administrator to update a table.
+   * @param instanceId (String) the id of the component where their data must be updated into
+   * tables.
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to update a table
    */
   protected String getUpdateQuery(String instanceId, String tableType) {
     SilverTrace.info("peasCore", "SQLRequest.getUpdateQuery",
         "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceId
-            + " | tableType=" + tableType);
+        + " | tableType=" + tableType);
     // set the value for the tableName tag
     internalTag.put("__ID__", instanceId);
 
@@ -197,21 +184,17 @@ public class SQLRequest {
   }
 
   /**
-   * Returns the complete SQL query which allows the administrator to insert
-   * data into tables.
-   * 
-   * @param instanceId
-   *          (String) the id of the component where their data must be inserted
-   *          into tables.
-   * @param tableType
-   *          (String) the type of the table which must be created (forum,
-   *          rights, message, event, ...)
+   * Returns the complete SQL query which allows the administrator to insert data into tables.
+   * @param instanceId (String) the id of the component where their data must be inserted into
+   * tables.
+   * @param tableType (String) the type of the table which must be created (forum, rights, message,
+   * event, ...)
    * @return the complete SQL query to insert a table
    */
   protected String getInsertQuery(String instanceId, String tableType) {
     SilverTrace.info("peasCore", "SQLRequest.getInsertQuery",
         "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceId
-            + " | tableType=" + tableType);
+        + " | tableType=" + tableType);
     // set the value for the tableName tag
     internalTag.put("__ID__", instanceId);
 
@@ -240,11 +223,9 @@ public class SQLRequest {
   }
 
   /**
-   * Substitute all intern tag of the file. These tags ( __tableName__, ... )
-   * will be replaced by values received or read into the DBUtil.
-   * 
-   * @param createQueries
-   *          (String) creation requests of tables
+   * Substitute all intern tag of the file. These tags ( __tableName__, ... ) will be replaced by
+   * values received or read into the DBUtil.
+   * @param createQueries (String) creation requests of tables
    * @return the complet request to allows the creation of a table.
    */
   private String substituteInternalTag(String localQuery) {
@@ -276,10 +257,7 @@ public class SQLRequest {
 
   /**
    * Returns a specific SQL query from the properties file.
-   * 
-   * @param tableType
-   *          (String) the specific word which allows us to separate the right
-   *          SQL code
+   * @param tableType (String) the specific word which allows us to separate the right SQL code
    * @return a part of the SQL query whished
    */
   private String getSubQuery(String tableType) {
@@ -293,7 +271,7 @@ public class SQLRequest {
     if (beginTableType >= endTableType) {
       SilverTrace.warn("peasCore", "SQLRequest.getSubQuery",
           "root.MSG_GEN_PARAM_VALUE", "begin(" + beginTableType + ") >= end("
-              + endTableType + ")");
+          + endTableType + ")");
       allQueries.indexOf("<BONUSTABLE>");
       return null;
     }

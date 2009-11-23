@@ -40,8 +40,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * The ParserManager class manages all the parsers which will be used to parse
- * the indexed files.
+ * The ParserManager class manages all the parsers which will be used to parse the indexed files.
  */
 public final class ParserManager {
 
@@ -53,9 +52,7 @@ public final class ParserManager {
   }
 
   /**
-   * Returns the set of all the known file formats.
-   * 
-   * The returned set is a Set of String.
+   * Returns the set of all the known file formats. The returned set is a Set of String.
    */
   static public Set getFormatNames() {
     return parserMap.keySet();
@@ -172,16 +169,15 @@ public final class ParserManager {
   }
 
   /**
-   * The map giving the parser for a specific file format.
-   * 
-   * The type of this map is : Map (String -> Parser).
+   * The map giving the parser for a specific file format. The type of this map is : Map (String ->
+   * Parser).
    */
 
   static private final Map parserMap;
 
   /**
-   * At class initialization time, the parser's map is built and initialized
-   * from the Parsers.properties file.
+   * At class initialization time, the parser's map is built and initialized from the
+   * Parsers.properties file.
    */
 
   static {

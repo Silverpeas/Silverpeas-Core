@@ -56,10 +56,8 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
- * A PublicationTemplate describes a set of publication records built on a same
- * template.
- * 
- * A PublicationTemplate groups :
+ * A PublicationTemplate describes a set of publication records built on a same template. A
+ * PublicationTemplate groups :
  * <OL>
  * <LI>a RecordTemplate which describes the built records.
  * <LI>a RecordSet of records built on this template,
@@ -120,8 +118,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   /**
-   * Returns the Form used to create and update the records built from this
-   * template.
+   * Returns the Form used to create and update the records built from this template.
    */
   public Form getUpdateForm() throws PublicationTemplateException {
     if (updateForm == null)
@@ -192,8 +189,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   /**
-   * Returns the Form witch name is name parameter the records built from this
-   * template.
+   * Returns the Form witch name is name parameter the records built from this template.
    */
   public Form getEditForm(String name) throws PublicationTemplateException {
     SilverTrace.info("form", "PublicationTemplateImpl.getEditForm",
@@ -388,9 +384,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * load a recordTemplate definition from xml file to java objects
-   * 
-   * @param xmlFileName
-   *          the xml file name that contains process model definition
+   * @param xmlFileName the xml file name that contains process model definition
    * @return a RecordTemplate object
    */
   private RecordTemplate loadRecordTemplate(String xmlFileName)
@@ -455,9 +449,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Save a recordTemplate to xml file
-   * 
-   * @param recordTemplate
-   *          the object to save as xml File
+   * @param recordTemplate the object to save as xml File
    */
   private void saveRecordTemplate(RecordTemplate recordTemplate, String subDir,
       String xmlFileName) throws PublicationTemplateException {
@@ -476,7 +468,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
           throw new PublicationTemplateException(
               "PublicationTemplateImpl.saveRecordTemplate",
               "form.EX_ERR_CASTOR_SAVE_PUBLICATION_TEMPLATE", "xmlDirPath = "
-                  + xmlDirPath, e);
+              + xmlDirPath, e);
         }
 
       String xmlFilePath = PublicationTemplateManager.makePath(

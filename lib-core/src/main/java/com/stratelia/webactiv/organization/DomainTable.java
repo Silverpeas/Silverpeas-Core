@@ -35,7 +35,8 @@ public class DomainTable extends Table {
     super(schema, "ST_Domain");
   }
 
-  static final private String DOMAIN_COLUMNS = "id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL";
+  static final private String DOMAIN_COLUMNS =
+      "id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL";
 
   /**
    * Fetch the current domain row from a resultSet.
@@ -82,9 +83,10 @@ public class DomainTable extends Table {
     insertRow(INSERT_DOMAIN, domain);
   }
 
-  static final private String INSERT_DOMAIN = "insert into"
-      + " ST_Domain(id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL)"
-      + " values  (? ,? ,?, ? ,?, ?, ?, ?)";
+  static final private String INSERT_DOMAIN =
+      "insert into"
+          + " ST_Domain(id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL)"
+          + " values  (? ,? ,?, ? ,?, ?, ?, ?)";
 
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {

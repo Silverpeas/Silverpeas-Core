@@ -29,25 +29,19 @@ import java.io.Serializable;
 import com.silverpeas.util.i18n.I18NHelper;
 
 /**
- * A FileDescription pack all the needed information to parse and index a file.
- * 
- * We need :
+ * A FileDescription pack all the needed information to parse and index a file. We need :
  * <UL>
  * <LI>the path to the file</LI>
  * <LI>the encoding of the file</LI>
  * <LI>the format of the file</LI>
  * <LI>the language of the file</LI>
  * </UL>
- * 
- * The java.io.InputStreamReader javadoc page provides a link to a list of
- * java-known encodings.
+ * The java.io.InputStreamReader javadoc page provides a link to a list of java-known encodings.
  */
 public final class FileDescription implements Serializable {
   /**
-   * Set the new FileDescription with the given path, encoding, format and
-   * language.
-   * 
-   * The path should not be null;
+   * Set the new FileDescription with the given path, encoding, format and language. The path should
+   * not be null;
    */
   public FileDescription(String path, String encoding, String format,
       String lang) {

@@ -27,15 +27,13 @@ import java.util.*;
 import com.silverpeas.form.*;
 
 /**
- * A simple record filter built from a list of fieldFilter whose criteria must
- * all match to accept a DataRecord.
+ * A simple record filter built from a list of fieldFilter whose criteria must all match to accept a
+ * DataRecord.
  */
 public class SimpleRecordFilter implements RecordFilter {
   /**
-   * Builds a SimpleRecordFilter.
-   * 
-   * Before any call to the match method, you must use the addFieldFilter method
-   * to add each needed field filter.
+   * Builds a SimpleRecordFilter. Before any call to the match method, you must use the
+   * addFieldFilter method to add each needed field filter.
    */
   public SimpleRecordFilter() {
   }
@@ -48,8 +46,7 @@ public class SimpleRecordFilter implements RecordFilter {
   }
 
   /**
-   * Returns true if the fields of the specified record match all the field
-   * filter of this Filter.
+   * Returns true if the fields of the specified record match all the field filter of this Filter.
    */
   public boolean match(DataRecord testedRecord) throws FormException {
     Iterator filters = this.filters.iterator();

@@ -24,9 +24,8 @@
 package com.stratelia.silverpeas.util;
 
 /**
- * Title: userPanelPeas Description: this is an object pair of pair object
- * Copyright: Copyright (c) 2002 Company: Silverpeas
- * 
+ * Title: userPanelPeas Description: this is an object pair of pair object Copyright: Copyright (c)
+ * 2002 Company: Silverpeas
  * @author J-C Groccia
  * @version 1.0
  */

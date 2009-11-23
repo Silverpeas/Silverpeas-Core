@@ -31,7 +31,6 @@ import com.silverpeas.form.FormException;
 
 /**
  * A PdcUserField stores a the users references
- * 
  * @see Field
  * @see FieldDisplayer
  */
@@ -55,8 +54,7 @@ public class PdcUserField implements Field {
   }
 
   /**
-   * Returns the users ids referenced by this field.
-   * (userCardId,userCardId,userCardId, ...)
+   * Returns the users ids referenced by this field. (userCardId,userCardId,userCardId, ...)
    */
   public String getUserCardIds() {
     return userCardIds;
@@ -77,8 +75,8 @@ public class PdcUserField implements Field {
   }
 
   /**
-   * Returns the string value of this field : the user names (FirstName
-   * LastName,FirstName LastName,FirstName LastName, ...)
+   * Returns the string value of this field : the user names (FirstName LastName,FirstName
+   * LastName,FirstName LastName, ...)
    */
   public String getValue() {
     String theUserCardIds = getUserCardIds(); // userCardId-userId,userCardId-userId
@@ -132,10 +130,8 @@ public class PdcUserField implements Field {
   }
 
   /**
-   * Returns the local value of this field.
-   * 
-   * There is no local format for a user field, so the language parameter is
-   * unused.
+   * Returns the local value of this field. There is no local format for a user field, so the
+   * language parameter is unused.
    */
   public String getValue(String language) {
     return getValue();
@@ -154,16 +150,14 @@ public class PdcUserField implements Field {
   }
 
   /**
-   * Always returns false since a user reference can't be computed from a user
-   * name.
+   * Always returns false since a user reference can't be computed from a user name.
    */
   public boolean acceptValue(String value) {
     return false;
   }
 
   /**
-   * Always returns false since a user reference can't be computed from a user
-   * name.
+   * Always returns false since a user reference can't be computed from a user name.
    */
   public boolean acceptValue(String value, String language) {
     return false;
@@ -231,7 +225,6 @@ public class PdcUserField implements Field {
 
   /**
    * Set to null this field.
-   * 
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */

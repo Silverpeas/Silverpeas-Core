@@ -43,21 +43,18 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Titre : Description : Copyright : Copyright (c) 2001 Société :
- * 
  * @author eDurand
  * @version 1.0
  */
 
-public abstract class AbstractListener implements INotificationServerChannel,
-    MessageDrivenBean, MessageListener {
+public abstract class AbstractListener implements INotificationServerChannel, MessageDrivenBean,
+    MessageListener {
   protected String m_channel;
   protected String m_payload;
   protected MessageDrivenContext m_context;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractListener() {
@@ -65,8 +62,6 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -74,8 +69,6 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -83,8 +76,6 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -92,10 +83,7 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param ctx
-   * 
    * @see
    */
   public void setMessageDrivenContext(MessageDrivenContext ctx) {
@@ -104,18 +92,15 @@ public abstract class AbstractListener implements INotificationServerChannel,
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws CreateException
-   * 
    * @see
    */
   public void ejbCreate() throws CreateException {
   }
 
   /**
-   * process a message received on NotificationServer JMS message queue :
-   * extract the message to send
+   * process a message received on NotificationServer JMS message queue : extract the message to
+   * send
    */
   protected void processMessage(Message msg) throws NotificationServerException {
     NotificationData nd;

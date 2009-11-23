@@ -30,10 +30,8 @@
 package com.silverpeas.wysiwyg.importExport;
 
 /**
- * @author sdevolder
- * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author sdevolder TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public class WysiwygContentType {
 
@@ -47,8 +45,7 @@ public class WysiwygContentType {
   }
 
   /**
-   * @param path
-   *          The path to set.
+   * @param path The path to set.
    */
   public void setPath(String path) {
     this.path = path;

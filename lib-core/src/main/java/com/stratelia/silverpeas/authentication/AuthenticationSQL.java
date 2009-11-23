@@ -48,7 +48,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * This class performs the authentification using an SQL table
- * 
  * @author tleroi
  * @version
  */
@@ -82,7 +81,7 @@ public class AuthenticationSQL extends Authentication {
         + ".SQLUserPasswordColumnName");
     m_UserPasswordAvailableColumnName = propFile
         .getString(authenticationServerName
-            + ".SQLUserPasswordAvailableColumnName");
+        + ".SQLUserPasswordAvailableColumnName");
     m_PasswordEncryption = propFile.getString(authenticationServerName
         + ".SQLPasswordEncryption");
   }
@@ -169,7 +168,7 @@ public class AuthenticationSQL extends Authentication {
                 "AuthenticationSQL.internalAuthentication()",
                 SilverpeasException.ERROR,
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
-                    + login);
+                + login);
           }
         } else {
           boolean passwordsMatch = true;
@@ -192,7 +191,7 @@ public class AuthenticationSQL extends Authentication {
                 "AuthenticationSQL.internalAuthentication()",
                 SilverpeasException.ERROR,
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
-                    + login);
+                + login);
           }
         }
       } else {
@@ -271,20 +270,13 @@ public class AuthenticationSQL extends Authentication {
   }
 
   /**
-   * Overrides Authentication.internalChangePassword to offer password update
-   * capabilities In case of SQL Authentication, this method check if password
-   * entry matches with the actual one. The password update is made in the
-   * updateUserFull method.
-   * 
-   * @param login
-   *          user login
-   * @param oldPassword
-   *          user old password
-   * @param newPassword
-   *          user new password
-   * 
-   * @throws AuthenticationException
-   *           if oldPassword does not match with actual password
+   * Overrides Authentication.internalChangePassword to offer password update capabilities In case
+   * of SQL Authentication, this method check if password entry matches with the actual one. The
+   * password update is made in the updateUserFull method.
+   * @param login user login
+   * @param oldPassword user old password
+   * @param newPassword user new password
+   * @throws AuthenticationException if oldPassword does not match with actual password
    */
   protected void internalChangePassword(String login, String oldPassword,
       String newPassword) throws AuthenticationException {

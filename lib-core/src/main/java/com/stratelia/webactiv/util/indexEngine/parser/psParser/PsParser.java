@@ -47,8 +47,7 @@ public class PsParser extends PipedParser {
   }
 
   /**
-   * outPutContent read the text content of a ps file and store it in out to be
-   * ready to be indexed
+   * outPutContent read the text content of a ps file and store it in out to be ready to be indexed
    */
 
   public void outPutContent(Writer out, String path, String encoding)

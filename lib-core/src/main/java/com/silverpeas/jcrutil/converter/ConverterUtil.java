@@ -35,7 +35,6 @@ import org.apache.jackrabbit.util.Text;
 
 /**
  * Utility class for path and date conversions between JCR and Slverpeas Pojo.
- * 
  * @author Emmanuel Hugonnet
  * @version $revision$
  */
@@ -71,9 +70,7 @@ public class ConverterUtil {
 
   /**
    * Encodes the JCR path to a Xpath compatible path.
-   * 
-   * @param path
-   *          the JCR path to be encoded for Xpath.
+   * @param path the JCR path to be encoded for Xpath.
    * @return the corresponding xpath.
    */
   public static final String encodeJcrPath(String path) {
@@ -82,9 +79,7 @@ public class ConverterUtil {
 
   /**
    * Replace all whitespace to SPACE_TOKEN.
-   * 
-   * @param name
-   *          the String o be converted.
+   * @param name the String o be converted.
    * @return the resulting String.
    */
   public static String convertToJcrPath(String name) {
@@ -105,7 +100,6 @@ public class ConverterUtil {
 
   /**
    * Replace all "'" chars with %39
-   * 
    * @param text
    * @return a String with all quotes replaced by %39
    */
@@ -115,7 +109,6 @@ public class ConverterUtil {
 
   /**
    * Replace all %39 with the char'
-   * 
    * @param text
    * @return a String with all %39 replaced by quotes
    */
@@ -125,9 +118,7 @@ public class ConverterUtil {
 
   /**
    * Replace all SPACE_TOKEN to whitespace.
-   * 
-   * @param name
-   *          the String o be converted.
+   * @param name the String o be converted.
    * @return the resulting String.
    */
   public static String convertFromJcrPath(String name) {
@@ -136,9 +127,7 @@ public class ConverterUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
-   * 
-   * @param date
-   *          the String to be parsed.
+   * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
    */
@@ -157,9 +146,7 @@ public class ConverterUtil {
 
   /**
    * Format a Date to a String of format yyyy/MM/dd.
-   * 
-   * @param date
-   *          the date to be formatted.
+   * @param date the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */
@@ -172,9 +159,7 @@ public class ConverterUtil {
 
   /**
    * Format a Calendar to a String of format yyyy/MM/dd.
-   * 
-   * @param calend
-   *          the date to be formatted.
+   * @param calend the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */
@@ -186,13 +171,10 @@ public class ConverterUtil {
   }
 
   /**
-   * Parse a String of format HH:mm and set the corresponding hours and minutes
-   * to the specified Calendar.
-   * 
-   * @param time
-   *          the String to be parsed.
-   * @param the
-   *          calendar to be updated.
+   * Parse a String of format HH:mm and set the corresponding hours and minutes to the specified
+   * Calendar.
+   * @param time the String to be parsed.
+   * @param the calendar to be updated.
    * @throws ParseException
    */
   public static void setTime(Calendar calend, String time) {
@@ -215,9 +197,7 @@ public class ConverterUtil {
 
   /**
    * Format a Date to a String of format HH:mm.
-   * 
-   * @param date
-   *          the date to be formatted.
+   * @param date the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */
@@ -230,9 +210,7 @@ public class ConverterUtil {
 
   /**
    * Format a Calendar to a String of format HH:mm.
-   * 
-   * @param calend
-   *          the date to be formatted.
+   * @param calend the date to be formatted.
    * @return the formatted String.
    * @throws ParseException
    */

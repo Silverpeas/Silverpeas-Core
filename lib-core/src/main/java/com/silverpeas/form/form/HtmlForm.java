@@ -46,9 +46,8 @@ import com.silverpeas.form.TypeManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * A Form is an object which can display in HTML the content of a DataRecord to
- * a end user and can retrieve via HTTP any updated values.
- * 
+ * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
+ * retrieve via HTTP any updated values.
  * @see DataRecord
  * @see RecordTemplate
  * @see FieldDisplayer
@@ -237,13 +236,9 @@ public class HtmlForm extends AbstractForm {
   }
 
   /**
-   * Prints the HTML layout of the dataRecord using the RecordTemplate to
-   * extract labels and extra informations.
-   * 
-   * The value formats may be adapted to a local language.
-   * 
-   * Never throws an Exception but log a silvertrace and writes an empty string
-   * when :
+   * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
+   * informations. The value formats may be adapted to a local language. Never throws an Exception
+   * but log a silvertrace and writes an empty string when :
    * <UL>
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.
@@ -272,13 +267,9 @@ public class HtmlForm extends AbstractForm {
   }
 
   /**
-   * Prints the HTML layout of the dataRecord using the RecordTemplate to
-   * extract labels and extra informations.
-   * 
-   * The value formats may be adapted to a local language.
-   * 
-   * Never throws an Exception but log a silvertrace and writes an empty string
-   * when :
+   * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
+   * informations. The value formats may be adapted to a local language. Never throws an Exception
+   * but log a silvertrace and writes an empty string when :
    * <UL>
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.

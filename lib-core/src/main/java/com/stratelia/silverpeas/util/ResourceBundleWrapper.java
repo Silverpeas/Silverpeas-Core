@@ -53,15 +53,15 @@ public class ResourceBundleWrapper extends ResourceBundle {
 
   protected Object handleGetObject(String key) {
     Object result = null;
-    try{
+    try {
       result = this.bundle.getObject(key);
-    }catch (MissingResourceException mrex){
+    } catch (MissingResourceException mrex) {
 
     }
     if (result == null && this.parentBundle != null) {
-      try{
-      result = this.parentBundle.getObject(key);
-      }catch (MissingResourceException mrex){
+      try {
+        result = this.parentBundle.getObject(key);
+      } catch (MissingResourceException mrex) {
       }
 
     }

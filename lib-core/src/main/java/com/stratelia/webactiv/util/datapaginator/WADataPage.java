@@ -30,7 +30,6 @@
 package com.stratelia.webactiv.util.datapaginator;
 
 /**
- * 
  * @author jpouyadou
  * @version
  */
@@ -51,20 +50,16 @@ public interface WADataPage {
   public WAItem getItemByName(String name);
 
   /**
-   * this method returns the index, <strong>relative to the parent
-   * document</strong> of the first item on the page. This index is inclusive,
-   * that is, the item actually belongs to the page.
-   * 
+   * this method returns the index, <strong>relative to the parent document</strong> of the first
+   * item on the page. This index is inclusive, that is, the item actually belongs to the page.
    * @see getEndIndex()
    */
   public int getStartItemDocumentIndex();
 
   /**
-   * this method returns the index, <strong>relative to the parent
-   * document</strong> of the last item on the page. This index is exclusive,
-   * that is, the item actually belongs to the next page (this index is the
-   * index of the last visible item + 1).
-   * 
+   * this method returns the index, <strong>relative to the parent document</strong> of the last
+   * item on the page. This index is exclusive, that is, the item actually belongs to the next page
+   * (this index is the index of the last visible item + 1).
    * @see getStartIndex()
    */
   public int getEndItemDocumentIndex();

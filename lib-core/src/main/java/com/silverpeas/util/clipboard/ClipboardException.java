@@ -50,15 +50,13 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ClipboardException extends SilverpeasException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public ClipboardException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -66,13 +64,10 @@ public class ClipboardException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public ClipboardException(String callingClass, int errorLevel,
@@ -82,13 +77,10 @@ public class ClipboardException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public ClipboardException(String callingClass, int errorLevel,
@@ -98,14 +90,11 @@ public class ClipboardException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public ClipboardException(String callingClass, int errorLevel,
@@ -114,8 +103,7 @@ public class ClipboardException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "clipboard";

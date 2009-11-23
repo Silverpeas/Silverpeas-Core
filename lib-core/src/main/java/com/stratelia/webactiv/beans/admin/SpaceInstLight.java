@@ -37,10 +37,8 @@ import com.stratelia.webactiv.organization.SpaceRow;
 
 /**
  * @author neysseri
- * 
  */
-public class SpaceInstLight extends AbstractI18NBean implements Serializable,
-    Comparable {
+public class SpaceInstLight extends AbstractI18NBean implements Serializable, Comparable {
 
   private String id = null;
   private String name = null;

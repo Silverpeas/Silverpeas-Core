@@ -59,13 +59,9 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Most common used constructor
-   * 
-   * @param messageType
-   *          message type (NORMAL, URGENT, ...)
-   * @param title
-   *          message title (=subject)
-   * @param content
-   *          message content (=body)
+   * @param messageType message type (NORMAL, URGENT, ...)
+   * @param title message title (=subject)
+   * @param content message content (=body)
    */
   public NotificationMetaData(int messageType, String title, String content) {
     reset();
@@ -102,9 +98,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message type
-   * 
-   * @param messageType
-   *          the message type to be set
+   * @param messageType the message type to be set
    */
   public void setMessageType(int messageType) {
     this.messageType = messageType;
@@ -112,7 +106,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message type
-   * 
    * @return the message type
    */
   public int getMessageType() {
@@ -121,9 +114,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message date
-   * 
-   * @param date
-   *          the message date to be set
+   * @param date the message date to be set
    */
   public void setDate(Date date) {
     this.date = date;
@@ -131,7 +122,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message date
-   * 
    * @return the message date
    */
   public Date getDate() {
@@ -140,9 +130,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message title
-   * 
-   * @param title
-   *          the title to be set
+   * @param title the title to be set
    */
   public void setTitle(String title) {
     // this.title = title;
@@ -155,7 +143,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message title
-   * 
    * @return the message title
    */
   public String getTitle() {
@@ -169,9 +156,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message content
-   * 
-   * @param content
-   *          the content to be set
+   * @param content the content to be set
    */
   public void setContent(String content) {
     // this.content = content;
@@ -187,7 +172,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message content
-   * 
    * @return the message content
    */
   public String getContent() {
@@ -208,9 +192,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message source
-   * 
-   * @param source
-   *          the source to be set
+   * @param source the source to be set
    */
   public void setSource(String source) {
     this.source = source;
@@ -218,7 +200,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message source
-   * 
    * @return the message source
    */
   public String getSource() {
@@ -227,9 +208,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message sender
-   * 
-   * @param sender
-   *          the sender to be set
+   * @param sender the sender to be set
    */
   public void setSender(String sender) {
     this.sender = sender;
@@ -237,7 +216,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set answer allowed
-   * 
    * @param if answer allowed
    */
   public void setAnswerAllowed(boolean answerAllowed) {
@@ -246,7 +224,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message sender
-   * 
    * @return the message sender
    */
   public String getSender() {
@@ -255,7 +232,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get answer allowed
-   * 
    * @return if answer is allowed
    */
   public boolean isAnswerAllowed() {
@@ -264,9 +240,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message link
-   * 
-   * @param link
-   *          the link to be set
+   * @param link the link to be set
    */
   public void setLink(String link) {
     this.link = link;
@@ -274,7 +248,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message link
-   * 
    * @return the message link
    */
   public String getLink() {
@@ -283,9 +256,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message session Id
-   * 
-   * @param sessionId
-   *          the session Id to be set
+   * @param sessionId the session Id to be set
    */
   public void setSessionId(String sessionId) {
     this.sessionId = sessionId;
@@ -293,7 +264,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message session Id
-   * 
    * @return the message session Id
    */
   public String getSessionId() {
@@ -302,9 +272,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message user recipients
-   * 
-   * @param userRecipients
-   *          the user ids that must receive this message
+   * @param userRecipients the user ids that must receive this message
    */
   public void setUserRecipients(Collection userRecipients) {
     this.userRecipients = userRecipients;
@@ -312,7 +280,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message user recipients
-   * 
    * @return the message user recipients
    */
   public Collection getUserRecipients() {
@@ -321,9 +288,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Add a user recipient to user recipients
-   * 
-   * @param userId
-   *          id of user that must be added
+   * @param userId id of user that must be added
    */
   public void addUserRecipient(String userId) {
     userRecipients.add(userId);
@@ -331,9 +296,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Add a user recipient to user recipients
-   * 
-   * @param userIds
-   *          user ids to be added as an array of String
+   * @param userIds user ids to be added as an array of String
    */
   public void addUserRecipients(String[] userIds) {
     if (userIds != null)
@@ -342,9 +305,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Add a user recipient to user recipients
-   * 
-   * @param users
-   *          users to be added as an array of UserDetail objects
+   * @param users users to be added as an array of UserDetail objects
    */
   public void addUserRecipients(UserDetail[] users) {
     for (int i = 0; users != null && i < users.length; i++) {
@@ -355,9 +316,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message group recipients
-   * 
-   * @param groupRecipients
-   *          the group ids that must receive this message
+   * @param groupRecipients the group ids that must receive this message
    */
   public void setGroupRecipients(Collection groupRecipients) {
     this.groupRecipients = groupRecipients;
@@ -365,7 +324,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Get message group recipients
-   * 
    * @return the message group recipients
    */
   public Collection getGroupRecipients() {
@@ -374,9 +332,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Add a group recipient to group recipients
-   * 
-   * @param groupId
-   *          id of group that must be added
+   * @param groupId id of group that must be added
    */
   public void addGroupRecipient(String groupId) {
     groupRecipients.add(groupId);
@@ -384,9 +340,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Add group recipients to group recipients
-   * 
-   * @param groupIds
-   *          group ids to be added as an array of String
+   * @param groupIds group ids to be added as an array of String
    */
   public void addGroupRecipients(String[] groupIds) {
     if (groupIds != null)

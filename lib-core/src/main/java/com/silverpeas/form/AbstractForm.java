@@ -33,7 +33,6 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.fileupload.FileItem;
 
-
 import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -75,18 +74,13 @@ public abstract class AbstractForm implements Form {
   }
 
   /**
-   * Prints the javascripts which will be used to control
-   * the new values given to the data record fields.
-   *
-   * The error messages may be adapted to a local language.
-   * The RecordTemplate gives the field type and constraints.
-   * The RecordTemplate gives the local label too.
-   *
-   * Never throws an Exception
-   * but log a silvertrace and writes an empty string when :
+   * Prints the javascripts which will be used to control the new values given to the data record
+   * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
+   * field type and constraints. The RecordTemplate gives the local label too. Never throws an
+   * Exception but log a silvertrace and writes an empty string when :
    * <UL>
-   * <LI> a field is unknown by the template.
-   * <LI> a field has not the required type.
+   * <LI>a field is unknown by the template.
+   * <LI>a field has not the required type.
    * </UL>
    */
   @Override
@@ -103,14 +97,15 @@ public abstract class AbstractForm implements Form {
 
       FieldTemplate fieldTemplate = null;
       if (itFields != null && itFields.hasNext()) {
-        //while (itFields.hasNext())
-        //{
+        // while (itFields.hasNext())
+        // {
         fieldTemplate = (FieldTemplate) itFields.next();
 
-        //out.println("<script type=\"text/javascript\" src=\"/weblib/xmlforms/"+fieldTemplate.getTemplateName()+"/"+fieldTemplate.getFieldName()+".js\"></script>");
+        // out.println("<script type=\"text/javascript\" src=\"/weblib/xmlforms/"+fieldTemplate.getTemplateName()+"/"+fieldTemplate.getFieldName()+".js\"></script>");
         out.println(
-            "<script type=\"text/javascript\" src=\"/weblib/xmlforms/" + fieldTemplate.getTemplateName() + ".js\"></script>");
-        //}
+            "<script type=\"text/javascript\" src=\"/weblib/xmlforms/" +
+            fieldTemplate.getTemplateName() + ".js\"></script>");
+        // }
       }
 
       out.println(Util.getJavascriptIncludes());
@@ -149,12 +144,16 @@ public abstract class AbstractForm implements Form {
               fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
 
               if (fieldDisplayer != null) {
-                //out.println("	field = document.forms[" + pc.getFormIndex() + "].elements[\"" + fieldTemplate.getFieldName() + "\"];");
-                out.println("	field = document.getElementById(\"" + fieldTemplate.getFieldName() + "\");");
+                // out.println("	field = document.forms[" + pc.getFormIndex() + "].elements[\"" +
+                // fieldTemplate.getFieldName() + "\"];");
+                out.println("	field = document.getElementById(\"" + fieldTemplate.getFieldName() +
+                    "\");");
                 out.println("	if (field != null) {");
                 fieldDisplayer.displayScripts(out, fieldTemplate, pc);
                 out.println("}\n");
-                pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+                pc
+                    .incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
+                    pc));
               }
             } catch (FormException fe) {
               SilverTrace.error("form", "AbstractForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
@@ -169,13 +168,15 @@ public abstract class AbstractForm implements Form {
       out.println("		result = true;");
       out.println("		break;");
       out.println("	case 1 :");
-      out.println("		errorMsg = \"" + Util.getString("GML.ThisFormContains", language) + " 1 " + Util.getString(
+      out.println("		errorMsg = \"" + Util.getString("GML.ThisFormContains", language) + " 1 " +
+          Util.getString(
           "GML.error", language) + " : \\n \" + errorMsg;");
       out.println("		window.alert(errorMsg);");
       out.println("		result = false;");
       out.println("		break;");
       out.println("	default :");
-      out.println("		errorMsg = \"" + Util.getString("GML.ThisFormContains", language) + "\" + errorNb + \" " + Util.
+      out.println("		errorMsg = \"" + Util.getString("GML.ThisFormContains", language) +
+          "\" + errorNb + \" " + Util.
           getString("GML.errors", language) + " :\\n \" + errorMsg;");
       out.println("		window.alert(errorMsg);");
       out.println("		result = false;");
@@ -196,11 +197,9 @@ public abstract class AbstractForm implements Form {
   public abstract void display(JspWriter out, PagesContext PagesContext, DataRecord record);
 
   /**
-   * Updates the values of the dataRecord using the RecordTemplate
-   * to extra control information (readOnly or mandatory status).
-   *
-   * The fieldName must be used to retrieve the HTTP parameter from the request.
-   *
+   * Updates the values of the dataRecord using the RecordTemplate to extra control information
+   * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
@@ -225,7 +224,8 @@ public abstract class AbstractForm implements Form {
             }
             fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
-              attachmentIds.addAll(fieldDisplayer.update((List<FileItem>)items, record.getField(fieldName),
+              attachmentIds.addAll(fieldDisplayer.update((List<FileItem>) items, record
+                  .getField(fieldName),
                   fieldTemplate, pagesContext));
             }
           } catch (FormException fe) {
@@ -265,14 +265,14 @@ public abstract class AbstractForm implements Form {
                 itemName = itemName + UserField.PARAM_NAME_SUFFIX;
               }
               FileItem item = getParameter(items, itemName);
-                if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
-                  isEmpty = false;
-                } else {
+              if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
+                isEmpty = false;
+              } else {
                 String itemValue = getParameterValue(items, itemName);
                 isEmpty = !StringUtil.isDefined(itemValue);
               }
             }
-          }catch  (FormException fe) {
+          } catch (FormException fe) {
             SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, fe);
           } catch (Exception e) {
             SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, e);
@@ -334,7 +334,7 @@ public abstract class AbstractForm implements Form {
     return null;
   }
 
-  //for multi-values parameter (like checkbox)
+  // for multi-values parameter (like checkbox)
   private List getParameters(List items, String parameterName) {
     List parameters = new ArrayList();
     Iterator iter = items.iterator();
@@ -349,7 +349,8 @@ public abstract class AbstractForm implements Form {
   }
 
   private boolean runOnUnix() {
-    ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+    ResourceLocator settings =
+        new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
     return settings.getBoolean("runOnSolaris", false);
   }
 }

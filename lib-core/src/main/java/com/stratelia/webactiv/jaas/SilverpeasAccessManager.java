@@ -127,7 +127,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
-   * 
    * @param principal
    * @param id
    * @return
@@ -139,9 +138,9 @@ public class SilverpeasAccessManager implements AccessManager {
     try {
       session = repository.login(new SilverpeasSystemCredentials());
       Node node = getNode(session, id);
-      if(node.hasProperty(JcrConstants.SLV_PROPERTY_OWNER)) {
+      if (node.hasProperty(JcrConstants.SLV_PROPERTY_OWNER)) {
         return principal.getUserId().equals(
-          node.getProperty(JcrConstants.SLV_PROPERTY_OWNER).getValue().getString());
+            node.getProperty(JcrConstants.SLV_PROPERTY_OWNER).getValue().getString());
       }
       return true;
     } catch (ItemNotFoundException ex) {
@@ -159,7 +158,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
-   * 
    * @param principal
    * @param id
    * @return
@@ -186,25 +184,23 @@ public class SilverpeasAccessManager implements AccessManager {
     }
   }
 
-
   protected boolean isPathAutorized(Path path) {
-        Set principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
-        Path.Element[] elements = path.getElements();
-        Iterator iter = principals.iterator();
-        while (iter.hasNext()) {
-          SilverpeasUserPrincipal principal = (SilverpeasUserPrincipal) iter.next();
-          for (int i = 0; i < elements.length; i++) {
-            if (principal.getUserProfile(elements[i].getName().getLocalName()) != null) {
-              return true;
-            }
-          }
+    Set principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
+    Path.Element[] elements = path.getElements();
+    Iterator iter = principals.iterator();
+    while (iter.hasNext()) {
+      SilverpeasUserPrincipal principal = (SilverpeasUserPrincipal) iter.next();
+      for (int i = 0; i < elements.length; i++) {
+        if (principal.getUserProfile(elements[i].getName().getLocalName()) != null) {
+          return true;
         }
-        return false;
+      }
+    }
+    return false;
   }
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
-   * 
    * @param id
    * @return
    * @throws LoginException
@@ -249,7 +245,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
-   * 
    * @param id
    * @return
    * @throws LoginException

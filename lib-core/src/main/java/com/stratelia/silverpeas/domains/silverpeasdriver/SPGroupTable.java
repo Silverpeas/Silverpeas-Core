@@ -197,7 +197,8 @@ public class SPGroupTable extends Table {
         new String[0]);
   }
 
-  static final private String SELECT_USERROLE_GROUP_IDS = "select id from DomainSP_Group,ST_UserRole_Group_Rel"
+  static final private String SELECT_USERROLE_GROUP_IDS =
+      "select id from DomainSP_Group,ST_UserRole_Group_Rel"
       + " where id = groupId and userRoleId = ?";
 
   /**
@@ -222,12 +223,12 @@ public class SPGroupTable extends Table {
         .toArray(new String[0]);
   }
 
-  static final private String SELECT_SPACEUSERROLE_GROUP_IDS = "select id from DomainSP_Group,ST_SpaceUserRole_Group_Rel"
+  static final private String SELECT_SPACEUSERROLE_GROUP_IDS =
+      "select id from DomainSP_Group,ST_SpaceUserRole_Group_Rel"
       + " where id = groupId and spaceUserRoleId = ?";
 
   /**
-   * Returns the Group whose fields match those of the given sample group
-   * fields.
+   * Returns the Group whose fields match those of the given sample group fields.
    */
   public SPGroupRow[] getAllMatchingGroups(SPGroupRow sampleGroup)
       throws AdminPersistenceException {
@@ -335,7 +336,8 @@ public class SPGroupTable extends Table {
       return result.intValue() >= 1;
   }
 
-  static final private String SELECT_COUNT_GROUP_USER_REL = "select count(*) from DomainSP_Group_User_Rel"
+  static final private String SELECT_COUNT_GROUP_USER_REL =
+      "select count(*) from DomainSP_Group_User_Rel"
       + " where userId = ? and groupId = ?";
 
   /**
@@ -350,7 +352,7 @@ public class SPGroupTable extends Table {
     if (user == null) {
       throw new AdminPersistenceException("SPGroupTable.addUserInGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER", "user Id: '"
-              + userId + "'");
+          + userId + "'");
     }
 
     SPGroupRow group = getGroup(groupId);
@@ -364,7 +366,8 @@ public class SPGroupTable extends Table {
     updateRelation(INSERT_A_GROUP_USER_REL, params);
   }
 
-  static final private String INSERT_A_GROUP_USER_REL = "insert into DomainSP_Group_User_Rel(groupId, userId) values(?,?)";
+  static final private String INSERT_A_GROUP_USER_REL =
+      "insert into DomainSP_Group_User_Rel(groupId, userId) values(?,?)";
 
   /**
    * Removes an user from this group.
@@ -381,7 +384,8 @@ public class SPGroupTable extends Table {
     updateRelation(DELETE_GROUP_USER_REL, params);
   }
 
-  static final private String DELETE_GROUP_USER_REL = "delete from DomainSP_Group_User_Rel where groupId = ? and userId = ?";
+  static final private String DELETE_GROUP_USER_REL =
+      "delete from DomainSP_Group_User_Rel where groupId = ? and userId = ?";
 
   /**
    * Fetch the current group row from a resultSet.

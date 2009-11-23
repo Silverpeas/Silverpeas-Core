@@ -30,15 +30,13 @@
 package com.stratelia.silverpeas.authentication;
 
 /**
- * 
  * @author tleroi
  * @version
  */
-public class AuthenticationBadCredentialException extends
-    AuthenticationException {
+public class AuthenticationBadCredentialException extends AuthenticationException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public AuthenticationBadCredentialException(String callingClass,
       int errorLevel, String message) {

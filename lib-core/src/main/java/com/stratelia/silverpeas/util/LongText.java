@@ -104,7 +104,7 @@ public class LongText {
     } catch (Exception e) {
       throw new UtilException("LongText.getLongText()",
           SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", Integer
-              .toString(longTextId), e);
+          .toString(longTextId), e);
     } finally {
       DBUtil.close(rs, stmt);
       closeConnection(privateConnection);
@@ -124,7 +124,7 @@ public class LongText {
     } catch (Exception e) {
       throw new UtilException("LongText.removeLongText()",
           SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", Integer
-              .toString(longTextId), e);
+          .toString(longTextId), e);
     } finally {
       DBUtil.close(stmt);
       closeConnection(privateConnection);

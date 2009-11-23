@@ -38,15 +38,12 @@ import java.util.List;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This objet is used by all the admin jsp such as SpaceManagement,
- * UserManagement, etc... It provides access functions to query and modify the
- * domains as well as the company organization It should be used only by a
- * client that has the administrator rights
- * 
+ * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
+ * provides access functions to query and modify the domains as well as the company organization It
+ * should be used only by a client that has the administrator rights
  * @author
  */
-public class OrganizationController extends AdminReference implements
-    java.io.Serializable {
+public class OrganizationController extends AdminReference implements java.io.Serializable {
   /**
    * Constructor declaration
    */
@@ -55,10 +52,7 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param userId
-   * 
    * @deprecated
    */
   public OrganizationController(String userId) {
@@ -66,10 +60,7 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param auc
-   * 
    * @deprecated
    */
   public OrganizationController(AdminUserConnections auc) {
@@ -93,8 +84,7 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * Return all the subSpaces Id available in silverpeas given a space id
-   * (driver format)
+   * Return all the subSpaces Id available in silverpeas given a space id (driver format)
    */
   public String[] getAllSubSpaceIds(String sSpaceId) {
     try {
@@ -104,7 +94,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_SUBSPACE_IDS", "father space id: '" + sSpaceId
-              + "'", e);
+          + "'", e);
       return new String[0];
     }
   }
@@ -142,10 +132,7 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getGeneralSpaceId() {
@@ -176,8 +163,7 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * Return the component ids available for the cuurent user Id in the given
-   * space id
+   * Return the component ids available for the cuurent user Id in the given space id
    */
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
     try {
@@ -187,14 +173,13 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAvailCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '"
-              + sClientSpaceId + "', user Id: '" + sUserId + "'", e);
+          + sClientSpaceId + "', user Id: '" + sUserId + "'", e);
       return new String[0];
     }
   }
 
   /**
-   * Return the component ids available for the cuurent user Id in the given
-   * space id
+   * Return the component ids available for the cuurent user Id in the given space id
    */
   public String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId) {
     try {
@@ -206,7 +191,7 @@ public class OrganizationController extends AdminReference implements
       SilverTrace.error("admin",
           "OrganizationController.getAvailCompoIdsAtRoot",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '"
-              + sClientSpaceId + "', user Id: '" + sUserId + "'", e);
+          + sClientSpaceId + "', user Id: '" + sUserId + "'", e);
       return new String[0];
     }
   }
@@ -240,8 +225,7 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * Return the driver component ids available for the cuurent user Id in the
-   * given space id
+   * Return the driver component ids available for the cuurent user Id in the given space id
    */
   public String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId) {
     try {
@@ -253,14 +237,13 @@ public class OrganizationController extends AdminReference implements
       SilverTrace.error("admin",
           "OrganizationController.getAvailDriverCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '"
-              + sClientSpaceId + "', user Id: '" + sUserId + "'", e);
+          + sClientSpaceId + "', user Id: '" + sUserId + "'", e);
       return new String[0];
     }
   }
 
   /**
-   * Return the tuples (space id, compo id) allowed for the given user and given
-   * component name
+   * Return the tuples (space id, compo id) allowed for the given user and given component name
    */
   public CompoSpace[] getCompoForUser(String sUserId, String sCompoName) {
     try {
@@ -325,14 +308,13 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getComponentInst",
           "admin.MSG_ERR_GET_COMPONENT", "component Id : '" + sComponentId
-              + "'", e);
+          + "'", e);
       return null;
     }
   }
 
   /**
-   * @param spaceId
-   *          - id of the space or subSpace
+   * @param spaceId - id of the space or subSpace
    * @return a List of SpaceInst ordered from root to subSpace
    * @throws Exception
    */
@@ -372,7 +354,7 @@ public class OrganizationController extends AdminReference implements
       SilverTrace.error("admin",
           "OrganizationController.getComponentInstLight",
           "admin.MSG_ERR_GET_COMPONENT", "component Id : '" + sComponentId
-              + "'", e);
+          + "'", e);
       return null;
     }
   }
@@ -439,8 +421,8 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * @deprecated use getAllUsers(String componentId) Return all the users
-   *             allowed to acces the given component of the given space
+   * @deprecated use getAllUsers(String componentId) Return all the users allowed to acces the given
+   * component of the given space
    */
   public UserDetail[] getAllUsers(String sPrefixTableName, String sComponentName) {
     try {
@@ -454,7 +436,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsers",
           "admin.MSG_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "space Id: '"
-              + sPrefixTableName + "' component Id: '" + sComponentName, e);
+          + sPrefixTableName + "' component Id: '" + sComponentName, e);
       return null;
     }
   }
@@ -473,14 +455,13 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsers",
           "admin.MSG_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "componentId: '"
-              + componentId, e);
+          + componentId, e);
       return null;
     }
   }
 
   /**
-   * For use in userPanel : return the users that are direct child of a given
-   * group
+   * For use in userPanel : return the users that are direct child of a given group
    */
   public UserDetail[] getFiltredDirectUsers(String sGroupId,
       String sUserLastNameFilter) {
@@ -521,8 +502,7 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * For use in userPanel : return the total number of users recursivly
-   * contained in a group
+   * For use in userPanel : return the total number of users recursivly contained in a group
    */
   public int getAllSubUsersNumber(String sGroupId) {
     try {
@@ -568,8 +548,8 @@ public class OrganizationController extends AdminReference implements
   }
 
   /**
-   * Return all the users with the given profile allowed to access the given
-   * component of the given space
+   * Return all the users with the given profile allowed to access the given component of the given
+   * space
    */
   public UserDetail[] getUsers(String sPrefixTableName, String sComponentName,
       String sProfile) {
@@ -585,8 +565,8 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUsers",
           "admin.MSG_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "profile: '"
-              + sProfile + "', space Id: '" + sPrefixTableName
-              + "' component Id: '" + sComponentName, e);
+          + sProfile + "', space Id: '" + sPrefixTableName
+          + "' component Id: '" + sComponentName, e);
       return null;
     }
   }
@@ -597,7 +577,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '"
-              + userId + "', componentId: '" + componentId + "'", e);
+          + userId + "', componentId: '" + componentId + "'", e);
       return null;
     }
   }
@@ -610,8 +590,8 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId = "
-              + userId + ", componentId = " + componentId + ", objectId = "
-              + objectId, e);
+          + userId + ", componentId = " + componentId + ", objectId = "
+          + objectId, e);
       return null;
     }
   }
@@ -758,7 +738,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + sUserId
-              + "'", e);
+          + "'", e);
       return new String[0];
     }
   }
@@ -775,7 +755,7 @@ public class OrganizationController extends AdminReference implements
       SilverTrace.error("admin",
           "OrganizationController.getUserManageableSpaceIds",
           "admin.MSG_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId
-              + "'", e);
+          + "'", e);
       return new String[0];
     }
   }
@@ -802,14 +782,13 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + sUserId
-              + "'", e);
+          + "'", e);
       return new String[0];
     }
   }
 
   /**
-   * Return all the subSpaces Id available in webactiv given a space id (driver
-   * format)
+   * Return all the subSpaces Id available in webactiv given a space id (driver format)
    */
   public String[] getAllSubSpaceIds(String sSpaceId, String sUserId) {
     try {
@@ -819,14 +798,13 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SUBSPACE_IDS", "user Id: '"
-              + sUserId + "', father space id: '" + sSpaceId + "'", e);
+          + sUserId + "', father space id: '" + sSpaceId + "'", e);
       return new String[0];
     }
   }
 
   /**
-   * Return all the components Id available in webactiv given a space id (driver
-   * format)
+   * Return all the components Id available in webactiv given a space id (driver format)
    */
   public String[] getAllComponentIds(String sSpaceId) {
     try {
@@ -834,14 +812,13 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllComponentIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space id="
-              + sSpaceId, e);
+          + sSpaceId, e);
       return new String[0];
     }
   }
 
   /**
-   * Return all the components Id recursively available in webactiv given a
-   * space id (driver format)
+   * Return all the components Id recursively available in webactiv given a space id (driver format)
    */
   public String[] getAllComponentIdsRecur(String sSpaceId) {
     try {
@@ -850,16 +827,14 @@ public class OrganizationController extends AdminReference implements
       SilverTrace.error("admin",
           "OrganizationController.getAllComponentIdsRecur",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "spaceId = "
-              + sSpaceId, e);
+          + sSpaceId, e);
       return new String[0];
     }
   }
 
   /**
-   * Return all the components Id recursively in (Space+subspaces, or only
-   * subspaces or all silverpeas) available in silverpeas given a userId and a
-   * componentNameRoot
-   * 
+   * Return all the components Id recursively in (Space+subspaces, or only subspaces or all
+   * silverpeas) available in silverpeas given a userId and a componentNameRoot
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -885,7 +860,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isComponentAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '"
-              + userId + "', componentId: '" + componentId + "'", e);
+          + userId + "', componentId: '" + componentId + "'", e);
       return false;
     }
   }
@@ -901,7 +876,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isSpaceAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + userId
-              + "', spaceId: '" + spaceId + "'", e);
+          + "', spaceId: '" + spaceId + "'", e);
       return false;
     }
   }
@@ -914,7 +889,7 @@ public class OrganizationController extends AdminReference implements
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isObjectAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_OBJECT", "userId = " + userId
-              + ", componentId = " + componentId + ", objectId = " + objectId,
+          + ", componentId = " + componentId + ", objectId = " + objectId,
           e);
       return false;
     }
@@ -974,11 +949,8 @@ public class OrganizationController extends AdminReference implements
 
   /**
    * Return userIds according to a list of profile names
-   * 
-   * @param componentId
-   *          the instance id
-   * @param profileNames
-   *          the list which contains the profile names
+   * @param componentId the instance id
+   * @param profileNames the list which contains the profile names
    * @return a string array of user id
    */
   public String[] getUsersIdsByRoleNames(String componentId, List profileNames) {
@@ -995,8 +967,8 @@ public class OrganizationController extends AdminReference implements
           SilverTrace.info("admin",
               "OrganizationController.getUsersIdsByRoleNames",
               "root.MSG_GEN_PARAM_VALUE", "profileName = "
-                  + profileInst.getName() + ", profileId = "
-                  + profileInst.getId());
+              + profileInst.getName() + ", profileId = "
+              + profileInst.getId());
         }
       }
 
@@ -1023,7 +995,7 @@ public class OrganizationController extends AdminReference implements
       String objectType, List profileNames) {
     SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId
-            + ", objectId = " + objectId);
+        + ", objectId = " + objectId);
     try {
       List profiles = m_Admin.getProfilesByObject(objectId, objectType,
           componentId);

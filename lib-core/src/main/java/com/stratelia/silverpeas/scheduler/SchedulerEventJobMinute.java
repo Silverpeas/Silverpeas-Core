@@ -26,22 +26,18 @@ package com.stratelia.silverpeas.scheduler;
 import java.util.*;
 
 /**
- * This class extends the class 'SchedulerJob' for the functionality of the
- * scheduled execution of shell scripts.
+ * This class extends the class 'SchedulerJob' for the functionality of the scheduled execution of
+ * shell scripts.
  */
 public class SchedulerEventJobMinute extends SchedulerEventJob {
   long m_iMs = 1000;
 
   /**
-   * The constructor has proteceted access, because the generation of jobs
-   * should be done in a central way by the class 'SimpleScheduler'
-   * 
-   * @param aController
-   *          The controller, that controls all job executions
-   * @param aOwner
-   *          The owner of the job
-   * @param aJobName
-   *          The name of the job
+   * The constructor has proteceted access, because the generation of jobs should be done in a
+   * central way by the class 'SimpleScheduler'
+   * @param aController The controller, that controls all job executions
+   * @param aOwner The owner of the job
+   * @param aJobName The name of the job
    */
   protected SchedulerEventJobMinute(SimpleScheduler theJobController,
       SchedulerEventHandler theJobOwner, String theJobName, int iMinutes)

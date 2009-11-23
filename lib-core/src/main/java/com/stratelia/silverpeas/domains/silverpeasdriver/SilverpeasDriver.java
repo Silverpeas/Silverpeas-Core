@@ -51,8 +51,8 @@ public class SilverpeasDriver extends AbstractDomainDriver {
   }
 
   /**
-   * Virtual method that performs extra initialization from a properties file.
-   * To overload by the class who need it.
+   * Virtual method that performs extra initialization from a properties file. To overload by the
+   * class who need it.
    */
   public void initFromProperties(ResourceLocator rs) throws Exception {
     m_PasswordEncryption = rs.getString("database.SQLPasswordEncryption");
@@ -116,7 +116,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.createUser",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", ud.getFirstName()
-              + " " + ud.getLastName(), e);
+          + " " + ud.getLastName(), e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -132,7 +132,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "userId : "
-              + userId, e);
+          + userId, e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -180,8 +180,8 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud
-              .getFirstName()
-              + " " + ud.getLastName(), e);
+          .getFirstName()
+          + " " + ud.getLastName(), e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -204,8 +204,8 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud
-              .getFirstName()
-              + " " + ud.getLastName(), e);
+          .getFirstName()
+          + " " + ud.getLastName(), e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -231,7 +231,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.getUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "userId : "
-              + userId, e);
+          + userId, e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -266,7 +266,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.getUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "userId : "
-              + userId, e);
+          + userId, e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -389,7 +389,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.createGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", m_Group
-              .getName(), e);
+          .getName(), e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -405,7 +405,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.deleteGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "groupId : "
-              + groupId, e);
+          + groupId, e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -469,7 +469,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.updateGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "groupId : "
-              + group.getSpecificId(), e);
+          + group.getSpecificId(), e);
     } finally {
       this.releaseDomainSPSchema();
     }
@@ -504,7 +504,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } catch (Exception e) {
       throw new AdminException("SilverpeasDriver.getGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "groupId : "
-              + groupId, e);
+          + groupId, e);
     } finally {
       this.releaseDomainSPSchema();
     }

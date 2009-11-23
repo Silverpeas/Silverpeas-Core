@@ -31,8 +31,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
  */
 public final class IndexEngineProxy {
   /**
-   * The IndexEngine class is only used via static methods and no IndexEngine
-   * object will ever be constructed.
+   * The IndexEngine class is only used via static methods and no IndexEngine object will ever be
+   * constructed.
    */
   private IndexEngineProxy() {
   }

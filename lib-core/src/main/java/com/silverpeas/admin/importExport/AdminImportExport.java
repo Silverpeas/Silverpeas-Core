@@ -32,7 +32,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 /**
  * Classe de gestion des components dans le moteur d'importExport de silverpeas.
- * 
  * @author sdevolder
  */
 public class AdminImportExport {
@@ -41,13 +40,10 @@ public class AdminImportExport {
   AdminController ac = null;
 
   /**
-   * Méthode récupérant la liste des componentInsts des composants impliqués
-   * dans une exportation donnée et destinées au marshalling.
-   * 
-   * @param listComponentId
-   *          = liste des id des composants impliqués dans l'esxport en cours
-   * @return l'objet ComponentsType complété, null si la liste passée en
-   *         paramètre est vide
+   * Méthode récupérant la liste des componentInsts des composants impliqués dans une
+   * exportation donnée et destinées au marshalling.
+   * @param listComponentId = liste des id des composants impliqués dans l'esxport en cours
+   * @return l'objet ComponentsType complété, null si la liste passée en paramètre est vide
    */
   public ComponentsType getComponents(List listComponentId) {
     ComponentsType componentsType = new ComponentsType();

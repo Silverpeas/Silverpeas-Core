@@ -24,8 +24,8 @@
 package com.stratelia.silverpeas.scheduler;
 
 /**
- * The class 'SchedulerEvent' holds the event information, if there is a event
- * fired by the scheduler. Only events of the type 'EXECUTION.
+ * The class 'SchedulerEvent' holds the event information, if there is a event fired by the
+ * scheduler. Only events of the type 'EXECUTION.
  */
 public class SchedulerEvent {
   /**
@@ -48,7 +48,6 @@ public class SchedulerEvent {
 
   /**
    * This method returns the job
-   * 
    * @return The job, which is the source for the event
    */
   public SchedulerJob getJob() {
@@ -57,7 +56,6 @@ public class SchedulerEvent {
 
   /**
    * This method returns the event type
-   * 
    * @return The type of the event
    */
   public int getType() {
@@ -65,13 +63,10 @@ public class SchedulerEvent {
   }
 
   /**
-   * The constructor has proteceted access, because the generation of events
-   * should be done internally
-   * 
-   * @param aType
-   *          The type of the event
-   * @param aJob
-   *          The job, which is the source for the event
+   * The constructor has proteceted access, because the generation of events should be done
+   * internally
+   * @param aType The type of the event
+   * @param aJob The job, which is the source for the event
    */
   protected SchedulerEvent(int aType, SchedulerJob aJob) {
     theType = aType;

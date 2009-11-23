@@ -49,10 +49,8 @@ import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 
 /**
- * An IndexManager manage all the web'activ's index.
- * 
- * An IndexManager is NOT thread safe : to share an IndexManager between several
- * threads use an IndexerThread.
+ * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
+ * an IndexManager between several threads use an IndexerThread.
  */
 public class IndexManager {
   /**
@@ -75,8 +73,7 @@ public class IndexManager {
   public static final String THUMBNAIL_DIRECTORY = "thumbnailDirectory";
 
   /**
-   * Exhaustive list of indexation's operations Used by objects which must be
-   * indexed
+   * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
   public static final int NONE = -1;
   public static final int ADD = 0;
@@ -86,17 +83,16 @@ public class IndexManager {
   private Hashtable indexWriters = new Hashtable();
 
   /**
-   * The constructor takes no parameters and all the index engine parameters are
-   * taken from the properties file
-   * "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
+   * The constructor takes no parameters and all the index engine parameters are taken from the
+   * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
     getProperties("com.stratelia.webactiv.util.indexEngine.IndexEngine");
 
     SilverTrace.debug("indexEngine", "IndexManager",
         "indexEngine.INFO_INDEX_ENGINE_STARTED", "maxFieldLength="
-            + maxFieldLength + ", mergeFactor=" + mergeFactor
-            + ", maxMergeDocs=" + maxMergeDocs);
+        + maxFieldLength + ", mergeFactor=" + mergeFactor
+        + ", maxMergeDocs=" + maxMergeDocs);
   }
 
   /**
@@ -109,7 +105,7 @@ public class IndexManager {
     indexDocs(writer, indexEntry);
     SilverTrace.debug("applicationIndexer", "IndexManager().addIndexEntry()",
         "applicationIndexer.MSG_INDEXING_COMPONENT_ITEM", "componentId = "
-            + indexEntry.getComponent());
+        + indexEntry.getComponent());
   }
 
   /**
@@ -128,7 +124,7 @@ public class IndexManager {
 
       SilverTrace.debug("indexEngine", "IndexManager",
           "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION", "writerPath = "
-              + writerPath);
+          + writerPath);
 
       if (writerPath != null) {
         // IndexWriter writer = (IndexWriter) indexWriters.get(writerPath);
@@ -149,7 +145,7 @@ public class IndexManager {
 
           SilverTrace.info("indexEngine", "IndexManager.optimize()",
               "root_MSG_GEN_PARAM_VALUE", "# of documents indexed in "
-                  + writerPath + " = " + writer.docCount());
+              + writerPath + " = " + writer.docCount());
 
           // Then, close the writer
           try {
@@ -193,24 +189,21 @@ public class IndexManager {
   }
 
   /**
-   * Return the path to the directory where are stored the index for the given
-   * index entry.
+   * Return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(IndexEntry indexEntry) {
     return getIndexDirectoryPath(indexEntry.getPK());
   }
 
   /**
-   * Return the path to the directory where are stored the index for the given
-   * index entry.
+   * Return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(IndexEntryPK indexEntry) {
     return getIndexDirectoryPath(null, indexEntry.getComponent());
   }
 
   /**
-   * Return the path to the directory where are stored the index for the given
-   * index entry.
+   * Return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(String space, String component) {
     String path = FileRepositoryManager.getAbsoluteIndexPath(space, component);
@@ -219,20 +212,15 @@ public class IndexManager {
   }
 
   /**
-   * Return the analyzer used to parse indexed texts and queries in the locale
-   * language.
+   * Return the analyzer used to parse indexed texts and queries in the locale language.
    */
   public Analyzer getAnalyzer() throws IOException {
     return getAnalyzer(null);
   }
 
   /**
-   * Return the analyzer used to parse indexed texts and queries in the given
-   * language.
-   * 
-   * @param language
-   *          the language used in a document or a query.
-   * 
+   * Return the analyzer used to parse indexed texts and queries in the given language.
+   * @param language the language used in a document or a query.
    * @return the analyzer for the required language or a default analyzer.
    */
   public Analyzer getAnalyzer(String language) {
@@ -305,17 +293,11 @@ public class IndexManager {
   }
 
   /**
-   * Returns an IndexWriter to the index stored at the given path.
-   * 
-   * The index directory and files are created if not found.
-   * 
-   * @param path
-   *          the path to the index root directory
-   * @param language
-   *          the language of the indexed documents.
-   * 
-   * @return an IndexWriter or null if the index can't be found or create or
-   *         read.
+   * Returns an IndexWriter to the index stored at the given path. The index directory and files are
+   * created if not found.
+   * @param path the path to the index root directory
+   * @param language the language of the indexed documents.
+   * @return an IndexWriter or null if the index can't be found or create or read.
    */
   private IndexWriter getIndexWriter(String path, String language) {
     IndexWriter writer = (IndexWriter) indexWriters.get(path);
@@ -358,7 +340,6 @@ public class IndexManager {
 
   /**
    * Method declaration
-   * 
    * @param writer
    * @param indexEntry
    */
@@ -582,7 +563,7 @@ public class IndexManager {
   private void addFile(Document doc, FileDescription f) {
     SilverTrace.debug("indexEngine", "IndexManager.addFile",
         "root.MSG_GEN_ENTER_METHOD", "file = " + f.getPath() + ", type = "
-            + f.getFormat());
+        + f.getFormat());
     Reader reader = null;
     try {
       reader = getReader(f);
@@ -596,7 +577,7 @@ public class IndexManager {
         Field fFile = new Field(getFieldName(CONTENT, f.getLang()), reader);
         SilverTrace.debug("indexEngine", "IndexManager.addFile",
             "root.MSG_GEN_PARAM_VALUE", "doc = " + fFile.name() + ", field = "
-                + fFile.toString());
+            + fFile.toString());
         doc.add(fFile);
       }
     } catch (Exception e) {

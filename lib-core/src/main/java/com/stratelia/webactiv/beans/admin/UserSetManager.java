@@ -38,7 +38,7 @@ public class UserSetManager {
     try {
       SilverTrace.info("admin", "UserSetManager.getAllSubUsersNumber()",
           "root.MSG_GEN_ENTER_METHOD", "setType=" + setType + ", setId="
-              + setId);
+          + setId);
       ddManager.getOrganizationSchema();
       return ddManager.organization.userSet.getSubUserNumber(setType,
           idAsInt(setId));
@@ -96,7 +96,7 @@ public class UserSetManager {
       throw new AdminException("UserSetManager.addUserSetRelation",
           SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_USERSET_USERSET_RELATION", "relation : "
-              + superSetType + superSetId + " --> " + subSetType + subSetId, e);
+          + superSetType + superSetId + " --> " + subSetType + subSetId, e);
     }
   }
 
@@ -113,7 +113,7 @@ public class UserSetManager {
       throw new AdminException("UserSetManager.addUserRelation",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_USERSET_USER_RELATION",
           "relation : " + superSetType + superSetId + " --> user id '" + userId
-              + "'", e);
+          + "'", e);
     }
   }
 

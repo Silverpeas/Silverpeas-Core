@@ -47,7 +47,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class performs the LDAP authentification
- * 
  * @author tleroi
  * @version
  */
@@ -117,7 +116,7 @@ public class AuthenticationLDAP extends Authentication {
     SilverTrace.info("authentication",
         "AuthenticationLDAP.internalAuthentication()",
         "root.MSG_GEN_PARAM_VALUE", "javax.net.ssl.trustStore = "
-            + System.getProperty("javax.net.ssl.trustStore"));
+        + System.getProperty("javax.net.ssl.trustStore"));
   }
 
   protected void openConnection() throws AuthenticationException {
@@ -141,7 +140,7 @@ public class AuthenticationLDAP extends Authentication {
         throw new AuthenticationHostException(
             "AuthenticationLDAP.openConnection()", SilverpeasException.ERROR,
             "root.EX_CONNECTION_OPEN_FAILED", "Host=" + m_Host + ";Port="
-                + Integer.toString(m_Port), ex);
+            + Integer.toString(m_Port), ex);
       }
     }
   }
@@ -157,7 +156,7 @@ public class AuthenticationLDAP extends Authentication {
       throw new AuthenticationHostException(
           "AuthenticationLDAP.closeConnection()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
-              + Integer.toString(m_Port), ex);
+          + Integer.toString(m_Port), ex);
     }
   }
 
@@ -191,7 +190,7 @@ public class AuthenticationLDAP extends Authentication {
         SilverTrace.info("authentication",
             "AuthenticationLDAP.internalAuthentication()",
             "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString
-                + ", baseDN = " + baseDNs[b]);
+            + ", baseDN = " + baseDNs[b]);
         res = m_LDAPConnection.search(baseDNs[b], LDAPConnection.SCOPE_SUB,
             searchString, attrNames, false);
         if (!res.hasMore()) {
@@ -207,7 +206,7 @@ public class AuthenticationLDAP extends Authentication {
             SilverTrace.debug("authentication",
                 "AuthenticationLDAP.internalAuthentication()",
                 "root.MSG_GEN_PARAM_VALUE", "m_MustAlertPasswordExpiration="
-                    + m_MustAlertPasswordExpiration);
+                + m_MustAlertPasswordExpiration);
             if (m_MustAlertPasswordExpiration)
               nbDaysBeforeExpiration = calculateDaysBeforeExpiration(fe);
           }
@@ -230,14 +229,14 @@ public class AuthenticationLDAP extends Authentication {
       throw new AuthenticationBadCredentialException(
           "AuthenticationLDAP.internalAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_PWD_EMPTY", "User="
-              + login);
+          + login);
     }
     try {
       SilverTrace
           .info("authentication",
-              "AuthenticationLDAP.internalAuthentication()",
-              "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "UserDN="
-                  + userFullDN);
+          "AuthenticationLDAP.internalAuthentication()",
+          "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "UserDN="
+          + userFullDN);
       m_LDAPConnection.bind(userFullDN, passwd);
       SilverTrace.info("authentication",
           "AuthenticationLDAP.internalAuthentication()",
@@ -256,17 +255,13 @@ public class AuthenticationLDAP extends Authentication {
           "AuthenticationLDAP.internalAuthentication()",
           SilverpeasException.WARNING,
           "authentication.EX_AUTHENTICATION_PASSWORD_ABOUT_TO_EXPIRE", "User="
-              + login);
+          + login);
     }
   }
 
   /**
-   * Given an user ldap entry, compute the numbers of days before password
-   * expiration
-   * 
-   * @param fe
-   *          the user ldap entry
-   * 
+   * Given an user ldap entry, compute the numbers of days before password expiration
+   * @param fe the user ldap entry
    * @return duration in days
    */
   private int calculateDaysBeforeExpiration(LDAPEntry fe) {
@@ -280,7 +275,7 @@ public class AuthenticationLDAP extends Authentication {
     SilverTrace.debug("authentication",
         "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? "
-            + (pwdLastSetAttr == null));
+        + (pwdLastSetAttr == null));
     if (pwdLastSetAttr == null)
       return Integer.MAX_VALUE;
 
@@ -302,14 +297,14 @@ public class AuthenticationLDAP extends Authentication {
     SilverTrace.debug("authentication",
         "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = "
-            + DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
+        + DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
     Date now = new Date();
 
     long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();
     SilverTrace.debug("authentication",
         "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "delayInMilliseconds = "
-            + delayInMilliseconds);
+        + delayInMilliseconds);
     int delayInDays = Math
         .round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
 
@@ -321,16 +316,10 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   /**
-   * Overrides Authentication.internalChangePassword to offer password update
-   * capabilities
-   * 
-   * @param login
-   *          user login
-   * @param oldPassword
-   *          user old password
-   * @param newPassword
-   *          user new password
-   * 
+   * Overrides Authentication.internalChangePassword to offer password update capabilities
+   * @param login user login
+   * @param oldPassword user old password
+   * @param newPassword user new password
    * @throws AuthenticationException
    */
   protected void internalChangePassword(String login, String oldPassword,
@@ -363,7 +352,7 @@ public class AuthenticationLDAP extends Authentication {
         throw new AuthenticationBadCredentialException(
             "AuthenticationLDAP.changePassword()", SilverpeasException.ERROR,
             "authentication.EX_USER_NOT_FOUND", "User=" + login
-                + ";LoginField=" + m_UserLoginFieldName);
+            + ";LoginField=" + m_UserLoginFieldName);
       }
       fe = res.next();
       userFullDN = (String) fe.getDN();

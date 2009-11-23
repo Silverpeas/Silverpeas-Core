@@ -26,20 +26,16 @@ package com.stratelia.silverpeas.scheduler;
 import java.util.*;
 
 /**
- * This class extends the class 'SchedulerJob' for the functionality of the
- * scheduled execution of shell scripts.
+ * This class extends the class 'SchedulerJob' for the functionality of the scheduled execution of
+ * shell scripts.
  */
 public class SchedulerEventJob extends SchedulerJob {
   /**
-   * The constructor has proteceted access, because the generation of jobs
-   * should be done in a central way by the class 'SimpleScheduler'
-   * 
-   * @param aController
-   *          The controller, that controls all job executions
-   * @param aOwner
-   *          The owner of the job
-   * @param aJobName
-   *          The name of the job
+   * The constructor has proteceted access, because the generation of jobs should be done in a
+   * central way by the class 'SimpleScheduler'
+   * @param aController The controller, that controls all job executions
+   * @param aOwner The owner of the job
+   * @param aJobName The name of the job
    */
   protected SchedulerEventJob(SimpleScheduler theJobController,
       SchedulerEventHandler theJobOwner, String theJobName)
@@ -48,11 +44,9 @@ public class SchedulerEventJob extends SchedulerJob {
   }
 
   /**
-   * This method implements the abstract method of the base class. It creates a
-   * new SchedulerEvent and sends it to the job owner.
-   * 
-   * @param theExecutionDate
-   *          The date of the execution
+   * This method implements the abstract method of the base class. It creates a new SchedulerEvent
+   * and sends it to the job owner.
+   * @param theExecutionDate The date of the execution
    */
   protected void execute(Date theExecutionDate) throws SchedulerException {
     try {
@@ -61,7 +55,7 @@ public class SchedulerEventJob extends SchedulerJob {
     } catch (Exception aException) {
       throw new SchedulerException(
           "SchedulerShellJob.execute: Execution failed (Reason: "
-              + aException.getMessage() + ")");
+          + aException.getMessage() + ")");
     }
   }
 }

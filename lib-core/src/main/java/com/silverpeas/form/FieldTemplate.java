@@ -26,11 +26,8 @@ package com.silverpeas.form;
 import java.util.Map;
 
 /**
- * A FieldTemplate describes a specific field of a DataRecord.
- * 
- * A FieldTemplate gives the field name, type information and display
- * information.
- * 
+ * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
+ * type information and display information.
  * @see DataRecord
  * @see RecordTemplate
  */
@@ -86,14 +83,14 @@ public interface FieldTemplate {
   public boolean isHidden();
 
   /**
-   * Returns a Map (String -> String) of named parameters which can be used by
-   * the displayer (max-size, length ...).
+   * Returns a Map (String -> String) of named parameters which can be used by the displayer
+   * (max-size, length ...).
    */
   // public Map getParameters();
 
   /**
-   * Returns a Map (String -> String) of named parameters which can be used by
-   * the displayer (max-size, length ...).
+   * Returns a Map (String -> String) of named parameters which can be used by the displayer
+   * (max-size, length ...).
    */
   public Map getParameters(String language);
 

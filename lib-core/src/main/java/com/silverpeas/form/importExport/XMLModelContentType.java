@@ -28,10 +28,8 @@ import java.util.ArrayList;
 import com.silverpeas.form.importExport.XMLField;
 
 /**
- * @author neysseri
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author neysseri To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class XMLModelContentType {
 
@@ -67,8 +65,7 @@ public class XMLModelContentType {
   }
 
   /**
-   * @param listImageParts
-   *          The listImageParts to set.
+   * @param listImageParts The listImageParts to set.
    */
   public void setFields(ArrayList fields) {
     this.fields = fields;

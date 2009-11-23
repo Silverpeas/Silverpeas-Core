@@ -59,15 +59,13 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 
 /**
- * The WAIndexSearcher class implements search over all the WebActiv's index.
- * 
- * A WAIndexSearcher manages a set of cached lucene IndexSearcher.
+ * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
+ * manages a set of cached lucene IndexSearcher.
  */
 public class WAIndexSearcher {
   /**
-   * The primary and secondary factor are used to give a better score to entries
-   * whose title or abstract match the query.
-   * 
+   * The primary and secondary factor are used to give a better score to entries whose title or
+   * abstract match the query.
    * @see #merge
    */
   private int primaryFactor = 3;
@@ -75,8 +73,8 @@ public class WAIndexSearcher {
   private QueryParser.Operator defaultOperand = QueryParser.OR_OPERATOR;
 
   /**
-   * The no parameters constructor retrieves all the needed data from the
-   * IndexEngine.properties file.
+   * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
+   * file.
    */
 
   public WAIndexSearcher() {
@@ -120,10 +118,8 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Search the documents of the given component's set.
-   * 
-   * All entries found whose startDate is not reached or whose endDate is passed
-   * are pruned from the results set.
+   * Search the documents of the given component's set. All entries found whose startDate is not
+   * reached or whose endDate is passed are pruned from the results set.
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws com.stratelia.webactiv.searchEngine.model.ParseException {
@@ -179,9 +175,7 @@ public class WAIndexSearcher {
 
   /**
    * Returns the lucene hits of the query
-   * 
-   * @param searchField
-   *          the search field within the index.
+   * @param searchField the search field within the index.
    */
   private Hits getHits(QueryDescription query, String searchField,
       Searcher searcher)
@@ -227,13 +221,13 @@ public class WAIndexSearcher {
         parsedQuery = queryParser.parse(query.getQuery());
         SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
             "root.MSG_GEN_PARAM_VALUE", "getOperator() = "
-                + queryParser.getDefaultOperator());
+            + queryParser.getDefaultOperator());
       }
 
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getHits",
-              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-                  + parsedQuery.toString());
+          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+          + parsedQuery.toString());
 
       hits = searcher.search(parsedQuery);
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -287,8 +281,8 @@ public class WAIndexSearcher {
           analyzer);
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getXMLHits",
-              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-                  + parsedQuery.toString());
+          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+          + parsedQuery.toString());
 
       hits = searcher.search(parsedQuery);
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -341,8 +335,8 @@ public class WAIndexSearcher {
           analyzer);
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getMultiFieldHits",
-              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-                  + parsedQuery.toString());
+          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+          + parsedQuery.toString());
 
       hits = searcher.search(parsedQuery);
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -358,10 +352,8 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Makes a List of MatchingIndexEntry from a lucene hits.
-   * 
-   * All entries found whose startDate is not reached or whose endDate is passed
-   * are pruned from the results list.
+   * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
+   * reached or whose endDate is passed are pruned from the results list.
    */
   private List makeList(Hits hits, QueryDescription query) throws IOException {
     List results = new ArrayList();
@@ -477,9 +469,7 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Merges two MatchingIndexEntry List and re-computes the scores.
-   * 
-   * The new score is :
+   * Merges two MatchingIndexEntry List and re-computes the scores. The new score is :
    * 
    * <PRE>
    * primaryScore * primaryFactor + secondaryScore * secondaryFactor
@@ -487,13 +477,10 @@ public class WAIndexSearcher {
    * primaryFactor + primaryScore
    * </PRE>
    * 
-   * If an entry is in the secondary list but not in the primary, his score is
-   * left unchanged.
-   * 
-   * If any, all entries in the primary list but not the secondary are ignored.
-   * In practice this case should not occurs as the secondary is extracted from
-   * the CONTENT index which contains all the HEADER contents from which is
-   * extracted the primary list.
+   * If an entry is in the secondary list but not in the primary, his score is left unchanged. If
+   * any, all entries in the primary list but not the secondary are ignored. In practice this case
+   * should not occurs as the secondary is extracted from the CONTENT index which contains all the
+   * HEADER contents from which is extracted the primary list.
    */
   private List merge(List primaryList, int primaryFactor, List secondaryList,
       int secondaryFactor) {
@@ -539,8 +526,7 @@ public class WAIndexSearcher {
   private final IndexManager indexManager;
 
   /**
-   * Return a multi-searcher built on the searchers list matching the (space,
-   * component) pair set.
+   * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
   private Searcher getSearcher(Set spaceComponentPairSet) {
     List searcherList = new ArrayList();
@@ -568,8 +554,8 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Build the set of all the path to the directories index corresponding the
-   * given (space, component) pairs.
+   * Build the set of all the path to the directories index corresponding the given (space,
+   * component) pairs.
    */
   private Set getIndexPathSet(Set spaceComponentPairSet) {
     Set pathSet = new HashSet();
@@ -598,36 +584,23 @@ public class WAIndexSearcher {
   }
 
   /**
-   * Retrieve the index searcher over the specified index directory.
-   * 
-   * The index readers are cached in a Map (path -> (timestamp, reader)). If a
-   * reader is found in the cache but appear to be too old (according to the
-   * timestamp) then it is re-open.
-   * 
-   * If the index files are not found, null is returned without any error (as
-   * this case comes each time a request is made on a space/component without
-   * any indexed documents).
+   * Retrieve the index searcher over the specified index directory. The index readers are cached in
+   * a Map (path -> (timestamp, reader)). If a reader is found in the cache but appear to be too old
+   * (according to the timestamp) then it is re-open. If the index files are not found, null is
+   * returned without any error (as this case comes each time a request is made on a space/component
+   * without any indexed documents).
    */
   private Searcher getSearcher(String path) {
     /*
-     * if (!(new File(path).exists())) { return null;
-     * 
-     * } CachedIndex cached = (CachedIndex) cache.get(path);
-     * 
-     * try { if (cached == null || cached.timestamp !=
-     * IndexReader.lastModified(path)) { if (cached != null) {
-     * cached.reader.close(); SilverTrace.info("searchEngine",
-     * "WAIndexSearcher", "searchEngine.INFO_REOPEN_INDEX_FILE", path); } else {
-     * SilverTrace.info("searchEngine", "WAIndexSearcher",
-     * "searchEngine.INFO_OPEN_INDEX_FILE", path); }
-     * 
-     * cached = new CachedIndex(path); cache.put(path, cached); } } catch
-     * (IOException e) {
-     * 
-     * SilverTrace.error("searchEngine", "WAIndexSearcher",
-     * "searchEngine.MSG_CANT_READ_INDEX_FILE", e); return null; }
-     * 
-     * return new IndexSearcher(cached.reader);
+     * if (!(new File(path).exists())) { return null; } CachedIndex cached = (CachedIndex)
+     * cache.get(path); try { if (cached == null || cached.timestamp !=
+     * IndexReader.lastModified(path)) { if (cached != null) { cached.reader.close();
+     * SilverTrace.info("searchEngine", "WAIndexSearcher", "searchEngine.INFO_REOPEN_INDEX_FILE",
+     * path); } else { SilverTrace.info("searchEngine", "WAIndexSearcher",
+     * "searchEngine.INFO_OPEN_INDEX_FILE", path); } cached = new CachedIndex(path); cache.put(path,
+     * cached); } } catch (IOException e) { SilverTrace.error("searchEngine", "WAIndexSearcher",
+     * "searchEngine.MSG_CANT_READ_INDEX_FILE", e); return null; } return new
+     * IndexSearcher(cached.reader);
      */
 
     Searcher searcher = null;

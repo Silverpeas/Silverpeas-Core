@@ -48,15 +48,13 @@ package com.silverpeas.util.clipboard;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SKDException extends ClipboardException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public SKDException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -64,13 +62,10 @@ public class SKDException extends ClipboardException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public SKDException(String callingClass, int errorLevel, String message,
@@ -80,13 +75,10 @@ public class SKDException extends ClipboardException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public SKDException(String callingClass, int errorLevel, String message,
@@ -96,14 +88,11 @@ public class SKDException extends ClipboardException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public SKDException(String callingClass, int errorLevel, String message,
@@ -112,8 +101,7 @@ public class SKDException extends ClipboardException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "clipboard";

@@ -32,9 +32,8 @@ public class ScoreComparator implements Comparator {
   static public ScoreComparator comparator = new ScoreComparator();
 
   /**
-   * A matching index entry is greater another if his score is higher.
-   * 
-   * This result is reversed as we want a descending sort.
+   * A matching index entry is greater another if his score is higher. This result is reversed as we
+   * want a descending sort.
    */
   public int compare(Object o1, Object o2) {
     MatchingIndexEntry r1 = (MatchingIndexEntry) o1;
@@ -50,10 +49,8 @@ public class ScoreComparator implements Comparator {
   }
 
   /**
-   * This comparator equals self only.
-   * 
-   * Use the shared comparator ScoreComparator.comparator if multiples
-   * comparators are used.
+   * This comparator equals self only. Use the shared comparator ScoreComparator.comparator if
+   * multiples comparators are used.
    */
   public boolean equals(Object o) {
     return o == this;

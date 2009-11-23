@@ -37,10 +37,9 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * <P>
- * This is the controlling class for all scheduling jobs. It works like a
- * factory. The only way to create a job is the usage of the method 'getJob'.
- * The parameter signature controls the needed job type (script, method or
- * event). An example:
+ * This is the controlling class for all scheduling jobs. It works like a factory. The only way to
+ * create a job is the usage of the method 'getJob'. The parameter signature controls the needed job
+ * type (script, method or event). An example:
  * </P>
  * <CODE>
  *     .....<BR>
@@ -48,16 +47,14 @@ import com.stratelia.silverpeas.silvertrace.*;
  *     .....<BR>
  * </CODE>
  * <P>
- * This simple line creates a new controlling instance (only once) and a new
- * event job. The job owner (or creator) have to handle SchedulerEvents of the
- * type 'EXECUTION'. In this example is it the object 'jobOwner', that gets
- * ervery day at 2:00 events from the job with the name 'Hello'. The timestamp
- * of execution is described by a cron string (here: '0 2 * * *'). This simple
- * string is divided into five fields (separated by spaces): minute, hour, day
- * of month, month and day of week. The '*' meens <B>every</B> minute, hour,....
- * So it is a wildcard. If you do not like this method, every job type has a
- * generator method, that uses five Vectors to describe a timestamp. Have a look
- * at the methods for the details.
+ * This simple line creates a new controlling instance (only once) and a new event job. The job
+ * owner (or creator) have to handle SchedulerEvents of the type 'EXECUTION'. In this example is it
+ * the object 'jobOwner', that gets ervery day at 2:00 events from the job with the name 'Hello'.
+ * The timestamp of execution is described by a cron string (here: '0 2 * * *'). This simple string
+ * is divided into five fields (separated by spaces): minute, hour, day of month, month and day of
+ * week. The '*' meens <B>every</B> minute, hour,.... So it is a wildcard. If you do not like this
+ * method, every job type has a generator method, that uses five Vectors to describe a timestamp.
+ * Have a look at the methods for the details.
  * </P>
  * <P>
  * Let us have a look at the script jobs:
@@ -68,10 +65,9 @@ import com.stratelia.silverpeas.silvertrace.*;
  *     .....<BR>
  * </CODE>
  * <P>
- * There is only one additional parameter: The path to the script. Additional
- * parameter to the script must be separated by spaces. It is not a shell, so
- * piping, redirections etc. given as parameter are not implemented. If you need
- * this, you have to realize it inside the sript.
+ * There is only one additional parameter: The path to the script. Additional parameter to the
+ * script must be separated by spaces. It is not a shell, so piping, redirections etc. given as
+ * parameter are not implemented. If you need this, you have to realize it inside the sript.
  * </P>
  * <P>
  * What about the method jobs?
@@ -82,28 +78,24 @@ import com.stratelia.silverpeas.silvertrace.*;
  *     .....<BR>
  * </CODE>
  * <P>
- * Looks more complicated? No, it isn't. The first three parameter are identical
- * with the corresponding parameter of the script job. The following parameter
- * stand for the 'action'. The object 'methodImplementer' holds a method with
- * the name 'test'. This method has to have two parameters (argumenttypes:
- * PrintStream, Date). And? Is it realy complicated?
+ * Looks more complicated? No, it isn't. The first three parameter are identical with the
+ * corresponding parameter of the script job. The following parameter stand for the 'action'. The
+ * object 'methodImplementer' holds a method with the name 'test'. This method has to have two
+ * parameters (argumenttypes: PrintStream, Date). And? Is it realy complicated?
  * </P>
  * <P>
- * This class creates a log file for every job. The location of the files could
- * be controlled by a property file ('SimpleScheduler.properties'). It is
- * searched in the home directories of the application and the current user.
- * Additionaly there is the method 'setLogDirectory'. This method has to be
- * called <B>before</B> any job is created. If nothing works, the log files will
- * be placed in [user home]/.SimpleScheduler/logs.
+ * This class creates a log file for every job. The location of the files could be controlled by a
+ * property file ('SimpleScheduler.properties'). It is searched in the home directories of the
+ * application and the current user. Additionaly there is the method 'setLogDirectory'. This method
+ * has to be called <B>before</B> any job is created. If nothing works, the log files will be placed
+ * in [user home]/.SimpleScheduler/logs.
  * </P>
- * 
  */
 public class SimpleScheduler {
   // Global constants
   /**
-   * This date format is used for writing a timestamp into the log files. It
-   * could be used by external methods, so the log files have a consistent
-   * layout.
+   * This date format is used for writing a timestamp into the log files. It could be used by
+   * external methods, so the log files have a consistent layout.
    */
   public static final SimpleDateFormat LOG_DATE_FORMAT = new SimpleDateFormat(
       "yyyy-MM-dd HH:mm");
@@ -124,40 +116,27 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method sets the base dirctory, where the logfiles of the jobs will be
-   * created. It has to be called before any job is installed.
-   * 
-   * @param aBasePath
-   *          The path to the directory where the logfiles will be created
-   * @return True, if the setting of the base directory with the given directory
-   *         was successful
+   * This method sets the base dirctory, where the logfiles of the jobs will be created. It has to
+   * be called before any job is installed.
+   * @param aBasePath The path to the directory where the logfiles will be created
+   * @return True, if the setting of the base directory with the given directory was successful
    */
   /*
-   * public static void setLogDirectory (String aBasePath) throws
-   * SchedulerException { File workFile;
-   * 
-   * if (aBasePath == null) { throw new SchedulerException
-   * ("SimpleScheduler.setLogDirectory: Parameter 'aBasePath' is null"); }
-   * 
-   * if (theSimpleScheduler != null) { throw new SchedulerException(
-   * "SimpleScheduler.setLogDirectory: Method 'setLogDirectory' was not the first called method"
-   * ); }
-   * 
-   * // Check the the given directory workFile = new File (aBasePath); if
-   * ((workFile != null) && workFile.exists() && workFile.isDirectory () &&
-   * workFile.canWrite ()) { theSimpleScheduler = new SimpleScheduler
-   * (workFile); } else { theSimpleScheduler = new SimpleScheduler (); } }
+   * public static void setLogDirectory (String aBasePath) throws SchedulerException { File
+   * workFile; if (aBasePath == null) { throw new SchedulerException
+   * ("SimpleScheduler.setLogDirectory: Parameter 'aBasePath' is null"); } if (theSimpleScheduler !=
+   * null) { throw new SchedulerException(
+   * "SimpleScheduler.setLogDirectory: Method 'setLogDirectory' was not the first called method" );
+   * } // Check the the given directory workFile = new File (aBasePath); if ((workFile != null) &&
+   * workFile.exists() && workFile.isDirectory () && workFile.canWrite ()) { theSimpleScheduler =
+   * new SimpleScheduler (workFile); } else { theSimpleScheduler = new SimpleScheduler (); } }
    */
   /**
-   * This method creates a job that fires a SchedulerEvent of the type
-   * 'EXECUTION'. The timestamp is given in minutes
-   * 
-   * @param aJobOwner
-   *          The owner of the created job
-   * @param aJobName
-   *          The name of the created job
-   * @param iMinutes
-   *          The minutes
+   * This method creates a job that fires a SchedulerEvent of the type 'EXECUTION'. The timestamp is
+   * given in minutes
+   * @param aJobOwner The owner of the created job
+   * @param aJobName The name of the created job
+   * @param iMinutes The minutes
    * @return A new job
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
@@ -190,24 +169,17 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method creates a job that fires a SchedulerEvent of the type
-   * 'EXECUTION'. The timestamp is given by a cron like string (currently ranges
-   * are not allowed). So the string '* 3,21 * 3 0' starts the execution of the
-   * given command every Sunday in March at 03:00 and 21:00. The allowed ranges
-   * are: minutes (0-59), hours (0-23), days of a month (1-31), months (1-12;
-   * starts with 1 for January), day of a week (0-6; starts with 0 for Sunday).
-   * Currently the parser for the cron string is not very flexible, so have a
-   * look at the syntax.
-   * 
-   * @param aJobOwner
-   *          The owner of the created job
-   * @param aJobName
-   *          The name of the created job
-   * @param aCronString
-   *          A cron like string ([*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}]
-   *          [*|NUM{,NUM}] [*|NUM{,NUM}])
-   * @param aCommand
-   *          A shell command with space separated parameters
+   * This method creates a job that fires a SchedulerEvent of the type 'EXECUTION'. The timestamp is
+   * given by a cron like string (currently ranges are not allowed). So the string '* 3,21 * 3 0'
+   * starts the execution of the given command every Sunday in March at 03:00 and 21:00. The allowed
+   * ranges are: minutes (0-59), hours (0-23), days of a month (1-31), months (1-12; starts with 1
+   * for January), day of a week (0-6; starts with 0 for Sunday). Currently the parser for the cron
+   * string is not very flexible, so have a look at the syntax.
+   * @param aJobOwner The owner of the created job
+   * @param aJobName The name of the created job
+   * @param aCronString A cron like string ([*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}]
+   * [*|NUM{,NUM}])
+   * @param aCommand A shell command with space separated parameters
    * @return A new job
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
@@ -240,25 +212,17 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method creates a job that fires a SchedulerEvent of the type
-   * 'EXECUTION'. The time settings are given by vectors. Each vector holds a
-   * list of Integer objects. Every Integer represents a element of a timestamp
-   * (cron like). Emty Vectors matches all elements of the domain.
-   * 
-   * @param aJobOwner
-   *          The owner of the created job
-   * @param aJobName
-   *          The name of the created job
-   * @param startMinutes
-   *          A list of minutes (0-59)
-   * @param startHours
-   *          A list of hours (0-23)
-   * @param startDaysOfMonth
-   *          A list of days of a month (1-31)
-   * @param startMonths
-   *          A list of months (1-12; starts with 1 for January)
-   * @param startDaysOfWeek
-   *          A list of day of a week (0-6; starts with 0 for Sunday)
+   * This method creates a job that fires a SchedulerEvent of the type 'EXECUTION'. The time
+   * settings are given by vectors. Each vector holds a list of Integer objects. Every Integer
+   * represents a element of a timestamp (cron like). Emty Vectors matches all elements of the
+   * domain.
+   * @param aJobOwner The owner of the created job
+   * @param aJobName The name of the created job
+   * @param startMinutes A list of minutes (0-59)
+   * @param startHours A list of hours (0-23)
+   * @param startDaysOfMonth A list of days of a month (1-31)
+   * @param startMonths A list of months (1-12; starts with 1 for January)
+   * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
    * @return A new job
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
@@ -294,26 +258,19 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method creates a job that executes a class method. The timestamp is
-   * given by a cron like string (currently ranges are not allowed). So the
-   * string '* 3,21 * 3 0' starts the given method every Sunday in March at
-   * 03:00 and 21:00. The allowed ranges are: minutes (0-59), hours (0-23), days
-   * of a month (1-31), months (1-12; starts with 1 for January), day of a week
-   * (0-6; starts with 0 for Sunday). Currently the parser for the cron string
-   * is not very flexible, so have a look at the syntax.
-   * 
-   * @param aJobOwner
-   *          The owner of the created job
-   * @param aJobName
-   *          The name of the created job
-   * @param aCronString
-   *          A cron like string ([*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}]
-   *          [*|NUM{,NUM}] [*|NUM{,NUM}])
-   * @param aMethodOwner
-   *          The owner object of the execution method
-   * @param aExecutionMethodName
-   *          The name of a method for the execution logic (Arguments must be
-   *          PrintStream and Date)
+   * This method creates a job that executes a class method. The timestamp is given by a cron like
+   * string (currently ranges are not allowed). So the string '* 3,21 * 3 0' starts the given method
+   * every Sunday in March at 03:00 and 21:00. The allowed ranges are: minutes (0-59), hours (0-23),
+   * days of a month (1-31), months (1-12; starts with 1 for January), day of a week (0-6; starts
+   * with 0 for Sunday). Currently the parser for the cron string is not very flexible, so have a
+   * look at the syntax.
+   * @param aJobOwner The owner of the created job
+   * @param aJobName The name of the created job
+   * @param aCronString A cron like string ([*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}]
+   * [*|NUM{,NUM}])
+   * @param aMethodOwner The owner object of the execution method
+   * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
+   * PrintStream and Date)
    * @return A new job
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
@@ -387,29 +344,18 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method creates a job that executes a class method. The time settings
-   * are given by minute. The given execution method has to handle two parameter
-   * (PrintStream, Date)
-   * 
-   * @param aJobOwner
-   *          The owner of the created job
-   * @param aJobName
-   *          The name of the created job
-   * @param startMinutes
-   *          A list of minutes (0-59)
-   * @param startHours
-   *          A list of hours (0-23)
-   * @param startDaysOfMonth
-   *          A list of days of a month (1-31)
-   * @param startMonths
-   *          A list of months (1-12; starts with 1 for January)
-   * @param startDaysOfWeek
-   *          A list of day of a week (0-6; starts with 0 for Sunday)
-   * @param aMethodOwner
-   *          The owner object of the execution method
-   * @param aExecutionMethodName
-   *          The name of a method for the execution logic (Arguments must be
-   *          PrintStream and Date)
+   * This method creates a job that executes a class method. The time settings are given by minute.
+   * The given execution method has to handle two parameter (PrintStream, Date)
+   * @param aJobOwner The owner of the created job
+   * @param aJobName The name of the created job
+   * @param startMinutes A list of minutes (0-59)
+   * @param startHours A list of hours (0-23)
+   * @param startDaysOfMonth A list of days of a month (1-31)
+   * @param startMonths A list of months (1-12; starts with 1 for January)
+   * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
+   * @param aMethodOwner The owner object of the execution method
+   * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
+   * PrintStream and Date)
    * @return A new job
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
@@ -444,31 +390,20 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method creates a job that executes a class method. The time settings
-   * are given by vectors. Each vector holds a list of Integer objects. Every
-   * Integer represents a element of a timestamp (cron like). Emty Vectors
-   * matches all elements of the domain. The given execution method has to
+   * This method creates a job that executes a class method. The time settings are given by vectors.
+   * Each vector holds a list of Integer objects. Every Integer represents a element of a timestamp
+   * (cron like). Emty Vectors matches all elements of the domain. The given execution method has to
    * handle two parameter (PrintStream, Date)
-   * 
-   * @param aJobOwner
-   *          The owner of the created job
-   * @param aJobName
-   *          The name of the created job
-   * @param startMinutes
-   *          A list of minutes (0-59)
-   * @param startHours
-   *          A list of hours (0-23)
-   * @param startDaysOfMonth
-   *          A list of days of a month (1-31)
-   * @param startMonths
-   *          A list of months (1-12; starts with 1 for January)
-   * @param startDaysOfWeek
-   *          A list of day of a week (0-6; starts with 0 for Sunday)
-   * @param aMethodOwner
-   *          The owner object of the execution method
-   * @param aExecutionMethodName
-   *          The name of a method for the execution logic (Arguments must be
-   *          PrintStream and Date)
+   * @param aJobOwner The owner of the created job
+   * @param aJobName The name of the created job
+   * @param startMinutes A list of minutes (0-59)
+   * @param startHours A list of hours (0-23)
+   * @param startDaysOfMonth A list of days of a month (1-31)
+   * @param startMonths A list of months (1-12; starts with 1 for January)
+   * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
+   * @param aMethodOwner The owner object of the execution method
+   * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
+   * PrintStream and Date)
    * @return A new job
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
@@ -507,9 +442,7 @@ public class SimpleScheduler {
 
   /**
    * This method returns a list of the jobs of the given job owner
-   * 
-   * @param aJobOwner
-   *          A job owner
+   * @param aJobOwner A job owner
    * @return A list of the jobs of the given job owner
    */
   public static Vector getJobList(SchedulerEventHandler aJobOwner)
@@ -527,11 +460,8 @@ public class SimpleScheduler {
 
   /**
    * This method removes a job
-   * 
-   * @param aJobOwner
-   *          A job owner
-   * @param aJobName
-   *          A job name
+   * @param aJobOwner A job owner
+   * @param aJobName A job name
    */
   public static void removeJob(SchedulerEventHandler aJobOwner, String aJobName)
       throws SchedulerException {
@@ -558,11 +488,8 @@ public class SimpleScheduler {
 
   /**
    * This method removes a job
-   * 
-   * @param aJobOwner
-   *          A job owner
-   * @param aJobName
-   *          A job name
+   * @param aJobOwner A job owner
+   * @param aJobName A job name
    */
   public static void removeJob(SchedulerEventHandler aJobOwner,
       SchedulerJob aJob) throws SchedulerException {
@@ -589,9 +516,7 @@ public class SimpleScheduler {
 
   /**
    * This method removes all jobs of the given job owner
-   * 
-   * @param aJobOwner
-   *          The job owner, whitch jobs should be removed
+   * @param aJobOwner The job owner, whitch jobs should be removed
    */
   public static void removeAllJobs(SchedulerEventHandler aJobOwner)
       throws SchedulerException {
@@ -611,8 +536,8 @@ public class SimpleScheduler {
   }
 
   /**
-   * This method kills all active jobs. The unique instance of the
-   * SimpleScheduler will be destroyed.
+   * This method kills all active jobs. The unique instance of the SimpleScheduler will be
+   * destroyed.
    */
   public static void shutdown() {
     SilverTrace.debug("scheduler", "SimpleScheduler",
@@ -628,7 +553,6 @@ public class SimpleScheduler {
 
   /**
    * The constructor is private because it will be created internal.
-   * 
    */
   private SimpleScheduler() throws SchedulerException {
     this(null);
@@ -636,9 +560,7 @@ public class SimpleScheduler {
 
   /**
    * The constructor is private because it will be created internal
-   * 
-   * @param aBasePath
-   *          The path to the directory where the logfiles will be created
+   * @param aBasePath The path to the directory where the logfiles will be created
    */
   private SimpleScheduler(File aBasePath) throws SchedulerException {
     htJobs = new Hashtable();
@@ -648,11 +570,8 @@ public class SimpleScheduler {
 
   /**
    * This method adds a job to the internal list of jobs an starts the job
-   * 
-   * @param aJobOwner
-   *          A job owner
-   * @param aNewJob
-   *          A new job
+   * @param aJobOwner A job owner
+   * @param aNewJob A new job
    */
   private SchedulerJob addJob(SchedulerEventHandler aJobOwner,
       SchedulerJob aNewJob) throws SchedulerException {
@@ -676,15 +595,13 @@ public class SimpleScheduler {
     } catch (Exception aException) {
       throw new SchedulerException(
           "SimpleScheduler.addJob: Could add the job to the job list (Reason: "
-              + aException.getMessage() + ")");
+          + aException.getMessage() + ")");
     }
   }
 
   /**
    * This method removes a job
-   * 
-   * @param aJob
-   *          A job object
+   * @param aJob A job object
    */
   private void removeJob(SchedulerJob aJob) {
     Enumeration elementEnumerator;
@@ -718,9 +635,7 @@ public class SimpleScheduler {
 
   /**
    * This method checks the existence of the given job name
-   * 
-   * @param aJobName
-   *          A new job name
+   * @param aJobName A new job name
    * @return True, if the name does not exist
    */
   private boolean checkJobName(String aJobName) {
@@ -763,12 +678,10 @@ public class SimpleScheduler {
    * This method logs messages into the controller log file
    */
   /*
-   * private void log (String aLogMessage) { PrintStream logStream;
-   * 
-   * try { logStream = new PrintStream (new FileOutputStream
-   * (theLogBaseFile.getAbsolutePath () + System.getProperties ().getProperty
-   * ("file.separator") + MAIN_LOG_FILE_NAME + ".log", true)); logStream.println
-   * (LOG_DATE_FORMAT.format (new Date ()) + ": " + aLogMessage);
-   * logStream.close (); } catch (Exception aException) { // Do nothing } }
+   * private void log (String aLogMessage) { PrintStream logStream; try { logStream = new
+   * PrintStream (new FileOutputStream (theLogBaseFile.getAbsolutePath () + System.getProperties
+   * ().getProperty ("file.separator") + MAIN_LOG_FILE_NAME + ".log", true)); logStream.println
+   * (LOG_DATE_FORMAT.format (new Date ()) + ": " + aLogMessage); logStream.close (); } catch
+   * (Exception aException) { // Do nothing } }
    */
 }

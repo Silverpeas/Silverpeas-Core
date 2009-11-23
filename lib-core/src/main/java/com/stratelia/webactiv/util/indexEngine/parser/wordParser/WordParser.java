@@ -34,10 +34,8 @@ import org.apache.poi.hwpf.extractor.WordExtractor;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 
 /**
- * A WordParser parse a Word file. Use an open source java library named
- * textmining Class WordExtractor extracts the text from a Word
- * 6.0/95/97/2000/XP word doc
- * 
+ * A WordParser parse a Word file. Use an open source java library named textmining Class
+ * WordExtractor extracts the text from a Word 6.0/95/97/2000/XP word doc
  * @author neysseri
  */
 public class WordParser implements Parser {
@@ -50,11 +48,8 @@ public class WordParser implements Parser {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param path
    * @param encoding
-   * 
    * @return
    */
   public Reader getReader(String path, String encoding) {

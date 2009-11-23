@@ -31,8 +31,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 
 /**
- * An Identified RecordTemplate adds a database id and an external id to a
- * RecordTemplate.
+ * An Identified RecordTemplate adds a database id and an external id to a RecordTemplate.
  */
 public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
   private int id = -1;
@@ -70,7 +69,6 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -79,7 +77,6 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   /**
    * Returns the field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
@@ -94,8 +91,7 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
   }
 
   /**
-   * Returns true if the data record is built on this template and all the
-   * constraints are ok.
+   * Returns true if the data record is built on this template and all the constraints are ok.
    */
   public boolean checkDataRecord(DataRecord record) {
     return wrappedTemplate.checkDataRecord(record);

@@ -29,8 +29,7 @@ import java.net.URLEncoder;
 import com.stratelia.webactiv.util.indexEngine.model.*;
 
 /**
- * A MatchingIndexEntry is an IndexEntry completed with a score by the search
- * engine.
+ * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
  */
 public class MatchingIndexEntry extends IndexEntry implements Serializable {
   /**
@@ -56,18 +55,14 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
-   * Set the score of this entry.
-   * 
-   * Only the searchEngine should call this method.
+   * Set the score of this entry. Only the searchEngine should call this method.
    */
   public void setScore(float score) {
     this.score = score;
   }
 
   /**
-   * Returns web'activ logic parameters for the URL used to displayed this
-   * entry.
-   * 
+   * Returns web'activ logic parameters for the URL used to displayed this entry.
    */
   public String getPageAndParams() {
     String type = URLEncoder.encode(getObjectType());

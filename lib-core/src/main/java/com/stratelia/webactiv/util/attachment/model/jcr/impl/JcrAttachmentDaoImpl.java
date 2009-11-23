@@ -52,12 +52,9 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#
+   * @see com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#
    * createAttachmentNode(javax.jcr.Session,
-   * com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
-   * java.lang.String)
+   * com.stratelia.webactiv.util.attachment.model.AttachmentDetail, java.lang.String)
    */
   public void createAttachmentNode(Session session,
       AttachmentDetail attachment, String language) throws RepositoryException,
@@ -98,12 +95,9 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#
+   * @see com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDao#
    * deleteAttachmentNode(javax.jcr.Session,
-   * com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
-   * java.lang.String)
+   * com.stratelia.webactiv.util.attachment.model.AttachmentDetail, java.lang.String)
    */
   public void deleteAttachmentNode(Session session,
       AttachmentDetail attachment, String language) throws RepositoryException,
@@ -118,15 +112,11 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
   }
 
   /**
-   * Indicate if the node for the specified attachment is currently locked (for
-   * example by Office in the case of a webdav online edition).
-   * 
-   * @param session
-   *          the JCR session.
-   * @param attachment
-   *          the attachment.
-   * @param language
-   *          the language to obtain the file.
+   * Indicate if the node for the specified attachment is currently locked (for example by Office in
+   * the case of a webdav online edition).
+   * @param session the JCR session.
+   * @param attachment the attachment.
+   * @param language the language to obtain the file.
    * @return true if the node is locked - false otherwise.
    * @throws RepositoryException
    */
@@ -183,11 +173,8 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /**
    * Add a folder node into the repository
-   * 
-   * @param parent
-   *          the parent node
-   * @param name
-   *          the name of the new node
+   * @param parent the parent node
+   * @param name the name of the new node
    * @return the created node.
    * @throws ItemExistsException
    * @throws PathNotFoundException
@@ -210,13 +197,9 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
 
   /**
    * Add a file node into the repository
-   * 
-   * @param parent
-   *          the folder node containing the file node.
-   * @param attachment
-   *          the attachment for the file.
-   * @param language
-   *          the language for the file.
+   * @param parent the folder node containing the file node.
+   * @param attachment the attachment for the file.
+   * @param language the language for the file.
    * @return the created node.
    * @throws IOException
    * @throws RepositoryException

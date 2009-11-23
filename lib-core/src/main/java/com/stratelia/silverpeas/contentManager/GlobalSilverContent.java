@@ -30,11 +30,10 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 
 /**
- * This class allows the result jsp page of the global search to show all
- * features (name, description, location)
+ * This class allows the result jsp page of the global search to show all features (name,
+ * description, location)
  */
-public class GlobalSilverContent extends AbstractI18NBean implements
-    java.io.Serializable {
+public class GlobalSilverContent extends AbstractI18NBean implements java.io.Serializable {
   private String name = "";
   private String description = "";
   private String url = "";

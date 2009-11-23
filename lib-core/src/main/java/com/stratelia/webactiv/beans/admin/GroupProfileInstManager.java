@@ -66,8 +66,7 @@ public class GroupProfileInstManager {
   }
 
   /**
-   * Get Space profile information with given id and creates a new
-   * GroupProfileInst
+   * Get Space profile information with given id and creates a new GroupProfileInst
    */
   public GroupProfileInst getGroupProfileInst(DomainDriverManager ddManager,
       String sProfileId, String sGroupId) throws AdminException {
@@ -83,7 +82,7 @@ public class GroupProfileInstManager {
         throw new AdminException("GroupProfileInstManager.getGroupProfileInst",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
             "space profile Id: '" + sProfileId + "', groupId: '" + sGroupId
-                + "'", e);
+            + "'", e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -98,8 +97,7 @@ public class GroupProfileInstManager {
   }
 
   /**
-   * get information for given id and store it in the given GroupProfileInst
-   * object
+   * get information for given id and store it in the given GroupProfileInst object
    */
   public void setGroupProfileInst(GroupProfileInst groupProfileInst,
       DomainDriverManager ddManager, String sProfileId, String sGroupId)
@@ -140,7 +138,7 @@ public class GroupProfileInstManager {
       throw new AdminException("GroupProfileInstManager.setGroupProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
           "space profile Id: '" + sProfileId + "', groupId = '" + sGroupId
-              + "'", e);
+          + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -155,12 +153,12 @@ public class GroupProfileInstManager {
       for (int nI = 0; nI < groupProfileInst.getNumGroup(); nI++)
         ddManager.organization.groupUserRole.removeGroupFromGroupUserRole(
             idAsInt(groupProfileInst.getGroup(nI)), idAsInt(groupProfileInst
-                .getId()));
+            .getId()));
 
       for (int nI = 0; nI < groupProfileInst.getNumUser(); nI++)
         ddManager.organization.groupUserRole.removeUserFromGroupUserRole(
             idAsInt(groupProfileInst.getUser(nI)), idAsInt(groupProfileInst
-                .getId()));
+            .getId()));
 
       // delete the groupProfile node
       ddManager.organization.groupUserRole
@@ -218,7 +216,7 @@ public class GroupProfileInstManager {
         // Create the links between the spaceProfile and the group
         ddManager.organization.groupUserRole.addGroupInGroupUserRole(
             idAsInt((String) alAddGroup.get(nI)), idAsInt(groupProfileInst
-                .getId()));
+            .getId()));
       }
 
       // Remove the removed groups
@@ -226,7 +224,7 @@ public class GroupProfileInstManager {
         // delete the node link SpaceProfile_Group
         ddManager.organization.groupUserRole.removeGroupFromGroupUserRole(
             idAsInt((String) alRemGroup.get(nI)), idAsInt(groupProfileInst
-                .getId()));
+            .getId()));
       }
 
       // Compute the Old spaceProfile User list
@@ -256,7 +254,7 @@ public class GroupProfileInstManager {
         // Create the links between the spaceProfile and the User
         ddManager.organization.groupUserRole.addUserInGroupUserRole(
             idAsInt((String) alAddUser.get(nI)), idAsInt(groupProfileInst
-                .getId()));
+            .getId()));
       }
 
       // Remove the removed Users
@@ -264,16 +262,14 @@ public class GroupProfileInstManager {
         // delete the node link SpaceProfile_User
         ddManager.organization.groupUserRole.removeUserFromGroupUserRole(
             idAsInt((String) alRemUser.get(nI)), idAsInt(groupProfileInst
-                .getId()));
+            .getId()));
       }
 
       // update the spaceProfile node
       /*
-       * GroupUserRoleRow changedSpaceUserRole =
-       * makeGroupUserRoleRow(groupProfileInstNew); changedSpaceUserRole.id =
-       * idAsInt(groupProfileInstNew.getId());
-       * ddManager.organization.groupUserRole
-       * .updateSpaceUserRole(changedSpaceUserRole);
+       * GroupUserRoleRow changedSpaceUserRole = makeGroupUserRoleRow(groupProfileInstNew);
+       * changedSpaceUserRole.id = idAsInt(groupProfileInstNew.getId());
+       * ddManager.organization.groupUserRole .updateSpaceUserRole(changedSpaceUserRole);
        */
 
       return groupProfileInst.getId();

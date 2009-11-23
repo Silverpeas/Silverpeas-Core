@@ -28,10 +28,7 @@ import java.io.Serializable;
 import com.silverpeas.util.i18n.I18NHelper;
 
 /**
- * A ContentDescription pack all the needed information to parse and index a
- * content.
- * 
- * We need :
+ * A ContentDescription pack all the needed information to parse and index a content. We need :
  * <UL>
  * <LI>the content itself</LI>
  * <LI>the language of the file</LI>
