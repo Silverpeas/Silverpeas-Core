@@ -166,4 +166,19 @@ public class RandomGenerator {
     calendar.set(Calendar.MILLISECOND, 0);
     return calendar;
   }
+
+
+  public static Calendar getCalendarAfter(Calendar date) {
+    Calendar endDate = Calendar.getInstance();
+    endDate.setTimeInMillis(date.getTimeInMillis());
+    endDate.add(Calendar.DAY_OF_MONTH, 1 + random.nextInt(10));
+    return endDate;
+  }
+
+   public static Calendar getCalendarBefore(Calendar date) {
+    Calendar beforeDate = Calendar.getInstance();
+    beforeDate.setTimeInMillis(date.getTimeInMillis());
+    beforeDate.add(Calendar.DAY_OF_MONTH, - 1 - random.nextInt(10));
+    return date;
+  }
 }
