@@ -1,8 +1,7 @@
 infobulleCommand_GetState = function() {
-
 	if ( FCK.EditMode != FCK_EDITMODE_WYSIWYG )
 		return FCK_TRISTATE_DISABLED;
-
+	return FCK_TRISTATE_OFF;
 }
 
 FCKCommands.RegisterCommand('Infobulle', new FCKDialogCommand('Infobulle','Infobulle',FCKConfig.PluginsPath+'infobulle/test.html', 400, 220,infobulleCommand_GetState ));
@@ -12,7 +11,6 @@ var oTestItem = new FCKToolbarButton('Infobulle', 'Infobulle',null, null, false,
 
 oTestItem.IconPath = FCKConfig.PluginsPath + 'infobulle/infobulle.gif';
 FCKToolbarItems.RegisterItem('Infobulle',oTestItem);
-
 
 FCK.ContextMenu.RegisterListener({
 	AddItems : function( menu, tag, tagName ) {
