@@ -26,6 +26,8 @@
   </dependencies>
   
   <modules>
+    <module>admin</module>
+    <module>authentication</module>
     <module>clipboard</module>
     <module>channels</module>
     <module>personalization</module>

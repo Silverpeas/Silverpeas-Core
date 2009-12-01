@@ -43,7 +43,7 @@
           <appendAssemblyId>true</appendAssemblyId>
           <attach>true</attach>
           <skipAssembly>true</skipAssembly>
-          <finalName>${artifactId}-${version}-configuration</finalName>
+          <finalName>${project.artifactId}-${project.version}-configuration</finalName>
         </configuration>
         <executions>
           <execution>
