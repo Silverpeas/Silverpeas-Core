@@ -35,7 +35,6 @@ import javax.naming.InitialContext;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import org.dbunit.JndiBasedDBTestCase;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;

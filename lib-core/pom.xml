@@ -29,6 +29,7 @@
     <dependency>
       <groupId>informa</groupId>
       <artifactId>informa</artifactId>
+      <classifier>silverpeas</classifier>
     </dependency>
     <dependency>
       <groupId>org.dbunit</groupId>
