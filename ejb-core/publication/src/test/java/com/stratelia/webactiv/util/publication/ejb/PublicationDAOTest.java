@@ -7,16 +7,11 @@ package com.stratelia.webactiv.util.publication.ejb;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.File;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 import javax.naming.Context;
 import static org.junit.Assert.*;
@@ -35,7 +30,13 @@ public class PublicationDAOTest extends AbstractTestDao {
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));
-    File jndiDir = new File(props.getProperty(Context.PROVIDER_URL).substring(8));
+    String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
+    props = new Properties();
+    props.load(this.getClass().getClassLoader().getResourceAsStream(
+        "jdbc.properties"));
+    String jndiPath =  props.getProperty("jndi.name", "");
+    File jndiDir = new File(jndiBaseDir + File.separatorChar +
+            jndiPath.substring(0, jndiPath.lastIndexOf('/')));
     jndiDir.mkdirs();
     super.setUp();
   }
