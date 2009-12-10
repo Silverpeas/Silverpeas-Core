@@ -447,7 +447,12 @@
     <description>no description</description>
     <servlet-class>com.silverpeas.workflowdesigner.servlets.WorkflowDesignerRequestRouter</servlet-class>
   </servlet>
-
+  <servlet>
+    <servlet-name>WebConnectionsRequestRouter</servlet-name>
+    <display-name>WebConnectionsRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.external.webConnections.servlets.WebConnectionsRequestRouter</servlet-class>
+  </servlet>
 
 
   <servlet-mapping>
@@ -723,7 +728,10 @@
     <servlet-name>WorkflowDesignerRequestRouter</servlet-name>
     <url-pattern>/RworkflowDesigner/*</url-pattern>
   </servlet-mapping>
-
+   <servlet-mapping>
+    <servlet-name>WebConnectionsRequestRouter</servlet-name>
+    <url-pattern>/RwebConnections/*</url-pattern>
+  </servlet-mapping>
 
 
   <jsp-config>

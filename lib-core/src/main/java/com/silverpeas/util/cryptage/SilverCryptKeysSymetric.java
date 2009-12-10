@@ -23,8 +23,8 @@
  */
 package com.silverpeas.util.cryptage;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
-
 import javax.crypto.spec.SecretKeySpec;
 
 public class SilverCryptKeysSymetric {
@@ -33,10 +33,26 @@ public class SilverCryptKeysSymetric {
 
   public SilverCryptKeysSymetric() {
     if (key == null) {
-      byte[] keybyte = "ƒþX]Lh/‘".getBytes();
-      // key = new SecretKeySpec(keybyte,"DES");
-      key = new SecretKeySpec(keybyte, "Blowfish");
+      byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
+      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
     }
+  }
+
+  public SilverCryptKeysSymetric(String keyCode) {
+    if (key == null) {
+      byte[] keybyte = getKeyBytes(keyCode);
+      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
+    }
+  }
+
+  protected byte[] getKeyBytes(String keyCode) {
+    byte[] keybyte;
+    try {
+      keybyte = "ƒþX]Lh/‘".getBytes("ISO-8859-1");
+    } catch (UnsupportedEncodingException e) {
+      keybyte = "ƒþX]Lh/‘".getBytes();
+    }
+    return keybyte;
   }
 
   public Key getKey() {
