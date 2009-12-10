@@ -51,26 +51,22 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for notificationUser, returns "notificationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for notificationUser, returns
+   * "notificationUser"
    */
   public String getSessionControlBeanName() {
     return "pdcUtilization";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {

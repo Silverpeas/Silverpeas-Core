@@ -35,7 +35,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
 
 /**
  * Class implementing the tag &lt;buttonPane&gt; from workflowEditor.tld
- * 
  */
 public class ProcessModelButtonPane extends TagSupport {
   private String strCancelAction;
@@ -48,8 +47,7 @@ public class ProcessModelButtonPane extends TagSupport {
   }
 
   /**
-   * @param cancelAction
-   *          the current Tab name to set
+   * @param cancelAction the current Tab name to set
    */
   public void setCancelAction(String cancelAction) {
     strCancelAction = cancelAction;
@@ -57,7 +55,6 @@ public class ProcessModelButtonPane extends TagSupport {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
    */
   public int doStartTag() throws JspException {

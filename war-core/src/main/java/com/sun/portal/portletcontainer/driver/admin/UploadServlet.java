@@ -143,7 +143,7 @@ public class UploadServlet extends HttpServlet {
     if (warFileName == null || !warFileName.endsWith(".war")) {
       session.setAttribute(AdminConstants.DEPLOYMENT_FAILED_ATTRIBUTE,
           DesktopMessages
-              .getLocalizedString(AdminConstants.INVALID_PORTLET_APP));
+          .getLocalizedString(AdminConstants.INVALID_PORTLET_APP));
     } else {
       PortletAdminData portletAdminData = PortletAdminDataFactory
           .getPortletAdminData(null);

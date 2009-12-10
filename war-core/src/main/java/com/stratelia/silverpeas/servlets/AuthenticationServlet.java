@@ -155,12 +155,11 @@ public class AuthenticationServlet extends HttpServlet {
           sDomainId, request); // Throws Specific Exception
     } else {
       /*
-       * try { lpAuth.storeAuthenticationKey(sLogin, sDomainId, testKey); }
-       * catch (AuthenticationException e) { SilverTrace.error("authentication",
-       * "AuthenticationServlet.doPost()",
-       * "root.CANT_STORE_AUTHENTICATION_TESTKEY", "sLogin = " + sLogin +
-       * ", sDomainId = " + sDomainId + ", testKey = " + testKey, e); }
-       * authentificationKey = testKey;
+       * try { lpAuth.storeAuthenticationKey(sLogin, sDomainId, testKey); } catch
+       * (AuthenticationException e) { SilverTrace.error("authentication",
+       * "AuthenticationServlet.doPost()", "root.CANT_STORE_AUTHENTICATION_TESTKEY", "sLogin = " +
+       * sLogin + ", sDomainId = " + sDomainId + ", testKey = " + testKey, e); } authentificationKey
+       * = testKey;
        */
     }
 
@@ -229,7 +228,6 @@ public class AuthenticationServlet extends HttpServlet {
 
   /**
    * Convert a string to a string with only letters in upper case
-   * 
    * @param toConvert
    * @return
    */
@@ -253,7 +251,6 @@ public class AuthenticationServlet extends HttpServlet {
 
   /**
    * Write connections cookie
-   * 
    * @param name
    * @param value
    * @param duration

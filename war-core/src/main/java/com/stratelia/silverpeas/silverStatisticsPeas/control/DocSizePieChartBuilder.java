@@ -33,10 +33,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * @author BERTINL
- * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author BERTINL TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
   private String currentUserId;
@@ -52,9 +50,7 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
+   * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getChartTitle()
    */
   public String getChartTitle() {
@@ -79,9 +75,7 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
+   * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
   Hashtable getCmpStats() {
@@ -94,8 +88,8 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
     } catch (SQLException e) {
       SilverTrace
           .error("silverStatisticsPeas",
-              "DocSizePieChartBuilder.getCmpStats()",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "DocSizePieChartBuilder.getCmpStats()",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
 
     return cmpStats;

@@ -48,26 +48,22 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for notificationUser, returns "notificationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for notificationUser, returns
+   * "notificationUser"
    */
   public String getSessionControlBeanName() {
     return "pdcSubscriptionPeas";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -150,13 +146,9 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * Performs <code>Request</code> initialization for furure use in
-   * subscriptionList.jsp
-   * 
-   * @param request
-   *          a <code>HttpServletRequest</code> to be forwarded
-   * @param subscriptions
-   *          a list of loaded PDCSubscription to be shown
+   * Performs <code>Request</code> initialization for furure use in subscriptionList.jsp
+   * @param request a <code>HttpServletRequest</code> to be forwarded
+   * @param subscriptions a list of loaded PDCSubscription to be shown
    * @return jsp name
    */
   private String doInitSubscrListRequest(HttpServletRequest request,

@@ -34,7 +34,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 
 /**
  * Class implementing the tag &lt;processModelTabs&gt; from workflowEditor.tld
- * 
  */
 public class ProcessModelTabs extends TagSupport {
   private String strCurrentTab;
@@ -47,8 +46,7 @@ public class ProcessModelTabs extends TagSupport {
   }
 
   /**
-   * @param currentTab
-   *          the current Tab name to set
+   * @param currentTab the current Tab name to set
    */
   public void setCurrentTab(String currentTab) {
     strCurrentTab = currentTab;
@@ -56,7 +54,6 @@ public class ProcessModelTabs extends TagSupport {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
    */
   public int doStartTag() throws JspException {
@@ -84,7 +81,7 @@ public class ProcessModelTabs extends TagSupport {
         "ViewParticipants".equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.states"),
         "ViewStates".equals(strCurrentTab) ? "#" : "ViewStates", "ViewStates"
-            .equals(strCurrentTab));
+        .equals(strCurrentTab));
     tabbedPane.addTab(resource.getString("workflowDesigner.actions"),
         "ViewActions".equals(strCurrentTab) ? "#" : "ViewActions",
         "ViewActions".equals(strCurrentTab));

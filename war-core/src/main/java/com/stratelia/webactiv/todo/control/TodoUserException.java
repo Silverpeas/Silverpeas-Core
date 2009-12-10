@@ -35,7 +35,6 @@ package com.stratelia.webactiv.todo.control;
 import java.lang.Exception;
 
 /**
- * 
  * @author mmarengo
  * @version 1.0
  */
@@ -43,9 +42,7 @@ public class TodoUserException extends Exception {
 
   /**
    * Constructor declaration
-   * 
    * @param message
-   * 
    * @see
    */
   public TodoUserException(String message) {

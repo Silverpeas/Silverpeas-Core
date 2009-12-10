@@ -48,8 +48,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -58,18 +56,18 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
   /**
    * Package from which to attempt to load RequestHandler objects
    */
-  private static final String REQUEST_HANDLER_PACKAGE = "com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers";
+  private static final String REQUEST_HANDLER_PACKAGE =
+      "com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers";
 
   /**
-   * Name of the session bean that will be used for this application. This must
-   * be matched by the useBean actions in the JSPs.
+   * Name of the session bean that will be used for this application. This must be matched by the
+   * useBean actions in the JSPs.
    */
   private static final String SESSION_BEAN_NAME = "SILVERMAIL";
 
   /**
-   * Hash table of RequestHandler instances, keyed by class name. This is used
-   * for performance optimization, to avoid the need to load a class by name to
-   * process each request.
+   * Hash table of RequestHandler instances, keyed by class name. This is used for performance
+   * optimization, to avoid the need to load a class by name to process each request.
    */
   private HashMap handlerHash = new HashMap();
 
@@ -78,15 +76,15 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component = (ComponentSessionController) new SILVERMAILSessionController(
-        mainSessionCtrl, context);
+    ComponentSessionController component =
+        (ComponentSessionController) new SILVERMAILSessionController(
+            mainSessionCtrl, context);
     return component;
   }
 
   /**
-   * This method has to be implemented in the component request router class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request router class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return SESSION_BEAN_NAME;
@@ -118,9 +116,9 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * Locate and return the RequestHandler instance for this action. Instances
-   * are stored in a hash table once instantiated, so after the initial use of
-   * Class.forName() this method is very fast and does not rely on reflection.
+   * Locate and return the RequestHandler instance for this action. Instances are stored in a hash
+   * table once instantiated, so after the initial use of Class.forName() this method is very fast
+   * and does not rely on reflection.
    */
   protected SILVERMAILRequestHandler getHandlerInstance(String action)
       throws SILVERMAILException {
@@ -151,7 +149,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
         throw new SILVERMAILException(
             "SILVERMAILRequestRouter.getHandlerInstance()",
             SilverpeasException.ERROR, "silvermail.EX_NO_HANDLER", "Class="
-                + handlerName, ex);
+            + handlerName, ex);
       } catch (InstantiationException ex) {
         // It probably doesn't have a no-argument constructor
         throw new SILVERMAILException(
@@ -173,12 +171,8 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param action
-   * 
    * @return
-   * 
    * @see
    */
   protected String extractFunctionName(String action) {

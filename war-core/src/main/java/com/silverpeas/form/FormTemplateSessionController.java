@@ -28,12 +28,10 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
- * 
  * @author neysseri
  * @version
  */
-public class FormTemplateSessionController extends
-    AbstractComponentSessionController {
+public class FormTemplateSessionController extends AbstractComponentSessionController {
   private String componentId;
   private String objectId;
   private String objectType;

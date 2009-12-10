@@ -52,29 +52,33 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for notificationUser, returns "notificationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for notificationUser, returns
+   * "notificationUser"
    */
   public String getSessionControlBeanName() {
     return "importExportPeas";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request) {
-    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC; // get the session controller to inform the request
+  public String getDestination(String function, ComponentSessionController componentSC,
+      HttpServletRequest request) {
+    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC; // get
+                                                                                                // the
+                                                                                                // session
+                                                                                                // controller
+                                                                                                // to
+                                                                                                // inform
+                                                                                                // the
+                                                                                                // request
     String destination = "";
 
     try {
@@ -85,14 +89,16 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
       } else if ("Import".equals(function)) {
         File file = null;
         List<FileItem> items = FileUploadUtil.parseRequest(request);
-        for(FileItem item: items) {
-          if(!item.isFormField()) {
+        for (FileItem item : items) {
+          if (!item.isFormField()) {
             String fileName = FileUploadUtil.getFileName(item);
             file = new File(FileRepositoryManager.getTemporaryPath(null, null) + fileName);
             FileUploadUtil.saveToFile(file, item);
           }
         }
-        ImportReport importReport = importExportSC.processImport(file.getAbsolutePath(), (ResourcesWrapper) request.getAttribute("resources"));
+        ImportReport importReport =
+            importExportSC.processImport(file.getAbsolutePath(), (ResourcesWrapper) request
+                .getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
       } else if (function.equals("ExportItems")) {
@@ -100,7 +106,8 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
         String rootId = (String) request.getAttribute("RootId");
 
         if (itemPKs != null && itemPKs.size() > 0) {
-          ExportReport report = importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
+          ExportReport report =
+              importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
 
           request.setAttribute("ExportReport", report);
 
@@ -113,7 +120,8 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
         String rootId = (String) request.getAttribute("RootId");
 
         if (itemPKs != null && itemPKs.size() > 0) {
-          ExportPDFReport report = importExportSC.processExportPDF(importExportSC.getLanguage(), itemPKs, rootId);
+          ExportPDFReport report =
+              importExportSC.processExportPDF(importExportSC.getLanguage(), itemPKs, rootId);
 
           if (report != null) {
             request.setAttribute("ExportPDFReport", report);
@@ -128,7 +136,8 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("KmaxExportComponent")) {
         List itemPKs = (List) request.getAttribute("selectedResultsWa");
         if (itemPKs != null && itemPKs.size() > 0) {
-          ExportReport report = importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, null, null);
+          ExportReport report =
+              importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, null, null);
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {
@@ -140,7 +149,9 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
         String timeCriteria = (String) request.getAttribute("TimeCriteria");
 
         if (itemPKs != null && itemPKs.size() > 0) {
-          ExportReport report = importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, combination, timeCriteria);
+          ExportReport report =
+              importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, combination,
+                  timeCriteria);
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {

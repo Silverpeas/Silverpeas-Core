@@ -110,7 +110,7 @@ abstract public class CacheManager {
   public void setInfos(int what, String id, PanelLine pl) {
     SilverTrace.info("selectionPeas", "CacheManager.setInfos",
         "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-            + ", Name = " + pl.m_Values[0] + ", Selected=" + pl.m_Selected);
+        + ", Name = " + pl.m_Values[0] + ", Selected=" + pl.m_Selected);
     getCache(what).put(id, pl);
   }
 
@@ -120,12 +120,12 @@ abstract public class CacheManager {
     if (valret != null) {
       SilverTrace.info("selectionPeas", "CacheManager.getInfos",
           "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-              + ", Name = " + valret.m_Values[0] + ", Selected="
-              + valret.m_Selected);
+          + ", Name = " + valret.m_Values[0] + ", Selected="
+          + valret.m_Selected);
     } else {
       SilverTrace.info("selectionPeas", "CacheManager.getInfos",
           "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-              + ", NULL");
+          + ", NULL");
       valret = getLineFromId(what, id);
       setInfos(what, id, valret);
     }
@@ -192,14 +192,14 @@ abstract public class CacheManager {
     }
     valret = (PanelLine[]) ar.toArray(new PanelLine[0]);
     Arrays.sort(valret, new Comparator() {
-      public int compare(Object o1, Object o2) {
+        public int compare(Object o1, Object o2) {
         return ((PanelLine) o1).m_Values[0].toUpperCase().compareTo(
             ((PanelLine) o2).m_Values[0].toUpperCase());
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
     return valret;

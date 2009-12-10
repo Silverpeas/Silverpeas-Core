@@ -52,8 +52,7 @@ import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 
-public class PdcSubscriptionSessionController extends
-    AbstractComponentSessionController {
+public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
   private PdcSubscriptionBm scBm = null;
   private PdcBm pdcBm = null;
@@ -76,7 +75,7 @@ public class PdcSubscriptionSessionController extends
       try {
         PdcSubscriptionBmHome icEjbHome = (PdcSubscriptionBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME,
-                PdcSubscriptionBmHome.class);
+            PdcSubscriptionBmHome.class);
         scBm = icEjbHome.create();
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException(

@@ -40,23 +40,22 @@ public class FileSharingCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
-   * int, java.lang.String, java.lang.Object)
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
+   * java.lang.String, java.lang.Object)
    */
   public void doInvoke(int action, int iParam, String componentId,
       Object extraParam) {
     SilverTrace.info("fileSharing", "FileSharingCallback.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-            + iParam + ", componentId = " + componentId + ", extraParam = "
-            + extraParam.toString());
+        + iParam + ", componentId = " + componentId + ", extraParam = "
+        + extraParam.toString());
 
     if (iParam == -1) {
       SilverTrace.info("fileSharing", "FileSharingCallback.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "fileId is null. Callback stopped ! action = " + action
-              + ", componentId = " + componentId + ", extraParam = "
-              + extraParam.toString());
+          + ", componentId = " + componentId + ", extraParam = "
+          + extraParam.toString());
       return;
     }
 
@@ -87,7 +86,6 @@ public class FileSharingCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
   public void subscribe() {

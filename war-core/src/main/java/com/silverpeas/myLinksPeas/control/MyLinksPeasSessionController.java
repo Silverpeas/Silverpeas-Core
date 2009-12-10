@@ -38,8 +38,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class MyLinksPeasSessionController extends
-    AbstractComponentSessionController {
+public class MyLinksPeasSessionController extends AbstractComponentSessionController {
   public static final int SCOPE_USER = 0;
   public static final int SCOPE_COMPONENT = 1;
   public static final int SCOPE_OBJECT = 2;
@@ -52,13 +51,8 @@ public class MyLinksPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public MyLinksPeasSessionController(MainSessionController mainSessionCtrl,
@@ -91,7 +85,7 @@ public class MyLinksPeasSessionController extends
       SilverTrace.debug("myLinks",
           "MyLinksPeasSessionController.getAllLinksByInstance()",
           "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size()
-              + " instanceId = " + instanceId);
+          + " instanceId = " + instanceId);
     } catch (Exception e) {
       // traitement des exceptions
       throw new MyLinksRuntimeException(

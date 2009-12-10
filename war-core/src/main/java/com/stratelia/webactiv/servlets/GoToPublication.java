@@ -65,7 +65,7 @@ public class GoToPublication extends GoTo {
     try {
       PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
           .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBmHome.class);
+          PublicationBmHome.class);
       currentPublicationBm = publicationBmHome.create();
     } catch (Exception e) {
       displayError(null);

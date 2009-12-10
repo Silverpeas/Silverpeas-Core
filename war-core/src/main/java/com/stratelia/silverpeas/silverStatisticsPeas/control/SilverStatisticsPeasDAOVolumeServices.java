@@ -39,20 +39,16 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
- * @author BERTINL
- * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author BERTINL TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public class SilverStatisticsPeasDAOVolumeServices {
   private static final String DB_NAME = JNDINames.ADMIN_DATASOURCE;
 
   /**
-   * donne les stats global pour l'enemble de tous les users cad 2 infos, la
-   * collection contient donc un seul element
-   * 
+   * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
+   * donc un seul element
    * @return
-   * 
    * @throws SQLException
    */
   public static Collection[] getStatsInstancesServices() throws SQLException {
@@ -68,14 +64,9 @@ public class SilverStatisticsPeasDAOVolumeServices {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Collection[] getCollectionArrayFromResultset(ResultSet rs)
@@ -103,14 +94,9 @@ public class SilverStatisticsPeasDAOVolumeServices {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param selectQuery
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Collection[] getCollectionArrayFromQuery(String selectQuery)
@@ -137,10 +123,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private static Connection getConnection() {
@@ -158,10 +141,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private static void freeConnection(Connection con) {

@@ -54,8 +54,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ToDoSessionController extends AbstractComponentSessionController {
@@ -73,8 +71,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public ToDoSessionController(MainSessionController mainSessionCtrl,
@@ -100,9 +96,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * 
    * methods for ToDo
-   * 
    */
 
   public Collection getToDos() throws TodoException {
@@ -120,12 +114,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public Collection getNotCompletedToDos() throws TodoException {
@@ -146,12 +136,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public Collection getOrganizerToDos() throws TodoException {
@@ -172,12 +158,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public Collection getClosedToDos() throws TodoException {
@@ -197,14 +179,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param todoId
-   * 
    * @return
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public ToDoHeader getToDoHeader(String todoId) throws TodoException {
@@ -224,8 +201,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
    * @param name
    * @param description
@@ -236,9 +211,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @param endDay
    * @param endHour
    * @param percent
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void updateToDo(String id, String name, String description,
@@ -280,13 +253,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
    * @param percent
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void setToDoPercentCompleted(String id, String percent)
@@ -317,12 +286,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
    * @param title
    * @param text
-   * 
    * @see
    */
   protected void notifyAttendees(String id, String title, String text) {
@@ -346,12 +312,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void closeToDo(String id) throws TodoException {
@@ -375,12 +337,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void reopenToDo(String id) throws TodoException {
@@ -401,8 +359,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param name
    * @param description
    * @param priority
@@ -412,11 +368,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @param endDay
    * @param endHour
    * @param percent
-   * 
    * @return
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public String addToDo(String name, String description, String priority,
@@ -459,12 +412,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void removeToDo(String id) throws TodoException {
@@ -482,10 +431,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void indexAll() throws TodoException {
@@ -502,9 +448,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * 
    * methods for attendees
-   * 
    */
 
   public Collection getToDoAttendees(String todoId) throws TodoException {
@@ -525,13 +469,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param todoId
    * @param userIds
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void setToDoAttendees(String todoId, String[] userIds)
@@ -550,10 +490,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public UserDetail[] getUserList() {
@@ -562,12 +499,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @return
-   * 
    * @see
    */
   public UserDetail getUserDetail(String userId) {
@@ -576,10 +509,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public NotificationSender getNotificationSender() {
@@ -591,10 +521,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ResourceLocator getSettings() {
@@ -607,10 +534,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param viewType
-   * 
    * @see
    */
   public void setViewType(int viewType) {
@@ -619,10 +543,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getViewType() {
@@ -631,10 +552,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ToDoHeader getCurrentToDoHeader() {
@@ -643,10 +561,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param todo
-   * 
    * @see
    */
   public void setCurrentToDoHeader(ToDoHeader todo) {
@@ -655,10 +570,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getCurrentAttendees() {
@@ -667,10 +579,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param attendees
-   * 
    * @see
    */
   public void setCurrentAttendees(Collection attendees) {
@@ -678,9 +587,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Paramètre le userPannel => tous les users, sélection des users
-   * participants
-   * 
+   * Paramètre le userPannel => tous les users, sélection des users participants
    * @param
    * @return
    * @throws
@@ -729,9 +636,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Retourne une Collection de UserDetail des utilisateurs selectionnés via le
-   * userPanel
-   * 
+   * Retourne une Collection de UserDetail des utilisateurs selectionnés via le userPanel
    * @param
    * @return
    * @throws TodoException

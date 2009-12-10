@@ -30,8 +30,7 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * DesktopMessages is used to get the localized messages from
- * DesktopMessages.properties
+ * DesktopMessages is used to get the localized messages from DesktopMessages.properties
  */
 public class DesktopMessages {
 

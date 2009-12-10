@@ -43,15 +43,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
 public class POPUPRequestRouter extends ComponentRequestRouter {
   /**
-   * Name of the session bean that will be used for this application. This must
-   * be matched by the useBean actions in the JSPs.
+   * Name of the session bean that will be used for this application. This must be matched by the
+   * useBean actions in the JSPs.
    */
   private static final String SESSION_BEAN_NAME = "POPUP";
 
@@ -66,9 +64,8 @@ public class POPUPRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request router class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request router class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return SESSION_BEAN_NAME;
@@ -91,7 +88,7 @@ public class POPUPRequestRouter extends ComponentRequestRouter {
     } else if (function.startsWith("ToAlert")) {
       SilverTrace.info("popup", "POPUPRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "request.getParameter(theUserId)="
-              + request.getParameter("theUserId"));
+          + request.getParameter("theUserId"));
       popupSC.notifySession(request.getParameter("theUserId"), request
           .getParameter("messageAux"));
       request.setAttribute("action", "Close");

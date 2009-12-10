@@ -37,7 +37,6 @@ public class ToDoAccess {
 
   /**
    * getEJB
-   * 
    * @return instance of CalendarBmHome
    */
   static private CalendarBm getEJB() throws TodoException {
@@ -55,9 +54,7 @@ public class ToDoAccess {
 
   /**
    * getNotCompletedToDos
-   * 
    * @return Collection of TodoHeaders
-   * 
    * @throws TodoException
    */
   static public Collection getNotCompletedToDos(String userId)

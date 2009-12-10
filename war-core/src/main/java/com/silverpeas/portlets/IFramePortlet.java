@@ -85,8 +85,8 @@ public class IFramePortlet extends GenericPortlet implements FormNames {
   }
 
   /*
-   * Process the "finished" action for the edit page. Set the "url" to the value
-   * specified in the edit page.
+   * Process the "finished" action for the edit page. Set the "url" to the value specified in the
+   * edit page.
    */
   private void processEditFinishedAction(ActionRequest request,
       ActionResponse response) throws PortletException {

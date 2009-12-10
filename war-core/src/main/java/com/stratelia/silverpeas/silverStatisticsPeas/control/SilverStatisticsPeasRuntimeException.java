@@ -25,8 +25,7 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class SilverStatisticsPeasRuntimeException extends
-    SilverpeasRuntimeException {
+public class SilverStatisticsPeasRuntimeException extends SilverpeasRuntimeException {
 
   public SilverStatisticsPeasRuntimeException(String callingClass,
       int errorLevel, String message) {

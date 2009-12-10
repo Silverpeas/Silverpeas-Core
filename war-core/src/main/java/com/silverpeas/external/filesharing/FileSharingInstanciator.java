@@ -38,7 +38,7 @@ public class FileSharingInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("fileSharing", "FileSharingInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // insert your code here !
 
@@ -50,7 +50,7 @@ public class FileSharingInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("fileSharing", "FileSharingInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // insert your code here !
 

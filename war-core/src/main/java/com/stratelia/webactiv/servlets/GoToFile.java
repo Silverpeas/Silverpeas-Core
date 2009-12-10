@@ -72,12 +72,11 @@ public class GoToFile extends GoTo {
         if (isAccessAuthorized) {
           // res.setContentType(attachment.getType());
           /*
-           * res.setContentType("application/x-download");
-           * res.setContentLength(new Long(attachment.getSize()).intValue());
-           * res.setHeader("Content-Disposition",
-           * "inline; filename=\""+attachment.getLogicalName()+'"'); String
-           * filePath = AttachmentController.createPath(componentId,
-           * "Images")+attachment.getPhysicalName(); write(res, filePath);
+           * res.setContentType("application/x-download"); res.setContentLength(new
+           * Long(attachment.getSize()).intValue()); res.setHeader("Content-Disposition",
+           * "inline; filename=\""+attachment.getLogicalName()+'"'); String filePath =
+           * AttachmentController.createPath(componentId, "Images")+attachment.getPhysicalName();
+           * write(res, filePath);
            */
 
           // http://localhost:8000/silverpeas/FileServer/NV_o2o_Participant_FR.exe?ComponentId=toolbox558&UserId=9&SourceFile=1175858831259.exe&MimeType=application/octet-stream&ArchiveIt=Y&PubId=1460&NodeId=0&Directory=Attachment\Images\&logicalName=NV_o2o_Participant_FR.exe

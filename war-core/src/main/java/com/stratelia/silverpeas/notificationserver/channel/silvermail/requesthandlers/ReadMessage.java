@@ -36,8 +36,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -45,15 +43,10 @@ public class ReadMessage implements SILVERMAILRequestHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param componentSC
    * @param request
-   * 
    * @return
-   * 
    * @throws SILVERMAILException
-   * 
    * @see
    */
   public String handleRequest(ComponentSessionController componentSC,

@@ -34,8 +34,6 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -43,15 +41,10 @@ public class Main implements SILVERMAILRequestHandler {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param componentSC
    * @param request
-   * 
    * @return
-   * 
    * @throws SILVERMAILException
-   * 
    * @see
    */
   public String handleRequest(ComponentSessionController componentSC,

@@ -49,8 +49,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class DragAndDrop extends HttpServlet {
@@ -59,10 +57,7 @@ public class DragAndDrop extends HttpServlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param config
-   * 
    * @see
    */
   public void init(ServletConfig config) {
@@ -76,14 +71,10 @@ public class DragAndDrop extends HttpServlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
    * @param res
-   * 
    * @throws IOException
    * @throws ServletException
-   * 
    * @see
    */
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -93,14 +84,10 @@ public class DragAndDrop extends HttpServlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
    * @param res
-   * 
    * @throws IOException
    * @throws ServletException
-   * 
    * @see
    */
   public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -141,7 +128,7 @@ public class DragAndDrop extends HttpServlet {
         FileItem item = (FileItem) items.get(i);
         SilverTrace.info("attachment", "DragAndDrop.doPost",
             "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
-                + item.getFieldName());
+            + item.getFieldName());
         SilverTrace.info("attachment", "DragAndDrop.doPost",
             "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = " + item.getName());
 
@@ -158,7 +145,7 @@ public class DragAndDrop extends HttpServlet {
             fullFileName = fullFileName.replace('\\', File.separatorChar);
             SilverTrace.info("attachment", "DragAndDrop.doPost",
                 "root.MSG_GEN_PARAM_VALUE", "fullFileName on Unix = "
-                    + fullFileName);
+                + fullFileName);
           }
 
           String fileName = fullFileName.substring(fullFileName
@@ -195,7 +182,7 @@ public class DragAndDrop extends HttpServlet {
             boolean fileForActify = false;
             SilverTrace.info("attachment", "DragAndDrop.doPost",
                 "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="
-                    + tokenizer.countTokens());
+                + tokenizer.countTokens());
             while (tokenizer.hasMoreTokens() && !fileForActify) {
               String extension = tokenizer.nextToken();
               if (type.equalsIgnoreCase(extension))

@@ -60,7 +60,8 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
-    SelectionPeasWrapperSessionController session = (SelectionPeasWrapperSessionController) componentSC;
+    SelectionPeasWrapperSessionController session =
+        (SelectionPeasWrapperSessionController) componentSC;
 
     try {
       if (function.equals("open")) {

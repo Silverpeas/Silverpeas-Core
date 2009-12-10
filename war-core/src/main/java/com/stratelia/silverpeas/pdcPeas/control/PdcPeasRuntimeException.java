@@ -28,8 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class PdcPeasRuntimeException extends SilverpeasRuntimeException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public PdcPeasRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -52,8 +52,7 @@ public class PdcPeasRuntimeException extends SilverpeasRuntimeException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "pdcPeas";

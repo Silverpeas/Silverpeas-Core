@@ -54,8 +54,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class FileUploader extends HttpServlet {
@@ -64,10 +62,7 @@ public class FileUploader extends HttpServlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param config
-   * 
    * @see
    */
   public void init(ServletConfig config) {
@@ -81,14 +76,10 @@ public class FileUploader extends HttpServlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
    * @param res
-   * 
    * @throws IOException
    * @throws ServletException
-   * 
    * @see
    */
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -98,14 +89,10 @@ public class FileUploader extends HttpServlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
    * @param res
-   * 
    * @throws IOException
    * @throws ServletException
-   * 
    * @see
    */
   public void doPost(HttpServletRequest req, HttpServletResponse res)

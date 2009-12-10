@@ -82,27 +82,26 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("versioningPeas",
             "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("versioningPeas",
             "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:
         SilverTrace
             .error("versioningPeas",
-                "VersioningScheduleImpl.handleSchedulerEvent",
-                "Illegal event type");
+            "VersioningScheduleImpl.handleSchedulerEvent",
+            "Illegal event type");
         break;
     }
   }
 
   /**
    * Publish in Silverpeas 3d files converted by Actify
-   * 
    * @throws IOException
    * @throws Exception
    */
@@ -144,7 +143,7 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
         SilverTrace.info("versioningPeas",
             "VersioningSchedulerImpl.doProcessActify()",
             "root.MSG_GEN_PARAM_VALUE", "detailPathToAnalyse="
-                + detailPathToAnalyse);
+            + detailPathToAnalyse);
         folderToAnalyse = new File(detailPathToAnalyse);
         File[] filesList = folderToAnalyse.listFiles();
 
@@ -178,12 +177,11 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
     }
     SilverTrace
         .info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()",
-            "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
    * Purge native 3D files alreday converted by Actify
-   * 
    * @throws Exception
    */
   public synchronized void doPurgeActify(Date date) throws Exception {

@@ -61,471 +61,463 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 
 public class DesktopServlet extends HttpServlet {
-    
-    ServletContext context;
-    
-    private static Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
-            "com.silverpeas.portlets.PCDLogMessages");
-    
-    /**
-     * Reads the DriverConfig.properties file.
-     * Initializes the Portlet Registry files.
-     *
-     * @param config the ServletConfig Object
-     *
-     * @throws javax.servlet.ServletException 
-     */
-    public void init(ServletConfig config)
-    throws ServletException {
-        super.init(config);
-        context = config.getServletContext();
-        PropertiesContext.init();
-        PortletRegistryCache.init();
-    }
-    
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        try {
-            doGetPost(request, response);
-        } catch(Exception e) {
-            System.out.println(e);
-        }
-    }
-    
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        doGetPost(request, response);
-    }
 
-    private void doGetPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        
-        DesktopMessages.init(request);
-        DriverUtil.init(request);
-        response.setContentType("text/html;charset=UTF-8");
-        
-        // Get the list of visible portlets(sorted by the row number)
-        try {
-            ServletContextThreadLocalizer.set(context);
-            PortletRegistryContext portletRegistryContext = DriverUtil.getPortletRegistryContext(null);
-            PortletContent portletContent = getPortletContentObject(context, request, response);
-            String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
-            String portletRemove = DriverUtil.getPortletRemove(request);
-            if(portletRemove != null && portletWindowName != null) {
-                portletRegistryContext.showPortletWindow(portletWindowName, false);
-                portletWindowName = null; // re-render all portlets
-            }
-            Map portletContents = null;
-            if(portletWindowName == null) {
-                portletContents = getAllPortletContents(request, portletContent, portletRegistryContext);
+  ServletContext context;
+
+  private static Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
+      "com.silverpeas.portlets.PCDLogMessages");
+
+  /**
+   * Reads the DriverConfig.properties file. Initializes the Portlet Registry files.
+   * @param config the ServletConfig Object
+   * @throws javax.servlet.ServletException
+   */
+  public void init(ServletConfig config)
+      throws ServletException {
+    super.init(config);
+    context = config.getServletContext();
+    PropertiesContext.init();
+    PortletRegistryCache.init();
+  }
+
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    try {
+      doGetPost(request, response);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doGetPost(request, response);
+  }
+
+  private void doGetPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+
+    DesktopMessages.init(request);
+    DriverUtil.init(request);
+    response.setContentType("text/html;charset=UTF-8");
+
+    // Get the list of visible portlets(sorted by the row number)
+    try {
+      ServletContextThreadLocalizer.set(context);
+      PortletRegistryContext portletRegistryContext = DriverUtil.getPortletRegistryContext(null);
+      PortletContent portletContent = getPortletContentObject(context, request, response);
+      String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
+      String portletRemove = DriverUtil.getPortletRemove(request);
+      if (portletRemove != null && portletWindowName != null) {
+        portletRegistryContext.showPortletWindow(portletWindowName, false);
+        portletWindowName = null; // re-render all portlets
+      }
+      Map portletContents = null;
+      if (portletWindowName == null) {
+        portletContents = getAllPortletContents(request, portletContent, portletRegistryContext);
+      } else {
+        String driverAction = DriverUtil.getDriverAction(request);
+        if (WindowInvokerConstants.ACTION.equals(driverAction)) {
+          URL url = executeProcessAction(request, portletContent);
+          try {
+            if (url != null) {
+              response.sendRedirect(url.toString());
             } else {
-                String driverAction = DriverUtil.getDriverAction(request);
-                if(WindowInvokerConstants.ACTION.equals(driverAction)) {
-                    URL url = executeProcessAction(request, portletContent);
-                    try {
-                        if(url != null) {
-                            response.sendRedirect(url.toString());
-                        } else {
-                            response.sendRedirect(request.getRequestURL().toString());
-                        }
-                    } catch (IOException ioe) {
-                        throw new InvokerException("Failed during sendRedirect", ioe);
-                    }
-                } else if(WindowInvokerConstants.RENDER.equals(driverAction)) {
-                    portletContents = getAllPortletContents(request, portletContent, portletRegistryContext);
-                } else if(WindowInvokerConstants.RESOURCE.equals(driverAction)) {
-                     portletContent.setPortletWindowName(portletWindowName);
-                     ChannelMode portletWindowMode = getCurrentPortletWindowMode(request, portletWindowName);
-                     ChannelState portletWindowState = getCurrentPortletWindowState(request, portletWindowName);
-                     portletContent.setPortletWindowState(portletWindowState);
-                     portletContent.setPortletWindowMode(portletWindowMode);
-                     portletContent.getResources();
-                }
+              response.sendRedirect(request.getRequestURL().toString());
             }
-            if(portletContents != null){
-                Map<String, SortedSet<PortletWindowData>> portletWindowContents = 
-                        getPortletWindowContents(request, portletContents, portletRegistryContext);
-                setPortletWindowData(request, portletWindowContents);
-                InvokerUtil.setResponseProperties(request, response, portletContent.getResponseProperties());
-                RequestDispatcher rd = context.getRequestDispatcher(getPresentationURI());
-                rd.forward(request, response);
-                InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
-            }
-        } catch(Exception e) {
-            System.out.println(e);
-        } finally {
-            ServletContextThreadLocalizer.set(null);
+          } catch (IOException ioe) {
+            throw new InvokerException("Failed during sendRedirect", ioe);
+          }
+        } else if (WindowInvokerConstants.RENDER.equals(driverAction)) {
+          portletContents = getAllPortletContents(request, portletContent, portletRegistryContext);
+        } else if (WindowInvokerConstants.RESOURCE.equals(driverAction)) {
+          portletContent.setPortletWindowName(portletWindowName);
+          ChannelMode portletWindowMode = getCurrentPortletWindowMode(request, portletWindowName);
+          ChannelState portletWindowState =
+              getCurrentPortletWindowState(request, portletWindowName);
+          portletContent.setPortletWindowState(portletWindowState);
+          portletContent.setPortletWindowMode(portletWindowMode);
+          portletContent.getResources();
         }
+      }
+      if (portletContents != null) {
+        Map<String, SortedSet<PortletWindowData>> portletWindowContents =
+            getPortletWindowContents(request, portletContents, portletRegistryContext);
+        setPortletWindowData(request, portletWindowContents);
+        InvokerUtil
+            .setResponseProperties(request, response, portletContent.getResponseProperties());
+        RequestDispatcher rd = context.getRequestDispatcher(getPresentationURI());
+        rd.forward(request, response);
+        InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    } finally {
+      ServletContextThreadLocalizer.set(null);
     }
-    
-    /**
-     * Returns the PortletWindowData object for the portlet window.
-     * A Set of PortletWindowData for all portlet windows is stored in the
-     * Session.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletWindowName the name of the portlet window
-     *
-     * @return the PortletWindowData object for the portlet window.
-     */
-    private PortletWindowData getPortletWindowData(HttpServletRequest request, String portletWindowName) {
-        HttpSession session = request.getSession(true);
-        PortletWindowData portletWindowData = null;
-        Map<String, SortedSet<PortletWindowData>> portletWindowContents = (Map)session.getAttribute(DesktopConstants.PORTLET_WINDOWS);
-        boolean found = false;
-        if(portletWindowContents != null) {
-            Set set = portletWindowContents.entrySet();
-            Iterator<Map.Entry> setItr = set.iterator();
-            while(setItr.hasNext()) {
-                Map.Entry<String, SortedSet<PortletWindowData>> mapEntry = setItr.next();
-                SortedSet<PortletWindowData> portletWindowDataSet = mapEntry.getValue();
-                for(Iterator<PortletWindowData> itr = portletWindowDataSet.iterator(); itr.hasNext();) {
-                    portletWindowData = itr.next();
-                    if(portletWindowName.equals(portletWindowData.getPortletWindowName())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if(found) {
-                    break;
-                }
-            }
+  }
+
+  /**
+   * Returns the PortletWindowData object for the portlet window. A Set of PortletWindowData for all
+   * portlet windows is stored in the Session.
+   * @param request the HttpServletRequest Object
+   * @param portletWindowName the name of the portlet window
+   * @return the PortletWindowData object for the portlet window.
+   */
+  private PortletWindowData getPortletWindowData(HttpServletRequest request,
+      String portletWindowName) {
+    HttpSession session = request.getSession(true);
+    PortletWindowData portletWindowData = null;
+    Map<String, SortedSet<PortletWindowData>> portletWindowContents =
+        (Map) session.getAttribute(DesktopConstants.PORTLET_WINDOWS);
+    boolean found = false;
+    if (portletWindowContents != null) {
+      Set set = portletWindowContents.entrySet();
+      Iterator<Map.Entry> setItr = set.iterator();
+      while (setItr.hasNext()) {
+        Map.Entry<String, SortedSet<PortletWindowData>> mapEntry = setItr.next();
+        SortedSet<PortletWindowData> portletWindowDataSet = mapEntry.getValue();
+        for (Iterator<PortletWindowData> itr = portletWindowDataSet.iterator(); itr.hasNext();) {
+          portletWindowData = itr.next();
+          if (portletWindowName.equals(portletWindowData.getPortletWindowName())) {
+            found = true;
+            break;
+          }
         }
-        if(found) {
-            return portletWindowData;
+        if (found) {
+          break;
+        }
+      }
+    }
+    if (found) {
+      return portletWindowData;
+    } else {
+      return null;
+    }
+  }
+
+  private void setPortletWindowData(HttpServletRequest request,
+      Map<String, SortedSet<PortletWindowData>> portletWindowContents) {
+    HttpSession session = request.getSession(true);
+    session.removeAttribute(DesktopConstants.PORTLET_WINDOWS);
+    session.setAttribute(DesktopConstants.PORTLET_WINDOWS, portletWindowContents);
+  }
+
+  /**
+   * Returns a Map of portlet data and title for all portlet windows. In the portlet window is
+   * maximized, only the data and title for that portlet is displayed. For any portlet window that
+   * is minimized , only the title is shown.
+   * @param request the HttpServletRequest Object
+   * @param portletContent the PortletContent Object
+   * @param portletRegistryContext the PortletRegistryContext Object
+   * @return a Map of portlet data and title for all portlet windows.
+   */
+  private Map getAllPortletContents(HttpServletRequest request, PortletContent portletContent,
+      PortletRegistryContext portletRegistryContext) throws InvokerException {
+    String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
+    ChannelState portletWindowState = getCurrentPortletWindowState(request, portletWindowName);
+    Map portletContents;
+    if (portletWindowState.equals(ChannelState.MAXIMIZED)) {
+      portletContent.setPortletWindowState(ChannelState.MAXIMIZED);
+      portletContents = getPortletContent(request, portletContent, portletWindowName);
+    } else {
+      List visiblePortletWindows = getVisiblePortletWindows(portletRegistryContext);
+      int numPortletWindows = visiblePortletWindows.size();
+      List portletList = new ArrayList();
+      List portletMinimizedList = new ArrayList();
+      for (int i = 0; i < numPortletWindows; i++) {
+        portletWindowName = (String) visiblePortletWindows.get(i);
+        portletWindowState = getCurrentPortletWindowState(request, portletWindowName);
+        if (portletWindowState.equals(ChannelState.MINIMIZED)) {
+          portletMinimizedList.add(portletWindowName);
         } else {
-            return null;
+          portletList.add(portletWindowName);
         }
+      }
+      portletContents = getPortletContents(request, portletContent, portletList);
+      if (!portletMinimizedList.isEmpty()) {
+        Map portletTitles = getPortletTitles(request, portletContent, portletMinimizedList);
+        portletContents.putAll(portletTitles);
+      }
     }
-    
-    private void setPortletWindowData(HttpServletRequest request, 
-            Map<String, SortedSet<PortletWindowData>> portletWindowContents) {
-        HttpSession session = request.getSession(true);
-        session.removeAttribute(DesktopConstants.PORTLET_WINDOWS);
-        session.setAttribute(DesktopConstants.PORTLET_WINDOWS, portletWindowContents);
+    return portletContents;
+  }
+
+  /**
+   * Returns a Map of portlet data and title for a portlet window.
+   * @param request the HttpServletRequest Object
+   * @param portletContent the PortletContent Object
+   * @param portletWindowName the name of the portlet window
+   * @return a Map of portlet data and title for a portlet window.
+   */
+  private Map getPortletContent(HttpServletRequest request, PortletContent portletContent,
+      String portletWindowName) throws InvokerException {
+    portletContent.setPortletWindowName(portletWindowName);
+    ChannelMode portletWindowMode = getCurrentPortletWindowMode(request, portletWindowName);
+    portletContent.setPortletWindowMode(portletWindowMode);
+    StringBuffer buffer = portletContent.getContent();
+    String title = portletContent.getTitle();
+    Map portletContents = new HashMap();
+    portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
+    portletContents.put(DesktopConstants.PORTLET_TITLE, title);
+    Map portletContentMap = new HashMap();
+    portletContentMap.put(portletWindowName, portletContents);
+    return portletContentMap;
+  }
+
+  /**
+   * Returns a Map of portlet data and title for the portlet windows specified in the portletList
+   * @param request the HttpServletRequest Object
+   * @param portletContent the PortletContent Cobject
+   * @param portletList the List of portlet windows
+   * @return a Map of portlet data and title for the portlet windows specified in the portletList
+   */
+  private Map getPortletContents(HttpServletRequest request, PortletContent portletContent,
+      List portletList) throws InvokerException {
+    String portletWindowName;
+    int numPortletWindows = portletList.size();
+    Map portletContentMap = new HashMap();
+    for (int i = 0; i < numPortletWindows; i++) {
+      portletWindowName = (String) portletList.get(i);
+      portletContent.setPortletWindowName(portletWindowName);
+      portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
+      portletContent
+          .setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
+      StringBuffer buffer;
+      try {
+        buffer = portletContent.getContent();
+      } catch (InvokerException ie) {
+        buffer = new StringBuffer(ie.getMessage());
+      }
+      String title = null;
+      try {
+        title = portletContent.getTitle();
+      } catch (InvokerException iex) {
+        // Just logging
+        if (logger.isLoggable(Level.SEVERE)) {
+          LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0048");
+          logRecord.setLoggerName(logger.getName());
+          logRecord.setThrown(iex);
+          logRecord.setParameters(new String[] { portletWindowName });
+          logger.log(logRecord);
+        }
+        title = "";
+      }
+      Map portletContents = new HashMap();
+      portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
+      portletContents.put(DesktopConstants.PORTLET_TITLE, title);
+      portletContentMap.put(portletWindowName, portletContents);
     }
-    
-    /**
-     * Returns a Map of portlet data and title for all portlet windows.
-     * In the portlet window is maximized, only the data and title for that portlet is
-     * displayed.
-     * For any portlet window that is minimized , only the title is shown.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletContent the PortletContent Object
-     * @param portletRegistryContext the PortletRegistryContext Object
-     * 
-     * @return a Map of portlet data and title for all portlet windows.
-     */
-    private Map getAllPortletContents(HttpServletRequest request, PortletContent portletContent,
-            PortletRegistryContext portletRegistryContext) throws InvokerException {
-        String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
-        ChannelState portletWindowState = getCurrentPortletWindowState(request, portletWindowName);
-        Map portletContents;
-        if(portletWindowState.equals(ChannelState.MAXIMIZED)) {
-            portletContent.setPortletWindowState(ChannelState.MAXIMIZED);
-            portletContents = getPortletContent(request, portletContent, portletWindowName);
+    return portletContentMap;
+  }
+
+  /**
+   * Returns a Map of portlet title for the portlet windows specified in the portletMinimizedList
+   * @param request the HttpServletRequest Object
+   * @param portletContent the PortletContent Cobject
+   * @param portletMinimizedList the List of portlet windows that are minimized
+   * @return a Map of portlet title for the portlet windows that are minimized.
+   */
+  private Map getPortletTitles(HttpServletRequest request, PortletContent portletContent,
+      List portletMinimizedList) throws InvokerException {
+    String portletWindowName;
+    int numPortletWindows = portletMinimizedList.size();
+    Map portletTitlesMap = new HashMap();
+    for (int i = 0; i < numPortletWindows; i++) {
+      portletWindowName = (String) portletMinimizedList.get(i);
+      portletContent.setPortletWindowName(portletWindowName);
+      portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
+      portletContent
+          .setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
+      StringBuffer buffer = null;
+      String title = portletContent.getDefaultTitle();
+      Map portletContents = new HashMap();
+      portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
+      portletContents.put(DesktopConstants.PORTLET_TITLE, title);
+      portletTitlesMap.put(portletWindowName, portletContents);
+    }
+    return portletTitlesMap;
+  }
+
+  /**
+   * Returns a Map of PortletWindowData for the portlet windows for both thick and think widths.
+   * @param request the HttpServletRequest Object
+   * @param portletContents a Map of portlet data and title for the portlet windows
+   * @param portletRegistryContext the PortletRegistryContext Object
+   * @return a Map of PortletWindowData for the portlet windows
+   */
+  private Map<String, SortedSet<PortletWindowData>> getPortletWindowContents(
+      HttpServletRequest request,
+      Map portletContents, PortletRegistryContext portletRegistryContext) {
+    Iterator itr = portletContents.keySet().iterator();
+    String portletWindowName;
+    SortedSet<PortletWindowData> portletWindowContentsThin = new TreeSet<PortletWindowData>();
+    SortedSet<PortletWindowData> portletWindowContentsThick = new TreeSet<PortletWindowData>();
+    int thinCount = 0;
+    int thickCount = 0;
+    while (itr.hasNext()) {
+      portletWindowName = (String) itr.next();
+      try {
+        PortletWindowData portletWindowData =
+            getPortletWindowDataObject(request, portletContents, portletRegistryContext,
+                portletWindowName);
+
+        if (portletWindowData.isThin()) {
+          portletWindowContentsThin.add(portletWindowData);
+          thinCount++;
+        } else if (portletWindowData.isThick()) {
+          portletWindowContentsThick.add(portletWindowData);
+          thickCount++;
         } else {
-            List visiblePortletWindows = getVisiblePortletWindows(portletRegistryContext);
-            int numPortletWindows = visiblePortletWindows.size();
-            List portletList = new ArrayList();
-            List portletMinimizedList = new ArrayList();
-            for(int i = 0; i < numPortletWindows; i++) {
-                portletWindowName = (String)visiblePortletWindows.get(i);
-                portletWindowState = getCurrentPortletWindowState(request, portletWindowName);
-                if(portletWindowState.equals(ChannelState.MINIMIZED)) {
-                    portletMinimizedList.add(portletWindowName);
-                } else {
-                    portletList.add(portletWindowName);
-                }
-            }
-            portletContents = getPortletContents(request, portletContent, portletList);
-            if(!portletMinimizedList.isEmpty()){
-                Map portletTitles = getPortletTitles(request, portletContent, portletMinimizedList);
-                portletContents.putAll(portletTitles);
-            }
+          throw new PortletRegistryException(portletWindowName + " is neither thick or thin!!");
         }
-        return portletContents;
+      } catch (PortletRegistryException pre) {
+        pre.printStackTrace();
+      }
     }
-    
-    /**
-     * Returns a Map of portlet data and title for a portlet window.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletContent the PortletContent Object
-     * @param portletWindowName the name of the portlet window
-     *
-     * @return a Map of portlet data and title for a portlet window.
-     */
-    private Map getPortletContent(HttpServletRequest request, PortletContent portletContent,
-            String portletWindowName) throws InvokerException {
-        portletContent.setPortletWindowName(portletWindowName);
-        ChannelMode portletWindowMode = getCurrentPortletWindowMode(request, portletWindowName);
-        portletContent.setPortletWindowMode(portletWindowMode);
-        StringBuffer buffer = portletContent.getContent();
-        String title = portletContent.getTitle();
-        Map portletContents = new HashMap();
-        portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
-        portletContents.put(DesktopConstants.PORTLET_TITLE, title);
-        Map portletContentMap = new HashMap();
-        portletContentMap.put(portletWindowName, portletContents);
-        return portletContentMap;
-    }
-    
-    /**
-     * Returns a Map of portlet data and title for the portlet windows specified in the portletList
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletContent the PortletContent Cobject
-     * @param portletList the List of portlet windows
-     * 
-     * @return a Map of portlet data and title for the portlet windows specified in the portletList
-     */
-    private Map getPortletContents(HttpServletRequest request, PortletContent portletContent,
-            List portletList) throws InvokerException {
-        String portletWindowName;
-        int numPortletWindows = portletList.size();
-        Map portletContentMap = new HashMap();
-        for(int i = 0; i < numPortletWindows; i++) {
-            portletWindowName = (String)portletList.get(i);
-            portletContent.setPortletWindowName(portletWindowName);
-            portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
-            portletContent.setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
-            StringBuffer buffer;
-            try {
-                buffer = portletContent.getContent();
-            } catch (InvokerException ie) {
-                buffer = new StringBuffer(ie.getMessage());
-            }
-            String title = null;
-            try{
-                title = portletContent.getTitle();
-            } catch (InvokerException iex) {
-                // Just logging
-                if(logger.isLoggable(Level.SEVERE)){
-                    LogRecord logRecord = new LogRecord(Level.SEVERE,"PSPCD_CSPPD0048");
-                    logRecord.setLoggerName(logger.getName());
-                    logRecord.setThrown(iex);
-                    logRecord.setParameters(new String[] {portletWindowName});
-                    logger.log(logRecord);
-                }
-                title = "";
-            }
-            Map portletContents = new HashMap();
-            portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
-            portletContents.put(DesktopConstants.PORTLET_TITLE, title);
-            portletContentMap.put(portletWindowName, portletContents);
-        }
-        return portletContentMap;
-    }
-    
-    /**
-     * Returns a Map of portlet title for the portlet windows specified in the 
-     * portletMinimizedList
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletContent the PortletContent Cobject
-     * @param portletMinimizedList the List of portlet windows that are minimized
-     * 
-     * @return a Map of portlet title for the portlet windows that are minimized.
-     */
-    private Map getPortletTitles(HttpServletRequest request, PortletContent portletContent,
-            List portletMinimizedList) throws InvokerException {
-        String portletWindowName;
-        int numPortletWindows = portletMinimizedList.size();
-        Map portletTitlesMap = new HashMap();
-        for(int i = 0; i < numPortletWindows; i++) {
-            portletWindowName = (String)portletMinimizedList.get(i);
-            portletContent.setPortletWindowName(portletWindowName);
-            portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
-            portletContent.setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
-            StringBuffer buffer = null;
-            String title = portletContent.getDefaultTitle();
-            Map portletContents = new HashMap();
-            portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
-            portletContents.put(DesktopConstants.PORTLET_TITLE, title);
-            portletTitlesMap.put(portletWindowName, portletContents);
-        }
-        return portletTitlesMap;
-    }
-    
-    /**
-     * Returns a Map of PortletWindowData for the portlet windows for both thick
-     * and think widths.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletContents a Map of portlet data and title for the portlet windows
-     * @param portletRegistryContext the PortletRegistryContext Object 
-     *
-     * @return a Map of PortletWindowData for the portlet windows
-     */
-    private Map<String,SortedSet<PortletWindowData>> getPortletWindowContents(HttpServletRequest request, 
-            Map portletContents, PortletRegistryContext portletRegistryContext) {
-        Iterator itr = portletContents.keySet().iterator();
-        String portletWindowName;
-        SortedSet<PortletWindowData> portletWindowContentsThin = new TreeSet<PortletWindowData>();
-        SortedSet<PortletWindowData> portletWindowContentsThick = new TreeSet<PortletWindowData>();
-        int thinCount = 0;
-        int thickCount = 0;
-        while(itr.hasNext()) {
-            portletWindowName = (String)itr.next();
-            try {
-                PortletWindowData portletWindowData = getPortletWindowDataObject(request, portletContents, portletRegistryContext, portletWindowName);
-                
-                if(portletWindowData.isThin()) {
-                    portletWindowContentsThin.add(portletWindowData);
-                    thinCount++;
-                } else if (portletWindowData.isThick()) {
-                    portletWindowContentsThick.add(portletWindowData);
-                    thickCount++;
-                } else {
-                    throw new PortletRegistryException(portletWindowName + " is neither thick or thin!!");
-                }
-            } catch (PortletRegistryException pre) {
-                pre.printStackTrace();
-            }
-        }
-        Map portletWindowContents = new HashMap();
-        portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
-        portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
-        logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[] { String.valueOf(thinCount),
+    Map portletWindowContents = new HashMap();
+    portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
+    portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
+    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[] { String.valueOf(thinCount),
         String.valueOf(thickCount) });
-        
-        return portletWindowContents;
+
+    return portletWindowContents;
+  }
+
+  private URL executeProcessAction(HttpServletRequest request, PortletContent portletContent)
+      throws InvokerException {
+    String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
+    ChannelMode portletWindowMode =
+        DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
+    ChannelState portletWindowState =
+        DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
+    portletContent.setPortletWindowName(portletWindowName);
+    portletContent.setPortletWindowMode(portletWindowMode);
+    portletContent.setPortletWindowState(portletWindowState);
+    URL url = portletContent.executeAction();
+    return url;
+  }
+
+  /**
+   * Returns the list of visible portlet windows from the portlet registry.
+   * @param portletRegistryContext the PortletRegistryContext Object
+   * @return the list of visible portlet windows from the portlet registry.
+   */
+  protected List getVisiblePortletWindows(PortletRegistryContext portletRegistryContext)
+      throws InvokerException {
+    List visiblePortletWindows = null;
+    try {
+      visiblePortletWindows = portletRegistryContext.getVisiblePortletWindows(PortletType.LOCAL);
+    } catch (PortletRegistryException pre) {
+      visiblePortletWindows = Collections.EMPTY_LIST;
+      throw new InvokerException("Cannot get Portlet List", pre);
     }
-    
-    private URL executeProcessAction(HttpServletRequest request, PortletContent portletContent) throws InvokerException {
-        String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
-        ChannelMode portletWindowMode = DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
-        ChannelState portletWindowState = DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
-        portletContent.setPortletWindowName(portletWindowName);
-        portletContent.setPortletWindowMode(portletWindowMode);
-        portletContent.setPortletWindowState(portletWindowState);
-        URL url = portletContent.executeAction();
-        return url;
+    return visiblePortletWindows;
+  }
+
+  /**
+   * Returns the current portlet window state for the portlet window. First it checks in the request
+   * and then checks in the session.
+   * @param request the HttpServletRequest Object
+   * @param portletWindowName the name of the portlet window
+   * @return the current portlet window state for the portlet window.
+   */
+  protected ChannelState getCurrentPortletWindowState(HttpServletRequest request,
+      String portletWindowName) {
+    ChannelState portletWindowState = ChannelState.NORMAL;
+    if (portletWindowName != null) {
+      portletWindowState =
+          DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
+      if (portletWindowState == null) {
+        portletWindowState = getPortletWindowStateFromSavedData(request, portletWindowName);
+      }
     }
-    
-    /**
-     * Returns the list of visible portlet windows from the portlet registry.
-     *
-     * @param portletRegistryContext the PortletRegistryContext Object
-     * 
-     * @return the list of visible portlet windows from the portlet registry.
-     */
-    protected List getVisiblePortletWindows(PortletRegistryContext portletRegistryContext) throws InvokerException {
-        List visiblePortletWindows = null;
-        try {
-            visiblePortletWindows = portletRegistryContext.getVisiblePortletWindows(PortletType.LOCAL);
-        } catch (PortletRegistryException pre) {
-            visiblePortletWindows = Collections.EMPTY_LIST;
-            throw new InvokerException("Cannot get Portlet List", pre);
-        }
-        return visiblePortletWindows;
+    return portletWindowState;
+  }
+
+  /**
+   * Returns the current portlet window mode for the portlet window. First it checks in the request
+   * and then checks in the session.
+   * @param request the HttpServletRequest Object
+   * @param portletWindowName the name of the portlet window
+   * @return the current portlet window mode for the portlet window.
+   */
+  protected ChannelMode getCurrentPortletWindowMode(HttpServletRequest request,
+      String portletWindowName) {
+    ChannelMode portletWindowMode = ChannelMode.VIEW;
+    if (portletWindowName != null) {
+      portletWindowMode =
+          DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
+      if (portletWindowMode == null) {
+        portletWindowMode = getPortletWindowModeFromSavedData(request, portletWindowName);
+      }
     }
-    
-    /**
-     * Returns the current portlet window state for the portlet window.
-     * First it checks in the request and then checks in the session.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletWindowName the name of the portlet window
-     *
-     * @return the current portlet window state for the portlet window.
-     */
-    protected ChannelState getCurrentPortletWindowState(HttpServletRequest request, String portletWindowName) {
-        ChannelState portletWindowState = ChannelState.NORMAL;
-        if(portletWindowName != null) {
-            portletWindowState = DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
-            if(portletWindowState == null) {
-                portletWindowState = getPortletWindowStateFromSavedData(request, portletWindowName);
-            }
-        }
-        return portletWindowState;
+    return portletWindowMode;
+  }
+
+  /**
+   * Returns the portlet window state for the portlet window from the PortletWindowData that is in
+   * the session.
+   * @param request the HttpServletRequest Object
+   * @param portletWindowName the name of the portlet window
+   * @return the portlet window state for the portlet window from session.
+   */
+  protected ChannelState getPortletWindowStateFromSavedData(HttpServletRequest request,
+      String portletWindowName) {
+    PortletWindowData portletWindowContent = getPortletWindowData(request, portletWindowName);
+    ChannelState portletWindowState = ChannelState.NORMAL;
+    if (portletWindowContent != null) {
+      String currentPortletWindowState = portletWindowContent.getCurrentWindowState();
+      if (currentPortletWindowState != null) {
+        portletWindowState = new ChannelState(currentPortletWindowState);
+      }
     }
-    
-    /**
-     * Returns the current portlet window mode for the portlet window.
-     * First it checks in the request and then checks in the session.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletWindowName the name of the portlet window
-     *
-     * @return the current portlet window mode for the portlet window.
-     */
-    protected ChannelMode getCurrentPortletWindowMode(HttpServletRequest request, String portletWindowName) {
-        ChannelMode portletWindowMode = ChannelMode.VIEW;
-        if(portletWindowName != null) {
-            portletWindowMode = DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
-            if(portletWindowMode == null) {
-                portletWindowMode = getPortletWindowModeFromSavedData(request, portletWindowName);
-            }
-        }
-        return portletWindowMode;
+    return portletWindowState;
+  }
+
+  /**
+   * Returns the portlet window mode for the portlet window from the PortletWindowData that is in
+   * the session.
+   * @param request the HttpServletRequest Object
+   * @param portletWindowName the name of the portlet window
+   * @return the portlet window mode for the portlet window from session.
+   */
+  protected ChannelMode getPortletWindowModeFromSavedData(HttpServletRequest request,
+      String portletWindowName) {
+    PortletWindowData portletWindowContent = getPortletWindowData(request, portletWindowName);
+    ChannelMode portletWindowMode = ChannelMode.VIEW;
+    if (portletWindowContent != null) {
+      String currentPortletWindowMode = portletWindowContent.getCurrentMode();
+      if (currentPortletWindowMode != null) {
+        portletWindowMode = new ChannelMode(currentPortletWindowMode);
+      }
     }
-    
-    /**
-     * Returns the portlet window state for the portlet window from the
-     * PortletWindowData that is in the session.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletWindowName the name of the portlet window
-     *
-     * @return the portlet window state for the portlet window from session.
-     */
-    protected ChannelState getPortletWindowStateFromSavedData(HttpServletRequest request, String portletWindowName) {
-        PortletWindowData portletWindowContent = getPortletWindowData(request, portletWindowName);
-        ChannelState portletWindowState = ChannelState.NORMAL;
-        if(portletWindowContent != null) {
-            String currentPortletWindowState = portletWindowContent.getCurrentWindowState();
-            if(currentPortletWindowState != null) {
-                portletWindowState = new ChannelState(currentPortletWindowState);
-            }
-        }
-        return portletWindowState;
-    }
-    
-    /**
-     * Returns the portlet window mode for the portlet window from the
-     * PortletWindowData that is in the session.
-     *
-     * @param request the HttpServletRequest Object
-     * @param portletWindowName the name of the portlet window
-     *
-     * @return the portlet window mode for the portlet window from session.
-     */
-    protected ChannelMode getPortletWindowModeFromSavedData(HttpServletRequest request, String portletWindowName) {
-        PortletWindowData portletWindowContent = getPortletWindowData(request, portletWindowName);
-        ChannelMode portletWindowMode = ChannelMode.VIEW;
-        if(portletWindowContent != null) {
-            String currentPortletWindowMode = portletWindowContent.getCurrentMode();
-            if(currentPortletWindowMode != null) {
-                portletWindowMode = new ChannelMode(currentPortletWindowMode);
-            }
-        }
-        return portletWindowMode;
-    }
-    
-    protected PortletContent getPortletContentObject(ServletContext context,
-            HttpServletRequest request, HttpServletResponse response) throws InvokerException{
-        return new PortletContent(context, request, response);
-    }
-    
-    protected PortletWindowData getPortletWindowDataObject(HttpServletRequest request,
-            Map portletContents, PortletRegistryContext portletRegistryContext,
-            String portletWindowName) throws PortletRegistryException{
-        
-        PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
-        Map portletContentMap = (Map)portletContents.get(portletWindowName);
-        portletWindowData.init(request, portletRegistryContext, portletWindowName);
-        portletWindowData.setContent((StringBuffer)portletContentMap.get(DesktopConstants.PORTLET_CONTENT));
-        portletWindowData.setTitle((String)portletContentMap.get(DesktopConstants.PORTLET_TITLE));
-        portletWindowData.setCurrentMode(getCurrentPortletWindowMode(request, portletWindowName));
-        portletWindowData.setCurrentWindowState(getCurrentPortletWindowState(request, portletWindowName));
-        
-        return portletWindowData;
-    }
-    
-    protected String getPresentationURI(){
-        return "/portlet/jsp/jsr/desktop.jsp";
-    }
+    return portletWindowMode;
+  }
+
+  protected PortletContent getPortletContentObject(ServletContext context,
+      HttpServletRequest request, HttpServletResponse response) throws InvokerException {
+    return new PortletContent(context, request, response);
+  }
+
+  protected PortletWindowData getPortletWindowDataObject(HttpServletRequest request,
+      Map portletContents, PortletRegistryContext portletRegistryContext,
+      String portletWindowName) throws PortletRegistryException {
+
+    PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
+    Map portletContentMap = (Map) portletContents.get(portletWindowName);
+    portletWindowData.init(request, portletRegistryContext, portletWindowName);
+    portletWindowData.setContent((StringBuffer) portletContentMap
+        .get(DesktopConstants.PORTLET_CONTENT));
+    portletWindowData.setTitle((String) portletContentMap.get(DesktopConstants.PORTLET_TITLE));
+    portletWindowData.setCurrentMode(getCurrentPortletWindowMode(request, portletWindowName));
+    portletWindowData
+        .setCurrentWindowState(getCurrentPortletWindowState(request, portletWindowName));
+
+    return portletWindowData;
+  }
+
+  protected String getPresentationURI() {
+    return "/portlet/jsp/jsr/desktop.jsp";
+  }
 }

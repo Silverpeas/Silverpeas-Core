@@ -51,12 +51,9 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class SelectionPeasSessionController extends
-    AbstractComponentSessionController {
+public class SelectionPeasSessionController extends AbstractComponentSessionController {
   protected Selection m_Selection = null;
   protected GenericPanel m_SearchSetPanel = null;
   protected GenericPanel m_SearchElementPanel = null;
@@ -73,13 +70,8 @@ public class SelectionPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public SelectionPeasSessionController(MainSessionController mainSessionCtrl,
@@ -131,7 +123,7 @@ public class SelectionPeasSessionController extends
       String fieldsNames) {
     SelectionJdbcParams selectionJdbcParams = new SelectionJdbcParams(
         jdbcSetting.getDriverClassName(), jdbcSetting.getUrl(), jdbcSetting
-            .getLogin(), jdbcSetting.getPassword(), tableName, columnsNames,
+        .getLogin(), jdbcSetting.getPassword(), tableName, columnsNames,
         formIndex, fieldsNames);
     m_Selection.setExtraParams(selectionJdbcParams);
   }
@@ -385,9 +377,9 @@ public class SelectionPeasSessionController extends
           getString("selectionPeas.confirmRemoveFromCart")));
       poList
           .add(new PanelOperation(getString("selectionPeas.removeAllFromCart"),
-              m_Context + getIcon().getString("selectionPeas.allDelete"),
-              "RemoveAllFromCart",
-              getString("selectionPeas.confirmRemoveFromCart")));
+          m_Context + getIcon().getString("selectionPeas.allDelete"),
+          "RemoveAllFromCart",
+          getString("selectionPeas.confirmRemoveFromCart")));
     }
     return (PanelOperation[]) poList.toArray(new PanelOperation[0]);
   }

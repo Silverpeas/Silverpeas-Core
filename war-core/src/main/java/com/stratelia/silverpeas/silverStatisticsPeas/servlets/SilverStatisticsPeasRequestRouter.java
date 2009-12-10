@@ -42,8 +42,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
@@ -55,13 +53,9 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -71,38 +65,35 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "SilverStatisticsPeas";
   }
 
   /**
-   * This method has to be implemented by the component request router it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request router it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
-    SilverStatisticsPeasSessionController silverStatisticsSC = (SilverStatisticsPeasSessionController) componentSC;
+    SilverStatisticsPeasSessionController silverStatisticsSC =
+        (SilverStatisticsPeasSessionController) componentSC;
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + silverStatisticsSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
 
     String userProfile = silverStatisticsSC.getUserProfile();
     if (userProfile.equals("A")
         || userProfile
-            .equals(SilverStatisticsPeasSessionController.SPACE_ADMIN)) {
+        .equals(SilverStatisticsPeasSessionController.SPACE_ADMIN)) {
       request.setAttribute("UserProfile", userProfile);
     } else {
       SilverTrace.info("silverStatisticsPeas",
@@ -208,7 +199,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
           {
             request.setAttribute("ResultData",
                 silverStatisticsSC.getStatsConnexionAllGroup(hostDateBegin,
-                    hostDateEnd, filterId));
+                hostDateEnd, filterId));
 
             // graphiques
             Chart userChart = silverStatisticsSC.getUserConnectionsGroupChart(
@@ -219,8 +210,8 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
           {
             request
                 .setAttribute("ResultData", silverStatisticsSC
-                    .getStatsConnexionAllUser(hostDateBegin, hostDateEnd,
-                        filterId));
+                .getStatsConnexionAllUser(hostDateBegin, hostDateEnd,
+                filterId));
 
             // graphiques
             Chart userChart = silverStatisticsSC.getUserConnectionsUserChart(
@@ -243,7 +234,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
               // graphiques
               Chart userChart = silverStatisticsSC
                   .getUserConnectionsGroupChart(hostDateBegin, hostDateEnd,
-                      entiteId);
+                  entiteId);
               request.getSession(true).setAttribute(ChartServlet.USERCHART,
                   userChart);
             } else {
@@ -257,7 +248,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
           {
             request.setAttribute("ResultData", silverStatisticsSC
                 .getStatsConnexionGroupUser(hostDateBegin, hostDateEnd,
-                    filterId));
+                filterId));
 
             // graphiques
             Chart userChart = silverStatisticsSC.getUserConnectionsGroupChart(
@@ -299,7 +290,7 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
           {
             request.setAttribute("ResultData",
                 silverStatisticsSC.getStatsConnexionUserUser(hostDateBegin,
-                    hostDateEnd, filterId));
+                hostDateEnd, filterId));
 
             // graphiques
             Chart userChart = silverStatisticsSC.getUserConnectionsUserChart(

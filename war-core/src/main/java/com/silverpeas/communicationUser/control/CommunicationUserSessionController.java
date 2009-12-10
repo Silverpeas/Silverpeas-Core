@@ -55,12 +55,10 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
- * 
  * @author dlesimple
  * @version
  */
-public class CommunicationUserSessionController extends
-    AbstractComponentSessionController {
+public class CommunicationUserSessionController extends AbstractComponentSessionController {
   Selection sel = null;
 
   // CBO : ADD
@@ -71,11 +69,8 @@ public class CommunicationUserSessionController extends
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @see
    */
   public CommunicationUserSessionController(
@@ -94,7 +89,6 @@ public class CommunicationUserSessionController extends
 
   /**
    * Get nb of connected users
-   * 
    * @author dlesimple
    * @return
    */
@@ -104,7 +98,6 @@ public class CommunicationUserSessionController extends
 
   /**
    * Get connected users
-   * 
    * @author dlesimple
    * @return Collection of connected Users
    */
@@ -114,7 +107,6 @@ public class CommunicationUserSessionController extends
 
   /**
    * Get UserDetail
-   * 
    * @param userId
    * @return User
    */
@@ -124,7 +116,6 @@ public class CommunicationUserSessionController extends
 
   /**
    * Send message to user
-   * 
    * @param userId
    * @param message
    */

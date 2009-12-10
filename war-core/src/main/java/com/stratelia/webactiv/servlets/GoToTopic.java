@@ -40,8 +40,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class GoToTopic extends GoTo {

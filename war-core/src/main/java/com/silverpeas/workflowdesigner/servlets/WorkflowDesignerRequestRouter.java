@@ -76,13 +76,13 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
 
   static private Map mapHandler; // mapping of functions to their handlers
   static final private String root = "/workflowDesigner/jsp/"; // the root
-                                                               // directory for
-                                                               // all the *.jsp
+
+  // directory for
+  // all the *.jsp
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "WorkflowDesigner";
@@ -90,13 +90,9 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -106,26 +102,24 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = null;
-    WorkflowDesignerSessionController workflowDesignerSC = (WorkflowDesignerSessionController) componentSC;
+    WorkflowDesignerSessionController workflowDesignerSC =
+        (WorkflowDesignerSessionController) componentSC;
     FunctionHandler handler = getHandler(function);
 
     SilverTrace.info("workflowDesigner",
         "WorkflowDesignerRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
 
     // Check access rights
     //
@@ -164,7 +158,6 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.GenericServlet#init()
    */
   public void init() throws ServletException {
@@ -174,7 +167,6 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
    */
   public void init(ServletConfig config) throws ServletException {
@@ -510,8 +502,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (role == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditRole", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditRole", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_ROLE_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Role", role);
@@ -587,8 +578,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (columns == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditColumns", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditColumns", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_COLUMNS_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Columns", columns);
@@ -683,10 +673,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (participant == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditParticipant", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowEngine.EX_PARTICIPANT_NOT_FOUND"); //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditParticipant", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowEngine.EX_PARTICIPANT_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Participant", participant);
       request.setAttribute("StateNames", workflowDesignerSC
@@ -769,8 +757,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (state == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditState", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditState", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_STATE_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("State", state);
@@ -871,10 +858,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (qualifiedUsers == null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerRequestRouter.hndlEditQualifiedUser", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_QUALIFIED_USERS_NOT_FOUND"); //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlEditQualifiedUser", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_QUALIFIED_USERS_NOT_FOUND"); //$NON-NLS-1$
       }
       // Configure the QualifiedUsrs editor to match the content of
       // worikingUsers,
@@ -1025,10 +1010,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (action == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditAction", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "WorkflowEngine.EX_ERR_ACTION_NOT_FOUND_IN_MODEL"); //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditAction", //$NON-NLS-1$
+            SilverpeasException.ERROR, "WorkflowEngine.EX_ERR_ACTION_NOT_FOUND_IN_MODEL"); //$NON-NLS-1$
       }
       request.setAttribute("Action", action);
       request.setAttribute("FormNames", workflowDesignerSC
@@ -1114,10 +1097,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (consequence == null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerRequestRouter.hndlEditConsequence", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlEditConsequence", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Consequence", consequence);
       request.setAttribute("context", strContext);
@@ -1289,7 +1270,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
         WorkflowDesignerSessionController workflowDesignerSC,
         HttpServletRequest request) throws WorkflowDesignerException,
         WorkflowException {
-      String strContext = request.getParameter("context"), strFormType = WorkflowDesignerSessionController.FORM_TYPE_ACTION;
+      String strContext = request.getParameter("context"), strFormType =
+          WorkflowDesignerSessionController.FORM_TYPE_ACTION;
       Form form;
 
       if ("AddForm".equals(function)) {
@@ -1308,14 +1290,13 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
         if (WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION
             .equals(form.getName())
             || WorkflowDesignerSessionController.FORM_TYPE_PRINT.equals(form
-                .getName())) {
+            .getName())) {
           strFormType = form.getName();
         }
       }
 
       if (form == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditForm", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditForm", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_FORM_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Form", form);
@@ -1409,8 +1390,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       // Check if the parent object can be found
       //
       if (form == null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerRequestRouter.hndlEditInput", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlEditInput", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARENT_NOT_FOUND"); //$NON-NLS-1$
       }
       if ("AddInput".equals(function)) {
@@ -1426,8 +1406,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (input == null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerRequestRouter.hndlEditInput", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlEditInput", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_INPUT_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Input", input);
@@ -1460,8 +1439,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       // Check if the parent object can be found
       //
       if (form == null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerRequestRouter.hndlUpdateInput", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlUpdateInput", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARENT_NOT_FOUND"); //$NON-NLS-1$
       }
       input = form.createInput();
@@ -1555,10 +1533,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (relatedUser == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditRelatedUser", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowEngine.EX_RELATED_USER_NOT_FOUND"); //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditRelatedUser", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowEngine.EX_RELATED_USER_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("RoleNames", workflowDesignerSC.retrieveRoleNames(
           true, false));
@@ -1696,8 +1672,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
     }
   };
   /**
-   * Handles the "AddContextualDesignation" and "ModifyContextualDesignation"
-   * functions
+   * Handles the "AddContextualDesignation" and "ModifyContextualDesignation" functions
    */
   private static FunctionHandler hndlEditContextualDesignation = new FunctionHandler() {
 
@@ -1718,8 +1693,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       if (designation == null) {
         throw new WorkflowDesignerException(
             "WorkflowDesignerRequestRouter.hndlEditContextualDesignation", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_NOT_FOUND"); //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("RoleNames", workflowDesignerSC.retrieveRoleNames(
           false, true));
@@ -1810,8 +1784,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (item == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditItem", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditItem", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_ITEM_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Item", item);
@@ -1908,8 +1881,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       // Check if the parent object can be found
       //
       if (item == null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerRequestRouter.hndlEditParameter", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlEditParameter", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARENT_NOT_FOUND"); //$NON-NLS-1$
       }
       if ("AddParameter".equals(function)) {
@@ -1921,8 +1893,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       }
 
       if (parameter == null) {
-        throw new WorkflowException(
-            "WorkflowDesignerRequestRouter.hndlEditParameter", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerRequestRouter.hndlEditParameter", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_PARAMETER_NOT_FOUND"); //$NON-NLS-1$
       }
       request.setAttribute("Parameter", parameter);
@@ -1943,8 +1914,9 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request) throws WorkflowDesignerException,
         WorkflowException {
       String strContext = request.getParameter("context"), strName = request
-          .getParameter("name"), strValue = request.getParameter("value"), strNameOriginal = request
-          .getParameter("name_original");
+          .getParameter("name"), strValue = request.getParameter("value"), strNameOriginal =
+          request
+              .getParameter("name_original");
       Item item = workflowDesignerSC.findItem(strContext);
       Parameter parameter;
 
@@ -1992,9 +1964,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
 
   /**
    * Calculate the name for an editor based on the context
-   * 
-   * @param strContext
-   *          the context
+   * @param strContext the context
    * @return resource key to retrieve the name
    */
   static private String calculateEditorName(String strContext) {
@@ -2034,11 +2004,8 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
 
   /**
    * Calculate the URL to the parent screen based on the current context
-   * 
-   * @param strConxtext
-   *          the context
-   * @param workflowDesignerSC
-   *          session controller
+   * @param strConxtext the context
+   * @param workflowDesignerSC session controller
    * @return the relative URL
    * @throws WorkflowException
    */

@@ -50,7 +50,6 @@ public class ItemList extends TagSupport {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
    */
   public int doStartTag() throws JspException {
@@ -146,8 +145,7 @@ public class ItemList extends TagSupport {
   }
 
   /**
-   * @param context
-   *          the context to set
+   * @param context the context to set
    */
   public void setContext(String context) {
     strContext = context;
@@ -161,8 +159,7 @@ public class ItemList extends TagSupport {
   }
 
   /**
-   * @param currentScreen
-   *          the currentScreen to set
+   * @param currentScreen the currentScreen to set
    */
   public void setCurrentScreen(String currentScreen) {
     this.strCurrentScreen = currentScreen;
@@ -176,8 +173,7 @@ public class ItemList extends TagSupport {
   }
 
   /**
-   * @param items
-   *          the items to set
+   * @param items the items to set
    */
   public void setItems(DataFolder items) {
     this.items = items;
@@ -191,8 +187,7 @@ public class ItemList extends TagSupport {
   }
 
   /**
-   * @param paneTitleKey
-   *          the paneTitleKey to set
+   * @param paneTitleKey the paneTitleKey to set
    */
   public void setPaneTitleKey(String paneTitleKey) {
     strPaneTitleKey = paneTitleKey;

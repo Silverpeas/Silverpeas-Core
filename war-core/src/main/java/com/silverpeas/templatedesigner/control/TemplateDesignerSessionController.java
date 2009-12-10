@@ -41,8 +41,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class TemplateDesignerSessionController extends
-    AbstractComponentSessionController {
+public class TemplateDesignerSessionController extends AbstractComponentSessionController {
   PublicationTemplateImpl template = null;
   boolean updateInProgress = false;
 
@@ -55,13 +54,8 @@ public class TemplateDesignerSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public TemplateDesignerSessionController(

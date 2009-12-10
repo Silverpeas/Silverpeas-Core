@@ -37,8 +37,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -48,8 +46,6 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public POPUPSessionController(MainSessionController mainSessionCtrl,
@@ -66,10 +62,7 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param currentFunction
-   * 
    * @see
    */
   public void setCurrentFunction(String currentFunction) {
@@ -78,10 +71,7 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCurrentFunction() {
@@ -90,12 +80,8 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param messageId
-   * 
    * @return
-   * 
    * @see
    */
   public POPUPMessage getMessage(long messageId) throws POPUPException {
@@ -104,10 +90,7 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public long getCurrentMessageId() {
@@ -116,10 +99,7 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setCurrentMessageId(long value) {
@@ -128,7 +108,6 @@ public class POPUPSessionController extends AbstractComponentSessionController {
 
   /**
    * Send message to user
-   * 
    * @param userId
    * @param message
    */

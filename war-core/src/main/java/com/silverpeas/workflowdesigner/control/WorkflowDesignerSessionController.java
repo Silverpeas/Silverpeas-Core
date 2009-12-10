@@ -80,8 +80,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class WorkflowDesignerSessionController extends
-    AbstractComponentSessionController {
+public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
 
   public static final String TYPE_USER = "user";
   public static final String FORMS = "forms";
@@ -111,21 +110,17 @@ public class WorkflowDesignerSessionController extends
   private static final String CONTEXT_DELIMS = "/[]"; //$NON-NLS-1$
   private ProcessModel m_processModel; // The process model being edited.
   private String m_strProcessModelFileName; // we have to store the file path as
-                                            // well, since it is not included in
-                                            // the ProcessModel object...
+  // well, since it is not included in
+  // the ProcessModel object...
   private String m_strReferencedInComponent; // the name of a Component
-                                             // Descriptor where the current
-                                             // process model is referenced
+
+  // Descriptor where the current
+  // process model is referenced
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public WorkflowDesignerSessionController(
@@ -139,26 +134,21 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Get the list of all process models available for edition
-   * 
-   * @return A list of Strings containing relative paths to process model file
-   *         names.
+   * @return A list of Strings containing relative paths to process model file names.
    * @throws WorkflowDesignerException
    */
   public List listProcessModels() throws WorkflowDesignerException {
     try {
       return Workflow.getProcessModelManager().listProcessModels();
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.getPorcesModels", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_GETTING_RPOCES_MODELS_FAILED", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.getPorcesModels", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_GETTING_RPOCES_MODELS_FAILED", //$NON-NLS-1$
           e);
     }
   }
 
   /**
    * Create a new ProcessModel descriptor that is not yet saved in a XML file.
-   * 
    * @return ProcessModel object
    */
   public ProcessModel createProcessModel() throws WorkflowDesignerException {
@@ -170,19 +160,15 @@ public class WorkflowDesignerSessionController extends
 
       return m_processModel;
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.createPorcesModel", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_CREATING_PROCESS_DESCRIPTIOR_FAILED", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.createPorcesModel", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_CREATING_PROCESS_DESCRIPTIOR_FAILED", //$NON-NLS-1$
           e);
     }
   }
 
   /**
    * Load the process model from the specified file, cache it before returning.
-   * 
-   * @param strProcessFileName
-   *          relative path and the file name
+   * @param strProcessFileName relative path and the file name
    * @return An object implementing the ProcessModel interface
    * @throws WorkflowDesignerException
    */
@@ -202,21 +188,16 @@ public class WorkflowDesignerSessionController extends
 
       return m_processModel;
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.loadProcesModel", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_LOADING_PROCES_MODEL_FAILED", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.loadProcesModel", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_LOADING_PROCES_MODEL_FAILED", //$NON-NLS-1$
           e);
     }
   }
 
   /**
    * Save the currently cached process model in a XML file
-   * 
-   * @param strProcessModelFileName
-   *          the relative path and the name of the file
-   * @throws WorkflowDesignerException
-   *           when the saving goes wrong...
+   * @param strProcessModelFileName the relative path and the name of the file
+   * @throws WorkflowDesignerException when the saving goes wrong...
    */
   public void saveProcessModel(String strProcessModelFileName)
       throws WorkflowDesignerException {
@@ -236,10 +217,8 @@ public class WorkflowDesignerSessionController extends
             File.separatorChar);
 
         if (processList.indexOf(strProcessModelFileName) >= 0) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.saveProcesModel", //$NON-NLS-1$
-              SilverpeasException.ERROR,
-              "workflowDesigner.EX_PROCESS_MODEL_EXISTS");//$NON-NLS-1$
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.saveProcesModel", //$NON-NLS-1$
+              SilverpeasException.ERROR, "workflowDesigner.EX_PROCESS_MODEL_EXISTS");//$NON-NLS-1$
         }
         // Cache the file name if it is the first save
         //
@@ -252,21 +231,16 @@ public class WorkflowDesignerSessionController extends
       Workflow.getProcessModelManager().saveProcessModel(m_processModel,
           m_strProcessModelFileName);
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.saveProcesModel", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_SAVING_PROCESS_MODEL_FAILED", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.saveProcesModel", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_SAVING_PROCESS_MODEL_FAILED", //$NON-NLS-1$
           e);
     }
   }
 
   /**
    * Removes the process model descriptor file from the filesystem
-   * 
-   * @param strProcessModelFileName
-   *          the relative path to the process file name
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
+   * @param strProcessModelFileName the relative path to the process file name
+   * @throws WorkflowDesignerException when something goes wrong
    */
   public void removeProcessModel(String strProcessModelFileName)
       throws WorkflowDesignerException {
@@ -274,17 +248,15 @@ public class WorkflowDesignerSessionController extends
       Workflow.getProcessModelManager().deleteProcessModelDescriptor(
           strProcessModelFileName);
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeProcesModel", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_REMOVING_PROCESS_DESCRIPTIOR_FAILED", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeProcesModel", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_REMOVING_PROCESS_DESCRIPTIOR_FAILED", //$NON-NLS-1$
           e);
     }
   }
 
   /**
-   * An object implementing the ProcessModel interface containing the currently
-   * loaded model or null if none.
+   * An object implementing the ProcessModel interface containing the currently loaded model or null
+   * if none.
    */
   public ProcessModel getProcessModel() {
     return m_processModel;
@@ -298,19 +270,16 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * The relative path and file name of the currently loaded model or null if
-   * none.
+   * The relative path and file name of the currently loaded model or null if none.
    */
   public String getProcessFileName() {
     return m_strProcessModelFileName;
   }
 
   /**
-   * The name of the component descriptor that references this process model
-   * definition
-   * 
-   * @return the component descriptor file name (without .xml) or
-   *         <code>null</code> if no components reference this process model.
+   * The name of the component descriptor that references this process model definition
+   * @return the component descriptor file name (without .xml) or <code>null</code> if no components
+   * reference this process model.
    */
   public String getComponentDescriptorName() {
     return m_strReferencedInComponent;
@@ -318,9 +287,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update the header of the cached process model
-   * 
-   * @param processModel
-   *          the reference object
+   * @param processModel the reference object
    */
   public void updateProcessModelHeader(ProcessModel processModel) {
     // Update the current process Model
@@ -330,7 +297,6 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Create a new columns object to be added to the model
-   * 
    * @return an object implementing Columns
    */
   public Columns addColumns() {
@@ -341,11 +307,8 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Update or insert a new columns section of the presentation element of the
-   * cached process model
-   * 
-   * @param source
-   *          the reference object
+   * Update or insert a new columns section of the presentation element of the cached process model
+   * @param source the reference object
    * @throws WorkflowDesignerException
    */
   public void updateColumns(Columns source, String strRoleOriginal)
@@ -360,10 +323,8 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateColumns", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS"); //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
     {
@@ -371,19 +332,15 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strRoleOriginal.equals(source.getRoleName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateColumns", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS"); //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS"); //$NON-NLS-1$
       }
 
       try {
         m_processModel.getPresentation().deleteColumns(strRoleOriginal);
       } catch (WorkflowException e) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateColumns", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_UPDATING_COLUMNS_FAILED", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_UPDATING_COLUMNS_FAILED", //$NON-NLS-1$
             e);
       }
     }
@@ -393,28 +350,22 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Removes the 'columns' object specified by the role name
-   * 
-   * @param strRoleName
-   *          the value of the role attribute
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
+   * @param strRoleName the value of the role attribute
+   * @throws WorkflowDesignerException when something goes wrong
    */
   public void deleteColumns(String strRoleName)
       throws WorkflowDesignerException {
     try {
       m_processModel.getPresentation().deleteColumns(strRoleName);
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.deleteColumns", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_DELETING_COLUMNS_FAILED", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.deleteColumns", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_DELETING_COLUMNS_FAILED", //$NON-NLS-1$
           e);
     }
   }
 
   /**
    * Create a new role object to be added to the model
-   * 
    * @return an object implementing Role
    */
   public Role createRole() {
@@ -433,13 +384,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update or insert a new role element of the cached process model
-   * 
-   * @param source
-   *          the data carrier object
-   * @param strNameOriginal
-   *          the original name of the object
-   * @throws WorkflowDesignerException
-   *           if another object with the same name already exists
+   * @param source the data carrier object
+   * @param strNameOriginal the original name of the object
+   * @throws WorkflowDesignerException if another object with the same name already exists
    */
   public void updateRole(Role source, String strNameOriginal)
       throws WorkflowDesignerException {
@@ -457,8 +404,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'role' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateRole", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateRole", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_ROLE_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -467,8 +413,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateRole", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateRole", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_ROLE_EXISTS"); //$NON-NLS-1$
       }
 
@@ -481,11 +426,8 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the role specified
-   * 
-   * @param strRoleName
-   *          the name of the role
-   * @throws WorkflowDesignerException
-   *           if the role cannot be found or is referenced elsewhere.
+   * @param strRoleName the name of the role
+   * @throws WorkflowDesignerException if the role cannot be found or is referenced elsewhere.
    */
   public void removeRole(String strRoleName) throws WorkflowDesignerException {
     Map mapDesignations = collectContextualDesignations(), mapQualifiedUsers;
@@ -496,8 +438,7 @@ public class WorkflowDesignerSessionController extends
     RelatedUser relatedUser;
 
     if (strRoleName == null) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
           SilverpeasException.ERROR, "workflowDesigner.EX_ROLE_NOT_FOUND"); //$NON-NLS-1$
     }
     // Check if this role is referenced elsewhere ...
@@ -512,16 +453,14 @@ public class WorkflowDesignerSessionController extends
         designation = (ContextualDesignation) iterDesignation.next();
 
         if (strRoleName.equals(designation.getRole())) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
-              SilverpeasException.ERROR,
-              "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+              SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
               (String) mapDesignations.get(designations)
                   + " ( role: '"
                   + strRoleName
                   + "'"
                   + (designation.getLanguage() == null ? "" : (", lang: '"
-                      + designation.getLanguage() + "'")) + " )");
+                  + designation.getLanguage() + "'")) + " )");
         }
       }
     }
@@ -530,8 +469,7 @@ public class WorkflowDesignerSessionController extends
     //
     if (m_processModel.getPresentation() != null
         && m_processModel.getPresentation().getColumnsByRole(strRoleName) != null) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
           SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
           "presentation, (columns: '" + strRoleName + "')");
     }
@@ -546,10 +484,8 @@ public class WorkflowDesignerSessionController extends
         form = (Form) iterForm.next();
 
         if (strRoleName.equals(form.getRole())) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
-              SilverpeasException.ERROR,
-              "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+              SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
               "form: '" + form.getName() + "', (role: '" + strRoleName + "')");
         }
       }
@@ -564,19 +500,15 @@ public class WorkflowDesignerSessionController extends
       qualifiedUsers = (QualifiedUsers) iterKeys.next();
 
       if (strRoleName.equals(qualifiedUsers.getRole())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
             (String) mapQualifiedUsers.get(qualifiedUsers) + " (role: '"
                 + strRoleName + "')");
       }
 
       if (qualifiedUsers.getUserInRole(strRoleName) != null) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
             (String) mapQualifiedUsers.get(qualifiedUsers) + " (userInRole: '"
                 + strRoleName + "')");
       }
@@ -589,20 +521,18 @@ public class WorkflowDesignerSessionController extends
         relatedUser = (RelatedUser) iterRelatedUser.next();
 
         if (strRoleName.equals(relatedUser.getRole())) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
-              SilverpeasException.ERROR,
-              "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+              SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
               (String) mapQualifiedUsers.get(qualifiedUsers)
                   + " (relatedUser: ["
                   + (relatedUser.getParticipant() == null ? ""
-                      : (" participant: '"
-                          + relatedUser.getParticipant().getName() + "'"))
+                  : (" participant: '"
+                  + relatedUser.getParticipant().getName() + "'"))
                   + (relatedUser.getFolderItem() == null ? ""
-                      : (" folderItem: '"
-                          + relatedUser.getFolderItem().getName() + "'"))
+                  : (" folderItem: '"
+                  + relatedUser.getFolderItem().getName() + "'"))
                   + (relatedUser.getRelation() == null ? "" : (" relation: '"
-                      + relatedUser.getRelation() + "'")) + " role: '"
+                  + relatedUser.getRelation() + "'")) + " role: '"
                   + strRoleName + "'" + " ])");
         }
       }
@@ -617,15 +547,13 @@ public class WorkflowDesignerSessionController extends
         ;
       m_processModel.setRoles(null);
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole", //$NON-NLS-1$
           SilverpeasException.ERROR, "workflowDesigner.EX_ROLE_NOT_FOUND"); //$NON-NLS-1$
     }
   }
 
   /**
    * Create a new participant object to be added to the model
-   * 
    * @return an object implementing Participant
    */
   public Participant createParticipant() {
@@ -644,9 +572,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update or insert a new participant element of the cached process model
-   * 
-   * @param source
-   *          the reference object
+   * @param source the reference object
    * @throws WorkflowDesignerException
    */
   public void updateParticipant(Participant source, String strNameOriginal)
@@ -667,8 +593,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'participant' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateParticipant", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateParticipant", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARTICIPANT_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -677,8 +602,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateParticipant", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateParticipant", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARTICIPANT_EXISTS"); //$NON-NLS-1$
       }
 
@@ -693,11 +617,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the participant specified
-   * 
-   * @param strParticipantName
-   *          the name of the participant
-   * @throws WorkflowDesignerException
-   *           if the participant cannot be found or is referenced elsewhere.
+   * @param strParticipantName the name of the participant
+   * @throws WorkflowDesignerException if the participant cannot be found or is referenced
+   * elsewhere.
    */
   public void removeParticipant(String strParticipantName)
       throws WorkflowDesignerException {
@@ -709,10 +631,8 @@ public class WorkflowDesignerSessionController extends
         strParticipantName);
 
     if (reference == null) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeParticipant", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_PARTICIPANT_NOT_FOUND"); //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeParticipant", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_PARTICIPANT_NOT_FOUND"); //$NON-NLS-1$
     }
     // Check if this participant is referenced elsewhere ...
     //
@@ -734,20 +654,19 @@ public class WorkflowDesignerSessionController extends
         if (reference == relatedUser.getParticipant()) {
           throw new WorkflowDesignerException(
               "WorkflowDesignerSessionController.removeParticipant", //$NON-NLS-1$
-              SilverpeasException.ERROR,
-              "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+              SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
               (String) mapQualifiedUsers.get(qualifiedUsers)
                   + " (relatedUser: ["
                   + (relatedUser.getParticipant() == null ? ""
-                      : (" participant: '"
-                          + relatedUser.getParticipant().getName() + "'"))
+                  : (" participant: '"
+                  + relatedUser.getParticipant().getName() + "'"))
                   + (relatedUser.getFolderItem() == null ? ""
-                      : (" folderItem: '"
-                          + relatedUser.getFolderItem().getName() + "'"))
+                  : (" folderItem: '"
+                  + relatedUser.getFolderItem().getName() + "'"))
                   + (relatedUser.getRelation() == null ? "" : (" relation: '"
-                      + relatedUser.getRelation() + "'"))
+                  + relatedUser.getRelation() + "'"))
                   + (relatedUser.getRole() == null ? "" : (" role: '"
-                      + relatedUser.getRole() + "'")) + " ])");
+                  + relatedUser.getRole() + "'")) + " ])");
         }
       }
     }
@@ -761,16 +680,13 @@ public class WorkflowDesignerSessionController extends
         ;
       m_processModel.setParticipants(null);
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeParticipant", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_PARTICIPANT_NOT_FOUND"); //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeParticipant", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_PARTICIPANT_NOT_FOUND"); //$NON-NLS-1$
     }
   }
 
   /**
    * Create a new state object to be added to the model
-   * 
    * @return an object implementing State
    */
   public State createState() {
@@ -789,9 +705,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update or insert a new state element of the cached process model
-   * 
-   * @param source
-   *          the reference object
+   * @param source the reference object
    * @throws WorkflowDesignerException
    */
   public void updateState(State source, String strNameOriginal)
@@ -810,8 +724,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'state' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateState", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateState", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_STATE_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -820,8 +733,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateState", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateState", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_STATE_EXISTS"); //$NON-NLS-1$
       }
 
@@ -838,11 +750,8 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the state specified
-   * 
-   * @param strStateName
-   *          the name of the state
-   * @throws WorkflowDesignerException
-   *           if the state cannot be found or is referenced elsewhere.
+   * @param strStateName the name of the state
+   * @throws WorkflowDesignerException if the state cannot be found or is referenced elsewhere.
    */
   public void removeState(String strStateName) throws WorkflowDesignerException {
     Actions actions = m_processModel.getActionsEx();
@@ -869,8 +778,7 @@ public class WorkflowDesignerSessionController extends
 
             if (consequence.getTargetState(strStateName) != null
                 || consequence.getUnsetState(strStateName) != null) {
-              throw new WorkflowDesignerException(
-                  "WorkflowDesignerSessionController.removeState", //$NON-NLS-1$
+              throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeState", //$NON-NLS-1$
                   SilverpeasException.ERROR,
                   "workflowDesigner.EX_ELEMENT_REFERENCED", "action : '"
                       + action.getName()
@@ -891,8 +799,7 @@ public class WorkflowDesignerSessionController extends
         participant = (Participant) iterParticipant.next();
 
         if (participant.getResolvedState().equals(strStateName)) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.removeState", //$NON-NLS-1$
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeState", //$NON-NLS-1$
               SilverpeasException.ERROR,
               "workflowDesigner.EX_ELEMENT_REFERENCED", "participant : '"
                   + participant.getName()
@@ -904,24 +811,18 @@ public class WorkflowDesignerSessionController extends
     try {
       m_processModel.getStatesEx().removeState(strStateName);
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeState", //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeState", //$NON-NLS-1$
           SilverpeasException.ERROR, "workflowDesigner.EX_STATE_NOT_FOUND"); //$NON-NLS-1$
     }
   }
 
   /**
-   * Update Qualified Users referenced by the context, create the object if it
-   * was <code>null</code> before.
-   * 
-   * @param qualifiedUsers
-   *          the new Qualified Users
-   * @param strContext
-   *          the context of the QualifiedUsers being updated
-   * @throws WorkflowException
-   *           when the update goes wrong
-   * @throws WorkflowDesignerException
-   *           when the update goes wrong
+   * Update Qualified Users referenced by the context, create the object if it was <code>null</code>
+   * before.
+   * @param qualifiedUsers the new Qualified Users
+   * @param strContext the context of the QualifiedUsers being updated
+   * @throws WorkflowException when the update goes wrong
+   * @throws WorkflowDesignerException when the update goes wrong
    */
   public void updateQualifiedUsers(QualifiedUsers source, String strContext)
       throws WorkflowException, WorkflowDesignerException {
@@ -948,22 +849,14 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Find a related user corresponding to the criteria given
-   * 
-   * @param strContext
-   *          the context
-   * @param strParticipant
-   *          the name of the participant, may be <code>null</code>
-   * @param strFolderItem
-   *          the name of the data folder item, may be <code>null</code>
-   * @param strRelation
-   *          the relation, may be <code>null</code>
-   * @param strRole
-   *          the name of the role, may be <code>null</code>
+   * @param strContext the context
+   * @param strParticipant the name of the participant, may be <code>null</code>
+   * @param strFolderItem the name of the data folder item, may be <code>null</code>
+   * @param strRelation the relation, may be <code>null</code>
+   * @param strRole the name of the role, may be <code>null</code>
    * @return an object implementing RelatedUser
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
-   * @throws WorkflowException
-   *           when something goes wrong
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
    */
   public RelatedUser findRelatedUser(String strContext, String strParticipant,
       String strFolderItem, String strRelation, String strRole)
@@ -1006,23 +899,15 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update a related user corresponding to the criteria given
-   * 
-   * @param strContext
-   *          the context
-   * @param strParticipantOriginal
-   *          the original name of the participant, may be <code>null</code>
-   * @param strFolderItemOriginal
-   *          the original name of the data folder item, may be
-   *          <code>null</code>
-   * @param strRelationOriginal
-   *          the original relation, may be <code>null</code>
-   * @param strRoleOriginal
-   *          the original name of the role, may be <code>null</code>
+   * @param strContext the context
+   * @param strParticipantOriginal the original name of the participant, may be <code>null</code>
+   * @param strFolderItemOriginal the original name of the data folder item, may be
+   * <code>null</code>
+   * @param strRelationOriginal the original relation, may be <code>null</code>
+   * @param strRoleOriginal the original name of the role, may be <code>null</code>
    * @return an object implementing RelatedUser
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
-   * @throws WorkflowException
-   *           when something goes wrong
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
    */
   public void updateRelatedUser(RelatedUser source, String strContext,
       String strParticipantOriginal, String strFolderItemOriginal,
@@ -1048,10 +933,8 @@ public class WorkflowDesignerSessionController extends
         // If a 'state' element with the same attributes as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateRelatedUser", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_RELATED_USER_EXISTS"); //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateRelatedUser", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_RELATED_USER_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
     {
@@ -1064,18 +947,22 @@ public class WorkflowDesignerSessionController extends
       // Therefore we compare all the attributes with their initial values.
       //
       if (check != null
-          && !((strParticipantOriginal == null && strParticipant == null || strParticipantOriginal != null
-              && strParticipantOriginal.equals(strParticipant))
-              && (strFolderItemOriginal == null && strFolderItem == null || strFolderItemOriginal != null
-                  && strFolderItemOriginal.equals(strFolderItem))
-              && (strRelationOriginal == null && source.getRelation() == null || strRelationOriginal != null
-                  && strRelationOriginal.equals(source.getRelation())) && (strRoleOriginal == null
+          &&
+          !((strParticipantOriginal == null && strParticipant == null || strParticipantOriginal != null
+              &&
+              strParticipantOriginal.equals(strParticipant))
+              &&
+              (strFolderItemOriginal == null && strFolderItem == null || strFolderItemOriginal != null
+                  &&
+                  strFolderItemOriginal.equals(strFolderItem))
+              &&
+              (strRelationOriginal == null && source.getRelation() == null || strRelationOriginal != null
+                  &&
+                  strRelationOriginal.equals(source.getRelation())) && (strRoleOriginal == null
               && source.getRole() == null || strRoleOriginal != null
               && strRoleOriginal.equals(source.getRole())))) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateRelatedUser", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_RELATED_USER_EXISTS"); //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateRelatedUser", //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_RELATED_USER_EXISTS"); //$NON-NLS-1$
       }
 
       // Update the relatedUser
@@ -1109,15 +996,10 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the related user specified
-   * 
-   * @param reference
-   *          the reference for the related user to remove
-   * @param strContext
-   *          the context
-   * @throws WorkflowDesignerException
-   *           if the related user cannot be found or something goes wrong
-   * @throws WorkflowException
-   *           if the related user cannot be found or when something goes wrong
+   * @param reference the reference for the related user to remove
+   * @param strContext the context
+   * @throws WorkflowDesignerException if the related user cannot be found or something goes wrong
+   * @throws WorkflowException if the related user cannot be found or when something goes wrong
    */
   public void removeRelatedUser(RelatedUser reference, String strContext)
       throws WorkflowDesignerException, WorkflowException {
@@ -1128,7 +1010,6 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Create a new action object to be added to the model
-   * 
    * @return an object implementing Action
    */
   public Action createAction() {
@@ -1147,13 +1028,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update or insert a new action element of the cached process model
-   * 
-   * @param source
-   *          the reference object
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
-   * @throws WorkflowException
-   *           when something goes wrong
+   * @param source the reference object
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
    */
   public void updateAction(Action source, String strNameOriginal)
       throws WorkflowDesignerException, WorkflowException {
@@ -1182,8 +1059,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'action' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateAction", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateAction", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_ACTION_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -1192,8 +1068,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateAction", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateAction", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_ACTION_EXISTS"); //$NON-NLS-1$
       }
 
@@ -1208,13 +1083,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the action specified
-   * 
-   * @param strActionName
-   *          the name of the action
-   * @throws WorkflowException
-   *           if the action cannot be found
-   * @throws WorkflowDesignerException
-   *           if the action is referenced elsewhere
+   * @param strActionName the name of the action
+   * @throws WorkflowException if the action cannot be found
+   * @throws WorkflowDesignerException if the action is referenced elsewhere
    */
   public void removeAction(String strActionName) throws WorkflowException,
       WorkflowDesignerException {
@@ -1234,8 +1105,7 @@ public class WorkflowDesignerSessionController extends
         //
         if (state.getTimeoutAction() != null
             && state.getTimeoutAction().getName().equals(strActionName)) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.removeAction", //$NON-NLS-1$
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeAction", //$NON-NLS-1$
               SilverpeasException.ERROR,
               "workflowDesigner.EX_ELEMENT_REFERENCED", "state : '"
                   + state.getName()
@@ -1247,8 +1117,7 @@ public class WorkflowDesignerSessionController extends
         //
         if (allowedActions != null) {
           if (allowedActions.getAllowedAction(strActionName) != null) {
-            throw new WorkflowDesignerException(
-                "WorkflowDesignerSessionController.removeAction", //$NON-NLS-1$
+            throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeAction", //$NON-NLS-1$
                 SilverpeasException.ERROR,
                 "workflowDesigner.EX_ELEMENT_REFERENCED", "state : '"
                     + state.getName()
@@ -1269,15 +1138,10 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update or insert a new consequence element of the cached process model
-   * 
-   * @param source
-   *          the reference object
-   * @param strContext
-   *          the context of Consequence
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
-   * @throws WorkflowException
-   *           when something goes wrong
+   * @param source the reference object
+   * @param strContext the context of Consequence
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
    */
   public void updateConsequence(Consequence source, String strContext)
       throws WorkflowDesignerException, WorkflowException {
@@ -1310,8 +1174,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'consequence' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateConsequence", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateConsequence", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_CONSEQUENCE_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -1322,8 +1185,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (idxCheck >= 0 && idxCheck != idxConsequence) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateConsequence", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateConsequence", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_CONSEQUENCE_EXISTS"); //$NON-NLS-1$
       }
 
@@ -1339,15 +1201,10 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Move the consequence specified by the context inside the collection
-   * 
-   * @param strContext
-   *          the context of the consequence
-   * @param iConsequence
-   *          the current index of the consequence in the collection
-   * @param nDirection
-   *          the offset and the direction to move by
-   * @throws WorkflowDesignerException
-   *           if the consequence cannot be found.
+   * @param strContext the context of the consequence
+   * @param iConsequence the current index of the consequence in the collection
+   * @param nDirection the offset and the direction to move by
+   * @throws WorkflowDesignerException if the consequence cannot be found.
    */
   public void moveConsequence(String strContext, int iConsequence,
       int nDirection) throws WorkflowDesignerException {
@@ -1364,20 +1221,15 @@ public class WorkflowDesignerSessionController extends
             consequence);
       }
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.moveConsequence", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.moveConsequence", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
     }
   }
 
   /**
    * Remove the consequence specified by the context
-   * 
-   * @param strContext
-   *          the context of the consequence
-   * @throws WorkflowDesignerException
-   *           if the consequence cannot be found.
+   * @param strContext the context of the consequence
+   * @throws WorkflowDesignerException if the consequence cannot be found.
    */
   public void removeConsequence(String strContext)
       throws WorkflowDesignerException {
@@ -1396,16 +1248,13 @@ public class WorkflowDesignerSessionController extends
         consequences.getConsequenceList().remove(idxConsequence);
       }
     } catch (WorkflowException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.removeConsequence", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
+      throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeConsequence", //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_CONSEQUENCE_NOT_FOUND"); //$NON-NLS-1$
     }
   }
 
   /**
    * Create a new form object to be added to the model
-   * 
    * @return an object implementing Form
    */
   public Form createForm() {
@@ -1424,9 +1273,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Find the form by context
-   * 
-   * @param strContext
-   *          the context
+   * @param strContext the context
    * @return a Form object
    */
   public Form findForm(String strContext) {
@@ -1458,17 +1305,11 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update Form referenced by the context.
-   * 
-   * @param source
-   *          the object carrying the new values
-   * @param strContext
-   *          the context of the form being updated
-   * @param strNameOriginal
-   *          the original name of the form
-   * @throws WorkflowException
-   *           when the update goes wrong
-   * @throws WorkflowDesignerException
-   *           when the update goes wrong
+   * @param source the object carrying the new values
+   * @param strContext the context of the form being updated
+   * @param strNameOriginal the original name of the form
+   * @throws WorkflowException when the update goes wrong
+   * @throws WorkflowDesignerException when the update goes wrong
    */
   public void updateForm(Form source, String strContext,
       String strNameOriginal, String strRoleOriginal) throws WorkflowException,
@@ -1485,7 +1326,8 @@ public class WorkflowDesignerSessionController extends
       // with the same name add it to the collection
       //
       if (check == null // or CHECK not really identical to source
-          || (source.getRole() != null && !source.getRole().equals(
+          ||
+          (source.getRole() != null && !source.getRole().equals(
               check.getRole()))) {
         // add the object to the collection;
         //
@@ -1494,8 +1336,7 @@ public class WorkflowDesignerSessionController extends
         // If an 'Form' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateForm", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateForm", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_FORM_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -1509,25 +1350,24 @@ public class WorkflowDesignerSessionController extends
       // Therefore we compare all the attributes with their initial values.
       //
       if (check != null && (check.getRole() == null && source.getRole() == null // the
-                                                                                // "check's"
-                                                                                // name
-                                                                                // role
-                                                                                // &
-                                                                                // role
-                                                                                // are
-                                                                                // really
-                                                                                // ...
-      || source.getRole() != null && source.getRole().equals(check.getRole())) // ...
-                                                                               // the
-                                                                               // same
-                                                                               // as
-                                                                               // "source's";
+      // "check's"
+          // name
+          // role
+          // &
+          // role
+          // are
+          // really
+          // ...
+          || source.getRole() != null && source.getRole().equals(check.getRole())) // ...
+          // the
+          // same
+          // as
+          // "source's";
           && !(strNameOriginal.equals(source.getName()) // name & role didn't
-                                                        // change
+          // change
           && (strRoleOriginal == null && source.getRole() == null || strRoleOriginal != null
               && strRoleOriginal.equals(source.getRole())))) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateForm", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateForm", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_FORM_EXISTS"); //$NON-NLS-1$
       }
 
@@ -1542,13 +1382,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the form described by the context
-   * 
-   * @param strContext
-   *          the context
-   * @throws WorkflowException
-   *           if the form cannot be found
-   * @throws WorkflowDesignerException
-   *           if the form is referenced elsewhere
+   * @param strContext the context
+   * @throws WorkflowException if the form cannot be found
+   * @throws WorkflowDesignerException if the form is referenced elsewhere
    */
   public void removeForm(String strContext) throws WorkflowException,
       WorkflowDesignerException {
@@ -1598,8 +1434,7 @@ public class WorkflowDesignerSessionController extends
         // Thrown when no token was found where expected
         // re-throw an exception
         //
-        throw new WorkflowException(
-            "WorkflowDesignerSessionController.removeForm", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerSessionController.removeForm", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowEngine.EX_FORM_NOT_FOUND", e); //$NON-NLS-1$
       }
     }
@@ -1607,9 +1442,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Find the input by context
-   * 
-   * @param strContext
-   *          the context
+   * @param strContext the context
    * @return a Input object
    */
   public Input findInput(String strContext) {
@@ -1637,15 +1470,10 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update or insert a new input element of the cached process model
-   * 
-   * @param source
-   *          the reference object
-   * @param strContext
-   *          the context of Input
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
-   * @throws WorkflowException
-   *           when something goes wrong
+   * @param source the reference object
+   * @param strContext the context of Input
+   * @throws WorkflowDesignerException when something goes wrong
+   * @throws WorkflowException when something goes wrong
    */
   public void updateInput(Input source, String strContext)
       throws WorkflowDesignerException, WorkflowException {
@@ -1669,8 +1497,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'input' element with the same item/value as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateInput", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateInput", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_INPUT_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -1679,8 +1506,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && check != input) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateInput", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateInput", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_INPUT_EXISTS"); //$NON-NLS-1$
       }
 
@@ -1696,13 +1522,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the input specified by the context
-   * 
-   * @param strContext
-   *          the context of the input
-   * @throws WorkflowDesignerException
-   *           if the input cannot be found.
-   * @throws WorkflowException
-   *           if the input cannot be found
+   * @param strContext the context of the input
+   * @throws WorkflowDesignerException if the input cannot be found.
+   * @throws WorkflowException if the input cannot be found
    */
   public void removeInput(String strContext) throws WorkflowDesignerException,
       WorkflowException {
@@ -1726,14 +1548,12 @@ public class WorkflowDesignerSessionController extends
       }
     }
 
-    throw new WorkflowDesignerException(
-        "WorkflowDesignerSessionController.removeInput", //$NON-NLS-1$
+    throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeInput", //$NON-NLS-1$
         SilverpeasException.ERROR, "workflowDesigner.EX_INPUT_NOT_FOUND"); //$NON-NLS-1$
   }
 
   /**
    * Create a new ContextualDesignation object to be added to the model
-   * 
    * @return an object implementing ContextualDesignation
    */
   public ContextualDesignation createDesignation() {
@@ -1744,12 +1564,9 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Update or insert a new ContextualDesignation element of the cached process
-   * model
-   * 
+   * Update or insert a new ContextualDesignation element of the cached process model
    * @param strContext
-   * @param source
-   *          the reference object
+   * @param source the reference object
    * @param strLangOriginal
    * @param strRoleOriginal
    * @throws WorkflowDesignerException
@@ -1777,8 +1594,7 @@ public class WorkflowDesignerSessionController extends
         //
         throw new WorkflowDesignerException(
             "WorkflowDesignerSessionController.updateContextualDesignations", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_EXISTS"); //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
     {
@@ -1788,11 +1604,10 @@ public class WorkflowDesignerSessionController extends
       //
       if (check != null
           && !(strLangOriginal.equals(source.getLanguage()) && strRoleOriginal
-              .equals(source.getRole()))) {
+          .equals(source.getRole()))) {
         throw new WorkflowDesignerException(
             "WorkflowDesignerSessionController.updateContextualDesignations", //$NON-NLS-1$
-            SilverpeasException.ERROR,
-            "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_EXISTS"); //$NON-NLS-1$
+            SilverpeasException.ERROR, "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_EXISTS"); //$NON-NLS-1$
       }
 
       // Update the contextual designation
@@ -1805,19 +1620,12 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Finds the contextual designation with the given attributes in the specified
-   * context
-   * 
-   * @param strContext
-   *          the context of the designation
-   * @param strLanguage
-   *          the language
-   * @param strRole
-   *          the role name
-   * @return contextual designation of the given role & name or
-   *         <code>null</code>
-   * @throws WorkflowDesignerException
-   *           if something goes wrong
+   * Finds the contextual designation with the given attributes in the specified context
+   * @param strContext the context of the designation
+   * @param strLanguage the language
+   * @param strRole the role name
+   * @return contextual designation of the given role & name or <code>null</code>
+   * @throws WorkflowDesignerException if something goes wrong
    */
   public ContextualDesignation findContextualDesignation(String strContext,
       String strRole, String strLanguage) throws WorkflowDesignerException {
@@ -1826,15 +1634,11 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Removes the contextual designation with the attributes as the reference
-   * object in the specified context
-   * 
-   * @param strContext
-   *          the context of the designation
-   * @param contextualDesignation
-   *          the reference object
-   * @throws WorkflowDesignerException
-   *           when something goes wrong e.g. designation not found
+   * Removes the contextual designation with the attributes as the reference object in the specified
+   * context
+   * @param strContext the context of the designation
+   * @param contextualDesignation the reference object
+   * @throws WorkflowDesignerException when something goes wrong e.g. designation not found
    */
   public void removeContextualDesignation(String strContext,
       ContextualDesignation contextualDesignation)
@@ -1845,20 +1649,15 @@ public class WorkflowDesignerSessionController extends
     } catch (WorkflowException e) {
       throw new WorkflowDesignerException(
           "WorkflowDesignerSessionController.removeContextualDesignation", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_NOT_FOUND"); //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_CONTEXTUAL_DESIGNATION_NOT_FOUND"); //$NON-NLS-1$
     }
   }
 
   /**
    * Finds the contextual designations object in the specified context
-   * 
-   * @param strContext
-   *          the context of the designations
-   * @return ContextualDesignations collection or <code>null</code> if nothing
-   *         found
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
+   * @param strContext the context of the designations
+   * @return ContextualDesignations collection or <code>null</code> if nothing found
+   * @throws WorkflowDesignerException when something goes wrong
    */
   private ContextualDesignations findContextualDesignations(String strContext)
       throws WorkflowDesignerException {
@@ -2003,18 +1802,15 @@ public class WorkflowDesignerSessionController extends
     if (designations == null) {
       throw new WorkflowDesignerException(
           "WorkflowDesignerSessionController.getContextualDesignations", //$NON-NLS-1$
-          SilverpeasException.ERROR,
-          "workflowDesigner.EX_CONTEXTUAL_DESIGNATIONS_NOT_FOUND"); //$NON-NLS-1$
+          SilverpeasException.ERROR, "workflowDesigner.EX_CONTEXTUAL_DESIGNATIONS_NOT_FOUND"); //$NON-NLS-1$
     }
     return designations;
   }
 
   /**
-   * Collect all the object of the type ContextualDesignations instantiated in
-   * the Process Model
-   * 
-   * @return a map, where the key is the reference to the object and the value
-   *         is a textual description of the object location
+   * Collect all the object of the type ContextualDesignations instantiated in the Process Model
+   * @return a map, where the key is the reference to the object and the value is a textual
+   * description of the object location
    */
   private Map collectContextualDesignations() {
     Map map = new IdentityHashMap();
@@ -2153,9 +1949,9 @@ public class WorkflowDesignerSessionController extends
           map.put(input.getLabels(), strFormId
               + " : input"
               + (input.getItem() == null ? "" : (" [ item: '"
-                  + input.getItem().getName() + "' ] : label"))
+              + input.getItem().getName() + "' ] : label"))
               + (input.getValue() == null ? "" : (" [ value: '"
-                  + input.getValue() + "' ] : label")));
+              + input.getValue() + "' ] : label")));
         }
       }
     }
@@ -2165,7 +1961,6 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Create a new item object to be added to the model
-   * 
    * @return an object implementing Item
    */
   public Item createItem(String strContext) {
@@ -2200,9 +1995,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Find the Item specified by the context
-   * 
-   * @param strConxtext
-   *          the context
+   * @param strConxtext the context
    * @return an Item object or <code>null</code>
    */
   public Item findItem(String strContext) {
@@ -2233,17 +2026,11 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update Item referenced by the context.
-   * 
-   * @param source
-   *          the object carrying the new values
-   * @param strContext
-   *          the context of the item being updated
-   * @param strNameOriginal
-   *          the original name of the item
-   * @throws WorkflowException
-   *           when the update goes wrong
-   * @throws WorkflowDesignerException
-   *           when the update goes wrong
+   * @param source the object carrying the new values
+   * @param strContext the context of the item being updated
+   * @param strNameOriginal the original name of the item
+   * @throws WorkflowException when the update goes wrong
+   * @throws WorkflowDesignerException when the update goes wrong
    */
   public void updateItem(Item source, String strContext, String strNameOriginal)
       throws WorkflowException, WorkflowDesignerException {
@@ -2281,8 +2068,7 @@ public class WorkflowDesignerSessionController extends
         // If an 'Item' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateItem", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateItem", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_ITEM_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -2292,8 +2078,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateItem", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateItem", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_ITEM_EXISTS"); //$NON-NLS-1$
       }
 
@@ -2311,13 +2096,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the item described by the context
-   * 
-   * @param strContext
-   *          the context
-   * @throws WorkflowException
-   *           when the item cannot be found
-   * @throws WorkflowDesignerException
-   *           when the item is referenced elsewhere
+   * @param strContext the context
+   * @throws WorkflowException when the item cannot be found
+   * @throws WorkflowDesignerException when the item is referenced elsewhere
    */
   public void removeItem(String strContext) throws WorkflowException,
       WorkflowDesignerException {
@@ -2330,8 +2111,7 @@ public class WorkflowDesignerSessionController extends
     RelatedUser relatedUser;
 
     if (strContext == null) {
-      throw new WorkflowException(
-          "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+      throw new WorkflowException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
           "workflowEngine.EX_ITEM_NOT_FOUND"); // $NON-NLS-1$
     }
     strtok = new StringTokenizer(strContext, CONTEXT_DELIMS);
@@ -2348,15 +2128,13 @@ public class WorkflowDesignerSessionController extends
         strItemName = strtok.nextToken();
         items = m_processModel.getUserInfos();
       } else {
-        throw new WorkflowException(
-            "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+        throw new WorkflowException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
             "workflowEngine.EX_ITEM_NOT_FOUND", // $NON-NLS-1$
             strItemName == null ? "<null>" //$NON-NLS-1$
                 : strItemName);
       }
     } catch (NoSuchElementException e) {
-      throw new WorkflowException(
-          "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+      throw new WorkflowException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
           "workflowEngine.EX_ITEM_NOT_FOUND", e); // $NON-NLS-1$
     }
 
@@ -2376,10 +2154,8 @@ public class WorkflowDesignerSessionController extends
 
           if (strItemName.equals(item.getMapTo())
               && !strItemName.equals(item.getName())) {
-            throw new WorkflowDesignerException(
-                "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
-                SilverpeasException.ERROR,
-                "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+            throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+                SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
                 "userInfos item: '" + item.getName() + "' : mapTo");
           }
         }
@@ -2395,10 +2171,8 @@ public class WorkflowDesignerSessionController extends
           item = (Item) iterItem.next();
 
           if (strItemName.equals(item.getMapTo())) {
-            throw new WorkflowDesignerException(
-                "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
-                SilverpeasException.ERROR,
-                "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+            throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+                SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
                 "dataFolder item: '" + item.getName() + "' : mapTo");
           }
         }
@@ -2417,10 +2191,8 @@ public class WorkflowDesignerSessionController extends
           columns = (Columns) iterColumns.next();
 
           if (columns.getColumn(strItemName) != null) {
-            throw new WorkflowDesignerException(
-                "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
-                SilverpeasException.ERROR,
-                "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+            throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+                SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
                 "presentation, (columns: '" + columns.getRoleName() + "')");
           }
         }
@@ -2448,8 +2220,7 @@ public class WorkflowDesignerSessionController extends
               consequence = (Consequence) iterConsequence.next();
 
               if (strItemName.equals(consequence.getItem())) {
-                throw new WorkflowDesignerException(
-                    "WorkflowDesignerSessionController.removeItem", //$NON-NLS-1$
+                throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem", //$NON-NLS-1$
                     SilverpeasException.ERROR,
                     "workflowDesigner.EX_ELEMENT_REFERENCED", "action : '"
                         + action.getName() + "' (item : '" + strItemName + "')"); //$NON-NLS-1$
@@ -2485,8 +2256,7 @@ public class WorkflowDesignerSessionController extends
 
             if (input.getItem() != null
                 && strItemName.equals(input.getItem().getName())) {
-              throw new WorkflowDesignerException(
-                  "WorkflowDesignerSessionController.removeItem", //$NON-NLS-1$
+              throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem", //$NON-NLS-1$
                   SilverpeasException.ERROR,
                   "workflowDesigner.EX_ELEMENT_REFERENCED", strFormId
                       + " : input" + " [ item: '" + strItemName + "' ]");
@@ -2518,23 +2288,21 @@ public class WorkflowDesignerSessionController extends
             && relatedUser.getFolderItem() != null && strItemName
             .equals(relatedUser.getFolderItem().getName()))
             || (items == m_processModel.getUserInfos() && strItemName
-                .equals(relatedUser.getRelation()))) {
-          throw new WorkflowDesignerException(
-              "WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
-              SilverpeasException.ERROR,
-              "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
+            .equals(relatedUser.getRelation()))) {
+          throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeItem()", //$NON-NLS-1$
+              SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED", //$NON-NLS-1$
               (String) mapQualifiedUsers.get(qualifiedUsers)
                   + " (relatedUser: ["
                   + (relatedUser.getParticipant() == null ? ""
-                      : (" participant: '"
-                          + relatedUser.getParticipant().getName() + "'"))
+                  : (" participant: '"
+                  + relatedUser.getParticipant().getName() + "'"))
                   + (relatedUser.getFolderItem() == null ? ""
-                      : (" folderItem: '"
-                          + relatedUser.getFolderItem().getName() + "'"))
+                  : (" folderItem: '"
+                  + relatedUser.getFolderItem().getName() + "'"))
                   + (relatedUser.getRelation() == null ? "" : (" relation: '"
-                      + relatedUser.getRelation() + "'"))
+                  + relatedUser.getRelation() + "'"))
                   + (relatedUser.getRole() == null ? "" : (" role: '"
-                      + relatedUser.getRole() + "'")) + " ])");
+                  + relatedUser.getRole() + "'")) + " ])");
         }
       }
     }
@@ -2550,17 +2318,11 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Update Parameter referenced by the context and parameter name.
-   * 
-   * @param source
-   *          the object carrying the new values
-   * @param strContext
-   *          the context of the item being updated
-   * @param strNameOriginal
-   *          the original name of the parameter
-   * @throws WorkflowException
-   *           when the update goes wrong
-   * @throws WorkflowDesignerException
-   *           when the update goes wrong
+   * @param source the object carrying the new values
+   * @param strContext the context of the item being updated
+   * @param strNameOriginal the original name of the parameter
+   * @throws WorkflowException when the update goes wrong
+   * @throws WorkflowDesignerException when the update goes wrong
    */
   public void updateParameter(Parameter source, String strContext,
       String strNameOriginal) throws WorkflowException,
@@ -2584,8 +2346,7 @@ public class WorkflowDesignerSessionController extends
         // If a 'Parameter' element with the same name as the new element
         // already exists we have a problem...
         //
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateParameter", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateParameter", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARAMETER_EXISTS"); //$NON-NLS-1$
       }
     } else // Existing object
@@ -2595,8 +2356,7 @@ public class WorkflowDesignerSessionController extends
       // already exists we have a problem...
       //
       if (check != null && !strNameOriginal.equals(source.getName())) {
-        throw new WorkflowDesignerException(
-            "WorkflowDesignerSessionController.updateParameter", //$NON-NLS-1$
+        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateParameter", //$NON-NLS-1$
             SilverpeasException.ERROR, "workflowDesigner.EX_PARAMETER_EXISTS"); //$NON-NLS-1$
       }
 
@@ -2610,11 +2370,8 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Remove the parameter described by the context and name
-   * 
-   * @param strContext
-   *          the context
-   * @param strName
-   *          the name of the parameter
+   * @param strContext the context
+   * @param strName the name of the parameter
    * @throws WorkflowException
    */
   public void removeParameter(String strContext, String strName)
@@ -2626,9 +2383,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Find the QualifiedUsers specified by the context
-   * 
-   * @param strConxtext
-   *          the context
+   * @param strConxtext the context
    * @return a QualifiedUsers object or <code>null</code>
    */
   public QualifiedUsers findQualifiedUsers(String strContext)
@@ -2697,13 +2452,9 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Set the QualifiedUsers specified by the context to the given value
-   * 
-   * @param qualifiedUsers
-   *          the new value of qualified users
-   * @param strContext
-   *          the context
-   * @throws WorkflowDesignerException
-   *           When the qualified users' parent could not be found
+   * @param qualifiedUsers the new value of qualified users
+   * @param strContext the context
+   * @throws WorkflowDesignerException When the qualified users' parent could not be found
    */
   public void setQualifiedUsers(QualifiedUsers qualifiedUsers, String strContext)
       throws WorkflowException, WorkflowDesignerException {
@@ -2767,11 +2518,9 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Collect all the objects of the type QalifiedUsers instantiated in the
-   * Process Model
-   * 
-   * @return a map, where the key is the reference to the object and the value
-   *         is a textual description of the object location
+   * Collect all the objects of the type QalifiedUsers instantiated in the Process Model
+   * @return a map, where the key is the reference to the object and the value is a textual
+   * description of the object location
    */
   private Map collectQualifiedUsers() {
     Map map = new IdentityHashMap();
@@ -2824,9 +2573,9 @@ public class WorkflowDesignerSessionController extends
                   + action.getName()
                   + "' : consequence: ["
                   + (consequence.getItem() == null ? "Default" : (" item: '"
-                      + consequence.getItem() + "', operator: '"
-                      + consequence.getOperator() + "', value: '"
-                      + consequence.getValue() + "'")) + " ]");
+                  + consequence.getItem() + "', operator: '"
+                  + consequence.getOperator() + "', value: '"
+                  + consequence.getValue() + "'")) + " ]");
             }
           }
         }
@@ -2838,9 +2587,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Get the Action specified by the context
-   * 
-   * @param strConxtext
-   *          the context
+   * @param strConxtext the context
    * @return an Action object or <code>null</code>
    */
   public Action findAction(String strContext) throws WorkflowException {
@@ -2868,9 +2615,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Find the Consequence specified by the context
-   * 
-   * @param strConxtext
-   *          the context
+   * @param strConxtext the context
    * @return an Consequence object or <code>null</code>
    */
   public Consequence findConsequence(String strContext)
@@ -2910,9 +2655,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Returns the language codes as configured in the properties
-   * 
-   * @param fDefault
-   *          if <code>true</code> the 'default' option shall be included
+   * @param fDefault if <code>true</code> the 'default' option shall be included
    * @return an array of language codes
    */
   public String[] retrieveLanguageCodes(boolean fDefault) {
@@ -2932,11 +2675,9 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Returns names of available languages as configured in the properties,
-   * localised for the current user
-   * 
-   * @param fDefault
-   *          if <code>true</code> the 'default' option shall be included
+   * Returns names of available languages as configured in the properties, localised for the current
+   * user
+   * @param fDefault if <code>true</code> the 'default' option shall be included
    * @return an array of language names
    */
   public String[] retrieveLanguageNames(boolean fDefault) {
@@ -2960,9 +2701,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Returns the item type codes as configured in the properties
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
+   * @param fNone if <code>true</code> the 'None' option shall be included
    * @return an array of codes
    */
   public String[] retrieveItemTypeCodes(boolean fNone) {
@@ -2983,9 +2722,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Returns a list of comparison operators as configured in the properties,
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'none' option shall be included
+   * @param fNone if <code>true</code> the 'none' option shall be included
    * @return an array of operators
    */
   public String[] retrieveOperators(boolean fNone) {
@@ -3006,7 +2743,6 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Returns the action kind codes as configured in the properties retrieve
-   * 
    * @return an array of codes
    */
   public String[] retrieveActionKindCodes() {
@@ -3023,7 +2759,6 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Returns the input displayer type codes as configured in the properties
-   * 
    * @return an array of codes
    */
   public String[] retrieveDisplayerNames() {
@@ -3041,9 +2776,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Produce a list of action names
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
+   * @param fNone if <code>true</code> the 'None' option shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveActionNames(boolean fNone) {
@@ -3067,11 +2800,8 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Produce a list of role names
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
-   * @param fDefault
-   *          if <code>true</code> the 'default' option shall be included
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @param fDefault if <code>true</code> the 'default' option shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveRoleNames(boolean fNone, boolean fDefault) {
@@ -3099,9 +2829,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Produce a list of state names
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
+   * @param fNone if <code>true</code> the 'None' option shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveStateNames(boolean fNone) {
@@ -3124,9 +2852,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Produce a list of participant names
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
+   * @param fNone if <code>true</code> the 'None' option shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveParticipantNames(boolean fNone) {
@@ -3149,14 +2875,9 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Produce a list of user info item names, optionally those where the type =
-   * 'user'
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
-   * @param fUsersOnly
-   *          if <code>true</code> only the items of type 'user' shall be
-   *          included
+   * Produce a list of user info item names, optionally those where the type = 'user'
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @param fUsersOnly if <code>true</code> only the items of type 'user' shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveUserInfoItemNames(boolean fNone, boolean fUsersOnly) {
@@ -3183,14 +2904,9 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Produce a list of data folder item names, optionally those where the type =
-   * 'user'
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
-   * @param fUsersOnly
-   *          if <code>true</code> only the items of type 'user' shall be
-   *          included
+   * Produce a list of data folder item names, optionally those where the type = 'user'
+   * @param fNone if <code>true</code> the 'None' option shall be included
+   * @param fUsersOnly if <code>true</code> only the items of type 'user' shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveFolderItemNames(boolean fNone, boolean fUsersOnly) {
@@ -3217,11 +2933,8 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Produce a list of form names, only forms other than 'presentationForm' and
-   * 'printForm'
-   * 
-   * @param fNone
-   *          if <code>true</code> the 'None' option shall be included
+   * Produce a list of form names, only forms other than 'presentationForm' and 'printForm'
+   * @param fNone if <code>true</code> the 'None' option shall be included
    * @return an array of Strings or an empty array.
    */
   public String[] retrieveFormNames(boolean fNone) {
@@ -3250,20 +2963,13 @@ public class WorkflowDesignerSessionController extends
   }
 
   /**
-   * Generates component descriptor file in the appropriate directory, reloads
-   * the cache to take the new file into account, stores the new descriptor's
-   * name to be able to access it later
-   * 
-   * @param strLabel
-   *          the label that will be put in the descriptor
-   * @param strDescription
-   *          the description that will be put in the descriptor
-   * @param strRole
-   *          the role name to select role labels (for profiles)
-   * @param strLanguage
-   *          the language code to select role labels (for profiles)
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
+   * Generates component descriptor file in the appropriate directory, reloads the cache to take the
+   * new file into account, stores the new descriptor's name to be able to access it later
+   * @param strLabel the label that will be put in the descriptor
+   * @param strDescription the description that will be put in the descriptor
+   * @param strRole the role name to select role labels (for profiles)
+   * @param strLanguage the language code to select role labels (for profiles)
+   * @throws WorkflowDesignerException when something goes wrong
    */
   public void generateComponentDescriptor(String strLabel,
       String strDescription, String strRole, String strLanguage)
@@ -3274,7 +2980,7 @@ public class WorkflowDesignerSessionController extends
     SPParameters spParameters = new SPParameters();
     SPParameter spParameter = new SPParameter(
         ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME, getSettings()
-            .getString("componentDescriptor.parameterLabel"),
+        .getString("componentDescriptor.parameterLabel"),
         m_strProcessModelFileName.replaceAll("\\\\", "/"), true, null, null,
         null, null, null, null);
 
@@ -3304,7 +3010,7 @@ public class WorkflowDesignerSessionController extends
     waComponent = new WAComponent(m_processModel.getName(), strLabel,
         strDescription, getSettings().getString("componentDescriptor.suite"),
         true, false, getSettings().getString(
-            "componentDescriptor.managerInstanciator"), new String[0],
+        "componentDescriptor.managerInstanciator"), new String[0],
         listSPProfile);
     waComponent.setRequestRouter(getSettings().getString(
         "componentDescriptor.managerRequestRouter"));
@@ -3331,12 +3037,10 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Finds the component that references the given process model
-   * 
-   * @param strProcessModelFileName
-   *          the relative path to the file containing the process model
-   *          description
-   * @return the name of the component descriptor file name (without .XML ) or
-   *         <code>null</code> if no components reference the given model.
+   * @param strProcessModelFileName the relative path to the file containing the process model
+   * description
+   * @return the name of the component descriptor file name (without .XML ) or <code>null</code> if
+   * no components reference the given model.
    */
   private String findComponentDescriptor(String strProcessModelFileName) {
     Hashtable waComponents = Instanciateur.getWAComponents();
@@ -3371,9 +3075,7 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Clear the Component Descriptor cache and load it again
-   * 
-   * @throws WorkflowDesignerException
-   *           when something goes wrong
+   * @throws WorkflowDesignerException when something goes wrong
    */
   private void rebuildComponentDescriptorCache()
       throws WorkflowDesignerException {
@@ -3389,11 +3091,8 @@ public class WorkflowDesignerSessionController extends
 
   /**
    * Upload given process model in workflow repository.
-   * 
-   * @param model
-   *          process model file
-   * @throws WorkflowDesignerException
-   *           , WorkflowException
+   * @param model process model file
+   * @throws WorkflowDesignerException , WorkflowException
    */
   public void uploadProcessModel(FileItem model)
       throws WorkflowDesignerException, WorkflowException {

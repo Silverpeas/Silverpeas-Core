@@ -39,10 +39,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * @author BERTINL
- * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author BERTINL TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public abstract class AbstractPieChartBuilder {
   private static final int LEGEND_MAX_LENGTH = 20;
@@ -219,7 +217,7 @@ public abstract class AbstractPieChartBuilder {
 
         legend.add("["
             + ((space.getName().length() > LEGEND_MAX_LENGTH) ? space.getName()
-                .substring(0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
+            .substring(0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
         currentStats.add(new String[] { "SPACE", tabSpaceIds[i],
             space.getName(), String.valueOf(count1), String.valueOf(count2),
             String.valueOf(count3) });
@@ -250,7 +248,7 @@ public abstract class AbstractPieChartBuilder {
 
       pieChart = ChartUtil.buildPieChart(getChartTitle(),
           buildDoubleArrayFromStringCollection(counts), (String[]) legend
-              .toArray(new String[0]));
+          .toArray(new String[0]));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
           "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);

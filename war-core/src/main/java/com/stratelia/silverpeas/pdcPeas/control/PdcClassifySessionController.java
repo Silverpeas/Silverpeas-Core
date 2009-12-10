@@ -43,8 +43,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class PdcClassifySessionController extends
-    AbstractComponentSessionController {
+public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
   private List currentSilverObjectIds = null;
   private String currentComponentId = null;

@@ -36,24 +36,16 @@ import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-
-
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ClipboardRequestRouter extends ComponentRequestRouter {
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   @Override
@@ -63,9 +55,8 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   @Override
   public String getSessionControlBeanName() {
@@ -73,15 +64,12 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function,
@@ -89,7 +77,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
     SilverTrace.info("clipboardPeas",
         "ClipboardRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD",
         " componentName = " + componentSC.getClass().getName()
-            + "; function = " + function);
+        + "; function = " + function);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) componentSC;
     String destination = "";
 
@@ -111,7 +99,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
         if (clipboardSC.getComponentId() != null)
           destination = URLManager
               .getURL(null, request.getParameter("SpaceFrom"), request
-                  .getParameter("ComponentFrom"))
+              .getParameter("ComponentFrom"))
               + "paste.jsp";
         else
           destination = URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS)
@@ -132,8 +120,8 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
       clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
       destination = "/clipboard/jsp/clipboard.jsp";
     } else if (function.startsWith("delete")) {
-      try {      
-         int max = clipboardSC.getClipboardSize();
+      try {
+        int max = clipboardSC.getClipboardSize();
         int removed = 0;
         for (int i = 0; i < max; i++) {
           String removedValue = request.getParameter("clipboardId" + i);
@@ -159,7 +147,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
           SilverTrace.info("clipboardPeas",
               "ClipboardRequestRooter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "selectObject " + objectIndex
-                  + " -> " + objectStatus);
+              + " -> " + objectStatus);
           clipboardSC.setClipboardSelectedElement(Integer.parseInt(objectIndex),
               Boolean.parseBoolean(objectStatus));
         }
@@ -188,7 +176,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
             "root.MSG_GEN_PARAM_VALUE", "compR = " + componentName);
         destination = URLManager.getURL(null,
             request.getParameter("SpaceFrom"), request
-                .getParameter("ComponentFrom"))
+            .getParameter("ComponentFrom"))
             + "paste.jsp";
       } else {
         SilverTrace.info("clipboardPeas",

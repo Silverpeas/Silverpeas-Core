@@ -41,8 +41,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
-public class PdcUtilizationSessionController extends
-    AbstractComponentSessionController {
+public class PdcUtilizationSessionController extends AbstractComponentSessionController {
   private String currentView = "P";
   private Axis currentAxis = null;
   private PdcBm pdcBm = null;

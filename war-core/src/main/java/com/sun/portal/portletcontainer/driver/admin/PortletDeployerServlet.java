@@ -46,8 +46,8 @@ import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * AdminServlet is a router for admin related requests like
- * deploying/undeploying of portlets and creating of portlet windows.
+ * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and
+ * creating of portlet windows.
  */
 public class PortletDeployerServlet extends HttpServlet {
 
@@ -67,46 +67,46 @@ public class PortletDeployerServlet extends HttpServlet {
           PORTLET_DRIVER_AUTODEPLOY_DIR, new WarFileFilter(),
           new DirectoryChangedListener() {
 
-            public void fileAdded(File file) {
-              if (file.getName().endsWith(WarFileFilter.WAR_EXTENSION)) {
-                PortletWar portlet = new PortletWar(file);
-                checkAndDeploy(portlet);
-              } else if (file.getName().endsWith(
-                  WarFileFilter.WAR_DEPLOYED_EXTENSION)) {
-                String markerFileName = file.getAbsolutePath();
-                String portletWarFileName = markerFileName.replaceFirst(
-                    WarFileFilter.WAR_DEPLOYED_EXTENSION + "$", "");
-                PortletWar portlet = new PortletWar(portletWarFileName);
+        public void fileAdded(File file) {
+          if (file.getName().endsWith(WarFileFilter.WAR_EXTENSION)) {
+            PortletWar portlet = new PortletWar(file);
+            checkAndDeploy(portlet);
+          } else if (file.getName().endsWith(
+              WarFileFilter.WAR_DEPLOYED_EXTENSION)) {
+            String markerFileName = file.getAbsolutePath();
+            String portletWarFileName = markerFileName.replaceFirst(
+                WarFileFilter.WAR_DEPLOYED_EXTENSION + "$", "");
+            PortletWar portlet = new PortletWar(portletWarFileName);
 
-                if (!portlet.warFileExists()) {
-                  try {
-                    portlet.undeploy();
-                  } catch (Exception e) {
-                    if (logger.isLoggable(Level.INFO)) {
-                      logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet
-                          .getWarName());
-                    }
-                  }
+            if (!portlet.warFileExists()) {
+              try {
+                portlet.undeploy();
+              } catch (Exception e) {
+                if (logger.isLoggable(Level.INFO)) {
+                  logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet
+                      .getWarName());
                 }
               }
             }
+          }
+          }
 
-            private void checkAndDeploy(PortletWar portlet) {
-              if (!portlet.isDeployed())
-                portlet.deploy();
-              else if (portlet.needsRedeploy()) {
-                try {
-                  portlet.redeploy();
-                } catch (Exception e) {
-                  if (logger.isLoggable(Level.INFO)) {
-                    logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet
-                        .getWarName());
-                  }
-                }
+        private void checkAndDeploy(PortletWar portlet) {
+          if (!portlet.isDeployed())
+            portlet.deploy();
+          else if (portlet.needsRedeploy()) {
+            try {
+              portlet.redeploy();
+            } catch (Exception e) {
+              if (logger.isLoggable(Level.INFO)) {
+                logger.log(Level.INFO, "PSPCD_CSPPD0031", portlet
+                    .getWarName());
               }
             }
+          }
+          }
 
-          });
+      });
 
       Timer timer = new Timer();
       long watchInterval = PropertiesContext.getAutodeployDirWatchInterval();

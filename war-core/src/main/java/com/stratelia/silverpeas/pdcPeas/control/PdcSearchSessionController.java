@@ -107,8 +107,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class PdcSearchSessionController extends
-    AbstractComponentSessionController {
+public class PdcSearchSessionController extends AbstractComponentSessionController {
 
   static public final String ALL_SPACES = "*";
   static public final String ALL_COMPONENTS = "*";
@@ -325,7 +324,7 @@ public class PdcSearchSessionController extends
     MatchingIndexEntry[] plainSearchResults = null;
     if (getQueryParameters() != null
         && (getQueryParameters().getKeywords() != null || getQueryParameters()
-            .getXmlQuery() != null)) {
+        .getXmlQuery() != null)) {
       QueryDescription query = getQueryParameters().getQueryDescription(
           getUserId(), "*");
 
@@ -352,7 +351,7 @@ public class PdcSearchSessionController extends
 
       SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
           "root.MSG_GEN_PARAM_VALUE", "# component = "
-              + query.getSpaceComponentPairSet().size());
+          + query.getSpaceComponentPairSet().size());
       try {
         String originalQuery = query.getQuery();
         query.setQuery(getSynonymsQueryString(originalQuery));
@@ -385,8 +384,8 @@ public class PdcSearchSessionController extends
         SilverTrace.info("pdcPeas",
             "PdcSearchSessionController.isMatchingIndexEntryAvailable()",
             "pdcPeas.EX_CAN_SEARCH_QUERY", "componentId = " + componentId
-                + ", objectId = " + mie.getObjectId() + ", objectType = "
-                + mie.getObjectType(), e);
+            + ", objectId = " + mie.getObjectId() + ", objectType = "
+            + mie.getObjectType(), e);
       }
     }
     // contrôle des droits sur les espaces et les composants
@@ -715,9 +714,9 @@ public class PdcSearchSessionController extends
           } catch (Exception e) {
             SilverTrace
                 .error(
-                    "pdcPeas",
-                    "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
-                    "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
+                "pdcPeas",
+                "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
+                "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
           }
           underLink = getUrl(m_sContext, indexEntry);
           int iStart = underLink.indexOf("Attachment");
@@ -839,21 +838,18 @@ public class PdcSearchSessionController extends
   }
 
   /**
-   * Cette methode construit un tableau contenant toutes les informations utiles
-   * à la construction de la JSP resultat
-   * 
-   * @param results
-   *          - un tableau de MatchingIndexEntry
-   * @return un tableau contenant les informations relatives aux parametres
-   *         d'entrée
+   * Cette methode construit un tableau contenant toutes les informations utiles à la construction
+   * de la JSP resultat
+   * @param results - un tableau de MatchingIndexEntry
+   * @return un tableau contenant les informations relatives aux parametres d'entrée
    */
   private List matchingIndexEntries2GlobalSilverResults(
       List matchingIndexEntries) throws Exception {
     SilverTrace
         .info(
-            "pdcPeas",
-            "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "pdcPeas",
+        "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
+        "root.MSG_GEN_ENTER_METHOD");
 
     if (matchingIndexEntries == null || matchingIndexEntries.size() == 0) {
       return new ArrayList();
@@ -880,15 +876,15 @@ public class PdcSearchSessionController extends
 
       SilverTrace
           .info(
-              "pdcPeas",
-              "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
-              "root.MSG_GEN_PARAM_VALUE", "title= " + title);
+          "pdcPeas",
+          "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
+          "root.MSG_GEN_PARAM_VALUE", "title= " + title);
 
       // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
       // RESULT PAGE
       if (title.endsWith("wysiwyg.txt")
           && (componentId.startsWith("kmelia") || componentId
-              .startsWith("kmax"))) {
+          .startsWith("kmax"))) {
         continue;
       }
 
@@ -1051,11 +1047,11 @@ public class PdcSearchSessionController extends
       throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId
-            + ", componentId = " + componentId);
+        + ", componentId = " + componentId);
 
     DocumentVersion version = versioningUtil
         .getLastPublicVersion(new DocumentPK(
-            new Integer(documentId).intValue(), "useless", componentId));
+        new Integer(documentId).intValue(), "useless", componentId));
 
     String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
         version.getLogicalName(), documentId, version.getPk().getId());
@@ -1191,7 +1187,7 @@ public class PdcSearchSessionController extends
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getDaughterValues()",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", valueId = "
-            + valueId);
+        + valueId);
     List values = null;
     if (componentList == null || componentList.size() == 0) {
       values = getPdcBm().getPertinentDaughterValuesByInstanceId(searchContext,
@@ -1536,8 +1532,8 @@ public class PdcSearchSessionController extends
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getAxisValuesByFilter",
         "root.MSG_GEN_PARAM_VALUE", "filter_by_name = " + filter_by_name
-            + ", filter_by_description = " + filter_by_description
-            + ", search_in_daughters = " + search_in_daughters);
+        + ", filter_by_description = " + filter_by_description
+        + ", search_in_daughters = " + search_in_daughters);
     AxisFilter filter;
     if (filter_by_name != null && !"".equals(filter_by_name)) {
       filter_by_name = filter_by_name.replace('*', '%');
@@ -1724,7 +1720,7 @@ public class PdcSearchSessionController extends
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.buildComponentListWhereToSearch()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
-            + component);
+        + component);
 
     componentList = new ArrayList();
 
@@ -1758,7 +1754,7 @@ public class PdcSearchSessionController extends
         || componentId.startsWith("kmelia")) {
       boolean isPrivateSearch = "yes"
           .equalsIgnoreCase(getOrganizationController()
-              .getComponentParameterValue(componentId, "privateSearch"));
+          .getComponentParameterValue(componentId, "privateSearch"));
       if (isPrivateSearch) {
         return false;
       } else {
@@ -1801,8 +1797,7 @@ public class PdcSearchSessionController extends
   }
 
   /**
-   * Returns the list of allowed components for the current user in the given
-   * space/domain.
+   * Returns the list of allowed components for the current user in the given space/domain.
    */
   public List getAllowedComponents(String space) {
     List allowedList = new ArrayList();
@@ -1867,9 +1862,8 @@ public class PdcSearchSessionController extends
   private Vector searchDomains = null; // All the domains available for search
 
   /**
-   * Get the search domains available for search The search domains are
-   * contained in a Vector of array of 3 String (String[0]=domain name,
-   * String[1]=domain url page, String[2]=internal Id)
+   * Get the search domains available for search The search domains are contained in a Vector of
+   * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
    */
   public Vector getSearchDomains() {
     if (searchDomains == null) {
@@ -1880,9 +1874,8 @@ public class PdcSearchSessionController extends
   }
 
   /**
-   * Set the search domains available for search The search domains are
-   * contained in a Vector of array of 3 String (String[0]=domain name,
-   * String[1]=domain url page, String[2]=internal Id)
+   * Set the search domains available for search The search domains are contained in a Vector of
+   * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
    */
   public void setSearchDomains() {
     ResourceLocator resource = null;
@@ -1947,10 +1940,10 @@ public class PdcSearchSessionController extends
           .getComponentInstLight(componentId);
       return urlBase
           + URLManager.getNewComponentURL(componentInst.getDomainFatherId(),
-              componentId)
+          componentId)
           + params
           + URLManager
-              .getEndURL(componentInst.getDomainFatherId(), componentId);
+          .getEndURL(componentInst.getDomainFatherId(), componentId);
     } else {
       return urlBase + URLManager.getURL(null, componentId) + pageAndParams;
     }
@@ -2011,7 +2004,7 @@ public class PdcSearchSessionController extends
       try {
         SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-                SearchEngineBmHome.class);
+            SearchEngineBmHome.class);
         searchEngine = home.create();
       } catch (Exception e) {
         throw new PdcException(
@@ -2037,8 +2030,7 @@ public class PdcSearchSessionController extends
   }
 
   /**
-   * @param i
-   *          - type of the current search
+   * @param i - type of the current search
    */
   public void setSearchType(int i) {
     searchType = i;
@@ -2067,13 +2059,10 @@ public class PdcSearchSessionController extends
   }
 
   /**
-   * Cette methode construit un tableau contenant toutes les informations utiles
-   * à la construction de la JSP resultat
-   * 
-   * @param results
-   *          - un tableau de MatchingIndexEntry
-   * @return un tableau contenant les informations relatives aux parametres
-   *         d'entrée
+   * Cette methode construit un tableau contenant toutes les informations utiles à la construction
+   * de la JSP resultat
+   * @param results - un tableau de MatchingIndexEntry
+   * @return un tableau contenant les informations relatives aux parametres d'entrée
    */
   private List filterMatchingIndexEntries(
       MatchingIndexEntry[] matchingIndexEntries) {
@@ -2111,7 +2100,7 @@ public class PdcSearchSessionController extends
       // RESULT PAGE
       if (title.endsWith("wysiwyg.txt")
           && (componentId.startsWith("kmelia") || componentId
-              .startsWith("kmax"))) {
+          .startsWith("kmax"))) {
         continue;
       }
 

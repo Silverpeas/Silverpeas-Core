@@ -44,12 +44,9 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class AlertUserPeasSessionController extends
-    AbstractComponentSessionController {
+public class AlertUserPeasSessionController extends AbstractComponentSessionController {
   protected AlertUser m_AlertUser = null;
   protected Selection m_Selection = null;
   protected NotificationSender m_NotificationSender = null;
@@ -59,13 +56,8 @@ public class AlertUserPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public AlertUserPeasSessionController(MainSessionController mainSessionCtrl,
@@ -161,11 +153,10 @@ public class AlertUserPeasSessionController extends
     if (message != null && message.trim().length() > 0
         && (getUserRecipients().length > 0 || getGroupRecipients().length > 0)) {
       /*
-       * StringBuffer content = new
-       * StringBuffer(notifMetaData.getContent("fr"));
+       * StringBuffer content = new StringBuffer(notifMetaData.getContent("fr"));
        * content.append(getString("AuthorMessage"
-       * )).append(" : \"").append(message).append("\"\n\n\n");
-       * notifMetaData.setContent("fr", content.toString());
+       * )).append(" : \"").append(message).append("\"\n\n\n"); notifMetaData.setContent("fr",
+       * content.toString());
        */
       setNotificationContent(message, "fr");
       setNotificationContent(message, "en");
@@ -178,14 +169,14 @@ public class AlertUserPeasSessionController extends
     SilverTrace.info("alertUserPeas",
         "AlertUserPeasSessionController.setNotificationContent()",
         "root.MSG_GEN_PARAM_VALUE", "language = " + language + ", content = "
-            + content.toString());
+        + content.toString());
     content.append("\n\n").append(getString("AuthorMessage")).append(" : \n\"")
         .append(message).append("\"");
     getNotificationMetaData().setContent(content.toString(), language);
     SilverTrace.info("alertUserPeas",
         "AlertUserPeasSessionController.setNotificationContent()",
         "root.MSG_GEN_EXIT_METHOD", "content = "
-            + getNotificationMetaData().getContent(language));
+        + getNotificationMetaData().getContent(language));
   }
 
   public void sendNotification() {
@@ -193,7 +184,7 @@ public class AlertUserPeasSessionController extends
       SilverTrace.info("alertUserPeas",
           "AlertUserPeasSessionController.sendNotification()",
           "root.MSG_GEN_PARAM_VALUE", "content_en = "
-              + getNotificationMetaData().getContent("en"));
+          + getNotificationMetaData().getContent("en"));
       m_NotificationSender.notifyUser(getNotificationMetaData());
     } catch (NotificationManagerException e) {
       SilverTrace.warn("alertUserPeas",

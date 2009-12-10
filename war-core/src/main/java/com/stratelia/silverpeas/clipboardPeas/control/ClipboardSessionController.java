@@ -50,8 +50,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 /**
  * A servlet ClipboardSessionControler acts as a proxy for a ClipboardBm EJB.
  */
-public class ClipboardSessionController extends
-    AbstractComponentSessionController {
+public class ClipboardSessionController extends AbstractComponentSessionController {
 
   /*
    * The Web'Activ context
@@ -75,8 +74,7 @@ public class ClipboardSessionController extends
   private String sessionId = null;
 
   /**
-   * The ClipboardSessionController is built empty and will be later
-   * initialized.
+   * The ClipboardSessionController is built empty and will be later initialized.
    */
   public ClipboardSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
@@ -89,10 +87,7 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Method getCounter
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getCounter() {
@@ -102,10 +97,7 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Method incCounter
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public void incCounter(int inc) {
@@ -115,10 +107,7 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Method doIdle
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public void doIdle(int nbinc) {
@@ -128,10 +117,7 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Method getJavaScriptTask
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getHF_JavaScriptTask(HttpServletRequest request) {
@@ -145,7 +131,8 @@ public class ClipboardSessionController extends
 
       if (message.equals("SHOWCLIPBOARD")) {
         // portage netscape
-        str.append("top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
+        str
+            .append("top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
         str.append("top.ClipboardWindow.focus();");
       } else if (message.equals("REFRESHCLIPBOARD")) {
         // portage netscape
@@ -171,8 +158,9 @@ public class ClipboardSessionController extends
         str.append("document.refreshform.target = '" + TargetFrame + "';");
         str.append("document.refreshform.submit();");
       } else if (message.equals("IDLE")) {
-        com.stratelia.silverpeas.notificationserver.channel.server.SilverMessage serverMessage = com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
-            .read(getUserId(), sessionId);
+        com.stratelia.silverpeas.notificationserver.channel.server.SilverMessage serverMessage =
+            com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
+                .read(getUserId(), sessionId);
 
         if (serverMessage != null) {
           SilverTrace.info("clipboardPeas",
@@ -185,7 +173,8 @@ public class ClipboardSessionController extends
             str.append("');");
             str
                 .append("self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID="
-                    + serverMessage.getID() + "';");
+                    +
+                    serverMessage.getID() + "';");
           } else if (serverMessage.getWhat().equals("JAVASCRIPT")) {
             str.append(EncodeHelper.javaStringToJsString(serverMessage
                 .getContent()));
@@ -197,17 +186,17 @@ public class ClipboardSessionController extends
             SilverTrace.info("clipboardPeas",
                 "ClipboardSessionController.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", " popupMessage = "
-                    + popupMessage.getWhat());
+                + popupMessage.getWhat());
             if (popupMessage.getWhat().equals("ALERT")) {
               SilverTrace.info("clipboardPeas",
                   "ClipboardSessionController.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE",
                   " URLManager.getURL(URLManager.CMP_POPUP) = "
-                      + URLManager.getURL(URLManager.CMP_POPUP));
+                  + URLManager.getURL(URLManager.CMP_POPUP));
               SilverTrace.info("clipboardPeas",
                   "ClipboardSessionController.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", " MessageID = "
-                      + popupMessage.getID());
+                  + popupMessage.getID());
               str.append("msgPopup = SP_openWindow('../.."
                   + URLManager.getURL(URLManager.CMP_POPUP)
                   + "ReadMessage.jsp?MessageID=" + popupMessage.getID()
@@ -223,11 +212,11 @@ public class ClipboardSessionController extends
                   "ClipboardSessionController.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE",
                   " URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER) = "
-                      + URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER));
+                  + URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER));
               SilverTrace.info("clipboardPeas",
                   "ClipboardSessionController.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", " userId = "
-                      + popupMessage.getSenderId());
+                  + popupMessage.getSenderId());
               request.setAttribute("MessageID", popupMessage.getID());
               str.append("OpenDiscussion('../.."
                   + URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER)
@@ -260,10 +249,7 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Method getJavaScriptTask
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getHF_HTMLForm(HttpServletRequest request) {
@@ -304,14 +290,14 @@ public class ClipboardSessionController extends
 
   /**
    *Return the list of object (IndexEntry format) in clipboard.
-   * @return the list of object (IndexEntry format) in clipboard. 
+   * @return the list of object (IndexEntry format) in clipboard.
    */
   public synchronized Collection getIndexEntryObjects() throws java.rmi.RemoteException {
     SilverTrace.info("clipboardPeas",
         "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_ENTER_METHOD");
     ArrayList result = new ArrayList();
-    Iterator qi  = getClipboardObjects().iterator();
+    Iterator qi = getClipboardObjects().iterator();
     while (qi.hasNext()) {
       Transferable clipObject = (Transferable) qi.next();
 
@@ -344,14 +330,13 @@ public class ClipboardSessionController extends
   public synchronized Collection getObjects() throws java.rmi.RemoteException,
       javax.naming.NamingException, java.sql.SQLException {
     ArrayList result = new ArrayList();
-    Iterator qi =  getClipboardObjects().iterator();
+    Iterator qi = getClipboardObjects().iterator();
     while (qi.hasNext()) {
       ClipboardSelection clipObject = (ClipboardSelection) qi.next();
       result.add(clipObject);
     }
     return result;
   }
-
 
   @Override
   public ResourceLocator getSettings() {
@@ -402,7 +387,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setComponentRooterName(String RooterName) {
     m_CallerRooterName = RooterName;
@@ -411,7 +395,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setSpaceId(String SpaceId) {
     m_CallerSpaceId = SpaceId;
@@ -420,7 +403,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setComponentId(String ComponentId) {
     m_CallerComponentId = ComponentId;
@@ -429,7 +411,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setJSPPage(String JSPPage) {
     m_CallerJSPPage = JSPPage;
@@ -438,7 +419,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public void setTargetFrame(String TargetFrame) {
     m_CallerTargetFrame = TargetFrame;
@@ -447,7 +427,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getComponentRooterName() {
     return m_CallerRooterName;
@@ -456,7 +435,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getSpaceId() {
     return m_CallerSpaceId;
@@ -465,7 +443,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getComponentId() {
     return m_CallerComponentId;
@@ -474,7 +451,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getJSPPage() {
     return m_CallerJSPPage;
@@ -483,7 +459,6 @@ public class ClipboardSessionController extends
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public String getTargetFrame() {
     return m_CallerTargetFrame;
@@ -491,10 +466,7 @@ public class ClipboardSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIntervalInSec() {

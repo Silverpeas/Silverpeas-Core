@@ -37,8 +37,8 @@ import com.sun.portal.portletcontainer.invoker.ResponseProperties;
 import com.sun.portal.portletcontainer.invoker.WindowInvoker;
 
 /**
- * PortletContent is responsible for getting the portlet content and execting
- * action on the portlet. It delegates the calls to PortletWindowInvoker.
+ * PortletContent is responsible for getting the portlet content and execting action on the portlet.
+ * It delegates the calls to PortletWindowInvoker.
  */
 public class PortletContent {
 

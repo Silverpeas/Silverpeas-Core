@@ -39,9 +39,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "MyLinks";
@@ -49,13 +48,9 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -64,15 +59,12 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -80,7 +72,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
     SilverTrace.info("myLinksPeas",
         "MyLinksPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
 
     String destination = "";
     String rootDest = "/myLinksPeas/jsp/";
@@ -212,9 +204,8 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
     if ("true".equals(request.getParameter("Popup")))
       popup = true;
     /*
-     * String instanceId = request.getParameter("InstanceId"); if (instanceId !=
-     * null) return new LinkDetail(name, description,url,visible,popup,
-     * instanceId); else
+     * String instanceId = request.getParameter("InstanceId"); if (instanceId != null) return new
+     * LinkDetail(name, description,url,visible,popup, instanceId); else
      */
     return new LinkDetail(name, description, url, visible, popup);
   }

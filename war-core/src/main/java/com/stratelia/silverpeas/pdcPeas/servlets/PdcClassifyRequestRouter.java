@@ -114,7 +114,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         HttpSession session = request.getSession(true);
         PdcSearchSessionController pdcSearchSC = (PdcSearchSessionController) session
             .getAttribute("Silverpeas_pdcSearch_"
-                + pdcSC.getCurrentComponentId());
+            + pdcSC.getCurrentComponentId());
 
         if (pdcSearchSC != null)
           request.setAttribute("SearchContext", pdcSearchSC.getSearchContext());

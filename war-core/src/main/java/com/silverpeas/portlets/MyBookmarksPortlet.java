@@ -49,7 +49,7 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute("SilverSessionController",
-            PortletSession.APPLICATION_SCOPE);
+        PortletSession.APPLICATION_SCOPE);
 
     List links = new ArrayList();
     try {

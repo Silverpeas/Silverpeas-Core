@@ -42,8 +42,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
 
 /**
- * Class implementing the tag &lt;contextualDesignationList&gt; from
- * workflowEditor.tld
+ * Class implementing the tag &lt;contextualDesignationList&gt; from workflowEditor.tld
  */
 public class ContextualDesignationList extends TagSupport {
   private static final String UTF8 = "UTF-8"; // encoding
@@ -57,7 +56,6 @@ public class ContextualDesignationList extends TagSupport {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
    */
   public int doStartTag() throws JspException {
@@ -163,8 +161,7 @@ public class ContextualDesignationList extends TagSupport {
   }
 
   /**
-   * @param context
-   *          the context to set
+   * @param context the context to set
    */
   public void setContext(String context) {
     strContext = context;
@@ -178,8 +175,7 @@ public class ContextualDesignationList extends TagSupport {
   }
 
   /**
-   * @param designations
-   *          the designations to set
+   * @param designations the designations to set
    */
   public void setDesignations(ContextualDesignations designations) {
     this.designations = designations;
@@ -193,8 +189,7 @@ public class ContextualDesignationList extends TagSupport {
   }
 
   /**
-   * @param parentScreen
-   *          the relative URL of the parent screen to set
+   * @param parentScreen the relative URL of the parent screen to set
    */
   public void setParentScreen(String parentScreen) {
     strParentScreen = parentScreen;
@@ -208,8 +203,7 @@ public class ContextualDesignationList extends TagSupport {
   }
 
   /**
-   * @param paneTitleKey
-   *          the paneTitleKey to set
+   * @param paneTitleKey the paneTitleKey to set
    */
   public void setPaneTitleKey(String paneTitleKey) {
     strPaneTitleKey = paneTitleKey;
@@ -223,8 +217,7 @@ public class ContextualDesignationList extends TagSupport {
   }
 
   /**
-   * @param columnLabelKey
-   *          the columnLabelKey to set
+   * @param columnLabelKey the columnLabelKey to set
    */
   public void setColumnLabelKey(String columnLabelKey) {
     strColumnLabelKey = columnLabelKey;

@@ -162,8 +162,7 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * Get user choices from the PdcSearchSessionController and put it in the
-   * Request
+   * Get user choices from the PdcSearchSessionController and put it in the Request
    */
   public static void setUserChoices(HttpServletRequest request,
       PdcSearchSessionController pdcSC) throws Exception {
@@ -215,8 +214,8 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * set attributes into the request Attributes are build by information about
-   * both sessioncontroller
+   * set attributes into the request Attributes are build by information about both
+   * sessioncontroller
    */
   public static void setAttributesAdvancedSearch(
       PdcSearchSessionController pdcSC, HttpServletRequest request,
@@ -256,8 +255,8 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * put in the request the primary axis and eventually the secondary axis
-   * accroding to search context
+   * put in the request the primary axis and eventually the secondary axis accroding to search
+   * context
    */
   public static void setPertinentAxis(PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
@@ -314,8 +313,8 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * put in the request the primary axis and eventually the secondary axis
-   * accroding to search context
+   * put in the request the primary axis and eventually the secondary axis accroding to search
+   * context
    */
   public static void setContext(PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {

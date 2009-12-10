@@ -61,8 +61,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ImportDragAndDrop extends HttpServlet {
@@ -104,8 +102,8 @@ public class ImportDragAndDrop extends HttpServlet {
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId + " topicId = " + topicId
-              + " userId = " + userId + " ignoreFolders = " + ignoreFolders
-              + ", draftMode = " + draftMode);
+          + " userId = " + userId + " ignoreFolders = " + ignoreFolders
+          + ", draftMode = " + draftMode);
 
       DiskFileUpload dfu = new DiskFileUpload();
       // maximum size that will be stored in memory
@@ -129,7 +127,7 @@ public class ImportDragAndDrop extends HttpServlet {
         fullFileName = item.getName();
         SilverTrace.info("importExportPeas", "Drop.doPost",
             "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
-                + item.getFieldName() + " - " + fullFileName);
+            + item.getFieldName() + " - " + fullFileName);
 
         String fileName = null;
         if (fullFileName != null && parentPath != null

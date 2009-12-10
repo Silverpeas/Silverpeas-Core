@@ -85,7 +85,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration Get stat size directory data from database
- * 
  * @author
  */
 public class SilverStatisticsPeasDAOVolumeServer {
@@ -98,17 +97,12 @@ public class SilverStatisticsPeasDAOVolumeServer {
   private static final String DB_NAME = JNDINames.SILVERSTATISTICS_DATASOURCE;
 
   /**
-   * donne les stats global pour l'enemble de tous les users cad 2 infos, la
-   * collection contient donc un seul element
-   * 
-   * 
+   * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
+   * donc un seul element
    * @param dateBegin
    * @param dateEnd
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getStatsVolumeServer() throws SQLException {
@@ -122,10 +116,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private static Connection getConnection() {
@@ -143,10 +134,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private static void freeConnection(Connection con) {
@@ -163,14 +151,9 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param selectQuery
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Collection getStatsVolumeServerFromQuery(String selectQuery)
@@ -197,14 +180,9 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Collection getStatsVolumeServerFromResultSet(ResultSet rs)
@@ -231,9 +209,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * donne les stats sur le nombre de pièces jointes non versionnées
-   * 
    * @return
-   * 
    * @throws SQLException
    */
   public static Hashtable getStatsAttachmentsVentil(String currentUserId)
@@ -273,18 +249,16 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * donne les stats sur le nombre de pièces jointes versionnées
-   * 
    * @return
-   * 
    * @throws SQLException
    */
   public static Hashtable getStatsVersionnedAttachmentsVentil(
       String currentUserId) throws SQLException {
     SilverTrace
         .info(
-            "silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
-            "root.MSG_GEN_ENTER_METHOD");
+        "silverStatisticsPeas",
+        "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
+        "root.MSG_GEN_ENTER_METHOD");
 
     Hashtable resultat = new Hashtable(); // key=componentId, value=new
     // String[3] {nb, null, null}
@@ -336,9 +310,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * donne les stats sur la taille des pièces jointes non versionnées
-   * 
    * @return
-   * 
    * @throws SQLException
    */
   public static Hashtable getStatsAttachmentsSizeVentil(String currentUserId)
@@ -397,18 +369,16 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
   /**
    * donne les stats sur la taille des pièces jointes versionnées
-   * 
    * @return
-   * 
    * @throws SQLException
    */
   public static Hashtable getStatsVersionnedAttachmentsSizeVentil(
       String currentUserId) throws SQLException {
     SilverTrace
         .info(
-            "silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsSizeVentil",
-            "root.MSG_GEN_ENTER_METHOD");
+        "silverStatisticsPeas",
+        "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsSizeVentil",
+        "root.MSG_GEN_ENTER_METHOD");
 
     Hashtable resultat = new Hashtable(); // key=componentId, value=new
     // String[3] {nb, null, null}

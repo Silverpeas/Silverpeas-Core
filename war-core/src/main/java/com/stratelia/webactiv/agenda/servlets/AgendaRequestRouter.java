@@ -57,16 +57,12 @@ import org.apache.commons.fileupload.FileUploadException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AgendaRequestRouter extends ComponentRequestRouter {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AgendaRequestRouter() {
@@ -74,44 +70,36 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param context
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component = (ComponentSessionController) new AgendaSessionController(
-        mainSessionCtrl, context);
+    ComponentSessionController component =
+        (ComponentSessionController) new AgendaSessionController(
+            mainSessionCtrl, context);
 
     return component;
   }
 
   /**
-   * This method has to be implemented in the component request router class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request router class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "agenda";
   }
 
   /**
-   * This method has to be implemented by the component request router it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Controller, build and initialised.
-   * @param request
-   *          The entering request. The request router need it to get parameters
+   * This method has to be implemented by the component request router it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Controller, build and initialised.
+   * @param request The entering request. The request router need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -382,7 +370,6 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         /*
          * if (StringUtil.isDefined(journalId) && !"-1".equals(journalId))
          * scc.setJournalCategories(journalId, categoryIds); else {
-         * 
          * scc.setCurrentCategories(categories); journalId = "-1"; }
          */
         scc.setCurrentCategories(categories);
@@ -453,19 +440,19 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc
               .getComponentId())
               + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "RepositoryTypeTemp") + File.separator + tempFolderName;
+              "RepositoryTypeTemp") + File.separator + tempFolderName;
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(agendaSc.getComponentId(),
                 GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                    "RepositoryTypeTemp")
-                    + File.separator + tempFolderName);
+                "RepositoryTypeTemp")
+                + File.separator + tempFolderName);
           }
 
           // Creation of the file in the temp folder
           fileUploaded = new File(FileRepositoryManager
               .getAbsolutePath(agendaSc.getComponentId())
               + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "RepositoryTypeTemp")
+              "RepositoryTypeTemp")
               + File.separator
               + tempFolderName
               + File.separator + logicalName);
@@ -476,7 +463,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
             SilverTrace.debug("agenda",
                 "AgendaRequestRouter.processFormUpload()",
                 "root.MSG_GEN_PARAM_VALUE", "fileUploaded = " + fileUploaded
-                    + " fileSize=" + fileSize + " fileType=" + fileType);
+                + " fileSize=" + fileSize + " fileType=" + fileType);
           }
         }
       }

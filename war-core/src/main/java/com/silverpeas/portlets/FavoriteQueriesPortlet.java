@@ -44,7 +44,7 @@ public class FavoriteQueriesPortlet extends GenericPortlet implements FormNames 
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute("SilverSessionController",
-            PortletSession.APPLICATION_SCOPE);
+        PortletSession.APPLICATION_SCOPE);
 
     Iterator iCentersList = (new InterestCenterUtil()).getICByUserId(
         Integer.parseInt(m_MainSessionCtrl.getUserId())).iterator();

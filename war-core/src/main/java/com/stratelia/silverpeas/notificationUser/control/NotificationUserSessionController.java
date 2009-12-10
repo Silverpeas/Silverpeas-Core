@@ -56,12 +56,10 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * 
  * @author tleroi
  * @version
  */
-public class NotificationUserSessionController extends
-    AbstractComponentSessionController {
+public class NotificationUserSessionController extends AbstractComponentSessionController {
   Selection sel = null;
 
   /* paramaters of a notification */
@@ -72,11 +70,8 @@ public class NotificationUserSessionController extends
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @see
    */
   public NotificationUserSessionController(
@@ -96,12 +91,8 @@ public class NotificationUserSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public ArrayList getDefaultAddresses() throws NotificationManagerException {
@@ -121,12 +112,8 @@ public class NotificationUserSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
   public ArrayList getNotifPriorities() throws NotificationManagerException {
@@ -136,12 +123,8 @@ public class NotificationUserSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws NotificationUserException
-   * 
    * @see
    */
   public ArrayList getAvailableGroups() throws NotificationUserException {
@@ -162,10 +145,7 @@ public class NotificationUserSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayList getAvailableUsers() {
@@ -187,8 +167,6 @@ public class NotificationUserSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @param compoId
    * @param notificationId
    * @param priorityId
@@ -196,9 +174,7 @@ public class NotificationUserSessionController extends
    * @param txtMessage
    * @param selectedUsers
    * @param selectedGroups
-   * 
    * @throws NotificationManagerException
-   * 
    * @see
    */
 
@@ -211,9 +187,9 @@ public class NotificationUserSessionController extends
 
     SilverTrace
         .debug("notificationUser",
-            "NotificationUsersessionController.sendMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-                + priorityId);
+        "NotificationUsersessionController.sendMessage()",
+        "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
+        + priorityId);
 
     if ((notificationId != null) && (notificationId.length() > 0)) {
       notifTypeId = Integer.parseInt(notificationId);
@@ -235,12 +211,8 @@ public class NotificationUserSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @param src
-   * 
    * @return
-   * 
    * @see
    */
   public String[] getIdsArrayFromIdsLine(String src) {
@@ -271,15 +243,15 @@ public class NotificationUserSessionController extends
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator() {
-        public int compare(Object o1, Object o2) {
+          public int compare(Object o1, Object o2) {
           return (((Properties) o1).getProperty("name")).toUpperCase()
               .compareTo(((Properties) o2).getProperty("name").toUpperCase());
-        }
+          }
 
         public boolean equals(Object o) {
           return false;
-        }
-      });
+          }
+                });
       arToDisplay = new ArrayList(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);

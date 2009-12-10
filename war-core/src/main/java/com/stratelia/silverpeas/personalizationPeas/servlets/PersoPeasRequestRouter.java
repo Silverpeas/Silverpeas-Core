@@ -138,8 +138,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PersoPeasRequestRouter extends ComponentRequestRouter {
@@ -151,13 +149,9 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -167,33 +161,30 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for notificationUser, returns "notificationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for notificationUser, returns
+   * "notificationUser"
    */
   public String getSessionControlBeanName() {
     return "personalizationPeas";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     SilverTrace.info(getSessionControlBeanName(),
         "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "function = " + function);
-    PersonalizationSessionController personalizationScc = (PersonalizationSessionController) componentSC;
+    PersonalizationSessionController personalizationScc =
+        (PersonalizationSessionController) componentSC;
 
     ResourceLocator rl = new ResourceLocator(
         "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
@@ -322,8 +313,8 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
           SilverTrace.info(getSessionControlBeanName(),
               "PersoPeasRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-                  + " - userLastName=" + userLastName + " userEmail="
-                  + userEmail);
+              + " - userLastName=" + userLastName + " userEmail="
+              + userEmail);
 
           // process extra properties
           HashMap properties = new HashMap();
@@ -345,8 +336,8 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
               .htmlStringToJavaString(userEmail), EncodeHelper
               .htmlStringToJavaString(request.getParameter("userAccessLevel")),
               EncodeHelper.htmlStringToJavaString(request
-                  .getParameter("OldPassword")), EncodeHelper
-                  .htmlStringToJavaString(request.getParameter("NewPassword")),
+              .getParameter("OldPassword")), EncodeHelper
+              .htmlStringToJavaString(request.getParameter("NewPassword")),
               properties);
           request.setAttribute("Message", personalizationScc
               .getString("MessageOK"));

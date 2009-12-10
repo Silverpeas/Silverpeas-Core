@@ -39,21 +39,15 @@ import com.silverpeas.communicationUser.control.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class CommunicationUserRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -63,26 +57,22 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for communicationUser, returns "communicationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for communicationUser, returns
+   * "communicationUser"
    */
   public String getSessionControlBeanName() {
     return "communicationUser";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/communicationUser/jsp/communicationUser.jsp?flag=user")
+   * "/communicationUser/jsp/communicationUser.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -96,7 +86,8 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
     // client utiliser userPanelPeas. Cela mélange les objets selectionnée.
 
     String destination = "";
-    CommunicationUserSessionController commUserSC = (CommunicationUserSessionController) componentSC;
+    CommunicationUserSessionController commUserSC =
+        (CommunicationUserSessionController) componentSC;
     SilverTrace.info("communicationUser",
         "CommunicationUserRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function=" + function);
@@ -110,15 +101,13 @@ public class CommunicationUserRequestRouter extends ComponentRequestRouter {
       }
       // CBO : REMOVE
       /*
-       * else if (function.equals("NotifyUser")) {
-       * request.setAttribute("userDetail",
+       * else if (function.equals("NotifyUser")) { request.setAttribute("userDetail",
        * commUserSC.getTargetUserDetail(request.getParameter("theUserId")));
        * request.setAttribute("action", "NotifyUser"); destination =
-       * "/communicationUser/jsp/writeMessage.jsp"; } else if
-       * (function.equals("ToAlert")) {
+       * "/communicationUser/jsp/writeMessage.jsp"; } else if (function.equals("ToAlert")) {
        * commUserSC.notifySession(request.getParameter("theUserId"),
-       * request.getParameter("messageAux")); request.setAttribute("action",
-       * "Close"); destination = "/communicationUser/jsp/writeMessage.jsp"; }
+       * request.getParameter("messageAux")); request.setAttribute("action", "Close"); destination =
+       * "/communicationUser/jsp/writeMessage.jsp"; }
        */
       // CBO : FIN REMOVE
 

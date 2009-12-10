@@ -56,12 +56,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class SilverStatisticsPeasSessionController extends
-    AbstractComponentSessionController {
+public class SilverStatisticsPeasSessionController extends AbstractComponentSessionController {
   public static final String SPACE_ADMIN = "SpaceAdmin";
   public static final int INDICE_VALUE = 0;
   public static final int INDICE_LIB = 1;
@@ -130,13 +127,8 @@ public class SilverStatisticsPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public SilverStatisticsPeasSessionController(
@@ -288,9 +280,9 @@ public class SilverStatisticsPeasSessionController extends
     } catch (Exception se) {
       SilverTrace
           .error(
-              "silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getDistinctUserConnectionsChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "silverStatisticsPeas",
+          "SilverStatisticsPeasSessionController.getDistinctUserConnectionsChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -419,9 +411,9 @@ public class SilverStatisticsPeasSessionController extends
     } catch (Exception se) {
       SilverTrace
           .error(
-              "silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getUserConnectionsUserChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "silverStatisticsPeas",
+          "SilverStatisticsPeasSessionController.getUserConnectionsUserChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -494,9 +486,9 @@ public class SilverStatisticsPeasSessionController extends
     } catch (Exception se) {
       SilverTrace
           .error(
-              "silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getUserConnectionsGroupChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "silverStatisticsPeas",
+          "SilverStatisticsPeasSessionController.getUserConnectionsGroupChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -618,9 +610,7 @@ public class SilverStatisticsPeasSessionController extends
 
   /**
    * Méthode d'envoi de notification aux utilisateurs connectés
-   * 
-   * @param listUserDetail
-   *          - liste des utilisateurs conenctés
+   * @param listUserDetail - liste des utilisateurs conenctés
    * @param message
    */
   public void notifyAllSessions(Collection listUserDetail, String message) {
@@ -671,7 +661,7 @@ public class SilverStatisticsPeasSessionController extends
         "filterType=" + filterType);
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourUserPanel()", "filterId="
-            + filterId);
+        + filterId);
   }
 
   /**
@@ -932,7 +922,7 @@ public class SilverStatisticsPeasSessionController extends
 
       axisChart = ChartUtil
           .buildLineAxisChart(generalMessage.getString("GML.date"), this
-              .getString("silverStatisticsPeas.Access"), title, dates, nbAccess);
+          .getString("silverStatisticsPeas.Access"), title, dates, nbAccess);
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -1091,7 +1081,7 @@ public class SilverStatisticsPeasSessionController extends
 
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.getYear()", "yearValue="
-            + yearValue);
+        + yearValue);
 
     if (years != null) {
       Iterator it = years.iterator();
@@ -1118,7 +1108,7 @@ public class SilverStatisticsPeasSessionController extends
 
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.getMonth()", "monthValue="
-            + monthValue);
+        + monthValue);
     for (int i = 0; i < 12; i++) {
       stat = new String[2];
       stat[INDICE_VALUE] = Integer.toString(i);
@@ -1383,7 +1373,6 @@ public class SilverStatisticsPeasSessionController extends
   }
 
   /**
-   * 
    * @return Returns the path.
    */
   public Vector getPath() {

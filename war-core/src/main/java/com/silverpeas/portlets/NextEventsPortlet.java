@@ -52,7 +52,7 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute("SilverSessionController",
-            PortletSession.APPLICATION_SCOPE);
+        PortletSession.APPLICATION_SCOPE);
 
     PortletPreferences pref = request.getPreferences();
     int nbEvents = Integer.parseInt(pref.getValue("nbEvents", "5"));
@@ -130,8 +130,8 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
   }
 
   /*
-   * Process the "finished" action for the edit page. Set the "url" to the value
-   * specified in the edit page.
+   * Process the "finished" action for the edit page. Set the "url" to the value specified in the
+   * edit page.
    */
   private void processEditFinishedAction(ActionRequest request,
       ActionResponse response) throws PortletException {

@@ -27,8 +27,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class TemplateDesignerException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public TemplateDesignerException(String callingClass, int errorLevel,
       String message) {
@@ -51,8 +51,7 @@ public class TemplateDesignerException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "TemplateDesigner";

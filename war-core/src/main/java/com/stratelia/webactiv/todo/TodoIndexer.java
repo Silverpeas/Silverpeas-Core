@@ -54,8 +54,6 @@ import com.stratelia.webactiv.todo.control.TodoException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class TodoIndexer implements ComponentIndexerInterface {
@@ -64,12 +62,8 @@ public class TodoIndexer implements ComponentIndexerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
-   * 
    * @throws TodoException
-   * 
    * @see
    */
   public void index(MainSessionController mainSessionCtrl,

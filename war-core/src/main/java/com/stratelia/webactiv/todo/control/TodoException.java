@@ -35,7 +35,6 @@ package com.stratelia.webactiv.todo.control;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * 
  * @author mmarengo
  * @version 1.0
  */
@@ -50,13 +49,10 @@ public class TodoException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public TodoException(String callingClass, int errorLevel, String message,
@@ -66,13 +62,10 @@ public class TodoException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public TodoException(String callingClass, int errorLevel, String message,
@@ -82,14 +75,11 @@ public class TodoException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public TodoException(String callingClass, int errorLevel, String message,

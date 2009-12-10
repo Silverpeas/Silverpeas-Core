@@ -37,21 +37,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -61,26 +55,22 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for notificationUser, returns "notificationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for notificationUser, returns
+   * "notificationUser"
    */
   public String getSessionControlBeanName() {
     return "notificationUser";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -233,8 +223,10 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         request.setAttribute("SelectedIdUsers", new String[0]);
         request.setAttribute("SelectedIdGroups", new String[0]);
 
-        destination = "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
-            + popupMode + "&editTargets=" + editTargets + "&compoId=";
+        destination =
+            "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
+                +
+                popupMode + "&editTargets=" + editTargets + "&compoId=";
 
       } else if (function.startsWith("emptyAll")) {
         request.setAttribute("SelectedIdUsers", new String[0]);
@@ -242,8 +234,10 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
         editTargets = request.getParameter("editTargets");
         popupMode = request.getParameter("popupMode");
-        destination = "/notificationUser/jsp/notificationSender.jsp?Action=emptyAll&notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
-            + popupMode + "&editTargets=" + editTargets + "&compoId=";
+        destination =
+            "/notificationUser/jsp/notificationSender.jsp?Action=emptyAll&notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
+                +
+                popupMode + "&editTargets=" + editTargets + "&compoId=";
       } else {
         destination = "/notificationUser/jsp/" + function;
       }

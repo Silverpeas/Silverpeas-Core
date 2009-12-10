@@ -36,11 +36,10 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 public interface SILVERMAILRequestHandler {
 
   /**
-   * Perform any processing requiring to support this request, and return the
-   * URL of the JSP view that should display the results of the request.
-   * 
-   * @return the URL within the web application of the JSP view to which the
-   *         controller should redirect the response
+   * Perform any processing requiring to support this request, and return the URL of the JSP view
+   * that should display the results of the request.
+   * @return the URL within the web application of the JSP view to which the controller should
+   * redirect the response
    */
   String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException;

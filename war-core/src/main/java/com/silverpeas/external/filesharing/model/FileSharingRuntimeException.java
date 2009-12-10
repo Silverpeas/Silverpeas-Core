@@ -27,8 +27,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class FileSharingRuntimeException extends SilverpeasRuntimeException {
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public FileSharingRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -51,8 +51,7 @@ public class FileSharingRuntimeException extends SilverpeasRuntimeException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "FileSharing";

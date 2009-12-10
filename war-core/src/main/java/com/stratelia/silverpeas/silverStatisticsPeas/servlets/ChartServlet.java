@@ -42,10 +42,8 @@ import org.jCharts.encoders.ServletEncoderHelper;
 import org.jCharts.properties.PropertyException;
 
 /**
- * @author BERTINL
- * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author BERTINL TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public class ChartServlet extends HttpServlet {
 
@@ -69,10 +67,8 @@ public class ChartServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest
-   * , javax.servlet.http.HttpServletResponse)
+   * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest ,
+   * javax.servlet.http.HttpServletResponse)
    */
   protected void service(HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {

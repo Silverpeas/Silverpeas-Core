@@ -97,27 +97,20 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PortletRequestRooter extends HttpServlet {
 
   /**
    * <init>
-   * 
    */
   public PortletRequestRooter() {
   }
 
   /**
    * doPost Controleur in the MVC paradigm
-   * 
-   * @param request
-   *          parameter for doPost
-   * 
-   * @throws ServletException
-   *           -
+   * @param request parameter for doPost
+   * @throws ServletException -
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
@@ -144,7 +137,7 @@ public class PortletRequestRooter extends HttpServlet {
       }
       SilverTrace.info("portlet", "PortletRequestRooter.doPost",
           "root.MSG_GEN_ENTER_METHOD", "function=" + function + ", spaceId="
-              + spaceId + ", portletState=" + portletState);
+          + spaceId + ", portletState=" + portletState);
       // Compute the destination page
 
       if (msc == null) {
@@ -302,9 +295,9 @@ public class PortletRequestRooter extends HttpServlet {
         request.setAttribute("spaceModel", space);
         request
             .setAttribute("fullURL", GeneralPropertiesManager
-                .getGeneralResourceLocator().getString("ApplicationURL")
-                + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="
-                + space.getSpaceId());
+            .getGeneralResourceLocator().getString("ApplicationURL")
+            + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="
+            + space.getSpaceId());
         destination = "/jobStartPagePeas/jsp/goBack.jsp";
 
       } else if (function.equalsIgnoreCase("portletAdminBarre")) {
@@ -494,9 +487,9 @@ public class PortletRequestRooter extends HttpServlet {
         request.setAttribute("spaceModel", space);
         request
             .setAttribute("fullURL", GeneralPropertiesManager
-                .getGeneralResourceLocator().getString("ApplicationURL")
-                + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="
-                + space.getSpaceId());
+            .getGeneralResourceLocator().getString("ApplicationURL")
+            + "/RjobStartPagePeas/jsp/SetPortlet?spaceId="
+            + space.getSpaceId());
         destination = "/jobStartPagePeas/jsp/goBack.jsp";
 
       } else if ((function.equalsIgnoreCase("down"))
@@ -677,13 +670,8 @@ public class PortletRequestRooter extends HttpServlet {
 
   /**
    * doGet
-   * 
-   * @param request
-   *          parameter for doGet
-   * 
-   * @throws ServletException
-   *           -
-   * 
+   * @param request parameter for doGet
+   * @throws ServletException -
    */
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
@@ -692,7 +680,6 @@ public class PortletRequestRooter extends HttpServlet {
 
   /**
    * getSessionControlBeanName
-   * 
    * @return the returned String
    */
   public String getSessionControlBeanName() {

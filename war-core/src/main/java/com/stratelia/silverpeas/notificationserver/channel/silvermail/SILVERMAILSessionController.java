@@ -35,20 +35,15 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
-public class SILVERMAILSessionController extends
-    AbstractComponentSessionController {
+public class SILVERMAILSessionController extends AbstractComponentSessionController {
   protected String currentFunction;
   protected long currentMessageId = -1;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SILVERMAILSessionController(MainSessionController mainSessionCtrl,
@@ -67,10 +62,7 @@ public class SILVERMAILSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @param currentFunction
-   * 
    * @see
    */
   public void setCurrentFunction(String currentFunction) {
@@ -79,10 +71,7 @@ public class SILVERMAILSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCurrentFunction() {
@@ -91,12 +80,8 @@ public class SILVERMAILSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @param folderName
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getFolderMessageList(String folderName)
@@ -107,12 +92,8 @@ public class SILVERMAILSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @param messageId
-   * 
    * @return
-   * 
    * @see
    */
   public SILVERMAILMessage getMessage(long messageId)
@@ -122,10 +103,7 @@ public class SILVERMAILSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public long getCurrentMessageId() {
@@ -134,10 +112,7 @@ public class SILVERMAILSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setCurrentMessageId(long value) {

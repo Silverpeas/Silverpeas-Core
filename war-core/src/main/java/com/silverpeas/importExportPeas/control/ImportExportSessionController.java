@@ -38,10 +38,8 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 /**
  * @author neysseri
- * 
  */
-public class ImportExportSessionController extends
-    AbstractComponentSessionController {
+public class ImportExportSessionController extends AbstractComponentSessionController {
   public ImportExportSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
@@ -60,9 +58,8 @@ public class ImportExportSessionController extends
   }
 
   /**
-   * @param itemsToExport
-   *          a List of WAAttributeValuePair contains ids of elements to export
-   *          (objectId and instanceId)
+   * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
+   * (objectId and instanceId)
    * @throws ImportExportException
    */
   public ExportReport processExport(String language, List itemsToExport,
@@ -76,16 +73,12 @@ public class ImportExportSessionController extends
   }
 
   /**
-   * Export Pdf attachements of selected publications to a unique PDF. Useful
-   * for a single print or download.
-   * 
-   * @param language
-   *          : language
-   * @param itemsToExport
-   *          : List<WAAttributeValuePair> contains ids of elements to export
-   *          (objectId and instanceId)
-   * @param rootId
-   *          :
+   * Export Pdf attachements of selected publications to a unique PDF. Useful for a single print or
+   * download.
+   * @param language : language
+   * @param itemsToExport : List<WAAttributeValuePair> contains ids of elements to export (objectId
+   * and instanceId)
+   * @param rootId :
    * @return
    * @throws ImportExportException
    */
@@ -100,11 +93,9 @@ public class ImportExportSessionController extends
   }
 
   /**
-   * @param itemsToExport
-   *          a List of WAAttributeValuePair contains ids of elements to export
-   *          (objectId and instanceId)
-   * @param Arraylist
-   *          of combination (/0/1/1 ... /0/2/7)
+   * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
+   * (objectId and instanceId)
+   * @param Arraylist of combination (/0/1/1 ... /0/2/7)
    * @param timeCriteria
    * @throws ImportExportException
    */

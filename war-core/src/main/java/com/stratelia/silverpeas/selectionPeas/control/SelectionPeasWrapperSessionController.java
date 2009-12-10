@@ -37,21 +37,16 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * A simple wrapper to the userpanel.
- * 
  * @author Didier Wenzek
  */
-public class SelectionPeasWrapperSessionController extends
-    AbstractComponentSessionController {
+public class SelectionPeasWrapperSessionController extends AbstractComponentSessionController {
 
   private String[] selectedUserIds;
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * @param mainSessionCtrl
-   *          The full work session.
-   * @param componentContext
-   *          The context of this component session.
+   * @param mainSessionCtrl The full work session.
+   * @param componentContext The context of this component session.
    */
   public SelectionPeasWrapperSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

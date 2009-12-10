@@ -55,34 +55,30 @@ public class PdcRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for notificationUser, returns "notificationUser"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for notificationUser, returns
+   * "notificationUser"
    */
   public String getSessionControlBeanName() {
     return "pdcPeas";
   }
 
   /**
-   * This is the separator string between the name of axis or values and their
-   * order in the option html tag
+   * This is the separator string between the name of axis or values and their order in the option
+   * html tag
    */
   private static final String sepOptionValueTag = "#_$#";
   private static final int lenOfSeparator = PdcRequestRouter.sepOptionValueTag
       .length();
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -629,7 +625,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // update the value object
         Value updatedValue = new Value(valueId, "unknown", valueName,
             valueDescription, null, null, null, -1, (new Integer(valueOrder))
-                .intValue(), null);
+            .intValue(), null);
 
         // récupération des traductions
         I18NHelper.setI18NInfo(updatedValue, request);
@@ -674,7 +670,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // create the axe
         Value value = new Value("UNKNOWN", "unknown", valueName,
             valueDescription, null, null, null, -1, (new Integer(valueOrder))
-                .intValue(), null);
+            .intValue(), null);
         int status = pdcSC.insertMotherValue(value);
 
         switch (status) {
@@ -711,7 +707,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // create the axe
         Value value = new Value("UNKNOWN", "unknown", valueName,
             valueDescription, null, null, null, -1, (new Integer(valueOrder))
-                .intValue(), null);
+            .intValue(), null);
         int status = pdcSC.createDaughterValue(value);
 
         I18NHelper.setI18NInfo(value, request);
@@ -860,11 +856,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search the axisHeader whished from the sorted list of axis header.
-   * 
-   * @param axeId
-   *          - the id of the whished axisHeader
-   * @param axis
-   *          - A primary or secondary list of axes
+   * @param axeId - the id of the whished axisHeader
+   * @param axis - A primary or secondary list of axes
    * @return the whished AxisHeader or null
    */
   private AxisHeader extractAxisHeader(String axeId, List axis) {
@@ -883,11 +876,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search sisters values of a Value from an axe.
-   * 
-   * @param axis
-   *          - A primary or secondary list of axes
-   * @param value
-   *          - a value of the axe
+   * @param axis - A primary or secondary list of axes
+   * @param value - a value of the axe
    * @return the list of sisters
    */
   private List getSisterValues(Axis axis, Value value) {
@@ -910,11 +900,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Search daughters values of a Value from an axe.
-   * 
-   * @param axis
-   *          - A primary or secondary list of axes
-   * @param mother
-   *          - a value of the axe
+   * @param axis - A primary or secondary list of axes
+   * @param mother - a value of the axe
    * @return the list of daughters
    */
   private List getDaughterValues(Axis axis, Value mother) {
@@ -936,9 +923,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   /**
    * Extract the order of axis or values values.
-   * 
-   * @param text
-   *          - The value of the axis or the value (String+separator+order)
+   * @param text - The value of the axis or the value (String+separator+order)
    * @return the order
    */
   private String extractOrder(String text) {

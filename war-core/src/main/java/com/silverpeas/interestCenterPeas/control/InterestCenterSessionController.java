@@ -40,8 +40,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
-public class InterestCenterSessionController extends
-    AbstractComponentSessionController {
+public class InterestCenterSessionController extends AbstractComponentSessionController {
 
   private InterestCenterBm icEjb = null;
 
@@ -64,7 +63,7 @@ public class InterestCenterSessionController extends
       try {
         InterestCenterBmHome icEjbHome = (InterestCenterBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-                InterestCenterBmHome.class);
+            InterestCenterBmHome.class);
         icEjb = icEjbHome.create();
       } catch (Exception e) {
         throw new InterestCenterRuntimeException(
@@ -75,10 +74,7 @@ public class InterestCenterSessionController extends
   }
 
   /**
-   * Method getICByUserId
-   * 
-   * returns ArrayList of all InterestCenter objects for user given by userId
-   * 
+   * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
   public ArrayList getICByUserId() throws RemoteException {
     initEJB();
@@ -86,10 +82,7 @@ public class InterestCenterSessionController extends
   }
 
   /**
-   * Method getICByPK
-   * 
-   * returns InterestCenter object by pk
-   * 
+   * Method getICByPK returns InterestCenter object by pk
    */
   public InterestCenter getICByPK(int pk) throws RemoteException {
     initEJB();
@@ -97,10 +90,7 @@ public class InterestCenterSessionController extends
   }
 
   /**
-   * Method createIC
-   * 
-   * creates new InterestCenter
-   * 
+   * Method createIC creates new InterestCenter
    */
   public void createIC(InterestCenter icToCreate) throws RemoteException {
     initEJB();
@@ -108,10 +98,7 @@ public class InterestCenterSessionController extends
   }
 
   /**
-   * Method updateIC
-   * 
-   * updates existing InterestCenter
-   * 
+   * Method updateIC updates existing InterestCenter
    */
   public void updateIC(InterestCenter icToUpdate) throws RemoteException {
     initEJB();
@@ -119,10 +106,7 @@ public class InterestCenterSessionController extends
   }
 
   /**
-   * Method removeICByPKs
-   * 
-   * removes InterestCenter objects corresponding to PKs from given ArrayList
-   * 
+   * Method removeICByPKs removes InterestCenter objects corresponding to PKs from given ArrayList
    */
   public void removeICByPKs(String[] iDs) throws RemoteException {
     initEJB();
@@ -134,10 +118,7 @@ public class InterestCenterSessionController extends
   }
 
   /**
-   * Method removeICByPK
-   * 
-   * removes InterestCenter object corresponding to given PK
-   * 
+   * Method removeICByPK removes InterestCenter object corresponding to given PK
    */
   public void removeICByPK(int pk) throws RemoteException {
     initEJB();

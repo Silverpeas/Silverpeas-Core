@@ -41,24 +41,16 @@ import com.stratelia.silverpeas.util.PairObject;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class GenericPanelPeasSessionController extends
-    AbstractComponentSessionController {
+public class GenericPanelPeasSessionController extends AbstractComponentSessionController {
   GenericPanel m_Panel = null;
   PanelProvider m_Nav = null;
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public GenericPanelPeasSessionController(

@@ -30,12 +30,8 @@ import com.stratelia.silverpeas.util.SilverpeasSettings;
 
 public class GenericPanelPeasSettings extends SilverpeasSettings {
   /*
-   * public static int m_UsersByPage = 20;
-   * 
-   * static { ResourceLocator rs = newResourceLocator(
-   * "com.stratelia.silverpeas.genericPanelPeas.settings.genericPanelPeasSettings"
-   * , "");
-   * 
+   * public static int m_UsersByPage = 20; static { ResourceLocator rs = newResourceLocator(
+   * "com.stratelia.silverpeas.genericPanelPeas.settings.genericPanelPeasSettings" , "");
    * m_UsersByPage = readInt(rs, "UsersByPage", 20); }
    */
 }

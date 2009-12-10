@@ -72,9 +72,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   @Override
   public String getSessionControlBeanName() {
@@ -504,23 +503,23 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
           "root.MSG_GEN_PARAM_VALUE", "Managed spaceId= "
-              + jobStartPageSC.getManagedSpaceId());
+          + jobStartPageSC.getManagedSpaceId());
       SpaceInst destinationSpace = jobStartPageSC.getSpaceInstById(request
           .getParameter("DestinationSpace"));
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
           "root.MSG_GEN_PARAM_VALUE", "espace source: " + currentSpace.getId()
-              + " espace dest=" + destinationSpace.getId());
+          + " espace dest=" + destinationSpace.getId());
       // Moving only if destination space and current space are different
       if (!destinationSpace.getId().equals(currentSpace.getId())) {
         SilverTrace.info("jobStartPagePeas",
             "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
             "root.MSG_GEN_PARAM_VALUE", "espace source: "
-                + jobStartPageSC.isSpaceInMaintenance(currentSpace.getId()
-                    .substring(2))
-                + " espace dest="
-                + jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId()
-                    .substring(2)));
+            + jobStartPageSC.isSpaceInMaintenance(currentSpace.getId()
+            .substring(2))
+            + " espace dest="
+            + jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId()
+            .substring(2)));
         // Destination and source space in maintenance = OK
         if ((jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId()
             .substring(2)) && jobStartPageSC.isSpaceInMaintenance(currentSpace
@@ -530,9 +529,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           SilverTrace.info("jobStartPagePeas",
               "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
               "root.MSG_GEN_PARAM_VALUE", "component = " + compoint1.getId()
-                  + " espace dest:" + destinationSpace.getId().substring(2)
-                  + " componentBefore="
-                  + request.getParameter("ComponentBefore"));
+              + " espace dest:" + destinationSpace.getId().substring(2)
+              + " componentBefore="
+              + request.getParameter("ComponentBefore"));
           jobStartPageSC.setMoveComponentToSpace(compoint1, request
               .getParameter("DestinationSpace").substring(2), request
               .getParameter("ComponentBefore"));
@@ -587,7 +586,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasRequestRouter.ChangeDestinationSpace()",
           "root.MSG_GEN_PARAM_VALUE", "currentSpaceId=" + currentSpace.getId()
-              + "selectedSpaceId=" + selectedSpace.getId());
+          + "selectedSpaceId=" + selectedSpace.getId());
       request.setAttribute("jobStartPageSC", jobStartPageSC);
       request.setAttribute("currentComponentName", compoint1.getLabel());
       request.setAttribute("currentSpace", currentSpace);
@@ -733,8 +732,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         jobStartPageSC.setCreateSpaceParameters(request
             .getParameter("NameObject"), request.getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper
-                .getSelectedLanguage(request), request
-                .getParameter("SelectedLook"));
+            .getSelectedLanguage(request), request
+            .getParameter("SelectedLook"));
       }
 
       if (spaceTemplate != null && spaceTemplate.length() > 0
@@ -758,7 +757,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("InvokeUserPanelForTemplateProfile")) {
       destination = jobStartPageSC.initUserPanelForTemplateProfile(
           (String) request.getAttribute("myComponentURL"), request
-              .getParameter("profileIndex"));
+          .getParameter("profileIndex"));
     } else if (function.equals("ReturnUserPanelForTemplateProfile")) {
       jobStartPageSC.returnUserPanelForTemplateProfile(request
           .getParameter("profileIndex"));
@@ -841,7 +840,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         SilverTrace.info("jobStartPagePeas",
             "JobStartPagePeasRequestRouter.SpaceManager()",
             "root.MSG_GEN_PARAM_VALUE", "profileName=" + profile.getName()
-                + " profileName=" + profile.getLabel());
+            + " profileName=" + profile.getLabel());
         request.setAttribute("Profile", profile);
       }
 
@@ -1044,24 +1043,22 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = null;
-    JobStartPagePeasSessionController jobStartPageSC = (JobStartPagePeasSessionController) componentSC;
+    JobStartPagePeasSessionController jobStartPageSC =
+        (JobStartPagePeasSessionController) componentSC;
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobStartPageSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
 
     try {
       if (destination == null) {

@@ -208,8 +208,8 @@ public class AuthenticationNTLMServlet extends HttpServlet {
 
       SilverTrace.info("authentication", "AuthenticationNTLMServlet.doPost",
           "root.MSG_GEN_PARAM_VALUE", "login = " + login + ", domain = "
-              + domain + ", domainId = " + domainId + ", defaultDomainId = "
-              + defaultDomainId);
+          + domain + ", domainId = " + domainId + ", defaultDomainId = "
+          + defaultDomainId);
 
       // Used by hyperlink and to be coherent with AuthenticationServlet
       session.setAttribute("Silverpeas_pwdForHyperlink",

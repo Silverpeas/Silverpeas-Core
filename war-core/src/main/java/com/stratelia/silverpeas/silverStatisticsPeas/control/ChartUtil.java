@@ -53,7 +53,6 @@ import org.jCharts.types.PieLabelType;
 
 /**
  * @author bertinl
- * 
  */
 public class ChartUtil {
 
@@ -194,7 +193,6 @@ public class ChartUtil {
 
   /*****************************************************************************************
    * Random Color generator.
-   * 
    * @return Color
    ******************************************************************************************/
   protected static Color getRandomColor() {
@@ -209,7 +207,6 @@ public class ChartUtil {
 
   /*****************************************************************************************
    * Random number generator.
-   * 
    * @param maxValue
    * @return double
    ******************************************************************************************/
@@ -219,7 +216,6 @@ public class ChartUtil {
 
   /*****************************************************************************************
    * Random number generator in specified range.
-   * 
    * @param minValue
    * @param maxValue
    * @return double
@@ -230,7 +226,6 @@ public class ChartUtil {
 
   /*****************************************************************************************
    * Random Paint generator.
-   * 
    * @return Paint
    ******************************************************************************************/
   protected static Paint getRandomPaint() {
@@ -248,7 +243,6 @@ public class ChartUtil {
 
   /*****************************************************************************************
    * Random Color generator.
-   * 
    * @return Paint[]
    ******************************************************************************************/
   public static Paint[] getRandomPaints(int numToCreate) {

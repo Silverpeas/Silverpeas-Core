@@ -38,182 +38,170 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
-public class TicketDetail implements Serializable
-{
-	private int fileId;
-	private String componentId;
-	private boolean versioning;
-	private String creatorId;
-	private String creatorName;
-	private Date creationDate;
-	private String updateId;
-	private String updateName;
-	private Date updateDate;
-	private Date endDate;
-	private int nbAccessMax;
-	private int nbAccess; 
-	private String keyFile;
-	private Collection<DownloadDetail> downloads;
+public class TicketDetail implements Serializable {
+  private int fileId;
+  private String componentId;
+  private boolean versioning;
+  private String creatorId;
+  private String creatorName;
+  private Date creationDate;
+  private String updateId;
+  private String updateName;
+  private Date updateDate;
+  private Date endDate;
+  private int nbAccessMax;
+  private int nbAccess;
+  private String keyFile;
+  private Collection<DownloadDetail> downloads;
 
-	
-	public TicketDetail()
-	{
-		
-	}
-	
-	public TicketDetail(int fileId, String componentId, boolean versioning, String creatorId, Date creationDate, Date endDate, int nbAccessMax)
-	{
-		setFileId(fileId);
-		setComponentId(componentId);
-		setVersioning(versioning);
-		setCreatorId(creatorId);
-		setCreationDate(creationDate);
-		setEndDate(endDate);
-		setNbAccessMax(nbAccessMax);
-	}
+  public TicketDetail() {
 
-	public int getFileId() {
-		return fileId;
-	}
+  }
 
-	public void setFileId(int fileId) {
-		this.fileId = fileId;
-	}
+  public TicketDetail(int fileId, String componentId, boolean versioning, String creatorId,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    setFileId(fileId);
+    setComponentId(componentId);
+    setVersioning(versioning);
+    setCreatorId(creatorId);
+    setCreationDate(creationDate);
+    setEndDate(endDate);
+    setNbAccessMax(nbAccessMax);
+  }
 
-	public String getComponentId() {
-		return componentId;
-	}
+  public int getFileId() {
+    return fileId;
+  }
 
-	public void setComponentId(String componentId) {
-		this.componentId = componentId;
-	}
+  public void setFileId(int fileId) {
+    this.fileId = fileId;
+  }
 
-	public boolean isVersioning() {
-		return versioning;
-	}
+  public String getComponentId() {
+    return componentId;
+  }
 
-	public void setVersioning(boolean versioning) {
-		this.versioning = versioning;
-	}
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
 
-	public String getCreatorId() {
-		return creatorId;
-	}
+  public boolean isVersioning() {
+    return versioning;
+  }
 
-	public void setCreatorId(String creatorId) {
-		this.creatorId = creatorId;
-	}
+  public void setVersioning(boolean versioning) {
+    this.versioning = versioning;
+  }
 
-	public String getCreatorName()
-	{
-		return creatorName;
-	}
-	
-	public void setCreatorName(String creatorName)
-	{
-		this.creatorName = creatorName;
-	}
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
+  public String getCreatorId() {
+    return creatorId;
+  }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+  public void setCreatorId(String creatorId) {
+    this.creatorId = creatorId;
+  }
 
-	public String getUpdateId() {
-		return updateId;
-	}
+  public String getCreatorName() {
+    return creatorName;
+  }
 
-	public void setUpdateId(String updateId) {
-		this.updateId = updateId;
-	}
-	
-	public String getUpdateName()
-	{
-		return updateName;
-	}
-	
-	public void setUpdateName(String updateName)
-	{
-		this.updateName = updateName;
-	}
+  public void setCreatorName(String creatorName) {
+    this.creatorName = creatorName;
+  }
 
-	public Date getUpdateDate() {
-		return updateDate;
-	}
+  public Date getCreationDate() {
+    return creationDate;
+  }
 
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate;
+  }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+  public String getUpdateId() {
+    return updateId;
+  }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+  public void setUpdateId(String updateId) {
+    this.updateId = updateId;
+  }
 
-	public int getNbAccessMax() {
-		return nbAccessMax;
-	}
+  public String getUpdateName() {
+    return updateName;
+  }
 
-	public void setNbAccessMax(int nbAccessMax) {
-		this.nbAccessMax = nbAccessMax;
-	}
+  public void setUpdateName(String updateName) {
+    this.updateName = updateName;
+  }
 
-	public int getNbAccess() {
-		return nbAccess;
-	}
+  public Date getUpdateDate() {
+    return updateDate;
+  }
 
-	public void setNbAccess(int nbAccess) {
-		this.nbAccess = nbAccess;
-	}
+  public void setUpdateDate(Date updateDate) {
+    this.updateDate = updateDate;
+  }
 
-	public String getKeyFile() {
-		return keyFile;
-	}
+  public Date getEndDate() {
+    return endDate;
+  }
 
-	public void setKeyFile(String keyFile) {
-		this.keyFile = keyFile;
-	}
-	
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
 
-	public Collection<DownloadDetail> getDownloads() {
-		return downloads;
-	}
-	
-	public void setDownloads(Collection<DownloadDetail> downloads) {
-		this.downloads = downloads;
-	}
-	
-	public String getUrl()
-	{
-		return URLManager.getApplicationURL()+"/Ticket?Key="+getKeyFile();
-	}
-	
-	public boolean isValid()
-	{
-		if (StringUtil.isDefined(getKeyFile()))
-			return (getEndDate().after(new Date()) && getNbAccess() < getNbAccessMax());
-		else
-			return false;
-	}
-	
-	public AttachmentDetail getAttachmentDetail()
-	{
-		return AttachmentController.searchAttachmentByPK(new AttachmentPK(""	+ getFileId()));
-	}
-	
-	public Document getDocument()
-	{
-		try {
-			return new VersioningUtil().getDocument(new DocumentPK(getFileId(), getComponentId()));
-		} catch (RemoteException e) {
-			SilverTrace.error("fileSharing", "TicketDetail.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
-		}
-		return null;
-	}
+  public int getNbAccessMax() {
+    return nbAccessMax;
+  }
+
+  public void setNbAccessMax(int nbAccessMax) {
+    this.nbAccessMax = nbAccessMax;
+  }
+
+  public int getNbAccess() {
+    return nbAccess;
+  }
+
+  public void setNbAccess(int nbAccess) {
+    this.nbAccess = nbAccess;
+  }
+
+  public String getKeyFile() {
+    return keyFile;
+  }
+
+  public void setKeyFile(String keyFile) {
+    this.keyFile = keyFile;
+  }
+
+  public Collection<DownloadDetail> getDownloads() {
+    return downloads;
+  }
+
+  public void setDownloads(Collection<DownloadDetail> downloads) {
+    this.downloads = downloads;
+  }
+
+  public String getUrl() {
+    return URLManager.getApplicationURL() + "/Ticket?Key=" + getKeyFile();
+  }
+
+  public boolean isValid() {
+    if (StringUtil.isDefined(getKeyFile()))
+      return (getEndDate().after(new Date()) && getNbAccess() < getNbAccessMax());
+    else
+      return false;
+  }
+
+  public AttachmentDetail getAttachmentDetail() {
+    return AttachmentController.searchAttachmentByPK(new AttachmentPK("" + getFileId()));
+  }
+
+  public Document getDocument() {
+    try {
+      return new VersioningUtil().getDocument(new DocumentPK(getFileId(), getComponentId()));
+    } catch (RemoteException e) {
+      SilverTrace.error("fileSharing", "TicketDetail.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
+    }
+    return null;
+  }
 }

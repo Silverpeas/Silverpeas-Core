@@ -108,8 +108,10 @@ public class SearchUserPanel extends BrowsePanelProvider {
         .getComponentId(), m_SelectionExtraParams.getProfileIds(), modelUser);
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text = getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text = getSureString(filters[FILTER_LASTNAME]);
+    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text =
+        getSureString(filters[FILTER_FIRSTNAME]);
+    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text =
+        getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }
 }

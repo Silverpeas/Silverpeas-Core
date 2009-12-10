@@ -39,7 +39,7 @@ public class TemplateDesignerInstanciator implements ComponentsInstanciatorIntf 
     SilverTrace.info("templateDesigner",
         "TemplateDesignerInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId ="
-            + userId);
+        + userId);
 
     // insert your code here !
 
@@ -52,7 +52,7 @@ public class TemplateDesignerInstanciator implements ComponentsInstanciatorIntf 
     SilverTrace.info("templateDesigner",
         "TemplateDesignerInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId ="
-            + userId);
+        + userId);
 
     // insert your code here !
 

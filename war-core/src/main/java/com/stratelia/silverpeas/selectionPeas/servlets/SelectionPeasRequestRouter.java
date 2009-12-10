@@ -50,21 +50,15 @@ import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SelectionPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -73,24 +67,20 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "selectionPeas";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -150,7 +140,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
           } else {
             UserDetail[] users = selectionPeasSC.getOrganizationController()
                 .getUserDetails(
-                    selectionPeasSC.getSelection().getSelectedElements());
+                selectionPeasSC.getSelection().getSelectedElements());
             if (users != null && users.length > 0) {
               request.setAttribute("users", users);
             }
@@ -404,7 +394,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
 
       SilverTrace.info("selectionPeas", "doBrowseOperation()",
           "root.MSG_GEN_PARAM_VALUE", "htmlFormName = "
-              + selectionPeasSC.getSelection().getHtmlFormName());
+          + selectionPeasSC.getSelection().getHtmlFormName());
       if (selectionPeasSC.getSelection().getHtmlFormName() != null) {
         destination = getDestination("ValidateAndSetOpener", selectionPeasSC,
             request);
@@ -487,7 +477,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
 
     ComponentSessionController componentSessionController = (ComponentSessionController) request
         .getSession(true).getAttribute(
-            "Silverpeas_" + beanName + "_" + componentId);
+        "Silverpeas_" + beanName + "_" + componentId);
     Method m = componentSessionController.getClass().getMethod(method, null);
     JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(
         componentSessionController, null);

@@ -49,7 +49,6 @@ public class RelatedUserList extends TagSupport {
 
   /*
    * (non-Javadoc)
-   * 
    * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
    */
   public int doStartTag() throws JspException {
@@ -63,7 +62,8 @@ public class RelatedUserList extends TagSupport {
     ArrayColumn column;
     RelatedUser relatedUser;
     StringBuffer sb;
-    String strEditURL, strPaneTitle, strParticipant = "", strFolderItem = "", strRelation = "", strRole = "", strContextEncoded, strParametersEncoded;
+    String strEditURL, strPaneTitle, strParticipant = "", strFolderItem = "", strRelation = "", strRole =
+        "", strContextEncoded, strParametersEncoded;
 
     try {
       gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
@@ -175,8 +175,7 @@ public class RelatedUserList extends TagSupport {
   }
 
   /**
-   * @param context
-   *          the context to set
+   * @param context the context to set
    */
   public void setContext(String context) {
     strContext = context;
@@ -190,8 +189,7 @@ public class RelatedUserList extends TagSupport {
   }
 
   /**
-   * @param currentScreen
-   *          the currentScreen to set
+   * @param currentScreen the currentScreen to set
    */
   public void setCurrentScreen(String currentScreen) {
     this.strCurrentScreen = currentScreen;
@@ -205,8 +203,7 @@ public class RelatedUserList extends TagSupport {
   }
 
   /**
-   * @param iterRelatedUser
-   *          the Related User iterator to set
+   * @param iterRelatedUser the Related User iterator to set
    */
   public void setIterRelatedUser(Iterator iterRelatedUser) {
     this.iterRelatedUser = iterRelatedUser;

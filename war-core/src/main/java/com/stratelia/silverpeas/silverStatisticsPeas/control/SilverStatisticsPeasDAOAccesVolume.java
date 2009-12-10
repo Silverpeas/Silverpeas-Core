@@ -44,7 +44,6 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration Get cumul datas from database to access and Volume
- * 
  * @author
  */
 public class SilverStatisticsPeasDAOAccesVolume {
@@ -70,9 +69,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * donne les stats sur le nombre d'accès
-   * 
    * @return
-   * 
    * @throws SQLException
    */
   public static Hashtable getStatsUserVentil(String dateStat,
@@ -199,9 +196,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * donne les stats sur le nombre d'accès
-   * 
    * @return
-   * 
    * @throws SQLException
    * @throws ParseException
    */
@@ -268,15 +263,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param selectQuery
-   * 
    * @return
-   * 
    * @throws SQLException
    * @throws ParseException
-   * 
    * @see
    */
   private static Collection getStatsUserFromQuery(String selectQuery)
@@ -303,15 +293,10 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
-   * 
    * @return
-   * 
    * @throws SQLException
    * @throws ParseException
-   * 
    * @see
    */
   private static Collection getStatsUserFromResultSet(ResultSet rs)
@@ -359,14 +344,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param selectQuery
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Hashtable getHashtableFromQuery(String selectQuery)
@@ -393,14 +373,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Hashtable getHashtableFromResultset(ResultSet rs)
@@ -417,9 +392,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * donne les stats sur le nombre de publications
-   * 
    * @return
-   * 
    * @throws SQLException
    */
   public static Hashtable getStatsPublicationsVentil(String dateStat,
@@ -577,10 +550,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private static Connection getConnection() {
@@ -602,10 +572,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private static void freeConnection(Connection con) {

@@ -82,8 +82,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @author Michael Nikolaenko
  * @version 1.0
  */
-public class VersioningSessionController extends
-    AbstractComponentSessionController {
+public class VersioningSessionController extends AbstractComponentSessionController {
   private static ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.webactiv.general", "");
   private static String m_context = generalSettings.getString("ApplicationURL");
@@ -152,16 +151,14 @@ public class VersioningSessionController extends
 
   /**
    * to initilize the Versioning EJB
-   * 
-   * @exception VersioningRuntimeException
-   *              when can't initialized the home object of EJB Versioning
+   * @exception VersioningRuntimeException when can't initialized the home object of EJB Versioning
    */
   private void initEJB() {
     if (versioning_bm == null) {
       try {
         VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-                VersioningBmHome.class);
+            VersioningBmHome.class);
         versioning_bm = vscEjbHome.create();
       } catch (Exception e) {
         throw new VersioningRuntimeException(
@@ -173,7 +170,6 @@ public class VersioningSessionController extends
 
   /**
    * to set attributes for UserPanel
-   * 
    * @return void
    * @exception
    * @author Michael Nikolaenko
@@ -194,7 +190,6 @@ public class VersioningSessionController extends
 
   /**
    * to set attributes for UserPanel
-   * 
    * @return void
    * @exception
    * @author Michael Nikolaenko
@@ -266,7 +261,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    * @throws RemoteException
@@ -278,7 +272,6 @@ public class VersioningSessionController extends
 
   /**
    * to generate path to icon of document
-   * 
    * @return String Path to icon
    * @exception
    * @author Michael Nikolaenko
@@ -290,7 +283,6 @@ public class VersioningSessionController extends
 
   /**
    * To generate path to icon of document
-   * 
    * @param physicalName
    * @param isReadOnly
    * @return String Path to icon
@@ -311,7 +303,6 @@ public class VersioningSessionController extends
 
   /**
    * to generate path to icon for status of document
-   * 
    * @return String Path to icon
    * @exception
    * @author Michael Nikolaenko
@@ -327,7 +318,6 @@ public class VersioningSessionController extends
 
   /**
    * to get user detail for given user id
-   * 
    * @return UserDetail
    * @exception
    * @author Michael Nikolaenko
@@ -339,7 +329,6 @@ public class VersioningSessionController extends
 
   /**
    * to get user name for given user id
-   * 
    * @return String
    * @exception
    * @author Michael Nikolaenko
@@ -360,7 +349,6 @@ public class VersioningSessionController extends
 
   /**
    * to get alt message for status icon of document
-   * 
    * @return String Alt message
    * @exception
    * @author Michael Nikolaenko
@@ -387,13 +375,11 @@ public class VersioningSessionController extends
 
   /**
    * to get url for version
-   * 
    * @return String url
    * @exception
    * @author Michael Nikolaenko
    * @version 1.0
    * @deprecated
-   * 
    */
   public String getDocumentVersionURL(String space, String component_name,
       String context, String logicalName, String physicalName, String mimeType) {
@@ -401,7 +387,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param context
    * @param logicalName
    * @param physicalName
@@ -423,7 +408,6 @@ public class VersioningSessionController extends
 
   /**
    * to get path to jsp page for showing versions
-   * 
    * @return String
    * @exception
    * @author Michael Nikolaenko
@@ -435,7 +419,6 @@ public class VersioningSessionController extends
 
   /**
    * to get path to jsp page for creating document
-   * 
    * @return String
    * @exception
    * @author Michael Nikolaenko
@@ -447,7 +430,6 @@ public class VersioningSessionController extends
 
   /**
    * to get path to jsp page for creating new version
-   * 
    * @return String
    * @exception
    * @author Michael Nikolaenko
@@ -459,7 +441,6 @@ public class VersioningSessionController extends
 
   /**
    * to create path to version
-   * 
    * @return String
    * @exception VersioningRuntimeException
    * @author Michael Nikolaenko
@@ -471,7 +452,6 @@ public class VersioningSessionController extends
 
   /**
    * to create path to version
-   * 
    * @return String
    * @exception VersioningRuntimeException
    * @author David Lesimple
@@ -483,7 +463,6 @@ public class VersioningSessionController extends
 
   /**
    * to get all users for given profile
-   * 
    * @return HashMap Stored pair user id and Reader
    * @exception
    * @author Michael Nikolaenko
@@ -540,7 +519,6 @@ public class VersioningSessionController extends
 
   /**
    * to get all users with no reader rights
-   * 
    * @return ArrayList
    * @exception
    * @author Michael Nikolaenko
@@ -585,7 +563,6 @@ public class VersioningSessionController extends
 
   /**
    * to get versionig EJB
-   * 
    * @return VersioningBm
    * @exception
    * @author Michael Nikolaenko
@@ -599,7 +576,6 @@ public class VersioningSessionController extends
 
   /**
    * Constructor
-   * 
    * @return
    * @exception
    * @author Michael Nikolaenko
@@ -614,7 +590,6 @@ public class VersioningSessionController extends
 
   /**
    * to get attributes for userpanel
-   * 
    * @return UserDetail
    * @exception
    * @author Michael Nikolaenko
@@ -632,7 +607,6 @@ public class VersioningSessionController extends
 
   /**
    * to get all readers
-   * 
    * @return HashMap
    * @exception
    * @author Michael Nikolaenko
@@ -663,7 +637,6 @@ public class VersioningSessionController extends
 
   /**
    * to get document from DB
-   * 
    * @return Document
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -678,7 +651,6 @@ public class VersioningSessionController extends
 
   /**
    * to get all documents for given publication id
-   * 
    * @return ArrayList
    * @exception
    * @author Michael Nikolaenko
@@ -701,7 +673,6 @@ public class VersioningSessionController extends
 
   /**
    * to create new document
-   * 
    * @return DocumentPK
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -732,7 +703,6 @@ public class VersioningSessionController extends
 
   /**
    * to add new document version
-   * 
    * @return DocumentVersion
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -761,7 +731,6 @@ public class VersioningSessionController extends
 
   /**
    * to update document (Save it to DB)
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -779,7 +748,6 @@ public class VersioningSessionController extends
 
   /**
    * to check document out
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -793,7 +761,6 @@ public class VersioningSessionController extends
 
   /**
    * to check document in
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -803,7 +770,7 @@ public class VersioningSessionController extends
       throws RemoteException {
     initEJB();
     DocumentVersion lastVersion = getLastVersion(documentPK);
-    if(!RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+    if (!RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
       versioning_bm.checkDocumentIn(documentPK, user_id);
       return true;
     }
@@ -812,7 +779,6 @@ public class VersioningSessionController extends
 
   /**
    * to get last public version of document
-   * 
    * @return DocumentVersion
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -830,7 +796,6 @@ public class VersioningSessionController extends
 
   /**
    * to get last version of document
-   * 
    * @return DocumentVersion
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -846,7 +811,6 @@ public class VersioningSessionController extends
 
   /**
    * to get all versions of document. If user id is set filter will be applied
-   * 
    * @return ArrayList
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -859,7 +823,6 @@ public class VersioningSessionController extends
 
   /**
    * to get only public versions of document.
-   * 
    * @return ArrayList
    * @author Nicolas Eysseric
    * @version 3.0
@@ -873,7 +836,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param documentPK
    * @param user_id
    * @return
@@ -924,7 +886,6 @@ public class VersioningSessionController extends
 
   /**
    * to get one version of a document.
-   * 
    * @return DocumentVersion
    * @author David Lesimple
    * @version 3.0
@@ -938,7 +899,6 @@ public class VersioningSessionController extends
 
   /**
    * to validate document
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -955,7 +915,6 @@ public class VersioningSessionController extends
 
   /**
    * to delete document
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -970,7 +929,7 @@ public class VersioningSessionController extends
     if (profile != null) {
       if (ObjectType.DOCUMENT.equals(profile.getObjectType())
           && profile.getObjectId() == Integer
-              .parseInt(document.getPk().getId())) {
+          .parseInt(document.getPk().getId())) {
         profile.removeAllGroups();
         profile.removeAllUsers();
         updateProfileInst(profile);
@@ -979,14 +938,13 @@ public class VersioningSessionController extends
     }
     initEJB();
     versioning_bm.deleteDocument(documentPK);
-    
+
     CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_REMOVE, document
-            .getOwnerId(), document.getForeignKey().getInstanceId(), document);
+        .getOwnerId(), document.getForeignKey().getInstanceId(), document);
   }
 
   /**
    * to refuse document
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -1003,7 +961,6 @@ public class VersioningSessionController extends
 
   /**
    * to create index for search engeen
-   * 
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -1016,7 +973,6 @@ public class VersioningSessionController extends
 
   /**
    * to store in controller editing document
-   * 
    * @return void
    * @exception
    * @author Michael Nikolaenko
@@ -1028,7 +984,6 @@ public class VersioningSessionController extends
 
   /**
    * to get current document
-   * 
    * @return Document
    * @exception
    * @author Michael Nikolaenko
@@ -1047,9 +1002,7 @@ public class VersioningSessionController extends
   }
 
   /**
-   * to store in controller editing document and set lists of readers and
-   * workers
-   * 
+   * to store in controller editing document and set lists of readers and workers
    * @return void
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -1062,7 +1015,6 @@ public class VersioningSessionController extends
 
   /**
    * to get user status
-   * 
    * @return boolean true if users reader
    * @exception
    * @author Michael Nikolaenko
@@ -1073,7 +1025,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param document
    * @param userId
    * @return
@@ -1081,10 +1032,10 @@ public class VersioningSessionController extends
    */
   public boolean isReader(Document document, String userId)
       throws RemoteException {
-	  
-	  if (!useRights())
-		  return true;
-	  
+
+    if (!useRights())
+      return true;
+
     ProfileInst profile = null;
     setEditingDocument(document);
     boolean isReader = false;
@@ -1101,7 +1052,7 @@ public class VersioningSessionController extends
     SilverTrace.info("versioningPeas",
         "VersioningSessionController.isReader()", "root.MSG_GEN_ENTER_METHOD",
         "document = " + document.getPk().getId() + ", userId = " + userId
-            + "profile=" + getProfile());
+        + "profile=" + getProfile());
     if (profile == null)
       return false;
 
@@ -1125,16 +1076,14 @@ public class VersioningSessionController extends
   }
 
   public boolean isWriter(Document document, int userId) throws RemoteException {
-	  if (!useRights())
-		  return true;
-	  return isWriter(document, new Integer(userId).toString());
+    if (!useRights())
+      return true;
+    return isWriter(document, new Integer(userId).toString());
   }
 
   /**
    * Checks if the specified userId is publisher for the current component.
-   * 
-   * @param userId
-   *          the unique id of the user checked for publisher role.
+   * @param userId the unique id of the user checked for publisher role.
    * @return true if the user has publisher role - false otherwise.
    */
   public boolean isPublisher(String userId) {
@@ -1143,9 +1092,7 @@ public class VersioningSessionController extends
 
   /**
    * Checks if the specified userId is admin for the current component.
-   * 
-   * @param userId
-   *          the unique id of the user checked for admin role.
+   * @param userId the unique id of the user checked for admin role.
    * @return true if the user has admin role - false otherwise.
    */
   public boolean isAdmin(String userId) {
@@ -1173,25 +1120,22 @@ public class VersioningSessionController extends
    * Indicates if the specified user has reading access to the document.
    * @param document the document for which access is checked.
    * @param userId the unique id of the user
-   * 
    * @return true if the user has access - false otherwise.
    */
   public boolean hasAccess(Document document, String userId)
       throws RemoteException {
-	  if (!useRights())
-		  return true;
-	  return isAdmin(userId) || isPublisher(userId) || isReader(document, userId);
+    if (!useRights())
+      return true;
+    return isAdmin(userId) || isPublisher(userId) || isReader(document, userId);
   }
-  
-  private boolean useRights()
-  {
-	  if (componentId != null && !componentId.startsWith("kmelia"))
-		  return false;
-	  return true;
+
+  private boolean useRights() {
+    if (componentId != null && !componentId.startsWith("kmelia"))
+      return false;
+    return true;
   }
 
   /**
-   * 
    * @param document
    * @param userId
    * @return
@@ -1215,7 +1159,7 @@ public class VersioningSessionController extends
     SilverTrace.info("versioningPeas",
         "VersioningSessionController.isWriter()", "root.MSG_GEN_ENTER_METHOD",
         "document = " + document.getPk().getId() + ", userId = " + userId
-            + "profile=" + getProfile());
+        + "profile=" + getProfile());
     if (profile.getAllUsers() != null)
       isWriter = profile.getAllUsers().contains(userId);
     if (!isWriter) {
@@ -1236,7 +1180,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    * @throws RemoteException
@@ -1247,7 +1190,7 @@ public class VersioningSessionController extends
     SilverTrace.info("versioningPeas",
         "VersioningController.initUserPanelInstanceForGroupsUsers()",
         "root.MSG_GEN_ENTER_METHOD", "role = " + role + ", componentId = "
-            + getComponentId() + ", documentId = " + documentId);
+        + getComponentId() + ", documentId = " + documentId);
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
     PairObject[] hostPath = new PairObject[1];
@@ -1277,32 +1220,28 @@ public class VersioningSessionController extends
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
 
-    if (!StringUtil.isDefined(getNodeId()))
-    {
-	    //Selectable users and groups are component's ones.
-	    ArrayList<String> profileNames = new ArrayList<String>();
-	    profileNames.add(ADMIN);
-	    profileNames.add(PUBLISHER);
-	    profileNames.add(role);
-	    if (role.equals(READER)) {
-	      profileNames.add(WRITER);
-	    }
-	    sug.setProfileNames(profileNames);
-    }
-    else
-    {
-    	//Selectable users and groups are topic's ones.
-    	ProfileInst topicProfile = getTopicProfile(ADMIN, getNodeId());
-    	sug.addProfileId(topicProfile.getId());
-    	topicProfile = getTopicProfile(PUBLISHER, getNodeId());
-    	sug.addProfileId(topicProfile.getId());
-    	topicProfile = getTopicProfile(WRITER, getNodeId());
-    	sug.addProfileId(topicProfile.getId());
-    	if (role.equals(READER))
-    	{
-    		topicProfile = getTopicProfile(READER, getNodeId());
-        	sug.addProfileId(topicProfile.getId());
-    	}
+    if (!StringUtil.isDefined(getNodeId())) {
+      // Selectable users and groups are component's ones.
+      ArrayList<String> profileNames = new ArrayList<String>();
+      profileNames.add(ADMIN);
+      profileNames.add(PUBLISHER);
+      profileNames.add(role);
+      if (role.equals(READER)) {
+        profileNames.add(WRITER);
+      }
+      sug.setProfileNames(profileNames);
+    } else {
+      // Selectable users and groups are topic's ones.
+      ProfileInst topicProfile = getTopicProfile(ADMIN, getNodeId());
+      sug.addProfileId(topicProfile.getId());
+      topicProfile = getTopicProfile(PUBLISHER, getNodeId());
+      sug.addProfileId(topicProfile.getId());
+      topicProfile = getTopicProfile(WRITER, getNodeId());
+      sug.addProfileId(topicProfile.getId());
+      if (role.equals(READER)) {
+        topicProfile = getTopicProfile(READER, getNodeId());
+        sug.addProfileId(topicProfile.getId());
+      }
     }
     sel.setExtraParams(sug);
 
@@ -1315,7 +1254,7 @@ public class VersioningSessionController extends
           new String[0]));
       if (role.equals(READER)
           || !new Integer(getEditingDocument().getCurrentWorkListOrder())
-              .toString().equals(WRITERS_LIST_ORDERED))
+          .toString().equals(WRITERS_LIST_ORDERED))
         sel.setSelectedSets((String[]) fileProfile.getAllGroups().toArray(
             new String[0]));
     }
@@ -1354,7 +1293,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @return
    */
   public NodeBm getNodeBm() {
@@ -1372,7 +1310,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param profiles
    * @param role
    * @return
@@ -1387,7 +1324,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    */
@@ -1397,7 +1333,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    */
@@ -1421,7 +1356,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param groupIds
    * @return
    */
@@ -1436,7 +1370,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param userIds
    * @return
    */
@@ -1451,7 +1384,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param profileId
    * @throws RemoteException
    */
@@ -1461,7 +1393,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @return
    */
   private AdminController getAdmin() {
@@ -1472,7 +1403,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param profile
    * @throws RemoteException
    */
@@ -1489,7 +1419,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    */
@@ -1517,7 +1446,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    */
@@ -1572,7 +1500,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @param topicId
    * @return
@@ -1591,7 +1518,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @throws RemoteException
    */
@@ -1612,7 +1538,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @throws RemoteException
    */
@@ -1624,7 +1549,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @throws RemoteException
    */
@@ -1637,7 +1561,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @return
    * @throws RemoteException
@@ -1651,7 +1574,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @throws RemoteException
    */
   @SuppressWarnings("unchecked")
@@ -1699,7 +1621,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param role
    * @throws RemoteException
    */
@@ -1741,7 +1662,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param docId
    * @param docVersion
    * @param attachmentSettings
@@ -1782,7 +1702,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param workers
    * @param usersIds
    * @return
@@ -1829,7 +1748,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param workers
    * @param groupIds
    * @return
@@ -1876,7 +1794,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param groups
    * @param workers
    * @return workers
@@ -1920,7 +1837,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @throws RemoteException
    */
   public void deleteWorkers() throws RemoteException {
@@ -1929,7 +1845,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param keepSaved
    * @throws RemoteException
    */
@@ -1953,7 +1868,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @param workers
    * @param setTypeId
    * @param setType
@@ -1969,14 +1883,13 @@ public class VersioningSessionController extends
       if (worker.getId() != setTypeId
           && worker.isApproval()
           && new Integer(document.getCurrentWorkListOrder()).toString().equals(
-              WRITERS_LIST_APPROUVAL))
+          WRITERS_LIST_APPROUVAL))
         worker.setApproval(false);
     }
     updateWorkList(document);
   }
 
   /**
-   * 
    * @param value
    */
   public void setAlreadyMerged(boolean value) {
@@ -1984,7 +1897,6 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @return
    */
   public boolean isAlreadyMerged() {
@@ -1992,19 +1904,18 @@ public class VersioningSessionController extends
   }
 
   /**
-   * 
    * @return
    * @throws RemoteException
    */
   public int getSavedListType() throws RemoteException {
     return getVersioningBm().getSavedListType(getComponentId());
   }
-  
+
   public String getXmlForm() {
-	  return xmlForm;
+    return xmlForm;
   }
 
   public void setXmlForm(String xmlForm) {
-	  this.xmlForm = xmlForm;
+    this.xmlForm = xmlForm;
   }
 }

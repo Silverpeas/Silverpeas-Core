@@ -34,8 +34,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author CBONIN
- * 
- * 
  */
 public class PubliPieChartBuilder extends AbstractPieChartBuilder {
   private String dateStat;
@@ -63,9 +61,7 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
+   * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getChartTitle()
    */
   public String getChartTitle() {
@@ -83,7 +79,7 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
           + message.getString("silverStatisticsPeas.EvolutionAccessUser")
           + " "
           + this.organizationController.getUserDetail(this.filterIdUser)
-              .getLastName() + " ";
+          .getLastName() + " ";
     }
 
     try {
@@ -96,8 +92,8 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
     } catch (Exception e) {
       SilverTrace
           .error("silverStatisticsPeas",
-              "PubliPieChartBuilder.getChartTitle()",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "PubliPieChartBuilder.getChartTitle()",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
 
     title += message.getString("silverStatisticsPeas.In") + " "
@@ -108,9 +104,7 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
+   * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
   Hashtable getCmpStats() {
@@ -119,7 +113,7 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume
           .getStatsPublicationsVentil(dateStat, currentUserId, filterIdGroup,
-              filterIdUser));
+          filterIdUser));
     } catch (SQLException e) {
       SilverTrace.error("silverStatisticsPeas",
           "PubliPieChartBuilder.getCmpStats()", "root.EX_SQL_QUERY_FAILED", e);
