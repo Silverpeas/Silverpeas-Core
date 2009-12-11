@@ -23,11 +23,14 @@
  */
 package com.stratelia.webactiv.util.questionContainer.control;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -44,6 +47,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.answer.control.AnswerBm;
 import com.stratelia.webactiv.util.answer.control.AnswerBmHome;
@@ -120,8 +124,6 @@ import com.stratelia.webactiv.util.score.model.ScorePK;
 
 /**
  * Class declaration
- * 
- * 
  * @author neysseri
  */
 public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
@@ -147,7 +149,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -267,7 +269,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getNotClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -291,7 +293,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getOpenedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -316,7 +318,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getOpenedQuestionContainersAndUserScores()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     Connection con = null;
 
     try {
@@ -351,7 +353,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainersWithScores()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -389,7 +391,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainersWithUserScores()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     Connection con = null;
 
     try {
@@ -427,7 +429,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -451,7 +453,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getInWaitQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -476,7 +478,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getUserScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     Collection scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -508,7 +510,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getBestScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", nbBestScores = " + nbBestScores);
+        + questionContainerPK + ", nbBestScores = " + nbBestScores);
     Collection scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -531,7 +533,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getWorstScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", nbScores = " + nbScores);
+        + questionContainerPK + ", nbScores = " + nbScores);
     Collection scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -553,7 +555,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Collection scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -584,7 +586,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getAverageScoreByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     float averageScore = 0;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -607,7 +609,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     Connection con = null;
     Collection questions = null;
     Collection comments = null;
@@ -655,7 +657,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainer()",
         "root.MSG_GEN_EXIT_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     return new QuestionContainerDetail(questionContainerHeader, questions,
         comments, userVotes);
   }
@@ -665,7 +667,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
     QuestionContainerHeader questionContainerHeader = null;
 
@@ -691,8 +693,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainerByParticipationId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId
-            + ", participationId = " + participationId);
+        + questionContainerPK + ", userId = " + userId
+        + ", participationId = " + participationId);
     Collection questions = null;
     Collection comments = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -715,7 +717,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
 
         userVotes = questionResultBm
             .getUserQuestionResultsToQuestionByParticipation(userId,
-                new ForeignPK(question.getPK()), participationId);
+            new ForeignPK(question.getPK()), participationId);
         question.setQuestionResults(userVotes);
         nbMaxPoints += question.getNbPointsMax();
       }
@@ -732,8 +734,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainerByParticipationId()",
         "root.MSG_GEN_EXIT_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId
-            + ", participationId = " + participationId);
+        + questionContainerPK + ", userId = " + userId
+        + ", participationId = " + participationId);
     return new QuestionContainerDetail(questionContainerHeader, questions,
         comments, userVotes);
   }
@@ -743,7 +745,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.closeQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -772,7 +774,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.openQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
 
     try {
@@ -800,7 +802,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getNbVotersByQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     int nbVoters = 0;
 
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
@@ -826,7 +828,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     SimpleDateFormat formatterDB = new java.text.SimpleDateFormat("yyyy/MM/dd");
     QuestionPK questionPK = null;
     AnswerPK answerPK = null;
@@ -904,7 +906,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
         SilverTrace.info("questionContainer",
             "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
             "root.MSG_GEN_PARAM_VALUE", "answer.getNbPoints(): "
-                + answer.getNbPoints() + ", penaltyValue=" + penaltyValue);
+            + answer.getNbPoints() + ", penaltyValue=" + penaltyValue);
         try {
           questionResultBm.setQuestionResultToUser(result);
         } catch (Exception e) {
@@ -961,8 +963,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
       SilverTrace.info("questionContainer",
           "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
           "root.MSG_GEN_PARAM_VALUE", "Question ptsmin ="
-              + question.getNbPointsMin() + " - Question ptsmax ="
-              + question.getNbPointsMax());
+          + question.getNbPointsMin() + " - Question ptsmax ="
+          + question.getNbPointsMax());
       if (question.getNbPointsMax() < questionUserScore) {
         questionUserScore = question.getNbPointsMax();
       } else if (question.getNbPointsMin() > questionUserScore) {
@@ -972,7 +974,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
       SilverTrace.info("questionContainer",
           "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
           "root.MSG_GEN_PARAM_VALUE", "questionUserScore =" + questionUserScore
-              + " - userScore =" + userScore);
+          + " - userScore =" + userScore);
     }
 
     SilverTrace.info("questionContainer",
@@ -1008,8 +1010,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.recordReplyToQuestionContainerByUser()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId + ", comment = "
-            + comment);
+        + questionContainerPK + ", userId = " + userId + ", comment = "
+        + comment);
     recordReplyToQuestionContainerByUser(questionContainerPK, userId, reply);
     addComment(questionContainerPK, userId, comment, isAnonymousComment);
   }
@@ -1020,7 +1022,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.addComment()", "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", userId = " + userId
-            + ", comment = " + comment);
+        + ", comment = " + comment);
     Connection con = null;
 
     try {
@@ -1046,8 +1048,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.createQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", questionContainerDetail = "
-            + questionContainerDetail + ", userId = " + userId);
+        + questionContainerPK + ", questionContainerDetail = "
+        + questionContainerDetail + ", userId = " + userId);
     Connection con = null;
     QuestionContainerHeader questionContainerHeader = questionContainerDetail
         .getHeader();
@@ -1103,7 +1105,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.updateQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
-            + questionContainerHeader);
+        + questionContainerHeader);
     Connection con = null;
 
     try {
@@ -1132,7 +1134,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.updateQuestions()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     QuestionBm questionBm = getQuestionBm();
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     Iterator it = questions.iterator();
@@ -1159,69 +1161,68 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     }
   }
 
-  public void deleteVotes(QuestionContainerPK questionContainerPK)
-    {
-     	SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteVotes()", "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-        Connection con = null;
-        ScorePK    scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-        QuestionBm questionBm = getQuestionBm();
-        ScoreBm    scoreBm = getScoreBm();
-        QuestionResultBm questionResultBm = getQuestionResultBm();
-        
-        try
-        {
-        	QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
-        	
-        	// mise a zero du nombre de participation
-        	qch.setNbVoters(0);
-        	updateQuestionContainerHeader(qch);
-        	
-           	con = getConnection();
-            scoreBm.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
-            
-            // get all questions to delete results
-            Collection<Question> questions = questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-            if (questions != null && !questions.isEmpty())
-            {
-	            Iterator<Question>   iterator = questions.iterator();
-	            while (iterator.hasNext())
-	            {
-	            	Question question = (Question) iterator.next();
-	                QuestionPK questionPKToDelete = question.getPK();
-	                // delete all results
-	                questionResultBm.deleteQuestionResultsToQuestion(new ForeignPK(questionPKToDelete));
-	                Collection<Answer> answers = question.getAnswers();
-	                Collection<Answer> newAnswers = new ArrayList<Answer>();
-	                Iterator<Answer> itA = answers.iterator();
-	                while (itA.hasNext())
-	                {
-	                	Answer answer = (Answer) itA.next();
-	                	answer.setNbVoters(0);
-	                	newAnswers.add(answer);
-	                }
-	                question.setAnswers(newAnswers);
-                	questionBm.updateQuestion(question);
-	            }
-            }
+  public void deleteVotes(QuestionContainerPK questionContainerPK) {
+    SilverTrace.info("questionContainer", "QuestionContainerBmEJB.deleteVotes()",
+        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+    Connection con = null;
+    ScorePK scorePK =
+        new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
+            questionContainerPK.getComponentName());
+    QuestionPK questionPK =
+        new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
+            questionContainerPK.getComponentName());
+    QuestionBm questionBm = getQuestionBm();
+    ScoreBm scoreBm = getScoreBm();
+    QuestionResultBm questionResultBm = getQuestionResultBm();
 
+    try {
+      QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
+
+      // mise a zero du nombre de participation
+      qch.setNbVoters(0);
+      updateQuestionContainerHeader(qch);
+
+      con = getConnection();
+      scoreBm.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
+
+      // get all questions to delete results
+      Collection<Question> questions =
+          questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
+      if (questions != null && !questions.isEmpty()) {
+        Iterator<Question> iterator = questions.iterator();
+        while (iterator.hasNext()) {
+          Question question = (Question) iterator.next();
+          QuestionPK questionPKToDelete = question.getPK();
+          // delete all results
+          questionResultBm.deleteQuestionResultsToQuestion(new ForeignPK(questionPKToDelete));
+          Collection<Answer> answers = question.getAnswers();
+          Collection<Answer> newAnswers = new ArrayList<Answer>();
+          Iterator<Answer> itA = answers.iterator();
+          while (itA.hasNext()) {
+            Answer answer = (Answer) itA.next();
+            answer.setNbVoters(0);
+            newAnswers.add(answer);
+          }
+          question.setAnswers(newAnswers);
+          questionBm.updateQuestion(question);
         }
-        catch (Exception e)
-        {
-            throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.deleteVotes()", SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED", e);
-        }
-        finally
-        {
-            freeConnection(con);
-        }
+      }
+
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.deleteVotes()",
+          SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
+          e);
+    } finally {
+      freeConnection(con);
     }
+  }
 
   public void deleteQuestionContainer(QuestionContainerPK questionContainerPK)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.deleteQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     Connection con = null;
     ScorePK scorePK = new ScorePK(questionContainerPK.getId(),
         questionContainerPK.getSpace(), questionContainerPK.getComponentName());
@@ -1317,7 +1318,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getUserVotesToQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     Collection votes = null;
     QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK
         .getSpace(), questionContainerPK.getComponentName());
@@ -1363,7 +1364,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getAveragePoints()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     float averagePoints = 0;
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
@@ -1388,7 +1389,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getUserNbParticipationsByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId);
+        + questionContainerPK + ", userId = " + userId);
     int nbPart = 0;
 
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
@@ -1414,8 +1415,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getUserScoreByFatherIdAndParticipationId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK + ", userId = " + userId
-            + ", participationId = " + participationId);
+        + questionContainerPK + ", userId = " + userId
+        + ", participationId = " + participationId);
     ScoreDetail scoreDetail = null;
 
     ScorePK scorePK = new ScorePK("", questionContainerPK.getSpace(),
@@ -1440,7 +1441,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.updateScore()", "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", scoreDetail = "
-            + scoreDetail);
+        + scoreDetail);
     ScoreBm scoreBm = getScoreBm();
 
     try {
@@ -1509,7 +1510,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
         QuestionContainerHeader questionContainerHeader = getQuestionContainerHeader(pk);
         silverObjectId = QuestionContainerContentManager.createSilverContent(
             null, questionContainerHeader, questionContainerHeader
-                .getCreatorId(), true);
+            .getCreatorId(), true);
       }
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
@@ -1518,6 +1519,133 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
           "questionContainer.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
     return silverObjectId;
+  }
+
+  public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
+    List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
+    StringBuffer csvRow = new StringBuffer();
+    OrganizationController orga = new OrganizationController();
+    try {
+      if (questionContainer.getHeader().isAnonymous()) {
+        // anonymes
+        Collection<Question> questions = questionContainer.getQuestions();
+        Iterator<Question> itQ = questions.iterator();
+        while (itQ.hasNext()) {
+          Question question = itQ.next();
+
+          if (question.getStyle().equals("open")) {
+            // question ouverte
+            String id = question.getPK().getId();
+            QuestionContainerPK qcPK =
+                new QuestionContainerPK(id, question.getPK().getSpaceId(), question.getPK()
+                    .getInstanceId());
+            Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
+            Iterator<QuestionResult> itO = openAnswers.iterator();
+            while (itO.hasNext()) {
+              QuestionResult qR = itO.next();
+              addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
+            }
+          } else {
+            // question fermée
+            Collection<Answer> answers = question.getAnswers();
+            Iterator<Answer> itA = answers.iterator();
+            while (itA.hasNext()) {
+              Answer answer = itA.next();
+              int nbUsers =
+                  getQuestionResultBm()
+                      .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
+              String percent = Math.round((answer.getNbVoters() * 100f) / nbUsers) + "%";
+              addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore, answer
+                  .getNbPoints());
+            }
+          }
+        }
+      } else {
+        // pour les enquêtes non anonymes
+        Collection<Question> questions = questionContainer.getQuestions();
+        Iterator<Question> itQ = questions.iterator();
+        while (itQ.hasNext()) {
+          Question question = itQ.next();
+          if (question.getStyle().equals("open")) {
+            // question ouverte
+            String id = question.getPK().getId();
+            QuestionContainerPK qcPK =
+                new QuestionContainerPK(id, question.getPK().getSpaceId(), question.getPK()
+                    .getInstanceId());
+            Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
+            Iterator<QuestionResult> itO = openAnswers.iterator();
+            while (itO.hasNext()) {
+              QuestionResult qR = itO.next();
+              addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(), orga.getUserDetail(
+                  qR.getUserId()).getDisplayedName(), false, 0);
+            }
+          } else {
+            // question fermée
+            Collection<Answer> answers = question.getAnswers();
+            Iterator<Answer> itA = answers.iterator();
+            while (itA.hasNext()) {
+              Answer answer = itA.next();
+              Collection<String> users =
+                  getQuestionResultBm().getUsersByAnswer(answer.getPK().getId());
+              Iterator<String> itU = users.iterator();
+              while (itU.hasNext()) {
+                addCSVValue(csvRow, question.getLabel(), answer.getLabel(), orga.getUserDetail(
+                    itU.next()).getDisplayedName(), addScore, answer.getNbPoints());
+              }
+            }
+          }
+        }
+      }
+      csvRows.add(csvRow);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return writeCSVFile(csvRows);
+  }
+
+  private void addCSVValue(StringBuffer row, String questionLabel, String answerLabel,
+      String value, boolean addScore, int nbPoints) {
+    row.append("\"");
+    if (questionLabel != null)
+      row.append(questionLabel.replaceAll("\"", "\"\"")).append("\"").append(";");
+    if (answerLabel != null)
+      row.append("\"").append(answerLabel.replaceAll("\"", "\"\"")).append("\"").append(";");
+    if (value != null)
+      row.append("\"").append(value.replaceAll("\"", "\"\"")).append("\"");
+    if (addScore) {
+      row.append(";");
+      row.append("\"").append(nbPoints).append("\"");
+    }
+    row.append(System.getProperty("line.separator"));
+  }
+
+  private String writeCSVFile(List<StringBuffer> csvRows) {
+    FileOutputStream fileOutput = null;
+    String csvFilename = new Date().getTime() + ".csv";
+    try {
+      fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath() + csvFilename);
+
+      StringBuffer csvRow;
+      for (int r = 0; r < csvRows.size(); r++) {
+        csvRow = (StringBuffer) csvRows.get(r);
+        fileOutput.write(csvRow.toString().getBytes());
+        fileOutput.write("\n".getBytes());
+      }
+    } catch (Exception e) {
+      csvFilename = null;
+      e.printStackTrace();
+    } finally {
+      if (fileOutput != null) {
+        try {
+          fileOutput.flush();
+          fileOutput.close();
+        } catch (IOException e) {
+          csvFilename = null;
+          e.printStackTrace();
+        }
+      }
+    }
+    return csvFilename;
   }
 
   /**************************************************************************************************************************/
@@ -1563,7 +1691,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
       try {
         QuestionResultBmHome questionResultBmHome = (QuestionResultBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONRESULTBM_EJBHOME,
-                QuestionResultBmHome.class);
+            QuestionResultBmHome.class);
 
         currentQuestionResultBm = questionResultBmHome.create();
       } catch (Exception e) {

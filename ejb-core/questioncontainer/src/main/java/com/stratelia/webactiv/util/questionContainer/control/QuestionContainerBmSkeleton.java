@@ -76,22 +76,16 @@ import com.stratelia.webactiv.util.score.model.ScoreDetail;
 
 /**
  * Interface declaration
- * 
- * 
  * @author neysseri
  */
 public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
    * @param reply
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void recordReplyToQuestionContainerByUser(
@@ -100,16 +94,12 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
    * @param reply
    * @param comment
    * @param isAnonymousComment
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void recordReplyToQuestionContainerByUser(
@@ -118,14 +108,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getSuggestions(QuestionContainerPK questionContainerPK)
@@ -133,14 +118,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getQuestionContainers(
@@ -148,15 +128,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
-   * @param ids
-   *          A collection of QuestionContainer id
-   * 
+   * @param ids A collection of QuestionContainer id
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getQuestionContainerHeaders(ArrayList pks)
@@ -164,15 +138,10 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public QuestionContainerDetail getQuestionContainer(
@@ -181,16 +150,11 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
    * @param participationId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public QuestionContainerDetail getQuestionContainerByParticipationId(
@@ -199,14 +163,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getNotClosedQuestionContainers(
@@ -214,14 +173,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getOpenedQuestionContainers(
@@ -229,14 +183,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getClosedQuestionContainers(
@@ -244,14 +193,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getInWaitQuestionContainers(
@@ -259,12 +203,8 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void closeQuestionContainer(QuestionContainerPK questionContainerPK)
@@ -272,12 +212,8 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void openQuestionContainer(QuestionContainerPK questionContainerPK)
@@ -285,14 +221,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public int getNbVotersByQuestionContainer(
@@ -300,16 +231,11 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param questionContainerDetail
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public QuestionContainerPK createQuestionContainer(
@@ -319,12 +245,8 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteQuestionContainer(QuestionContainerPK questionContainerPK)
@@ -335,12 +257,8 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerHeader
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateQuestionContainerHeader(
@@ -348,13 +266,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param questions
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateQuestions(QuestionContainerPK questionContainerPK,
@@ -362,14 +276,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public float getAveragePoints(QuestionContainerPK questionContainerPK)
@@ -377,15 +286,10 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getOpenedQuestionContainersAndUserScores(
@@ -394,14 +298,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getQuestionContainersWithScores(
@@ -409,15 +308,10 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getQuestionContainersWithUserScores(
@@ -426,15 +320,10 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getUserScoresByFatherId(
@@ -443,15 +332,10 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param nbBestScores
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getBestScoresByFatherId(
@@ -460,14 +344,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public float getAverageScoreByFatherId(QuestionContainerPK questionContainerPK)
@@ -475,14 +354,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getScoresByFatherId(QuestionContainerPK questionContainerPK)
@@ -490,15 +364,10 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public int getUserNbParticipationsByFatherId(
@@ -507,16 +376,11 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param userId
    * @param participationId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(
@@ -525,13 +389,9 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param questionContainerPK
    * @param scoreDetail
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateScore(QuestionContainerPK questionContainerPK,
@@ -539,12 +399,8 @@ public interface QuestionContainerBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteIndex(QuestionContainerPK pk) throws RemoteException;
@@ -557,4 +413,13 @@ public interface QuestionContainerBmSkeleton {
   public QuestionContainerHeader getQuestionContainerHeader(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
+  /**
+   * create export file
+   * @param questionContainer : QuestionContainerDetail
+   * @param addScore : boolean
+   * @return export file name : String
+   * @throws RemoteException
+   */
+  public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore)
+      throws RemoteException;
 }
