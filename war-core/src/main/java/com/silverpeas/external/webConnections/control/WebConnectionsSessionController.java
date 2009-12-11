@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
-import com.silverpeas.external.webConnections.dao.WebConnectionsRuntimeException;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.util.StringUtil;
