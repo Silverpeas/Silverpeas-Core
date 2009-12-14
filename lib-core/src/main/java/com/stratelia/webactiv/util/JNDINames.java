@@ -96,6 +96,7 @@ public class JNDINames extends SilverpeasSettings {
   public static String MYDBBM_EJBHOME = "ejb/MyDBBm";
   public static String TAGCLOUDBM_EJBHOME = "ejb/TagCloudBm";
   public static String NOTATIONBM_EJBHOME = "ejb/NotationBm";
+  public static String CLASSIFIEDSBM_EJBHOME = "ejb/ClassifiedsBm";
 
   public static String WEBPUBMANAGER_EJBHOME = "ejb/WebPublicationManagerBm";
 
