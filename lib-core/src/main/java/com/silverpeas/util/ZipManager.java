@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
 import java.io.File;
@@ -34,51 +33,21 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
-import org.apache.tools.zip.ZipOutputStream;
+
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Classe contenant des méthodes statiques de gestion des fichiers zip
  * @author sdevolder
  */
 public class ZipManager {
-
-  /**
-   * Méthode nécéssaire car l api ne gère pas les accents. Elle est publique car utilisée dans
-   * les classes utilisant ZipManager.
-   * @param text
-   * @return
-   */
-  public static String transformStringToAsciiString(String text) {
-    String newText = text.replace('é', 'e');
-    newText = newText.replace('è', 'e');
-    newText = newText.replace('ë', 'e');
-    newText = newText.replace('ê', 'e');
-    newText = newText.replace('ö', 'o');
-    newText = newText.replace('ô', 'o');
-    newText = newText.replace('õ', 'o');
-    newText = newText.replace('ò', 'o');
-    newText = newText.replace('ï', 'i');
-    newText = newText.replace('î', 'i');
-    newText = newText.replace('ì', 'i');
-    newText = newText.replace('ñ', 'n');
-    newText = newText.replace('ü', 'u');
-    newText = newText.replace('û', 'u');
-    newText = newText.replace('ù', 'u');
-    newText = newText.replace('ç', 'c');
-    newText = newText.replace('à', 'a');
-    newText = newText.replace('ä', 'a');
-    newText = newText.replace('ã', 'a');
-    newText = newText.replace('â', 'a');
-    newText = newText.replace('°', '_');
-    return newText;
-  }
 
   /**
    * Méthode compressant au format zip un fichier ou un dossier de façon récursive au format zip
@@ -89,7 +58,7 @@ public class ZipManager {
    * @throws IOException
    */
   public static long compressPathToZip(String filename, String outfilename)
-      throws FileNotFoundException, IOException {
+          throws FileNotFoundException, IOException {
     ZipOutputStream zos = null;
     File file = new File(filename);
     try {
@@ -97,8 +66,6 @@ public class ZipManager {
       FileOutputStream os = new FileOutputStream(outfilename);
       // création du flux zip
       zos = new ZipOutputStream(os);
-      // zos.setEncoding("Cp437");
-
       if (file.isFile() || file.list().length == 0) // cas fichier ou cas
       // dossier vide
       {
@@ -116,16 +83,12 @@ public class ZipManager {
         }
         zos.closeEntry();
         is.close();
-      } else {// file.isDirectory() == true
+      } else {
         // Récupération du contenu du dossier
-        // le cas dossier vide est traité plus haut
-        String[] listContenuStringPath = file.list();
-        List<File> listcontenuPath = ZipManager.convertListStringToListFile(
-            listContenuStringPath, file.getPath());
+        File[] listcontenuPath = file.listFiles();
         for (File file1 : listcontenuPath) {
-          // enlever les accents sur le nom des file
-          compressPathToZip(file1.getPath(), file.getName() + File.separator
-              + file1.getName(), outfilename, zos);
+          compressPathToZip(file1.getPath(), file.getName() + File.separatorChar
+                  + file1.getName(), outfilename, zos);
         }
       }
       zos.close();
@@ -151,23 +114,15 @@ public class ZipManager {
    * @throws IOException
    */
   private static void compressPathToZip(String filename, String fileToCreate,
-      String outfilename, ZipOutputStream zos) throws FileNotFoundException,
-      IOException {
+          String outfilename, ZipOutputStream zos) throws FileNotFoundException,
+          IOException {
     File file = new File(filename);
-    // if ((file.isFile()) || (file.list().length == 0)) //cas fichier ou cas
-    // dossier vide: ! zip ne crée les dossiers vides
     if (file.isFile()) // cas fichier
     {
       byte[] buf = new byte[4096]; // read buffer
       // Création du flux d'entrée du fichier à compresser
       FileInputStream is = new FileInputStream(filename);
-      // Création d'un champs ZipEntry pour le fichier à compresser dans le
-      // fichier zip à creer
-      // Utilisation de FileServerUtils.replaceAccentChars car l api ne gère pas
-      // les accents
-      String name = transformStringToAsciiString(fileToCreate);
-      // zos.putNextEntry(new ZipEntry(fileToCreate));
-      zos.putNextEntry(new ZipEntry(name));
+      zos.putNextEntry(new ZipEntry(fileToCreate));
       // Lecture du fichier et écriture dans le fichier zip
       int len = 0;
       while ((len = is.read(buf)) > 0) {
@@ -175,16 +130,14 @@ public class ZipManager {
       }
       zos.closeEntry();
       is.close();
-    } else {// file.isDirectory() == true
-      // Récupération du contenu du dossier
-      // le cas dossier vide est traité plus haut
+    } else {
       String[] listContenuStringPath = file.list();
       List<File> listcontenuPath = ZipManager.convertListStringToListFile(
-          listContenuStringPath, file.getPath());
+              listContenuStringPath, file.getPath());
       for (File file1 : listcontenuPath) {
         compressPathToZip(file1.getPath(), fileToCreate
-            + /* file.getName()+ */File.separator + file1.getName(),
-            outfilename, zos);
+                + File.separator + file1.getName(),
+                outfilename, zos);
       }
     }
   }
@@ -197,7 +150,7 @@ public class ZipManager {
    * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private static List<File> convertListStringToListFile(String[] listFileName,
-      String path) {
+          String path) {
     List<File> listFile = new ArrayList<File>();
     if (listFileName == null) {
       return null;
@@ -219,8 +172,8 @@ public class ZipManager {
    * @throws IOException
    */
   public static void compressStreamToZip(InputStream inputStream,
-      String filePathNameToCreate, String outfilename)
-      throws FileNotFoundException, IOException {
+          String filePathNameToCreate, String outfilename)
+          throws FileNotFoundException, IOException {
 
     FileOutputStream os = null;
     ZipOutputStream zos = null;
@@ -261,11 +214,11 @@ public class ZipManager {
   public static void extract(File source, File dest) throws UtilException {
     if (source == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
-          "util.EXE_SOURCE_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
+              "util.EXE_SOURCE_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
     if (dest == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
-          "util.EXE_DESTINATION_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
+              "util.EXE_DESTINATION_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
     extractFile(source, dest);
   }
@@ -280,14 +233,12 @@ public class ZipManager {
   private static void extractFile(File srcF, File dir) {
     ZipFile zf = null;
     try {
-      zf = new ZipFile(srcF, "cp437");
-      // zf = new ZipFile(srcF);
-      ZipEntry ze = null;
+      zf = new ZipFile(srcF);
 
-      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.getEntries();
+      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
       while (entries.hasMoreElements()) {
-        ze = (ZipEntry) entries.nextElement();
-        File f = new File(dir, Project.translatePath(ze.getName()));
+        ZipEntry ze = entries.nextElement();
+        File f = new File(dir, ze.getName());
         try {
           // create intermediary directories - sometimes zip don't add them
           File dirF = new File(f.getParent());
@@ -306,20 +257,20 @@ public class ZipManager {
           }
         } catch (FileNotFoundException ex) {
           SilverTrace.warn("util", "ZipManager.extractFile()",
-              "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
+                  "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
         }
       }
     } catch (IOException ioe) {
       SilverTrace.warn("util", "ZipManager.extractFile()",
-          "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
-          + srcF.getPath(), ioe);
+              "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
+              + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
           zf.close();
         } catch (IOException e) {
           SilverTrace.warn("util", "ZipManager.expandFile()",
-              "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
+                  "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
         }
       }
     }
@@ -330,27 +281,28 @@ public class ZipManager {
     ZipFile zf = null;
     int nbFiles = 0;
     try {
-      zf = new ZipFile(srcF, "cp437");
+      zf = new ZipFile(srcF);
       // zf = new ZipFile(srcF);
       ZipEntry ze = null;
 
-      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.getEntries();
+      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
       while (entries.hasMoreElements()) {
         ze = (ZipEntry) entries.nextElement();
-        if (!ze.isDirectory())
+        if (!ze.isDirectory()) {
           nbFiles++;
+        }
       }
     } catch (IOException ioe) {
       SilverTrace.warn("util", "ZipManager.getNbFiles()",
-          "util.EXE_ERROR_WHILE_COUNTING_FILE", "sourceFile = "
-          + srcF.getPath(), ioe);
+              "util.EXE_ERROR_WHILE_COUNTING_FILE", "sourceFile = "
+              + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
           zf.close();
         } catch (IOException e) {
           SilverTrace.warn("util", "ZipManager.getNbFiles()",
-              "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
+                  "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
         }
       }
     }

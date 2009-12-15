@@ -55,6 +55,7 @@ public class FileServerUtils extends Object {
    * @return a string with all its accented chars replaced.
    */
   public static String replaceAccentChars(String toParse) {
+
     String newLogicalName = toParse.replace('é', 'e');
     newLogicalName = newLogicalName.replace('è', 'e');
     newLogicalName = newLogicalName.replace('ë', 'e');
@@ -75,6 +76,7 @@ public class FileServerUtils extends Object {
     newLogicalName = newLogicalName.replace('ä', 'a');
     newLogicalName = newLogicalName.replace('ã', 'a');
     newLogicalName = newLogicalName.replace('â', 'a');
+    newLogicalName = newLogicalName.replace('°', '_');
     return newLogicalName;
   }
 

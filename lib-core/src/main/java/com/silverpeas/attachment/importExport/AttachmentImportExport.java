@@ -46,6 +46,7 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
@@ -369,7 +370,7 @@ public class AttachmentImportExport {
             // Le nom physique correspond maintenant au fichier copi�
             attDetail.setPhysicalName(relativeExportPath
                 + File.separator
-                + ZipManager.transformStringToAsciiString(attDetail
+                + FileServerUtils.replaceAccentChars(attDetail
                 .getLogicalName()));
 
           } catch (IOException ex) {
@@ -382,9 +383,8 @@ public class AttachmentImportExport {
         } else if (attDetail.getExtension().equalsIgnoreCase(extensionFilter)) {
           try {
             copyAttachment(attDetail, pk, exportPath);
-            // Le nom physique correspond maintenant au fichier copi�
-            attDetail.setLogicalName(ZipManager
-                .transformStringToAsciiString(attDetail.getLogicalName()));
+            // Le nom physique correspond maintenant au fichier copi
+            attDetail.setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (Exception ex) {
             // TODO: gerer ou ne pas gerer telle est la question
@@ -406,7 +406,7 @@ public class AttachmentImportExport {
         + File.separator + attDetail.getPhysicalName();
 
     String fichierJointExport = exportPath + File.separator
-        + ZipManager.transformStringToAsciiString(attDetail.getLogicalName());
+        + FileServerUtils.replaceAccentChars(attDetail.getLogicalName());
 
     FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
   }

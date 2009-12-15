@@ -978,8 +978,7 @@ public class ImportExport {
             .getUnbalancedPublications(componentId);
         Iterator unbalancedPublicationsDetails = unbalancedPublications.iterator();
         String publicationFileNameRelativePath = "";
-        String componentLabel = ZipManager.transformStringToAsciiString(componentInst.getLabel());
-
+        String componentLabel = FileServerUtils.replaceAccentChars(componentInst.getLabel());
         while (unbalancedPublicationsDetails.hasNext()) {
           PublicationDetail pubDetail = (PublicationDetail) unbalancedPublicationsDetails.next();
           PublicationType publicationType = gedIE.getPublicationCompleteById(new Integer(pubDetail

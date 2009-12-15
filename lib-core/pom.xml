@@ -64,10 +64,6 @@
       <artifactId>bcmail-jdk16</artifactId>
     </dependency>
     <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-    </dependency>
-    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
     </dependency>

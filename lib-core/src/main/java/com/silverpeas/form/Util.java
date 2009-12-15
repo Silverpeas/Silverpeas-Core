@@ -25,8 +25,8 @@ package com.silverpeas.form;
 
 import java.io.PrintWriter;
 
-import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -86,7 +86,7 @@ public class Util {
   public static void getJavascriptChecker(String fieldName,
       PagesContext pageContext, PrintWriter out) {
     String jsFunction = "check"
-        + ZipManager.transformStringToAsciiString(fieldName.replace(' ', '_'));
+        + FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
     out.println(" try { ");
     out.println("if (typeof(" + jsFunction + ") == 'function')");
     out.println(" 	" + jsFunction + "('" + pageContext.getLanguage() + "');");

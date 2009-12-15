@@ -13,5 +13,6 @@
   <artifactId>authentication</artifactId>
   <version>${parent.version}</version>
   <packaging>ejb</packaging>
-  <name>EJB Admin</name>
+  <name>EJB Authentication</name>
 </project>
+

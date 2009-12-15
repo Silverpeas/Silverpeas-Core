@@ -43,7 +43,6 @@ import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
 import com.silverpeas.versioning.VersioningIndexer;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -57,6 +56,7 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -240,7 +240,7 @@ public class VersioningImportExport {
         + attachmentCopy.getPhysicalName();
     String fichierJointExport = exportPath
         + File.separator
-        + ZipManager.transformStringToAsciiString(attachmentCopy
+        + FileServerUtils.replaceAccentChars(attachmentCopy
             .getLogicalName());
     try {
       FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
@@ -251,11 +251,9 @@ public class VersioningImportExport {
     // Le nom physique correspond maintenant au fichier copié
     attachmentCopy.setPhysicalName(relativeExportPath
         + File.separator
-        + ZipManager.transformStringToAsciiString(attachmentCopy
+        + FileServerUtils.replaceAccentChars(attachmentCopy
             .getLogicalName()));
-    attachmentCopy.setLogicalName(ZipManager
-        .transformStringToAsciiString(attachmentCopy.getLogicalName()));
-
+    attachmentCopy.setLogicalName(FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
     return attachmentCopy;
   }
 

@@ -107,19 +107,9 @@ public class RepositoryAccessServlet extends HttpServlet {
    */
   @Override
   public void init() throws ServletException {
-    String infos = this.getServletConfig().getServletContext().getServerInfo();
-    boolean needLock = infos != null && infos.startsWith("Orion");
-    try {
-      if (needLock && checkLock()) {
-        SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
-            "RepositoryAccessServlet.init()",
-            "Locking the repository ...........");
-        log("Locking the repository ...........");
-        System.out.println("Locking the repository ...........");
-        return;
-      }
+    try {     
       log("Initializing the repository ...........");
-      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()",
           "Initializing the repository ...........");
       // check if servlet is defined twice
@@ -130,7 +120,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       getServletContext().setAttribute(CTX_PARAM_THIS, this);
       String jcrConfigurationFile = getServletConfig().getInitParameter(
           "configuration");
-      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Configuration file : "
               + jcrConfigurationFile);
       XmlWebApplicationContext context = new XmlWebApplicationContext();
@@ -138,12 +128,12 @@ public class RepositoryAccessServlet extends HttpServlet {
       String[] configLocations = StringUtils.tokenizeToStringArray(
           jcrConfigurationFile,
           ConfigurableWebApplicationContext.CONFIG_LOCATION_DELIMITERS);
-      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Configuration locations : "
               + String.valueOf(configLocations));
       context.setConfigLocations(configLocations);
       context.refresh();
-      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Spring context loaded.");
       repository = (Repository) context.getBean("repository");
       config = (RmiConfiguration) context.getBean("rmi-configuration");
@@ -151,10 +141,10 @@ public class RepositoryAccessServlet extends HttpServlet {
           "RepositoryAccessServlet.init()", "About to launch cleaner Thread");
       cleaner = new PeriodicJcrCleaner(repository);
       new Thread(cleaner).start();
-      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet initialized.", repository.toString());
       registerRMI(config);
-      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "RMI registred");
       getServletContext().setAttribute(Repository.class.getName(), repository);
       registerSilverpeasNodeTypes();
@@ -182,6 +172,10 @@ public class RepositoryAccessServlet extends HttpServlet {
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet error", e);
       throw e;
+    } catch (Throwable e) {
+      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+          "RepositoryAccessServlet error", e);
+      throw new ServletException(e);
     }
   }
 
@@ -194,21 +188,12 @@ public class RepositoryAccessServlet extends HttpServlet {
     SilverpeasRegister.registerNodeTypes(cndFileName);
   }
 
-  private boolean checkLock() throws IOException {
-    File tempFile = File.createTempFile("silverpeas_", "_lock");
-    String tempDir = tempFile.getParent();
-    tempFile.delete();
-    File lock = new File(tempDir, "silverpeas.lock");
-    lock.deleteOnExit();
-    return lock.createNewFile();
-  }
-
   @Override
   public void destroy() {
     super.destroy();
     unregisterRMI(config);
     log("Closing the repository ...........");
-    SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+    SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
         "Closing the repository ...........");
   }
 
@@ -220,7 +205,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       try {
         String user = session.getUserID();
         String name = repository.getDescriptor(Repository.REP_NAME_DESC);
-        SilverTrace.info("jcrUtil", "RepositoryAccessServlet.init()",
+        SilverTrace.error("jcrUtil", "RepositoryAccessServlet.init()",
             "Logged in as " + user + " to a " + name + " repository.");
       } finally {
         session.logout();
@@ -324,7 +309,7 @@ public class RepositoryAccessServlet extends HttpServlet {
         // rmiHost is not configured
         RMIServerSocketFactory sf;
 
-        SilverTrace.debug("RepositoryAccessServlet", "jackrabbit.init",
+        SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
             "Creating RMIServerSocketFactory for host " + config.getHost());
         InetAddress hostAddress = InetAddress.getByName(config.getHost());
         sf = getRMIServerSocketFactory(hostAddress);
@@ -337,13 +322,13 @@ public class RepositoryAccessServlet extends HttpServlet {
       } catch (UnknownHostException uhe) {
         // thrown if the rmiHost cannot be resolved into an IP-Address
         // by getRMIServerSocketFactory
-        SilverTrace.info("attachment", "RepositoryAccessServlet",
+        SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Cannot create Registry", uhe);
       } catch (RemoteException e) {
         // thrown by createRegistry if binding to the rmiHost:rmiPort
         // fails, for example due to rmiHost being remote or another
         // application already being bound to the port
-        SilverTrace.info("attachment", "RepositoryAccessServlet",
+        SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Cannot create Registry", e);
       }
 
@@ -351,7 +336,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       // potentially active registry. We do not check yet, whether the
       // registry is actually accessible.
       if (reg == null) {
-        SilverTrace.debug("attachment", "RepositoryAccessServlet",
+        SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Trying to access existing registry at "
                 + config.getHost() + ":" + config.getPort());
         try {
@@ -367,17 +352,17 @@ public class RepositoryAccessServlet extends HttpServlet {
       // if we finally have a registry, register the repository with the
       // rmiName
       if (reg != null) {
-        SilverTrace.debug("attachment", "RepositoryAccessServlet",
+        SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Registering repository as " + config.getName()
                 + " to registry " + reg);
         reg.bind(config.getName(), remote);
 
         // when successfull, keep references
         this.rmiRepository = remote;
-        SilverTrace.info("attachment", "RepositoryAccessServlet",
+        SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Repository bound via RMI with name: " + rmiUri);
       } else {
-        SilverTrace.info("attachment", "RepositoryAccessServlet",
+        SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init",
             "RMI registry missing, cannot bind repository via RMI");
       }

@@ -73,6 +73,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
@@ -474,15 +475,13 @@ public class PublicationsTypeManager {
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii = ZipManager
-        .transformStringToAsciiString(relativeExportPath.toString());
+    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = "
             + relativeExportPathAscii);
     // String relativeExportPathAscii = relativeExportPath.toString();
-    String pathToCreateAscii = ZipManager
-        .transformStringToAsciiString(pathToCreate.toString());
+    String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
@@ -612,14 +611,12 @@ public class PublicationsTypeManager {
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii = ZipManager
-        .transformStringToAsciiString(relativeExportPath.toString());
+    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = "
             + relativeExportPathAscii);
-    String pathToCreateAscii = ZipManager
-        .transformStringToAsciiString(pathToCreate.toString());
+    String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "pathToCreateAscii = " + pathToCreateAscii);
