@@ -33,10 +33,8 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 /**
- * All graphic elements from the viewGenerator package have to implement this
- * interface. It will enable an object (button, tab ...) to be printed in an
- * html format.
- * 
+ * All graphic elements from the viewGenerator package have to implement this interface. It will
+ * enable an object (button, tab ...) to be printed in an html format.
  * @author neysseri
  * @version 1.0
  */
@@ -44,7 +42,6 @@ public interface SimpleGraphicElement {
 
   /**
    * Print an html representation for this object.
-   * 
    * @return The html representation for this object.
    */
   public String print();

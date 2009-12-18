@@ -48,25 +48,20 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public abstract class ComponentRequestRouter extends HttpServlet {
   /**
-   * This method has to be implemented in the component request Router class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request Router class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public abstract String getSessionControlBeanName();
 
   /**
-   * This method has to be implemented by the component request Router it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp", when accessing
-   *          "http://localhost/webactiv/Ralmanach/jsp/Main.jsp")
-   * @param componentSC
-   *          The component Session Controller, build and initialised.
-   * @param request
-   *          The entering request. The request Router need it to get parameters
+   * This method has to be implemented by the component request Router it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp", when accessing
+   * "http://localhost/webactiv/Ralmanach/jsp/Main.jsp")
+   * @param componentSC The component Session Controller, build and initialised.
+   * @param request The entering request. The request Router need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public abstract String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request);
@@ -113,11 +108,11 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     SilverTrace.debug("peasCore",
         "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
-            + new Boolean(mainSessionCtrl.isAppInMaintenance()).toString());
+        + new Boolean(mainSessionCtrl.isAppInMaintenance()).toString());
     SilverTrace.debug("peasCore",
         "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = "
-            + mainSessionCtrl.getUserAccessLevel());
+        + mainSessionCtrl.getUserAccessLevel());
     if (mainSessionCtrl.isAppInMaintenance()
         && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin())
       return GeneralPropertiesManager.getGeneralResourceLocator().getString(
@@ -135,14 +130,14 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     SilverTrace.debug("peasCore",
         "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = "
-            + mainSessionCtrl.getUserAccessLevel());
+        + mainSessionCtrl.getUserAccessLevel());
 
     boolean isSpaceInMaintenance = mainSessionCtrl
         .isSpaceInMaintenance(spaceId);
     SilverTrace.debug("peasCore",
         "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "spaceIsMaintenance = "
-            + isSpaceInMaintenance);
+        + isSpaceInMaintenance);
 
     // Space in Maintenance ?
     if (isSpaceInMaintenance
@@ -158,8 +153,8 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         SilverTrace.warn("peasCore",
             "ComponentRequestRouter.computeDestination",
             "peasCore.MSG_USER_NOT_ALLOWED", "User="
-                + mainSessionCtrl.getUserId() + " | componentId=" + componentId
-                + " | spaceId=" + spaceId);
+            + mainSessionCtrl.getUserId() + " | componentId=" + componentId
+            + " | spaceId=" + spaceId);
         destination = GeneralPropertiesManager.getGeneralResourceLocator()
             .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
         return destination;
@@ -241,8 +236,8 @@ public abstract class ComponentRequestRouter extends HttpServlet {
       } else {
         request
             .setAttribute(
-                "com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI",
-                request.getRequestURI());
+            "com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI",
+            request.getRequestURI());
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null)
@@ -251,21 +246,21 @@ public abstract class ComponentRequestRouter extends HttpServlet {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
-                  + destination + "' not found !");
+              + destination + "' not found !");
       }
     } catch (Exception e) {
       try {
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
-                SilverpeasException.ERROR,
-                "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-                    + destination, e));
+            SilverpeasException.ERROR,
+            "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
+            + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher(
             "/admin/jsp/errorpageMain.jsp").forward(request, response);
       } catch (Exception ex) {
         if ((e.getMessage() != null)
             && (e.getMessage().indexOf(
-                "Connection reset by peer: socket write error") >= 0)
+            "Connection reset by peer: socket write error") >= 0)
             && (e.getMessage().indexOf("SQL") < 0)) { // This is a
           // "Connection reset by peer"
           // exception due to user
@@ -275,12 +270,12 @@ public abstract class ComponentRequestRouter extends HttpServlet {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-                  + destination, e);
+              + destination, e);
         } else {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
-                  + destination, e);
+              + destination, e);
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_ERROR_PAGE_FAILED",
@@ -334,7 +329,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         }
         SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
             "root.MSG_GEN_PARAM_VALUE", "componentId=" + componentId
-                + "spaceId=" + spaceId + " pathInfo=" + pathInfo);
+            + "spaceId=" + spaceId + " pathInfo=" + pathInfo);
       }
     } else {
       spaceId = "-1";
@@ -345,7 +340,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     String[] context = new String[] { spaceId, componentId, function };
     SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
         "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId + " | componentId="
-            + componentId + " | function=" + function);
+        + componentId + " | function=" + function);
     return context;
   }
 
@@ -382,7 +377,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     SilverTrace.info("peasCore",
         "ComponentRequestRouter.setComponentSessionController",
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId
-            + " | componentId=" + componentId);
+        + " | componentId=" + componentId);
     return component;
   }
 }

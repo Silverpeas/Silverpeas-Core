@@ -73,7 +73,7 @@ public class SessionInfo extends Object {
           // + spName);
           if ((spName != null)
               && ((spName.startsWith("Silverpeas_")) || (spName
-                  .startsWith("WYSIWYG_")))) {
+              .startsWith("WYSIWYG_")))) {
             spNames.add(spName);
           }
         }
@@ -84,7 +84,8 @@ public class SessionInfo extends Object {
             SilverTrace.debug("peasCore", "SessionInfo.cleanSession()",
                 "Remove=" + spName);
             if (element instanceof AbstractComponentSessionController) {
-              AbstractComponentSessionController controller = (AbstractComponentSessionController) element;
+              AbstractComponentSessionController controller =
+                  (AbstractComponentSessionController) element;
               controller.close();
               SilverTrace.debug("peasCore", "SessionManager.cleanSession()",
                   controller.getClass().getName());
@@ -136,13 +137,8 @@ public class SessionInfo extends Object {
 
   /**
    * Transform the milliseconds duration in hours, minutes and seconds.
-   * 
-   * 
-   * @param duration
-   *          in milliseconds
-   * 
+   * @param duration in milliseconds
    * @return "xxHyymnzzs" where xx=hours, yy=minutes, zz=seconds
-   * 
    * @see getConnectedUsersList
    */
   public String formatDuration(long duration) {

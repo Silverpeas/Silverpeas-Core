@@ -34,7 +34,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 /**
  * Create a new ArrayPane.
  * @author cdm
- * 
  */
 public class ArrayPaneTag extends TagSupport {
 
@@ -54,9 +53,11 @@ public class ArrayPaneTag extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
-    final GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
-        "SessionGraphicElementFactory");
-    ArrayPane arrayPane = gef.getArrayPane(var, routingAddress, pageContext.getRequest(), pageContext.getSession());
+    final GraphicElementFactory gef =
+        (GraphicElementFactory) pageContext.getSession().getAttribute(
+            "SessionGraphicElementFactory");
+    ArrayPane arrayPane =
+        gef.getArrayPane(var, routingAddress, pageContext.getRequest(), pageContext.getSession());
     if (title != null) {
       arrayPane.setTitle(title);
     }

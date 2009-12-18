@@ -38,9 +38,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * The FormPane interface gives us the skeleton for all funtionnalities we need
- * to display typical WA form table pane.
- * 
+ * The FormPane interface gives us the skeleton for all funtionnalities we need to display typical
+ * WA form table pane.
  * @author frageade
  * @version 1.0
  */
@@ -76,12 +75,9 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @see
    */
   public FormPane(String nam, String url, PageContext pc) {
@@ -109,10 +105,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param title
-   * 
    * @see
    */
   public void setTitle(String title) {
@@ -121,10 +114,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTitle() {
@@ -133,10 +123,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -145,10 +132,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
-   * 
    * @see
    */
   public void setName(String nam) {
@@ -157,10 +141,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDisplayName() {
@@ -169,10 +150,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
-   * 
    * @see
    */
   public void setDisplayName(String nam) {
@@ -181,10 +159,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDescription() {
@@ -193,10 +168,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param des
-   * 
    * @see
    */
   public void setDescription(String des) {
@@ -205,10 +177,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public PageContext getPageContext() {
@@ -217,10 +186,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getFormLines() {
@@ -229,10 +195,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getNbLines() {
@@ -242,10 +205,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean hasReply() {
@@ -254,10 +214,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rep
-   * 
    * @see
    */
   public void setReply(boolean rep) {
@@ -270,10 +227,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getUtilisateurArchivageDemandes() {
@@ -282,10 +236,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param uad
-   * 
    * @see
    */
   public void setUtilisateurArchivageDemandes(boolean uad) {
@@ -294,10 +245,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getPublieurArchivageDemandes() {
@@ -306,10 +254,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param uad
-   * 
    * @see
    */
   public void setPublieurArchivageDemandes(boolean uad) {
@@ -318,10 +263,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getUtilisateurArchivageReponses() {
@@ -330,10 +272,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param uad
-   * 
    * @see
    */
   public void setUtilisateurArchivageReponses(boolean uad) {
@@ -342,10 +281,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getPublieurArchivageReponses() {
@@ -354,10 +290,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param uad
-   * 
    * @see
    */
   public void setPublieurArchivageReponses(boolean uad) {
@@ -366,10 +299,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getUtilisateurEnvoiDemandes() {
@@ -378,10 +308,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param uad
-   * 
    * @see
    */
   public void setUtilisateurEnvoiDemandes(boolean uad) {
@@ -390,10 +317,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param language
-   * 
    * @see
    */
   public void setLanguage(String language) {
@@ -408,10 +332,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param line
-   * 
    * @see
    */
   public void add(FormLine line) {
@@ -430,10 +351,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lineName
-   * 
    * @see
    */
   public void remove(String lineName) {
@@ -480,10 +398,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {
@@ -550,10 +465,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getBuildRequest() {
@@ -573,10 +485,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param resultVector
-   * 
    * @see
    */
   public void initFromVector(Vector resultVector) {
@@ -595,19 +504,20 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDTD() {
     String retour = "<!DOCTYPE formulaire [";
 
-    retour = retour
-        + "\n<!ELEMENT formulaire (name, displayName, description, reply, utilisateurArchivageDemandes, publieurArchivageDemandes,";
-    retour = retour
-        + "\n       utilisateurArchivageReponses, publieurArchivageReponses, utilisateurEnvoiDemandes, field*)>";
+    retour =
+        retour
+            +
+            "\n<!ELEMENT formulaire (name, displayName, description, reply, utilisateurArchivageDemandes, publieurArchivageDemandes,";
+    retour =
+        retour
+            +
+            "\n       utilisateurArchivageReponses, publieurArchivageReponses, utilisateurEnvoiDemandes, field*)>";
     retour = retour
         + "\n<!ELEMENT field (name, label, value, rows?, cols?, size?, dbtype?, actions?)>";
     retour = retour + "\n<!ATTLIST field ";
@@ -641,24 +551,17 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();
 
   /**
    * Method declaration
-   * 
-   * 
    * @param trueActionPage
    * @param deleteActionCode
    * @param modifyActionCode
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printDemo(String trueActionPage,
@@ -666,14 +569,10 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param trueActionPage
    * @param submitPage
    * @param modifyActionCode
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printHeader(String trueActionPage, String submitPage,

@@ -70,8 +70,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AgendaAccess {
@@ -80,7 +78,6 @@ public class AgendaAccess {
 
   /**
    * getEJB
-   * 
    * @return instance of CalendarBmHome
    */
   static private CalendarBm getEJB() throws AgendaException {
@@ -98,14 +95,9 @@ public class AgendaAccess {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @return
-   * 
    * @throws AgendaException
-   * 
    * @see
    */
   static public boolean hasTentativeSchedulables(String userId)
@@ -121,10 +113,7 @@ public class AgendaAccess {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
-   * 
    * @see
    */
   static public void setCurrentDay(Date date) {
@@ -178,7 +167,7 @@ public class AgendaAccess {
       throw new AgendaException(
           "AgendaAccess.getJournalHeadersForUserAfterDate()",
           SilverpeasException.ERROR, "agenda.EX_CANT_GET_JOURNAL", "userId="
-              + userIdAgenda, e);
+          + userIdAgenda, e);
     }
   }
 }

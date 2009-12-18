@@ -35,7 +35,6 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -44,11 +43,8 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormButtonSubmit(String nam, String val) {
@@ -58,10 +54,7 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -73,14 +66,10 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -95,10 +84,7 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -106,10 +92,7 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
@@ -121,10 +104,7 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {
@@ -136,10 +116,7 @@ public class FormButtonSubmit extends FormButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toLineXML() {

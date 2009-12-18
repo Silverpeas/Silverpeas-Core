@@ -99,7 +99,7 @@ public class LoginServlet extends HttpServlet {
           .getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
       controller
           .setAllowPasswordChange(((allowPasswordChange != null) && (allowPasswordChange
-              .equals("yes"))) ? true : false);
+          .equals("yes"))) ? true : false);
 
       // Notify user about password expiration if needed
       Boolean alertUserAboutPwdExpiration = (Boolean) session
@@ -108,7 +108,7 @@ public class LoginServlet extends HttpServlet {
           && (alertUserAboutPwdExpiration.booleanValue()))
         alertUserAboutPwdExpiration(controller.getUserId(), controller
             .getOrganizationController().getAdministratorUserIds(
-                controller.getUserId())[0], controller.getFavoriteLanguage());
+            controller.getUserId())[0], controller.getFavoriteLanguage());
 
     } catch (Exception e) {
       SilverTrace.error("peasCore", "LoginServlet.doPost()",
@@ -181,8 +181,8 @@ public class LoginServlet extends HttpServlet {
       NotificationSender sender = new NotificationSender(null);
       NotificationMetaData notifMetaData = new NotificationMetaData(
           NotificationParameters.NORMAL, messages
-              .getString("passwordExpirationAlert"), messages
-              .getString("passwordExpirationMessage"));
+          .getString("passwordExpirationAlert"), messages
+          .getString("passwordExpirationMessage"));
       notifMetaData.setSender(fromUserId);
       notifMetaData.addUserRecipient(userId);
       sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,
@@ -190,7 +190,7 @@ public class LoginServlet extends HttpServlet {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
           "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = "
-              + userId, e);
+          + userId, e);
     }
   }
 

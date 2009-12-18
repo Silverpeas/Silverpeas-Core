@@ -71,7 +71,7 @@ public class PaginationTag extends TagSupport {
     try {
       pageContext.getOut().println(
           "<table id=\"pagination\" width=\"100%\" border=\"0\" "
-              + "cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
+          + "cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
       pageContext.getOut().println(
           "<tr valign=\"middle\" class=\"intfdcolor\">");
       pageContext.getOut().println(
@@ -83,10 +83,10 @@ public class PaginationTag extends TagSupport {
         pageContext
             .getOut()
             .print(
-                "<img src=\""
-                    + getIconsPath()
-                    + "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""
-                    + altPreviousAction + "\"/></a>");
+            "<img src=\""
+            + getIconsPath()
+            + "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""
+            + altPreviousAction + "\"/></a>");
       } else {
         pageContext.getOut().println("&#160;&#160;&#160;");
       }
@@ -94,7 +94,7 @@ public class PaginationTag extends TagSupport {
         if (i == currentPage) {
           pageContext.getOut().println(
               " <span class=\"ArrayNavigationOn\">&#160;" + (i + 1)
-                  + "&#160;</span>");
+              + "&#160;</span>");
         } else {
           pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
           pageContext.getOut().print(getUrl(action, hasParam, (i)));
@@ -112,10 +112,10 @@ public class PaginationTag extends TagSupport {
         pageContext
             .getOut()
             .print(
-                "<img src=\""
-                    + getIconsPath()
-                    + "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""
-                    + altNextAction + "\"/></a>");
+            "<img src=\""
+            + getIconsPath()
+            + "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""
+            + altNextAction + "\"/></a>");
       }
       pageContext.getOut().println("</td>");
       pageContext.getOut().println("</tr>");

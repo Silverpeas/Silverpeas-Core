@@ -109,7 +109,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.
- * 
  * @author sDevolder.
  */
 public class ImportExport {
@@ -127,11 +126,8 @@ public class ImportExport {
 
   /**
    * Méthode créant le fichier xml corespondant à l'arbre des objets.
-   * 
-   * @param silverPeasExchangeType
-   *          - arbre des objets à mapper sur le fichier xml
-   * @param xmlToExportPath
-   *          - chemin et nom du fichier xml à créer
+   * @param silverPeasExchangeType - arbre des objets à mapper sur le fichier xml
+   * @param xmlToExportPath - chemin et nom du fichier xml à créer
    * @throws ImportExportException
    */
   public void upLoadSilverpeasExchange(SilverPeasExchangeType silverPeasExchangeType,
@@ -194,9 +190,7 @@ public class ImportExport {
 
   /**
    * Méthode retournant l'arbre des objets mappés sur le fichier xml passé en paramètre.
-   * 
-   * @param xmlFileName
-   *          le fichier xml interprêté par Castor
+   * @param xmlFileName le fichier xml interprêté par Castor
    * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML Castor
    * @throws ImportExportException
    */
@@ -236,7 +230,7 @@ public class ImportExport {
       } catch (SAXException ex) {
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
             "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName)
-                .append(" is not valid according to default schema").toString());
+            .append(" is not valid according to default schema").toString());
 
         // If case the default schema is not the one specified by the
         // XML import file, try to get the right XML-schema and
@@ -267,8 +261,8 @@ public class ImportExport {
 
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
             "root.MSG_GEN_PARAM_VALUE", (new StringBuilder(
-                "Trying again using schema specification located at ")).append(altXsdSystemId)
-                .toString());
+            "Trying again using schema specification located at ")).append(altXsdSystemId)
+            .toString());
 
         // Try again to load, parse and validate the XML import file,
         // using the new schema specification
@@ -305,45 +299,43 @@ public class ImportExport {
     } catch (MappingException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
-              + me.getLocalizedMessage(), me);
+          + me.getLocalizedMessage(), me);
     } catch (MarshalException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_UNMARSHALLING_FAILED", "XML Filename " + xmlFileName + ": "
-              + me.getLocalizedMessage(), me);
+          + me.getLocalizedMessage(), me);
     } catch (ValidationException ve) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-              + ve.getLocalizedMessage(), ve);
+          + ve.getLocalizedMessage(), ve);
     } catch (IOException ioe) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
-              + ioe.getLocalizedMessage(), ioe);
+          + ioe.getLocalizedMessage(), ioe);
     } catch (ParserConfigurationException ex) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-              + ex.getLocalizedMessage(), ex);
+          + ex.getLocalizedMessage(), ex);
     } catch (SAXNotRecognizedException snre) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-              + snre.getLocalizedMessage(), snre);
+          + snre.getLocalizedMessage(), snre);
     } catch (SAXNotSupportedException snse) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-              + snse.getLocalizedMessage(), snse);
+          + snse.getLocalizedMessage(), snse);
     } catch (SAXException se) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-              + se.getLocalizedMessage(), se);
+          + se.getLocalizedMessage(), se);
     }
   }
 
   /**
    * Cherche et retourne un nom de ressource extrait du chemin d'un URI donné.
-   * 
-   * @param uri
-   *          l'URI dans lequel on cherche le nom de ressource.
+   * @param uri l'URI dans lequel on cherche le nom de ressource.
    * @return le nom de ressource dans la chaîne uri ou chaîne vide (jamais null) sir uri est
-   *         <caode>null</code> ou vide ou s'il n'y a pas de ressource indiquée par uri.
+   * <caode>null</code> ou vide ou s'il n'y a pas de ressource indiquée par uri.
    */
   private String extractUriNameIndex(String uri) {
 
@@ -377,13 +369,10 @@ public class ImportExport {
   }
 
   /**
-   * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans le
-   * fichier xml passé en paramètre sont générées grace à l'outil castor.
-   * 
-   * @param userDetail
-   *          - information sur l'utilisateur utilisant le moteur importExport
-   * @param xmlFileName
-   *          - fichier xml définissant les import et/ou export à effectuer
+   * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans
+   * le fichier xml passé en paramètre sont générées grace à l'outil castor.
+   * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
+   * @param xmlFileName - fichier xml définissant les import et/ou export à effectuer
    * @return un rapport détaillé sur l'execution de l'import/export
    * @throws ImportExportException
    */
@@ -437,12 +426,9 @@ public class ImportExport {
   /**
    * Méthode faisant appel au moteur d'importExport de silver peas, des publications dont les
    * paramètres passés sous forme de WAAttributeValuePair sont exportées grace à l'outil castor.
-   * 
    * @deprecated
-   * @param userDetail
-   *          - information sur l'utilisateur utilisant le moteur importExport
-   * @param itemsToExport
-   *          - liste de WAAttributeValuePair
+   * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
+   * @param itemsToExport - liste de WAAttributeValuePair
    * @return un rapport détaillé sur l'execution de l'import/export
    * @throws ImportExportException
    */
@@ -834,7 +820,6 @@ public class ImportExport {
 
   /**
    * Export Kmax Publications
-   * 
    * @param userDetail
    * @param language
    * @param listItemsToExport
@@ -1221,11 +1206,8 @@ public class ImportExport {
 
   /**
    * Méthode générant le nom de l'export nommé: "exportAAAA-MM-JJ-hh'H'mm'm'ss's'_userId"
-   * 
-   * @param userDetail
-   *          - UserDetail de l'utilisateur
-   * @param name
-   *          : nom du fichier final
+   * @param userDetail - UserDetail de l'utilisateur
+   * @param name : nom du fichier final
    * @return - la chaine représentant le nom généré du répertoire d'exportation
    */
   public String generateExportDirName(UserDetail userDetail, String name) {
@@ -1268,7 +1250,6 @@ public class ImportExport {
 
   /**
    * Add father of nodeDetail to List
-   * 
    * @param nodesIds
    * @param nodeDetail
    * @param cie

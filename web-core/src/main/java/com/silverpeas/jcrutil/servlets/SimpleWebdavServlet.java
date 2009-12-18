@@ -28,8 +28,7 @@ import javax.servlet.ServletContext;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class SimpleWebdavServlet extends
-    org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
+public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
   public String getAuthenticateHeaderValue() {
     ResourceLocator resources = new ResourceLocator(
         "com.stratelia.webactiv.util.jcr", "");
@@ -43,10 +42,8 @@ public class SimpleWebdavServlet extends
   private Repository repository;
 
   /**
-   * Returns the <code>Repository</code>. If no repository has been set or
-   * created the repository initialized by <code>RepositoryAccessServlet</code>
-   * is returned.
-   * 
+   * Returns the <code>Repository</code>. If no repository has been set or created the repository
+   * initialized by <code>RepositoryAccessServlet</code> is returned.
    * @return repository
    * @see RepositoryAccessServlet#getRepository(ServletContext)
    */
@@ -59,7 +56,6 @@ public class SimpleWebdavServlet extends
 
   /**
    * Sets the <code>Repository</code>.
-   * 
    * @param repository
    */
   public void setRepository(Repository repository) {

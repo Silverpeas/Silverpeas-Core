@@ -39,11 +39,9 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletAppRegistry represents the PortletAppRegistry Element in
- * portlet-app-registry.xml
+ * PortletAppRegistry represents the PortletAppRegistry Element in portlet-app-registry.xml
  */
-public class PortletAppRegistry implements PortletRegistryTags,
-    PortletRegistryObject {
+public class PortletAppRegistry implements PortletRegistryTags, PortletRegistryObject {
   private String version;
   private Map portletAppTable;
   private List portletAppList;

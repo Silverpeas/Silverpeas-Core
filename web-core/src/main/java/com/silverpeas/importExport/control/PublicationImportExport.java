@@ -49,16 +49,18 @@ public class PublicationImportExport {
   }
 
   /**
-   * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à partir des informations
-   * du fichier destiné à être attaché à celle ci. Utilisation de l'api POI dans le cas des fichiers MSoffice.
+   * Méthodes permettant de récupérer un objet publication dont les méta-données sont
+   * générées à partir des informations du fichier destiné à être attaché à celle ci.
+   * Utilisation de l'api POI dans le cas des fichiers MSoffice.
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
-   * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les informations qui iront renseigner les
-   * méta-données de la publication à creer
+   * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
+   * informations qui iront renseigner les méta-données de la publication à creer
    * @return renvoie un objet PublicationDetail
    */
-  public static PublicationDetail convertFileInfoToPublicationDetail(UserDetail userDetail, File file, boolean isPOIUsed) {
+  public static PublicationDetail convertFileInfoToPublicationDetail(UserDetail userDetail,
+      File file, boolean isPOIUsed) {
 
-    //For reading the properties in an Office document
+    // For reading the properties in an Office document
     MSdocumentPropertiesManager MSdpManager = new MSdocumentPropertiesManager();
 
     PublicationDetail pubDetail = null;
@@ -77,12 +79,26 @@ public class PublicationImportExport {
         poiTitle = si.getTitle();
         poiSubject = si.getSubject();
         poiKeywords = si.getKeywords();
-        nomPub = ((poiTitle == null) || (poiTitle.trim().length() == 0) ? fileName : poiTitle);//si le champs corespondant est vide, on affecte le nom physique du fichier
+        nomPub = ((poiTitle == null) || (poiTitle.trim().length() == 0) ? fileName : poiTitle);// si
+                                                                                               // le
+                                                                                               // champs
+                                                                                               // corespondant
+                                                                                               // est
+                                                                                               // vide,
+                                                                                               // on
+                                                                                               // affecte
+                                                                                               // le
+                                                                                               // nom
+                                                                                               // physique
+                                                                                               // du
+                                                                                               // fichier
         description = ((poiSubject == null) || (poiSubject.trim().length() == 0) ? "" : poiSubject);
-        motsClefs = ((poiKeywords == null) || (poiKeywords.trim().length() == 0) ? "" : poiKeywords);
+        motsClefs =
+            ((poiKeywords == null) || (poiKeywords.trim().length() == 0) ? "" : poiKeywords);
         content = "fichier(s) importé(s)";
       } catch (Exception ex) {
-        //on estime que l'exception est dû au fait que nous ne sommes pas en présence d'un fichier OLE2 (office)
+        // on estime que l'exception est dû au fait que nous ne sommes pas en présence d'un
+        // fichier OLE2 (office)
         nomPub = fileName;
         description = nomPub;
         motsClefs = nomPub;
@@ -94,15 +110,18 @@ public class PublicationImportExport {
       motsClefs = "";
       content = "";
     }
-    pubDetail = new PublicationDetail("unknown"/*id*/, nomPub/*nom*/, description/*description*/, new Date()/*date de création*/, new Date()/*date de début de validité*/, null/*date de fin de validité*/, userDetail.getId()/*id user*/, "5"/*importance*/, null/*version de la publication*/, motsClefs/*keywords*/, content);
+    pubDetail =
+        new PublicationDetail("unknown"/* id */, nomPub/* nom */, description/* description */,
+            new Date()/* date de création */, new Date()/* date de début de validité */,
+            null/* date de fin de validité */, userDetail.getId()/* id user */,
+            "5"/* importance */, null/* version de la publication */, motsClefs/* keywords */,
+            content);
     return pubDetail;
   }
 
   /**
    * Add nodes (coordinatesId) to a publication
-   *
-   * @param PublicationDetail
-   *          , List of coordinateId
+   * @param PublicationDetail , List of coordinateId
    * @return nothing
    */
   public static void addNodesToPublication(PublicationPK pubPK, List nodes) {
@@ -114,7 +133,8 @@ public class PublicationImportExport {
             pubPK));
       }
     } catch (Exception e) {
-      throw new PublicationRuntimeException("CoordinateImportExport.addNodesToPublication()", SilverpeasRuntimeException.ERROR,
+      throw new PublicationRuntimeException("CoordinateImportExport.addNodesToPublication()",
+          SilverpeasRuntimeException.ERROR,
           "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e);
     }
   }
@@ -126,8 +146,9 @@ public class PublicationImportExport {
   private static PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+      PublicationBmHome publicationBmHome =
+          (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+              PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
@@ -138,7 +159,6 @@ public class PublicationImportExport {
 
   /**
    * Get unbalanced publications
-   *
    * @param componentId
    * @return ArrayList of publicationDetail
    */

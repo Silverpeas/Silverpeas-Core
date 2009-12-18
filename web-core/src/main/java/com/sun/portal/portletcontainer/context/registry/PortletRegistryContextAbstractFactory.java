@@ -43,7 +43,7 @@ public class PortletRegistryContextAbstractFactory {
       try {
         instance = ServiceFinder
             .getServiceImplementationInstance(PortletRegistryContextAbstractFactory.class
-                .getName());
+            .getName());
       } catch (Exception ex) {
         throw new PortletRegistryException(ex);
       }

@@ -85,12 +85,9 @@ import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class JobDomainPeasSessionController extends
-    AbstractComponentSessionController {
+public class JobDomainPeasSessionController extends AbstractComponentSessionController {
   String m_TargetUserId = null;
 
   String m_TargetDomainId = "";
@@ -116,13 +113,8 @@ public class JobDomainPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public JobDomainPeasSessionController(MainSessionController mainSessionCtrl,
@@ -163,7 +155,6 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
    * USER functions
    */
   public void setTargetUser(String userId) {
@@ -211,9 +202,9 @@ public class JobDomainPeasSessionController extends
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.createUser()",
         "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin
-            + " userLastName=" + userLastName + " userFirstName="
-            + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
-            + userAccessLevel);
+        + " userLastName=" + userLastName + " userFirstName="
+        + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
+        + userAccessLevel);
 
     existingUser = m_AdminCtrl.getUserIdByLoginAndDomain(userLogin,
         m_TargetDomainId);
@@ -277,11 +268,8 @@ public class JobDomainPeasSessionController extends
   }
 
   /**
-   * Regroupement éventuel de l'utilisateur dans un groupe (pour les domaines
-   * SQL)
-   * 
+   * Regroupement éventuel de l'utilisateur dans un groupe (pour les domaines SQL)
    * @throws JobDomainPeasException
-   * 
    */
   private void regroupInGroup(HashMap properties, String lastGroupId)
       throws JobDomainPeasException {
@@ -290,7 +278,7 @@ public class JobDomainPeasSessionController extends
     if (!"-1".equals(getTargetDomain().getId())
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
-            "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
+        "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
 
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain()
           .getPropFileName(), "");
@@ -372,7 +360,6 @@ public class JobDomainPeasSessionController extends
 
   /**
    * parse le fichier CSV
-   * 
    * @param InputStream
    */
   public void importCsvUsers(FileItem filePart) throws UtilTrappedException,
@@ -682,7 +669,7 @@ public class JobDomainPeasSessionController extends
       JobDomainPeasTrappedException jdpe = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.importCsvUsers",
           SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", listErrors
-              .toString());
+          .toString());
       jdpe.setGoBackPage("displayUsersCsvImport");
       throw jdpe;
     }
@@ -797,7 +784,7 @@ public class JobDomainPeasSessionController extends
     if (!"-1".equals(getTargetDomain().getId())
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
-            "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
+        "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
       ResourceLocator specificRs = new ResourceLocator(getTargetDomain()
           .getPropFileName(), "");
       int numPropertyRegroup = SilverpeasSettings.readInt(specificRs,
@@ -851,8 +838,8 @@ public class JobDomainPeasSessionController extends
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName="
-            + userLastName + " userFirstName=" + userFirstName + " userEMail="
-            + userEMail + " userAccessLevel=" + userAccessLevel);
+        + userLastName + " userFirstName=" + userFirstName + " userEMail="
+        + userEMail + " userAccessLevel=" + userAccessLevel);
 
     theModifiedUser = m_AdminCtrl.getUserFull(idUser);
     if (theModifiedUser == null) {
@@ -890,7 +877,7 @@ public class JobDomainPeasSessionController extends
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
     refresh();
     setTargetUser(idRet);
@@ -920,7 +907,7 @@ public class JobDomainPeasSessionController extends
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySynchronizedUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
     refresh();
     setTargetUser(idRet);
@@ -940,7 +927,7 @@ public class JobDomainPeasSessionController extends
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.deleteUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
     if (m_TargetUserId.equals(idUser)) {
       m_TargetUserId = null;
@@ -1057,7 +1044,6 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
    * GROUP functions
    */
   public void returnIntoGroup(String groupId) throws JobDomainPeasException {
@@ -1095,7 +1081,7 @@ public class JobDomainPeasSessionController extends
     if (StringUtil.isDefined(groupId)) {
       if (getTargetGroup() == null
           || (getTargetGroup() != null && !getTargetGroup().getId().equals(
-              groupId))) {
+          groupId))) {
         Group targetGroup = m_AdminCtrl.getGroupById(groupId);
         if (GroupNavigationStock.isGroupValid(targetGroup)) {
           List manageableGroupIds = null;
@@ -1123,8 +1109,7 @@ public class JobDomainPeasSessionController extends
   }
 
   /**
-   * @return a List with 2 elements. First one, a List of UserDetail. Last one,
-   *         a List of Group.
+   * @return a List with 2 elements. First one, a List of UserDetail. Last one, a List of Group.
    * @throws JobDomainPeasException
    */
   public List getGroupManagers() throws JobDomainPeasException {
@@ -1439,7 +1424,7 @@ public class JobDomainPeasSessionController extends
             + m_TargetUserId
             + "\">"
             + EncodeHelper.javaStringToHtmlString(getTargetUserDetail()
-                .getDisplayedName()) + "</a>");
+            .getDisplayedName()) + "</a>");
       } else {
         strPath.append(EncodeHelper
             .javaStringToHtmlString(getTargetUserDetail().getDisplayedName()));
@@ -1461,7 +1446,7 @@ public class JobDomainPeasSessionController extends
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.createGroup()",
         "root.MSG_GEN_ENTER_METHOD", "ParentId=" + idParent + " Name="
-            + groupName + " Desc=" + groupDescription);
+        + groupName + " Desc=" + groupDescription);
     theNewGroup.setId("-1");
     if (StringUtil.isDefined(m_TargetDomainId)
         && !m_TargetDomainId.equals("-1")) {
@@ -1486,7 +1471,7 @@ public class JobDomainPeasSessionController extends
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.modifyGroup()",
         "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup + " Desc="
-            + groupDescription);
+        + groupDescription);
 
     Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
@@ -1599,7 +1584,6 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
    * DOMAIN functions
    */
 
@@ -2488,7 +2472,6 @@ public class JobDomainPeasSessionController extends
   }
 
   /*
-   * 
    * Selection Peas functions
    */
 
@@ -2520,7 +2503,7 @@ public class JobDomainPeasSessionController extends
 
     sel.setSelectedElements(SelectionUsersGroups
         .getUserIds(((GroupNavigationStock) m_GroupsPath.lastElement())
-            .getAllUserPage()));
+        .getAllUserPage()));
 
     // Contraintes
     sel.setSetSelectable(false);
@@ -2588,7 +2571,7 @@ public class JobDomainPeasSessionController extends
         "JobDomainPeasSessionController.synchroSQLDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-            + m_TargetDomainId);
+        + m_TargetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_INFO);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -2603,9 +2586,9 @@ public class JobDomainPeasSessionController extends
     } else {
       SilverTrace
           .info("jobDomainPeas",
-              "JobDomainPeasSessionController.synchroSQLDomain()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "------------!!!! SYNCHRO DOMAIN SQL : DEUXIEME APPEL !!!!!-----------");
+          "JobDomainPeasSessionController.synchroSQLDomain()",
+          "root.MSG_GEN_PARAM_VALUE",
+          "------------!!!! SYNCHRO DOMAIN SQL : DEUXIEME APPEL !!!!!-----------");
     }
   }
 
@@ -2614,7 +2597,7 @@ public class JobDomainPeasSessionController extends
         "JobDomainPeasSessionController.synchroSQLDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-            + m_TargetDomainId);
+        + m_TargetDomainId);
 
     String sReport = "";
     SynchroUserWebServiceItf synchroUserWebService = null;
@@ -2627,7 +2610,7 @@ public class JobDomainPeasSessionController extends
 
       SynchroReport.warn("jobDomainPeas.synchronizeSilverpeasViaWebService",
           "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId()
-              + ")", null);
+          + ")", null);
 
       // 1- Récupère la liste des groupes à synchroniser (en insert et
       // update)
@@ -2672,10 +2655,8 @@ public class JobDomainPeasSessionController extends
 
         // Suppression des groupes
         /*
-         * Collection listGroupSilverpeas =
-         * Arrays.asList(m_AdminCtrl.getAllGroupIds()); sReport +=
-         * synchroUserWebService.deleteListGroupWebService(theDomain.getId(),
-         * listGroupSilverpeas);
+         * Collection listGroupSilverpeas = Arrays.asList(m_AdminCtrl.getAllGroupIds()); sReport +=
+         * synchroUserWebService.deleteListGroupWebService(theDomain.getId(), listGroupSilverpeas);
          */
 
       }
@@ -2710,14 +2691,10 @@ public class JobDomainPeasSessionController extends
         /*
          * //Insertion / Update des users if(listUserToInsertUpdate != null &&
          * listUserToInsertUpdate.size()>0) { sReport +=
-         * synchroUserWebService.insertUpdateListUserWebService
-         * (theDomain.getId(), listUserToInsertUpdate, listGroupToInsertUpdate);
-         * }
-         * 
-         * //Suppression des users if(listUserToDelete != null &&
-         * listUserToDelete.size()>0) { sReport +=
-         * synchroUserWebService.deleteListUserWebService(theDomain.getId(),
-         * listUserToDelete); }
+         * synchroUserWebService.insertUpdateListUserWebService (theDomain.getId(),
+         * listUserToInsertUpdate, listGroupToInsertUpdate); } //Suppression des users
+         * if(listUserToDelete != null && listUserToDelete.size()>0) { sReport +=
+         * synchroUserWebService.deleteListUserWebService(theDomain.getId(), listUserToDelete); }
          */
         // Suppression des users
         if (listUserToDelete != null && listUserToDelete.size() > 0) {
@@ -2758,7 +2735,7 @@ public class JobDomainPeasSessionController extends
         "JobDomainPeasSessionController.synchroDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO DOMAIN APPELE----------- domainId="
-            + m_TargetDomainId);
+        + m_TargetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(traceLevel);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -2842,7 +2819,7 @@ public class JobDomainPeasSessionController extends
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.getListUsersSelected()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
-            + listSelectedUsers.toString());
+        + listSelectedUsers.toString());
     return listSelectedUsers;
   }
 
@@ -2855,7 +2832,7 @@ public class JobDomainPeasSessionController extends
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.setListSelectedUsers()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
-            + listSelectedUsers.toString());
+        + listSelectedUsers.toString());
   }
 
   public void setIndexOfFirstItemToDisplay(String index) {

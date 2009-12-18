@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * 
  * @author squere
  * @version
  */
@@ -45,8 +44,6 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TabbedPaneWA() {
@@ -55,10 +52,7 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -85,12 +79,8 @@ public class TabbedPaneWA extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param tabs
-   * 
    * @return
-   * 
    * @see
    */
   private String printTabLine(Collection tabs) {
@@ -135,7 +125,7 @@ public class TabbedPaneWA extends AbstractTabbedPane {
       } else {
         result.append("<td align=center nowrap height=24><span class=\"")
             .append(style).append("\">").append(tab.getLabel()).append(
-                "</span></td>");
+            "</span></td>");
       }
       result.append("</tr>\n");
       result.append("</table>\n");

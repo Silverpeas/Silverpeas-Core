@@ -174,12 +174,8 @@ public class PortletAdmin implements PortletAdminMBean {
 
   /**
    * Deletes the portlet application from the stored location
-   * 
-   * @param warNameOnly
-   *          name of the portlet application (without extension)
-   * @param warFileLocation
-   *          deployed location of the portlet
-   * 
+   * @param warNameOnly name of the portlet application (without extension)
+   * @param warFileLocation deployed location of the portlet
    * @return true if the deletion is successful.
    */
   public boolean deletePortlet(String warNameOnly, String warFileLocation) {

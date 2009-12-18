@@ -35,7 +35,7 @@ public class NeedWindowTag extends TagSupport {
     if (window == null) {
       GraphicElementFactory gef = (GraphicElementFactory) pageContext
           .getSession().getAttribute(
-              GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       window = gef.getWindow();
       pageContext.setAttribute(WindowTag.WINDOW_PAGE_ATT, window);
     }

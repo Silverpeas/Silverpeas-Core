@@ -59,11 +59,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * The SpaceModelFactory is a class used for its statics methods. its construct
- * and maintain the SpaceModel hierarchie in memory. It implement the
- * persistance for the SpaceModel class, ie : it provide read and save methods
- * from/to a database. It can read/save the user specific state for the portlets
- * (min, max or normal) either.
+ * The SpaceModelFactory is a class used for its statics methods. its construct and maintain the
+ * SpaceModel hierarchie in memory. It implement the persistance for the SpaceModel class, ie : it
+ * provide read and save methods from/to a database. It can read/save the user specific state for
+ * the portlets (min, max or normal) either.
  */
 public class SpaceModelFactory {
   static protected OrganizationController oc = null;
@@ -77,18 +76,15 @@ public class SpaceModelFactory {
   // private static java.util.HashMap spaceModels ;
 
   /*
-   * static private DataSource dataSource ;
-   * 
-   * // Static initializer : i.e. executed only one time for the class static {
-   * try { // Get the initialContext Context ctx = new InitialContext(); // Look
-   * up myDataSource dataSource = (DataSource) ctx.lookup ("jdbc/Silverpeas");
-   * //Create a connection object } catch(NamingException e) {
-   * e.printStackTrace(); } }
+   * static private DataSource dataSource ; // Static initializer : i.e. executed only one time for
+   * the class static { try { // Get the initialContext Context ctx = new InitialContext(); // Look
+   * up myDataSource dataSource = (DataSource) ctx.lookup ("jdbc/Silverpeas"); //Create a connection
+   * object } catch(NamingException e) { e.printStackTrace(); } }
    */
 
   /**
-   * As the SpaceModelFactory is a class used for its statics methods, It
-   * doesn't need any contructor
+   * As the SpaceModelFactory is a class used for its statics methods, It doesn't need any
+   * contructor
    */
 
   private SpaceModelFactory() {
@@ -96,9 +92,7 @@ public class SpaceModelFactory {
 
   /**
    * Read a spaceModel from database and construct a SpaceModel in memory
-   * 
-   * @param aSpaceId
-   *          the space database Id
+   * @param aSpaceId the space database Id
    * @return a spaceModel
    */
   public static SpaceModel getSpaceModel(PortletSchema os, String aSpaceId)
@@ -153,19 +147,13 @@ public class SpaceModelFactory {
   }
 
   /**
-   * get a spaceModel and remove the component that are not allowed for this
-   * user
-   * 
-   * @param msc
-   *          parameter for getSpaceModel
-   * @param aSpaceId
-   *          the required space Id
-   * @param isAdmin
-   *          true if the user is editing the spaceModel. in this case, the
-   *          unallowed portlets are not remove from the spaceModel.
+   * get a spaceModel and remove the component that are not allowed for this user
+   * @param msc parameter for getSpaceModel
+   * @param aSpaceId the required space Id
+   * @param isAdmin true if the user is editing the spaceModel. in this case, the unallowed portlets
+   * are not remove from the spaceModel.
    * @return the returned SpaceModel
-   * @throws PortletException
-   *           -
+   * @throws PortletException -
    */
   public static SpaceModel getSpaceModel(MainSessionController msc,
       String aSpaceId, boolean isAdmin) throws PortletException {
@@ -250,46 +238,29 @@ public class SpaceModelFactory {
 
   /**
    * portletSaveState Save the portlet state : minimized, normal or maximized
-   * 
-   * @param aSpaceId
-   *          parameter for portletSaveState
-   * @param aPortlet
-   *          the portlet to save the state
-   * @throws PortletException
-   *           -
+   * @param aSpaceId parameter for portletSaveState
+   * @param aPortlet the portlet to save the state
+   * @throws PortletException -
    */
 
   /*
-   * public static void portletSaveState(String aSpaceId, String aUserId,
-   * Portlet aPortlet) throws PortletException { PortletSchema os = null ; //
-   * Test the arguments if (aSpaceId == null) {throw new
-   * PortletException("spaceId is null");} if (aSpaceId.equalsIgnoreCase(""))
-   * {throw new PortletException("spaceId is empty");}
-   * 
-   * if (aUserId == null) {throw new PortletException("userId is null");} if
-   * (aUserId.equalsIgnoreCase("")) {throw new
-   * PortletException("UserId is empty");}
-   * 
-   * int spaceNum = Integer.parseInt(aSpaceId) ;
-   * 
-   * try { // Create a schema for accessing tables // os = new
-   * PortletSchema(dataSource.getConnection()) ; os = new PortletSchema() ;
-   * PortletStateTable tPortletState = os.portletState ;
-   * 
-   * // To be atomised in the future UserTable tUser = os.user ; UserRow ur =
-   * tUser.getByLdapId(aLDAPUserId) ; int aUserId = ur.getId() ;
-   * 
-   * String req = "Select * from ST_PortletState" + "  Where portletRowId = " +
-   * aPortlet.getRowId() + "  and userId = " + aUserId ; PortletStateRow psr =
-   * tPortletState.getPortletState(req) ; // If there is not yet a State for
-   * this portlet and this user if (psr == null) { //We have to create one psr =
-   * new PortletStateRow(-1, aPortlet.getState(), aUserId, aPortlet.getRowId())
-   * ; } else { psr.setState(aPortlet.getState()); } tPortletState.save(psr) ;
-   * os.commit();
-   * 
-   * } catch (UtilException e) { throw new PortletException(e,
-   * "Error Saving the portlet State") ; } finally { try { if (os != null) {
-   * os.close(); } } catch (UtilException e) { e.printStackTrace(); } } }
+   * public static void portletSaveState(String aSpaceId, String aUserId, Portlet aPortlet) throws
+   * PortletException { PortletSchema os = null ; // Test the arguments if (aSpaceId == null) {throw
+   * new PortletException("spaceId is null");} if (aSpaceId.equalsIgnoreCase("")) {throw new
+   * PortletException("spaceId is empty");} if (aUserId == null) {throw new
+   * PortletException("userId is null");} if (aUserId.equalsIgnoreCase("")) {throw new
+   * PortletException("UserId is empty");} int spaceNum = Integer.parseInt(aSpaceId) ; try { //
+   * Create a schema for accessing tables // os = new PortletSchema(dataSource.getConnection()) ; os
+   * = new PortletSchema() ; PortletStateTable tPortletState = os.portletState ; // To be atomised
+   * in the future UserTable tUser = os.user ; UserRow ur = tUser.getByLdapId(aLDAPUserId) ; int
+   * aUserId = ur.getId() ; String req = "Select * from ST_PortletState" + "  Where portletRowId = "
+   * + aPortlet.getRowId() + "  and userId = " + aUserId ; PortletStateRow psr =
+   * tPortletState.getPortletState(req) ; // If there is not yet a State for this portlet and this
+   * user if (psr == null) { //We have to create one psr = new PortletStateRow(-1,
+   * aPortlet.getState(), aUserId, aPortlet.getRowId()) ; } else {
+   * psr.setState(aPortlet.getState()); } tPortletState.save(psr) ; os.commit(); } catch
+   * (UtilException e) { throw new PortletException(e, "Error Saving the portlet State") ; } finally
+   * { try { if (os != null) { os.close(); } } catch (UtilException e) { e.printStackTrace(); } } }
    */
   public static void portletSaveState(SpaceModel space, Portlet aPortlet)
       throws PortletException {
@@ -328,16 +299,10 @@ public class SpaceModelFactory {
 
   /**
    * getPortlet Read an instance from database and contruct a Portlet in memory
-   * 
-   * @param instanceId
-   *          parameter for getPortlet
-   * @param rowId
-   *          -1 means that there is no PortletRow record associated to the
-   *          portlet
-   * 
+   * @param instanceId parameter for getPortlet
+   * @param rowId -1 means that there is no PortletRow record associated to the portlet
    * @return the returned Portlet
-   * @throws PortletException
-   *           -
+   * @throws PortletException -
    */
   private static Portlet getPortlet(int instanceId, int rowId)
       throws PortletException {
@@ -371,12 +336,9 @@ public class SpaceModelFactory {
 
   /**
    * getPortlet Read an instance from database and contruct a Portlet in memory
-   * 
-   * @param aInstanceId
-   *          parameter for getPortlet
+   * @param aInstanceId parameter for getPortlet
    * @return the returned Portlet
-   * @throws PortletException
-   *           -
+   * @throws PortletException -
    */
   public static Portlet getPortlet(int aInstanceId) throws PortletException {
     // -1 means that there is no PortletRow record associated to the portlet
@@ -384,12 +346,9 @@ public class SpaceModelFactory {
   }
 
   /**
-   * getPortletList Construct the list of portlet that can be added to a space :
-   * All instances that are not allready added the this space minus instance
-   * that are not "portlettizable" yet.
-   * 
-   * @param space
-   *          parameter for getPortletList
+   * getPortletList Construct the list of portlet that can be added to a space : All instances that
+   * are not allready added the this space minus instance that are not "portlettizable" yet.
+   * @param space parameter for getPortletList
    * @return the returned ComponentInstanceRow[]
    */
   public static PortletComponent[] getPortletList(SpaceModel space) {
@@ -416,13 +375,10 @@ public class SpaceModelFactory {
   }
 
   /**
-   * saveSpaceModel Save all the spaceModel structure in database. the save in
-   * done by deleting and recreating the structure.
-   * 
-   * @param space
-   *          parameter for saveSpaceModel
-   * @throws PortletException
-   *           -
+   * saveSpaceModel Save all the spaceModel structure in database. the save in done by deleting and
+   * recreating the structure.
+   * @param space parameter for saveSpaceModel
+   * @throws PortletException -
    */
   public static void saveSpaceModel(SpaceModel space) throws PortletException {
     PortletSchema os = null;
@@ -487,11 +443,8 @@ public class SpaceModelFactory {
 
   /**
    * Extract the last number from the string
-   * 
-   * @param chaine
-   *          The String to clean
+   * @param chaine The String to clean
    * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
-   * 
    */
   static String extractLastNumber(String chaine) {
     String s = "";
@@ -521,11 +474,9 @@ public class SpaceModelFactory {
 
   /**
    * Compute if there is any portlets avaible for this user in this space
-   * 
    * @param mainSessionCtrl
    * @param spaceId
    * @return true if there is at leat one portlet avalaible for this user
-   * 
    */
   public static boolean portletAvailable(MainSessionController mainSessionCtrl,
       String spaceId) {

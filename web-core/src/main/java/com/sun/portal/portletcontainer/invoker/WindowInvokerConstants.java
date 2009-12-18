@@ -24,8 +24,7 @@
 package com.sun.portal.portletcontainer.invoker;
 
 /**
- * WindowInvokerConstants has the contants used by the WindowInvoker and the
- * Driver
+ * WindowInvokerConstants has the contants used by the WindowInvoker and the Driver
  */
 
 public interface WindowInvokerConstants {

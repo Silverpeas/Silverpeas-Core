@@ -53,8 +53,8 @@ public abstract class AbstractPagination implements Pagination {
     }
     SilverTrace.info("viewgenerator", "AbstractPagination.constructor()",
         "root.MSG_GEN_PARAM_VALUE", "nbItems = " + nbItems
-            + ", nbItemsPerPage = " + nbItemsPerPage + ", firstItemIndex = "
-            + firstItemIndex);
+        + ", nbItemsPerPage = " + nbItemsPerPage + ", firstItemIndex = "
+        + firstItemIndex);
   }
 
   public String getIconsPath() {

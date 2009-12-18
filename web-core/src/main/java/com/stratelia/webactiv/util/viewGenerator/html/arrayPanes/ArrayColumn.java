@@ -35,16 +35,14 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * 
  * @author squere
  * @version
  */
 public class ArrayColumn implements SimpleGraphicElement {
 
   /**
-   * This behaviour is set when a column header is not sortable. No hyperlink
-   * will be anchored around the title of the column.
-   * 
+   * This behaviour is set when a column header is not sortable. No hyperlink will be anchored
+   * around the title of the column.
    * @see #setBehaviour(int behaviour)
    */
   final static public int COLUMN_BEHAVIOUR_NO_TRIGGER = 1;
@@ -58,22 +56,18 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * In some cases, it may be preferable to specify the routing address (via
-   * {@link #setRoutingAddress(String address)}) If not the {@link #print()}
-   * method defaults to an address derived from the request URL. Note that te
-   * routing address may start with the protocol string
-   * <strong>arraypane:</strong>, in which case a javascript:doArrayPane() URL
-   * is issued instead of a standard URL.
+   * {@link #setRoutingAddress(String address)}) If not the {@link #print()} method defaults to an
+   * address derived from the request URL. Note that te routing address may start with the protocol
+   * string <strong>arraypane:</strong>, in which case a javascript:doArrayPane() URL is issued
+   * instead of a standard URL.
    */
   protected String m_RoutingAddress = null;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param title
    * @param columnNumber
    * @param pane
-   * 
    * @see
    */
   public ArrayColumn(String title, int columnNumber, ArrayPane pane) {
@@ -93,20 +87,17 @@ public class ArrayColumn implements SimpleGraphicElement {
   }
 
   /**
-   * This method sets the routing address. This is actually the URL of the page
-   * to which requests will be routed when the user clicks on a column header
-   * link.
+   * This method sets the routing address. This is actually the URL of the page to which requests
+   * will be routed when the user clicks on a column header link.
    */
   public void setRoutingAddress(String address) {
     m_RoutingAddress = address;
   }
 
   /**
-   * Set the column to be sortable or not. If the array is already unsortable,
-   * this method will have no effect.
-   * 
-   * @param sortable
-   *          A true value will enable this column to be sorted
+   * Set the column to be sortable or not. If the array is already unsortable, this method will have
+   * no effect.
+   * @param sortable A true value will enable this column to be sorted
    */
   public void setSortable(boolean sortable) {
     if (sortable) {
@@ -118,10 +109,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getSortable() {
@@ -133,9 +121,7 @@ public class ArrayColumn implements SimpleGraphicElement {
   }
 
   /**
-   * This method changes the column behaviour, if the argument behaviour is
-   * valid
-   * 
+   * This method changes the column behaviour, if the argument behaviour is valid
    * @deprecated
    */
   public void setBehaviour(int behaviour) {
@@ -149,10 +135,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param title
-   * 
    * @see
    */
   public void setTitle(String title) {
@@ -161,10 +144,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param alignement
-   * 
    * @see
    */
   public void setAlignement(String alignement) {
@@ -173,10 +153,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTitle() {
@@ -185,10 +162,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getAlignement() {
@@ -197,10 +171,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getColumnNumber() {
@@ -219,12 +190,8 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param address
-   * 
    * @return
-   * 
    * @see
    */
   protected boolean isArrayPaneURL(String address) {
@@ -238,10 +205,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -314,9 +278,9 @@ public class ArrayColumn implements SimpleGraphicElement {
           }
           result.append(ArrayPane.ACTION_PARAMETER_NAME).append("=Sort&")
               .append(ArrayPane.TARGET_PARAMETER_NAME).append("=").append(
-                  pane.getName()).append("&").append(
-                  ArrayPane.COLUMN_PARAMETER_NAME).append("=").append(
-                  getColumnNumber());
+              pane.getName()).append("&").append(
+              ArrayPane.COLUMN_PARAMETER_NAME).append("=").append(
+              getColumnNumber());
         }
         // arraypane javascript function. Pass it parameters.
         else {

@@ -37,14 +37,9 @@ import com.stratelia.webactiv.persistence.*;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * Class declaration
- * 
- * This object is a singleton used by LoginServlet : when the user log in,
- * ComponentRequestRouter : when the user access a component.
- * 
- * It provides functions to manage the sessions, to write a log journal and get
- * informations about the logged users.
- * 
+ * Class declaration This object is a singleton used by LoginServlet : when the user log in,
+ * ComponentRequestRouter : when the user access a component. It provides functions to manage the
+ * sessions, to write a log journal and get informations about the logged users.
  * @author Marc Guillemin
  */
 public class SessionManager implements SchedulerEventHandler {
@@ -137,8 +132,8 @@ public class SessionManager implements SchedulerEventHandler {
       SilverLog.logConnexion("SessionManager starting", "TimeStamp="
           + Long.toString(scheduledSessionManagementTimeStamp / 60000),
           "UserSessionTimeout=" + Long.toString(userSessionTimeout / 60000)
-              + " adminSessionTimeout="
-              + Long.toString(adminSessionTimeout / 60000));
+          + " adminSessionTimeout="
+          + Long.toString(adminSessionTimeout / 60000));
 
     } catch (Exception ex) {
       SilverTrace.fatal("peasCore", "SessionManager.getInstance",
@@ -160,12 +155,9 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   /**
-   * Set the server last acessed time by the user. Used to verify if the session
-   * duration has expired (because of timeout).
-   * 
-   * 
+   * Set the server last acessed time by the user. Used to verify if the session duration has
+   * expired (because of timeout).
    * @param session
-   * 
    * @see ComponentRequestRouter and ClipboardRequestRouter
    */
   public void setLastAccess(HttpSession session) {
@@ -179,7 +171,8 @@ public class SessionManager implements SchedulerEventHandler {
               "peasCore",
               "SessionManager.setLastAccess",
               "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-                  + session.getId());
+                  +
+                  session.getId());
     }
 
     // reset previous notification
@@ -187,13 +180,10 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   /**
-   * This method creates a job that executes the "doSessionManagement" method.
-   * That job fires a SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or
-   * 'EXECUTION_SUCCESSFULL'.
-   * 
-   * The timestamp (every time the job will execute) settings is given by
-   * minutes and logically must be less than the session timeout.
-   * 
+   * This method creates a job that executes the "doSessionManagement" method. That job fires a
+   * SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or 'EXECUTION_SUCCESSFULL'. The
+   * timestamp (every time the job will execute) settings is given by minutes and logically must be
+   * less than the session timeout.
    * @see SimpleScheduler for more infos
    */
   public void initSchedulerTimeStamp() throws SchedulerException {
@@ -226,7 +216,6 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * Scheduler Event handler
-   * 
    */
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
 
@@ -234,7 +223,7 @@ public class SessionManager implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName()
-                + "' was not successfull");
+            + "' was not successfull");
         break;
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
@@ -248,15 +237,10 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   /**
-   * This method stores the users's sessions, initialises time counters and log
-   * session's data. The stored session may become invalid (if the user close
-   * the browser, this class is not notified).
-   * 
-   * @param session
-   *          the session to store
-   * @param anIP
-   *          IP adress of the user's host
-   * 
+   * This method stores the users's sessions, initialises time counters and log session's data. The
+   * stored session may become invalid (if the user close the browser, this class is not notified).
+   * @param session the session to store
+   * @param anIP IP adress of the user's host
    * @see removeSession
    */
   public synchronized void addSession(HttpSession session,
@@ -286,11 +270,7 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * Remove a session and log session's data.
-   * 
-   * 
-   * @param aSession
-   *          the session to remove
-   * 
+   * @param aSession the session to remove
    * @see LogoutServlet
    */
   public void removeSession(HttpSession session) {
@@ -308,7 +288,8 @@ public class SessionManager implements SchedulerEventHandler {
               "peasCore",
               "SessionManager.removeSession",
               "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
-                  + sessionId + ")");
+                  +
+                  sessionId + ")");
     }
   }
 
@@ -347,8 +328,7 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * pop del
+   * -------------------------------------------------------------------------- pop del
    */
   private void removeInQueueMessages(String userId, String sessionId) {
     try {
@@ -373,7 +353,7 @@ public class SessionManager implements SchedulerEventHandler {
     } catch (PersistenceException e) {
       SilverTrace.error("peasCore", "SessionManager.removeInQueueMessages()",
           "root.EX_NO_MESSAGE", "USERID=" + userId + " AND SESSIONID = "
-              + sessionId, e);
+          + sessionId, e);
     }
   }
 
@@ -388,7 +368,8 @@ public class SessionManager implements SchedulerEventHandler {
               "peasCore",
               "SessionManager.setIsAlived",
               "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-                  + session.getId());
+                  +
+                  session.getId());
     }
   }
 
@@ -401,7 +382,6 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * Gets all the connected users and the duration of their session.
-   * 
    * @author dlesimple
    * @return Collection of SessionInfo
    */
@@ -421,7 +401,6 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * Gets number of connected users
-   * 
    * @author dlesimple
    * @return nb of connected users
    */
@@ -430,15 +409,11 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   /**
-   * This method is called every scheduledSessionManagementTimeStamp minute by
-   * the scheduler, it notify the user when timeout has expired and then
-   * invalidates the session if the user has not accessed the server. The
-   * maximum minutes duration of session before invalidation is
+   * This method is called every scheduledSessionManagementTimeStamp minute by the scheduler, it
+   * notify the user when timeout has expired and then invalidates the session if the user has not
+   * accessed the server. The maximum minutes duration of session before invalidation is
    * userSessionTimeout + scheduledSessionManagementTimeStamp.
-   * 
-   * @param currentDate
-   *          the date when the method is called by the scheduler
-   * 
+   * @param currentDate the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters, addSession, setLastAccess
    */
   public void doSessionManagement(Date currentDate) {
@@ -484,11 +459,8 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * This method notify a user's end session
-   * 
-   * @param session
-   *          the session to get the user to notify
+   * @param session the session to get the user to notify
    * @endOfSession the time of the end of session (in milliseconds)
-   * 
    * @see
    */
   private void notifyEndOfSession(String userId, long endOfSession,
@@ -504,7 +476,7 @@ public class SessionManager implements SchedulerEventHandler {
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, msgTitle, m_Multilang
-            .getString("EndOfSessionNotificationMsgText"));
+        .getString("EndOfSessionNotificationMsgText"));
     notifMetaData.setSender(null);
     notifMetaData.setSessionId(sessionId);
     notifMetaData.addUserRecipient(userId);
@@ -515,8 +487,8 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   /**
-   * This method remove and invalidates all sessions. The unique instance of the
-   * SessionManager will be destroyed.
+   * This method remove and invalidates all sessions. The unique instance of the SessionManager will
+   * be destroyed.
    */
   public void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
@@ -556,7 +528,7 @@ public class SessionManager implements SchedulerEventHandler {
     } else {
       SilverTrace
           .debug("peasCore", "SessionManager.closeHttpSession",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!!");
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!!");
     }
   }
 }

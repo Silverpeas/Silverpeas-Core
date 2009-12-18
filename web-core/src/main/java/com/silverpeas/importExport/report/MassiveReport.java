@@ -33,10 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class MassiveReport {
 
@@ -119,12 +117,10 @@ public class MassiveReport {
       listUnitReports = new ArrayList();
     listUnitReports.add(unitReport);
     /*
-     * switch (unitReport.getStatus()) { case
-     * UnitReport.STATUS_PUBLICATION_CREATED: this.nbPublicationsCreated++;
-     * getComponentReport
-     * ().setNbPublicationsCreated(getComponentReport().getNbPublicationsCreated
-     * ()+1); break; case UnitReport.STATUS_PUBLICATION_UPDATED:
-     * this.nbPublicationsUpdated++;
+     * switch (unitReport.getStatus()) { case UnitReport.STATUS_PUBLICATION_CREATED:
+     * this.nbPublicationsCreated++; getComponentReport
+     * ().setNbPublicationsCreated(getComponentReport().getNbPublicationsCreated ()+1); break; case
+     * UnitReport.STATUS_PUBLICATION_UPDATED: this.nbPublicationsUpdated++;
      * getComponentReport().setNbPublicationsUpdated
      * (getComponentReport().getNbPublicationsUpdated()+1); break; }
      */

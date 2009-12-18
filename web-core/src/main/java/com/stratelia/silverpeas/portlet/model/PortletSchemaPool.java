@@ -28,10 +28,8 @@ import com.stratelia.webactiv.util.SchemaPool;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * The PortletSchemaPool class manages a pool of PortletSchema shared by all the
- * client (admin classes).
- * 
- * All the public methods are static and the calls are deferred to a singleton.
+ * The PortletSchemaPool class manages a pool of PortletSchema shared by all the client (admin
+ * classes). All the public methods are static and the calls are deferred to a singleton.
  */
 public class PortletSchemaPool extends SchemaPool {
   /**
@@ -40,16 +38,13 @@ public class PortletSchemaPool extends SchemaPool {
   static private PortletSchemaPool singleton = new PortletSchemaPool();
 
   /**
-   * The constructor is private, so we can ensure that only one pool will be
-   * created in the JVM.
+   * The constructor is private, so we can ensure that only one pool will be created in the JVM.
    */
   private PortletSchemaPool() {
   }
 
   /**
-   * Returns an Shema.
-   * 
-   * The returned schema must be released after use.
+   * Returns an Shema. The returned schema must be released after use.
    */
   static public PortletSchema getPortletSchema() throws UtilException {
     return (PortletSchema) singleton.getInstance();

@@ -34,7 +34,6 @@ import com.sun.portal.portletcontainer.invoker.InvokerException;
 
 /**
  * PortletWindowInvokerUtils is a utility class used by the PortletWindowInvoker
- * 
  */
 public class PortletWindowInvokerUtils {
   private static Logger logger = Logger.getLogger(
@@ -42,9 +41,7 @@ public class PortletWindowInvokerUtils {
       "com.silverpeas.portlets.PCDLogMessages");
 
   /**
-   * Returns the entityID.
-   * 
-   * It is stored in the portlet registry during deployment time.
+   * Returns the entityID. It is stored in the portlet registry during deployment time.
    */
   public static EntityID getEntityID(PortletWindowContext pwc,
       String portletWindowName) throws InvokerException {
@@ -59,8 +56,8 @@ public class PortletWindowInvokerUtils {
   }
 
   /**
-   * Gets the userInfoMap property for a portlet window. It is stored in the
-   * registry during deployment time.
+   * Gets the userInfoMap property for a portlet window. It is stored in the registry during
+   * deployment time.
    */
   public static Map getUserInfoMap(PortletWindowContext pwc,
       String portletWindowName) throws InvokerException {
@@ -77,8 +74,8 @@ public class PortletWindowInvokerUtils {
   }
 
   /**
-   * Gets the roleMap property for a portlet window. It is stored in the
-   * registry during deployment time.
+   * Gets the roleMap property for a portlet window. It is stored in the registry during deployment
+   * time.
    */
   public static Map getRoleMap(PortletWindowContext pwc,
       String portletWindowName) throws InvokerException {
@@ -95,8 +92,7 @@ public class PortletWindowInvokerUtils {
   }
 
   /**
-   * Returns the title of a portlet window. It is stored in the registry during
-   * deployment time.
+   * Returns the title of a portlet window. It is stored in the registry during deployment time.
    */
   public static String getPortletWindowTitle(PortletWindowContext pwc,
       String portletWindowName) throws InvokerException {
@@ -107,15 +103,14 @@ public class PortletWindowInvokerUtils {
     } catch (PortletWindowContextException pwce) {
       throw new InvokerException(
           "PortletWindowInvokerUtils.getPortletWindowTitle():"
-              + " couldn't get title for portlet window " + portletWindowName,
+          + " couldn't get title for portlet window " + portletWindowName,
           pwce);
     }
     return title;
   }
 
   /**
-   * Returns the title of a portlet. It is stored in the registry during
-   * deployment time.
+   * Returns the title of a portlet. It is stored in the registry during deployment time.
    */
   public static String getPortletTitle(String portletWindowName,
       PortletWindowContext pwc) throws InvokerException {

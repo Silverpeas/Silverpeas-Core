@@ -119,7 +119,7 @@ public class HtmlExportGenerator {
 
     sb
         .append(
-            "<TABLE border=\"0\" width=\"100%\" align=\"center\" bgcolor=\"#B3BFD1\">")
+        "<TABLE border=\"0\" width=\"100%\" align=\"center\" bgcolor=\"#B3BFD1\">")
         .append("\n");
     sb.append("<TR>").append("\n");
     sb.append("<TD align=\"center\">").append("\n");
@@ -410,7 +410,6 @@ public class HtmlExportGenerator {
 
   /**
    * Specific Kmax Return labels of positions exported
-   * 
    * @param combinationLabels
    * @return
    */
@@ -426,7 +425,6 @@ public class HtmlExportGenerator {
 
   /**
    * Specific Kmax /**
-   * 
    * @return
    */
   public String kmaxAxisToHTML(List axis, String language) {
@@ -438,7 +436,7 @@ public class HtmlExportGenerator {
 
     sb.append("<TITLE>")
         .append(resourceLocator.getString("importExport.index")).append(
-            htmlFileExportDir).append("</TITLE>");
+        htmlFileExportDir).append("</TITLE>");
     sb.append(getHtmlStyle());
     sb.append("</HEAD>\n");
     sb.append("<BODY>\n");
@@ -519,7 +517,7 @@ public class HtmlExportGenerator {
     sb.append("<TR><td>&nbsp;</td></tr>\n");
     sb.append("<TR><td><a target=\"indexPublications\" href=\"index-2.html\">")
         .append(resourceLocator.getString("importExport.unbalanced")).append(
-            "</a></td></tr>\n");
+        "</a></td></tr>\n");
     sb.append("<TR><td colspan=\"").append(axisNb).append(
         "\" align=\"center\"><input type=\"button\" value=\"").append(
         resourceLocator.getString("importExport.validate")).append(
@@ -561,7 +559,7 @@ public class HtmlExportGenerator {
 
     sb.append("<TITLE>")
         .append(resourceLocator.getString("importExport.index")).append(
-            htmlFileExportDir).append("</TITLE>");
+        htmlFileExportDir).append("</TITLE>");
     sb.append(getHtmlStyle());
     sb.append("</HEAD>\n");
     sb.append("<BODY>\n");

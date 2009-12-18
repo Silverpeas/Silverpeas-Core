@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.icons.IconWA;
 
 /**
  * The default implementation of IconPane interface
- * 
  * @author neysseric
  * @version 1.0
  */
@@ -55,8 +54,6 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractIconPane() {
@@ -69,10 +66,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Icon addIcon() {
@@ -91,8 +85,6 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setVerticalPosition() {
@@ -101,10 +93,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param width
-   * 
    * @see
    */
   public void setVerticalWidth(String width) {
@@ -113,8 +102,6 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setHorizontalPosition() {
@@ -123,10 +110,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param space
-   * 
    * @see
    */
   public void setSpacing(String space) {
@@ -135,10 +119,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getIcons() {
@@ -147,10 +128,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getViewType() {
@@ -159,10 +137,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getSpacing() {
@@ -171,10 +146,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getVerticalWidth() {
@@ -183,30 +155,21 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String horizontalPrint();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String verticalPrint();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();

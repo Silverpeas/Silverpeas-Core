@@ -29,13 +29,11 @@ package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * 
  * @author jboulet
  * @version
  */
 
-public class ArrayCellInputText extends ArrayCell implements
-    SimpleGraphicElement {
+public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElement {
 
   // -----------------------------------------------------------------------------------------------------------------
   // Attributs
@@ -61,12 +59,9 @@ public class ArrayCellInputText extends ArrayCell implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param value
    * @param line
-   * 
    * @see
    */
   public ArrayCellInputText(String name, String value, ArrayLine line) {
@@ -207,10 +202,7 @@ public class ArrayCellInputText extends ArrayCell implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getSyntax() {
@@ -285,10 +277,7 @@ public class ArrayCellInputText extends ArrayCell implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

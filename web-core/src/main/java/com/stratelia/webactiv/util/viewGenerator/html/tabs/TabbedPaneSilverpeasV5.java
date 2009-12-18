@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * 
  * @author squere
  * @version
  */
@@ -45,8 +44,6 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TabbedPaneSilverpeasV5() {
@@ -55,10 +52,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -89,12 +83,8 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param tabs
-   * 
    * @return
-   * 
    * @see
    */
   private String printTabLine(Collection tabs) {
@@ -130,22 +120,22 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
       if (tab.getEnabled()) {
         result.append("<td align=center nowrap class=").append(styleGauche)
             .append("><img src=\"").append(iconsPath).append(
-                "/tabs/1px.gif\"></td>\n");
+            "/tabs/1px.gif\"></td>\n");
         result.append("<td align=center nowrap class=").append(style).append(
             "><a href=\"").append(tab.getAction()).append("\">&nbsp;").append(
             tab.getLabel()).append("&nbsp;</td>\n");
         result.append("<td align=center nowrap class=").append(styleDroite)
             .append("><img src=\"").append(iconsPath).append(
-                "/tabs/1px.gif\"></td>\n");
+            "/tabs/1px.gif\"></td>\n");
       } else {
         result.append("<td align=center nowrap class=").append(styleGauche)
             .append("><img src=\"").append(iconsPath).append(
-                "/tabs/1px.gif\"></td>\n");
+            "/tabs/1px.gif\"></td>\n");
         result.append("<td align=center nowrap class=").append(style).append(
             ">").append(tab.getLabel()).append("</td>\n");
         result.append("<td align=center nowrap class=").append(styleDroite)
             .append("><img src=\"").append(iconsPath).append(
-                "/tabs/1px.gif\"></td>\n");
+            "/tabs/1px.gif\"></td>\n");
       }
     }
 

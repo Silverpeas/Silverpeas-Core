@@ -100,7 +100,7 @@ public class ApplicationIndexer extends Object {
     SilverTrace.info("applicationIndexer",
         "ApplicationIndexer.indexComponent()",
         "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = "
-            + compoInst.getLabel());
+        + compoInst.getLabel());
     ComponentIndexerInterface cii = getIndexer(compoInst);
     if (cii != null) {
       try {
@@ -111,17 +111,17 @@ public class ApplicationIndexer extends Object {
         SilverTrace.error("applicationIndexer",
             "ApplicationIndexer.indexComponent()",
             "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = "
-                + compoInst.getLabel(), e);
+            + compoInst.getLabel(), e);
       }
       SilverTrace.info("applicationIndexer",
           "ApplicationIndexer.indexComponent()",
           "applicationIndexer.MSG_END_INDEXING_COMPONENT", "component = "
-              + compoInst.getLabel());
+          + compoInst.getLabel());
     } else {
       SilverTrace.info("applicationIndexer",
           "ApplicationIndexer.indexComponent()",
           "applicationIndexer.MSG_COMPONENT_INDEXER_NOT_FOUND", "component = "
-              + compoInst.getLabel());
+          + compoInst.getLabel());
     }
   }
 
@@ -139,7 +139,7 @@ public class ApplicationIndexer extends Object {
       componentContext.setCurrentComponentId(personalComponent);
       cii = (ComponentIndexerInterface) Class.forName(
           "com.stratelia.webactiv." + compoName + "." + personalComponent
-              + "Indexer").newInstance();
+          + "Indexer").newInstance();
       cii.index(msc, componentContext);
     } catch (ClassNotFoundException ce) {
       SilverTrace.error("applicationIndexer",
@@ -208,8 +208,8 @@ public class ApplicationIndexer extends Object {
     try {
       cii = (ComponentIndexerInterface) Class
           .forName(
-              "com.stratelia.webactiv." + packageName + "." + className
-                  + "Indexer").newInstance();
+          "com.stratelia.webactiv." + packageName + "." + className
+          + "Indexer").newInstance();
     } catch (ClassNotFoundException ce) {
       classNotFound = true;
     } catch (Exception e) {
@@ -227,12 +227,12 @@ public class ApplicationIndexer extends Object {
         SilverTrace.debug("applicationIndexer",
             "ApplicationIndexer.getIndexer()",
             "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND", "component = "
-                + compoName, ce);
+            + compoName, ce);
       } catch (Exception e) {
         SilverTrace.debug("applicationIndexer",
             "ApplicationIndexer.getIndexer()",
             "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = "
-                + compoName, e);
+            + compoName, e);
       }
     }
     return cii;

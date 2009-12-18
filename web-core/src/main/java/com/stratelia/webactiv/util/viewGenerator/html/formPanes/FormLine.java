@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -60,8 +59,6 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public FormLine() {
@@ -81,11 +78,8 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormLine(String nam, String val) {
@@ -105,10 +99,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getType() {
@@ -117,10 +108,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typ
-   * 
    * @see
    */
   public void setType(String typ) {
@@ -129,10 +117,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isMandatory() {
@@ -141,10 +126,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mand
-   * 
    * @see
    */
   public void setMandatory(boolean mand) {
@@ -153,10 +135,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isLocked() {
@@ -165,10 +144,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lock
-   * 
    * @see
    */
   public void setLocked(boolean lock) {
@@ -177,10 +153,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isDBEntry() {
@@ -189,10 +162,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param dbe
-   * 
    * @see
    */
   public void setDBEntry(boolean dbe) {
@@ -201,10 +171,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDBType() {
@@ -213,10 +180,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typ
-   * 
    * @see
    */
   public void setDBType(String typ) {
@@ -225,10 +189,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param fp
-   * 
    * @see
    */
   public void setPane(FormPane fp) {
@@ -237,10 +198,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param val
-   * 
    * @see
    */
   public void setValue(String val) {
@@ -252,10 +210,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
-   * 
    * @see
    */
   public void setName(String nam) {
@@ -267,10 +222,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param lab
-   * 
    * @see
    */
   public void setLabel(String lab) {
@@ -282,10 +234,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param newId
-   * 
    * @see
    */
   public void setId(String newId) {
@@ -297,10 +246,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getValue() {
@@ -314,10 +260,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -326,10 +269,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLabel() {
@@ -343,10 +283,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getId() {
@@ -355,10 +292,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDBColumnCreationRequest() {
@@ -367,10 +301,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param language
-   * 
    * @see
    */
   public void setLanguage(String language) {
@@ -383,10 +314,7 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param language
-   * 
    * @see
    */
   public void setLanguage(ResourceLocator language) {
@@ -397,64 +325,45 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printDemo();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String toXML();
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public abstract FormPane getDescriptor(String nam, String url, PageContext pc);
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public abstract void getConfigurationByRequest(HttpServletRequest req);
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean validate() {
@@ -463,12 +372,8 @@ public abstract class FormLine implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param param
-   * 
    * @return
-   * 
    * @see
    */
   public String noNull(String param) {

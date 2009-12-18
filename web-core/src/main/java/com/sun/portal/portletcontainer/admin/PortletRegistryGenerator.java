@@ -74,8 +74,8 @@ import com.sun.portal.portletcontainer.warupdater.PortletWebAppUpdater;
 
 /**
  * PortletRegistryGenerator is responsible for parsing the portlet.xml using the
- * DeploymentDescriptorReader and generating Portlet Registry Elements like
- * PortletAppRegistry, PortletWindowRegistry and PortletWindowPreferenceRegistry
+ * DeploymentDescriptorReader and generating Portlet Registry Elements like PortletAppRegistry,
+ * PortletWindowRegistry and PortletWindowPreferenceRegistry
  */
 public class PortletRegistryGenerator implements PortletRegistryTags {
   private static final String WEB_INF_PREFIX = "WEB-INF" + "/";
@@ -193,8 +193,9 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     portletWindowRegistryWriter.appendDocument(portletWindowElementList);
     logger.log(Level.FINE, "PSPL_CSPPAM0010", "portlet-window-registry.xml");
 
-    PortletRegistryWriter portletWindowPreferenceRegistryWriter = new PortletWindowPreferenceRegistryWriter(
-        registryLocation, null);
+    PortletRegistryWriter portletWindowPreferenceRegistryWriter =
+        new PortletWindowPreferenceRegistryWriter(
+            registryLocation, null);
     portletWindowPreferenceRegistryWriter
         .appendDocument(portletWindowPreferenceElementList);
     logger.log(Level.FINE, "PSPL_CSPPAM0010",
@@ -223,279 +224,285 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     return warName;
   }
 
-  private void createPortletRegistryElements(Properties roleProperties, Properties userInfoProperties, List webAppRoles, PortletLang portletLang) throws PortletRegistryException {
-        List portletDescriptors = portletsDescriptor.getPortletDescriptors();
-        PortletRegistryElement portletApp, portletWindow, portletWindowPreference;
-        int size = portletDescriptors.size();
-        if(size == 0){
-            Object[] tokens = {"portlet.xml"};
-            throw new PortletRegistryException("invalidWar", tokens);
-        }
-        for (int i = 0; i < portletDescriptors.size(); i++) {
-            // Instantiate the objects required to write to the registry files
-            portletApp = new PortletApp();
-            portletWindow = new PortletWindow();
-            portletWindowPreference = new PortletWindowPreference();
-            
-            portletAppElementList.add(portletApp);
-            portletWindowElementList.add(portletWindow);
-            portletWindowPreferenceElementList.add(portletWindowPreference);
-            
-            PortletDescriptor portletDescriptor = (PortletDescriptor) portletDescriptors.get(i);
-            String portletName = portletDescriptor.getPortletName();
-            logger.log(Level.FINE, "PSPL_CSPPAM0007", portletName);
-            
-            PortletID portletID = new PortletID(getPortletAppName(), portletName);
-            String portletIDValue = portletID.toString();
-            logger.log(Level.FINEST, "PSPL_CSPPAM0008", portletIDValue);
-            portletApp.setPortletName(portletIDValue);
-            portletApp.setName(portletIDValue);
-            portletApp.setStringProperty(ARCHIVE_NAME_KEY, getPortletWarName());
-            portletApp.setStringProperty(ARCHIVE_TYPE_KEY, getPortletWarName().substring(getPortletWarName().lastIndexOf('.')+1));
-            
-            portletWindow.setPortletName(portletIDValue);
-            portletWindow.setName(portletIDValue);
-            portletWindow.setRemote(Boolean.FALSE.toString());
-            portletWindow.setLang(portletLang.toString());
-            
-            portletWindowPreference.setPortletName(portletIDValue);
-            portletWindowPreference.setName(portletIDValue);
-            
-            EntityID entityID = new EntityID(portletID);
-            String entityIDPrefix = entityID.getPrefix();
-            logger.log(Level.FINE, "PSPL_CSPPAM0009", entityIDPrefix);
-            portletWindow.setStringProperty(ENTITY_ID_PREFIX_KEY, entityIDPrefix);
-            
-            PortletInfoDescriptor portletInfo = portletDescriptor.getPortletInfoDescriptor();
-            String title = portletName;
-            String shortTitle = null;
-            List keywords = null;
-            
-            if (portletInfo != null) {
-                title = portletInfo.getTitle();
-                shortTitle = portletInfo.getShortTitle();
-                keywords = portletInfo.getKeywords();
-            }
-            portletApp.setStringProperty(TITLE_KEY, title);
-            portletApp.setStringProperty(SHORT_TITLE_KEY, shortTitle);
-            portletApp.setCollectionProperty(KEYWORDS_KEY, keywords);
-            portletWindow.setStringProperty(TITLE_KEY, title);
-            portletWindow.setStringProperty(VISIBLE_KEY, "false");
-            // When created through deploy, its thick
-            
-            String description = "";
-            if (portletDescriptor.getDescription() != null) {
-                description = portletDescriptor.getDescription();
-            }
-            portletApp.setStringProperty(DESCRIPTION_KEY, description);
-            
-            PortletPreferencesDescriptor ppd = portletDescriptor.getPortletPreferencesDescriptor();
-            List preferenceDescriptors = null;
-            if (ppd != null) {
-                preferenceDescriptors = ppd.getPreferenceDescriptors();
-                if (preferenceDescriptors != null && !preferenceDescriptors.isEmpty()) {
-                    Map preferences = new HashMap();
-                    Map preferencesReadOnly = new HashMap();
-                    for (int j = 0; j < preferenceDescriptors.size(); j++) {
-                        PreferenceDescriptor prd = (PreferenceDescriptor) preferenceDescriptors.get(j);
-                        String name = prd.getPrefName();
-                        List values = prd.getPrefValues();
-                        String value = PortletPreferencesUtility.getPreferenceString(values);
-                        preferences.put(name, value);
-                        String isReadOnly = String.valueOf(prd.getReadOnly());
-                        preferencesReadOnly.put(name, isReadOnly);
-                    }
-                    portletWindowPreference.setCollectionProperty(PREFERENCE_PROPERTIES_KEY, preferences);
-                    portletWindowPreference.setCollectionProperty(PREFERENCE_READ_ONLY_KEY, preferencesReadOnly);
-                }
-            }
-            
-            // Create roleMapping collection
-            // validate roles
-            List securityRoleRefDescriptors = portletDescriptor.getSecurityRoleRefDescriptors();
-            if (securityRoleRefDescriptors!=null && securityRoleRefDescriptors.size() > 0) {
-                List<String> roles = new ArrayList<String>();
-                for (int k = 0; k < securityRoleRefDescriptors.size(); k++) {
-                    SecurityRoleRefDescriptor srd = (SecurityRoleRefDescriptor) securityRoleRefDescriptors.get(k);
-                    String roleLink = srd.getRoleLink();
-                    String portletRole = srd.getRoleName();
-                    if (webAppRoles.contains(roleLink)) {
-                        roles.add(roleLink);
-                    } else if (webAppRoles.contains(portletRole)) {
-                        roles.add(portletRole);
-                    } else {
-                        Object[] tokens = {portletRole};
-                        throw new PortletRegistryException("errorRoleValidation", tokens);
-                    }
-                }
-                
-                Map<String, String> roleMap = new HashMap<String, String>();
-                for(Iterator j = roleProperties.entrySet().iterator();j.hasNext();) {
-                    Map.Entry entry = (Map.Entry) j.next();
-                    String key = (String) entry.getKey(); // webcontainer role
-                    String value = (String) entry.getValue(); // web.xml role
-                    roleMap.put(key,value);
-                }
-                // Check if role mapping is provided for all roles defined in web.xml
-                if(!roles.isEmpty()) {
-                    for(String role : roles) {
-                        if(!roleMap.containsValue(role)) {
-                            Object[] tokens = {role};
-                            throw new PortletRegistryException("errorReverseRoleMapping", tokens);
-                        }
-                    }
-                }
-                if(!roleMap.isEmpty())  {
-                    portletApp.setCollectionProperty(ROLE_MAP_KEY, roleMap);
-                }
-             
-                //create role descriptions
-                boolean hasRoleDescriptions = false;
-                HashMap roleDescriptions = new HashMap();
-                
-                for (int k = 0; k < securityRoleRefDescriptors.size(); k++) {
-                    SecurityRoleRefDescriptor srd = (SecurityRoleRefDescriptor) securityRoleRefDescriptors.get(k);
-                    Map roleDescMap = srd.getDescriptionMap();
-                    if (roleDescMap != null && roleDescMap.size() > 0) {
-                        hasRoleDescriptions = true;
-                        
-                        String name = srd.getRoleName();
-                        if (!roles.contains(name)) {
-                            String[] tokens = {srd.getRoleName()};
-                            throw new PortletRegistryException("errorReverseRoleMapping", tokens);
-                        }
-                        HashMap descriptions = new HashMap();
-                        for (Iterator j = roleDescMap.entrySet().iterator(); j.hasNext();) {
-                            Map.Entry entry = (Map.Entry) j.next();
-                            String lang = (String) entry.getKey();
-                            String desc = (String) entry.getValue();
-                            descriptions.put(lang, desc);
-                        }
-                        roleDescriptions.put(name, descriptions);
-                    }
-                }
-                
-                if (hasRoleDescriptions) {
-                    portletApp.setCollectionProperty(ROLE_DESCRIPTIONS_KEY, roleDescriptions);
-                }
-            }
-            
-            //create user info collection
-            if (userInfoProperties!=null && !userInfoProperties.isEmpty()) {
-                HashMap userInfoMap = new HashMap();
-                Set keys = userInfoProperties.keySet();
-                for (Iterator j = keys.iterator(); j.hasNext();) {
-                    String key = (String) j.next();
-                    String value = userInfoProperties.getProperty(key);
-                    userInfoMap.put(key, value);
-                }
-                portletApp.setCollectionProperty(USER_INFO_MAP_KEY, userInfoMap);
-            }else{
-                //Check if portlet.xml has user info attributes
-                List userAttrDescriptors = portletAppDescriptor.getUserAttributeDescriptors();
-                if (userAttrDescriptors!=null && userAttrDescriptors.size() > 0) {
-                    HashMap userInfoMap = new HashMap();
-                    
-                    for (Iterator di = userAttrDescriptors.iterator(); di.hasNext();) {
-                        UserAttributeDescriptor uad = (UserAttributeDescriptor) di.next();
-                        String attrName = uad.getName();
-                        userInfoMap.put(attrName,attrName);
-                    }
-                    if(userAttrDescriptors.size() > 0)
-                        portletApp.setCollectionProperty(USER_INFO_MAP_KEY, userInfoMap);
-                }
-            }
-            //create user info descriptions
-            boolean hasUserAttrDescriptions = false;
-            List userAttrDescriptors = portletAppDescriptor.getUserAttributeDescriptors();
-            if (userAttrDescriptors!=null && userAttrDescriptors.size() > 0) {
-                HashMap userAttrDescriptions = new HashMap();
-                
-                for (Iterator di = userAttrDescriptors.iterator(); di.hasNext();) {
-                    UserAttributeDescriptor uad = (UserAttributeDescriptor) di.next();
-                    Map userAttrDescMap = uad.getDescriptionMap();
-                    if (userAttrDescMap.size() > 0) {
-                        HashMap descriptions = new HashMap();
-                        for (Iterator j = userAttrDescMap.entrySet().iterator(); j.hasNext();) {
-                            Map.Entry entry = (Map.Entry) j.next();
-                            String lang = (String) entry.getKey();
-                            String desc = (String) entry.getValue();
-                            descriptions.put(lang, desc);
-                        }
-                        userAttrDescriptions.put(uad.getName(), descriptions);
-                    }
-                }
-                
-                if (hasUserAttrDescriptions) {
-                    portletApp.setCollectionProperty(USER_INFO_DESCRIPTIONS_KEY, userAttrDescriptions);
-                }
-            }
-            
-            //create supports collection
-            List supportsDescriptors = portletDescriptor.getSupportsDescriptors();
-            if (supportsDescriptors!=null && supportsDescriptors != null) {
-                HashMap supportsMap = new HashMap();
-                List contentTypes = new ArrayList();
-                for (Iterator j = supportsDescriptors.iterator(); j.hasNext();) {
-                    SupportsDescriptor sd = (SupportsDescriptor) j.next();
-                    String mimeType = sd.getMimeType();
-                    contentTypes.add(mimeType);
-                    List portletModes = sd.getPortletModes();
-                    supportsMap.put(mimeType, portletModes);
-                }
-                portletApp.setCollectionProperty(SUPPORTS_MAP_KEY, supportsMap);
-                portletApp.setCollectionProperty(SUPPORTED_CONTENT_TYPES_KEY, contentTypes);
-            }
-            
-            //create display name properties
-            Map displayNameMap = portletDescriptor.getDisplayNameMap();
-            //TODO Why we are creating HashMap again????
-            if (displayNameMap != null) {
-                HashMap displayNames = new HashMap();
-                
-                for (Iterator j = displayNameMap.entrySet().iterator(); j.hasNext();) {
-                    Map.Entry entry = (Map.Entry) j.next();
-                    String lang = (String) entry.getKey();
-                    String dn = (String) entry.getValue();
-                    displayNames.put(lang, dn);
-                }
-                portletApp.setCollectionProperty(DISPLAY_NAME_MAP_KEY, displayNames);
-            }
-            
-            //create descriptions properties
-            Map descriptionMap = portletDescriptor.getDescriptionMap();
-            //TODO Why we are creating HashMap again????
-            if (descriptionMap != null) {
-                HashMap descriptions = new HashMap();
-                
-                for (Iterator j = descriptionMap.entrySet().iterator(); j.hasNext();) {
-                    Map.Entry entry = (Map.Entry) j.next();
-                    String lang = (String) entry.getKey();
-                    String desc = (String) entry.getValue();
-                    descriptions.put(lang, desc);
-                }
-                portletApp.setCollectionProperty(DESCRIPTION_MAP_KEY, descriptions);
-            }
-            
-            //create supported locales collection
-            List supportedLocales = portletDescriptor.getSupportedLocales();
-            if (supportedLocales != null) {
-                portletApp.setCollectionProperty(SUPPORTED_LOCALES_KEY, supportedLocales);
-            }
-            
-            //create transport-guarantee property, if required
-            SecurityConstraintDescriptor scd = portletAppDescriptor.getSecurityConstraintDescriptor();
-            if (scd != null) {
-                List constrainedPortlets = scd.getConstrainedPortlets();
-                if (constrainedPortlets != null && constrainedPortlets.contains(portletName)) {
-                    String tgType = scd.getTransportGuaranteeType();
-                    if (tgType != null && tgType.length() > 0) {
-                        portletApp.setStringProperty(TRANSPORT_GUARANTEE_KEY, tgType);
-                    }
-                }
-            }
-        }
+  private void createPortletRegistryElements(Properties roleProperties,
+      Properties userInfoProperties, List webAppRoles, PortletLang portletLang)
+      throws PortletRegistryException {
+    List portletDescriptors = portletsDescriptor.getPortletDescriptors();
+    PortletRegistryElement portletApp, portletWindow, portletWindowPreference;
+    int size = portletDescriptors.size();
+    if (size == 0) {
+      Object[] tokens = { "portlet.xml" };
+      throw new PortletRegistryException("invalidWar", tokens);
     }
+    for (int i = 0; i < portletDescriptors.size(); i++) {
+      // Instantiate the objects required to write to the registry files
+      portletApp = new PortletApp();
+      portletWindow = new PortletWindow();
+      portletWindowPreference = new PortletWindowPreference();
+
+      portletAppElementList.add(portletApp);
+      portletWindowElementList.add(portletWindow);
+      portletWindowPreferenceElementList.add(portletWindowPreference);
+
+      PortletDescriptor portletDescriptor = (PortletDescriptor) portletDescriptors.get(i);
+      String portletName = portletDescriptor.getPortletName();
+      logger.log(Level.FINE, "PSPL_CSPPAM0007", portletName);
+
+      PortletID portletID = new PortletID(getPortletAppName(), portletName);
+      String portletIDValue = portletID.toString();
+      logger.log(Level.FINEST, "PSPL_CSPPAM0008", portletIDValue);
+      portletApp.setPortletName(portletIDValue);
+      portletApp.setName(portletIDValue);
+      portletApp.setStringProperty(ARCHIVE_NAME_KEY, getPortletWarName());
+      portletApp.setStringProperty(ARCHIVE_TYPE_KEY, getPortletWarName().substring(
+          getPortletWarName().lastIndexOf('.') + 1));
+
+      portletWindow.setPortletName(portletIDValue);
+      portletWindow.setName(portletIDValue);
+      portletWindow.setRemote(Boolean.FALSE.toString());
+      portletWindow.setLang(portletLang.toString());
+
+      portletWindowPreference.setPortletName(portletIDValue);
+      portletWindowPreference.setName(portletIDValue);
+
+      EntityID entityID = new EntityID(portletID);
+      String entityIDPrefix = entityID.getPrefix();
+      logger.log(Level.FINE, "PSPL_CSPPAM0009", entityIDPrefix);
+      portletWindow.setStringProperty(ENTITY_ID_PREFIX_KEY, entityIDPrefix);
+
+      PortletInfoDescriptor portletInfo = portletDescriptor.getPortletInfoDescriptor();
+      String title = portletName;
+      String shortTitle = null;
+      List keywords = null;
+
+      if (portletInfo != null) {
+        title = portletInfo.getTitle();
+        shortTitle = portletInfo.getShortTitle();
+        keywords = portletInfo.getKeywords();
+      }
+      portletApp.setStringProperty(TITLE_KEY, title);
+      portletApp.setStringProperty(SHORT_TITLE_KEY, shortTitle);
+      portletApp.setCollectionProperty(KEYWORDS_KEY, keywords);
+      portletWindow.setStringProperty(TITLE_KEY, title);
+      portletWindow.setStringProperty(VISIBLE_KEY, "false");
+      // When created through deploy, its thick
+
+      String description = "";
+      if (portletDescriptor.getDescription() != null) {
+        description = portletDescriptor.getDescription();
+      }
+      portletApp.setStringProperty(DESCRIPTION_KEY, description);
+
+      PortletPreferencesDescriptor ppd = portletDescriptor.getPortletPreferencesDescriptor();
+      List preferenceDescriptors = null;
+      if (ppd != null) {
+        preferenceDescriptors = ppd.getPreferenceDescriptors();
+        if (preferenceDescriptors != null && !preferenceDescriptors.isEmpty()) {
+          Map preferences = new HashMap();
+          Map preferencesReadOnly = new HashMap();
+          for (int j = 0; j < preferenceDescriptors.size(); j++) {
+            PreferenceDescriptor prd = (PreferenceDescriptor) preferenceDescriptors.get(j);
+            String name = prd.getPrefName();
+            List values = prd.getPrefValues();
+            String value = PortletPreferencesUtility.getPreferenceString(values);
+            preferences.put(name, value);
+            String isReadOnly = String.valueOf(prd.getReadOnly());
+            preferencesReadOnly.put(name, isReadOnly);
+          }
+          portletWindowPreference.setCollectionProperty(PREFERENCE_PROPERTIES_KEY, preferences);
+          portletWindowPreference.setCollectionProperty(PREFERENCE_READ_ONLY_KEY,
+              preferencesReadOnly);
+        }
+      }
+
+      // Create roleMapping collection
+      // validate roles
+      List securityRoleRefDescriptors = portletDescriptor.getSecurityRoleRefDescriptors();
+      if (securityRoleRefDescriptors != null && securityRoleRefDescriptors.size() > 0) {
+        List<String> roles = new ArrayList<String>();
+        for (int k = 0; k < securityRoleRefDescriptors.size(); k++) {
+          SecurityRoleRefDescriptor srd =
+              (SecurityRoleRefDescriptor) securityRoleRefDescriptors.get(k);
+          String roleLink = srd.getRoleLink();
+          String portletRole = srd.getRoleName();
+          if (webAppRoles.contains(roleLink)) {
+            roles.add(roleLink);
+          } else if (webAppRoles.contains(portletRole)) {
+            roles.add(portletRole);
+          } else {
+            Object[] tokens = { portletRole };
+            throw new PortletRegistryException("errorRoleValidation", tokens);
+          }
+        }
+
+        Map<String, String> roleMap = new HashMap<String, String>();
+        for (Iterator j = roleProperties.entrySet().iterator(); j.hasNext();) {
+          Map.Entry entry = (Map.Entry) j.next();
+          String key = (String) entry.getKey(); // webcontainer role
+          String value = (String) entry.getValue(); // web.xml role
+          roleMap.put(key, value);
+        }
+        // Check if role mapping is provided for all roles defined in web.xml
+        if (!roles.isEmpty()) {
+          for (String role : roles) {
+            if (!roleMap.containsValue(role)) {
+              Object[] tokens = { role };
+              throw new PortletRegistryException("errorReverseRoleMapping", tokens);
+            }
+          }
+        }
+        if (!roleMap.isEmpty()) {
+          portletApp.setCollectionProperty(ROLE_MAP_KEY, roleMap);
+        }
+
+        // create role descriptions
+        boolean hasRoleDescriptions = false;
+        HashMap roleDescriptions = new HashMap();
+
+        for (int k = 0; k < securityRoleRefDescriptors.size(); k++) {
+          SecurityRoleRefDescriptor srd =
+              (SecurityRoleRefDescriptor) securityRoleRefDescriptors.get(k);
+          Map roleDescMap = srd.getDescriptionMap();
+          if (roleDescMap != null && roleDescMap.size() > 0) {
+            hasRoleDescriptions = true;
+
+            String name = srd.getRoleName();
+            if (!roles.contains(name)) {
+              String[] tokens = { srd.getRoleName() };
+              throw new PortletRegistryException("errorReverseRoleMapping", tokens);
+            }
+            HashMap descriptions = new HashMap();
+            for (Iterator j = roleDescMap.entrySet().iterator(); j.hasNext();) {
+              Map.Entry entry = (Map.Entry) j.next();
+              String lang = (String) entry.getKey();
+              String desc = (String) entry.getValue();
+              descriptions.put(lang, desc);
+            }
+            roleDescriptions.put(name, descriptions);
+          }
+        }
+
+        if (hasRoleDescriptions) {
+          portletApp.setCollectionProperty(ROLE_DESCRIPTIONS_KEY, roleDescriptions);
+        }
+      }
+
+      // create user info collection
+      if (userInfoProperties != null && !userInfoProperties.isEmpty()) {
+        HashMap userInfoMap = new HashMap();
+        Set keys = userInfoProperties.keySet();
+        for (Iterator j = keys.iterator(); j.hasNext();) {
+          String key = (String) j.next();
+          String value = userInfoProperties.getProperty(key);
+          userInfoMap.put(key, value);
+        }
+        portletApp.setCollectionProperty(USER_INFO_MAP_KEY, userInfoMap);
+      } else {
+        // Check if portlet.xml has user info attributes
+        List userAttrDescriptors = portletAppDescriptor.getUserAttributeDescriptors();
+        if (userAttrDescriptors != null && userAttrDescriptors.size() > 0) {
+          HashMap userInfoMap = new HashMap();
+
+          for (Iterator di = userAttrDescriptors.iterator(); di.hasNext();) {
+            UserAttributeDescriptor uad = (UserAttributeDescriptor) di.next();
+            String attrName = uad.getName();
+            userInfoMap.put(attrName, attrName);
+          }
+          if (userAttrDescriptors.size() > 0)
+            portletApp.setCollectionProperty(USER_INFO_MAP_KEY, userInfoMap);
+        }
+      }
+      // create user info descriptions
+      boolean hasUserAttrDescriptions = false;
+      List userAttrDescriptors = portletAppDescriptor.getUserAttributeDescriptors();
+      if (userAttrDescriptors != null && userAttrDescriptors.size() > 0) {
+        HashMap userAttrDescriptions = new HashMap();
+
+        for (Iterator di = userAttrDescriptors.iterator(); di.hasNext();) {
+          UserAttributeDescriptor uad = (UserAttributeDescriptor) di.next();
+          Map userAttrDescMap = uad.getDescriptionMap();
+          if (userAttrDescMap.size() > 0) {
+            HashMap descriptions = new HashMap();
+            for (Iterator j = userAttrDescMap.entrySet().iterator(); j.hasNext();) {
+              Map.Entry entry = (Map.Entry) j.next();
+              String lang = (String) entry.getKey();
+              String desc = (String) entry.getValue();
+              descriptions.put(lang, desc);
+            }
+            userAttrDescriptions.put(uad.getName(), descriptions);
+          }
+        }
+
+        if (hasUserAttrDescriptions) {
+          portletApp.setCollectionProperty(USER_INFO_DESCRIPTIONS_KEY, userAttrDescriptions);
+        }
+      }
+
+      // create supports collection
+      List supportsDescriptors = portletDescriptor.getSupportsDescriptors();
+      if (supportsDescriptors != null && supportsDescriptors != null) {
+        HashMap supportsMap = new HashMap();
+        List contentTypes = new ArrayList();
+        for (Iterator j = supportsDescriptors.iterator(); j.hasNext();) {
+          SupportsDescriptor sd = (SupportsDescriptor) j.next();
+          String mimeType = sd.getMimeType();
+          contentTypes.add(mimeType);
+          List portletModes = sd.getPortletModes();
+          supportsMap.put(mimeType, portletModes);
+        }
+        portletApp.setCollectionProperty(SUPPORTS_MAP_KEY, supportsMap);
+        portletApp.setCollectionProperty(SUPPORTED_CONTENT_TYPES_KEY, contentTypes);
+      }
+
+      // create display name properties
+      Map displayNameMap = portletDescriptor.getDisplayNameMap();
+      // TODO Why we are creating HashMap again????
+      if (displayNameMap != null) {
+        HashMap displayNames = new HashMap();
+
+        for (Iterator j = displayNameMap.entrySet().iterator(); j.hasNext();) {
+          Map.Entry entry = (Map.Entry) j.next();
+          String lang = (String) entry.getKey();
+          String dn = (String) entry.getValue();
+          displayNames.put(lang, dn);
+        }
+        portletApp.setCollectionProperty(DISPLAY_NAME_MAP_KEY, displayNames);
+      }
+
+      // create descriptions properties
+      Map descriptionMap = portletDescriptor.getDescriptionMap();
+      // TODO Why we are creating HashMap again????
+      if (descriptionMap != null) {
+        HashMap descriptions = new HashMap();
+
+        for (Iterator j = descriptionMap.entrySet().iterator(); j.hasNext();) {
+          Map.Entry entry = (Map.Entry) j.next();
+          String lang = (String) entry.getKey();
+          String desc = (String) entry.getValue();
+          descriptions.put(lang, desc);
+        }
+        portletApp.setCollectionProperty(DESCRIPTION_MAP_KEY, descriptions);
+      }
+
+      // create supported locales collection
+      List supportedLocales = portletDescriptor.getSupportedLocales();
+      if (supportedLocales != null) {
+        portletApp.setCollectionProperty(SUPPORTED_LOCALES_KEY, supportedLocales);
+      }
+
+      // create transport-guarantee property, if required
+      SecurityConstraintDescriptor scd = portletAppDescriptor.getSecurityConstraintDescriptor();
+      if (scd != null) {
+        List constrainedPortlets = scd.getConstrainedPortlets();
+        if (constrainedPortlets != null && constrainedPortlets.contains(portletName)) {
+          String tgType = scd.getTransportGuaranteeType();
+          if (tgType != null && tgType.length() > 0) {
+            portletApp.setStringProperty(TRANSPORT_GUARANTEE_KEY, tgType);
+          }
+        }
+      }
+    }
+  }
 
   public Boolean unregister(String configFileLocation, String warFileLocation,
       String warName) throws Exception {
@@ -598,8 +605,9 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     preferences.put(PORTLET_HANDLE, portletHandle);
     portletWindowPreference.setCollectionProperty(PREFERENCE_PROPERTIES_KEY,
         preferences);
-    PortletRegistryWriter portletWindowPreferenceRegistryWriter = new PortletWindowPreferenceRegistryWriter(
-        registryLocation, null);
+    PortletRegistryWriter portletWindowPreferenceRegistryWriter =
+        new PortletWindowPreferenceRegistryWriter(
+            registryLocation, null);
     portletWindowPreferenceRegistryWriter
         .appendDocument(portletWindowPreferenceElementList);
     logger.log(Level.FINE, "PSPL_CSPPAM0010",

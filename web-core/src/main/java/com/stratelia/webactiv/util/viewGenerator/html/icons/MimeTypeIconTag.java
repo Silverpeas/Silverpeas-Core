@@ -85,8 +85,7 @@ public class MimeTypeIconTag extends TagSupport {
   }
 
   /**
-   * @param fileName
-   *          the fileName to set for the wanted icon.
+   * @param fileName the fileName to set for the wanted icon.
    */
   public void setFileName(String fileName) {
     this.fileExtension = FileRepositoryManager.getFileExtension(fileName)
@@ -94,16 +93,14 @@ public class MimeTypeIconTag extends TagSupport {
   }
 
   /**
-   * @param fileExtension
-   *          the file extension to set
+   * @param fileExtension the file extension to set
    */
   public void setFileExtension(String fileExtension) {
     this.fileExtension = fileExtension;
   }
 
   /**
-   * @param divId
-   *          the id attribute for the cerated div.
+   * @param divId the id attribute for the cerated div.
    */
   public void setDivId(String divId) {
     this.divId = divId;

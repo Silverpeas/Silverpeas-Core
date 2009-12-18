@@ -49,7 +49,6 @@ import com.sun.portal.portletcontainer.invoker.ResponseProperties;
 
 /**
  * InvokerUtil has utility methods needed by the Window Invoker
- * 
  */
 public class InvokerUtil {
 
@@ -60,55 +59,48 @@ public class InvokerUtil {
       "com.silverpeas.portlets.PCCTXLogMessages");
 
   /**
-   * Sets the response properties like cookies and headers in the
-   * HttpServletResponse and sets the markup header in Session so that it will
-   * be set in the <head> tag in header.jsp
-   * 
-   * @param request
-   *          the HttpServletRequest object
-   * @param response
-   *          the HttpServletResponse object
-   * @param responseProperties
-   *          the ResponseProperties responseProperties object
+   * Sets the response properties like cookies and headers in the HttpServletResponse and sets the
+   * markup header in Session so that it will be set in the <head> tag in header.jsp
+   * @param request the HttpServletRequest object
+   * @param response the HttpServletResponse object
+   * @param responseProperties the ResponseProperties responseProperties object
    */
   public static void setResponseProperties(HttpServletRequest request,
-            HttpServletResponse response, ResponseProperties responseProperties) {
-        if(responseProperties != null) {
-            List<Cookie> cookies = responseProperties.getCookies();
-            for (Cookie cookie : cookies) {
-                response.addCookie(cookie);
-            }
+      HttpServletResponse response, ResponseProperties responseProperties) {
+    if (responseProperties != null) {
+      List<Cookie> cookies = responseProperties.getCookies();
+      for (Cookie cookie : cookies) {
+        response.addCookie(cookie);
+      }
 
-            Map<String, List<String>> responseHeaders = responseProperties.getResponseHeaders();
-            Set<Map.Entry<String, List<String>>> entries = responseHeaders.entrySet();
-            for(Map.Entry<String, List<String>> mapEntry : entries) {
-                String headerName = mapEntry.getKey();
-                for(String headerValue : mapEntry.getValue()) {
-                    response.addHeader(headerName, headerValue);
-                }
-            }
-            
-            HttpSession session = request.getSession(true);
-            session.removeAttribute(MARKUP_HEADERS);
-            List<Element> markupHeadElements = responseProperties.getMarkupHeadElements();
-            if(!markupHeadElements.isEmpty()) {
-                List<String> markupHeaders = new ArrayList<String>();
-                for(Element markupHeadElement : markupHeadElements) {
-                    String elementValue = convertElementToString(markupHeadElement);
-                    if(elementValue != null) {
-                        markupHeaders.add(elementValue);
-                    }
-                }
-                session.setAttribute(MARKUP_HEADERS, markupHeaders);
-            }
+      Map<String, List<String>> responseHeaders = responseProperties.getResponseHeaders();
+      Set<Map.Entry<String, List<String>>> entries = responseHeaders.entrySet();
+      for (Map.Entry<String, List<String>> mapEntry : entries) {
+        String headerName = mapEntry.getKey();
+        for (String headerValue : mapEntry.getValue()) {
+          response.addHeader(headerName, headerValue);
         }
+      }
+
+      HttpSession session = request.getSession(true);
+      session.removeAttribute(MARKUP_HEADERS);
+      List<Element> markupHeadElements = responseProperties.getMarkupHeadElements();
+      if (!markupHeadElements.isEmpty()) {
+        List<String> markupHeaders = new ArrayList<String>();
+        for (Element markupHeadElement : markupHeadElements) {
+          String elementValue = convertElementToString(markupHeadElement);
+          if (elementValue != null) {
+            markupHeaders.add(elementValue);
+          }
+        }
+        session.setAttribute(MARKUP_HEADERS, markupHeaders);
+      }
     }
+  }
 
   /**
    * Clears the response properties
-   * 
-   * @param responseProperties
-   *          the ResponseProperties responseProperties object
+   * @param responseProperties the ResponseProperties responseProperties object
    */
   public static void clearResponseProperties(
       ResponseProperties responseProperties) {

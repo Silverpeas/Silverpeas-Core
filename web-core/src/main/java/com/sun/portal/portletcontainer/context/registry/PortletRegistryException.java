@@ -30,8 +30,8 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 /**
- * A <code>PortletRegistryException</code> is thrown when there are errors
- * related to registry read/write.
+ * A <code>PortletRegistryException</code> is thrown when there are errors related to registry
+ * read/write.
  */
 
 public class PortletRegistryException extends Exception {
@@ -46,10 +46,7 @@ public class PortletRegistryException extends Exception {
 
   /**
    * Constructs an instance of the <code>PortletRegistryException</code> class.
-   * 
-   * @param key
-   *          key string to index into resource bundle to retieve localized
-   *          message
+   * @param key key string to index into resource bundle to retieve localized message
    */
   public PortletRegistryException(String key) {
     super(key);
@@ -58,12 +55,8 @@ public class PortletRegistryException extends Exception {
 
   /**
    * Constructs an instance of the <code>PortletRegistryException</code> class.
-   * 
-   * @param key
-   *          key string to index into resource bundle to retieve localized
-   *          message
-   * @param tokens
-   *          array of tokens to be used by the exception message
+   * @param key key string to index into resource bundle to retieve localized message
+   * @param tokens array of tokens to be used by the exception message
    */
   public PortletRegistryException(String key, Object[] tokens) {
     super(key);
@@ -73,12 +66,8 @@ public class PortletRegistryException extends Exception {
 
   /**
    * Constructs an instance of the <code>PortletRegistryException</code> class.
-   * 
-   * @param key
-   *          key string to index into resource bundle to retieve localized
-   *          message
-   * @param t
-   *          Throwable object provided by the object which is throwing
+   * @param key key string to index into resource bundle to retieve localized message
+   * @param t Throwable object provided by the object which is throwing
    */
   public PortletRegistryException(String key, Throwable t) {
     super(key);
@@ -88,14 +77,9 @@ public class PortletRegistryException extends Exception {
 
   /**
    * Constructs an instance of the <code>PortletRegistryException</code> class.
-   * 
-   * @param key
-   *          key string to index into resource bundle to retieve localized
-   *          message
-   * @param t
-   *          Throwable object provided by the object which is throwing
-   * @param tokens
-   *          array of tokens to be used by the exception message
+   * @param key key string to index into resource bundle to retieve localized message
+   * @param t Throwable object provided by the object which is throwing
+   * @param tokens array of tokens to be used by the exception message
    */
   public PortletRegistryException(String key, Throwable t, Object[] tokens) {
     super(key);
@@ -106,10 +90,7 @@ public class PortletRegistryException extends Exception {
 
   /**
    * Constructs an instance of the <code>PortletRegistryException</code> class.
-   * 
-   * @param t
-   *          Throwable object provided by the object which is throwing the
-   *          exception
+   * @param t Throwable object provided by the object which is throwing the exception
    */
   public PortletRegistryException(Throwable t) {
     super(t);

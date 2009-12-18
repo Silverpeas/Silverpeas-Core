@@ -30,8 +30,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class OperationPaneSilverpeasV5StringFactory extends Object {
   /**
-   * Hashtable which contains the specifics code encoded as key and their values
-   * are right code encoded
+   * Hashtable which contains the specifics code encoded as key and their values are right code
+   * encoded
    */
   private static StringBuffer printString1 = null;
   private static StringBuffer printString2 = null;

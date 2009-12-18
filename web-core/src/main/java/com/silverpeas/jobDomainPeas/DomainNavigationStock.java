@@ -72,11 +72,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  */
 
 /**
- * This class manage the informations needed for domains navigation and browse
- * 
- * PRE-REQUIRED : the Domain passed in the constructor MUST BE A VALID DOMAIN
- * (with Id, etc...)
- * 
+ * This class manage the informations needed for domains navigation and browse PRE-REQUIRED : the
+ * Domain passed in the constructor MUST BE A VALID DOMAIN (with Id, etc...)
  * @t.leroi
  */
 public class DomainNavigationStock extends NavigationStock {

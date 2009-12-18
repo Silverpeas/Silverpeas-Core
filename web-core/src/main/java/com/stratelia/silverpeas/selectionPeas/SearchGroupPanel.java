@@ -94,7 +94,7 @@ public class SearchGroupPanel extends BrowsePanelProvider {
     modelGroup.setSuperGroupId(m_ParentGroupId);
     m_Ids = m_oc.searchGroupsIds(false,
         m_SelectionExtraParams.getComponentId(), m_SelectionExtraParams
-            .getProfileIds(), modelGroup);
+        .getProfileIds(), modelGroup);
 
     // Set search tokens values
     ((PanelSearchEdit) m_SearchTokens[FILTER_NAME]).m_Text = getSureString(filters[FILTER_NAME]);

@@ -45,12 +45,9 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author Thierry Leroi
  */
-public class JobOrganizationPeasSessionController extends
-    AbstractComponentSessionController {
+public class JobOrganizationPeasSessionController extends AbstractComponentSessionController {
   // View Group or User
   private String currentUserId = null;
   private String currentGroupId = null;
@@ -63,13 +60,8 @@ public class JobOrganizationPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public JobOrganizationPeasSessionController(
@@ -164,8 +156,8 @@ public class JobOrganizationPeasSessionController extends
   }
 
   /**
-   * @return an array of (name, value). name can be either a string or a
-   *         resource key starting by 'GML.' or 'JOP.'
+   * @return an array of (name, value). name can be either a string or a resource key starting by
+   * 'GML.' or 'JOP.'
    */
   public String[][] getCurrentUserInfos() {
     if (currentInfos == null) {
@@ -217,8 +209,8 @@ public class JobOrganizationPeasSessionController extends
   }
 
   /**
-   * @return an array of (name, value). name can be either a string or a
-   *         resource key starting by 'GML.' or 'JOP.'
+   * @return an array of (name, value). name can be either a string or a resource key starting by
+   * 'GML.' or 'JOP.'
    */
   public String[][] getCurrentGroupInfos() {
     if (currentInfos == null) {
@@ -253,8 +245,8 @@ public class JobOrganizationPeasSessionController extends
   }
 
   /**
-   * @return an array of (name, value). name can be either a string or a
-   *         resource key starting by 'GML.' or 'JOP.'
+   * @return an array of (name, value). name can be either a string or a resource key starting by
+   * 'GML.' or 'JOP.'
    */
   public String[][] getCurrentInfos() {
     if (getCurrentGroupId() != null) {
@@ -303,8 +295,8 @@ public class JobOrganizationPeasSessionController extends
   }
 
   /**
-   * @return a map of the official (business) names of the installed components
-   *         indexed by the internal names
+   * @return a map of the official (business) names of the installed components indexed by the
+   * internal names
    */
   private Map getComponentOfficialNames() {
     if (componentOfficialNames == null) {
@@ -324,14 +316,13 @@ public class JobOrganizationPeasSessionController extends
       SilverTrace.info("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getComponentOfficialName",
           "root.MSG_GEN_PARAM_VALUE", "!!!!! ERROR getting official name="
-              + internalName, e);
+          + internalName, e);
       return internalName;
     }
   }
 
   /**
-   * @return list of (array[space name, component label, component name, profile
-   *         name])
+   * @return list of (array[space name, component label, component name, profile name])
    */
   public List getCurrentProfiles() {
     if (currentProfiles == null) {
@@ -366,7 +357,7 @@ public class JobOrganizationPeasSessionController extends
             if (!StringUtil.isDefined(profile2Display[3]))
               profile2Display[3] = getAdminController()
                   .getProfileLabelfromName(currentComponent.getName(),
-                      currentProfile.getName());
+                  currentProfile.getName());
             currentProfiles.add(profile2Display);
 
             spaceIds.add(currentComponent.getDomainFatherId());

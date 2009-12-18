@@ -34,8 +34,7 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowRegistryWriter is responsible for updating the
- * portlet-window-registry.xml file
+ * PortletWindowRegistryWriter is responsible for updating the portlet-window-registry.xml file
  */
 public class PortletWindowRegistryWriter extends PortletRegistryWriter {
 

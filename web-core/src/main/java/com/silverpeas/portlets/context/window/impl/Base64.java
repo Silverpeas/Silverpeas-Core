@@ -54,11 +54,9 @@ class Base64 {
   }
 
   /**
-   * Convert the String into an array of bytes then send the bytes through the
-   * encoding algorithim. Return the encoded data as a String object.
-   * 
-   * @param theData
-   *          the data that is to be Base64 encoded.
+   * Convert the String into an array of bytes then send the bytes through the encoding algorithim.
+   * Return the encoded data as a String object.
+   * @param theData the data that is to be Base64 encoded.
    * @return String the base64 encoded data as a String object.
    */
   public static String encode(String theData) {
@@ -74,11 +72,8 @@ class Base64 {
   }
 
   /**
-   * This is where the actual encoding takes place. returns a byte array of the
-   * encoded bytes.
-   * 
-   * @param theBytes
-   *          a byte array that is to be Base64 encoded.
+   * This is where the actual encoding takes place. returns a byte array of the encoded bytes.
+   * @param theBytes a byte array that is to be Base64 encoded.
    * @return byte[] the Base64 encoded data.
    */
   public static byte[] encode(byte[] theBytes) {
@@ -133,9 +128,7 @@ class Base64 {
 
   /**
    * This is where the base 64 decoding is done.
-   * 
-   * @param encData
-   *          the Base64 encoded data that is to be decoded.
+   * @param encData the Base64 encoded data that is to be decoded.
    * @return byte[] the decoded data.
    */
   public static byte[] decode(byte[] encData) {
@@ -162,7 +155,8 @@ class Base64 {
     int sidx, didx;
     for (sidx = 0, didx = 0; didx < decData.length - 2; sidx += 4, didx += 3) {
       decData[didx] = (byte) (((encData[sidx] << 2) & 255) | ((encData[sidx + 1] >>> 4) & 003));
-      decData[didx + 1] = (byte) (((encData[sidx + 1] << 4) & 255) | ((encData[sidx + 2] >>> 2) & 017));
+      decData[didx + 1] =
+          (byte) (((encData[sidx + 1] << 4) & 255) | ((encData[sidx + 2] >>> 2) & 017));
       decData[didx + 2] = (byte) (((encData[sidx + 2] << 6) & 255) | (encData[sidx + 3] & 077));
 
     }

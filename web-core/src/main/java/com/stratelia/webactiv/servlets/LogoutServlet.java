@@ -92,21 +92,17 @@ public class LogoutServlet extends HttpServlet {
   }
 
   /*
-   * protected void cleanSession(HttpSession session) { Enumeration
-   * spSessionAttNames = session.getAttributeNames(); String spName;
-   * 
-   * while (spSessionAttNames.hasMoreElements()) { spName = (String)
-   * spSessionAttNames.nextElement(); //
-   * SilverTrace.info("peasCore","LogoutServlet.doPost()"
-   * ,"root.MSG_GEN_PARAM_VALUE","spName=" + spName); if ((spName != null) &&
-   * ((spName.startsWith("Silverpeas_")) || (spName.startsWith("WYSIWYG_")))) {
-   * //
-   * SilverTrace.info("peasCore","LogoutServlet.doPost()","root.MSG_GEN_PARAM_VALUE"
-   * ,"Remove=" + spName); session.removeAttribute(spName); } }
+   * protected void cleanSession(HttpSession session) { Enumeration spSessionAttNames =
+   * session.getAttributeNames(); String spName; while (spSessionAttNames.hasMoreElements()) {
+   * spName = (String) spSessionAttNames.nextElement(); //
+   * SilverTrace.info("peasCore","LogoutServlet.doPost()" ,"root.MSG_GEN_PARAM_VALUE","spName=" +
+   * spName); if ((spName != null) && ((spName.startsWith("Silverpeas_")) ||
+   * (spName.startsWith("WYSIWYG_")))) { //
+   * SilverTrace.info("peasCore","LogoutServlet.doPost()","root.MSG_GEN_PARAM_VALUE" ,"Remove=" +
+   * spName); session.removeAttribute(spName); } }
    * session.removeAttribute("SilverSessionController");
-   * session.removeAttribute("SessionGraphicElementFactory");
-   * session.removeAttribute("spaceModel"); // For Portlets
-   * session.removeAttribute("quizzUnderConstruction"); // For Quizz
+   * session.removeAttribute("SessionGraphicElementFactory"); session.removeAttribute("spaceModel");
+   * // For Portlets session.removeAttribute("quizzUnderConstruction"); // For Quizz
    * session.removeAttribute("questionsVector"); // For Quizz
    * session.removeAttribute("currentQuizzId"); // For Quizz
    * session.removeAttribute("questionsResponses"); // For Quizz

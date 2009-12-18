@@ -82,7 +82,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class manage the informations needed for job manager
- * 
  * @t.leroi
  */
 public class JobManagerSettings {
@@ -143,27 +142,27 @@ public class JobManagerSettings {
 
   static public void sortGroups(Group[] toSort) {
     Arrays.sort(toSort, new Comparator() {
-      public int compare(Object o1, Object o2) {
+        public int compare(Object o1, Object o2) {
         return (((Group) o1).getName()).compareTo(((Group) o2).getName());
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
   }
 
   static public void sortUsers(UserDetail[] toSort) {
     Arrays.sort(toSort, new Comparator() {
-      public int compare(Object o1, Object o2) {
+        public int compare(Object o1, Object o2) {
         return (((UserDetail) o1).getLastName()).compareTo(((UserDetail) o2)
             .getLastName());
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
   }

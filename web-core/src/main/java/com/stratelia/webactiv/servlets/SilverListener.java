@@ -31,13 +31,10 @@ import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * @author sv
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author sv To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class SilverListener implements HttpSessionListener,
-    ServletContextListener {
+public class SilverListener implements HttpSessionListener, ServletContextListener {
   // HttpSessionListener methods
   public void sessionCreated(HttpSessionEvent event) {
   }

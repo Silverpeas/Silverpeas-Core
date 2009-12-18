@@ -26,9 +26,7 @@ package com.silverpeas.jobDomainPeas;
 import java.util.Collection;
 
 /**
- * Interface de definition des webServices pour la synchronisation des
- * utilisateurs d'un domaine
- * 
+ * Interface de definition des webServices pour la synchronisation des utilisateurs d'un domaine
  * @c.bonin
  */
 public interface SynchroUserWebServiceItf {

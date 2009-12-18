@@ -59,7 +59,7 @@ public class ScheduledImport implements SchedulerEventHandler {
       if (!dir.exists() && !dir.isDirectory()) {
         SilverTrace.error("importExport", "ScheduledImport.initialize()",
             "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", "Repository '" + sDir
-                + "' does not exists !");
+            + "' does not exists !");
       } else {
         Vector jobList = SimpleScheduler.getJobList(this);
         if (jobList != null && jobList.size() > 0)
@@ -78,13 +78,13 @@ public class ScheduledImport implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("importExport",
             "ScheduledImport.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("importExport",
             "ScheduledImport.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:
@@ -128,7 +128,7 @@ public class ScheduledImport implements SchedulerEventHandler {
             SilverTrace.error("importExport",
                 "ScheduledImport.doScheduledImport()",
                 "importExport.EX_CANT_PROCESS_IMPORT", "file = "
-                    + file.getAbsolutePath(), e);
+                + file.getAbsolutePath(), e);
           } finally {
             if (postPolicy.equalsIgnoreCase("remove")) {
               file.delete();

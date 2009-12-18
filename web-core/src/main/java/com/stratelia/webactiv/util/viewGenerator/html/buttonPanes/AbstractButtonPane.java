@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -53,8 +52,6 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractButtonPane() {
@@ -63,10 +60,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param button
-   * 
    * @see
    */
   public void addButton(Button button) {
@@ -75,8 +69,6 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setVerticalPosition() {
@@ -85,10 +77,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param width
-   * 
    * @see
    */
   public void setVerticalWidth(String width) {
@@ -97,8 +86,6 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setHorizontalPosition() {
@@ -107,10 +94,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getButtons() {
@@ -119,10 +103,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getViewType() {
@@ -131,10 +112,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getVerticalWidth() {
@@ -143,30 +121,21 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String horizontalPrint();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String verticalPrint();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();

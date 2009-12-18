@@ -28,9 +28,7 @@ import com.stratelia.webactiv.agenda.control.AgendaException;
 public interface CalendarImportSettingsDao {
   /**
    * Get synchronisation user settings
-   * 
-   * @param userId
-   *          Id of user whose settings belong to
+   * @param userId Id of user whose settings belong to
    * @return CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
    */
@@ -38,9 +36,7 @@ public interface CalendarImportSettingsDao {
 
   /**
    * Save synchronisation user settings
-   * 
-   * @param settings
-   *          CalendarImportSettings object containing user settings
+   * @param settings CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
    */
   public void saveUserSettings(CalendarImportSettings settings)
@@ -48,9 +44,7 @@ public interface CalendarImportSettingsDao {
 
   /**
    * Update synchronisation user settings
-   * 
-   * @param settings
-   *          CalendarImportSettings object containing user settings
+   * @param settings CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
    */
   public void updateUserSettings(CalendarImportSettings settings)

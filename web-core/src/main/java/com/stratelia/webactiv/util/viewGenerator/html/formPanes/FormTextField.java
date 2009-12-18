@@ -35,7 +35,6 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -58,8 +57,6 @@ public class FormTextField extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public FormTextField() {
@@ -73,11 +70,8 @@ public class FormTextField extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormTextField(String nam, String val) {
@@ -90,12 +84,9 @@ public class FormTextField extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
-   * 
    * @see
    */
   public FormTextField(String nam, String val, String lab) {
@@ -108,10 +99,7 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nb
-   * 
    * @see
    */
   public void setNbCharMax(int nb) {
@@ -120,15 +108,13 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
-    String retour = "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-        + noNull(label);
+    String retour =
+        "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
+            + noNull(label);
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;";
     retour = retour + "<input type=\"text\" name=\"" + name + "\" value=\""
@@ -138,14 +124,10 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -166,10 +148,7 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -179,15 +158,13 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
-    String retour = "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-        + label;
+    String retour =
+        "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
+            + label;
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;";
@@ -198,10 +175,7 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {
@@ -218,10 +192,7 @@ public class FormTextField extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDBColumnCreationRequest() {

@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -48,10 +47,7 @@ public class FrameSilverpeasWeb20 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -59,7 +55,8 @@ public class FrameSilverpeasWeb20 extends AbstractFrame {
     String iconsPath = getIconsPath();
 
     result += "<table width=\"100%\"  border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td>\n";
-    result += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"tableFrame\">\n";
+    result +=
+        "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"tableFrame\">\n";
     result += "\t<tr>\n";
     result += "\t\t<td>\n";
     if (getTitle() != null) {
@@ -77,10 +74,7 @@ public class FrameSilverpeasWeb20 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printMiddle() {
@@ -97,10 +91,7 @@ public class FrameSilverpeasWeb20 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -130,10 +121,7 @@ public class FrameSilverpeasWeb20 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

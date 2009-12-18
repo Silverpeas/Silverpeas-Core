@@ -38,7 +38,6 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 
 /**
  * PortletRegistryCache maintains the cache of Portlet registry objects.
- * 
  */
 public class PortletRegistryCache {
 
@@ -201,8 +200,8 @@ public class PortletRegistryCache {
   }
 
   /**
-   * Returns the monitored config file name. The monitored file name is same as
-   * the file name with "." prepended.
+   * Returns the monitored config file name. The monitored file name is same as the file name with
+   * "." prepended.
    */
   public static String getMonitoredFileName(String fileName) {
     String registryLocation = null;

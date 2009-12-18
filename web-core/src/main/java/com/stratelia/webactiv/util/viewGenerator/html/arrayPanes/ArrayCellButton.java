@@ -46,8 +46,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
@@ -68,13 +66,10 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param value
    * @param activate
    * @param line
-   * 
    * @see
    */
   public ArrayCellButton(String name, String value, boolean activate,
@@ -87,10 +82,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCellAlign() {
@@ -99,10 +91,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param cellAlign
-   * 
    * @see
    */
   public void setCellAlign(String cellAlign) {
@@ -111,10 +100,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -123,10 +109,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getValue() {
@@ -135,10 +118,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getActivate() {
@@ -151,10 +131,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getSyntax() {
@@ -189,10 +166,7 @@ public class ArrayCellButton extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

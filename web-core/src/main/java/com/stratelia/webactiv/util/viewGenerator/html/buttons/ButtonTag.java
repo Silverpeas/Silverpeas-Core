@@ -63,8 +63,7 @@ public class ButtonTag extends TagSupport {
   }
 
   /**
-   * @param label
-   *            the label to set
+   * @param label the label to set
    */
   public void setLabel(String label) {
     this.label = label;
@@ -78,8 +77,7 @@ public class ButtonTag extends TagSupport {
   }
 
   /**
-   * @param action
-   *            the action to set
+   * @param action the action to set
    */
   public void setAction(String action) {
     this.action = action;
@@ -93,8 +91,7 @@ public class ButtonTag extends TagSupport {
   }
 
   /**
-   * @param disabled
-   *            the disabled to set
+   * @param disabled the disabled to set
    */
   public void setDisabled(boolean disabled) {
     this.disabled = disabled;

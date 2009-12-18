@@ -110,15 +110,15 @@ public class CacheManagerJdbcConnector extends CacheManager {
       PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
       theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what), "",
           m_Context + m_Icon.getString("selectionPeas.filter"), m_Local
-              .getString("selectionPeas.filter"), m_Local
-              .getString("selectionPeas.filter"));
+          .getString("selectionPeas.filter"), m_Local
+          .getString("selectionPeas.filter"));
       return theArray;
     } else if (what == CM_ELEMENT) {
       PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
       theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what), "",
           m_Context + m_Icon.getString("selectionPeas.filter"), m_Local
-              .getString("selectionPeas.filter"), m_Local
-              .getString("selectionPeas.filter"));
+          .getString("selectionPeas.filter"), m_Local
+          .getString("selectionPeas.filter"));
       return theArray;
     } else {
       return new PanelMiniFilterToken[0];
@@ -151,19 +151,19 @@ public class CacheManagerJdbcConnector extends CacheManager {
     if (what == CM_SET) {
       return new PanelMiniFilterSelect(999, Integer.toString(what), "set",
           m_Context + m_Icon.getString("selectionPeas.selectAll"), m_Context
-              + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
-              .getString("selectionPeas.selectAll"), m_Local
-              .getString("selectionPeas.unSelectAll"), m_Local
-              .getString("selectionPeas.selectAll"), m_Local
-              .getString("selectionPeas.unSelectAll"));
+          + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
+          .getString("selectionPeas.selectAll"), m_Local
+          .getString("selectionPeas.unSelectAll"), m_Local
+          .getString("selectionPeas.selectAll"), m_Local
+          .getString("selectionPeas.unSelectAll"));
     } else if (what == CM_ELEMENT) {
       return new PanelMiniFilterSelect(999, Integer.toString(what), "element",
           m_Context + m_Icon.getString("selectionPeas.selectAll"), m_Context
-              + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
-              .getString("selectionPeas.selectAll"), m_Local
-              .getString("selectionPeas.unSelectAll"), m_Local
-              .getString("selectionPeas.selectAll"), m_Local
-              .getString("selectionPeas.unSelectAll"));
+          + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
+          .getString("selectionPeas.selectAll"), m_Local
+          .getString("selectionPeas.unSelectAll"), m_Local
+          .getString("selectionPeas.selectAll"), m_Local
+          .getString("selectionPeas.unSelectAll"));
     } else {
       return null;
     }

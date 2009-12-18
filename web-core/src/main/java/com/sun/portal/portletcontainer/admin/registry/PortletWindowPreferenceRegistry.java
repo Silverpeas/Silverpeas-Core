@@ -38,11 +38,10 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowPreferenceRegistry represents the
- * PortletWindowPreferenceRegistry Element in portlet-window-preferences.xml
+ * PortletWindowPreferenceRegistry represents the PortletWindowPreferenceRegistry Element in
+ * portlet-window-preferences.xml
  */
-public class PortletWindowPreferenceRegistry implements PortletRegistryTags,
-    PortletRegistryObject {
+public class PortletWindowPreferenceRegistry implements PortletRegistryTags, PortletRegistryObject {
 
   private String version;
   private Map portletWindowPreferenceTable;

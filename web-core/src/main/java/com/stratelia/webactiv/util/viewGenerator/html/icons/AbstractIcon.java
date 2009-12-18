@@ -57,8 +57,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public abstract class AbstractIcon implements Icon {
@@ -70,7 +68,6 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * This is prepended to the image path if need be.
-   * 
    * @see #print()
    */
   public String m_RootImagePath = "";
@@ -88,11 +85,8 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconName
    * @param altTex
-   * 
    * @see
    */
   public AbstractIcon(String iconName, String altText) {
@@ -102,12 +96,9 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconName
    * @param altText
    * @param action
-   * 
    * @see
    */
   public AbstractIcon(String iconName, String altText, String action) {
@@ -118,13 +109,10 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconName
    * @param altText
    * @param action
    * @param imagePath
-   * 
    * @see
    */
   public AbstractIcon(String iconName, String altText, String action,
@@ -137,11 +125,8 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconName
    * @param altText
-   * 
    * @see
    */
   public void setProperties(String iconName, String altText) {
@@ -151,12 +136,9 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconName
    * @param altText
    * @param action
-   * 
    * @see
    */
   public void setProperties(String iconName, String altText, String action) {
@@ -167,13 +149,10 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconName
    * @param altText
    * @param action
    * @param imagePath
-   * 
    * @see
    */
   public void setProperties(String iconName, String altText, String action,
@@ -186,10 +165,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @see
    */
   public void setRootImagePath(String s) {
@@ -202,10 +178,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getAction() {
@@ -214,10 +187,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconName() {
@@ -226,10 +196,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getAltText() {
@@ -238,10 +205,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getImagePath() {
@@ -250,10 +214,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getRootImagePath() {
@@ -262,10 +223,7 @@ public abstract class AbstractIcon implements Icon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();

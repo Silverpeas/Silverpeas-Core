@@ -28,9 +28,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Handler de contenu XML (poru un parseur SAX), qui permete de récupérer l'URI de spécification du
- * namespace XML utilisé pour l'élément racine.
- * 
+ * Handler de contenu XML (poru un parseur SAX), qui permete de récupérer l'URI de spécification
+ * du namespace XML utilisé pour l'élément racine.
  * @author $Author$
  * @version $Revision$
  */
@@ -43,7 +42,6 @@ public class ImportExportNamespaceHandler extends DefaultHandler {
 
   /**
    * Retourne la valeur de la propriété nsSpec.
-   * 
    * @return La valeur de la propriété nsSpec.
    */
   public String getNsSpec() {

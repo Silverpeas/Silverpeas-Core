@@ -35,7 +35,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.board;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
- * 
  * @author lloiseau
  * @version 1.0
  */
@@ -46,8 +45,6 @@ public abstract class AbstractBoard implements Board {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractBoard() {
@@ -55,50 +52,36 @@ public abstract class AbstractBoard implements Board {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {
     /*
      * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr");
-     * 
-     * iconsPath = generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return
-     * iconsPath;
+     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
+     * generalSettings.getString("ApplicationURL") +
+     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
      */
     return GraphicElementFactory.getIconsPath();
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printBefore();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printAfter();
@@ -112,10 +95,7 @@ public abstract class AbstractBoard implements Board {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getBody() {

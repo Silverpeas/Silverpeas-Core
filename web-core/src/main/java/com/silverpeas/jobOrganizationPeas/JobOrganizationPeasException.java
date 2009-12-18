@@ -45,20 +45,15 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author Thierry Leroi, Jean-Christophe Carry
  */
 public class JobOrganizationPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public JobOrganizationPeasException(String callingClass, int errorLevel,
@@ -68,13 +63,10 @@ public class JobOrganizationPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public JobOrganizationPeasException(String callingClass, int errorLevel,
@@ -84,13 +76,10 @@ public class JobOrganizationPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public JobOrganizationPeasException(String callingClass, int errorLevel,
@@ -100,14 +89,11 @@ public class JobOrganizationPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public JobOrganizationPeasException(String callingClass, int errorLevel,
@@ -117,10 +103,7 @@ public class JobOrganizationPeasException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

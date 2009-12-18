@@ -43,7 +43,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * The default implementation of ArrayPane interface.
- * 
  * @author squere
  * @version 1.0
  */
@@ -62,8 +61,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   private int m_SortMode = 0;
 
   /**
-   * configurable values for cells spacing and padding (of the inernal table).
-   * These may be set via
+   * configurable values for cells spacing and padding (of the inernal table). These may be set via
    * {@link #setCellsConfiguration(int spacing,int padding,int borderWidth)}
    */
   private int m_CellsSpacing = 2;
@@ -73,25 +71,21 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)})
-   * 
    * @see ArrayColum.setRoutingAddress(String address)
    */
   private String m_RoutingAddress = null;
   WADataPaginator m_DataSource = null;
 
   /**
-   * This pseudo array line is used for compatibility with old cell code, only
-   * used when working in Data Source Mode.
+   * This pseudo array line is used for compatibility with old cell code, only used when working in
+   * Data Source Mode.
    */
   ArrayLine m_ArrayLine = null;
 
   /**
-   * Generic class to display a typical WA array table pane. A unique name
-   * identifier is to be used in html pages for this array specific actions
-   * (exemple : sort on a specific column)
-   * 
-   * @param name
-   *          A unique name in the page to display
+   * Generic class to display a typical WA array table pane. A unique name identifier is to be used
+   * in html pages for this array specific actions (exemple : sort on a specific column)
+   * @param name A unique name in the page to display
    */
   public ArrayPaneWithDataSource(String name, PageContext pageContext) {
     if (pageContext != null) {
@@ -103,12 +97,9 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param request
    * @param session
-   * 
    * @see
    */
   public ArrayPaneWithDataSource(String name,
@@ -118,10 +109,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param p
-   * 
    * @see
    */
   public void setDataSource(WADataPaginator p) {
@@ -131,13 +119,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param url
    * @param request
    * @param session
-   * 
    * @see
    */
   public ArrayPaneWithDataSource(String name, String url,
@@ -146,12 +131,9 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   }
 
   /**
-   * Generic class to display a typical WA array table pane. A unique name
-   * identifier is to be used in html pages for this array specific actions
-   * (exemple : sort on a specific column)
-   * 
-   * @param name
-   *          A unique name in the page to display
+   * Generic class to display a typical WA array table pane. A unique name identifier is to be used
+   * in html pages for this array specific actions (exemple : sort on a specific column)
+   * @param name A unique name in the page to display
    */
   public void init(String name, PageContext pageContext) {
     init(name, pageContext.getRequest(), pageContext.getSession());
@@ -159,12 +141,9 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param request
    * @param session
-   * 
    * @see
    */
   public void init(String name, javax.servlet.ServletRequest request,
@@ -174,13 +153,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param name
    * @param url
    * @param request
    * @param session
-   * 
    * @see
    */
   public void init(String name, String url,
@@ -216,7 +192,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
         SilverTrace.info("viewgenerator", "ArrayPaneWithDataSource.init()",
             "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action
-                + "'");
+            + "'");
         if (action != null) {
           if (action.equals("Sort")) {
             String newState = (String) request
@@ -252,10 +228,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param maximum
-   * 
    * @see
    */
   public void setVisibleLineNumber(int maximum) {
@@ -263,8 +236,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   }
 
   /**
-   * This method allows for the change of cell presentation values. A negative
-   * value means 'do not change this value'
+   * This method allows for the change of cell presentation values. A negative value means 'do not
+   * change this value'
    */
   public void setCellsConfiguration(int spacing, int padding, int borderWidth) {
     if (spacing >= 0) {
@@ -288,9 +261,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   }
 
   /**
-   * This method sets the routing address. This is actually the URL of the page
-   * to which requests will be routed when the user clicks on a column header
-   * link.
+   * This method sets the routing address. This is actually the URL of the page to which requests
+   * will be routed when the user clicks on a column header link.
    */
   public void setRoutingAddress(String address) {
     m_RoutingAddress = address;
@@ -298,11 +270,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Add a new column to the table.
-   * 
-   * @param title
-   *          The column title to display
-   * @return The new column header. You can use this object to modify the
-   *         default display options.
+   * @param title The column title to display
+   * @return The new column header. You can use this object to modify the default display options.
    */
   public ArrayColumn addArrayColumn(String title) {
     ArrayColumn col = new ArrayColumn(title, columns.size() + 1, this);
@@ -352,10 +321,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -372,17 +338,13 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     state.setSortColumn(columnNumber);
 
     /*
-     * if (getSession() != null) getSession().setAttribute(getName(),
-     * String.valueOf(columnNumber));
+     * if (getSession() != null) getSession().setAttribute(getName(), String.valueOf(columnNumber));
      */
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getColumnToSort() {
@@ -394,8 +356,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   }
 
   /**
-   * This methods sets the sort mode for all columns. The columns cells may or
-   * may not take this value into account.
+   * This methods sets the sort mode for all columns. The columns cells may or may not take this
+   * value into account.
    */
   public void setSortMode(int mode) {
     m_SortMode = mode;
@@ -403,10 +365,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getSortMode() {
@@ -415,11 +374,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param columnNumber
    * @param mode
-   * 
    * @see
    */
   public void setColumnBehaviour(int columnNumber, int mode) {
@@ -431,11 +387,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   }
 
   /**
-   * Set all array columns to be sortable or not. By default, all colums are
-   * sortable.
-   * 
-   * @param sortable
-   *          Set sortable to false if you want all the table to be unsortable.
+   * Set all array columns to be sortable or not. By default, all colums are sortable.
+   * @param sortable Set sortable to false if you want all the table to be unsortable.
    */
   public void setSortable(boolean sortable) {
     if (sortable) {
@@ -448,10 +401,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getSortable() {
@@ -460,10 +410,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private String printPseudoColumn() {
@@ -472,10 +419,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -488,10 +432,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private String dataSourcePrint() {
@@ -524,28 +465,28 @@ public class ArrayPaneWithDataSource implements ArrayPane {
           SilverTrace.info("viewgenerator",
               "ArrayPaneWithDataSource.dataSourcePrint()",
               "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-                  + pageActionString);
+              + pageActionString);
           page = m_DataSource.getNextPage();
         } else if (state.getFirstVisibleLine() < 0) {
           pageActionString = "previous";
           SilverTrace.info("viewgenerator",
               "ArrayPaneWithDataSource.dataSourcePrint()",
               "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-                  + pageActionString);
+              + pageActionString);
           page = m_DataSource.getPreviousPage();
         } else {
           pageActionString = "current";
           SilverTrace.info("viewgenerator",
               "ArrayPaneWithDataSource.dataSourcePrint()",
               "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-                  + pageActionString);
+              + pageActionString);
           page = m_DataSource.getCurrentPage();
           if (page == null) {
             pageActionString = "first";
             SilverTrace.info("viewgenerator",
                 "ArrayPaneWithDataSource.dataSourcePrint()",
                 "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-                    + pageActionString);
+                + pageActionString);
             page = m_DataSource.getFirstPage();
           }
         }
@@ -555,7 +496,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
         SilverTrace.info("viewgenerator",
             "ArrayPaneWithDataSource.dataSourcePrint()",
             "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-                + pageActionString);
+            + pageActionString);
 
         page = m_DataSource.getNextPage();
       }
@@ -579,10 +520,11 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     SilverTrace.info("viewgenerator",
         "ArrayPaneWithDataSource.dataSourcePrint()",
         "root.MSG_GEN_PARAM_VALUE", " PageNumber=" + pageNumber
-            + ", pageItemCount=" + pageItemCount);
+        + ", pageItemCount=" + pageItemCount);
     String result = "";
 
-    result += "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n";
+    result +=
+        "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n";
     result += "<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\""
         + m_CellsSpacing + "\" cellpadding=\"" + m_CellsPadding
         + "\" border=\"" + m_CellsBorderWidth + "\">";
@@ -657,19 +599,20 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     if (-1 != state.getMaximumVisibleLine()) {
       String iconPath = getIconsPath();
 
-      result += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
-          + "<tr align=\"center\" bgcolor=\"#999999\">\n"
-          + "<td><img src=\""
-          + iconPath
-          + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
-          + "</tr>\n"
-          + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
-          + "<td><img src=\""
-          + iconPath
-          + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
-          + "</tr>\n"
-          + "<tr align=\"center\"> \n"
-          + "<td class=\"ArrayNavigation\" height=\"20\">";
+      result +=
+          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
+              + "<tr align=\"center\" bgcolor=\"#999999\">\n"
+              + "<td><img src=\""
+              + iconPath
+              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "</tr>\n"
+              + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
+              + "<td><img src=\""
+              + iconPath
+              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "</tr>\n"
+              + "<tr align=\"center\"> \n"
+              + "<td class=\"ArrayNavigation\" height=\"20\">";
 
       if (pageNumber > 0) {
         result += "<a class=\"ArrayNavigation\" href=\"";
@@ -718,8 +661,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   }
 
   /**
-   * Default print mode entirely identical to ArrayPaneWA, used when the data
-   * source wasn't specified
+   * Default print mode entirely identical to ArrayPaneWA, used when the data source wasn't
+   * specified
    */
   private String standardPrint() {
     int first = -1;
@@ -737,7 +680,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     }
     String result = "";
 
-    result += "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n";
+    result +=
+        "<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n";
     result += "<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\""
         + m_CellsSpacing + "\" cellpadding=\"" + m_CellsPadding
         + "\" border=\"" + m_CellsBorderWidth + "\">";
@@ -787,19 +731,20 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     if (-1 != state.getMaximumVisibleLine()) {
       String iconPath = getIconsPath();
 
-      result += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
-          + "<tr align=\"center\" bgcolor=\"#999999\">\n"
-          + "<td><img src=\""
-          + iconPath
-          + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
-          + "</tr>\n"
-          + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
-          + "<td><img src=\""
-          + iconPath
-          + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
-          + "</tr>\n"
-          + "<tr align=\"center\"> \n"
-          + "<td class=\"ArrayNavigation\" height=\"20\">";
+      result +=
+          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
+              + "<tr align=\"center\" bgcolor=\"#999999\">\n"
+              + "<td><img src=\""
+              + iconPath
+              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "</tr>\n"
+              + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
+              + "<td><img src=\""
+              + iconPath
+              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "</tr>\n"
+              + "<tr align=\"center\"> \n"
+              + "<td class=\"ArrayNavigation\" height=\"20\">";
 
       if (first > 0) {
         result += "<a class=\"ArrayNavigation\" href=\"";
@@ -848,10 +793,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getUrl() {
@@ -882,10 +824,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public HttpSession getSession() {
@@ -894,10 +833,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ServletRequest getRequest() {
@@ -906,10 +842,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {

@@ -62,8 +62,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param hostName
-   *          The hostName to set. Importation will only occur on this host
+   * @param hostName The hostName to set. Importation will only occur on this host
    */
   public void setHostName(String hostName) {
     this.hostName = hostName;
@@ -77,8 +76,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param synchroDelay
-   *          Delay in minutes between each synchronisation.
+   * @param synchroDelay Delay in minutes between each synchronisation.
    */
   public void setSynchroDelay(int synchroDelay) {
     this.synchroDelay = synchroDelay;
@@ -92,8 +90,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param synchroType
-   *          The Synchronisation type : None, Outlook, Notes.
+   * @param synchroType The Synchronisation type : None, Outlook, Notes.
    */
   public void setSynchroType(int synchroType) {
     this.synchroType = synchroType;
@@ -107,8 +104,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param userId
-   *          The Id of user whose settings belong to.
+   * @param userId The Id of user whose settings belong to.
    */
   public void setUserId(int userId) {
     this.userId = userId;
@@ -122,8 +118,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param userId
-   *          The Id of user whose settings belong to.
+   * @param userId The Id of user whose settings belong to.
    */
   public void setUrlIcalendar(String url) {
     this.urlIcalendar = url;
@@ -137,8 +132,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param login
-   *          The Pwd to remote iCalendar
+   * @param login The Pwd to remote iCalendar
    */
   public void setLoginIcalendar(String login) {
     this.loginIcalendar = login;
@@ -152,8 +146,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param pwd
-   *          The Pwd to remote iCalendar
+   * @param pwd The Pwd to remote iCalendar
    */
   public void setPwdIcalendar(String pwd) {
     this.pwdIcalendar = pwd;
@@ -167,8 +160,7 @@ public class CalendarImportSettings {
   }
 
   /**
-   * @param charset
-   *          to remote iCalendar
+   * @param charset to remote iCalendar
    */
   public void setCharset(String charset) {
     this.charset = charset;

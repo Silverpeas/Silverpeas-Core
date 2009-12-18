@@ -35,8 +35,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PortletCallBack extends CallBack {
@@ -60,7 +58,7 @@ public class PortletCallBack extends CallBack {
 
       SilverTrace.info("portlet", "PortletCallBack.doInvoke()",
           "root.MSG_GEN_ENTER_METHOD", CallBackManager.getInvokeString(action,
-              iParam, sParam, extraParam));
+          iParam, sParam, extraParam));
       if (action == CallBackManager.ACTION_BEFORE_REMOVE_USER) {
         schema.portletState.dereferenceUserId(iParam);
       } else if (action == CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT) {
@@ -89,7 +87,7 @@ public class PortletCallBack extends CallBack {
     } catch (Exception e) {
       SilverTrace.error("portlet", "PortletCallBack.doInvoke()",
           "portlet.EX_GENERAL", CallBackManager.getInvokeString(action, iParam,
-              sParam, extraParam), e);
+          sParam, extraParam), e);
       try {
         if (schema != null) {
           schema.rollback();
@@ -97,7 +95,7 @@ public class PortletCallBack extends CallBack {
       } catch (Exception ex) {
         SilverTrace.warn("portlet", "PortletCallBack.doInvoke()",
             "root.EX_ERR_ROLLBACK", CallBackManager.getInvokeString(action,
-                iParam, sParam, extraParam), ex);
+            iParam, sParam, extraParam), ex);
       }
     } finally {
       try {
@@ -107,7 +105,7 @@ public class PortletCallBack extends CallBack {
       } catch (Exception e) {
         SilverTrace.warn("portlet", "PortletCallBack.doInvoke()",
             "portlet.EX_CANT_CLOSE_SCHEMA", CallBackManager.getInvokeString(
-                action, iParam, sParam, extraParam), e);
+            action, iParam, sParam, extraParam), e);
       }
     }
   }

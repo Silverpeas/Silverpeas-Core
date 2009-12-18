@@ -48,7 +48,7 @@ public class ArrayLineTag extends TagSupport {
     return EVAL_PAGE;
   }
 
-   public ArrayPane getArrayPane() {
+  public ArrayPane getArrayPane() {
     return (ArrayPane) pageContext.getAttribute(ArrayPaneTag.ARRAY_PANE_PAGE_ATT);
   }
 }

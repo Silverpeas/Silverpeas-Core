@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Vector;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -52,11 +51,8 @@ public class FormSelect extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormSelect(String nam, String val) {
@@ -72,13 +68,10 @@ public class FormSelect extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
    * @param siz
-   * 
    * @see
    */
   public FormSelect(String nam, String val, String lab, int siz) {
@@ -94,12 +87,9 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param itemsLabel
    * @param itemValue
    * @param selected
-   * 
    * @see
    */
   public void addItem(String itemsLabel, String itemValue, boolean selected) {
@@ -111,11 +101,8 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param itemsLabel
    * @param itemValue
-   * 
    * @see
    */
   public void addItem(String itemsLabel, String itemValue) {
@@ -127,10 +114,7 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -152,14 +136,10 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -174,10 +154,7 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -186,10 +163,7 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
@@ -201,10 +175,7 @@ public class FormSelect extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {

@@ -29,9 +29,8 @@ package com.stratelia.silverpeas.portlet;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Title: portlets Description: Enable portlet management in Silverpeas
- * Copyright: Copyright (c) 2001 Company: Stratelia
- * 
+ * Title: portlets Description: Enable portlet management in Silverpeas Copyright: Copyright (c)
+ * 2001 Company: Stratelia
  * @author Eric BURGEL
  * @version 1.0
  */
@@ -68,8 +67,6 @@ public class Portlet {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public Portlet() throws PortletException {
@@ -79,8 +76,6 @@ public class Portlet {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param aId
    * @param aRowId
    * @param aRequestRooter
@@ -98,7 +93,6 @@ public class Portlet {
    * @param aMaximizable
    * @param aMinimizable
    * @param aState
-   * 
    * @see
    */
   public Portlet(
@@ -146,10 +140,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getId() {
@@ -158,10 +149,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getRowId() {
@@ -170,10 +158,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getIndex() {
@@ -182,10 +167,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aIndex
-   * 
    * @see
    */
   public void setIndex(int aIndex) {
@@ -194,10 +176,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getRow() {
@@ -206,10 +185,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aRow
-   * 
    * @see
    */
   public void setRow(int aRow) {
@@ -218,10 +194,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getColumnNumber() {
@@ -230,10 +203,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aColumnNumber
-   * 
    * @see
    */
   public void setColumnNumber(int aColumnNumber) {
@@ -242,10 +212,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getRequestRooter() {
@@ -254,10 +221,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aRequestRooter
-   * 
    * @see
    */
   public void setRequestRooter(String aRequestRooter) {
@@ -266,10 +230,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getComponentName() {
@@ -278,10 +239,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aComponentName
-   * 
    * @see
    */
   public void setComponentName(String aComponentName) {
@@ -290,10 +248,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getComponentInstanceId() {
@@ -302,10 +257,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aComponentInstanceId
-   * 
    * @see
    */
   public void setComponentInstanceId(String aComponentInstanceId) {
@@ -314,10 +266,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -326,10 +275,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aName
-   * 
    * @see
    */
   public void setName(String aName) {
@@ -338,10 +284,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDescription() {
@@ -350,10 +293,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aDescription
-   * 
    * @see
    */
   public void setDescription(String aDescription) {
@@ -366,10 +306,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTitlebarUrl() {
@@ -378,10 +315,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aTitlebarUrl
-   * 
    * @see
    */
   public void setTitlebarUrl(String aTitlebarUrl) {
@@ -394,10 +328,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconUrl() {
@@ -406,10 +337,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aIconUrl
-   * 
    * @see
    */
   public void setIconUrl(String aIconUrl) {
@@ -422,10 +350,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getContentUrl() {
@@ -434,10 +359,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aContentUrl
-   * 
    * @see
    */
   public void setContentUrl(String aContentUrl) {
@@ -450,10 +372,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getMaxContentUrl() {
@@ -462,10 +381,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aMaxContentUrl
-   * 
    * @see
    */
   public void setMaxContentUrl(String aMaxContentUrl) {
@@ -478,10 +394,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getHeaderUrl() {
@@ -490,10 +403,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aHeaderUrl
-   * 
    * @see
    */
   public void setHeaderUrl(String aHeaderUrl) {
@@ -502,10 +412,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getFooterUrl() {
@@ -514,10 +421,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aFooterUrl
-   * 
    * @see
    */
   public void setFooterUrl(String aFooterUrl) {
@@ -526,10 +430,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getHelpUrl() {
@@ -538,10 +439,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aHelpUrl
-   * 
    * @see
    */
   public void setHelpUrl(String aHelpUrl) {
@@ -550,10 +448,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getMaximizable() {
@@ -562,10 +457,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aMaximizable
-   * 
    * @see
    */
   public void setMaximizable(boolean aMaximizable) {
@@ -574,10 +466,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getMinimizable() {
@@ -586,10 +475,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aMinimizable
-   * 
    * @see
    */
   public void setMinimizable(boolean aMinimizable) {
@@ -598,10 +484,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getState() {
@@ -610,10 +493,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getStateAsString() {
@@ -634,10 +514,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aState
-   * 
    * @see
    */
   public void setState(int aState) {
@@ -646,10 +523,7 @@ public class Portlet {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param aState
-   * 
    * @see
    */
   public void setState(String aState) {

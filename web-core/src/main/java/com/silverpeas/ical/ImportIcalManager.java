@@ -69,7 +69,6 @@ import com.sun.syndication.io.XmlReader;
 
 /**
  * @author dle
- * 
  */
 public class ImportIcalManager {
 
@@ -88,7 +87,6 @@ public class ImportIcalManager {
 
   /**
    * IMPORT Calendar in Ical format
-   * 
    * @param startDate
    * @param endDate
    * @return ReturnCode
@@ -166,7 +164,7 @@ public class ImportIcalManager {
         // I don't know why ??
         if (("00:00".equals(startHour) && "00:00".equals(endHour))
             || (!StringUtil.isDefined(startHour) && !StringUtil
-                .isDefined(endHour))) {
+            .isDefined(endHour))) {
           // For complete Day
           startHour = "";
           endHour = "";
@@ -219,8 +217,8 @@ public class ImportIcalManager {
               SilverTrace.debug("agenda",
                   "ImportIcalManager.importIcalAgenda()",
                   "root.MSG_GEN_PARAM_VALUE" + "Update event: "
-                      + DateUtil.date2SQLDate(startDay) + " " + startHour
-                      + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
+                  + DateUtil.date2SQLDate(startDay) + " " + startHour
+                  + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
               agendaSessionController.updateJournal(idEvent, name, description,
                   priority, classification, startDay, startHour, endDay,
                   endHour);
@@ -228,8 +226,8 @@ public class ImportIcalManager {
               SilverTrace.debug("agenda",
                   "ImportIcalManager.importIcalAgenda()",
                   "root.MSG_GEN_PARAM_VALUE" + "Create event: "
-                      + DateUtil.date2SQLDate(startDay) + " " + startHour
-                      + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
+                  + DateUtil.date2SQLDate(startDay) + " " + startHour
+                  + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
               idEvent = agendaSessionController.addJournal(name, description,
                   priority, classification, startDay, startHour, endDay,
                   endHour);
@@ -254,7 +252,6 @@ public class ImportIcalManager {
 
   /**
    * Verify if the event already exists
-   * 
    * @param eventIcal
    * @return id or null
    * @throws Exception
@@ -265,7 +262,6 @@ public class ImportIcalManager {
 
   /**
    * Verify if the event already exists
-   * 
    * @param eventIcal
    * @return id or null
    * @throws Exception
@@ -311,7 +307,7 @@ public class ImportIcalManager {
           Schedulable eventAgenda = (Schedulable) obj;
           if (eventAgenda.getName().equals(name)
               && DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(
-                  startDate)) {
+              startDate)) {
             if (StringUtil.isDefined(eventAgenda.getStartHour())
                 && StringUtil.isDefined(startHour)) {
               if (eventAgenda.getStartHour().equals(startHour))
@@ -327,7 +323,6 @@ public class ImportIcalManager {
 
   /**
    * Add or update categories of the event
-   * 
    * @param eventIcal
    * @param idEvent
    * @throws Exception
@@ -361,7 +356,6 @@ public class ImportIcalManager {
 
   /**
    * Method declaration
-   * 
    * @see
    */
   private void setCalendarBm() {
@@ -378,7 +372,6 @@ public class ImportIcalManager {
 
   /**
    * Return Date from a datetime string
-   * 
    * @param dateTime
    * @return
    * @throws ParseException
@@ -394,7 +387,6 @@ public class ImportIcalManager {
 
   /**
    * Extract hour from a date
-   * 
    * @param dateTime
    * @return
    * @throws ParseException
@@ -408,7 +400,6 @@ public class ImportIcalManager {
 
   /**
    * Get value of the Ical property
-   * 
    * @param property
    * @return String
    */
@@ -423,7 +414,6 @@ public class ImportIcalManager {
 
   /**
    * Get start dates of a reccurrent Event
-   * 
    * @param event
    * @return Collection of DateTime
    */

@@ -35,7 +35,6 @@ import com.silverpeas.pdc.importExport.PdcType;
 
 /**
  * @author tleroi
- * 
  */
 public class SilverPeasExchangeType {
 
@@ -83,8 +82,7 @@ public class SilverPeasExchangeType {
   }
 
   /**
-   * @param repositoriesType
-   *          The repositoriesType to set.
+   * @param repositoriesType The repositoriesType to set.
    */
   public void setRepositoriesType(RepositoriesType repositoriesType) {
     this.repositoriesType = repositoriesType;

@@ -42,8 +42,7 @@ import java.util.Collection;
 /**
  * Base class for all component session controller.
  */
-public class AbstractComponentSessionController implements
-    ComponentSessionController {
+public class AbstractComponentSessionController implements ComponentSessionController {
   private MainSessionController controller = null;
   private ComponentContext context = null;
   private String rootName = null;
@@ -57,12 +56,9 @@ public class AbstractComponentSessionController implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param controller
    * @param spaceId
    * @param componentId
-   * 
    * @see
    */
   public AbstractComponentSessionController(MainSessionController controller,
@@ -75,11 +71,8 @@ public class AbstractComponentSessionController implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param controller
    * @param context
-   * 
    * @see
    */
   public AbstractComponentSessionController(MainSessionController controller,
@@ -89,12 +82,9 @@ public class AbstractComponentSessionController implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param controller
    * @param context
    * @param resourceFileName
-   * 
    * @see
    */
   public AbstractComponentSessionController(MainSessionController controller,
@@ -161,10 +151,7 @@ public class AbstractComponentSessionController implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param resourceFileName
-   * 
    * @see
    */
   public void setMultilangFileName(String multilangFileName) {
@@ -195,10 +182,7 @@ public class AbstractComponentSessionController implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param resourceFileName
-   * 
    * @see
    */
   public void setIconFileName(String iconFileName) {
@@ -229,10 +213,7 @@ public class AbstractComponentSessionController implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param resourceFileName
-   * 
    * @see
    */
   public void setResourceFileName(String resourceFileName) {
@@ -266,12 +247,8 @@ public class AbstractComponentSessionController implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param resName
-   * 
    * @return
-   * 
    * @see
    */
   public String getString(String resName) {
@@ -294,10 +271,7 @@ public class AbstractComponentSessionController implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private MainSessionController getMainSessionController() {
@@ -306,10 +280,7 @@ public class AbstractComponentSessionController implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   @Override
@@ -330,8 +301,7 @@ public class AbstractComponentSessionController implements
   }
 
   /**
-   * The utilization of this method is allowed only for
-   * PersonalizationSessionController
+   * The utilization of this method is allowed only for PersonalizationSessionController
    */
   public void setLanguageToMainSessionController(String newLanguage) {
     // change the language into the mainSessionController
@@ -339,8 +309,7 @@ public class AbstractComponentSessionController implements
   }
 
   /**
-   * The utilization of this method is allowed only for
-   * PersonalizationSessionController
+   * The utilization of this method is allowed only for PersonalizationSessionController
    */
   public void setFavoriteSpaceToMainSessionController(String newSpace) {
     getMainSessionController().setFavoriteSpace(newSpace);
@@ -408,27 +377,24 @@ public class AbstractComponentSessionController implements
   }
 
   /**
-   * return the component Url : For Old Components' use ONLY ! (use it in the
-   * jsp:forward lines)
+   * return the component Url : For Old Components' use ONLY ! (use it in the jsp:forward lines)
    */
   public String getComponentUrl() {
     return URLManager.getURL(rootName, getSpaceId(), getComponentId());
   }
 
   /**
-   * return the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the
-   * name that appears in the URL's root (the 'R' prefix is added later when
-   * needed))
+   * return the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears
+   * in the URL's root (the 'R' prefix is added later when needed))
    */
   public String getComponentRootName() {
     return rootName;
   }
 
   /**
-   * set the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the
-   * name that appears in the URL's root (the 'R' prefix is added later when
-   * needed)) this function is called by the class of non-instanciable
-   * components the inherits from this class
+   * set the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears in
+   * the URL's root (the 'R' prefix is added later when needed)) this function is called by the
+   * class of non-instanciable components the inherits from this class
    */
   protected void setComponentRootName(String newRootName) {
     rootName = newRootName;
@@ -443,8 +409,7 @@ public class AbstractComponentSessionController implements
   }
 
   /**
-   * Return the parameter value for this component instance and the given
-   * parameter name
+   * Return the parameter value for this component instance and the given parameter name
    */
   @Override
   public String getComponentParameterValue(String parameterName) {
@@ -507,7 +472,6 @@ public class AbstractComponentSessionController implements
     }
     return flag;
   }
-
 
   @Override
   public synchronized PersonalizationBm getPersonalization() {
@@ -638,17 +602,17 @@ public class AbstractComponentSessionController implements
   }
 
   @Override
-   public int getClipboardSize() throws RemoteException {
+  public int getClipboardSize() throws RemoteException {
     return controller.size();
   }
 
   @Override
-   public void removeClipboardElement(int index) throws RemoteException {
+  public void removeClipboardElement(int index) throws RemoteException {
     controller.remove(index);
   }
 
   @Override
-   public void setClipboardError(String messageId, Exception ex) throws RemoteException {
+  public void setClipboardError(String messageId, Exception ex) throws RemoteException {
     controller.setMessageError(messageId, ex);
   }
 }

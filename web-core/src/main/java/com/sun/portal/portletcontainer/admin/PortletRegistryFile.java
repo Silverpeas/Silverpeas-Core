@@ -29,6 +29,7 @@ package com.sun.portal.portletcontainer.admin;
 
 public interface PortletRegistryFile {
   public static final String PORTLET_APP_REGISTRY_FILE = "portlet-app-registry.xml";
-  public static final String PORTLET_WINDOW_PREFERENCE_REGISTRY_FILE = "portlet-window-preference-registry.xml";
+  public static final String PORTLET_WINDOW_PREFERENCE_REGISTRY_FILE =
+      "portlet-window-preference-registry.xml";
   public static final String PORTLET_WINDOW_REGISTRY_FILE = "portlet-window-registry.xml";
 }

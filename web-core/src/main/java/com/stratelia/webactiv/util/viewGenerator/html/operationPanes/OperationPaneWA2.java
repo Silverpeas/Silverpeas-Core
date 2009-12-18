@@ -36,7 +36,6 @@ import java.util.Vector;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -44,8 +43,6 @@ public class OperationPaneWA2 extends AbstractOperationPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public OperationPaneWA2() {
@@ -54,12 +51,9 @@ public class OperationPaneWA2 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconPath
    * @param altText
    * @param action
-   * 
    * @see
    */
   public void addOperation(String iconPath, String altText, String action) {
@@ -72,18 +66,16 @@ public class OperationPaneWA2 extends AbstractOperationPane {
         .append(iconsPath).append("/1px.gif\" border=\"0\"></td>\n");
     operation
         .append(
-            "<td valign=\"top\" class=intfdcolor5 width=\"34\" align=center><a id=\"")
+        "<td valign=\"top\" class=intfdcolor5 width=\"34\" align=center><a id=\"")
         .append(altText).append("\" href=\"").append(action).append(
-            "\"><img src=\"").append(iconPath).append("\" alt=\"").append(
-            altText).append("\" border=\"0\"></a></td>\n");
+        "\"><img src=\"").append(iconPath).append("\" alt=\"").append(
+        altText).append("\" border=\"0\"></a></td>\n");
     operation.append("</tr>\n");
     stack.add(operation.toString());
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void addLine() {
@@ -100,10 +92,7 @@ public class OperationPaneWA2 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

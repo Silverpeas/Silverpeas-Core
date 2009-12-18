@@ -69,10 +69,8 @@ import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import com.sun.portal.portletcontainer.invoker.util.PortletWindowRules;
 
 /**
- * 
- * This class is responsible for rendering the portlet markup fragments. It
- * retrieves the portlet markup fragments by delegating the portlet execution to
- * the a container implementation.
+ * This class is responsible for rendering the portlet markup fragments. It retrieves the portlet
+ * markup fragments by delegating the portlet execution to the a container implementation.
  */
 public abstract class WindowInvoker implements WindowInvokerConstants {
 
@@ -140,13 +138,9 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   /**
    * Initializes the WindowInvoker.
    * <p>
-   * 
-   * @param servletContext
-   *          The ServletContext object.
-   * @param request
-   *          The HTTP request object.
-   * @param response
-   *          The HTTP response object.
+   * @param servletContext The ServletContext object.
+   * @param request The HTTP request object.
+   * @param response The HTTP response object.
    * @throws com.sun.portal.portletcontainer.invoker.InvokerException
    */
   public void init(ServletContext servletContext, HttpServletRequest request,
@@ -201,25 +195,16 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Gets the content for the portletWindow based on mode from the underlying
-   * container. This method is called to get content for VIEW, EDIT and and HELP
-   * mode .
-   * 
-   * This method sets all the necessary attributes in the ContainerRequest and
-   * Container Response and calls the configured container to get the content
-   * for the portlet.
-   * 
-   * 
-   * @param request
-   *          An HttpServletRequest that contains information related to this
-   *          request for content.
-   * @param response
-   *          An HttpServletResponse that allows the portlet window context to
-   *          influence the overall response for the page (besides generating
-   *          the content).
+   * Gets the content for the portletWindow based on mode from the underlying container. This method
+   * is called to get content for VIEW, EDIT and and HELP mode . This method sets all the necessary
+   * attributes in the ContainerRequest and Container Response and calls the configured container to
+   * get the content for the portlet.
+   * @param request An HttpServletRequest that contains information related to this request for
+   * content.
+   * @param response An HttpServletResponse that allows the portlet window context to influence the
+   * overall response for the page (besides generating the content).
    * @return StringBuffer holding the content.
-   * @exception InvokerException
-   *              If there was an error generating the content.
+   * @exception InvokerException If there was an error generating the content.
    */
 
   public StringBuffer render(HttpServletRequest request,
@@ -381,23 +366,15 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   // ***************************************************************
 
   /**
-   * Invokes the processAction of the portlet.
-   * 
-   * This method sets all the necessary attributes in the ContainerRequest and
-   * Container Response and calls the configured container to invoke the
+   * Invokes the processAction of the portlet. This method sets all the necessary attributes in the
+   * ContainerRequest and Container Response and calls the configured container to invoke the
    * processAction of the portlet.
-   * 
-   * 
-   * @param request
-   *          An HttpServletRequest that contains information related to this
-   *          request for content.
-   * @param response
-   *          An HttpServletResponse that allows the portlet window context to
-   *          influence the overall response for the page (besides generating
-   *          the content).
+   * @param request An HttpServletRequest that contains information related to this request for
+   * content.
+   * @param response An HttpServletResponse that allows the portlet window context to influence the
+   * overall response for the page (besides generating the content).
    * @return URL redirect URL
-   * @exception InvokerException
-   *              If there was an error generating the content.
+   * @exception InvokerException If there was an error generating the content.
    */
   public URL processAction(HttpServletRequest request,
       HttpServletResponse response) throws InvokerException {
@@ -474,9 +451,9 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
     // Request
     ExecuteActionRequest executeActionRequest = getContainer()
         .createExecuteActionRequest(request, portletEntityId,
-            currentWindowState, currentPortletWindowMode, portletWindowContext,
-            getPortletWindowURLFactory(processURL, request),
-            getWindowRequestReader());
+        currentWindowState, currentPortletWindowMode, portletWindowContext,
+        getPortletWindowURLFactory(processURL, request),
+        getWindowRequestReader());
 
     List allowableWindowStates = getAllowableWindowStates(request,
         currentPortletWindowMode);
@@ -567,23 +544,14 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Invokes the serveResource of the portlet.
-   * 
-   * This method sets all the necessary attributes in the ContainerRequest and
-   * Container Response and calls the configured container to invoke the
+   * Invokes the serveResource of the portlet. This method sets all the necessary attributes in the
+   * ContainerRequest and Container Response and calls the configured container to invoke the
    * serveResource of the portlet.
-   * 
-   * 
-   * @param request
-   *          An HttpServletRequest that contains information related to this
-   *          request for content.
-   * @param response
-   *          An HttpServletResponse that allows the portlet window context to
-   *          influence the overall response for the page (besides generating
-   *          the content).
-   * 
-   * @exception InvokerException
-   *              If there was an error generating the content.
+   * @param request An HttpServletRequest that contains information related to this request for
+   * content.
+   * @param response An HttpServletResponse that allows the portlet window context to influence the
+   * overall response for the page (besides generating the content).
+   * @exception InvokerException If there was an error generating the content.
    */
   public void getResources(HttpServletRequest request,
       HttpServletResponse response) throws InvokerException {
@@ -635,9 +603,9 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
     // Request
     GetResourceRequest getResourceRequest = getContainer()
         .createGetResourceRequest(request, portletEntityId, currentWindowState,
-            currentPortletWindowMode, portletWindowContext,
-            getPortletWindowURLFactory(processURL, request),
-            getWindowRequestReader());
+        currentPortletWindowMode, portletWindowContext,
+        getPortletWindowURLFactory(processURL, request),
+        getWindowRequestReader());
     populateContainerRequest(getResourceRequest, request,
         allowableWindowStates, allowablePortletWindowModes);
 
@@ -744,12 +712,10 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Gets the title for the portletWindow. This method returns the title from
-   * the portlet. Portlet uses javax.portlet.title namespace for its title.
-   * 
+   * Gets the title for the portletWindow. This method returns the title from the portlet. Portlet
+   * uses javax.portlet.title namespace for its title.
    * @return A string title.
-   * @exception InvokerException
-   *              if error occurs when getting the title for the portletWindow.
+   * @exception InvokerException if error occurs when getting the title for the portletWindow.
    */
   public String getTitle() throws InvokerException {
     if (title != null && title.length() != 0) {
@@ -760,9 +726,8 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Gets the response properties for the portletWindow. This method returns the
-   * cookies, headers that were set by the portlet.
-   * 
+   * Gets the response properties for the portletWindow. This method returns the cookies, headers
+   * that were set by the portlet.
    * @return ResponseProperties
    */
   public ResponseProperties getResponseProperties() {
@@ -810,8 +775,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Assemble the URL to cause the desktop to be rendered with the new mode and
-   * window state
+   * Assemble the URL to cause the desktop to be rendered with the new mode and window state
    */
   protected URL processModeChange(HttpServletRequest request,
       ChannelMode portletWindowMode, ChannelState portletWindowState)
@@ -838,8 +802,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Used by subclasses to find out if key in the request is reserved by the
-   * window invoker
+   * Used by subclasses to find out if key in the request is reserved by the window invoker
    */
 
   public static boolean isWindowInvokerKey(String key) {
@@ -856,8 +819,8 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   // -----------------------------------------------------------------
 
   /**
-   * Derived implementations can use this method to generate a error url if
-   * needed We return the URL based on the current mode
+   * Derived implementations can use this method to generate a error url if needed We return the URL
+   * based on the current mode
    */
 
   public URL getErrorCodeURL(ErrorCode errorCode, HttpServletRequest request)
@@ -984,10 +947,10 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
 
     processURL.append("?").append(DRIVER_ACTION).append("=").append(ACTION)
         .append("&").append(PORTLET_WINDOW_MODE_KEY).append("=").append(
-            portletWindowMode.toString()).append("&").append(
-            PORTLET_WINDOW_STATE_KEY).append("=").append(
-            portletWindowState.toString()).append("&").append(
-            PORTLET_WINDOW_KEY).append("=").append(getPortletWindowName());
+        portletWindowMode.toString()).append("&").append(
+        PORTLET_WINDOW_STATE_KEY).append("=").append(
+        portletWindowState.toString()).append("&").append(
+        PORTLET_WINDOW_KEY).append("=").append(getPortletWindowName());
 
     String spaceId = (String) request.getAttribute("SpaceId");
     if (StringUtil.isDefined(spaceId)) {
@@ -1007,10 +970,10 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
 
     processURL.append("?").append(DRIVER_ACTION).append("=").append(RENDER)
         .append("&").append(PORTLET_WINDOW_MODE_KEY).append("=").append(
-            portletWindowMode.toString()).append("&").append(
-            PORTLET_WINDOW_STATE_KEY).append("=").append(
-            portletWindowState.toString()).append("&").append(
-            PORTLET_WINDOW_KEY).append("=").append(getPortletWindowName());
+        portletWindowMode.toString()).append("&").append(
+        PORTLET_WINDOW_STATE_KEY).append("=").append(
+        portletWindowState.toString()).append("&").append(
+        PORTLET_WINDOW_KEY).append("=").append(getPortletWindowName());
 
     String spaceId = (String) request.getAttribute("SpaceId");
     if (StringUtil.isDefined(spaceId)) {
@@ -1024,8 +987,8 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Throws a WindowException exception if attempt is made to change to a new
-   * mode that is not allowed by the portal
+   * Throws a WindowException exception if attempt is made to change to a new mode that is not
+   * allowed by the portal
    */
   private void validateModeChange(ChannelMode currentMode, ChannelMode newMode,
       boolean authless) throws WindowException {
@@ -1035,7 +998,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
     if (!allowedList.contains(newMode)) {
       throw new WindowException(WindowErrorCode.INVALID_MODE_CHANGE_REQUEST,
           "Portal doesn't allow changing mode " + " from " + currentMode
-              + " to " + newMode);
+          + " to " + newMode);
     }
     return;
 
@@ -1043,7 +1006,6 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
 
   /**
    * Gets the <code>PortletWindowContext</code> for the PortletiIndow.
-   * 
    * @return <code>PortletWindowContext</code>.
    */
   public PortletWindowContext getPortletWindowContext() {
@@ -1051,17 +1013,12 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   }
 
   /**
-   * Gets a specified ResourceBundle file for the provider based on User's
-   * locale.
+   * Gets a specified ResourceBundle file for the provider based on User's locale.
    * <p>
-   * A provider can specify on-screen strings to be localized in a resource
-   * bundle file, as described in the Java <code>ResourceBundle</code> class.
-   * 
-   * @param base
-   *          a specified <code>ResourceBundle</code> name.
-   * 
+   * A provider can specify on-screen strings to be localized in a resource bundle file, as
+   * described in the Java <code>ResourceBundle</code> class.
+   * @param base a specified <code>ResourceBundle</code> name.
    * @see java.util.ResourceBundle.
-   * 
    * @return <code>ResourceBundle</code>.
    */
   public ResourceBundle getResourceBundle(String base) {

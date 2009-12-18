@@ -50,14 +50,12 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author t.leroi
  */
 public class PeasCoreRuntimeException extends SilverpeasRuntimeException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public PeasCoreRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -81,10 +79,7 @@ public class PeasCoreRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

@@ -35,7 +35,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * 
  * @author neysseri
  * @version
  */
@@ -43,22 +42,16 @@ public interface Button extends SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param label
    * @param action
    * @param disabled
-   * 
    * @see
    */
   public void init(String label, String action, boolean disabled);
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print();
@@ -69,10 +62,7 @@ public interface Button extends SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @see
    */
   public void setRootImagePath(String s);

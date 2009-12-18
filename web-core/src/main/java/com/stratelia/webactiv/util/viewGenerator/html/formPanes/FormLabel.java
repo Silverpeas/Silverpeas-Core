@@ -35,7 +35,6 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -44,8 +43,6 @@ public class FormLabel extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public FormLabel() {
@@ -56,11 +53,8 @@ public class FormLabel extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormLabel(String nam, String val) {
@@ -70,12 +64,9 @@ public class FormLabel extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
-   * 
    * @see
    */
   public FormLabel(String nam, String val, String lab) {
@@ -86,15 +77,13 @@ public class FormLabel extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
-    String retour = "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-        + noNull(label);
+    String retour =
+        "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
+            + noNull(label);
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;"
@@ -104,14 +93,10 @@ public class FormLabel extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -132,10 +117,7 @@ public class FormLabel extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -145,15 +127,13 @@ public class FormLabel extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
-    String retour = "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-        + label;
+    String retour =
+        "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
+            + label;
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;"
@@ -163,10 +143,7 @@ public class FormLabel extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {

@@ -48,20 +48,15 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class JobManagerPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public JobManagerPeasException(String callingClass, int errorLevel,
@@ -71,13 +66,10 @@ public class JobManagerPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public JobManagerPeasException(String callingClass, int errorLevel,
@@ -87,13 +79,10 @@ public class JobManagerPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public JobManagerPeasException(String callingClass, int errorLevel,
@@ -103,14 +92,11 @@ public class JobManagerPeasException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public JobManagerPeasException(String callingClass, int errorLevel,
@@ -120,10 +106,7 @@ public class JobManagerPeasException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

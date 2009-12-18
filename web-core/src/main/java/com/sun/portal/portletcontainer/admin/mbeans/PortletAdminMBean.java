@@ -32,34 +32,23 @@ public interface PortletAdminMBean {
   public static final String TYPE = "Portal.PortletAdmin";
 
   /**
-   * Performs the following three operations.. 1. Preparing the portlet
-   * webapplication 2. Registering the portlet with the portlet driver 3.
-   * Deploying the portlet webapplication in the webcontainer
-   * 
-   * @param warFileName
-   *          the portlet webapplication
-   * @param roles
-   *          the roles the user is in
-   * @param userinfo
-   *          the user information for the user
-   * @param deployToContainer
-   *          true if the application is to be deployed to the webcontainer
-   * 
+   * Performs the following three operations.. 1. Preparing the portlet webapplication 2.
+   * Registering the portlet with the portlet driver 3. Deploying the portlet webapplication in the
+   * webcontainer
+   * @param warFileName the portlet webapplication
+   * @param roles the roles the user is in
+   * @param userinfo the user information for the user
+   * @param deployToContainer true if the application is to be deployed to the webcontainer
    * @return true if the deployment is successful.
    */
   public Boolean deploy(String warFileName, Properties roles,
       Properties userinfo, boolean deployToContainer) throws Exception;
 
   /**
-   * Performs the following two operations.. 1. Unregistering the portlet from
-   * the portlet driver 2. Undeploying the portlet webapplication from the
-   * webcontainer
-   * 
-   * @param warFileName
-   *          the portlet webapplication
-   * @param undeployFromContainer
-   *          true if the application is to be undeployed from the webcontainer
-   * 
+   * Performs the following two operations.. 1. Unregistering the portlet from the portlet driver 2.
+   * Undeploying the portlet webapplication from the webcontainer
+   * @param warFileName the portlet webapplication
+   * @param undeployFromContainer true if the application is to be undeployed from the webcontainer
    * @return true if the undeployment is successful.
    */
   public Boolean undeploy(String warName, boolean undeployFromContainer)

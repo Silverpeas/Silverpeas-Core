@@ -53,10 +53,7 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 /**
- * RSS / ATOM feed utilities.
- * 
- * Created: Jan 03, 2007 12:50:56 PM
- * 
+ * RSS / ATOM feed utilities. Created: Jan 03, 2007 12:50:56 PM
  * @author Andras Berkes
  */
 public final class FeedUtilities {
@@ -70,7 +67,8 @@ public final class FeedUtilities {
   private static final long FEED_RETRY_MILLIS = 1000L;
 
   // --- HTTP CONNECTION HANDLER ---
-  private static final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+  private static final MultiThreadedHttpConnectionManager connectionManager =
+      new MultiThreadedHttpConnectionManager();
   private static final HttpClient httpClient = new HttpClient(connectionManager);
 
   private FeedUtilities() {
@@ -88,7 +86,7 @@ public final class FeedUtilities {
     get.setFollowRedirects(true);
     SilverTrace.info("agenda", "FeedUtilities.loadFeed()",
         "root.MSG_GEN_PARAM_VALUE", "username=" + username + " - pwd="
-            + password);
+        + password);
     if (StringUtil.isDefined(username)) {
       // Set username/password
       byte[] auth = StringUtils.encodeString(username + ':'
@@ -110,7 +108,7 @@ public final class FeedUtilities {
         } else {
           SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
               "agenda.FEED_LOADING_FAILED", "Status Http Client=" + status
-                  + " Content=" + bytes.toString());
+              + " Content=" + bytes.toString());
           bytes = null;
         }
       } catch (Exception loadError) {

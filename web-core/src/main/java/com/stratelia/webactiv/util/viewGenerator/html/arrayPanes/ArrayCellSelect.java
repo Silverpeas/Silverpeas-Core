@@ -30,7 +30,6 @@ import java.util.Iterator;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * 
  * @author jboulet
  * @version
  */
@@ -60,13 +59,10 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param strName
    * @param astrLabels
    * @param astrValues
    * @param line
-   * 
    * @see
    */
   public ArrayCellSelect(String strName, String[] astrLabels,
@@ -232,10 +228,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getSyntax() {
@@ -339,10 +332,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

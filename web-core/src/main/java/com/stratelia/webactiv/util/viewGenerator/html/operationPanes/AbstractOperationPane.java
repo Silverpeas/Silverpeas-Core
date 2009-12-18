@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -50,8 +49,6 @@ public abstract class AbstractOperationPane implements OperationPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractOperationPane() {
@@ -60,30 +57,22 @@ public abstract class AbstractOperationPane implements OperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {
     /*
      * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr");
-     * 
-     * iconsPath = generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return
-     * iconsPath;
+     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
+     * generalSettings.getString("ApplicationURL") +
+     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
      */
     return GraphicElementFactory.getIconsPath();
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getStack() {
@@ -92,10 +81,7 @@ public abstract class AbstractOperationPane implements OperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int nbOperations() {
@@ -109,12 +95,9 @@ public abstract class AbstractOperationPane implements OperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconPath
    * @param altText
    * @param action
-   * 
    * @see
    */
   public abstract void addOperation(String iconPath, String altText,
@@ -122,18 +105,13 @@ public abstract class AbstractOperationPane implements OperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public abstract void addLine();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();

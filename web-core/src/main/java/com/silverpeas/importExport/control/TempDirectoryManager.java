@@ -40,20 +40,17 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 public class TempDirectoryManager {
 
   /**
-   * Méthode purgeant le dossier Temporaire de silverpeas pour une limite
-   * ramenée au standard de 2 jours
+   * Méthode purgeant le dossier Temporaire de silverpeas pour une limite ramenée au standard de 2
+   * jours
    */
   public static void purgeTempDir() {
     purgeTempDir(2);
   }
 
   /**
-   * Méthode récursive purgeant le dossier Temporaire de silverpeas de tous
-   * les fichiers datés de plus de nbJours. Tous les répertoires vides à
-   * l'issue de cette purge sont également effacés
-   * 
-   * @param nbJour
-   *          - nombre de jours limite pour la conservation d'un fichier
+   * Méthode récursive purgeant le dossier Temporaire de silverpeas de tous les fichiers datés de
+   * plus de nbJours. Tous les répertoires vides à l'issue de cette purge sont également effacés
+   * @param nbJour - nombre de jours limite pour la conservation d'un fichier
    */
   public static void purgeTempDir(int nbJour) {
 
@@ -81,15 +78,11 @@ public class TempDirectoryManager {
   }
 
   /**
-   * Méthode récursive privée utilisée par public void purgeTempDir(int
-   * nbJour) purgeant le dossier Temporaire de silverpeas de tous les fichiers
-   * datés. de plus de nbJours. Tous les répertoires vides à l'issue de cette
-   * purge sont également effacés.
-   * 
-   * @param dir
-   *          - sous dossier du répertoire Temporaire à purger
-   * @param ecartTemps
-   *          - Durée de conservation des fichiers en millisecondes
+   * Méthode récursive privée utilisée par public void purgeTempDir(int nbJour) purgeant le
+   * dossier Temporaire de silverpeas de tous les fichiers datés. de plus de nbJours. Tous les
+   * répertoires vides à l'issue de cette purge sont également effacés.
+   * @param dir - sous dossier du répertoire Temporaire à purger
+   * @param ecartTemps - Durée de conservation des fichiers en millisecondes
    */
   private static void purgeTempDir(File dir, long ecartTemps) {
     // Parcours du dossier dir
@@ -116,15 +109,11 @@ public class TempDirectoryManager {
   }
 
   /**
-   * Transforme la table des chaines de caractères de nom de fichier en une
-   * liste de fichiers pour le chemin passé en paramètre
-   * 
-   * @param listFileName
-   *          - table des nom de fichier sous forme de chaine de caractères.
-   * @param path
-   *          - chemin des fichiers contenu dans les chaines de caractères.
-   * @return renvoie une liste d'objets File pour les noms de fichiers passés
-   *         en paramètres
+   * Transforme la table des chaines de caractères de nom de fichier en une liste de fichiers pour
+   * le chemin passé en paramètre
+   * @param listFileName - table des nom de fichier sous forme de chaine de caractères.
+   * @param path - chemin des fichiers contenu dans les chaines de caractères.
+   * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private static List convertListStringToListFile(String[] listFileName,
       String path) {

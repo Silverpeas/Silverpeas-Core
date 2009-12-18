@@ -35,7 +35,6 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -44,11 +43,8 @@ public class FormPassword extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormPassword(String nam, String val) {
@@ -59,12 +55,9 @@ public class FormPassword extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
-   * 
    * @see
    */
   public FormPassword(String nam, String val, String lab) {
@@ -75,10 +68,7 @@ public class FormPassword extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -91,14 +81,10 @@ public class FormPassword extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -113,10 +99,7 @@ public class FormPassword extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -125,10 +108,7 @@ public class FormPassword extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
@@ -140,10 +120,7 @@ public class FormPassword extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {

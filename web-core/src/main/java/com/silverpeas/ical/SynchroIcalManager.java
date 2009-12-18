@@ -40,7 +40,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * @author dle
- * 
  */
 public class SynchroIcalManager {
 
@@ -76,7 +75,6 @@ public class SynchroIcalManager {
 
   /**
    * Import remote calendar into Silverpeas calendar (update event if necessary)
-   * 
    * @param urlCalendar
    * @param localCalendar
    * @param loginICalendar
@@ -119,7 +117,6 @@ public class SynchroIcalManager {
 
   /**
    * Method declaration
-   * 
    * @see
    */
   private void setCalendarBm() {

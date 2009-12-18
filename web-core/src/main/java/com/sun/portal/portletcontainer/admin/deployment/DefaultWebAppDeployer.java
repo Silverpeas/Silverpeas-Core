@@ -24,9 +24,8 @@
 package com.sun.portal.portletcontainer.admin.deployment;
 
 /**
- * The DefaultWebAppDeployer class provides the default implementation of the
- * the WebAppDeployer interface.
- * 
+ * The DefaultWebAppDeployer class provides the default implementation of the the WebAppDeployer
+ * interface.
  */
 public class DefaultWebAppDeployer implements WebAppDeployer {
 

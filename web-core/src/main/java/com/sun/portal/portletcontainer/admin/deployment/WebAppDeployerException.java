@@ -24,29 +24,24 @@
 package com.sun.portal.portletcontainer.admin.deployment;
 
 /**
- * A <code>WebAppDeployerException</code> is thrown when there are errors
- * related to the deployment/undeployment to/from the web container.
+ * A <code>WebAppDeployerException</code> is thrown when there are errors related to the
+ * deployment/undeployment to/from the web container.
  */
 public class WebAppDeployerException extends Exception {
 
   /**
    * Constructs a new exception with the specified message
-   * 
-   * @param msg
-   *          The descriptive message.
+   * @param msg The descriptive message.
    */
   public WebAppDeployerException(String msg) {
     super(msg);
   }
 
   /**
-   * Constructs a new exception with the specified message, and the original
-   * <code>exception</code> or <code>error</code>
-   * 
-   * @param msg
-   *          The descriptive message.
-   * @param cause
-   *          The original <code>exception</code> or <code>error</code>.
+   * Constructs a new exception with the specified message, and the original <code>exception</code>
+   * or <code>error</code>
+   * @param msg The descriptive message.
+   * @param cause The original <code>exception</code> or <code>error</code>.
    */
   public WebAppDeployerException(String msg, Throwable cause) {
     super(msg, cause);

@@ -32,9 +32,9 @@ import com.silverpeas.util.StringUtil;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletRegistryWriter is responsible for writing to the Registry xmls. There
- * will be concrete classes to write to portlet-app-registry.xml
- * portlet-window-registry.xml portlet-window-preference-registry.xml.
+ * PortletRegistryWriter is responsible for writing to the Registry xmls. There will be concrete
+ * classes to write to portlet-app-registry.xml portlet-window-registry.xml
+ * portlet-window-preference-registry.xml.
  */
 public abstract class PortletRegistryWriter {
 
@@ -55,9 +55,8 @@ public abstract class PortletRegistryWriter {
   }
 
   /*
-   * public PortletRegistryWriter(String registryLocation, String filename) {
-   * file = new File(registryLocation + File.separator + filename);
-   * this.registryLocation = registryLocation; }
+   * public PortletRegistryWriter(String registryLocation, String filename) { file = new
+   * File(registryLocation + File.separator + filename); this.registryLocation = registryLocation; }
    */
 
   protected void write(PortletRegistryObject portletRegistryObject)
@@ -70,21 +69,15 @@ public abstract class PortletRegistryWriter {
   }
 
   /**
-   * Appends contents in the list to the specified registry xml file in the file
-   * system.
-   * 
-   * @param portletRegistryElementList
-   *          a <code>List</code> of Portlet registry elements
+   * Appends contents in the list to the specified registry xml file in the file system.
+   * @param portletRegistryElementList a <code>List</code> of Portlet registry elements
    */
   public abstract void appendDocument(List portletRegistryElementList)
       throws PortletRegistryException;
 
   /**
-   * Writes the contents in the list to the specified registry xml file in the
-   * file system.
-   * 
-   * @param portletRegistryElementList
-   *          a <code>List</code> of Portlet registry elements
+   * Writes the contents in the list to the specified registry xml file in the file system.
+   * @param portletRegistryElementList a <code>List</code> of Portlet registry elements
    */
   public abstract void writeDocument(List portletRegistryElementList)
       throws PortletRegistryException;

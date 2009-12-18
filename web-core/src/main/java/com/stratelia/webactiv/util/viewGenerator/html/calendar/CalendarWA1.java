@@ -37,8 +37,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class CalendarWA1 extends AbstractCalendar {
@@ -108,7 +106,7 @@ public class CalendarWA1 extends AbstractCalendar {
       result.append(
           "<TD class=\"intfdcolor3\" ALIGN=\"center\"><span class=txtNav4>")
           .append(settings.getString("GML.mois" + month)).append(" ").append(
-              year).append("</span></TD>");
+          year).append("</span></TD>");
       if (navigationBar) {
         result
             .append(
@@ -129,12 +127,12 @@ public class CalendarWA1 extends AbstractCalendar {
       if (shortName) {
         result.append("<TH ").append(weekDayStyle).append(">").append(
             settings.getString("GML.shortJour"
-                + calendar.get(Calendar.DAY_OF_WEEK))).append("</TH>");
+            + calendar.get(Calendar.DAY_OF_WEEK))).append("</TH>");
       } else {
         result.append("<TH ").append(weekDayStyle).append(">")
             .append(
-                settings.getString("GML.jour"
-                    + calendar.get(Calendar.DAY_OF_WEEK))).append("</TH>");
+            settings.getString("GML.jour"
+            + calendar.get(Calendar.DAY_OF_WEEK))).append("</TH>");
       }
       calendar.add(Calendar.DATE, 1);
     } while (calendar.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek);

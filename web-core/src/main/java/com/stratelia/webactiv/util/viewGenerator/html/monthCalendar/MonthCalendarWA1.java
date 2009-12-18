@@ -112,8 +112,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class MonthCalendarWA1 extends AbstractMonthCalendar {
@@ -131,10 +129,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -166,10 +161,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private String printDayOfWeek() {
@@ -190,14 +182,9 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param week
-   * 
    * @return
-   * 
    * @throws Exception
-   * 
    * @see
    */
   private String printNumberDayOfWeek(int week) throws Exception {
@@ -219,10 +206,10 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
         html.append("&nbsp;")
             .append("<a href=\"javascript: onClick=clickDay('").append(
-                DateUtil.getInputDate(day[k].getDate(), super.language))
+            DateUtil.getInputDate(day[k].getDate(), super.language))
             .append("')\" class=\"almanachDay\" ").append(
-                "onFocus=\"this.blur()\">").append(day[k].getNumbers()).append(
-                "</a> </td>");
+            "onFocus=\"this.blur()\">").append(day[k].getNumbers()).append(
+            "</a> </td>");
       } else {
         html.append("<td class=\"intfdcolor51\">&nbsp;").append(
             day[k].getNumbers()).append("</td>");
@@ -236,14 +223,9 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param week
-   * 
    * @return
-   * 
    * @throws Exception
-   * 
    * @see
    */
   private String printWeek(int week, ResourceLocator message) throws Exception {
@@ -253,7 +235,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
     SilverTrace.info("viewgenerator", "MonthCalendarWA1.printWeek()",
         "root.MSG_GEN_PARAM_VALUE", " Week = " + (week - 1)
-            + "); numbersRowOfWeek=" + numbersRowOfWeek + ". ");
+        + "); numbersRowOfWeek=" + numbersRowOfWeek + ". ");
     // pour chaque row de la semaine
 
     for (int i = 0; i < numbersRowOfWeek; i++) {
@@ -268,21 +250,17 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param week
    * @param row
    * @param numbersRowOfWeek
-   * 
    * @return
-   * 
    * @see
    */
   private String printRow(int week, int row, int numbersRowOfWeek,
       ResourceLocator message) {
     SilverTrace.info("viewgenerator", "MonthCalendarWA1.printRow()",
         "root.MSG_GEN_PARAM_VALUE", " Week = " + week + "; numbersRowOfWeek="
-            + numbersRowOfWeek + ". ");
+        + numbersRowOfWeek + ". ");
     StringBuffer html = new StringBuffer();
 
     int numbersDayOfWeek = super.getNumbersDayOfWeek();

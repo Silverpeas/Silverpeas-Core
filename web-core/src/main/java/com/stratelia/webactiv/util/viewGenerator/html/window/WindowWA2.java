@@ -34,7 +34,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 /**
  * A window with a browse at beginning and at the end
- * 
  * @author neysseri
  * @version 1.0
  */
@@ -42,8 +41,6 @@ public class WindowWA2 extends AbstractWindow {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public WindowWA2() {
@@ -51,10 +48,7 @@ public class WindowWA2 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -79,10 +73,7 @@ public class WindowWA2 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -111,10 +102,7 @@ public class WindowWA2 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

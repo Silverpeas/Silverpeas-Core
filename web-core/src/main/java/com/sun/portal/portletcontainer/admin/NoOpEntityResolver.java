@@ -29,10 +29,9 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
- * A dummy entity resolver to be used by parsers that want to prevent external
- * references to DTD from being processed. Parsers may want to use this dummy
- * resolver when processing files in a network disabled environment.
- * 
+ * A dummy entity resolver to be used by parsers that want to prevent external references to DTD
+ * from being processed. Parsers may want to use this dummy resolver when processing files in a
+ * network disabled environment.
  */
 public class NoOpEntityResolver implements EntityResolver {
   public InputSource resolveEntity(String publicId, String systemId) {

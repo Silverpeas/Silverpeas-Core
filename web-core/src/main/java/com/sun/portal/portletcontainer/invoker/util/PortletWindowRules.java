@@ -142,8 +142,8 @@ public class PortletWindowRules {
   }
 
   /**
-   * Validate window state for the portlet window Mode passed in. For Edit and
-   * Help mode, window state minimized is not allowed.
+   * Validate window state for the portlet window Mode passed in. For Edit and Help mode, window
+   * state minimized is not allowed.
    */
   public static boolean validateWindowStateChange(
       ChannelMode portletWindowMode, ChannelState windowState) {
@@ -163,8 +163,8 @@ public class PortletWindowRules {
   }
 
   /**
-   * Convert the window state representation used by the provider layer to the
-   * representation understood by the container layer
+   * Convert the window state representation used by the provider layer to the representation
+   * understood by the container layer
    */
   public static List mapToStandards(int[] portalWindowStates) {
     List newList = new ArrayList();
@@ -180,8 +180,8 @@ public class PortletWindowRules {
   }
 
   /**
-   * Convert the window state representation used by the provider layer to the
-   * representation understood by the container layer
+   * Convert the window state representation used by the provider layer to the representation
+   * understood by the container layer
    */
   public static ChannelState mapToStandards(int portalWindowState) {
     ChannelState winState = (ChannelState) windowStateMap.get(new Integer(
@@ -190,8 +190,8 @@ public class PortletWindowRules {
   }
 
   /**
-   * Convert the window state representation used by the container layer to the
-   * representation understood by the provider layer
+   * Convert the window state representation used by the container layer to the representation
+   * understood by the provider layer
    */
   public static int mapToPortletWindow(ChannelState windowState) {
     int winState = ((Integer) windowStateReverseMap.get(windowState))

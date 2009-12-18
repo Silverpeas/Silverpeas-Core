@@ -88,9 +88,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
- * Classe manager des importations unitaires du moteur d'importExport de
- * silverPeas
- * 
+ * Classe manager des importations unitaires du moteur d'importExport de silverPeas
  * @author sdevolder
  */
 public class PublicationsTypeManager {
@@ -103,18 +101,12 @@ public class PublicationsTypeManager {
   }
 
   /**
-   * Méthode métier du moteur d'importExport créant une exportation pour
-   * toutes les publications spécifiées en paramètre. passé en paramètre au
-   * moteur d'importExport.
-   * 
-   * @param userDetail
-   *          - contient les informations sur l'utilisateur du moteur
-   *          d'importExport
-   * @param listItemsToExport
-   *          - liste des WAAttributeValuePair contenant les id des publications
-   *          à exporter
-   * @param exportPath
-   *          - cible de l'exportation
+   * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
+   * spécifiées en paramètre. passé en paramètre au moteur d'importExport.
+   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
+   * @param listItemsToExport - liste des WAAttributeValuePair contenant les id des publications à
+   * exporter
+   * @param exportPath - cible de l'exportation
    * @return
    * @throws ImportExportException
    */
@@ -144,7 +136,7 @@ public class PublicationsTypeManager {
 
       SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
           "root.MSG_GEN_PARAM_VALUE", "objectId = " + attValue.getName()
-              + ", instanceId = " + attValue.getValue());
+          + ", instanceId = " + attValue.getValue());
 
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
@@ -219,7 +211,7 @@ public class PublicationsTypeManager {
             .getNodePositionsType().getListNodePositionType().get(0);
         exportPublicationRelativePath = createPathDirectoryForPublicationExport(
             exportPath, nodePositionType.getId(), componentId, componentInst
-                .getLabel(), publicationDetail, useNameForFolders);
+            .getLabel(), publicationDetail, useNameForFolders);
         exportPublicationPath = exportPath + File.separator
             + exportPublicationRelativePath;
       }
@@ -298,7 +290,7 @@ public class PublicationsTypeManager {
                 try {
                   attachment = AttachmentController
                       .searchAttachmentByPK(new AttachmentPK(imageId,
-                          componentId));
+                      componentId));
                 } catch (RuntimeException e1) {
                   SilverTrace.warn("importExport",
                       "PublicationTypeManager.processExport",
@@ -316,7 +308,7 @@ public class PublicationsTypeManager {
                   try {
                     FileRepositoryManager.copyFile(fromPath,
                         exportPublicationPath + File.separator
-                            + attachment.getLogicalName());
+                        + attachment.getLogicalName());
                   } catch (Exception e) {
                     SilverTrace.warn("importExport",
                         "PublicationTypeManager.processExport",
@@ -334,7 +326,7 @@ public class PublicationsTypeManager {
                 try {
                   attachment = AttachmentController
                       .searchAttachmentByPK(new AttachmentPK(fileId,
-                          componentId));
+                      componentId));
                 } catch (RuntimeException e1) {
                   SilverTrace.warn("importExport",
                       "PublicationTypeManager.processExport",
@@ -418,19 +410,12 @@ public class PublicationsTypeManager {
   }
 
   /**
-   * Méthode créant l'arboresecne des répertoires pour une publication
-   * exportée
-   * 
-   * @param exportPath
-   *          - dossier dans lequel creer notre arborescence de dossiers
-   * @param topicId
-   *          - id du topic dont on veut la branche
-   * @param componentId
-   *          - id du composant de la publication
-   * @param componentLabel
-   *          - label du composant
-   * @param pubName
-   *          - nom de la publication
+   * Méthode créant l'arboresecne des répertoires pour une publication exportée
+   * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
+   * @param topicId - id du topic dont on veut la branche
+   * @param componentId - id du composant de la publication
+   * @param componentLabel - label du composant
+   * @param pubName - nom de la publication
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForPublicationExport(String exportPath,
@@ -475,11 +460,12 @@ public class PublicationsTypeManager {
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath.toString());
+    String relativeExportPathAscii =
+        FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = "
-            + relativeExportPathAscii);
+        + relativeExportPathAscii);
     // String relativeExportPathAscii = relativeExportPath.toString();
     String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
     SilverTrace.debug("importExport",
@@ -570,19 +556,12 @@ public class PublicationsTypeManager {
   }
 
   /**
-   * Méthode créant l'arborescence des répertoires pour une publication
-   * exportée
-   * 
-   * @param exportPath
-   *          - dossier dans lequel creer notre arborescence de dossiers
-   * @param positionPath
-   *          - ensemble des noeuds sur laquelle la publication est classée
-   * @param componentId
-   *          - id du composant de la publication
-   * @param componentLabel
-   *          - label du composant
-   * @param pubName
-   *          - nom de la publication
+   * Méthode créant l'arborescence des répertoires pour une publication exportée
+   * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
+   * @param positionPath - ensemble des noeuds sur laquelle la publication est classée
+   * @param componentId - id du composant de la publication
+   * @param componentLabel - label du composant
+   * @param pubName - nom de la publication
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForKmaxPublicationExport(String exportPath,
@@ -611,11 +590,12 @@ public class PublicationsTypeManager {
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath.toString());
+    String relativeExportPathAscii =
+        FileServerUtils.replaceAccentChars(relativeExportPath.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = "
-            + relativeExportPathAscii);
+        + relativeExportPathAscii);
     String pathToCreateAscii = FileServerUtils.replaceAccentChars(pathToCreate.toString());
     SilverTrace.debug("importExport",
         "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
@@ -637,285 +617,287 @@ public class PublicationsTypeManager {
   }
 
   /**
-   * Méthode métier du moteur d'importExport créant toutes les publications
-   * unitaires définies au niveau du fichier d'import xml passé en paramètre
-   * au moteur d'importExport.
-   * 
-   * @param userDetail
-   *          - contient les informations sur l'utilisateur du moteur
-   *          d'importExport
-   * @param publicationsType
-   *          - objet mappé par castor contenant toutes les informations de
-   *          création des publications de type unitaire
-   * @param targetComponentId
-   *          - id du composant dans lequel creer les publications unitaires
-   * @return un objet ComponentReport contenant les informations de création
-   *         des publications unitaires et nécéssaire au rapport détaillé
+   * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies
+   * au niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
+   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
+   * @param publicationsType - objet mappé par castor contenant toutes les informations de
+   * création des publications de type unitaire
+   * @param targetComponentId - id du composant dans lequel creer les publications unitaires
+   * @return un objet ComponentReport contenant les informations de création des publications
+   * unitaires et nécéssaire au rapport détaillé
    * @throws ImportExportException
    */
-  public void processImport(UserDetail userDetail, PublicationsType publicationsType, String targetComponentId, boolean isPOIUsed)  {
-		GEDImportExport			gedIE				=	ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
-		AttachmentImportExport 	attachmentIE		=	new AttachmentImportExport();
-		PdcImportExport			pdcIE				=	new PdcImportExport();
-		VersioningImportExport	versioningIE		=	new VersioningImportExport();
-		CoordinateImportExport	coordinateIE		= 	new CoordinateImportExport();
+  public void processImport(UserDetail userDetail, PublicationsType publicationsType,
+      String targetComponentId, boolean isPOIUsed) {
+    GEDImportExport gedIE =
+        ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    PdcImportExport pdcIE = new PdcImportExport();
+    VersioningImportExport versioningIE = new VersioningImportExport();
+    CoordinateImportExport coordinateIE = new CoordinateImportExport();
 
-		List					listPub_Type 		=	publicationsType.getListPublicationType();
-		List					attachments 		=	null;
-		List					documents			= 	null;
-		List					nodes 				=	null;
-		PublicationDetail		pubDetail			=	null;
-		PublicationDetail		pubDetailToCreate	=	null;
-		String					componentId			=	null;
-		OrganizationController	orgaController		=	null;
-		int						nbItem				=	1;
+    List listPub_Type = publicationsType.getListPublicationType();
+    List attachments = null;
+    List documents = null;
+    List nodes = null;
+    PublicationDetail pubDetail = null;
+    PublicationDetail pubDetailToCreate = null;
+    String componentId = null;
+    OrganizationController orgaController = null;
+    int nbItem = 1;
 
-		//On parcours les objets PublicationType
-		Iterator itListPub_Type = listPub_Type.iterator();
-		PublicationType pubType = null;
-		while(itListPub_Type.hasNext()) {
-			pubType = (PublicationType)itListPub_Type.next();
+    // On parcours les objets PublicationType
+    Iterator itListPub_Type = listPub_Type.iterator();
+    PublicationType pubType = null;
+    while (itListPub_Type.hasNext()) {
+      pubType = (PublicationType) itListPub_Type.next();
 
-			//On détermine si on doit utiliser le componentId par défaut
-			if (pubType.getComponentId() == null || pubType.getComponentId().length() == 0)
-				componentId = targetComponentId;
-			else
-				componentId = pubType.getComponentId();
-			gedIE.setCurrentComponentId(componentId);
+      // On détermine si on doit utiliser le componentId par défaut
+      if (pubType.getComponentId() == null || pubType.getComponentId().length() == 0)
+        componentId = targetComponentId;
+      else
+        componentId = pubType.getComponentId();
+      gedIE.setCurrentComponentId(componentId);
 
-			//Création du rapport unitaire
-			UnitReport unitReport = new UnitReport("<publication> #"+nbItem);
-			ImportReportManager.addUnitReport(unitReport, componentId);
+      // Création du rapport unitaire
+      UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
+      ImportReportManager.addUnitReport(unitReport, componentId);
 
-			if (orgaController == null)
-				orgaController = new OrganizationController();
+      if (orgaController == null)
+        orgaController = new OrganizationController();
 
-			ComponentInst componentInst = orgaController.getComponentInst(componentId);
-			if (componentInst == null)
-			{
-				//le composant n'existe pas
-				unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
-				unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
-			}
-			else
-			{
-				ImportReportManager.setComponentName(componentId, componentInst.getLabel());
+      ComponentInst componentInst = orgaController.getComponentInst(componentId);
+      if (componentInst == null) {
+        // le composant n'existe pas
+        unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
+        unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
+      } else {
+        ImportReportManager.setComponentName(componentId, componentInst.getLabel());
 
-				pubDetailToCreate = pubType.getPublicationDetail();
+        pubDetailToCreate = pubType.getPublicationDetail();
 
-				if (pubType.getAttachmentsType() != null)
-					attachments = pubType.getAttachmentsType().getListAttachmentDetail();
-				if (pubType.getDocumentsType() != null)
-					documents	= pubType.getDocumentsType().getListDocuments();
+        if (pubType.getAttachmentsType() != null)
+          attachments = pubType.getAttachmentsType().getListAttachmentDetail();
+        if (pubType.getDocumentsType() != null)
+          documents = pubType.getDocumentsType().getListDocuments();
 
-				if (pubDetailToCreate == null)
-				{
-					//Le mapping ne contient pas l'élément publicationHeader
-					if (pubType.getId() == -1)
-					{
-						//Ce n'est pas une publication à mettre à jour par id
-					  	if (attachments != null && attachments.size() != 0)
-					  	{
-							AttachmentDetail 	attachment 	= (AttachmentDetail)attachments.get(0);
-						  	File 				file 		= new File(attachment.getPhysicalName());
-						  	pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(userDetail, file, isPOIUsed);
-					  	}
-					  	else {/*TODO: jeter exception ou trouver une autre solution de nommage*/
-						  	pubDetailToCreate = new PublicationDetail("unknown"/*id*/, "pub temp"/*nom*/, "description", new Date(), new Date(), null, userDetail.getId(), "5", null, null, null);
-					  	}
-					}
-					else
-					{
-						//C'est une publication à mettre à jour par id
-						pubDetailToCreate = new PublicationDetail();
-					}
-				}
-				pubDetailToCreate.setPk(new PublicationPK(null, "useless", componentId));
-				//Le mapping contient l'élément publicationHeader
-				if (pubType.getId() != -1)
-				{
-					pubDetailToCreate.getPK().setId(Integer.toString(pubType.getId()));
-				}
+        if (pubDetailToCreate == null) {
+          // Le mapping ne contient pas l'élément publicationHeader
+          if (pubType.getId() == -1) {
+            // Ce n'est pas une publication à mettre à jour par id
+            if (attachments != null && attachments.size() != 0) {
+              AttachmentDetail attachment = (AttachmentDetail) attachments.get(0);
+              File file = new File(attachment.getPhysicalName());
+              pubDetailToCreate =
+                  PublicationImportExport.convertFileInfoToPublicationDetail(userDetail, file,
+                      isPOIUsed);
+            } else {/* TODO: jeter exception ou trouver une autre solution de nommage */
+              pubDetailToCreate =
+                  new PublicationDetail("unknown"/* id */, "pub temp"/* nom */, "description",
+                      new Date(), new Date(), null, userDetail.getId(), "5", null, null, null);
+            }
+          } else {
+            // C'est une publication à mettre à jour par id
+            pubDetailToCreate = new PublicationDetail();
+          }
+        }
+        pubDetailToCreate.setPk(new PublicationPK(null, "useless", componentId));
+        // Le mapping contient l'élément publicationHeader
+        if (pubType.getId() != -1) {
+          pubDetailToCreate.getPK().setId(Integer.toString(pubType.getId()));
+        }
 
-				//Vérifie les données nécessaires à la création de la publication
-				checkPublication(pubDetailToCreate, userDetail);
+        // Vérifie les données nécessaires à la création de la publication
+        checkPublication(pubDetailToCreate, userDetail);
 
-				//Specific classify for kmax
-				if (isKmax(componentId))
-				{
-					//kmax : Get coordinates with value (name of the position)
-					List coordinates = pubType.getCoordinatesPositionsType().getCoordinatesPositions();
-					boolean createCoordinateAllowed = pubType.getCoordinatesPositionsType().getCreateEnable();
-					nodes = new ArrayList();
-					if (coordinates != null)
-					{
-						Iterator itCoordinates = coordinates.iterator();
-						while (itCoordinates.hasNext()) {
-							Coordinate coordinate = (Coordinate) itCoordinates.next();
-							if (coordinate != null)
-							{
-								Collection listCoordinatePointsType = coordinate.getCoordinatePoints();
-								if (listCoordinatePointsType != null)
-								{
-									Iterator itCoordinatesPoints = listCoordinatePointsType.iterator();
-									String coordinatePointsPath = "";
-									while (itCoordinatesPoints.hasNext()) {
-										CoordinatePointType coordinatePointType = (CoordinatePointType) itCoordinatesPoints.next();
-										if (!coordinatePointType.getValue().equals(""))
-										{
-											//Get NodeDetail by his name
-											NodeDetail nodeDetail = coordinateIE.getNodeDetailByName(coordinatePointType.getValue(), new Integer(coordinatePointType.getAxisId()).intValue(), componentId);
-											SilverTrace.debug("importExport", "PublicationsTypeManager.processImport", "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
-											if (nodeDetail == null && createCoordinateAllowed)
-											{
-											    NodeDetail position = new NodeDetail("toDefine", coordinatePointType.getValue(), "", null, userDetail.getId(), null, "0", new Integer(coordinatePointType.getAxisId()).toString(), null);
-											    nodeDetail = coordinateIE.addPosition(position, new Integer(coordinatePointType.getAxisId()).toString(), componentId);
-												SilverTrace.debug("importExport", "PublicationsTypeManager.processImport", "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
-											}
-											if (nodeDetail != null)
-											{
-												if (coordinatePointsPath.equals(""))
-													coordinatePointsPath = nodeDetail.getPath()+nodeDetail.getId();
-												else
-													coordinatePointsPath = coordinatePointsPath + "," + nodeDetail.getPath()+nodeDetail.getId();
-											}
-										}
-									}
-									SilverTrace.debug("importExport", "PublicationsTypeManager.processImport", "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
-									//Add coordinate (set of coordinatePoints)
-									int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath);
-									if (coordinateId==0)
-										unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-									else
-										nodes.add(new Integer(coordinateId));
-								}
-							}
-						}
-					}
-					SilverTrace.debug("importExport", "PublicationsTypeManager.processImport", "root.MSG_GEN_PARAM_VALUE", "TOTAL List coordinatesId = " + nodes);
-				}
-				else
-					//récupère les thèmes dans lesquels la publication doit être créée
-					nodes = pubType.getNodePositionsType().getListNodePositionType();
+        // Specific classify for kmax
+        if (isKmax(componentId)) {
+          // kmax : Get coordinates with value (name of the position)
+          List coordinates = pubType.getCoordinatesPositionsType().getCoordinatesPositions();
+          boolean createCoordinateAllowed = pubType.getCoordinatesPositionsType().getCreateEnable();
+          nodes = new ArrayList();
+          if (coordinates != null) {
+            Iterator itCoordinates = coordinates.iterator();
+            while (itCoordinates.hasNext()) {
+              Coordinate coordinate = (Coordinate) itCoordinates.next();
+              if (coordinate != null) {
+                Collection listCoordinatePointsType = coordinate.getCoordinatePoints();
+                if (listCoordinatePointsType != null) {
+                  Iterator itCoordinatesPoints = listCoordinatePointsType.iterator();
+                  String coordinatePointsPath = "";
+                  while (itCoordinatesPoints.hasNext()) {
+                    CoordinatePointType coordinatePointType =
+                        (CoordinatePointType) itCoordinatesPoints.next();
+                    if (!coordinatePointType.getValue().equals("")) {
+                      // Get NodeDetail by his name
+                      NodeDetail nodeDetail =
+                          coordinateIE.getNodeDetailByName(coordinatePointType.getValue(),
+                              new Integer(coordinatePointType.getAxisId()).intValue(), componentId);
+                      SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
+                          "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
+                      if (nodeDetail == null && createCoordinateAllowed) {
+                        NodeDetail position =
+                            new NodeDetail("toDefine", coordinatePointType.getValue(), "", null,
+                                userDetail.getId(), null, "0", new Integer(coordinatePointType
+                                    .getAxisId()).toString(), null);
+                        nodeDetail =
+                            coordinateIE.addPosition(position, new Integer(coordinatePointType
+                                .getAxisId()).toString(), componentId);
+                        SilverTrace
+                            .debug("importExport", "PublicationsTypeManager.processImport",
+                                "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
+                                    nodeDetail);
+                      }
+                      if (nodeDetail != null) {
+                        if (coordinatePointsPath.equals(""))
+                          coordinatePointsPath = nodeDetail.getPath() + nodeDetail.getId();
+                        else
+                          coordinatePointsPath =
+                              coordinatePointsPath + "," + nodeDetail.getPath() +
+                                  nodeDetail.getId();
+                      }
+                    }
+                  }
+                  SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
+                      "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
+                  // Add coordinate (set of coordinatePoints)
+                  int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath);
+                  if (coordinateId == 0)
+                    unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
+                  else
+                    nodes.add(new Integer(coordinateId));
+                }
+              }
+            }
+          }
+          SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
+              "root.MSG_GEN_PARAM_VALUE", "TOTAL List coordinatesId = " + nodes);
+        } else
+          // récupère les thèmes dans lesquels la publication doit être créée
+          nodes = pubType.getNodePositionsType().getListNodePositionType();
 
-				//Création ou modification de la publication
-				pubDetail = gedIE.createPublicationForUnitImport(unitReport, userDetail, pubDetailToCreate, nodes);
+        // Création ou modification de la publication
+        pubDetail =
+            gedIE.createPublicationForUnitImport(unitReport, userDetail, pubDetailToCreate, nodes);
 
-				try {
-					if (pubDetail != null)
-					{
-						//Specific Kmax: attach nodes after the publication creation
-						if (isKmax(componentId)) {
-							PublicationImportExport.addNodesToPublication(pubDetail.getPK(), (List<Integer>)nodes);
-                        }
-						//traitement du contenu de la publi
-						if (pubType.getPublicationContentType() != null) {
-							try {
-								gedIE.createPublicationContent(unitReport,Integer.parseInt(pubDetail.getId()), pubType.getPublicationContentType(), userDetail.getId());
-							}catch(ImportExportException ex) {
-								if (unitReport.getError() == UnitReport.ERROR_NO_ERROR)
-									unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
-							}
-						}
+        try {
+          if (pubDetail != null) {
+            // Specific Kmax: attach nodes after the publication creation
+            if (isKmax(componentId)) {
+              PublicationImportExport.addNodesToPublication(pubDetail.getPK(),
+                  (List<Integer>) nodes);
+            }
+            // traitement du contenu de la publi
+            if (pubType.getPublicationContentType() != null) {
+              try {
+                gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getId()),
+                    pubType.getPublicationContentType(), userDetail.getId());
+              } catch (ImportExportException ex) {
+                if (unitReport.getError() == UnitReport.ERROR_NO_ERROR)
+                  unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
+              }
+            }
 
-						//traitement des fichiers joints à la publi
-						if (attachments != null)
-						{
-							List copiedAttachments	= null;
-  							if (ImportExportHelper.isVersioningUsed(componentInst))
-  							{
-	  							//Mode versioning
-  								//copie des fichiers sur le serveur et enrichissement des AttachmentDetail
-								copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.getVersioningPath(componentId));
-								if (copiedAttachments.size()!=attachments.size())
-								{
-	  								unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-  								}
-  								versioningIE.importDocuments(pubDetail.getId(), componentId, copiedAttachments, Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
-  							}
-  							else
-  							{
-	  							//Ajout des attachments
-	  							copiedAttachments = attachmentIE.importAttachments(pubDetail.getId(),componentId,attachments, userDetail.getId(), pubDetail.isIndexable());
-	 							if (copiedAttachments.size()!=attachments.size())
-	  							{
-		  							unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-		  						}
-  							}
-  							ImportReportManager.addNumberOfFilesProcessed(copiedAttachments.size());
-  							ImportReportManager.addNumberOfFilesNotImported(attachments.size()-copiedAttachments.size());
+            // traitement des fichiers joints à la publi
+            if (attachments != null) {
+              List copiedAttachments = null;
+              if (ImportExportHelper.isVersioningUsed(componentInst)) {
+                // Mode versioning
+                // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
+                copiedAttachments =
+                    attachmentIE.copyFiles(componentId, attachments, versioningIE
+                        .getVersioningPath(componentId));
+                if (copiedAttachments.size() != attachments.size()) {
+                  unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+                }
+                versioningIE.importDocuments(pubDetail.getId(), componentId, copiedAttachments,
+                    Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
+              } else {
+                // Ajout des attachments
+                copiedAttachments =
+                    attachmentIE.importAttachments(pubDetail.getId(), componentId, attachments,
+                        userDetail.getId(), pubDetail.isIndexable());
+                if (copiedAttachments.size() != attachments.size()) {
+                  unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+                }
+              }
+              ImportReportManager.addNumberOfFilesProcessed(copiedAttachments.size());
+              ImportReportManager.addNumberOfFilesNotImported(attachments.size() -
+                  copiedAttachments.size());
 
-  							//On additionne la taille des fichiers importés au niveau du rapport
-  							Iterator itCopiedAttachments = copiedAttachments.iterator();
-  							while (itCopiedAttachments.hasNext()) {
-	  							AttachmentDetail attdetail = (AttachmentDetail) itCopiedAttachments.next();
-	  							ImportReportManager.addImportedFileSize(attdetail.getSize(),componentId);
-  							}
-						}
-						if (documents != null && ImportExportHelper.isVersioningUsed(componentInst))
-						{
-							//Get number of versions
-							int nbFiles = 0;
-							Iterator 		it			 		= documents.iterator();
-							Document		document			= null;
-							while (it.hasNext()) {
-								document = (Document) it.next();
-								nbFiles += document.getVersionsType().getListVersions().size();
-							}
+              // On additionne la taille des fichiers importés au niveau du rapport
+              Iterator itCopiedAttachments = copiedAttachments.iterator();
+              while (itCopiedAttachments.hasNext()) {
+                AttachmentDetail attdetail = (AttachmentDetail) itCopiedAttachments.next();
+                ImportReportManager.addImportedFileSize(attdetail.getSize(), componentId);
+              }
+            }
+            if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
+              // Get number of versions
+              int nbFiles = 0;
+              Iterator it = documents.iterator();
+              Document document = null;
+              while (it.hasNext()) {
+                document = (Document) it.next();
+                nbFiles += document.getVersionsType().getListVersions().size();
+              }
 
-							//Copy files on disk, set info on each version
-							List copiedFiles = versioningIE.copyFiles(componentId, documents, versioningIE.getVersioningPath(componentId));
-							ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
-  							ImportReportManager.addNumberOfFilesNotImported(nbFiles-copiedFiles.size());
+              // Copy files on disk, set info on each version
+              List copiedFiles =
+                  versioningIE.copyFiles(componentId, documents, versioningIE
+                      .getVersioningPath(componentId));
+              ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
+              ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
-							//Create documents and versions in DB
-							versioningIE.importDocuments(new ForeignPK(pubDetail.getId(),componentId), documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(pubDetail));
+              // Create documents and versions in DB
+              versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
+                  documents, Integer.parseInt(userDetail.getId()), ImportExportHelper
+                      .isIndexable(pubDetail));
 
-							//On additionne la taille des fichiers importés au niveau du rapport
-  							Iterator itCopiedFiles = copiedFiles.iterator();
-  							while (itCopiedFiles.hasNext()) {
-	  							DocumentVersion version = (DocumentVersion) itCopiedFiles.next();
-	  							ImportReportManager.addImportedFileSize(version.getSize(),componentId);
-  							}
-						}
+              // On additionne la taille des fichiers importés au niveau du rapport
+              Iterator itCopiedFiles = copiedFiles.iterator();
+              while (itCopiedFiles.hasNext()) {
+                DocumentVersion version = (DocumentVersion) itCopiedFiles.next();
+                ImportReportManager.addImportedFileSize(version.getSize(), componentId);
+              }
+            }
 
-						//traitement du classement PDC
-						try
-						{
-							int silverObjectId = gedIE.getSilverObjectId(pubDetail.getId());
+            // traitement du classement PDC
+            try {
+              int silverObjectId = gedIE.getSilverObjectId(pubDetail.getId());
 
-							//Ajout au plan de classement s'il y en a
-							if (pubType.getPdcPositionsType() != null) {
-								boolean pdcOK = pdcIE.addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
-								if (!pdcOK)
-									unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-							}
+              // Ajout au plan de classement s'il y en a
+              if (pubType.getPdcPositionsType() != null) {
+                boolean pdcOK =
+                    pdcIE.addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
+                if (!pdcOK)
+                  unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
+              }
 
-							List positions = pdcIE.getPositions(silverObjectId, componentId);
-							if (positions == null)
-							{
-								//La publication n'est pas classée sur le PDC
-								//Si le mode brouillon est activé et que le classement est obligatoire, la publication passe en mode "Draft"
-								if (pdcIE.isClassifyingMandatory(componentId) && ImportExportHelper.isDraftUsed(componentInst))
-								{
-									gedIE.publicationNotClassifiedOnPDC(pubDetail.getId());
-								}
-							}
-						}
-						catch (Exception e)
-						{
-							unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-						}
-					}
-				}catch(Exception ex) {
-					unitReport.setError(UnitReport.ERROR_ERROR);
-					SilverTrace.error("importExport","PublicationsTypeManager.processImport()","root.EX_NO_MESSAGE",ex);
-				}
-				attachments = null;
-			}
-			nbItem++;
-		}
-	}
+              List positions = pdcIE.getPositions(silverObjectId, componentId);
+              if (positions == null) {
+                // La publication n'est pas classée sur le PDC
+                // Si le mode brouillon est activé et que le classement est obligatoire, la
+                // publication passe en mode "Draft"
+                if (pdcIE.isClassifyingMandatory(componentId) &&
+                    ImportExportHelper.isDraftUsed(componentInst)) {
+                  gedIE.publicationNotClassifiedOnPDC(pubDetail.getId());
+                }
+              }
+            } catch (Exception e) {
+              unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
+            }
+          }
+        } catch (Exception ex) {
+          unitReport.setError(UnitReport.ERROR_ERROR);
+          SilverTrace.error("importExport", "PublicationsTypeManager.processImport()",
+              "root.EX_NO_MESSAGE", ex);
+        }
+        attachments = null;
+      }
+      nbItem++;
+    }
+  }
 
   private void checkPublication(PublicationDetail publication,
       UserDetail userDetail) {

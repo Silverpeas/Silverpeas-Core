@@ -34,7 +34,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 /**
  * The default implementation of Window interface
- * 
  * @author neysseri
  * @version 1.0
  */
@@ -42,8 +41,6 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public WindowWeb20V5() {
@@ -52,10 +49,7 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -72,7 +66,7 @@ public class WindowWeb20V5 extends AbstractWindow {
         .append("<table width=\"")
         .append(width)
         .append(
-            "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" name=\"topPage\" id=\"topPage\">");
+        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" name=\"topPage\" id=\"topPage\">");
     result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
     result.append(getBrowseBar().print());
     result.append("</td>");
@@ -97,10 +91,7 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -142,10 +133,7 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

@@ -36,7 +36,6 @@ import java.util.Vector;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -44,8 +43,6 @@ public class OperationPaneSilverpeasV5 extends AbstractOperationPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public OperationPaneSilverpeasV5() {
@@ -54,12 +51,9 @@ public class OperationPaneSilverpeasV5 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconPath
    * @param altText
    * @param action
-   * 
    * @see
    */
   public void addOperation(String iconPath, String altText, String action) {
@@ -80,8 +74,6 @@ public class OperationPaneSilverpeasV5 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void addLine() {
@@ -94,10 +86,7 @@ public class OperationPaneSilverpeasV5 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

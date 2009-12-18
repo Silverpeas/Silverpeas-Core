@@ -26,21 +26,17 @@ package com.sun.portal.portletcontainer.invoker;
 import com.sun.portal.container.ErrorCode;
 
 /**
- * A WindowException is thrown when error message can be displayed on the
- * Portlet Window.
- * 
+ * A WindowException is thrown when error message can be displayed on the Portlet Window.
  **/
 public class WindowException extends Exception {
 
   protected ErrorCode errorCode = null;
 
   /**
-   * Constructs a new exception with the specified message, indicating an error
-   * in the provider as happened.<br>
+   * Constructs a new exception with the specified message, indicating an error in the provider as
+   * happened.<br>
    * <br>
-   * 
-   * @param msg
-   *          The descriptive message.
+   * @param msg The descriptive message.
    */
   public WindowException(ErrorCode code, String msg) {
     super(msg);
@@ -48,15 +44,11 @@ public class WindowException extends Exception {
   }
 
   /**
-   * Constructs a new exception with the specified message, and the original
-   * <code>exception</code> or <code>error</code>, indicating an error in the
-   * container as happened.<br>
+   * Constructs a new exception with the specified message, and the original <code>exception</code>
+   * or <code>error</code>, indicating an error in the container as happened.<br>
    * <br>
-   * 
-   * @param msg
-   *          The descriptive message.
-   * @param cause
-   *          The original <code>exception</code> or <code>error</code>.
+   * @param msg The descriptive message.
+   * @param cause The original <code>exception</code> or <code>error</code>.
    */
   public WindowException(ErrorCode code, String msg, Throwable cause) {
     super(msg, cause);

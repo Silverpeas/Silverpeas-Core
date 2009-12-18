@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -48,10 +47,7 @@ public class FrameWA2 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -60,42 +56,30 @@ public class FrameWA2 extends AbstractFrame {
     String iconsPath = getIconsPath();
 
     /*
-     * result.append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
-     * ); result.append("\t<tr>\n"); result.append("\t\t<td>\n");result.append(
-     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
-     * ); result.append("\t\t\t\t<tr>\n"); result.append("\t\t\t\t\t<td>\n");
-     * result.append(
-     * "\t\t\t\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
-     * ); result.append("\t\t\t\t\t\t\t<tr>\n");result.append(
-     * "\t\t\t\t\t\t\t\t<td rowspan=\"2\" class=intfdcolor11 width=\"1\"><img src=\""
-     * )
-     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
-     * .append("\t\t\t\t\t\t\t\t<td colspan=\"2\" class=intfdcolor11><img src=\""
-     * )
-     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
+     * result.append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" );
+     * result.append("\t<tr>\n"); result.append("\t\t<td>\n");result.append(
+     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" );
+     * result.append("\t\t\t\t<tr>\n"); result.append("\t\t\t\t\t<td>\n"); result.append(
+     * "\t\t\t\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" );
+     * result.append("\t\t\t\t\t\t\t<tr>\n");result.append(
+     * "\t\t\t\t\t\t\t\t<td rowspan=\"2\" class=intfdcolor11 width=\"1\"><img src=\"" )
+     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
+     * .append("\t\t\t\t\t\t\t\t<td colspan=\"2\" class=intfdcolor11><img src=\"" )
+     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
      * .append("\t\t\t\t\t\t\t\t<td rowspan=\"2\"><img src=\"").append(iconsPath
      * ).append("/frame/htdroit.gif\" width=\"6\" height=\"5\"></td>\n");
-     * result.append("\t\t\t\t\t\t\t</tr>\n");
-     * result.append("\t\t\t\t\t\t\t<tr>\n");
-     * result.append("\t\t\t\t\t\t\t\t<td class=intfdcolor4 width=\"1\"><img src=\""
-     * )
-     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append(
-     * "\t\t\t\t\t\t\t\t<td class=intfdcolor51 width=\"100%\" height=\"4\"><img src=\""
-     * )
+     * result.append("\t\t\t\t\t\t\t</tr>\n"); result.append("\t\t\t\t\t\t\t<tr>\n");
+     * result.append("\t\t\t\t\t\t\t\t<td class=intfdcolor4 width=\"1\"><img src=\"" )
+     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result.append(
+     * "\t\t\t\t\t\t\t\t<td class=intfdcolor51 width=\"100%\" height=\"4\"><img src=\"" )
      * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"4\"></td>\n");
-     * result.append("\t\t\t\t\t\t\t</tr>\n");
-     * result.append("\t\t\t\t\t\t</table>\n");
+     * result.append("\t\t\t\t\t\t\t</tr>\n"); result.append("\t\t\t\t\t\t</table>\n");
      * result.append("\t\t\t\t\t</td>\n"); result.append("\t\t\t\t</tr>\n");
      * result.append("\t\t\t</table>\n");result.append(
-     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
-     * ); result.append("\t\t\t\t<tr>\n");
-     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\""
-     * ).
-     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
+     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" );
+     * result.append("\t\t\t\t<tr>\n");
+     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\"" ).
+     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
      * .append("\t\t\t\t\t<td class=intfdcolor4 width=\"1\"><img src=\"").append
      * (iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
      * result.append("\t\t\t\t\t<td class=intfdcolor51 width=\"100%\">");
@@ -117,10 +101,7 @@ public class FrameWA2 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printMiddle() {
@@ -130,20 +111,15 @@ public class FrameWA2 extends AbstractFrame {
 
     /*
      * result.append("</td>\n");
-     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\""
-     * ).
-     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
+     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\"" ).
+     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
      * .append("\t\t\t\t\t<td class=intfdcolor12 width=\"1\"><img src=\"").
      * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t</table>\n");
-     * result.append(
-     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
-     * ); result.append("\t\t\t\t<tr>\n");
-     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\""
-     * ).
-     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
+     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t</table>\n"); result.append(
+     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" );
+     * result.append("\t\t\t\t<tr>\n");
+     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\"" ).
+     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
      * .append("\t\t\t\t\t<td class=intfdcolor4 width=\"1\"><img src=\"").append
      * (iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
      * result.append("\t\t\t\t\t<td class=intfdcolor51 width=\"100%\">\n");
@@ -156,10 +132,7 @@ public class FrameWA2 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -175,47 +148,33 @@ public class FrameWA2 extends AbstractFrame {
 
     /*
      * result.append("\t\t\t\t\t</td>\n");
-     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\""
-     * ).
-     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
+     * result.append("\t\t\t\t\t<td class=intfdcolor11 width=\"1\"><img src=\"" ).
+     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
      * .append("\t\t\t\t\t<td class=intfdcolor12 width=\"1\"><img src=\"").
      * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t</table>\n");
-     * result.append(
-     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
-     * ); result.append("\t\t\t\t<tr>\n");result.append(
-     * "\t\t\t\t\t<td rowspan=\"2\" class=intfdcolor11 width=\"1\"><img src=\""
-     * ).
-     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result
+     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t</table>\n"); result.append(
+     * "\t\t\t<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" );
+     * result.append("\t\t\t\t<tr>\n");result.append(
+     * "\t\t\t\t\t<td rowspan=\"2\" class=intfdcolor11 width=\"1\"><img src=\"" ).
+     * append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result
      * .append("\t\t\t\t\t<td class=intfdcolor4 width=\"1\"><img src=\"").append
-     * (iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append(
-     * "\t\t\t\t\t<td class=intfdcolor51 width=\"100%\" height=\"100%\"><img src=\""
-     * )
-     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"4\"></td>\n");
-     * result
+     * (iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n"); result.append(
+     * "\t\t\t\t\t<td class=intfdcolor51 width=\"100%\" height=\"100%\"><img src=\"" )
+     * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"4\"></td>\n"); result
      * .append("\t\t\t\t\t<td rowspan=\"3\"><img src=\"").append(iconsPath)
      * .append("/frame/bsdroit.gif\" width=\"6\" height=\"6\"></td>\n");
-     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t\t<tr>\n");
-     * result.append(
-     * "\t\t\t\t\t<td colspan=\"2\" class=intfdcolor11 height=\"1\"><img src=\""
-     * )
+     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t\t<tr>\n"); result.append(
+     * "\t\t\t\t\t<td colspan=\"2\" class=intfdcolor11 height=\"1\"><img src=\"" )
      * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t\t<tr>\n");
-     * result.
+     * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t\t<tr>\n"); result.
      * append("\t\t\t\t\t<td width=\"1\"><img src=\"").append(iconsPath).append
      * ("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append("\t\t\t\t\t<td width=\"1\"><img src=\""
-     * ).append(iconsPath).append
+     * result.append("\t\t\t\t\t<td width=\"1\"><img src=\"" ).append(iconsPath).append
      * ("/1px.gif\" width=\"1\" height=\"1\"></td>\n");
-     * result.append("\t\t\t\t\t<td class=intfdcolor12 height=\"2\"><img src=\""
-     * )
+     * result.append("\t\t\t\t\t<td class=intfdcolor12 height=\"2\"><img src=\"" )
      * .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"2\"></td>\n");
      * result.append("\t\t\t\t</tr>\n"); result.append("\t\t\t</table>\n");
-     * result.append("\t\t</td>\n"); result.append("\t</tr>\n");
-     * result.append("</table>\n");
+     * result.append("\t\t</td>\n"); result.append("\t</tr>\n"); result.append("</table>\n");
      */
 
     return result.toString();
@@ -223,10 +182,7 @@ public class FrameWA2 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

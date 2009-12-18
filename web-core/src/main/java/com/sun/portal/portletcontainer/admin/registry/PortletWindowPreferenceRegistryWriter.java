@@ -37,8 +37,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  * PortletWindowPreferenceRegistryWriter is responsible for updating the
  * portlet-window-preferences.xml file
  */
-public class PortletWindowPreferenceRegistryWriter extends
-    PortletRegistryWriter {
+public class PortletWindowPreferenceRegistryWriter extends PortletRegistryWriter {
 
   public PortletWindowPreferenceRegistryWriter(String registryLocation,
       String context) {
@@ -48,8 +47,9 @@ public class PortletWindowPreferenceRegistryWriter extends
 
   public void appendDocument(List portletWindowPreferenceElementList)
       throws PortletRegistryException {
-    PortletRegistryReader portletWindowPreferenceRegistryReader = new PortletWindowPreferenceRegistryReader(
-        registryLocation, context);
+    PortletRegistryReader portletWindowPreferenceRegistryReader =
+        new PortletWindowPreferenceRegistryReader(
+            registryLocation, context);
     PortletRegistryObject portletWindowPreferenceRegistry = portletWindowPreferenceRegistryReader
         .readDocument();
     write(portletWindowPreferenceElementList, portletWindowPreferenceRegistry);

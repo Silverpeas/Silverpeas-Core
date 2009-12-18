@@ -33,10 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class ComponentReport {
 
@@ -72,9 +70,8 @@ public class ComponentReport {
     listUnitReports.add(report);
     /*
      * switch (report.getStatus()) { case UnitReport.STATUS_PUBLICATION_CREATED:
-     * this.nbPublicationsCreated++; break; case
-     * UnitReport.STATUS_PUBLICATION_UPDATED: this.nbPublicationsUpdated++;
-     * break; }
+     * this.nbPublicationsCreated++; break; case UnitReport.STATUS_PUBLICATION_UPDATED:
+     * this.nbPublicationsUpdated++; break; }
      */
 
   }
@@ -88,8 +85,8 @@ public class ComponentReport {
     listMassiveReports.add(report);
     report.setComponentReport(this);
     /*
-     * nbPublicationsCreated += report.getNbPublicationsCreated();
-     * nbPublicationsUpdated += report.getNbPublicationsUpdated();
+     * nbPublicationsCreated += report.getNbPublicationsCreated(); nbPublicationsUpdated +=
+     * report.getNbPublicationsUpdated();
      */
   }
 

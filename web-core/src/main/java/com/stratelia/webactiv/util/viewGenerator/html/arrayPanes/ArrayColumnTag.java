@@ -30,7 +30,6 @@ import javax.servlet.jsp.tagext.Tag;
 /**
  * Create a new column header in an ArrayPane
  * @author cdm
- * 
  */
 public class ArrayColumnTag extends BodyTagSupport {
 

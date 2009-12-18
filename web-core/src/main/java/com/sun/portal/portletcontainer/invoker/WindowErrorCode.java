@@ -26,8 +26,7 @@ package com.sun.portal.portletcontainer.invoker;
 import com.sun.portal.container.ErrorCode;
 
 /**
- * WindowErrorCode that must have localized message strings corresponding to
- * each.
+ * WindowErrorCode that must have localized message strings corresponding to each.
  **/
 public class WindowErrorCode extends ErrorCode {
 

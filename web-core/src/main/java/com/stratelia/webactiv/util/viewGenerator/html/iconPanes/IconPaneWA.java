@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
 
 /**
  * The default implementation of IconPane interface
- * 
  * @author neysseric
  * @version 1.0
  */
@@ -46,8 +45,6 @@ public class IconPaneWA extends AbstractIconPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public IconPaneWA() {
@@ -56,10 +53,7 @@ public class IconPaneWA extends AbstractIconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String horizontalPrint() {
@@ -86,10 +80,7 @@ public class IconPaneWA extends AbstractIconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String verticalPrint() {
@@ -118,10 +109,7 @@ public class IconPaneWA extends AbstractIconPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

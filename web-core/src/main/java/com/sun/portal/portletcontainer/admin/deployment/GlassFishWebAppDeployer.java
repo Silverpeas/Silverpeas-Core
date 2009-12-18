@@ -35,9 +35,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 
 /**
- * The class which implements the WebAppDeployer interface to provide the
- * deployment and undeployment functionality for Portlets on GlassFish
- * container.
+ * The class which implements the WebAppDeployer interface to provide the deployment and
+ * undeployment functionality for Portlets on GlassFish container.
  */
 public class GlassFishWebAppDeployer implements WebAppDeployer {
 
@@ -47,8 +46,7 @@ public class GlassFishWebAppDeployer implements WebAppDeployer {
   private String autoDeployDirectory;
 
   /**
-   * Initialize the autoDeployDirectory by reading the configuration data from
-   * the config file.
+   * Initialize the autoDeployDirectory by reading the configuration data from the config file.
    */
   public GlassFishWebAppDeployer() throws Exception {
     String portletContainerConfigDir = PortletRegistryHelper
@@ -79,9 +77,7 @@ public class GlassFishWebAppDeployer implements WebAppDeployer {
 
   /**
    * Provides the implementation of deploying Portlet war on GlassFish.
-   * 
-   * @param warFileName
-   *          The complete path to the Portlet war file.
+   * @param warFileName The complete path to the Portlet war file.
    * @return boolean Returns true if the deployment is successful.
    */
   public boolean deploy(String warFileName) throws WebAppDeployerException {
@@ -113,9 +109,7 @@ public class GlassFishWebAppDeployer implements WebAppDeployer {
 
   /**
    * Provides the implementation of undeploying Portlet war from GlassFish.
-   * 
-   * @param warFileName
-   *          The complete path to the Portlet war file.
+   * @param warFileName The complete path to the Portlet war file.
    * @return boolean Returns true if the deployment is successful.
    */
   public boolean undeploy(String warFileName) throws WebAppDeployerException {

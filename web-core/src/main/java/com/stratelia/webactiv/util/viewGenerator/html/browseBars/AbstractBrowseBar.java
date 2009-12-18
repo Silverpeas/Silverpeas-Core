@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -59,8 +58,6 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractBrowseBar() {
@@ -68,13 +65,10 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param domainName
    * @param componentName
    * @param information
    * @param path
-   * 
    * @see
    */
   public AbstractBrowseBar(String domainName, String componentName,
@@ -87,10 +81,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param domainName
-   * 
    * @see
    */
   public void setDomainName(String domainName) {
@@ -99,10 +90,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDomainName() {
@@ -111,10 +99,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param componentName
-   * 
    * @see
    */
   public void setComponentName(String componentName) {
@@ -124,11 +109,8 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param componentName
    * @param link
-   * 
    * @see
    */
   public void setComponentName(String componentName, String link) {
@@ -138,10 +120,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getComponentName() {
@@ -150,10 +129,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getComponentLink() {
@@ -162,10 +138,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param information
-   * 
    * @see
    */
   public void setExtraInformation(String information) {
@@ -178,10 +151,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getExtraInformation() {
@@ -190,10 +160,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param path
-   * 
    * @see
    */
   public void setPath(String path) {
@@ -206,10 +173,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPath() {
@@ -218,10 +182,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {
@@ -274,10 +235,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();

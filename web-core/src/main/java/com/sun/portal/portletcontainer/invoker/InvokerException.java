@@ -24,29 +24,24 @@
 package com.sun.portal.portletcontainer.invoker;
 
 /**
- * A <code>InvokerException</code> is thrown when there are errors related to
- * the invocation of portlet's methods.
+ * A <code>InvokerException</code> is thrown when there are errors related to the invocation of
+ * portlet's methods.
  */
 public class InvokerException extends Exception {
 
   /**
    * Constructs a new exception with the specified message
-   * 
-   * @param msg
-   *          The descriptive message.
+   * @param msg The descriptive message.
    */
   public InvokerException(String msg) {
     super(msg);
   }
 
   /**
-   * Constructs a new exception with the specified message, and the original
-   * <code>exception</code> or <code>error</code>
-   * 
-   * @param msg
-   *          The descriptive message.
-   * @param cause
-   *          The original <code>exception</code> or <code>error</code>.
+   * Constructs a new exception with the specified message, and the original <code>exception</code>
+   * or <code>error</code>
+   * @param msg The descriptive message.
+   * @param cause The original <code>exception</code> or <code>error</code>.
    */
   public InvokerException(String msg, Throwable cause) {
     super(msg, cause);
@@ -54,9 +49,7 @@ public class InvokerException extends Exception {
 
   /**
    * Constructs a new exception with the specified cause
-   * 
-   * @param cause
-   *          The original <code>exception</code> or <code>error</code>.
+   * @param cause The original <code>exception</code> or <code>error</code>.
    */
   public InvokerException(Throwable cause) {
     super(cause);

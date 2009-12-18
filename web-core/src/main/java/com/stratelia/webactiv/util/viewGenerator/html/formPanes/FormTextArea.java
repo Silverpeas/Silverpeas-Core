@@ -35,7 +35,6 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -48,8 +47,6 @@ public class FormTextArea extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public FormTextArea() {
@@ -65,11 +62,8 @@ public class FormTextArea extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormTextArea(String nam, String val) {
@@ -84,12 +78,9 @@ public class FormTextArea extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
-   * 
    * @see
    */
   public FormTextArea(String nam, String val, String lab) {
@@ -104,14 +95,11 @@ public class FormTextArea extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
    * @param nbcols
    * @param nbrows
-   * 
    * @see
    */
   public FormTextArea(String nam, String val, String lab, int nbcols, int nbrows) {
@@ -126,10 +114,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nbcols
-   * 
    * @see
    */
   public void setCols(int nbcols) {
@@ -138,10 +123,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nbrows
-   * 
    * @see
    */
   public void setRows(int nbrows) {
@@ -150,10 +132,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nb
-   * 
    * @see
    */
   public void setNbCharMax(int nb) {
@@ -162,10 +141,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nbcols
-   * 
    * @see
    */
   public void setCols(String nbcols) {
@@ -179,10 +155,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nbrows
-   * 
    * @see
    */
   public void setRows(String nbrows) {
@@ -196,15 +169,13 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
-    String retour = "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-        + noNull(label);
+    String retour =
+        "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
+            + noNull(label);
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;";
@@ -216,14 +187,10 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -250,10 +217,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -265,15 +229,13 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
-    String retour = "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-        + label;
+    String retour =
+        "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
+            + label;
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;";
@@ -285,10 +247,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {
@@ -307,10 +266,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDBColumnCreationRequest() {

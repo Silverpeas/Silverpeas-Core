@@ -38,11 +38,8 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
 
   /**
    * Get synchronisation user settings
-   * 
-   * @param userId
-   *          Id of user whose settings belong to
-   * @return CalendarImportSettings object containing user settings, null if no
-   *         settings found
+   * @param userId Id of user whose settings belong to
+   * @return CalendarImportSettings object containing user settings, null if no settings found
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
    */
   public CalendarImportSettings getUserSettings(String userId) {
@@ -82,9 +79,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
 
   /**
    * Save synchronisation user settings
-   * 
-   * @param settings
-   *          CalendarImportSettings object containing user settings
+   * @param settings CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
    */
   public void saveUserSettings(CalendarImportSettings settings)
@@ -93,7 +88,8 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
     PreparedStatement st = null;
     ResultSet rs = null;
 
-    String insertStatement = "insert into sb_agenda_import_settings (userId, hostName, synchroType, synchroDelay, url, remoteLogin, remotePwd, charset) values (?, ?, ?, ?, ?, ?, ?, ?)";
+    String insertStatement =
+        "insert into sb_agenda_import_settings (userId, hostName, synchroType, synchroDelay, url, remoteLogin, remotePwd, charset) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
     try {
       connection = getConnection();
@@ -120,9 +116,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
 
   /**
    * Update synchronisation user settings
-   * 
-   * @param settings
-   *          CalendarImportSettings object containing user settings
+   * @param settings CalendarImportSettings object containing user settings
    * @see com.stratelia.webactiv.agenda.model.CalendarImportSettings
    */
   public void updateUserSettings(CalendarImportSettings settings)
@@ -131,7 +125,8 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
     PreparedStatement st = null;
     ResultSet rs = null;
 
-    String updateStatement = "update sb_agenda_import_settings set hostName = ?, synchroType = ?, synchroDelay = ?, url= ?, remoteLogin= ?, remotePwd= ?, charset= ? where userId = ?";
+    String updateStatement =
+        "update sb_agenda_import_settings set hostName = ?, synchroType = ?, synchroDelay = ?, url= ?, remoteLogin= ?, remotePwd= ?, charset= ? where userId = ?";
 
     try {
       connection = getConnection();

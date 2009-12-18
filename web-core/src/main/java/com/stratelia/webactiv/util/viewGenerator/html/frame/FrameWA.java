@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -48,10 +47,7 @@ public class FrameWA extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -73,7 +69,7 @@ public class FrameWA extends AbstractFrame {
         .append(iconsPath).append("/1px.gif\"></td>\n");
     result
         .append(
-            "<td class=couleurCadre valign=top align=right colspan=2 rowspan=2><img src=\"")
+        "<td class=couleurCadre valign=top align=right colspan=2 rowspan=2><img src=\"")
         .append(iconsPath).append("/frame/hautGaucheLeft.gif\"></td>\n");
     result.append("<td valign=top colspan=2 rowspan=2><img src=\"").append(
         iconsPath).append("/frame/hautGaucheRight.gif\"></td>\n");
@@ -125,10 +121,7 @@ public class FrameWA extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printMiddle() {
@@ -163,10 +156,7 @@ public class FrameWA extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -228,10 +218,7 @@ public class FrameWA extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

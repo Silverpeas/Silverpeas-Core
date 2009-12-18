@@ -159,7 +159,7 @@ public class NavBarManager extends Object {
 
     SilverTrace.info("jobStartPagePeas", "NavBarManager.initWithUser()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + sUserId + " AdminAccess="
-            + adminAccess);
+        + adminAccess);
     m_sContext = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
     m_administrationCtrl = new AdminController(sUserId);
@@ -294,7 +294,7 @@ public class NavBarManager extends Object {
     }
     SilverTrace.info("jobStartPagePeas", "NavBarManager.setCurrentSubSpace()",
         "root.MSG_GEN_PARAM_VALUE", "Set Current SUB Space="
-            + m_CurrentSubSpaceId);
+        + m_CurrentSubSpaceId);
     return ((m_CurrentSubSpaceId != null) && (m_CurrentSubSpaceId.length() > 0));
   }
 
@@ -306,10 +306,8 @@ public class NavBarManager extends Object {
   }
 
   /*
-   * Protected functions
-   * --------------------------------------------------------
-   * --------------------
-   * --------------------------------------------------------
+   * Protected functions --------------------------------------------------------
+   * -------------------- --------------------------------------------------------
    * --------------------------
    */
 
@@ -428,7 +426,7 @@ public class NavBarManager extends Object {
     buildSpaceHTMLLine(valret);
     SilverTrace.info("jobStartPagePeas", "NavBarManager.buildSpaceObject()",
         "root.MSG_GEN_PARAM_VALUE", "Space=" + valret.id + " Name="
-            + valret.name + " Type=" + valret.type);
+        + valret.name + " Type=" + valret.type);
     return valret;
   }
 
@@ -463,7 +461,7 @@ public class NavBarManager extends Object {
             + space.id
             + "\"/>"
             + urlFactory(link, "space" + space.id, "", spaceName, SPACE,
-                objType, m_sContext, "", space);
+            objType, m_sContext, "", space);
       } else {
         StringBuffer sb = new StringBuffer();
         sb.append("<option ");
@@ -484,7 +482,7 @@ public class NavBarManager extends Object {
     boolean valret = m_ManageableSpaces.contains(getShortSpaceId(spaceInst
         .getId()))
         || m_ManageableSpaces.contains(getShortSpaceId(spaceInst
-            .getDomainFatherId()));
+        .getDomainFatherId()));
     SpaceInst parcSpaceInst = spaceInst;
 
     while ((!valret) && (parcSpaceInst.getDomainFatherId() != null)
@@ -552,9 +550,9 @@ public class NavBarManager extends Object {
         }
         valret[i].htmlLine = componentsSpaces.toString()
             + urlFactory(link, "element" + m_elmtCounter++, ci.getName(),
-                label, getComponentElementType(ci), objType, m_sContext,
-                (m_bAdministrationAccess) ? "startPageContent" : "MyMain",
-                valret[i]);
+            label, getComponentElementType(ci), objType, m_sContext,
+            (m_bAdministrationAccess) ? "startPageContent" : "MyMain",
+            valret[i]);
       } else {
         valret[i].htmlLine = "";
       }
@@ -595,7 +593,7 @@ public class NavBarManager extends Object {
       case SPACE_COLLAPSE:
         result.append("<a href=\"").append(link).append("\"").append(target)
             .append("><img src=\"").append(m_sContext).append(
-                "/util/icons/plusTree.gif\" border=0 align=\"absmiddle\"></a>");
+            "/util/icons/plusTree.gif\" border=0 align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
             + elementLabel
             + "\" src=\""
@@ -611,7 +609,7 @@ public class NavBarManager extends Object {
             .append("><img src=\"")
             .append(m_sContext)
             .append(
-                "/util/icons/minusTree.gif\" border=0 align=\"absmiddle\"></a>");
+            "/util/icons/minusTree.gif\" border=0 align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
             + elementLabel
             + "\" src=\""

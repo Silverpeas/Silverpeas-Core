@@ -43,7 +43,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * The default implementation of ArrayPane interface.
- * 
  * @author squere
  * @version 1.0
  */
@@ -60,8 +59,7 @@ public class ArrayPaneWA implements ArrayPane {
   private int m_SortMode = 0;
 
   /**
-   * configurable values for cells spacing and padding (of the inernal table).
-   * These may be set via
+   * configurable values for cells spacing and padding (of the inernal table). These may be set via
    * {@link #setCellsConfiguration(int spacing,int padding,int borderWidth)}
    */
   private int m_CellsSpacing = 2;
@@ -71,16 +69,13 @@ public class ArrayPaneWA implements ArrayPane {
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)})
-   * 
    * @see ArrayColum.setRoutingAddress(String address)
    */
   private String m_RoutingAddress = null;
 
   /**
-   * Default constructor as this class may be instanciated by method
-   * newInstance(), constructor contains no parameter. init methods must be used
-   * to initialize properly the instance.
-   * 
+   * Default constructor as this class may be instanciated by method newInstance(), constructor
+   * contains no parameter. init methods must be used to initialize properly the instance.
    * @see init
    */
   public ArrayPaneWA() {
@@ -88,12 +83,9 @@ public class ArrayPaneWA implements ArrayPane {
   }
 
   /**
-   * Generic class to display a typical WA array table pane. A unique name
-   * identifier is to be used in html pages for this array specific actions
-   * (exemple : sort on a specific column)
-   * 
-   * @param name
-   *          A unique name in the page to display
+   * Generic class to display a typical WA array table pane. A unique name identifier is to be used
+   * in html pages for this array specific actions (exemple : sort on a specific column)
+   * @param name A unique name in the page to display
    */
   public void init(String name, PageContext pageContext) {
     init(name, pageContext.getRequest(), pageContext.getSession());
@@ -101,12 +93,9 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param request
    * @param session
-   * 
    * @see
    */
   public void init(String name, javax.servlet.ServletRequest request,
@@ -116,13 +105,10 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param url
    * @param request
    * @param session
-   * 
    * @see
    */
   public void init(String name, String url,
@@ -151,7 +137,7 @@ public class ArrayPaneWA implements ArrayPane {
 
         SilverTrace.info("viewgenerator", "ArrayPaneWA.ArrayPaneWA()",
             "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action
-                + "'");
+            + "'");
         if (action != null) {
           if (action.equals("Sort")) {
             String newState = (String) request
@@ -169,12 +155,10 @@ public class ArrayPaneWA implements ArrayPane {
             }
           }
           /*
-           * else if (action.equals("Next")) {
-           * state.setFirstVisibleLine(state.getFirstVisibleLine() +
-           * state.getMaximumVisibleLine()); } else if
-           * (action.equals("Previous")) {
-           * state.setFirstVisibleLine(state.getFirstVisibleLine() -
-           * state.getMaximumVisibleLine()); }
+           * else if (action.equals("Next")) { state.setFirstVisibleLine(state.getFirstVisibleLine()
+           * + state.getMaximumVisibleLine()); } else if (action.equals("Previous")) {
+           * state.setFirstVisibleLine(state.getFirstVisibleLine() - state.getMaximumVisibleLine());
+           * }
            */
           else if (action.equals("ChangePage")) {
             String index = (String) request.getParameter(INDEX_PARAMETER_NAME);
@@ -191,10 +175,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param maximum
-   * 
    * @see
    */
   public void setVisibleLineNumber(int maximum) {
@@ -202,8 +183,8 @@ public class ArrayPaneWA implements ArrayPane {
   }
 
   /**
-   * This method allows for the change of cell presentation values. A negative
-   * value means 'do not change this value'
+   * This method allows for the change of cell presentation values. A negative value means 'do not
+   * change this value'
    */
   public void setCellsConfiguration(int spacing, int padding, int borderWidth) {
     if (spacing >= 0) {
@@ -227,9 +208,8 @@ public class ArrayPaneWA implements ArrayPane {
   }
 
   /**
-   * This method sets the routing address. This is actually the URL of the page
-   * to which requests will be routed when the user clicks on a column header
-   * link.
+   * This method sets the routing address. This is actually the URL of the page to which requests
+   * will be routed when the user clicks on a column header link.
    */
   public void setRoutingAddress(String address) {
     m_RoutingAddress = address;
@@ -237,11 +217,8 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Add a new column to the table.
-   * 
-   * @param title
-   *          The column title to display
-   * @return The new column header. You can use this object to modify the
-   *         default display options.
+   * @param title The column title to display
+   * @return The new column header. You can use this object to modify the default display options.
    */
   public ArrayColumn addArrayColumn(String title) {
     ArrayColumn col = new ArrayColumn(title, columns.size() + 1, this);
@@ -291,10 +268,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -312,10 +286,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getColumnToSort() {
@@ -323,8 +294,8 @@ public class ArrayPaneWA implements ArrayPane {
   }
 
   /**
-   * This methods sets the sort mode for all columns. The columns cells may or
-   * may not take this value into account.
+   * This methods sets the sort mode for all columns. The columns cells may or may not take this
+   * value into account.
    */
   public void setSortMode(int mode) {
     m_SortMode = mode;
@@ -332,10 +303,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getSortMode() {
@@ -344,11 +312,8 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param columnNumber
    * @param mode
-   * 
    * @see
    */
   public void setColumnBehaviour(int columnNumber, int mode) {
@@ -360,11 +325,8 @@ public class ArrayPaneWA implements ArrayPane {
   }
 
   /**
-   * Set all array columns to be sortable or not. By default, all colums are
-   * sortable.
-   * 
-   * @param sortable
-   *          Set sortable to false if you want all the table to be unsortable.
+   * Set all array columns to be sortable or not. By default, all colums are sortable.
+   * @param sortable Set sortable to false if you want all the table to be unsortable.
    */
   public void setSortable(boolean sortable) {
     if (sortable) {
@@ -377,10 +339,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getSortable() {
@@ -389,10 +348,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private String printPseudoColumn() {
@@ -401,10 +357,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -443,7 +396,7 @@ public class ArrayPaneWA implements ArrayPane {
         .append("<table width=\"98%\" class=\"ArrayColumn\" cellspacing=0 cellpadding=2 border=0><tr><td>\n");
     result.append("<table bgcolor=\"ffffff\" width=\"100%\" cellspacing=\"")
         .append(m_CellsSpacing).append("\" cellpadding=\"").append(
-            m_CellsPadding).append("\" border=\"").append(m_CellsBorderWidth)
+        m_CellsPadding).append("\" border=\"").append(m_CellsBorderWidth)
         .append("\">");
     if (m_CellsSpacing == 0) {
       result.append("<tr>");
@@ -510,10 +463,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getUrl() {
@@ -540,10 +490,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public HttpSession getSession() {
@@ -552,10 +499,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ServletRequest getRequest() {
@@ -564,10 +508,7 @@ public class ArrayPaneWA implements ArrayPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {

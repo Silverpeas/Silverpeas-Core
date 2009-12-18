@@ -62,7 +62,8 @@ public class NavigationListWA extends AbstractNavigationList {
     int nbTd = 0;
 
     result = "\n";
-    result += "<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"2\" class=\"intfdcolor5\">\n";
+    result +=
+        "<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"2\" class=\"intfdcolor5\">\n";
     result += "<tr>\n";
     result += "<td class=\"intfdcolor\">\n";
     result += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n";

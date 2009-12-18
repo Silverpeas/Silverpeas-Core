@@ -35,7 +35,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.frame;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -49,8 +48,6 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractFrame() {
@@ -58,60 +55,43 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {
     /*
      * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr");
-     * 
-     * iconsPath = generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return
-     * iconsPath;
+     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
+     * generalSettings.getString("ApplicationURL") +
+     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
      */
     return GraphicElementFactory.getIconsPath();
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printBefore();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printMiddle();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printAfter();
@@ -125,10 +105,7 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTop() {
@@ -144,10 +121,7 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getBottom() {
@@ -156,10 +130,7 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param title
-   * 
    * @see
    */
   public void addTitle(String title) {
@@ -168,10 +139,7 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTitle() {
@@ -180,10 +148,7 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean hasMiddle() {
@@ -192,8 +157,6 @@ public abstract class AbstractFrame implements Frame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setMiddle() {

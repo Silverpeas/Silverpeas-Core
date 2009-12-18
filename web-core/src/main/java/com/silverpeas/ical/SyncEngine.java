@@ -50,25 +50,15 @@ public final class SyncEngine {
 
   /**
    * Import a remote calendar
-   * 
-   * @param localCalendar
-   *          local calendar file
-   * @param remoteCalendar
-   *          Google Calendar's private ICAL URL
-   *          ("https://www.google.com/calendar/ical/.../basic.ics"), or the
-   *          RSS/ATOM feed's URL (= feed converter mode)
-   * @param username
-   *          full name of the user (eg. "username@gmail.com" or
-   *          "username@mydomain.org"), this value is optional in feed converter
-   *          mode
-   * @param password
-   *          Gmail password (in unencrypted, plain text format), this value is
-   *          optional in feed converter mode
-   * 
-   * @throws Exception
-   *           any exception (eg. i/o, invalid param, invalid calendar syntax,
-   *           etc)
-   * 
+   * @param localCalendar local calendar file
+   * @param remoteCalendar Google Calendar's private ICAL URL
+   * ("https://www.google.com/calendar/ical/.../basic.ics"), or the RSS/ATOM feed's URL (= feed
+   * converter mode)
+   * @param username full name of the user (eg. "username@gmail.com" or "username@mydomain.org"),
+   * this value is optional in feed converter mode
+   * @param password Gmail password (in unencrypted, plain text format), this value is optional in
+   * feed converter mode
+   * @throws Exception any exception (eg. i/o, invalid param, invalid calendar syntax, etc)
    */
   public final String synchronize(File localCalendar, URL remoteCalendar,
       String username, String password) throws Exception {

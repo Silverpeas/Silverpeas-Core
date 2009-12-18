@@ -47,23 +47,17 @@ import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class ArrayCellIconPane extends ArrayCell implements
-    SimpleGraphicElement {
+public class ArrayCellIconPane extends ArrayCell implements SimpleGraphicElement {
 
   private IconPane iconPane;
   private String alignement;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconPane
    * @param line
-   * 
    * @see
    */
   public ArrayCellIconPane(IconPane iconPane, ArrayLine line) {
@@ -73,10 +67,7 @@ public class ArrayCellIconPane extends ArrayCell implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public IconPane getIconPane() {
@@ -99,10 +90,7 @@ public class ArrayCellIconPane extends ArrayCell implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

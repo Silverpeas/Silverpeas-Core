@@ -46,8 +46,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public abstract class AbstractCalendar implements
@@ -98,10 +96,7 @@ public abstract class AbstractCalendar implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setWeekDayStyle(String value) {
@@ -110,10 +105,7 @@ public abstract class AbstractCalendar implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setMonthDayStyle(String value) {
@@ -122,10 +114,7 @@ public abstract class AbstractCalendar implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setMonthVisible(boolean value) {
@@ -134,10 +123,7 @@ public abstract class AbstractCalendar implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setNavigationBar(boolean value) {
@@ -146,10 +132,7 @@ public abstract class AbstractCalendar implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setShortName(boolean value) {

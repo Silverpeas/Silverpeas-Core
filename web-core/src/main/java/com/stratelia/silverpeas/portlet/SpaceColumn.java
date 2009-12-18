@@ -55,8 +55,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SpaceColumn {
@@ -82,7 +80,6 @@ public class SpaceColumn {
 
   /**
    * Constructor for the &lt;jsp:usebean&gt; tag compatibility
-   * 
    */
   public SpaceColumn() throws PortletException {
     throw new PortletException("SpaceColumn.SpaceColumn()",
@@ -91,9 +88,7 @@ public class SpaceColumn {
 
   /**
    * <init>
-   * 
-   * @param aColumnNumber
-   *          parameter for <init>
+   * @param aColumnNumber parameter for <init>
    */
   public SpaceColumn(int aColumnNumber) {
     columnNumber = aColumnNumber;
@@ -102,10 +97,8 @@ public class SpaceColumn {
 
   /**
    * SpaceColumn
-   * 
    * @param aColumnNumber
-   * @param aWidthType
-   *          Used to construct the frameset tag. ex "40%", "150px", "*".
+   * @param aWidthType Used to construct the frameset tag. ex "40%", "150px", "*".
    */
   public SpaceColumn(int aColumnNumber, String aColumnWidth) {
     columnNumber = aColumnNumber;
@@ -118,9 +111,7 @@ public class SpaceColumn {
 
   /**
    * getColumnNumber
-   * 
-   * @return the column number of this column : ie it's position in the column
-   *         space ArrayList
+   * @return the column number of this column : ie it's position in the column space ArrayList
    */
   public int getColumnNumber() {
     return columnNumber;
@@ -128,10 +119,8 @@ public class SpaceColumn {
 
   /**
    * setColumnWidth
-   * 
-   * @param aColumnWidth
-   *          : Used to construct the frameset that contains this column
-   *          examples : "40%" , "340px" or "*"
+   * @param aColumnWidth : Used to construct the frameset that contains this column examples : "40%"
+   * , "340px" or "*"
    */
   public void setColumnWidth(String aColumnWidth) {
     columnWidth = aColumnWidth;
@@ -139,9 +128,8 @@ public class SpaceColumn {
 
   /**
    * getColumnWidth
-   * 
-   * @return the column width : Used to construct the frameset that contains
-   *         this column examples : "40%" , "340px" or "*"
+   * @return the column width : Used to construct the frameset that contains this column examples :
+   * "40%" , "340px" or "*"
    */
   public String getColumnWidth() {
     return columnWidth;
@@ -153,9 +141,7 @@ public class SpaceColumn {
 
   /**
    * getPortlets
-   * 
-   * @param row
-   *          the index of the portlet in the column
+   * @param row the index of the portlet in the column
    * @return the portlet designed by the row index
    */
   public Portlet getPortlets(int row) {
@@ -164,7 +150,6 @@ public class SpaceColumn {
 
   /**
    * getPortletCount
-   * 
    * @return the portlet count for this column
    */
   public int getPortletCount() {
@@ -173,7 +158,6 @@ public class SpaceColumn {
 
   /**
    * addPortlet : Add the portlet to the given row
-   * 
    */
   void addPortlet(Portlet aPortlet, int row) {
     if ((row > portlets.size()) || (row < 0)) {
@@ -191,9 +175,7 @@ public class SpaceColumn {
 
   /**
    * addPortlet
-   * 
-   * @param aPortlet
-   *          parameter for addPortlet
+   * @param aPortlet parameter for addPortlet
    */
   void addPortlet(Portlet aPortlet) {
     aPortlet.setColumnNumber(getColumnNumber());
@@ -203,9 +185,7 @@ public class SpaceColumn {
 
   /**
    * removePortlet remove the portlet from this column
-   * 
-   * @param col
-   *          index of the portlet in the column
+   * @param col index of the portlet in the column
    */
   void removePortlet(int col) {
     portlets.remove(col);
@@ -218,7 +198,6 @@ public class SpaceColumn {
 
   /**
    * getRowRatios Compute ratios for the portlets in the column
-   * 
    * @return the ratios used to construct the column frameset
    */
   public String getRowRatios() {

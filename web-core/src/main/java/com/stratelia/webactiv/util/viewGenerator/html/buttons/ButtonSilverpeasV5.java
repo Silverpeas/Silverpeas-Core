@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 
 /**
- * 
  * @author neysseri
  * @version
  */
@@ -38,10 +37,7 @@ public class ButtonSilverpeasV5 extends AbstractButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

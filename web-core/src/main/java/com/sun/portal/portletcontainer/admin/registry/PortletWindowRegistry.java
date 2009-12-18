@@ -38,11 +38,9 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowRegistry represents the PortletWindowRegistry Element in
- * portlet-window-registry.xml
+ * PortletWindowRegistry represents the PortletWindowRegistry Element in portlet-window-registry.xml
  */
-public class PortletWindowRegistry implements PortletRegistryTags,
-    PortletRegistryObject {
+public class PortletWindowRegistry implements PortletRegistryTags, PortletRegistryObject {
 
   private String version;
   private Map portletWindowTable;

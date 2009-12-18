@@ -29,9 +29,8 @@
 package com.stratelia.silverpeas.peasCore;
 
 /**
- * Built by the main sesion controller the ComponentContext objects store the
- * context of a component instance : space, user, ... Used by the abstract
- * component session controllers.
+ * Built by the main sesion controller the ComponentContext objects store the context of a component
+ * instance : space, user, ... Used by the abstract component session controllers.
  */
 public class ComponentContext {
   private String m_sCurSpaceName;

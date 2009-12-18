@@ -34,7 +34,7 @@ public class OperationPaneTag extends NeedWindowTag {
 
   @Override
   public int doStartTag() throws JspException {
-    if(findAncestorWithClass(this, WindowTag.class) != null) {
+    if (findAncestorWithClass(this, WindowTag.class) != null) {
       throw new JspException("OperationPane Tag should not be after a WindowTag but before");
     }
     OperationPane pane = getWindow().getOperationPane();

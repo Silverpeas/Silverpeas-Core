@@ -62,8 +62,8 @@ import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This Class implements a servlet that is used as unified mechanism to retrieve
- * a jcr repository either through JNDI or RMI.
+ * This Class implements a servlet that is used as unified mechanism to retrieve a jcr repository
+ * either through JNDI or RMI.
  */
 public class RepositoryAccessServlet extends HttpServlet {
 
@@ -84,13 +84,11 @@ public class RepositoryAccessServlet extends HttpServlet {
   private transient RmiConfiguration config;
 
   /**
-   * Keeps a strong reference to the server side RMI repository instance to
-   * prevent the RMI distributed Garbage Collector from collecting the instance
-   * making the repository unaccessible though it should still be. This field is
-   * only set to a non-<code>null</code> value, if registration of the
-   * repository to an RMI registry succeeded in the {@link #registerRMI()}
+   * Keeps a strong reference to the server side RMI repository instance to prevent the RMI
+   * distributed Garbage Collector from collecting the instance making the repository unaccessible
+   * though it should still be. This field is only set to a non-<code>null</code> value, if
+   * registration of the repository to an RMI registry succeeded in the {@link #registerRMI()}
    * method.
-   * 
    * @see #registerRMI()
    * @see #unregisterRMI()
    */
@@ -98,16 +96,14 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Initializes the servlet.<br>
-   * Please note that only one repository startup servlet may exist per webapp.
-   * it registers itself as context attribute and acts as singleton.
-   * 
-   * @throws ServletException
-   *           if a same servlet is already registered or of another
-   *           initialization error occurs.
+   * Please note that only one repository startup servlet may exist per webapp. it registers itself
+   * as context attribute and acts as singleton.
+   * @throws ServletException if a same servlet is already registered or of another initialization
+   * error occurs.
    */
   @Override
   public void init() throws ServletException {
-    try {     
+    try {
       log("Initializing the repository ...........");
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()",
@@ -122,7 +118,7 @@ public class RepositoryAccessServlet extends HttpServlet {
           "configuration");
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Configuration file : "
-              + jcrConfigurationFile);
+          + jcrConfigurationFile);
       XmlWebApplicationContext context = new XmlWebApplicationContext();
       context.setServletContext(getServletContext());
       String[] configLocations = StringUtils.tokenizeToStringArray(
@@ -130,7 +126,7 @@ public class RepositoryAccessServlet extends HttpServlet {
           ConfigurableWebApplicationContext.CONFIG_LOCATION_DELIMITERS);
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Configuration locations : "
-              + String.valueOf(configLocations));
+          + String.valueOf(configLocations));
       context.setConfigLocations(configLocations);
       context.refresh();
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
@@ -220,9 +216,7 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the instance of this servlet
-   * 
-   * @param ctx
-   *          the servlet context
+   * @param ctx the servlet context
    * @return this servlet
    */
   private static RepositoryAccessServlet getInstance(ServletContext ctx) {
@@ -237,10 +231,8 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the JCR repository
-   * 
    * @return a JCR repository
-   * @throws IllegalStateException
-   *           if the repository is not available in the context.
+   * @throws IllegalStateException if the repository is not available in the context.
    */
   public Repository getRepository() {
     return repository;
@@ -248,25 +240,19 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the JCR repository
-   * 
-   * @param ctx
-   *          the servlet context
+   * @param ctx the servlet context
    * @return a JCR repository
-   * @throws IllegalStateException
-   *           if the repository is not available in the context.
+   * @throws IllegalStateException if the repository is not available in the context.
    */
   public static Repository getRepository(ServletContext ctx) {
     return getInstance(ctx).getRepository();
   }
 
   /**
-   * Return the fully qualified name of the class providing the remote
-   * repository. The class whose name is returned must implement the
-   * {@link RemoteFactoryDelegater} interface.
+   * Return the fully qualified name of the class providing the remote repository. The class whose
+   * name is returned must implement the {@link RemoteFactoryDelegater} interface.
    * <p/>
-   * Subclasses may override this method for providing a name of a own
-   * implementation.
-   * 
+   * Subclasses may override this method for providing a name of a own implementation.
    * @return getClass().getName() + "$RMIRemoteFactoryDelegater"
    */
   protected String getRemoteFactoryDelegaterClass() {
@@ -338,14 +324,14 @@ public class RepositoryAccessServlet extends HttpServlet {
       if (reg == null) {
         SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Trying to access existing registry at "
-                + config.getHost() + ":" + config.getPort());
+            + config.getHost() + ":" + config.getPort());
         try {
           reg = LocateRegistry.getRegistry(config.getHost(), config.getPort());
         } catch (RemoteException re) {
           SilverTrace.error("attachment", "RepositoryAccessServlet",
               "jackrabbit.init",
               "Cannot create the reference to the registry at "
-                  + config.getHost() + ":" + config.getPort(), re);
+              + config.getHost() + ":" + config.getPort(), re);
         }
       }
 
@@ -354,7 +340,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       if (reg != null) {
         SilverTrace.error("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Registering repository as " + config.getName()
-                + " to registry " + reg);
+            + " to registry " + reg);
         reg.bind(config.getName(), remote);
 
         // when successfull, keep references
@@ -379,8 +365,7 @@ public class RepositoryAccessServlet extends HttpServlet {
   }
 
   /**
-   * Unregisters the repository from the RMI registry, if it has previously been
-   * registered.
+   * Unregisters the repository from the RMI registry, if it has previously been registered.
    */
   private void unregisterRMI(RmiConfiguration config) {
 
@@ -399,22 +384,17 @@ public class RepositoryAccessServlet extends HttpServlet {
   }
 
   /**
-   * Returns an <code>RMIServerSocketFactory</code> used to create the server
-   * socket for a locally created RMI registry.
+   * Returns an <code>RMIServerSocketFactory</code> used to create the server socket for a locally
+   * created RMI registry.
    * <p/>
-   * This implementation returns a new instance of a simple
-   * <code>RMIServerSocketFactory</code> which just creates instances of the
-   * <code>java.net.ServerSocket</code> class bound to the given
-   * <code>hostAddress</code>. Implementations may overwrite this method to
-   * provide factory instances, which provide more elaborate server socket
-   * creation, such as SSL server sockets.
-   * 
-   * @param hostAddress
-   *          The <code>InetAddress</code> instance representing the the
-   *          interface on the local host to which the server sockets are bound.
-   * @return A new instance of a simple <code>RMIServerSocketFactory</code>
-   *         creating <code>java.net.ServerSocket</code> instances bound to the
-   *         <code>rmiHost</code>.
+   * This implementation returns a new instance of a simple <code>RMIServerSocketFactory</code>
+   * which just creates instances of the <code>java.net.ServerSocket</code> class bound to the given
+   * <code>hostAddress</code>. Implementations may overwrite this method to provide factory
+   * instances, which provide more elaborate server socket creation, such as SSL server sockets.
+   * @param hostAddress The <code>InetAddress</code> instance representing the the interface on the
+   * local host to which the server sockets are bound.
+   * @return A new instance of a simple <code>RMIServerSocketFactory</code> creating
+   * <code>java.net.ServerSocket</code> instances bound to the <code>rmiHost</code>.
    */
   protected RMIServerSocketFactory getRMIServerSocketFactory(
       final InetAddress hostAddress) {
@@ -431,8 +411,7 @@ public class RepositoryAccessServlet extends HttpServlet {
    */
   protected static abstract class RemoteFactoryDelegater {
 
-    public abstract Remote createRemoteRepository(Repository repository)
-        throws RemoteException;
+    public abstract Remote createRemoteRepository(Repository repository) throws RemoteException;
   }
 
   /**
@@ -444,8 +423,7 @@ public class RepositoryAccessServlet extends HttpServlet {
     private static final RemoteAdapterFactory FACTORY = new JackrabbitServerAdapterFactory();
 
     @Override
-    public Remote createRemoteRepository(Repository repository)
-        throws RemoteException {
+    public Remote createRemoteRepository(Repository repository) throws RemoteException {
       return FACTORY.getRemoteRepository(repository);
     }
 

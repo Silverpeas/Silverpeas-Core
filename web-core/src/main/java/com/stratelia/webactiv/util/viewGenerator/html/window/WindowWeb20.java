@@ -34,7 +34,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 /**
  * The default implementation of Window interface
- * 
  * @author neysseri
  * @version 1.0
  */
@@ -42,8 +41,6 @@ public class WindowWeb20 extends AbstractWindow {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public WindowWeb20() {
@@ -66,7 +63,7 @@ public class WindowWeb20 extends AbstractWindow {
     line.append("<tr>");
     line.append("<td class=\"viewGeneratorLines\" width=\"100%\" colspan=\"")
         .append(nbCols).append("\"><img src=\"").append(iconsPath).append(
-            "/1px.gif\" width=\"1\" height=\"1\"></td>");
+        "/1px.gif\" width=\"1\" height=\"1\"></td>");
     line.append("</tr>");
     line.append("<tr>");
     line.append("<td width=\"100%\" colspan=\"").append(nbCols).append(
@@ -78,10 +75,7 @@ public class WindowWeb20 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -115,10 +109,7 @@ public class WindowWeb20 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -152,10 +143,7 @@ public class WindowWeb20 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

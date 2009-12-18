@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * 
  * @author squere
  * @version
  */
@@ -45,8 +44,6 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TabbedPaneWA3() {
@@ -55,10 +52,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -73,7 +67,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
       tabs = (Collection) tabLines.get(j);
       result
           .append("<table cellpadding=\"0\" cellspacing=\"0\""
-              + " border=\"0\" width=\"100%\">\r\n<tr><td align=\"right\" width=\"100%\">");
+          + " border=\"0\" width=\"100%\">\r\n<tr><td align=\"right\" width=\"100%\">");
       result.append(printTabLine(tabs));
       result.append("</td><td><img src=\"").append(iconsPath).append(
           "/tabs/1px.gif\" width=\"").append(incr * 17).append(
@@ -86,12 +80,8 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param tabs
-   * 
    * @return
-   * 
    * @see
    */
   private String printTabLine(Collection tabs) {
@@ -101,7 +91,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
 
     result
         .append("<table id=\"tabbedPane\" cellpadding=\"0\" cellspacing=\"0\""
-            + " border=\"0\" width=\"100%\">\r\n");
+        + " border=\"0\" width=\"100%\">\r\n");
     result.append("<tr>\r\n");
     result.append("<td colspan=\"2\"><img src=\"").append(iconsPath).append(
         "/tabs/1px.gif\" width=\"1\" height=\"2\"></td>\r\n");
@@ -109,8 +99,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
         "/tabs/left1.gif\" width=\"15\" height=\"2\"></td>\r\n");
 
     /*
-     * if (indentation == RIGHT)
-     * result.append("<td width=\"100%\">&nbsp;</td>\n");
+     * if (indentation == RIGHT) result.append("<td width=\"100%\">&nbsp;</td>\n");
      */
 
     Iterator i = tabs.iterator();
@@ -139,7 +128,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
         if (tab.getEnabled()) {
           result.append("<td class=").append(style)
               .append(" nowrap><a href=\"").append(tab.getAction()).append(
-                  "\" class=").append(style).append(">").append(tab.getLabel())
+              "\" class=").append(style).append(">").append(tab.getLabel())
               .append("</td>\n");
         } else {
           result.append("<td class=").append(style).append(" nowrap>").append(
@@ -155,10 +144,10 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
         result.append("<tr>\n");
         result.append("<td class=").append(style).append("><img src=\"")
             .append(iconsPath).append(
-                "/tabs/ong_left.gif\" width=\"14\" height=\"14\"></td>\n");
+            "/tabs/ong_left.gif\" width=\"14\" height=\"14\"></td>\n");
         result.append("<td class=").append(style).append("><img src=\"")
             .append(iconsPath).append(
-                "/tabs/ong_on-off.gif\" width=\"14\" height=\"14\"></td>\n");
+            "/tabs/ong_on-off.gif\" width=\"14\" height=\"14\"></td>\n");
         result.append("</tr>\n");
         result.append("</table>\n");
 
@@ -181,7 +170,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
         if (tab.getEnabled()) {
           result.append("<td class=").append(style)
               .append(" nowrap><a href=\"").append(tab.getAction()).append(
-                  "\" class=").append(style).append(">").append(tab.getLabel())
+              "\" class=").append(style).append(">").append(tab.getLabel())
               .append("</td>\n");
         } else {
           result.append("<td class=").append(style).append(" nowrap>").append(
@@ -197,7 +186,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
         result.append("<tr>\n");
         result.append("<td class=").append(style).append("><img src=\"")
             .append(iconsPath).append(
-                "/tabs/ong_on-off.gif\" width=\"14\" height=\"14\"></td>\n");
+            "/tabs/ong_on-off.gif\" width=\"14\" height=\"14\"></td>\n");
         result.append("</tr>\n");
         result.append("</table>\n");
       }
@@ -206,8 +195,7 @@ public class TabbedPaneWA3 extends AbstractTabbedPane {
     // fin while
 
     /*
-     * if (indentation == LEFT) {
-     * result.append("<td width=\"100%\">&nbsp;</td>\n"); }
+     * if (indentation == LEFT) { result.append("<td width=\"100%\">&nbsp;</td>\n"); }
      */
 
     result.append("<td><img src=\"").append(iconsPath).append(

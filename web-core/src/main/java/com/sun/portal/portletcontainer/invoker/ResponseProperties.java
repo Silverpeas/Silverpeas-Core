@@ -34,98 +34,90 @@ import javax.servlet.http.Cookie;
 import org.w3c.dom.Element;
 
 /**
- * ResponseProperties holds the properties set by the Portlet. These properties
- * include cookies and headers that are set on the Response. It also includes
- * DOM element should be added to the markup head section of the response to the client.
- * 
+ * ResponseProperties holds the properties set by the Portlet. These properties include cookies and
+ * headers that are set on the Response. It also includes DOM element should be added to the markup
+ * head section of the response to the client.
  */
 public class ResponseProperties {
 
-    private Map<String, List<String>> responseHeaders;
-    private Map<String, List<Element>> markupHeaders;
-    private List<Cookie> cookies;
+  private Map<String, List<String>> responseHeaders;
+  private Map<String, List<Element>> markupHeaders;
+  private List<Cookie> cookies;
 
-    public ResponseProperties() {
-        responseHeaders = new HashMap<String, List<String>>();
-        markupHeaders = new HashMap<String, List<Element>>();
-        cookies = new ArrayList<Cookie>();
-    }
+  public ResponseProperties() {
+    responseHeaders = new HashMap<String, List<String>>();
+    markupHeaders = new HashMap<String, List<Element>>();
+    cookies = new ArrayList<Cookie>();
+  }
 
-    /**
-     * Returns the Map of response headers that are set are by the portlet using addProperty method
-     * of PortletResponse. If there is no response headers, returns and empty map.
-     * 
-     * @return the Map of the response headers that set by the portlet
-     */
-    public Map<String, List<String>> getResponseHeaders() {
-        return responseHeaders == null ? Collections.EMPTY_MAP : responseHeaders;
-    }
+  /**
+   * Returns the Map of response headers that are set are by the portlet using addProperty method of
+   * PortletResponse. If there is no response headers, returns and empty map.
+   * @return the Map of the response headers that set by the portlet
+   */
+  public Map<String, List<String>> getResponseHeaders() {
+    return responseHeaders == null ? Collections.EMPTY_MAP : responseHeaders;
+  }
 
-    /**
-     * Returns the list of DOM Elements that are set by the portlet using addProperty method
-     * of PortletResponse with the property name as "javax.portlet.markup.head.element".
-     * If there is no DOM elements, it returns an empty list.
-     * 
-     * @return the list of the DOM Elements that set by the portlet
-     */
-    public List<Element> getMarkupHeadElements() {
-        List<Element> markupHeadElements = null;
-        if(markupHeaders != null) {
-            markupHeadElements = markupHeaders.get("javax.portlet.markup.head.element");
-        }
-        return markupHeadElements == null ? Collections.EMPTY_LIST : markupHeadElements;
+  /**
+   * Returns the list of DOM Elements that are set by the portlet using addProperty method of
+   * PortletResponse with the property name as "javax.portlet.markup.head.element". If there is no
+   * DOM elements, it returns an empty list.
+   * @return the list of the DOM Elements that set by the portlet
+   */
+  public List<Element> getMarkupHeadElements() {
+    List<Element> markupHeadElements = null;
+    if (markupHeaders != null) {
+      markupHeadElements = markupHeaders.get("javax.portlet.markup.head.element");
     }
+    return markupHeadElements == null ? Collections.EMPTY_LIST : markupHeadElements;
+  }
 
-    /**
-     * Returns the list of Cookies that are set by the portlet using addProperty method
-     * of PortletResponse.
-     * If there is no cookies, it returns an empty list.
-     * 
-     * @return the list of the DOM Elements that set by the portlet
-     */
-    public List<Cookie> getCookies() {
-        return cookies == null ? Collections.EMPTY_LIST : cookies;
-    }
+  /**
+   * Returns the list of Cookies that are set by the portlet using addProperty method of
+   * PortletResponse. If there is no cookies, it returns an empty list.
+   * @return the list of the DOM Elements that set by the portlet
+   */
+  public List<Cookie> getCookies() {
+    return cookies == null ? Collections.EMPTY_LIST : cookies;
+  }
 
-    /**
-     * Sets the response headers.
-     * 
-     * @param responseHeaders the response headers
-     */
-    public void setResponseHeaders(Map<String, List<String>> responseHeaders) {
-        if (responseHeaders != null) {
-            this.responseHeaders.putAll(responseHeaders);
-        }
+  /**
+   * Sets the response headers.
+   * @param responseHeaders the response headers
+   */
+  public void setResponseHeaders(Map<String, List<String>> responseHeaders) {
+    if (responseHeaders != null) {
+      this.responseHeaders.putAll(responseHeaders);
     }
+  }
 
-    /**
-     * Sets the markup headers.
-     * 
-     * @param markupHeaders the markup headers
-     */
-    public void setMarkupHeaders(Map<String, List<Element>> markupHeaders) {
-        if (markupHeaders != null) {
-            this.markupHeaders.putAll(markupHeaders);
-        }
+  /**
+   * Sets the markup headers.
+   * @param markupHeaders the markup headers
+   */
+  public void setMarkupHeaders(Map<String, List<Element>> markupHeaders) {
+    if (markupHeaders != null) {
+      this.markupHeaders.putAll(markupHeaders);
     }
+  }
 
-    /**
-     * Sets the cookies.
-     * 
-     * @param cookies the cookies
-     */
-    public void setCookies(List<Cookie> cookies) {
-        if (cookies != null) {
-            this.cookies.addAll(cookies);
-        }
+  /**
+   * Sets the cookies.
+   * @param cookies the cookies
+   */
+  public void setCookies(List<Cookie> cookies) {
+    if (cookies != null) {
+      this.cookies.addAll(cookies);
     }
+  }
 
-    /**
-     *  Clears the response properties
-     */
-    public void clear() {
-        this.responseHeaders.clear();
-        this.markupHeaders.clear();
-        this.cookies.clear();
-    }
+  /**
+   * Clears the response properties
+   */
+  public void clear() {
+    this.responseHeaders.clear();
+    this.markupHeaders.clear();
+    this.cookies.clear();
+  }
 }

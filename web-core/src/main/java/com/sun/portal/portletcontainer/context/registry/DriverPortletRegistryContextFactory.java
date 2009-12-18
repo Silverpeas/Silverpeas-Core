@@ -24,17 +24,16 @@
 package com.sun.portal.portletcontainer.context.registry;
 
 /**
- * DriverPortletRegistryContextFactory provides the implementation of the
- * abstract methods of PortletRegistryContextFactory.
- * 
+ * DriverPortletRegistryContextFactory provides the implementation of the abstract methods of
+ * PortletRegistryContextFactory.
  */
-public class DriverPortletRegistryContextFactory implements
-    PortletRegistryContextFactory {
+public class DriverPortletRegistryContextFactory implements PortletRegistryContextFactory {
 
   public DriverPortletRegistryContextFactory() {
   }
 
-  private static String implementation = "com.sun.portal.portletcontainer.admin.PortletRegistryContextImpl";
+  private static String implementation =
+      "com.sun.portal.portletcontainer.admin.PortletRegistryContextImpl";
 
   /**
    * Returns a new instance of the Portlet Registry

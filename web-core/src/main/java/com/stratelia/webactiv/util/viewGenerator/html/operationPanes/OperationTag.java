@@ -47,7 +47,8 @@ public class OperationTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
-    OperationPane pane = (OperationPane) pageContext.getAttribute(OperationPaneTag.OPERATION_PANE_PAGE_ATT);
+    OperationPane pane =
+        (OperationPane) pageContext.getAttribute(OperationPaneTag.OPERATION_PANE_PAGE_ATT);
     pane.addOperation(icon, altText, action);
     return EVAL_PAGE;
   }

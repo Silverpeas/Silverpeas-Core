@@ -45,17 +45,15 @@ import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 
 /**
- * Common String utilities (formatters, converters, etc).
- * 
- * Created: Jan 03, 2007 12:50:56 PM
- * 
+ * Common String utilities (formatters, converters, etc). Created: Jan 03, 2007 12:50:56 PM
  * @author Andras Berkes
  */
 public final class StringUtils {
 
   private static final byte[] BASE64_CHARS = new byte[256];
-  private final static char[] ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-      .toCharArray();
+  private final static char[] ALPHABETS =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+          .toCharArray();
 
   public static final String US_ASCII = "US-ASCII";
   public static final String ISO_8859_1 = "ISO-8859-1";
@@ -242,10 +240,7 @@ public final class StringUtils {
 
   /**
    * Decodes a BASE64-encoded string.
-   * 
-   * @param string
-   *          BASE64 string
-   * 
+   * @param string BASE64 string
    * @return String the decoded bytes
    */
   public static final String decodeBASE64(String string) throws Exception {
@@ -284,10 +279,7 @@ public final class StringUtils {
 
   /**
    * Encode the input bytes into BASE64 format.
-   * 
-   * @param data
-   *          - byte array to encode
-   * 
+   * @param data - byte array to encode
    * @return encoded string
    */
   public static final String encodeBASE64(byte[] data) throws Exception {

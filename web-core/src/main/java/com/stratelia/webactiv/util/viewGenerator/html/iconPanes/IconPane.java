@@ -43,65 +43,47 @@ public interface IconPane extends SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Icon addIcon();
 
   /**
    * Return an icon using the 1px image
-   * 
    * @return an Icon
-   * 
    * @see
    */
   public Icon addEmptyIcon();
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setVerticalPosition();
 
   /**
    * Method declaration
-   * 
-   * 
    * @param width
-   * 
    * @see
    */
   public void setVerticalWidth(String width);
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void setHorizontalPosition();
 
   /**
    * Method declaration
-   * 
-   * 
    * @param space
-   * 
    * @see
    */
   public void setSpacing(String space);
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print();

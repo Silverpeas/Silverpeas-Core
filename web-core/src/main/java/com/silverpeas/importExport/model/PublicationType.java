@@ -38,10 +38,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.silverpeas.coordinates.importExport.CoordinatesPositionsType;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class PublicationType {
 
@@ -141,8 +139,7 @@ public class PublicationType {
   }
 
   /**
-   * @param publicationContentType
-   *          The publicationContentType to set.
+   * @param publicationContentType The publicationContentType to set.
    */
   public void setPublicationContentType(
       PublicationContentType publicationContentType) {
@@ -151,7 +148,6 @@ public class PublicationType {
 
   /**
    * Get Coordinates Positions
-   * 
    * @return Set of CoordinatePositions
    */
   public CoordinatesPositionsType getCoordinatesPositionsType() {

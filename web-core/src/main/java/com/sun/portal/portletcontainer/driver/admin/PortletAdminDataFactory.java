@@ -29,8 +29,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryContextFa
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletAdminDataFactory is a factory object that creates and returns a new
- * instance of the PortletAdminData.
+ * PortletAdminDataFactory is a factory object that creates and returns a new instance of the
+ * PortletAdminData.
  */
 public class PortletAdminDataFactory {
 

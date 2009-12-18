@@ -35,7 +35,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
- * 
  * @author neysseri
  * @version
  */
@@ -55,12 +54,9 @@ public abstract class AbstractButton implements Button {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param label
    * @param action
    * @param disabled
-   * 
    * @see
    */
   public void init(String label, String action, boolean disabled) {
@@ -71,30 +67,22 @@ public abstract class AbstractButton implements Button {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {
     /*
      * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr");
-     * 
-     * iconsPath = generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return
-     * iconsPath;
+     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
+     * generalSettings.getString("ApplicationURL") +
+     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
      */
     return GraphicElementFactory.getIconsPath();
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param s
-   * 
    * @see
    */
   public void setRootImagePath(String s) {
@@ -102,10 +90,7 @@ public abstract class AbstractButton implements Button {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();

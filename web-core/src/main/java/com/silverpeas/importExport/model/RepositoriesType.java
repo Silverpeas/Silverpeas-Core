@@ -32,10 +32,8 @@ package com.silverpeas.importExport.model;
 import java.util.List;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class RepositoriesType {
 
@@ -49,8 +47,7 @@ public class RepositoriesType {
   }
 
   /**
-   * @param listRepositoryType
-   *          The listRepositoryType to set.
+   * @param listRepositoryType The listRepositoryType to set.
    */
   public void setListRepositoryType(List listRepositoryType) {
     this.listRepositoryType = listRepositoryType;

@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.frame;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -48,16 +47,14 @@ public class FrameSilverpeasV5 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
     String result = "";
 
-    result += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"tableFrame\">\n";
+    result +=
+        "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"tableFrame\">\n";
     result += "\t<tr>\n";
     result += "\t\t<td colspan=\"3\" class=\"hautFrame\">\n";
     if (getTitle() != null) {
@@ -72,10 +69,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printMiddle() {
@@ -92,10 +86,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -123,10 +114,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

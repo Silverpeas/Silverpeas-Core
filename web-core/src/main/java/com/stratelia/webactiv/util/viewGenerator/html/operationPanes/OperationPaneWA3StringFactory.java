@@ -30,8 +30,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class OperationPaneWA3StringFactory extends Object {
   /**
-   * Hashtable which contains the specifics code encoded as key and their values
-   * are right code encoded
+   * Hashtable which contains the specifics code encoded as key and their values are right code
+   * encoded
    */
   private static StringBuffer printString1 = null;
   private static StringBuffer printString2 = null;
@@ -90,9 +90,9 @@ public class OperationPaneWA3StringFactory extends Object {
               iconsPath).append("/1px.gif\" width=1></td>\n");
           printString2
               .append(
-                  "<td rowspan=4 valign=top align=right colspan=2 class=intfdcolor51><img src=\"")
+              "<td rowspan=4 valign=top align=right colspan=2 class=intfdcolor51><img src=\"")
               .append(iconsPath).append(
-                  "/operationPane/angle.gif\" width=8 height=11></td>\n");
+              "/operationPane/angle.gif\" width=8 height=11></td>\n");
           printString2.append("<td class=intfdcolor51><img src=\"").append(
               iconsPath).append("/1px.gif\" height=6 width=27></td>\n");
           printString2.append("</tr>\n");

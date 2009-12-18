@@ -72,8 +72,7 @@ public interface ComponentSessionController {
   public List getComponentParameters();
 
   /**
-   * Return the parameter value for this component instance and the given
-   * parameter name
+   * Return the parameter value for this component instance and the given parameter name
    */
   public String getComponentParameterValue(String parameterName);
 
@@ -87,7 +86,7 @@ public interface ComponentSessionController {
   public String[] getUserRoles();
 
   /** Return the higher user's role (admin, publisher or user) */
-  public String getUserRoleLevel();  
+  public String getUserRoleLevel();
 
   public PersonalizationBm getPersonalization();
 
@@ -108,9 +107,9 @@ public interface ComponentSessionController {
 
   public Collection getClipboardSelectedObjects() throws Exception;
 
-   public String getClipboardErrorMessage() throws Exception;
+  public String getClipboardErrorMessage() throws Exception;
 
-   public Exception getClipboardExceptionError() throws Exception;
+  public Exception getClipboardExceptionError() throws Exception;
 
   public Collection getClipboardObjects() throws Exception;
 
@@ -124,10 +123,10 @@ public interface ComponentSessionController {
 
   public void setClipboardSelectedElement(int index, boolean selected) throws Exception;
 
-   public int getClipboardSize() throws Exception;
+  public int getClipboardSize() throws Exception;
 
-   public void removeClipboardElement(int index) throws Exception;
+  public void removeClipboardElement(int index) throws Exception;
 
-   public void setClipboardError(String messageId, Exception ex) throws Exception;
+  public void setClipboardError(String messageId, Exception ex) throws Exception;
 
 }

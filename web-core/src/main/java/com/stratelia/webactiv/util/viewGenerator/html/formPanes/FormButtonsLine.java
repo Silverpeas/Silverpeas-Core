@@ -36,7 +36,6 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 
  * @author frageade
  * @version
  */
@@ -47,11 +46,8 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
-   * 
    * @see
    */
   public FormButtonsLine(String nam, String val) {
@@ -62,12 +58,9 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param nam
    * @param val
    * @param lab
-   * 
    * @see
    */
   public FormButtonsLine(String nam, String val, String lab) {
@@ -79,10 +72,7 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param fb
-   * 
    * @see
    */
   public void addButton(FormButton fb) {
@@ -91,10 +81,7 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -119,14 +106,10 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nam
    * @param url
    * @param pc
-   * 
    * @return
-   * 
    * @see
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
@@ -141,10 +124,7 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param req
-   * 
    * @see
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
@@ -153,10 +133,7 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo() {
@@ -181,10 +158,7 @@ public class FormButtonsLine extends FormLine {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toXML() {

@@ -56,10 +56,10 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /*
-This object is used by all the components jsp that have access to the session.
-It is initialized given a login and a password which is authenticated.
-It provides functions to get information about the logged user (which is unique).
-It is also used to update the current environnement of the user (current domain, current component).
+ This object is used by all the components jsp that have access to the session.
+ It is initialized given a login and a password which is authenticated.
+ It provides functions to get information about the logged user (which is unique).
+ It is also used to update the current environnement of the user (current domain, current component).
  */
 public class MainSessionController extends AdminReference implements Clipboard {
 
@@ -400,8 +400,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   /**
-   * Return the value of the parameter for the given component and the given
-   * name of parameter
+   * Return the value of the parameter for the given component and the given name of parameter
    */
   public String getComponentParameterValue(String sComponentId,
       String parameterName) {
@@ -484,8 +483,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   /**
-   * Helper function. Create a new CurrentSessionControl object and fill it with
-   * the values of the current space Id and component Id passed in parameters
+   * Helper function. Create a new CurrentSessionControl object and fill it with the values of the
+   * current space Id and component Id passed in parameters
    **/
   public ComponentContext createComponentContext(String sSpaceId,
       String sComponent) {
@@ -524,8 +523,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
 
   /**
    * Update the current space for the current user
-   * 
-   * 
    * @deprecated
    */
   public void updateUserSpace(String sSpaceId) {
@@ -534,8 +531,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
 
   /**
    * Update the current component for the current user
-   * 
-   * 
    * @deprecated
    */
   public void updateUserComponent(String sComponent) {
@@ -546,7 +541,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
   // Profile functions
   // ---------------------------------
   /**
-   * 
    * @deprecated
    */
   public String getUserCurrentSpaceId() {
@@ -554,7 +548,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   /**
-   * 
    * @deprecated
    */
   public String getUserCurrentComponentId() {

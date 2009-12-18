@@ -34,10 +34,9 @@ import java.io.File;
 public class DirectoryUtils {
 
   /**
-   * Retourne une chaine ne contenant que des caractères autorisés pour le
-   * nommage des dossiers. en évitant de convertir les séparateurs de fichier.
-   * On suppose que ? ne pourra jamais être un séparateur de fichiers.
-   * 
+   * Retourne une chaine ne contenant que des caractères autorisés pour le nommage des dossiers.
+   * en évitant de convertir les séparateurs de fichier. On suppose que ? ne pourra jamais être
+   * un séparateur de fichiers.
    * @param directoryName
    * @return
    */
@@ -62,9 +61,8 @@ public class DirectoryUtils {
   }
 
   /**
-   * Retourne une chaine ne contenant que des caractères autorisés pour le
-   * nommage des dossiers y compris les séparateurs de fichier éventuellement.
-   * 
+   * Retourne une chaine ne contenant que des caractères autorisés pour le nommage des dossiers y
+   * compris les séparateurs de fichier éventuellement.
    * @param directoryName
    * @return
    */

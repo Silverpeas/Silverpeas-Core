@@ -100,8 +100,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public abstract class AbstractMonthCalendar implements MonthCalendar {
@@ -131,7 +129,6 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Creates new AbstractMonthCalendar: constructor
-   * 
    * @param: language: type String: the language of use of the monthCalendar
    */
   public AbstractMonthCalendar(String language) {
@@ -168,11 +165,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to add event in the month calendar
-   * 
-   * @param eventMonth
-   *          : type
-   *          com.stratelia.webactiv.util.viewGenerator.html.monthCalendar
-   *          .Event: the evenet of the current month
+   * @param eventMonth : type com.stratelia.webactiv.util.viewGenerator.html.monthCalendar .Event:
+   * the evenet of the current month
    * @return: void
    */
   public void addEvent(Event eventMonth) {
@@ -181,10 +175,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param listEventMonth
-   * 
    * @see
    */
   public void addEvent(Vector listEventMonth) {
@@ -193,7 +184,6 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to initialise the monthcalendar to current date
-   * 
    * @param: currentDate: type java.util.Date: current date
    * @return: void
    */
@@ -215,7 +205,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
         cal.get(Calendar.YEAR));
     SilverTrace.debug("viewgenerator", "MonthCalendarWA1.setCurrentMonth()",
         "root.MSG_GEN_PARAM_VALUE", "numbersWeekInMonth = "
-            + numbersWeekInMonth);
+        + numbersWeekInMonth);
 
     modifiedListEventMonth();
     SilverTrace.debug("viewgenerator", "MonthCalendarWA1.setCurrentMonth()",
@@ -225,19 +215,13 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * the events are limited at the date of current month example 1: current
-   * month jun event Startdate = 28/05 - EndDate = 15/06 for the object
-   * monthCalendar this event is modified: event StartDate = 1/06 - EndDate =
-   * 15/06
-   * 
-   * example 2: current month = jun event StartDate = 9/06 - EnDate = 18/07 for
-   * the object monthCalendar this event is modified: event StartDate = 9/06 -
+   * the events are limited at the date of current month example 1: current month jun event
+   * Startdate = 28/05 - EndDate = 15/06 for the object monthCalendar this event is modified: event
+   * StartDate = 1/06 - EndDate = 15/06 example 2: current month = jun event StartDate = 9/06 -
+   * EnDate = 18/07 for the object monthCalendar this event is modified: event StartDate = 9/06 -
    * EndDate = 30/06
-   * 
    * @return: void
-   * @exception catched
-   *              : java.text.ParseException: print int the log file, the event
-   *              iisn't add
+   * @exception catched : java.text.ParseException: print int the log file, the event iisn't add
    * @see com.stratelia.webactiv.util.DateUtil
    */
   private void modifiedListEventMonth() {
@@ -268,7 +252,6 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to initialise the list week of this current month and create the object Day
-   * 
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
    * @return: java.util.Vector: the vector of object Week
@@ -304,7 +287,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
       calY.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
       SilverTrace.debug("viewgenerator", "MonthCalendarWA1.setCurrentMonth()",
           "root.MSG_GEN_PARAM_VALUE", "for k=" + k + " calY.getTime() = "
-              + calY.getTime());
+          + calY.getTime());
 
       for (int z = 0; z < numbersDayOfWeek; z++) {
         Date dateDay = calY.getTime();
@@ -339,7 +322,6 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the name of day
-   * 
    * @param: date: type java.util.Date: the date of day
    * @return: java.lang.String: the name of day
    */
@@ -354,9 +336,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to obtain the numbers of day
-   * 
-   * @param date
-   *          : type java.util.Date: the date of day
+   * @param date : type java.util.Date: the date of day
    * @return java.lang.String: the name of day
    */
   private String getNumbersDay(Date date) {
@@ -368,7 +348,6 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
   /**
    * to control if the param date is in the current month
-   * 
    * @param: date: type java.util.Date: the date of day
    * @return: boolean: true if is in the month
    */
@@ -384,9 +363,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * to initialize the private parameters of the week, this method read in the
-   * file properties
-   * 
+   * to initialize the private parameters of the week, this method read in the file properties
    * @param: date: type java.util.Date: the date of day
    * @return: void
    * @catch: java.lang.Exception: write this exception in the log file
@@ -404,15 +381,14 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
           "AbstractMonthCalendar.initDayOfWeek()",
           "viewgenerator.EX_CANT_LOAD_DATE_UTIL",
           "DateUtil propertie: firstDayOfWeek = " + firstDayOfWeek
-              + "; lastDayOfWeek = " + lastDayOfWeek + "; numbersDayOfWeek = "
-              + numbersDayOfWeek + "; numbersWeekInMonth = "
-              + numbersWeekInMonth + ". ", e);
+          + "; lastDayOfWeek = " + lastDayOfWeek + "; numbersDayOfWeek = "
+          + numbersDayOfWeek + "; numbersWeekInMonth = "
+          + numbersWeekInMonth + ". ", e);
     }
   }
 
   /**
    * to obtain the numbers of week in current month
-   * 
    * @param int: the current month
    * @param int: the firstDayOf Week
    * @see: java.util.Calendar
@@ -421,7 +397,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   private int weeksIn(int month, int firstDayOfWeek, int year) {
     SilverTrace.debug("viewgenerator", "MonthCalendarWA1.weeksIn()",
         "root.MSG_GEN_PARAM_VALUE", "month = " + month + ", firstDayOfWeek = "
-            + firstDayOfWeek + ", year = " + year);
+        + firstDayOfWeek + ", year = " + year);
 
     // month--;
     Calendar calendar = Calendar.getInstance();
@@ -430,7 +406,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
 
     SilverTrace.debug("viewgenerator", "MonthCalendarWA1.weeksIn()",
         "root.MSG_GEN_PARAM_VALUE", "minimal day in first week = "
-            + calendar.getMinimalDaysInFirstWeek());
+        + calendar.getMinimalDaysInFirstWeek());
 
     calendar.setFirstDayOfWeek(firstDayOfWeek);
     calendar.set(Calendar.MONTH, month);
@@ -443,17 +419,14 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     }
     SilverTrace.debug("viewgenerator", "MonthCalendarWA1.weeksIn()",
         "root.MSG_GEN_PARAM_VALUE", "calendar.getTime() = "
-            + calendar.getTime());
+        + calendar.getTime());
 
     return calendar.get(Calendar.WEEK_OF_MONTH);
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   protected String[] getHeaderNameDay() {
@@ -467,9 +440,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * this method is use by the class who extend AbstractMonthCalendar the get
-   * method to obtain numbers week in the current month
-   * 
+   * this method is use by the class who extend AbstractMonthCalendar the get method to obtain
+   * numbers week in the current month
    * @return: int
    */
   protected int getNumbersWeekOfMonth() {
@@ -477,9 +449,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * this method is use by the class who extend AbstractMonthCalendar the get
-   * method to obtain numbers day int the week of current month
-   * 
+   * this method is use by the class who extend AbstractMonthCalendar the get method to obtain
+   * numbers day int the week of current month
    * @return: int
    */
   protected int getNumbersDayOfWeek() {
@@ -487,9 +458,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * this method is use by the class who extend AbstractMonthCalendar the get
-   * method to obtain the list of Day
-   * 
+   * this method is use by the class who extend AbstractMonthCalendar the get method to obtain the
+   * list of Day
    * @param: int: the number of week int the current month
    * @return: Day[]: the array of Day
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
@@ -504,9 +474,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * this method is use by the class who extend AbstractMonthCalendar the get
-   * method to obtain the numbers of row int the week
-   * 
+   * this method is use by the class who extend AbstractMonthCalendar the get method to obtain the
+   * numbers of row int the week
    * @param: int: the week
    * @return: int:
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Week
@@ -520,9 +489,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   }
 
   /**
-   * this method is use by the class who extend AbstractMonthCalendar the get
-   * method to obtain an array of object Event
-   * 
+   * this method is use by the class who extend AbstractMonthCalendar the get method to obtain an
+   * array of object Event
    * @param int: the week
    * @param int: the specific row in the week
    * @return Event[]: an array of Event object

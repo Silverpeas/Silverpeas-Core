@@ -36,11 +36,9 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 
 /**
- * PortletWindowDataImpl provides concrete implementation of PortletWindowData
- * interface
+ * PortletWindowDataImpl provides concrete implementation of PortletWindowData interface
  */
-public class PortletWindowDataImpl implements PortletWindowData, Comparable,
-    Serializable {
+public class PortletWindowDataImpl implements PortletWindowData, Comparable, Serializable {
 
   public static final long serialVersionUID = 1L;
   private String requestURL;
@@ -228,7 +226,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable,
         getCurrentMode()).append("&").append(
         WindowInvokerConstants.PORTLET_REMOVE_KEY).append("=").append("true")
         .append("&").append(WindowInvokerConstants.PORTLET_WINDOW_KEY).append(
-            "=").append(getPortletWindowName());
+        "=").append(getPortletWindowName());
     if (StringUtil.isDefined(getSpaceId())) {
       processURL.append("&").append(WindowInvokerConstants.DRIVER_SPACEID)
           .append("=").append(getSpaceId());
@@ -340,7 +338,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable,
   }
 
   public int hashCode() {
-   assert false : "hashCode not designed";
-   return 42; // any arbitrary constant will do
-   }
+    assert false : "hashCode not designed";
+    return 42; // any arbitrary constant will do
+  }
 }

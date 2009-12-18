@@ -28,9 +28,8 @@ import java.util.Map;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowPreferenceRegistryContext provides information pertaining to the
- * portlet window preference registry. This includes information about portlet
- * preferences.
+ * PortletWindowPreferenceRegistryContext provides information pertaining to the portlet window
+ * preference registry. This includes information about portlet preferences.
  */
 public interface PortletWindowPreferenceRegistryContext {
   public Map getPreferences(String portletWindowName, String userName)

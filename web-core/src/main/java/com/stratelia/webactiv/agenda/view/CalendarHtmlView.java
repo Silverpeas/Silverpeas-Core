@@ -110,8 +110,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class CalendarHtmlView {
@@ -137,10 +135,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scheduleCount
-   * 
    * @see
    */
   public void add(SchedulableCount scheduleCount) {
@@ -149,12 +144,8 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param day
-   * 
    * @return
-   * 
    * @see
    */
   public SchedulableCount getSchedulableCount(int day) {
@@ -176,10 +167,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setWeekDayStyle(String value) {
@@ -188,10 +176,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setMonthDayStyle(String value) {
@@ -200,10 +185,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setMonthSelectedDayStyle(String value) {
@@ -212,10 +194,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setMonthVisible(boolean value) {
@@ -224,10 +203,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setNavigationBar(boolean value) {
@@ -236,10 +212,7 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param value
-   * 
    * @see
    */
   public void setShortName(boolean value) {
@@ -248,13 +221,9 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
    * @param agendaSessionController
-   * 
    * @return
-   * 
    * @see
    */
 
@@ -265,13 +234,9 @@ public class CalendarHtmlView {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
    * @param agendaSessionController
-   * 
    * @return
-   * 
    * @see
    */
   public String getPDAView(Date date,
@@ -280,16 +245,12 @@ public class CalendarHtmlView {
   }
 
   /**
-   * Fonction ajoutée pour génerer le calendar soit pour un PDA (sans
-   * onmouseover) soit pour un web classique.
-   * 
-   * 
+   * Fonction ajoutée pour génerer le calendar soit pour un PDA (sans onmouseover) soit pour un
+   * web classique.
    * @param date
    * @param agendaSessionController
    * @param forPDA
-   * 
    * @return
-   * 
    * @see
    */
   public String getHtmlView(Date date,
@@ -358,7 +319,7 @@ public class CalendarHtmlView {
         if (forPda)
           result
               .append(
-                  " onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-2','','")
+              " onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-2','','")
               .append(getContext()).append("icons/cal_fle-gon.gif',1)\"");
 
         result.append("><img name=\"fle-2\" border=\"0\" src=\"").append(
@@ -376,7 +337,7 @@ public class CalendarHtmlView {
         if (forPda)
           result
               .append(
-                  " onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-1','','")
+              " onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-1','','")
               .append(getContext()).append("icons/cal_fle-don.gif',1)\"");
         result.append("><img name=\"fle-1\" border=\"0\" src=\"").append(
             getContext()).append(

@@ -37,7 +37,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * JDBC database access.
- * 
  * @author Antoine HEDIN
  */
 public class JdbcConnectorDAO {
@@ -145,8 +144,7 @@ public class JdbcConnectorDAO {
   }
 
   /**
-   * @param index
-   *          The index of the searched line.
+   * @param index The index of the searched line.
    * @return The data of the table's line corresponding to the index.
    */
   public String[] getLine(String index) {
@@ -176,15 +174,11 @@ public class JdbcConnectorDAO {
   }
 
   /**
-   * Closes the connection and its associated elements (statement and result
-   * set) if they are defined.
-   * 
-   * @param con
-   *          The connection.
-   * @param stmt
-   *          The statement.
-   * @param rs
-   *          The result set.
+   * Closes the connection and its associated elements (statement and result set) if they are
+   * defined.
+   * @param con The connection.
+   * @param stmt The statement.
+   * @param rs The result set.
    */
   private void closeConnection(Connection con, Statement stmt, ResultSet rs) {
     try {

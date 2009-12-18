@@ -34,7 +34,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 /**
  * The default implementation of Window interface
- * 
  * @author neysseri
  * @version 1.0
  */
@@ -42,8 +41,6 @@ public class WindowSilverpeasV5 extends AbstractWindow {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public WindowSilverpeasV5() {
@@ -52,10 +49,7 @@ public class WindowSilverpeasV5 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -82,10 +76,7 @@ public class WindowSilverpeasV5 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -119,10 +110,7 @@ public class WindowSilverpeasV5 extends AbstractWindow {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

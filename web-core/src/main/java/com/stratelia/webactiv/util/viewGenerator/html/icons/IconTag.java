@@ -63,8 +63,7 @@ public class IconTag extends TagSupport {
   }
 
   /**
-   * @param iconName
-   *          the iconName to set
+   * @param iconName the iconName to set
    */
   public void setIconName(String iconName) {
     this.iconName = iconName;
@@ -78,8 +77,7 @@ public class IconTag extends TagSupport {
   }
 
   /**
-   * @param altText
-   *          the altText to set
+   * @param altText the altText to set
    */
   public void setAltText(String altText) {
     this.altText = altText;
@@ -93,8 +91,7 @@ public class IconTag extends TagSupport {
   }
 
   /**
-   * @param action
-   *          the action to set
+   * @param action the action to set
    */
   public void setAction(String action) {
     this.action = action;
@@ -108,8 +105,7 @@ public class IconTag extends TagSupport {
   }
 
   /**
-   * @param imagePath
-   *          the imagePath to set
+   * @param imagePath the imagePath to set
    */
   public void setImagePath(String imagePath) {
     this.imagePath = imagePath;

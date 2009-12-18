@@ -37,8 +37,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletWindowPreferenceRegistryContextImpl is a concrete implementation of
- * the PortletWindowPreferenceRegistryContext interface.
+ * PortletWindowPreferenceRegistryContextImpl is a concrete implementation of the
+ * PortletWindowPreferenceRegistryContext interface.
  */
 public class PortletWindowPreferenceRegistryContextImpl implements
     PortletWindowPreferenceRegistryContext {
@@ -60,8 +60,9 @@ public class PortletWindowPreferenceRegistryContextImpl implements
   private void init(String context) throws PortletRegistryException {
     this.context = context;
     String registryLocation = PortletRegistryHelper.getRegistryLocation();
-    PortletRegistryReader portletWindowPreferenceRegistryReader = new PortletWindowPreferenceRegistryReader(
-        registryLocation, context);
+    PortletRegistryReader portletWindowPreferenceRegistryReader =
+        new PortletWindowPreferenceRegistryReader(
+            registryLocation, context);
     portletWindowPreferenceRegistry = portletWindowPreferenceRegistryReader
         .readDocument();
 

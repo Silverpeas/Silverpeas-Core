@@ -41,8 +41,7 @@ import java.util.Date;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * this class allows to convert objects into object "Event" usable by the
- * monthCalendar
+ * this class allows to convert objects into object "Event" usable by the monthCalendar
  */
 public class Event extends Object {
   private String id = null;
@@ -124,10 +123,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -136,10 +132,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date getStartDate() {
@@ -148,10 +141,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
-   * 
    * @see
    */
   public void setStartDate(Date date) {
@@ -160,10 +150,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date getEndDate() {
@@ -172,10 +159,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
-   * 
    * @see
    */
   public void setEndDate(Date date) {
@@ -184,10 +168,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getUrl() {
@@ -196,10 +177,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param p
-   * 
    * @see
    */
   public void setPriority(int p) {
@@ -208,10 +186,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getPriority() {
@@ -220,10 +195,7 @@ public class Event extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getSpanDay() {
@@ -236,9 +208,7 @@ public class Event extends Object {
 
   /*
    * to control if the event is in Day
-   * 
    * @param Day: the day to control if the current event is into this day
-   * 
    * @return boolean
    */
   public boolean isInDay(Day day) {
@@ -246,7 +216,7 @@ public class Event extends Object {
 
     SilverTrace.info("viewgenerator", "Event.isInDay()",
         "root.MSG_GEN_PARAM_VALUE", "dateDay = " + dateDay.toString()
-            + ", startDate = " + startDate.toString());
+        + ", startDate = " + startDate.toString());
 
     if (dateDay.equals(startDate)) {
       return true;
@@ -255,16 +225,11 @@ public class Event extends Object {
   }
 
   /*
-   * to control if the date of event is in the week if the start date of event
-   * is before the satrat day of week, the start day of event equals the start
-   * day of week if the end date of event is over the end day of week, the end
-   * day of event equals end day of week
-   * 
+   * to control if the date of event is in the week if the start date of event is before the satrat
+   * day of week, the start day of event equals the start day of week if the end date of event is
+   * over the end day of week, the end day of event equals end day of week
    * @param Date: start date and end date of week
-   * 
-   * @return boolean catch java.text.ParseException, write this exception int
-   * the log file
-   * 
+   * @return boolean catch java.text.ParseException, write this exception int the log file
    * @see com.stratelia.webactiv.util.DateUtil;
    */
   public boolean isInWeek(Date sDate, Date eDate) {
@@ -285,15 +250,11 @@ public class Event extends Object {
   }
 
   /*
-   * to initialize the parametar spanDay. This parameter represent le nombre de
-   * jour couvert par l'evenement it's use by the print method of the class of
-   * extend AbstractMonthCalendar default value for spanDay is 0
-   * 
+   * to initialize the parametar spanDay. This parameter represent le nombre de jour couvert par
+   * l'evenement it's use by the print method of the class of extend AbstractMonthCalendar default
+   * value for spanDay is 0
    * @return int
-   * 
-   * @catch java.text.ParseException, write this exception int the log file and
-   * return default value
-   * 
+   * @catch java.text.ParseException, write this exception int the log file and return default value
    * @see com.stratelia.webactiv.util.DateUtil;
    */
   private int initSpanDay(Date date) {
@@ -327,9 +288,8 @@ public class Event extends Object {
   }
 
   /**
-   * to compare the event with an other event this method return true if the
-   * event parameter span the same day, false else if
-   * 
+   * to compare the event with an other event this method return true if the event parameter span
+   * the same day, false else if
    * @return boolean
    */
   public boolean compareTo(Event evt) {
@@ -427,7 +387,6 @@ public class Event extends Object {
 
   /**
    * Get the InstanceId of the Event
-   * 
    * @author dlesimple
    * @param instanceId
    */

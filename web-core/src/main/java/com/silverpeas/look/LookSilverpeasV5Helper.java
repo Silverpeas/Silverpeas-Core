@@ -69,7 +69,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private boolean displaySpaceIcons = true;
   private boolean displayConnectedUsers = true;
   private List topItems = null;
-  private List topSpaceIds = null;	//sublist of topItems
+  private List topSpaceIds = null; // sublist of topItems
   private String mainPage = "Main.jsp";
   private String mainFrame = "MainFrameSilverpeasV5.jsp";
   private String spaceId = null;
@@ -79,14 +79,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private PublicationHelper kmeliaTransversal = null;
   private PublicationBm publicationBm = null;
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSpaceId()
    */
   public String getSpaceId() {
     return spaceId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#setSpaceId(java.lang.String)
    */
   public void setSpaceId(String spaceId) {
@@ -96,14 +98,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.spaceId = spaceId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSubSpaceId()
    */
   public String getSubSpaceId() {
     return subSpaceId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#setSubSpaceId(java.lang.String)
    */
   public void setSubSpaceId(String subSpaceId) {
@@ -113,21 +117,24 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.subSpaceId = subSpaceId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getComponentId()
    */
   public String getComponentId() {
     return componentId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#setComponentId(java.lang.String)
    */
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#setSpaceIdAndSubSpaceId(java.lang.String)
    */
   public void setSpaceIdAndSubSpaceId(String spaceId) {
@@ -142,8 +149,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
-  /* (non-Javadoc)
-   * @see com.silverpeas.look.LookHelper#setComponentIdAndSpaceIds(java.lang.String, java.lang.String, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * @see com.silverpeas.look.LookHelper#setComponentIdAndSpaceIds(java.lang.String,
+   * java.lang.String, java.lang.String)
    */
   public void setComponentIdAndSpaceIds(String spaceId, String subSpaceId, String componentId) {
     setComponentId(componentId);
@@ -160,21 +169,29 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
-  public LookSilverpeasV5Helper(MainSessionController mainSessionController, ResourceLocator resources) {
+  public LookSilverpeasV5Helper(MainSessionController mainSessionController,
+      ResourceLocator resources) {
     init(mainSessionController, resources);
   }
 
-  /* (non-Javadoc)
-   * @see com.silverpeas.look.LookHelper#init(com.stratelia.silverpeas.peasCore.MainSessionController, com.stratelia.webactiv.util.ResourceLocator, com.stratelia.webactiv.util.ResourceLocator)
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.silverpeas.look.LookHelper#init(com.stratelia.silverpeas.peasCore.MainSessionController,
+   * com.stratelia.webactiv.util.ResourceLocator, com.stratelia.webactiv.util.ResourceLocator)
    */
   public void init(MainSessionController mainSessionController, ResourceLocator resources) {
     this.mainSC = mainSessionController;
     this.orga = mainSessionController.getOrganizationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
-    this.defaultMessages = new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle", mainSessionController.getFavoriteLanguage());
+    this.defaultMessages =
+        new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+            mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
-      this.messages = new ResourceLocator(resources.getString("MessageBundle"), mainSessionController.getFavoriteLanguage());
+      this.messages =
+          new ResourceLocator(resources.getString("MessageBundle"), mainSessionController
+              .getFavoriteLanguage());
     }
     initProperties();
     getTopItems();
@@ -197,42 +214,48 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return orga;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getUserFullName(java.lang.String)
    */
   public String getUserFullName(String userId) {
     return orga.getUserDetail(userId).getDisplayedName();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getUserFullName()
    */
   public String getUserFullName() {
     return orga.getUserDetail(userId).getDisplayedName();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getUserId()
    */
   public String getUserId() {
     return userId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getAnonymousUserId()
    */
   public String getAnonymousUserId() {
     return guestId;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getLanguage()
    */
   public String getLanguage() {
     return mainSC.getFavoriteLanguage();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#isAnonymousUser()
    */
   public boolean isAnonymousUser() {
@@ -243,7 +266,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#displayPDCInNavigationFrame()
    */
   @Override
@@ -251,7 +275,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return displayPDCInNav;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#displayPDCFrame()
    */
   @Override
@@ -264,7 +289,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return displayContextualPDC;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#displaySpaceIcons()
    */
   @Override
@@ -272,7 +298,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return displaySpaceIcons;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSpaceId(java.lang.String)
    */
   @Override
@@ -284,7 +311,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return null;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getWallPaper(java.lang.String)
    */
   @Override
@@ -293,7 +321,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
       return "0";
     }
 
-    String path = FileRepositoryManager.getAbsolutePath("Space" + spaceId.substring(2), new String[]{"look"});
+    String path =
+        FileRepositoryManager.getAbsolutePath("Space" + spaceId.substring(2),
+            new String[] { "look" });
 
     File file = new File(path + "wallPaper.jpg");
     if (file.isFile()) {
@@ -308,48 +338,54 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return "0";
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getNBConnectedUsers()
    */
   @Override
   public int getNBConnectedUsers() {
     int nbConnectedUsers = 0;
     if (displayConnectedUsers) {
-      //Remove the current user
+      // Remove the current user
       nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList() - 1;
     }
     return nbConnectedUsers;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#isAnonymousAccess()
    */
   public boolean isAnonymousAccess() {
     return (StringUtil.isDefined(guestId) && guestId.equals(userId));
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSettings(java.lang.String)
    */
   public boolean getSettings(String key) {
     return SilverpeasSettings.readBoolean(resources, key, false);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSettings(java.lang.String, boolean)
    */
   public boolean getSettings(String key, boolean defaultValue) {
     return SilverpeasSettings.readBoolean(resources, key, defaultValue);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSettings(java.lang.String, java.lang.String)
    */
   public String getSettings(String key, String defaultValue) {
     return SilverpeasSettings.readString(resources, key, defaultValue);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getString(java.lang.String)
    */
   public String getString(String key) {
@@ -360,14 +396,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#isBackOfficeVisible()
    */
   public boolean isBackOfficeVisible() {
     return mainSC.isBackOfficeVisible();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getTopItems()
    */
   public List getTopItems() {
@@ -413,14 +451,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return topItems;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getTopSpaceIds()
    */
   public List getTopSpaceIds() {
     return topSpaceIds;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getMainFrame()
    */
   @Override
@@ -428,7 +468,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return mainFrame;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#setMainFrame(java.lang.String)
    */
   @Override
@@ -436,7 +477,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.mainFrame = mainFrame;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSpaceWallPaper()
    */
   @Override
@@ -445,15 +487,19 @@ public class LookSilverpeasV5Helper implements LookHelper {
       return null;
     }
 
-    String path = FileRepositoryManager.getAbsolutePath("Space" + getSpaceId().substring(2), new String[]{"look"});
+    String path =
+        FileRepositoryManager.getAbsolutePath("Space" + getSpaceId().substring(2),
+            new String[] { "look" });
 
     File file = new File(path + "wallPaper.jpg");
     if (file.isFile()) {
-      return FileServerUtils.getOnlineURL("Space" + getSpaceId().substring(2), file.getName(), file.getName(), "image/jpeg", "look");
+      return FileServerUtils.getOnlineURL("Space" + getSpaceId().substring(2), file.getName(), file
+          .getName(), "image/jpeg", "look");
     } else {
       file = new File(path + "wallPaper.gif");
       if (file.isFile()) {
-        return FileServerUtils.getOnlineURL("Space" + getSpaceId().substring(2), file.getName(), file.getName(), "image/gif", "look");
+        return FileServerUtils.getOnlineURL("Space" + getSpaceId().substring(2), file.getName(),
+            file.getName(), "image/gif", "look");
       }
     }
 
@@ -465,7 +511,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (!StringUtil.isDefined(function)) {
       function = "Main";
     }
-    return URLManager.getApplicationURL() + URLManager.getURL("useless", currentComponentId) + function;
+    return URLManager.getApplicationURL() + URLManager.getURL("useless", currentComponentId) +
+        function;
   }
 
   public String getComponentURL(String key) {
@@ -475,7 +522,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public String getDate() {
     if (formatter == null) {
-      formatter = new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"), new Locale(mainSC.getFavoriteLanguage()));
+      formatter =
+          new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"), new Locale(mainSC
+              .getFavoriteLanguage()));
     }
 
     return formatter.format(new Date());
@@ -521,7 +570,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     try {
       publis = (List) getPublicationBm().getDetailsByFatherPK(nodePK, null, true);
     } catch (RemoteException e) {
-      SilverTrace.error("lookSilverpeasV5", "LookSilverpeasV5Helper.getPublications", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.error("lookSilverpeasV5", "LookSilverpeasV5Helper.getPublications",
+          "root.MSG_GEN_PARAM_VALUE", e);
     }
     List filteredPublis = new ArrayList();
     PublicationDetail publi;
@@ -537,7 +587,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+        publicationBm =
+            ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+                PublicationBmHome.class)).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }

@@ -70,11 +70,10 @@ import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWA;
 
 /**
- * The GraphicElementFactory is the only class to instanciate in this package.
- * You should have one factory for each client (for future evolution). The
- * GraphicElementFactory is responsible from graphic component instanciation.
- * You should never directly instanciate a component without using this factory
- * ! This class uses the "factory design pattern".
+ * The GraphicElementFactory is the only class to instanciate in this package. You should have one
+ * factory for each client (for future evolution). The GraphicElementFactory is responsible from
+ * graphic component instanciation. You should never directly instanciate a component without using
+ * this factory ! This class uses the "factory design pattern".
  */
 public class GraphicElementFactory extends Object {
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
@@ -97,10 +96,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param look
-   * 
    * @see
    */
   public GraphicElementFactory(String look) {
@@ -125,10 +121,8 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Get the settings for the factory.
-   * 
-   * @return The ResourceLocator returned contains all default environment
-   *         settings necessary to know wich component to instanciate, but also
-   *         to know how to generate html code.
+   * @return The ResourceLocator returned contains all default environment settings necessary to know
+   * wich component to instanciate, but also to know how to generate html code.
    */
   public static ResourceLocator getSettings() {
     if (settings == null) {
@@ -141,10 +135,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ResourceLocator getLookSettings() {
@@ -172,10 +163,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ResourceLocator getSilverpeasLookSettings() {
@@ -192,10 +180,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ResourceLocator getFavoriteLookSettings() {
@@ -204,10 +189,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param look
-   * 
    * @see
    */
   public void setLook(String look) {
@@ -234,7 +216,7 @@ public class GraphicElementFactory extends Object {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
         "root.MSG_GEN_PARAM_VALUE", " look = " + look
-            + " | corresponding settings = " + selectedLook);
+        + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -254,25 +236,19 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLookFrame() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
         "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
-            + getFavoriteLookSettings().getString("FrameJSP"));
+        + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLookStyleSheet() {
@@ -288,7 +264,7 @@ public class GraphicElementFactory extends Object {
 
     code
         .append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset="
-            + charset + "\">\n");
+        + charset + "\">\n");
 
     if (externalStylesheet == null) {
       code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
@@ -306,12 +282,12 @@ public class GraphicElementFactory extends Object {
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()
-            .endsWith("web20"))
+        .endsWith("web20"))
       code.append(getYahooElements());
 
     SilverTrace
         .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-            "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
   }
 
@@ -322,7 +298,7 @@ public class GraphicElementFactory extends Object {
     code.append("<!-- CSS for Menu -->");
     code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
         + getSettings().getString("YUIMenuCss",
-            contextPath + "/util/yui/menu/assets/menu.css") + "\">");
+        contextPath + "/util/yui/menu/assets/menu.css") + "\">");
     code.append("<!-- Page-specific styles -->");
     code.append("<style type=\"text/css\">");
     code.append("    div.yuimenu {");
@@ -343,10 +319,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIcon(String iconKey) {
@@ -358,10 +331,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getAvailableLooks() {
@@ -377,18 +347,12 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new button.
-   * 
-   * @param label
-   *          The new button label
-   * @param action
-   *          The action associated exemple :
-   *          "javascript:onClick=history.back()", or
-   *          "http://www.stratelia.com/"
-   * @param disabled
-   *          Specify if the button is disabled or not. If disabled, no action
-   *          will be possible.
-   * @return returns an object implementing the FormButton interface. That's the
-   *         new button to use.
+   * @param label The new button label
+   * @param action The action associated exemple : "javascript:onClick=history.back()", or
+   * "http://www.stratelia.com/"
+   * @param disabled Specify if the button is disabled or not. If disabled, no action will be
+   * possible.
+   * @return returns an object implementing the FormButton interface. That's the new button to use.
    */
   public Button getFormButton(String label, String action, boolean disabled) {
     Button button = null;
@@ -409,11 +373,8 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new frame.
-   * 
-   * @param title
-   *          The new frame title
-   * @return returns an object implementing the Frame interface. That's the new
-   *         frame to use.
+   * @param title The new frame title
+   * @return returns an object implementing the Frame interface. That's the new frame to use.
    */
   public Frame getFrame() {
     Frame frame = null;
@@ -431,9 +392,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new board.
-   * 
-   * @return returns an object implementing the Board interface. That's the new
-   *         board to use.
+   * @return returns an object implementing the Board interface. That's the new board to use.
    */
   public Board getBoard() {
     Board board = null;
@@ -451,7 +410,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new navigation list.
-   * 
    * @return returns an object implementing the NavigationList interface.
    */
   public NavigationList getNavigationList() {
@@ -473,20 +431,14 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Construct a new button.
-   * 
    * @deprecated
-   * @return returns an object implementing the FormButton interface. That's the
-   *         new button to use.
-   * @param label
-   *          The new button label
-   * @param action
-   *          The action associated exemple : "javascript:history.back()", or
-   *          "http://www.stratelia.com/"
-   * @param disabled
-   *          Specify if the button is disabled or not. If disabled, no action
-   *          will be possible.
-   * @param imagePath
-   *          The path where the images needed to display buttons will be found.
+   * @return returns an object implementing the FormButton interface. That's the new button to use.
+   * @param label The new button label
+   * @param action The action associated exemple : "javascript:history.back()", or
+   * "http://www.stratelia.com/"
+   * @param disabled Specify if the button is disabled or not. If disabled, no action will be
+   * possible.
+   * @param imagePath The path where the images needed to display buttons will be found.
    */
   public Button getFormButton(String label, String action, boolean disabled,
       String imagePath) {
@@ -495,7 +447,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new TabbedPane.
-   * 
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane() {
@@ -519,7 +470,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new TabbedPane.
-   * 
    * @return An object implementing the TabbedPane interface.
    */
   public TabbedPane getTabbedPane(int nbLines) {
@@ -543,18 +493,13 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   * 
    * @deprecated
-   * @param name
-   *          The name from your array. This name has to be unique in the
-   *          session. It will be used to put some information (including the
-   *          sorted column), in the session. exemple : "MyToDoArrayPane"
-   * @param pageContext
-   *          The page context computed by the servlet or JSP. The PageContext
-   *          is used to both get new request (sort on a new column), and keep
-   *          the current state (via the session).
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
+   * @param pageContext The page context computed by the servlet or JSP. The PageContext is used to
+   * both get new request (sort on a new column), and keep the current state (via the session).
    * @return An object implementing the ArrayPane interface.
-   * 
    */
   public ArrayPane getArrayPane(String name,
       javax.servlet.jsp.PageContext pageContext) {
@@ -577,19 +522,13 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   * 
    * @deprecated
-   * @param name
-   *          The name from your array. This name has to be unique in the
-   *          session. It will be used to put some information (including the
-   *          sorted column), in the session. exemple : "MyToDoArrayPane"
-   * @param request
-   *          The http request (to get entering action, like sort operation)
-   * @param session
-   *          The client session (to get the old status, like on which column we
-   *          are sorted)
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
+   * @param request The http request (to get entering action, like sort operation)
+   * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.
-   * 
    */
   public ArrayPane getArrayPane(String name,
       javax.servlet.ServletRequest request,
@@ -613,22 +552,14 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   * 
-   * @param name
-   *          The name from your array. This name has to be unique in the
-   *          session. It will be used to put some information (including the
-   *          sorted column), in the session. exemple : "MyToDoArrayPane"
-   * @param url
-   *          The url to root sorting action. This url can contain parameters.
-   *          exemple :
-   *          http://localhost/webactiv/Rkmelia/topicManager?topicId=12
-   * @param request
-   *          The http request (to get entering action, like sort operation)
-   * @param session
-   *          The client session (to get the old status, like on which column we
-   *          are sorted)
+   * @param name The name from your array. This name has to be unique in the session. It will be used
+   * to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
+   * @param url The url to root sorting action. This url can contain parameters. exemple :
+   * http://localhost/webactiv/Rkmelia/topicManager?topicId=12
+   * @param request The http request (to get entering action, like sort operation)
+   * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.
-   * 
    */
   public ArrayPane getArrayPane(String name, String url,
       javax.servlet.ServletRequest request,
@@ -652,7 +583,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new main Window using the object specified in the properties.
-   * 
    * @return An object implementing Window interface
    */
   public Window getWindow() {
@@ -673,7 +603,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ButtonPane.
-   * 
    * @return An object implementing the ButtonPane interface
    */
   public ButtonPane getButtonPane() {
@@ -692,7 +621,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new IconPane.
-   * 
    * @return An object implementing the IconPane interface.
    */
   public IconPane getIconPane() {
@@ -709,7 +637,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new FormPane.
-   * 
    * @param name
    * @param actionURL
    * @param pageContext
@@ -722,7 +649,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new OperationPane.
-   * 
    * @return An object implementing the OperationPane interface.
    */
   public OperationPane getOperationPane() {
@@ -742,7 +668,6 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new BrowseBar.
-   * 
    * @return An object implementing the BrowseBar interface.
    */
   public BrowseBar getBrowseBar() {
@@ -761,9 +686,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new monthCalendar.
-   * 
-   * @param String
-   *          : the language to use by the monthCalendar
+   * @param String : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
   public MonthCalendar getMonthCalendar(String language) {
@@ -772,9 +695,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new Calendar.
-   * 
-   * @param String
-   *          : the language to use by the monthCalendar
+   * @param String : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
   public Calendar getCalendar(String context, String language, Date date) {

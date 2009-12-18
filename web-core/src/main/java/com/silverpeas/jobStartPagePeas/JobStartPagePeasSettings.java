@@ -32,7 +32,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class manage the informations needed for job start page
- * 
  * @c.bonin
  */
 public class JobStartPagePeasSettings {

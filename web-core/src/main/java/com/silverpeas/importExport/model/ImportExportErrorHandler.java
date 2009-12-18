@@ -29,7 +29,6 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author neysseri
- *
  */
 public class ImportExportErrorHandler implements ErrorHandler {
 

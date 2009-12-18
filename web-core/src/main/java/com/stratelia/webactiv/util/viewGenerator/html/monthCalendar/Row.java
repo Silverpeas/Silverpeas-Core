@@ -56,8 +56,6 @@ import java.util.Vector;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 class Row extends Object {
@@ -74,8 +72,6 @@ class Row extends Object {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public Row() {
@@ -84,10 +80,7 @@ class Row extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getListEvent() {
@@ -96,10 +89,7 @@ class Row extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param evt
-   * 
    * @see
    */
   public void addEventIntRow(Event evt) {

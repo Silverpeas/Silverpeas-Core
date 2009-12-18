@@ -51,8 +51,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 
 /**
- * PortletRegistryHelper is a Helper class to write to and read from the portlet
- * registry xml files.
+ * PortletRegistryHelper is a Helper class to write to and read from the portlet registry xml files.
  */
 public class PortletRegistryHelper implements PortletRegistryTags {
 

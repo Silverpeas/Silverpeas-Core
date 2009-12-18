@@ -31,10 +31,9 @@ import com.silverpeas.util.StringUtil;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletRegistryReader reads the specified registry xml file into a DOM
- * Document. The registry xml files can be portlet-app-registry.xml
- * portlet-window-registry.xml portlet-window-preference-registry.xml.
- * 
+ * PortletRegistryReader reads the specified registry xml file into a DOM Document. The registry xml
+ * files can be portlet-app-registry.xml portlet-window-registry.xml
+ * portlet-window-preference-registry.xml.
  */
 public abstract class PortletRegistryReader {
 
@@ -64,11 +63,8 @@ public abstract class PortletRegistryReader {
   }
 
   /**
-   * Reads the specified registry xml file in to the appropriate Portlet
-   * Registry Object.
-   * 
-   * @return a <code>PortletRegistryObject</code>, that represents the registry
-   *         xml file.
+   * Reads the specified registry xml file in to the appropriate Portlet Registry Object.
+   * @return a <code>PortletRegistryObject</code>, that represents the registry xml file.
    */
   public PortletRegistryObject readDocument() throws PortletRegistryException {
     PortletRegistryObject portletRegistryObject = create();
@@ -78,7 +74,6 @@ public abstract class PortletRegistryReader {
 
   /**
    * Creates specific Portlet Registry Object.
-   * 
    * @return a specific <code>PortletRegistryObject</code>.
    */
   public abstract PortletRegistryObject create();

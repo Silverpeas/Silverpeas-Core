@@ -35,9 +35,8 @@ package com.stratelia.webactiv.util.viewGenerator.html.navigationList;
 import java.util.Collection;
 
 /**
- * Item of a list. This item must contain a label and an URL ; and optionnally
- * it can have a number of elements and a string (informations).
- * 
+ * Item of a list. This item must contain a label and an URL ; and optionnally it can have a number
+ * of elements and a string (informations).
  * @author lloiseau
  * @version 1.0
  */
@@ -52,7 +51,6 @@ public class Item {
 
   /**
    * Creates new Item Contain a label, number of elements and information
-   * 
    * @param label
    * @param URL
    * @param nbelem
@@ -67,7 +65,6 @@ public class Item {
 
   /**
    * Creates new Item Contain a label, number of elements and information
-   * 
    * @param label
    * @param URL
    * @param nbelem
@@ -104,10 +101,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLabel() {
@@ -118,10 +112,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param label
-   * 
    * @see
    */
   public void setLabel(String label) {
@@ -132,10 +123,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getURL() {
@@ -146,10 +134,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param URL
-   * 
    * @see
    */
   public void setURL(String URL) {
@@ -160,10 +145,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getNbelem() {
@@ -174,10 +156,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nbelem
-   * 
    * @see
    */
   public void setNbelem(int nbelem) {
@@ -188,10 +167,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getInfo() {
@@ -202,10 +178,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param info
-   * 
    * @see
    */
   public void setInfo(String info) {
@@ -216,10 +189,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getLinks() {
@@ -230,10 +200,7 @@ public class Item {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param links
-   * 
    * @see
    */
   public void setLinks(Collection links) {

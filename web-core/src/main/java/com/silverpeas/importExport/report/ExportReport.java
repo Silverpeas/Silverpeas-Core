@@ -29,7 +29,6 @@ import java.util.HashMap;
 
 /**
  * @author sdevolder
- * 
  */
 public class ExportReport {
 

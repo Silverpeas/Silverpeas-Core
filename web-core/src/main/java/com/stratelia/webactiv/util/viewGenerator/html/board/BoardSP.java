@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.board;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -48,27 +47,22 @@ public class BoardSP extends AbstractBoard {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
     String result = "";
 
     result += "<CENTER>";
-    result += "<TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor><TR><TD CLASS=intfdcolor4 NOWRAP>";
+    result +=
+        "<TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor><TR><TD CLASS=intfdcolor4 NOWRAP>";
 
     return result;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -82,10 +76,7 @@ public class BoardSP extends AbstractBoard {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

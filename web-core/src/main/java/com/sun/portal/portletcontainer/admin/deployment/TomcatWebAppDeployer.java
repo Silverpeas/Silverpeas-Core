@@ -35,8 +35,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 
 /**
- * The class which implements the WebAppDeployer interface to provide the
- * deployment and undeployment functionality for Portlets on Tomcat container.
+ * The class which implements the WebAppDeployer interface to provide the deployment and
+ * undeployment functionality for Portlets on Tomcat container.
  */
 public class TomcatWebAppDeployer implements WebAppDeployer {
 
@@ -46,8 +46,7 @@ public class TomcatWebAppDeployer implements WebAppDeployer {
   private String autoDeployDirectory;
 
   /**
-   * Initialize the autoDeployDirectory by reading the configuration data from
-   * the config file.
+   * Initialize the autoDeployDirectory by reading the configuration data from the config file.
    */
   public TomcatWebAppDeployer() throws Exception {
     String portletContainerConfigDir = PortletRegistryHelper
@@ -77,9 +76,7 @@ public class TomcatWebAppDeployer implements WebAppDeployer {
 
   /**
    * Provides the implementation of deploying Portlet war on Tomcat.
-   * 
-   * @param warFileName
-   *          The complete path to the Portlet war file.
+   * @param warFileName The complete path to the Portlet war file.
    * @return boolean Returns true if the deployment is successful.
    */
   public boolean deploy(String warFileName) throws WebAppDeployerException {
@@ -112,9 +109,7 @@ public class TomcatWebAppDeployer implements WebAppDeployer {
 
   /**
    * Provides the implementation of undeploying Portlet war from Tomcat.
-   * 
-   * @param warFileName
-   *          The complete path to the Portlet war file.
+   * @param warFileName The complete path to the Portlet war file.
    * @return boolean Returns true if the deployment is successful.
    */
   public boolean undeploy(String warFileName) throws WebAppDeployerException {

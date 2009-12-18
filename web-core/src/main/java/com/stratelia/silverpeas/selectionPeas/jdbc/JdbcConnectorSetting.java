@@ -25,7 +25,6 @@ package com.stratelia.silverpeas.selectionPeas.jdbc;
 
 /**
  * JDBC connection setting.
- * 
  * @author Antoine HEDIN
  */
 public class JdbcConnectorSetting {

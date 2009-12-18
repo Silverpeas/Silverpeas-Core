@@ -28,8 +28,7 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.admin.PortletRegistryReader;
 
 /**
- * PortletWindowRegistryReader is responsible for reading the
- * portlet-window-registry.xml file
+ * PortletWindowRegistryReader is responsible for reading the portlet-window-registry.xml file
  */
 public class PortletWindowRegistryReader extends PortletRegistryReader {
 

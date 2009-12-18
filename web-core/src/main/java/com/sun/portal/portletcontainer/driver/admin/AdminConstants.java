@@ -29,26 +29,45 @@ package com.sun.portal.portletcontainer.driver.admin;
 public interface AdminConstants {
   // Attributes used in the session
   public final String PORTLETS_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.portlets";
-  public final String PORTLET_APPLICATIONS_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.portletApplications";
+  public final String PORTLET_APPLICATIONS_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.portletApplications";
   public final String PORTLETS_LABEL = "com.sun.portal.portletcontainer.driver.admin.portletsLabel";
-  public final String PORTLET_WINDOWS_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.portletWindows";
-  public final String SHOW_WINDOW_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.showWindow";
-  public final String HIDE_WINDOW_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.hideWindow";
-  public final String THICK_WINDOW_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.thickWindow";
-  public final String THIN_WINDOW_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.thinWindow";
-  public final String CREATION_SUCCEEDED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.creationSucceeded";
-  public final String CREATION_FAILED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.creationFailed";
-  public final String DEPLOYMENT_SUCCEEDED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.deploymentSucceeded";
-  public final String DEPLOYMENT_FAILED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.deploymentFailed";
-  public final String UNDEPLOYMENT_SUCCEEDED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.undeploymentSucceeded";
-  public final String UNDEPLOYMENT_FAILED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.undeploymentFailed";
-  public final String MODIFY_SUCCEEDED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.modifySucceeded";
-  public final String MODIFY_FAILED_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.modifyFailed";
-  public final String NO_WINDOW_DATA_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.noWindowData";
-  public final String SELECTED_PORTLET_WINDOW_ATTRIBUTE = "com.sun.portal.portletcontainer.driver.admin.selectedPortletWindow";
-  public final String CURRENT_SILVERPEAS_ELEMENT_ID = "com.silverpeas.portletcontainer.driver.admin.silverpeasElementId";
-  public final String CURRENT_SILVERPEAS_SPACE_ID = "com.silverpeas.portletcontainer.driver.admin.silverpeasSpaceId";
-  public final String CURRENT_SILVERPEAS_USER_ID = "com.silverpeas.portletcontainer.driver.admin.silverpeasUserId";
+  public final String PORTLET_WINDOWS_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.portletWindows";
+  public final String SHOW_WINDOW_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.showWindow";
+  public final String HIDE_WINDOW_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.hideWindow";
+  public final String THICK_WINDOW_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.thickWindow";
+  public final String THIN_WINDOW_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.thinWindow";
+  public final String CREATION_SUCCEEDED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.creationSucceeded";
+  public final String CREATION_FAILED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.creationFailed";
+  public final String DEPLOYMENT_SUCCEEDED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.deploymentSucceeded";
+  public final String DEPLOYMENT_FAILED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.deploymentFailed";
+  public final String UNDEPLOYMENT_SUCCEEDED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.undeploymentSucceeded";
+  public final String UNDEPLOYMENT_FAILED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.undeploymentFailed";
+  public final String MODIFY_SUCCEEDED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.modifySucceeded";
+  public final String MODIFY_FAILED_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.modifyFailed";
+  public final String NO_WINDOW_DATA_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.noWindowData";
+  public final String SELECTED_PORTLET_WINDOW_ATTRIBUTE =
+      "com.sun.portal.portletcontainer.driver.admin.selectedPortletWindow";
+  public final String CURRENT_SILVERPEAS_ELEMENT_ID =
+      "com.silverpeas.portletcontainer.driver.admin.silverpeasElementId";
+  public final String CURRENT_SILVERPEAS_SPACE_ID =
+      "com.silverpeas.portletcontainer.driver.admin.silverpeasSpaceId";
+  public final String CURRENT_SILVERPEAS_USER_ID =
+      "com.silverpeas.portletcontainer.driver.admin.silverpeasUserId";
 
   public final String PORTLETS_TAB = "portlets";
   public final String ADMIN_TAB = "admin";
@@ -95,5 +114,6 @@ public interface AdminConstants {
   public final String INVALID_PORTLET_APP = "portlets.admin.invalidPortletApp";
   public final String NO_PORTLET_APP = "portlets.admin.noPortletApp";
   public final String NO_BASE_PORTLET_WINDOW = "portlets.admin.noBasePortletWindow";
-  public final String PORTLET_WINDOW_NAME_ALREADY_EXISTS = "portlets.admin.portletWindowNameAlreadyExists";
+  public final String PORTLET_WINDOW_NAME_ALREADY_EXISTS =
+      "portlets.admin.portletWindowNameAlreadyExists";
 }

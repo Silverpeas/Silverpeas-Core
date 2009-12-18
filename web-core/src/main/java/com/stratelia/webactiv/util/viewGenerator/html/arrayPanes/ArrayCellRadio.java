@@ -55,8 +55,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
@@ -78,13 +76,10 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param value
    * @param checked
    * @param line
-   * 
    * @see
    */
   public ArrayCellRadio(String name, String value, boolean checked,
@@ -101,10 +96,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param cellAlign
-   * 
    * @see
    */
   public void setCellAlign(String cellAlign) {
@@ -113,10 +105,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -125,10 +114,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getValue() {
@@ -137,10 +123,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getChecked() {
@@ -156,9 +139,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Set the JavaScript action e.g. "onLoad=doOnLoad();"
-   * 
-   * @param strAction
-   *          the event name and the action
+   * @param strAction the event name and the action
    */
   public void setAction(String strAction) {
     action = strAction;
@@ -170,10 +151,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getSyntax() {
@@ -213,10 +191,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

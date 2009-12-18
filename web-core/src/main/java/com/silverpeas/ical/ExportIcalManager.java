@@ -76,7 +76,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * @author dle
- * 
  */
 public class ExportIcalManager {
 
@@ -94,7 +93,6 @@ public class ExportIcalManager {
 
   /**
    * Constructor for Servlet SubscribeAgenda call
-   * 
    * @param userId
    */
   public ExportIcalManager(String userId) {
@@ -112,7 +110,6 @@ public class ExportIcalManager {
 
   /**
    * Export Calendar in Ical file format
-   * 
    * @param startDate
    * @param endDate
    * @return ReturnCode
@@ -155,7 +152,6 @@ public class ExportIcalManager {
 
   /**
    * Export Calendar in Ical file format
-   * 
    * @return
    * @throws Exception
    * @throws AgendaException
@@ -171,7 +167,6 @@ public class ExportIcalManager {
 
   /**
    * Export Calendar in Ical format (call by SubscribeAgenda)
-   * 
    * @param startDate
    * @param endDate
    * @return ReturnCode
@@ -210,7 +205,6 @@ public class ExportIcalManager {
 
   /**
    * Get Ical header
-   * 
    * @return CalendarIcs
    */
   private Calendar getIcsCalendarHeader() {
@@ -224,7 +218,6 @@ public class ExportIcalManager {
 
   /**
    * Get Ical contents
-   * 
    * @param calendarIcs
    * @param startDate
    * @param endDate
@@ -240,7 +233,7 @@ public class ExportIcalManager {
         "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
         "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
-            + endDate);
+        + endDate);
     boolean exportAll = true;
     if (StringUtil.isDefined(startDate) && StringUtil.isDefined(startDate))
       exportAll = false;
@@ -251,7 +244,7 @@ public class ExportIcalManager {
           "root.MSG_GEN_PARAM_VALUE", "exportAll");
       SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
           "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
-              + endDate);
+          + endDate);
     }
 
     Iterator itSchedules = getSchedulableCalendar(startDate, endDate)
@@ -266,8 +259,8 @@ public class ExportIcalManager {
         SilverTrace.debug("agenda",
             "ExportIcalManager.getIcsCalendarContent()",
             "root.MSG_GEN_PARAM_VALUE", "eventAgenda.getStartDay()="
-                + eventAgenda.getStartDay() + " eventAgenda.getStartDate()="
-                + eventAgenda.getStartDate());
+            + eventAgenda.getStartDay() + " eventAgenda.getStartDate()="
+            + eventAgenda.getStartDate());
 
         // Conv startDateTime and endDateTime in ICal format
         DateTime startDateTime = new DateTime(eventAgenda.getStartDate());
@@ -332,7 +325,6 @@ public class ExportIcalManager {
 
   /**
    * Get All events between period
-   * 
    * @param startDate
    * @param endDate
    * @return Collections of Schedulable events
@@ -349,7 +341,6 @@ public class ExportIcalManager {
 
   /**
    * Method declaration
-   * 
    * @see
    */
   private void setCalendarBm() {

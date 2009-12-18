@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 /**
- * 
  * @author groccia
  * @version
  */

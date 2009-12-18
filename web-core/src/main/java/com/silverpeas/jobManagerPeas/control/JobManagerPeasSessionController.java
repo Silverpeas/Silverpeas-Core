@@ -45,12 +45,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class JobManagerPeasSessionController extends
-    AbstractComponentSessionController {
+public class JobManagerPeasSessionController extends AbstractComponentSessionController {
   // variables gloabes
   private Hashtable services = null;
 
@@ -60,13 +57,8 @@ public class JobManagerPeasSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public JobManagerPeasSessionController(MainSessionController mainSessionCtrl,
@@ -100,15 +92,15 @@ public class JobManagerPeasSessionController extends
     // initialisation des opérations du services jDesigner
     JobManagerService jdp = new JobManagerService("11", "JDP",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_JOBDOMAINPEAS) + "Main", null,
+        + URLManager.getURL(URLManager.CMP_JOBDOMAINPEAS) + "Main", null,
         false);
     JobManagerService jspp = new JobManagerService("12", "JSPP",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS) + "Main",
+        + URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS) + "Main",
         null, false);
     JobManagerService jrp = new JobManagerService("13", "JRP",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_JOBORGANIZATIONPEAS) + "Main",
+        + URLManager.getURL(URLManager.CMP_JOBORGANIZATIONPEAS) + "Main",
         null, false);
 
     // tools
@@ -118,45 +110,45 @@ public class JobManagerPeasSessionController extends
     // false);
     JobManagerService jImportExport = new JobManagerService("42", "JIE",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL("importExportPeas") + "Main", null, false);
+        + URLManager.getURL("importExportPeas") + "Main", null, false);
     JobManagerService jSpecificAuthent = new JobManagerService("43", "JSA",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL("specificAuthent") + "Main", null, false);
+        + URLManager.getURL("specificAuthent") + "Main", null, false);
     JobManagerService jtd = new JobManagerService("44", "JTD",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_TEMPLATEDESIGNER) + "Main",
+        + URLManager.getURL(URLManager.CMP_TEMPLATEDESIGNER) + "Main",
         null, false);
     JobManagerService jWorkflowDesigner = new JobManagerService("45", "JWD",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL("workflowDesigner") + "Main", null, false);
+        + URLManager.getURL("workflowDesigner") + "Main", null, false);
     JobManagerService portletDeployer = new JobManagerService("46", "portlets",
         JobManagerService.LEVEL_OPERATION, m_context + "/portletDeployer",
         null, false);
     JobManagerService jst = new JobManagerService("47", "JST",
         JobManagerService.LEVEL_OPERATION, m_context
-            + "/admin/jsp/ExploitationSilverTrace.jsp", null, false);
+        + "/admin/jsp/ExploitationSilverTrace.jsp", null, false);
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_PDC) + "Main", null, false);
+        + URLManager.getURL(URLManager.CMP_PDC) + "Main", null, false);
     JobManagerService jKM2 = new JobManagerService("22", "JKM2",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_THESAURUS) + "Main", null, false);
+        + URLManager.getURL(URLManager.CMP_THESAURUS) + "Main", null, false);
 
     // initialisation des opérations du service jSTAT
     JobManagerService jSTAT1 = new JobManagerService("31", "JSTAT1",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS) + "Main",
+        + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS) + "Main",
         null, false); // ViewConnection
     JobManagerService jSTAT2 = new JobManagerService("32", "JSTAT2",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS)
-            + "ViewAccess", null, false);
+        + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS)
+        + "ViewAccess", null, false);
     JobManagerService jSTAT3 = new JobManagerService("33", "JSTAT3",
         JobManagerService.LEVEL_OPERATION, m_context
-            + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS)
-            + "ViewVolumeServices", null, false);
+        + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS)
+        + "ViewVolumeServices", null, false);
 
     boolean kmServiceAllowed = false;
     int nbServices = 0;
@@ -215,7 +207,7 @@ public class JobManagerPeasSessionController extends
 
           jTools = new JobManagerService("4", "JTOOLS",
               JobManagerService.LEVEL_SERVICE, null, (String[]) ids
-                  .toArray(new String[0]), false);
+              .toArray(new String[0]), false);
           services.put(jTools.getId(), jTools);
         }
       }
@@ -362,7 +354,7 @@ public class JobManagerPeasSessionController extends
         SilverTrace.debug("jobManagerPeas",
             "jobManagerPeasSessionController.getServices()",
             "root.MSG_GEN_PARAM_VALUE", " jms id=" + jms.getId()
-                + "  jms label=" + jms.getLabel());
+            + "  jms label=" + jms.getLabel());
         listServices.add(jms);
       }
     }
@@ -372,11 +364,11 @@ public class JobManagerPeasSessionController extends
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
     SilverTrace
         .debug(
-            "jobManagerPeas",
-            "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-            "root.MSG_GEN_PARAM_VALUE", "ENTER jmsParent id="
-                + jmsParent.getId() + " jmsParent label="
-                + jmsParent.getLabel());
+        "jobManagerPeas",
+        "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
+        "root.MSG_GEN_PARAM_VALUE", "ENTER jmsParent id="
+        + jmsParent.getId() + " jmsParent label="
+        + jmsParent.getLabel());
     ArrayList listChild = new ArrayList();
     String[] idSubServices = jmsParent.getIdSubServices();
     for (int i = 0; i < idSubServices.length; i++) {
@@ -385,11 +377,11 @@ public class JobManagerPeasSessionController extends
       if (jmsChild != null) {
         SilverTrace
             .debug(
-                "jobManagerPeas",
-                "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-                "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
-                    + jmsChild.getId() + " jmsChild label="
-                    + jmsChild.getLabel());
+            "jobManagerPeas",
+            "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
+            "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
+            + jmsChild.getId() + " jmsChild label="
+            + jmsChild.getLabel());
         listChild.add(jmsChild);
       }
     }
@@ -408,10 +400,10 @@ public class JobManagerPeasSessionController extends
     // mise a jour de l'id actif et de l'objet correspondant
     SilverTrace
         .debug(
-            "jobManagerPeas",
-            "jobManagerPeasSessionController.changeServiceActif(String idNewService)",
-            "root.MSG_GEN_PARAM_VALUE", "ENTER idCurrentServiceActif="
-                + idCurrentServiceActif + " idNewService=" + idNewService);
+        "jobManagerPeas",
+        "jobManagerPeasSessionController.changeServiceActif(String idNewService)",
+        "root.MSG_GEN_PARAM_VALUE", "ENTER idCurrentServiceActif="
+        + idCurrentServiceActif + " idNewService=" + idNewService);
     if (this.idCurrentServiceActif != null) {// si = null, nous sommes dans la
       // première initialisation de
       // idCurrentServiceActif
@@ -450,10 +442,10 @@ public class JobManagerPeasSessionController extends
 
     SilverTrace
         .debug(
-            "jobManagerPeas",
-            "jobManagerPeasSessionController.changeServiceActif(String idNewService)",
-            "root.MSG_GEN_PARAM_VALUE", "END idCurrentServiceActif="
-                + idCurrentServiceActif + " idNewService=" + idNewService);
+        "jobManagerPeas",
+        "jobManagerPeasSessionController.changeServiceActif(String idNewService)",
+        "root.MSG_GEN_PARAM_VALUE", "END idCurrentServiceActif="
+        + idCurrentServiceActif + " idNewService=" + idNewService);
 
   }
 
@@ -469,9 +461,9 @@ public class JobManagerPeasSessionController extends
     ((JobManagerService) services.get(idCurrentOperationActif)).setActif(false);
     SilverTrace
         .debug(
-            "jobManagerPeas",
-            "jobManagerPeasSessionController.changeOperationActif(String idNewOperation)",
-            "root.MSG_GEN_PARAM_VALUE", "END idNewOperation=" + idNewOperation);
+        "jobManagerPeas",
+        "jobManagerPeasSessionController.changeOperationActif(String idNewOperation)",
+        "root.MSG_GEN_PARAM_VALUE", "END idNewOperation=" + idNewOperation);
 
     ((JobManagerService) services.get(idNewOperation)).setActif(true);
     this.idCurrentOperationActif = idNewOperation;

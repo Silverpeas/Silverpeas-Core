@@ -30,22 +30,38 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * The PortletAdminData is responsible for administering portlets.
- * The includes deploying/undeploying portlets, creating/modifying portlet windows.
+ * The PortletAdminData is responsible for administering portlets. The includes
+ * deploying/undeploying portlets, creating/modifying portlet windows.
  */
 public interface PortletAdminData {
-    public void init(PortletRegistryContext portletRegistryContext) throws PortletRegistryException;
-    public boolean deploy(String warName, boolean deployToContainer) throws Exception;
-    public boolean deploy(String warName, String rolesFilename, String userInfoFilename, boolean deployToContainer) throws Exception;
-    public boolean undeploy(String warName, boolean undeployFromContainer) throws Exception;
-    public List<PortletAppData> getPortlets(String locale);
-    public List<String> getPortletNames();
-    public List<String> getPortletDisplayNames(String locale);
-    public List<String> getPortletApplicationNames();
-    public List<String> getPortletWindowNames();
-    public boolean createPortletWindow(String portletName, String portletWindowName, String title) throws Exception;
-    public boolean modifyPortletWindow(String portletWindowName, String width, boolean visible, String row) throws Exception;
-    public boolean movePortletWindows(List portletWindows) throws Exception;
-    public boolean isVisible(String portletWindowName) throws Exception;
-    public String getWidth(String portletWindowName) throws Exception;
+  public void init(PortletRegistryContext portletRegistryContext) throws PortletRegistryException;
+
+  public boolean deploy(String warName, boolean deployToContainer) throws Exception;
+
+  public boolean deploy(String warName, String rolesFilename, String userInfoFilename,
+      boolean deployToContainer) throws Exception;
+
+  public boolean undeploy(String warName, boolean undeployFromContainer) throws Exception;
+
+  public List<PortletAppData> getPortlets(String locale);
+
+  public List<String> getPortletNames();
+
+  public List<String> getPortletDisplayNames(String locale);
+
+  public List<String> getPortletApplicationNames();
+
+  public List<String> getPortletWindowNames();
+
+  public boolean createPortletWindow(String portletName, String portletWindowName, String title)
+      throws Exception;
+
+  public boolean modifyPortletWindow(String portletWindowName, String width, boolean visible,
+      String row) throws Exception;
+
+  public boolean movePortletWindows(List portletWindows) throws Exception;
+
+  public boolean isVisible(String portletWindowName) throws Exception;
+
+  public String getWidth(String portletWindowName) throws Exception;
 }

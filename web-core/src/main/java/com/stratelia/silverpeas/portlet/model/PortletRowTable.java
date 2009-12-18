@@ -43,7 +43,8 @@ public class PortletRowTable extends AbstractTable {
   /**
    * The column list used for every select query.
    */
-  static final protected String PORTLETROW_COLUMNS = "id,InstanceId,portletColumnId,rowHeight,nbRow";
+  static final protected String PORTLETROW_COLUMNS =
+      "id,InstanceId,portletColumnId,rowHeight,nbRow";
 
   /**
    * Returns the unique PortletRow row having a given id

@@ -52,8 +52,6 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AbstractWindow() {
@@ -61,10 +59,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param gef
-   * 
    * @see
    */
   public void init(GraphicElementFactory gef) {
@@ -73,10 +68,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getBody() {
@@ -85,10 +77,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param body
-   * 
    * @see
    */
   public void addBody(String body) {
@@ -97,10 +86,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public GraphicElementFactory getGEF() {
@@ -109,30 +95,22 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getIconsPath() {
     /*
      * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr");
-     * 
-     * iconsPath = generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return
-     * iconsPath;
+     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
+     * generalSettings.getString("ApplicationURL") +
+     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
      */
     return GraphicElementFactory.getIconsPath();
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param width
-   * 
    * @see
    */
   public void setWidth(String width) {
@@ -141,10 +119,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getWidth() {
@@ -156,40 +131,28 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printBefore();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String printAfter();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public abstract String print();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public OperationPane getOperationPane() {
@@ -201,10 +164,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public BrowseBar getBrowseBar() {

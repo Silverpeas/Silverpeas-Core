@@ -24,8 +24,7 @@
 package com.sun.portal.portletcontainer.admin.registry;
 
 /**
- * PortletRegistryTags defines Tags that are used in the Portlet Registry XML
- * files.
+ * PortletRegistryTags defines Tags that are used in the Portlet Registry XML files.
  */
 
 public interface PortletRegistryTags {
@@ -39,7 +38,8 @@ public interface PortletRegistryTags {
   public static final String PORTLET_WINDOW_REGISTRY_TAG = "PortletWindowRegistry";
   public static final String PORTLET_WINDOW_TAG = "PortletWindow";
 
-  public static final String PORTLET_WINDOW_PREFERENCE_REGISTRY_TAG = "PortletWindowPreferenceRegistry";
+  public static final String PORTLET_WINDOW_PREFERENCE_REGISTRY_TAG =
+      "PortletWindowPreferenceRegistry";
   public static final String PORTLET_WINDOW_PREFERENCE_TAG = "PortletWindowPreference";
   public static final String LANG = "lang";
 

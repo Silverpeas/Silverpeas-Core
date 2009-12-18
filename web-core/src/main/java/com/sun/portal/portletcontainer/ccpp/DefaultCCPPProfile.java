@@ -31,37 +31,31 @@ import javax.ccpp.Profile;
 import javax.ccpp.ProfileDescription;
 
 /**
- * The DefaultCCPPProfile provides a dummy implementation of the CCPP Profile
- * object.
+ * The DefaultCCPPProfile provides a dummy implementation of the CCPP Profile object.
  */
 public class DefaultCCPPProfile implements Profile {
 
   /**
-   * Retrieves the attribute with the specified name contained within this
-   * profile. If an attribute is not unique within this profile, then the
-   * attribute returned is implementation specific. In this case, the attribute
-   * should instead be retrieved with
+   * Retrieves the attribute with the specified name contained within this profile. If an attribute
+   * is not unique within this profile, then the attribute returned is implementation specific. In
+   * this case, the attribute should instead be retrieved with
    * <code>getComponent(String).getAttribute(String)</code>.
    * <p>
-   * The object returned by this method, if not <code>null</code>, is an element
-   * of the <code>Set</code> returned by <code>getAttributes()</code>. The
-   * following expression will return <code>true</code>:
-   * <code>name.equals(getAttribute(name).getName())</code>.
+   * The object returned by this method, if not <code>null</code>, is an element of the
+   * <code>Set</code> returned by <code>getAttributes()</code>. The following expression will return
+   * <code>true</code>: <code>name.equals(getAttribute(name).getName())</code>.
    * </p>
-   * 
-   * @param name
-   *          the name of the attribute to retrieve
-   * @return the attribute with the specified name, or <code>null</code> if no
-   *         such attribute exists within this profile
+   * @param name the name of the attribute to retrieve
+   * @return the attribute with the specified name, or <code>null</code> if no such attribute exists
+   * within this profile
    */
   public Attribute getAttribute(String name) {
     return null;
   }
 
   /**
-   * Retrieves all the attributes contained within this profile as a
-   * <code>Set</code> of <code>Attribute</code> instances.
-   * 
+   * Retrieves all the attributes contained within this profile as a <code>Set</code> of
+   * <code>Attribute</code> instances.
    * @return all the attributes contained within this profile
    */
   public Set getAttributes() {
@@ -69,28 +63,23 @@ public class DefaultCCPPProfile implements Profile {
   }
 
   /**
-   * Retrieves the component with the specified local type (relative to the
-   * vocabulary) contained within this profile. The object returned by this
-   * method, if not <code>null</code>, is an element of the <code>Set</code>
-   * returned by <code>getComponents()</code>. The following expression will
-   * return <code>true</code>:
-   * <code>localtype.equals(getComponent(localtype).getDescription().getLocalType())</code>
-   * .
-   * 
-   * @param localtype
-   *          the local type of the component to retrieve as returned by
-   *          <code>Component.getDescription().getLocalType()</code>
-   * @return the component with the specified local type, or <code>null</code>
-   *         if no such component exists within this profile
+   * Retrieves the component with the specified local type (relative to the vocabulary) contained
+   * within this profile. The object returned by this method, if not <code>null</code>, is an
+   * element of the <code>Set</code> returned by <code>getComponents()</code>. The following
+   * expression will return <code>true</code>:
+   * <code>localtype.equals(getComponent(localtype).getDescription().getLocalType())</code> .
+   * @param localtype the local type of the component to retrieve as returned by
+   * <code>Component.getDescription().getLocalType()</code>
+   * @return the component with the specified local type, or <code>null</code> if no such component
+   * exists within this profile
    */
   public Component getComponent(String localtype) {
     return null;
   }
 
   /**
-   * Retrieves all the components contained within this profile as a
-   * <code>Set</code> of <code>Component</code> instances.
-   * 
+   * Retrieves all the components contained within this profile as a <code>Set</code> of
+   * <code>Component</code> instances.
    * @return all the components contained within this profile
    */
   public Set getComponents() {
@@ -99,7 +88,6 @@ public class DefaultCCPPProfile implements Profile {
 
   /**
    * Retrieves the object describing this profile.
-   * 
    * @return this profile's description object
    */
   public ProfileDescription getDescription() {

@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 /**
  * Classe de gestion des importations unitaires de thèmes dans KMelia pour le moteur d'importExport
  * de SilverPeas.
- * 
  * @author $Author$
  * @version $Revision$
  */
@@ -47,20 +46,17 @@ public class NodeTreesTypeManager {
 
   /**
    * Crée tous les thèmes (ou noeuds) unitairement définis tels que précisés dans le fichier
-   * d'import XML. La méthode est récursive pour chaque sous-noeud spécifié. Si un noeud existe déjà
-   * avec le même ID, l'algorithme interrompt la création de la branche correspondante (les
+   * d'import XML. La méthode est récursive pour chaque sous-noeud spécifié. Si un noeud existe
+   * déjà avec le même ID, l'algorithme interrompt la création de la branche correspondante (les
    * éventuels sous-noeuds ne seront pas créés) et il passe aux noeuds suivants.
    * <p>
    * Construit parallèlement un objet ComponentReport contenant les informations de création des
    * noeuds et nécéssaire au rapport détaillé.
    * </p>
-   * 
-   * @param userDetail
-   *          contient les informations sur l'utilisateur du moteur d'importExport
-   * @param nodeTreesType
-   *          objet mappé par castor contenant toutes les informations de création des noeuds
-   * @param targetComponentId
-   *          ID du composant par défaut dans lequel creer les noeuds.
+   * @param userDetail contient les informations sur l'utilisateur du moteur d'importExport
+   * @param nodeTreesType objet mappé par castor contenant toutes les informations de création des
+   * noeuds
+   * @param targetComponentId ID du composant par défaut dans lequel creer les noeuds.
    */
   public void processImport(UserDetail userDetail, NodeTreesType nodeTreesType,
       String targetComponentId) {
@@ -110,19 +106,14 @@ public class NodeTreesTypeManager {
 
   /**
    * Méthode récursive pour la création des noeuds et de leurs sous-noeuds.
-   * 
-   * @param node
-   *          noeud à créer (avec ses sous-noeuds éventuels).
-   * @param parentNode
-   *          noeud parent ou <code>null</code> pour désigner le noeud racine.
-   * @param gedIE
-   *          objet implémentant les méthodes utiles pour la gestion des thèmes et des publications.
-   * @param nbTopic
-   *          nombre courant de noeuds déjà créés.
-   * @param componentId
-   *          Identifiant du composant dans lequel on crée les noeuds.
-   * @return le nombre de noeuds augmentés par le nombre de créations effectuées avec succès lors de
-   *         l'appel à cette méthode.
+   * @param node noeud à créer (avec ses sous-noeuds éventuels).
+   * @param parentNode noeud parent ou <code>null</code> pour désigner le noeud racine.
+   * @param gedIE objet implémentant les méthodes utiles pour la gestion des thèmes et des
+   * publications.
+   * @param nbTopic nombre courant de noeuds déjà créés.
+   * @param componentId Identifiant du composant dans lequel on crée les noeuds.
+   * @return le nombre de noeuds augmentés par le nombre de créations effectuées avec succès
+   * lors de l'appel à cette méthode.
    */
   private int processImportNodeInternal(NodeDetail node, NodeDetail parentNode,
       GEDImportExport gedIE, int nbTopic, String componentId) {

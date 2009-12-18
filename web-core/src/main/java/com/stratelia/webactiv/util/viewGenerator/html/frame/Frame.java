@@ -35,9 +35,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.frame;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * Frame is an interface to be implemented by a graphic element to print a frame
- * in an html format.
- * 
+ * Frame is an interface to be implemented by a graphic element to print a frame in an html format.
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -60,37 +58,27 @@ public interface Frame extends SimpleGraphicElement {
 
   /**
    * Print the Frame in an html format
-   * 
    * @return The Frame representation
    */
   public String print();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printMiddle();
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter();

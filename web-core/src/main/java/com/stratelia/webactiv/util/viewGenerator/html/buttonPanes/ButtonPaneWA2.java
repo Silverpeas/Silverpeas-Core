@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -46,8 +45,6 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public ButtonPaneWA2() {
@@ -56,10 +53,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String horizontalPrint() {
@@ -88,10 +82,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String verticalPrint() {
@@ -116,10 +107,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

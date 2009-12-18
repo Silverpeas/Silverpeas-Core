@@ -46,16 +46,12 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public ArrayEmptyCell() {
@@ -63,12 +59,8 @@ public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public int compareTo(final java.lang.Object other) {
@@ -80,10 +72,7 @@ public class ArrayEmptyCell implements Comparable, SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

@@ -56,11 +56,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  */
 
 /**
- * This class manage the informations needed for groups navigation and browse
- * 
- * PRE-REQUIRED : the Group passed in the constructor MUST BE A VALID GROUP
- * (with Id, etc...)
- * 
+ * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
+ * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
  * @t.leroi
  */
 public class NavigationStock extends Object {

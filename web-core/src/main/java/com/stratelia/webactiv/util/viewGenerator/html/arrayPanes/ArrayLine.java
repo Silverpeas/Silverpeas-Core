@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 
 /**
- * 
  * @author squere
  * @version
  */
@@ -53,10 +52,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param pane
-   * 
    * @see
    */
   public ArrayLine(ArrayPane pane) {
@@ -71,10 +67,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param css
-   * 
    * @see
    */
   public void setStyleSheet(String css) {
@@ -83,10 +76,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getStyleSheet() {
@@ -95,12 +85,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param text
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayCellText addArrayCellText(String text) {
@@ -123,13 +109,9 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param text
    * @param link
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayCellLink addArrayCellLink(String text, String link) {
@@ -141,7 +123,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Add an ArrayCellLink with Target
-   * 
    * @author dlesimple
    * @param text
    * @param link
@@ -157,10 +138,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayEmptyCell addArrayEmptyCell() {
@@ -172,12 +150,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconPane
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayCellIconPane addArrayCellIconPane(IconPane iconPane) {
@@ -188,9 +162,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   /**
-   * This method permit to add a input box without format in the arrayPane.
-   * Input box parameters are name and value
-   * 
+   * This method permit to add a input box without format in the arrayPane. Input box parameters are
+   * name and value
    * @param name
    * @param value
    */
@@ -203,7 +176,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * To add an ArrayCellInputText to an ArrayLine
-   * 
    * @param cell
    * @return
    */
@@ -213,15 +185,11 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   /**
-   * This method permits to add a select drop-down box without format in the
-   * arrayPane. Select box parameters are name, labels and values
-   * 
-   * @param name
-   *          The name of the element
-   * @param astrLabels
-   *          an array of Labels to display
-   * @param astrValues
-   *          an array of Values to return
+   * This method permits to add a select drop-down box without format in the arrayPane. Select box
+   * parameters are name, labels and values
+   * @param name The name of the element
+   * @param astrLabels an array of Labels to display
+   * @param astrValues an array of Values to return
    * @return an ArrayCellSelect object.
    */
   public ArrayCellSelect addArrayCellSelect(String name, String[] astrLabels,
@@ -234,9 +202,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   /**
-   * This method permit to add a button in the arrayPane. Button parameters are
-   * name, value, and if the button is disabled or not.
-   * 
+   * This method permit to add a button in the arrayPane. Button parameters are name, value, and if
+   * the button is disabled or not.
    * @param name
    * @param value
    * @param activate
@@ -251,7 +218,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * This method permit to add a radiobutton in the arrayPane.
-   * 
    * @param name
    * @param value
    * @param checked
@@ -266,7 +232,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * This method permit to add a checkbox in the arrayPane.
-   * 
    * @param name
    * @param value
    * @param checked
@@ -281,12 +246,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param column
-   * 
    * @return
-   * 
    * @see
    */
   public SimpleGraphicElement getCellAt(int column) {
@@ -299,10 +260,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public static String printPseudoColumn() {
@@ -311,10 +269,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -332,10 +287,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   /**
-   * This method works like the {@link #print()} method, but inserts
-   * pseudocolumns after each column. This is useful when a 0 cellspacing is
-   * used.
-   * 
+   * This method works like the {@link #print()} method, but inserts pseudocolumns after each
+   * column. This is useful when a 0 cellspacing is used.
    * @see printPseudoColumn()
    */
   public String printWithPseudoColumns() {
@@ -356,12 +309,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public int compareTo(final java.lang.Object other) {
@@ -373,7 +322,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
     if (!(other instanceof ArrayLine)) {
       SilverTrace.info("viewgenerator", "ArrayLine.compareTo()",
           "root.MSG_GEN_PARAM_VALUE", " other not an ArrayLine : other="
-              + other.toString());
+          + other.toString());
       return 0;
     }
     ArrayLine tmp = (ArrayLine) other;
@@ -390,7 +339,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
     if (!(cell instanceof Comparable)) {
       SilverTrace.info("viewgenerator", "ArrayLine.compareTo()",
           "root.MSG_GEN_PARAM_VALUE", " cell not Comparable : cell="
-              + cell.toString());
+          + cell.toString());
       return 0;
     }
     sort = ((Comparable) cell).compareTo(tmp.getCellAt(sort));

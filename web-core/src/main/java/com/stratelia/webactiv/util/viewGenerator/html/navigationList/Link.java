@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.navigationList;
 
 /**
- * 
  * @author lloiseau
  * @version 1.0
  */
@@ -54,10 +53,7 @@ public class Link extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLabel() {
@@ -68,10 +64,7 @@ public class Link extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param label
-   * 
    * @see
    */
   public void setLabel(String label) {
@@ -82,10 +75,7 @@ public class Link extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getURL() {
@@ -96,10 +86,7 @@ public class Link extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param URL
-   * 
    * @see
    */
   public void setURL(String URL) {

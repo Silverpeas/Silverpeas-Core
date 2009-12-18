@@ -52,12 +52,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
-    Comparable {
+public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement, Comparable {
 
   private String text = null;
   private String alignement = null;
@@ -69,12 +66,9 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param text
    * @param link
    * @param line
-   * 
    * @see
    */
   public ArrayCellLink(String text, String link, ArrayLine line) {
@@ -85,13 +79,10 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param text
    * @param link
    * @param info
    * @param line
-   * 
    * @see
    */
   public ArrayCellLink(String text, String link, String info, ArrayLine line) {
@@ -103,10 +94,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getText() {
@@ -154,10 +142,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLink() {
@@ -166,10 +151,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getInfo() {
@@ -186,12 +168,8 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public int compareTo(final java.lang.Object other) {
@@ -209,10 +187,7 @@ public class ArrayCellLink extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

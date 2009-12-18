@@ -141,7 +141,7 @@ public abstract class RssServlet extends HttpServlet {
           // exportation du channel
           String encoding = "ISO-8859-1";
           res.setContentType("application/rss+xml");
-          res.setHeader("Content-Disposition", "inline; filename=feeds.rss" );
+          res.setHeader("Content-Disposition", "inline; filename=feeds.rss");
           Writer writer = res.getWriter();
           RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, encoding);
           rssExporter.write(channel);

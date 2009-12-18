@@ -29,8 +29,8 @@ import java.util.Map;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * PortletAppRegistryContext provides information pertaining to the portlet app
- * registry. This includes information about portlets.
+ * PortletAppRegistryContext provides information pertaining to the portlet app registry. This
+ * includes information about portlets.
  */
 public interface PortletAppRegistryContext {
 

@@ -40,10 +40,8 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class ImportReport {
 
@@ -132,7 +130,6 @@ public class ImportReport {
 
   /**
    * Méthode de formatage du rapport en vue de l'écriture d'un fichier de log
-   * 
    * @param resource
    * @return
    */
@@ -174,7 +171,7 @@ public class ImportReport {
       sb.append(resource.getString("importExportPeas.TotalFileUploadedSize")
           + " : "
           + FileRepositoryManager.formatFileSize(componentRpt
-              .getTotalImportedFileSize()) + "\n");
+          .getTotalImportedFileSize()) + "\n");
       // Affichage des rapports unitaires
       List unitReports = componentRpt.getListUnitReports();
       if (unitReports != null) {
@@ -190,12 +187,12 @@ public class ImportReport {
                 + resource.getString("GML.error")
                 + " : "
                 + resource.getString("importExportPeas.ImportError"
-                    + unitReport.getError())
+                + unitReport.getError())
                 + ", "
                 + resource.getString("importExportPeas.Status")
                 + " : "
                 + resource.getString("importExportPeas.ImportStatus"
-                    + unitReport.getStatus()) + "\n");
+                + unitReport.getStatus()) + "\n");
           }
         }
       }
@@ -213,7 +210,7 @@ public class ImportReport {
             sb.append(resource.getString("GML.error")
                 + " : "
                 + resource.getString("importExportPeas.ImportError"
-                    + massiveReport.getError()) + "\n");
+                + massiveReport.getError()) + "\n");
           }
           sb.append(resource.getString("importExportPeas.NbPubCreated") + " : "
               + massiveReport.getNbPublicationsCreated() + "\n");
@@ -236,12 +233,12 @@ public class ImportReport {
                     + resource.getString("GML.error")
                     + " : "
                     + resource.getString("importExportPeas.ImportError"
-                        + unitReport.getError())
+                    + unitReport.getError())
                     + ", "
                     + resource.getString("importExportPeas.Status")
                     + " : "
                     + resource.getString("importExportPeas.ImportStatus"
-                        + unitReport.getStatus()) + "\n");
+                    + unitReport.getStatus()) + "\n");
               }
             }
           }

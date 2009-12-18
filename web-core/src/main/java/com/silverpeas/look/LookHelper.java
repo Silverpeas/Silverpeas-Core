@@ -44,8 +44,7 @@ public interface LookHelper {
   public abstract void setComponentId(String componentId);
 
   /**
-   * @param spaceId
-   *          can be id of a space or a subspace
+   * @param spaceId can be id of a space or a subspace
    */
   public abstract void setSpaceIdAndSubSpaceId(String spaceId);
 
@@ -94,8 +93,7 @@ public interface LookHelper {
   public abstract boolean isBackOfficeVisible();
 
   /**
-   * @param componentIds
-   *          - a String like that kmelia12, toolbox35,
+   * @param componentIds - a String like that kmelia12, toolbox35,
    * @return a List of ComponentInst available to current user
    */
   public abstract List getTopItems();

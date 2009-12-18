@@ -68,8 +68,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 class Week extends Object {
@@ -83,11 +81,8 @@ class Week extends Object {
 
   /**
    * Creates the new Week
-   * 
-   * @param Day
-   *          [], an array of Day
-   * @param Vector
-   *          , a list of object Event. the event of month
+   * @param Day [], an array of Day
+   * @param Vector , a list of object Event. the event of month
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
    * @see java.util.Vector
    * @return object Week
@@ -128,9 +123,7 @@ class Week extends Object {
 
   /**
    * to initialise the event of the week
-   * 
-   * @param Vector
-   *          , the list of object Event. The event of current month
+   * @param Vector , the list of object Event. The event of current month
    * @return Vector, the list of objectEvent. The event of this week
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event
    * @see java.util.Vector
@@ -185,11 +178,9 @@ class Week extends Object {
   }
 
   /**
-   * to initialise the object Row in this week. if isn't possible to insert the
-   * event in the row, the new row is created
-   * 
-   * @param Vector
-   *          , the list of object Event of current week
+   * to initialise the object Row in this week. if isn't possible to insert the event in the row,
+   * the new row is created
+   * @param Vector , the list of object Event of current week
    * @return Vector, the list of object Row of current week
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Row
@@ -259,9 +250,7 @@ class Week extends Object {
 
   /**
    * to add a object Event int the current row
-   * 
-   * @param Row
-   *          , Event, the event who is add in the row
+   * @param Row , Event, the event who is add in the row
    * @return boolean, true if the operation "add" is succesfull, false else if
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Row
@@ -306,10 +295,7 @@ class Week extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date getEndDate() {
@@ -318,10 +304,7 @@ class Week extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getListEventWeek() {
@@ -330,10 +313,7 @@ class Week extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date[] getDateDayOfWeek() {
@@ -342,10 +322,7 @@ class Week extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Day[] getDayOfWeek() {
@@ -354,12 +331,8 @@ class Week extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param index
-   * 
    * @return
-   * 
    * @see
    */
   public Day getDayOfWeek(int index) {
@@ -374,10 +347,7 @@ class Week extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Vector getListRow() {

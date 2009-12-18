@@ -34,7 +34,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -42,8 +41,6 @@ public class BrowseBarWA extends AbstractBrowseBar {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public BrowseBarWA() {
@@ -52,10 +49,7 @@ public class BrowseBarWA extends AbstractBrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private String displayLine() {
@@ -77,10 +71,7 @@ public class BrowseBarWA extends AbstractBrowseBar {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

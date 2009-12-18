@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.tabs;
 
 /**
- * 
  * @author squere
  * @version 1.0
  */
@@ -45,12 +44,9 @@ public class Tab {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param label
    * @param action
    * @param selected
-   * 
    * @see
    */
   public Tab(String label, String action, boolean selected) {
@@ -62,13 +58,10 @@ public class Tab {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param label
    * @param action
    * @param selected
    * @param enabled
-   * 
    * @see
    */
   public Tab(String label, String action, boolean selected, boolean enabled) {
@@ -80,10 +73,7 @@ public class Tab {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getLabel() {
@@ -92,10 +82,7 @@ public class Tab {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getAction() {
@@ -104,10 +91,7 @@ public class Tab {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getSelected() {
@@ -116,10 +100,7 @@ public class Tab {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getEnabled() {

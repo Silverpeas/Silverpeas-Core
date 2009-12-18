@@ -60,8 +60,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class IconWA extends AbstractIcon {
@@ -79,11 +77,8 @@ public class IconWA extends AbstractIcon {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconName
    * @param altText
-   * 
    * @see
    */
   public IconWA(String iconName, String altText) {
@@ -92,12 +87,9 @@ public class IconWA extends AbstractIcon {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconName
    * @param altText
    * @param action
-   * 
    * @see
    */
   public IconWA(String iconName, String altText, String action) {
@@ -106,13 +98,10 @@ public class IconWA extends AbstractIcon {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param iconName
    * @param altText
    * @param action
    * @param imagePath
-   * 
    * @see
    */
   public IconWA(String iconName, String altText, String action, String imagePath) {
@@ -121,10 +110,7 @@ public class IconWA extends AbstractIcon {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

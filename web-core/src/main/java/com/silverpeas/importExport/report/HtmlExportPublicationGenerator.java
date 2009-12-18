@@ -50,7 +50,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * Classe générant le code html d'une publication exportée
- * 
  * @author sdevolder
  */
 public class HtmlExportPublicationGenerator {
@@ -70,10 +69,9 @@ public class HtmlExportPublicationGenerator {
 
   public HtmlExportPublicationGenerator(PublicationType publicationType, /*
                                                                           * DBModelContentType
-                                                                          * dbModelContent
-                                                                          * ,
+                                                                          * dbModelContent ,
                                                                           */
-  ModelDetail modelDetail, String wysiwygText, String urlPub) {
+      ModelDetail modelDetail, String wysiwygText, String urlPub) {
     this.publicationDetail = publicationType.getPublicationDetail();
     if (publicationType.getPublicationContentType() != null) {
       this.dbModelContent = publicationType.getPublicationContentType()
@@ -92,7 +90,6 @@ public class HtmlExportPublicationGenerator {
 
   /**
    * Display header of publication
-   * 
    * @return
    */
   public String toHtmlSommairePublication() {
@@ -101,9 +98,7 @@ public class HtmlExportPublicationGenerator {
 
   /**
    * Display header of publication
-   * 
-   * @param target
-   *          : name of iframe destination
+   * @param target : name of iframe destination
    * @return
    */
   public String toHtmlSommairePublication(String target) {
@@ -230,7 +225,7 @@ public class HtmlExportPublicationGenerator {
     try {
       template = (PublicationTemplateImpl) PublicationTemplateManager
           .getPublicationTemplate(publicationDetail.getPK().getInstanceId()
-              + ":" + publicationDetail.getInfoId());
+          + ":" + publicationDetail.getInfoId());
     } catch (Exception e) {
       return "Error getting publication template !";
     }
@@ -279,7 +274,7 @@ public class HtmlExportPublicationGenerator {
     // Contenu de la publication
     sb
         .append(
-            "<TABLE valign=\"top\" width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"4\">")
+        "<TABLE valign=\"top\" width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"4\">")
         .append("\n");
     sb.append("<TR><TD>").append("\n");
 

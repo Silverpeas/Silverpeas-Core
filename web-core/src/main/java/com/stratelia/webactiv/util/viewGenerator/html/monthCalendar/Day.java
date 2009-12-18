@@ -61,8 +61,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 class Day extends Object {
@@ -90,10 +88,7 @@ class Day extends Object {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param date
-   * 
    * @see
    */
   public Day(Date date) {
@@ -104,10 +99,7 @@ class Day extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -116,10 +108,7 @@ class Day extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getNumbers() {
@@ -128,10 +117,7 @@ class Day extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date getDate() {
@@ -140,10 +126,7 @@ class Day extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean getIsInThisMonth() {
@@ -152,10 +135,7 @@ class Day extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {
@@ -165,10 +145,7 @@ class Day extends Object {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isCurrentDay() {

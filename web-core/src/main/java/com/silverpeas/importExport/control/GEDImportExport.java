@@ -95,7 +95,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Classe métier de création d'entités silverpeas utilisée par le moteur d'importExport.
- * 
  * @author sDevolder.
  */
 public abstract class GEDImportExport extends ComponentImportExport {
@@ -109,13 +108,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Constructeur public de la classe
-   * 
-   * @param userDetail
-   *          - informations sur l'utilisateur faisant appel au moteur d'importExport
-   * @param targetComponentId
-   *          - composant silverpeas cible
-   * @param topicId
-   *          - topic cible du composant targetComponentId
+   * @param userDetail - informations sur l'utilisateur faisant appel au moteur d'importExport
+   * @param targetComponentId - composant silverpeas cible
+   * @param topicId - topic cible du composant targetComponentId
    */
   public GEDImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
@@ -175,15 +170,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode de création ou mise à jour d'une publication utilisée par le manager d'importation de
-   * repository du * moteur d'importExport. Cas particulier: si une publication de même nom existe
-   * déjà dans le composant, alors une nouvelle publication ne sera créée que si le premier node à
-   * lier ne contient pas la publication de même nom.
-   * 
-   * @param pubDetailToCreate
-   *          - publication à créer ou à mettre à jour.
-   * @return l'objet PublicationDetail contenant les informations de la publication créée ou mise à
-   *         jour.
+   * Méthode de création ou mise à jour d'une publication utilisée par le manager d'importation
+   * de repository du * moteur d'importExport. Cas particulier: si une publication de même nom
+   * existe déjà dans le composant, alors une nouvelle publication ne sera créée que si le
+   * premier node à lier ne contient pas la publication de même nom.
+   * @param pubDetailToCreate - publication à créer ou à mettre à jour.
+   * @return l'objet PublicationDetail contenant les informations de la publication créée ou mise
+   * à jour.
    * @throws ImportExportException
    */
   private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
@@ -301,7 +294,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
                   .getPK());
               PublicationPK pubPK = new PublicationPK(pubId, pubDetailToCreate.getPK());
               if (pubAlreadyExist) {
-                // Vérification dans le cas d une publication déjà existante de sa présence dans le
+                // Vérification dans le cas d une publication déjà existante de sa présence dans
+                // le
                 // thème
                 try {
                   getPublicationBm().getDetailByNameAndNodeId(pubDet_temp.getPK(),
@@ -333,11 +327,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode de création du contenu d une publication importée
-   * 
-   * @param pubId
-   *          - id de la publication pour laquelle on importe un contenu
-   * @param pubContent
-   *          - object de mapping castor contenant les informations d importation du contenu
+   * @param pubId - id de la publication pour laquelle on importe un contenu
+   * @param pubContent - object de mapping castor contenant les informations d importation du
+   * contenu
    * @throws ImportExportException
    */
   public void createPublicationContent(UnitReport unitReport, int pubId,
@@ -439,7 +431,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
               ad = AttachmentController.createAttachment(ad, true);
               fieldValue = ad.getPK().getId();
             } else {
-              // le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le
+              // le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut
+              // le
               // supprimer
               FileFolderManager.deleteFolder(path + physicalName);
             }
@@ -515,11 +508,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode préparant les dataModels pour la création en base d un contenu DBModel, cette méthode
-   * se charge également de la copie des fichiers du contenu sur le serveur
-   * 
-   * @param dbModelType
-   *          - objet de mapping castor contenant les informations de contenu de type DBModel
+   * Méthode préparant les dataModels pour la création en base d un contenu DBModel, cette
+   * méthode se charge également de la copie des fichiers du contenu sur le serveur
+   * @param dbModelType - objet de mapping castor contenant les informations de contenu de type
+   * DBModel
    * @return
    */
   private InfoDetail prepareDbModelContent(UnitReport unitReport, DBModelContentType dbModelType) {
@@ -578,11 +570,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode de création d'un contenu de type wysiwyg
-   * 
-   * @param pubId
-   *          - id de la publication pour laquelle on crée le contenu wysiwyg
-   * @param wysiwygType
-   *          - objet de mapping castor contenant les informations de contenu de type Wysiwyg
+   * @param pubId - id de la publication pour laquelle on crée le contenu wysiwyg
+   * @param wysiwygType - objet de mapping castor contenant les informations de contenu de type
+   * Wysiwyg
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId,
       WysiwygContentType wysiwygType, String userId) throws UtilException, WysiwygException,
@@ -633,13 +623,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode chargée de copier les fichiers images référencés par le contenu wysiwyg sur le serveur
-   * et de mettre à jour le contenu wysiwyg avec ces nouveaux liens
-   * 
-   * @param wysiwygText
-   *          - contenu wysiwyg passé en paramètre
-   * @param path
-   *          - chemin cible des images wysiwyg
+   * Méthode chargée de copier les fichiers images référencés par le contenu wysiwyg sur le
+   * serveur et de mettre à jour le contenu wysiwyg avec ces nouveaux liens
+   * @param wysiwygText - contenu wysiwyg passé en paramètre
+   * @param path - chemin cible des images wysiwyg
    * @return - le contenu wysiwyg mis à jour
    */
   private String replaceWysiwygImagesPathForImport(UnitReport unitReport, int pubId,
@@ -720,13 +707,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode chargée de remplacer une classe Css par une autre
-   * 
-   * @param wysiwygText
-   *          - contenu wysiwyg passé en paramètre
-   * @param oldCssClass
-   *          - la classe CSS à remplacer
-   * @param newCssClass
-   *          - la nouvelle classe CSS à utiliser
+   * @param wysiwygText - contenu wysiwyg passé en paramètre
+   * @param oldCssClass - la classe CSS à remplacer
+   * @param newCssClass - la nouvelle classe CSS à utiliser
    * @return - le contenu wysiwyg mis à jour
    */
   private String replaceWysiwygStringForImport(String oldString, String newString,
@@ -787,13 +770,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode copiant les images du contenu DBModel à creer
-   * 
-   * @param componentId
-   *          - id du composant de la publication dans laquelle on va creer le contenu DBModel
-   * @param listInfoImageDetail
-   *          - liste des InfoImageDetails correspondant aux images du contenu DBModel
+   * @param componentId - id du composant de la publication dans laquelle on va creer le contenu
+   * DBModel
+   * @param listInfoImageDetail - liste des InfoImageDetails correspondant aux images du contenu
+   * DBModel
    * @return - la liste des InfoImageDetails mise à jour avec les nouveaux fichiers créés sur le
-   *         serveur
+   * serveur
    */
   private Collection copyDBmodelImagePartsForImport(UnitReport unitReport, String componentId,
       Collection listInfoImageDetail) {
@@ -826,11 +808,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Méthode de copie des images DBModel d'un contenu dans le dossier d'exportation d'une
    * publication
-   * 
-   * @param exportPublicationPath
-   *          - dossier d'exportation de la publication
-   * @param listImageParts
-   *          - liste des images du contenu DBModel
+   * @param exportPublicationPath - dossier d'exportation de la publication
+   * @param listImageParts - liste des images du contenu DBModel
    * @return - la liste des images mise à jour
    */
   public ArrayList copyDBmodelImagePartsForExport(String exportPublicationPath,
@@ -857,13 +836,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Méthode copiant les images contenues dans le dossier d'exportation de la publication. Cette
    * méthode met à jour le fichier wysiwyg avec les nouveaux chemins d'images avant de le copier
    * dans l'exportation
-   * 
-   * @param pubId
-   *          - id de la publication à exporter
-   * @param componentId
-   *          - id du composant contenant la publication à exporter
-   * @param exportPublicationPath
-   *          - dossier d'exportation de la publication
+   * @param pubId - id de la publication à exporter
+   * @param componentId - id du composant contenant la publication à exporter
+   * @param exportPublicationPath - dossier d'exportation de la publication
    * @return le contenu du fichier wysiwyg
    */
   public void copyWysiwygImageForExport(String pubId, String componentId,
@@ -909,55 +884,41 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui aussi (par
-   * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
-   * exception.
-   * 
-   * @param nodeDetail
-   *          le détail du noeud à ajouter.
-   * @param topicId
-   *          l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
-   * @param unitReport
-   *          le rapport d'import unitaire.
-   * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de même
-   *         identifiant non modifié).
-   * @throws ImportExportException
-   *           en cas d'anomalie lors de la création du noeud.
+   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui
+   * aussi (par exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne
+   * lève aucune exception.
+   * @param nodeDetail le détail du noeud à ajouter.
+   * @param topicId l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
+   * @param unitReport le rapport d'import unitaire.
+   * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de
+   * même identifiant non modifié).
+   * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    */
   protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       UnitReport unitReport) throws ImportExportException;
 
   /**
-   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui aussi (par
-   * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
-   * exception.
-   * 
-   * @param nodeDetail
-   *          l'objet node correspondant au thème à créer.
-   * @param topicId
-   *          l'ID du thème dans lequel créer le nouveau thème.
+   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui
+   * aussi (par exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne
+   * lève aucune exception.
+   * @param nodeDetail l'objet node correspondant au thème à créer.
+   * @param topicId l'ID du thème dans lequel créer le nouveau thème.
    * @return un objet clé primaire du nouveau thème créé.
-   * @throws ImportExportException
-   *           en cas d'anomalie lors de la création du noeud.
+   * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    */
   protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException;
 
   /**
-   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers. Le
-   * nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de noeuds et
-   * de publications à partir d'une hiérarchie de dossiers et de fichiers.
-   * 
-   * @param unitReport
-   *          le rapport d'import unitaire.
-   * @param nodeDetail
-   *          le détail du noeud à créer.
-   * @param parentTopicId
-   *          l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
+   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers.
+   * Le nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de
+   * noeuds et de publications à partir d'une hiérarchie de dossiers et de fichiers.
+   * @param unitReport le rapport d'import unitaire.
+   * @param nodeDetail le détail du noeud à créer.
+   * @param parentTopicId l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
    * @return l'objet qui réprésente le détail du nouveau noeud créé ou du noeud existant (en
-   *         particulier si un noeud de même ID existe déjà).
-   * @throws ImportExportException
-   *           en cas d'anomalie lors de la création du noeud.
+   * particulier si un noeud de même ID existe déjà).
+   * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    */
   public NodeDetail createTopicForUnitImport(UnitReport unitReport, NodeDetail nodeDetail,
       int parentTopicId) throws ImportExportException {
@@ -978,9 +939,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode de création d'une publication dans le cas d'une importation unitaire avec méta-données
-   * définies dans le fichier xml d'importation.
-   * 
+   * Méthode de création d'une publication dans le cas d'une importation unitaire avec
+   * méta-données définies dans le fichier xml d'importation.
    * @param unitReport
    * @param userDetail
    * @param fileForPubliMetaData
@@ -1003,7 +963,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode de création d'une publication dans le cas d'une importation massive
-   * 
    * @param unitReport
    * @param userDetail
    * @param fileForPubliMetaData
@@ -1028,19 +987,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers. Le
-   * nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de noeuds et
-   * de publications à partir d'une hiérarchie de dossiers et de fichiers.
-   * 
-   * @param directory
-   *          le répertoire dont le nom représente le nouveau noeud.
-   * @param topicId
-   *          l'identifiant du noeud parent.
-   * @param massiveReport
-   *          le rapprt d'import.
+   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers.
+   * Le nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de
+   * noeuds et de publications à partir d'une hiérarchie de dossiers et de fichiers.
+   * @param directory le répertoire dont le nom représente le nouveau noeud.
+   * @param topicId l'identifiant du noeud parent.
+   * @param massiveReport le rapprt d'import.
    * @return un objet qui réprésente le nouveau noeud créé.
-   * @throws ImportExportException
-   *           en cas d'anomalie lors de la création du noeud.
+   * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    */
   public NodeDetail addSubTopicToTopic(File directory, int topicId, MassiveReport massiveReport)
       throws ImportExportException {
@@ -1058,9 +1012,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode récupérant le silverObjectId d'un objet d'id id
-   * 
-   * @param id
-   *          - id de la publication
+   * @param id - id de la publication
    * @return le silverObjectId de l'objet d'id id
    * @throws ImportExportException
    */
@@ -1068,7 +1020,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode de rècupération de la publication complète utilisée pour l'exportation
-   * 
    * @param pubId
    * @param componentId
    * @return
@@ -1088,7 +1039,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       InfoDetail infoDetail = pubComplete.getInfoDetail();
       PublicationContentType pubContent = null;
       if (infoDetail != null
-          && (infoDetail.getInfoImageList().size() != 0 || infoDetail.getInfoTextList().size() != 0)) {
+          &&
+          (infoDetail.getInfoImageList().size() != 0 || infoDetail.getInfoTextList().size() != 0)) {
         // la publication a un contenu de type DBModel
         pubContent = new PublicationContentType();
         DBModelContentType dbModel = new DBModelContentType();
@@ -1168,9 +1120,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Méthode renvoant la liste des topics de la publication sous forme de NodePK
-   * 
-   * @param pubId
-   *          - id de la publication dont on veut les topics
+   * @param pubId - id de la publication dont on veut les topics
    * @return - liste des nodesPk de la publication
    * @throws ImportExportException
    */
@@ -1215,7 +1165,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Specific Kmax: Create publication with no nodeFather
-   * 
    * @param pubDetail
    * @return pubDetail
    */

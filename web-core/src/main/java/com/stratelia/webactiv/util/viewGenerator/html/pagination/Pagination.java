@@ -26,9 +26,8 @@ package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * Pagination is an interface to be implemented by a graphic element to print a
- * pages index or a elements counter.
- * 
+ * Pagination is an interface to be implemented by a graphic element to print a pages index or a
+ * elements counter.
  * @author neysseri
  */
 public interface Pagination extends SimpleGraphicElement {
@@ -44,10 +43,7 @@ public interface Pagination extends SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printIndex();
@@ -60,10 +56,7 @@ public interface Pagination extends SimpleGraphicElement {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printCounter();

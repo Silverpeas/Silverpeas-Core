@@ -36,8 +36,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -45,13 +43,9 @@ public class HomePageUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param exception
    * @param language
-   * 
    * @return
-   * 
    * @see
    */
   public static String getMessageToDisplay(Throwable exception, String language) {
@@ -73,13 +67,9 @@ public class HomePageUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param exception
    * @param language
-   * 
    * @return
-   * 
    * @see
    */
   public static String getMessagesToDisplay(Throwable exception, String language) {
@@ -110,13 +100,9 @@ public class HomePageUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param toDisplayException
    * @param language
-   * 
    * @return
-   * 
    * @see
    */
   public static String getMessageFromException(Throwable toDisplayException,
@@ -137,12 +123,8 @@ public class HomePageUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param exception
-   * 
    * @return
-   * 
    * @see
    */
   public static Throwable getExceptionToDisplay(Throwable exception) {
@@ -163,10 +145,8 @@ public class HomePageUtil {
 
   /**
    * Trace the exception in SilverTrace
-   * 
    * @param exception
    * @param language
-   * 
    */
   public static void traceException(Throwable exception) {
     Throwable lastEx = getExceptionToDisplay(exception);
@@ -174,7 +154,7 @@ public class HomePageUtil {
     if ((lastEx != null)
         && (lastEx.getMessage() != null)
         && (lastEx.getMessage().indexOf(
-            "Connection reset by peer: socket write error") >= 0)
+        "Connection reset by peer: socket write error") >= 0)
         && (lastEx.getMessage().indexOf("SQL") < 0)) {
       SilverTrace.info("util", "HomePageUtil.traceException()",
           "root.EX_IGNORED", "Deepest", lastEx);

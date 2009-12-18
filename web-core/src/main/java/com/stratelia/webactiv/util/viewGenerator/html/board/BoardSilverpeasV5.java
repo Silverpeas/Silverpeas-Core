@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.board;
 
 /**
- * 
  * @author mraverdy&lloiseau
  * @version 1.0
  */
@@ -48,10 +47,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printBefore() {
@@ -66,10 +62,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String printAfter() {
@@ -83,10 +76,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

@@ -29,12 +29,11 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 /**
  * Create a new cell in an ArrayPane
  * @author cdm
- * 
  */
 public class ArrayCellTextTag extends BodyTagSupport {
 
   private static final long serialVersionUID = -719577480679901247L;
-  private String text;  
+  private String text;
 
   @Override
   public int doEndTag() throws JspException {

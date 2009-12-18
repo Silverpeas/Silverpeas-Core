@@ -53,26 +53,19 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
- * Classe manager des importations massives du moteur d'importExport de
- * silverPeas
- * 
+ * Classe manager des importations massives du moteur d'importExport de silverPeas
  * @author sdevolder
  */
 public class RepositoriesTypeManager {
 
   /**
-   * Méthode métier du moteur d'importExport créant toutes les publications
-   * massives définies au niveau du fichier d'import xml passé en paramètre
-   * au moteur d'importExport.
-   * 
-   * @param userDetail
-   *          - contient les informations sur l'utilisateur du moteur
-   *          d'importExport
-   * @param repositoriesType
-   *          - objet mappé par castor contenant toutes les informations de
-   *          création des publications du path défini
-   * @return un objet ComponentReport contenant les informations de création
-   *         des publications unitaires et nécéssaire au rapport détaillé
+   * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
+   * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
+   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
+   * @param repositoriesType - objet mappé par castor contenant toutes les informations de
+   * création des publications du path défini
+   * @return un objet ComponentReport contenant les informations de création des publications
+   * unitaires et nécéssaire au rapport détaillé
    * @throws ImportExportException
    */
   public void processImport(UserDetail userDetail,
@@ -152,7 +145,7 @@ public class RepositoriesTypeManager {
                     processImportRecursiveReplicate(massiveReport, userDetail,
                         file, gedIE, attachmentIE, versioningIE, pdcIE,
                         componentId, Integer.parseInt(nodeDetail.getNodePK()
-                            .getId()), isPOIUsed, isVersioningUsed, isDraftUsed);
+                        .getId()), isPOIUsed, isVersioningUsed, isDraftUsed);
                   } catch (ImportExportException ex) {
                     massiveReport
                         .setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
@@ -198,7 +191,7 @@ public class RepositoriesTypeManager {
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = "
-              + pubDetailToCreate.getStatus());
+          + pubDetailToCreate.getStatus());
 
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
@@ -227,8 +220,8 @@ public class RepositoriesTypeManager {
           attachments.add(attDetail);
           versioningIE.importDocuments(pubDetailToCreate.getPK().getId(),
               componentId, attachments, new Integer(userDetail.getId())
-                  .intValue(), pubDetailToCreate.isIndexable(), new Integer(
-                  topicId).toString());
+              .intValue(), pubDetailToCreate.isIndexable(), new Integer(
+              topicId).toString());
         }
       } else {
         // Ajout des attachments
@@ -253,25 +246,15 @@ public class RepositoriesTypeManager {
   }
 
   /**
-   * Méthode récursive appelée dans le cas de l'importation massive
-   * récursive sans création de nouveau topic: toutes les publications crées
-   * le seront dans le thème passé en paramètre.
-   * 
-   * @param massiveReport
-   *          - référence sur l'objet de rapport détaillé du cas import
-   *          massif permettant de le compléter quelque soit le niveau de
-   *          récursivité.
-   * @param userDetail
-   *          - contient les informations sur l'utilisateur du moteur
-   *          d'importExport.
-   * @param path
-   *          - dossier correspondant au niveau de récursivité auquel on se
-   *          trouve.
-   * @param componentId
-   *          - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId
-   *          - id du thème dans lequel seront crées les éléments, l'id
-   *          passé est toujours le même dans le cas présent
+   * Méthode récursive appelée dans le cas de l'importation massive récursive sans création de
+   * nouveau topic: toutes les publications crées le seront dans le thème passé en paramètre.
+   * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
+   * permettant de le compléter quelque soit le niveau de récursivité.
+   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
+   * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
+   * @param componentId - id du composant dans le lequel l'import massif est effectué.
+   * @param topicId - id du thème dans lequel seront crées les éléments, l'id passé est
+   * toujours le même dans le cas présent
    * @throws ImportExportException
    */
   public void processImportRecursiveNoReplicate(MassiveReport massiveReport,
@@ -295,25 +278,15 @@ public class RepositoriesTypeManager {
   }
 
   /**
-   * Méthode récursive appelée dans le cas de l'importation massive
-   * récursive avec création de nouveau topic: chaque sous dossier entrainera
-   * la création d'un topic de même nom.
-   * 
-   * @param massiveReport
-   *          - référence sur l'objet de rapport détaillé du cas import
-   *          massif permettant de le compléter quelque soit le niveau de
-   *          récursivité.
-   * @param userDetail
-   *          - contient les informations sur l'utilisateur du moteur
-   *          d'importExport.
-   * @param path
-   *          - dossier correspondant au niveau de récursivité auquel on se
-   *          trouve.
-   * @param componentId
-   *          - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId
-   *          - id du thème dans lequel seront crées les éléments du niveau
-   *          de récursivité auquel on se trouve.
+   * Méthode récursive appelée dans le cas de l'importation massive récursive avec création de
+   * nouveau topic: chaque sous dossier entrainera la création d'un topic de même nom.
+   * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
+   * permettant de le compléter quelque soit le niveau de récursivité.
+   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
+   * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
+   * @param componentId - id du composant dans le lequel l'import massif est effectué.
+   * @param topicId - id du thème dans lequel seront crées les éléments du niveau de
+   * récursivité auquel on se trouve.
    * @throws ImportExportException
    */
   public void processImportRecursiveReplicate(MassiveReport massiveReport,
@@ -335,7 +308,7 @@ public class RepositoriesTypeManager {
         // Traitement récursif spécifique
         processImportRecursiveReplicate(massiveReport, userDetail, file, gedIE,
             attachmentIE, versioningIE, pdcIE, componentId, Integer
-                .parseInt(nodeDetail.getNodePK().getId()), isPOIUsed,
+            .parseInt(nodeDetail.getNodePK().getId()), isPOIUsed,
             isVersioningUsed, isDraftUsed);
       }
     }
@@ -356,15 +329,11 @@ public class RepositoriesTypeManager {
   }
 
   /**
-   * Transforme la table des chaines de caractères de nom de fichier en une
-   * liste de fichiers pour le chemin passé en paramètre
-   * 
-   * @param listFileName
-   *          - table des nom de fichier sous forme de chaine de caractères.
-   * @param path
-   *          - chemin des fichiers contenu dans les chaines de caractères.
-   * @return renvoie une liste d'objets File pour les noms de fichiers passés
-   *         en paramètres
+   * Transforme la table des chaines de caractères de nom de fichier en une liste de fichiers pour
+   * le chemin passé en paramètre
+   * @param listFileName - table des nom de fichier sous forme de chaine de caractères.
+   * @param path - chemin des fichiers contenu dans les chaines de caractères.
+   * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private List convertListStringToListFile(String[] listFileName, String path) {
 

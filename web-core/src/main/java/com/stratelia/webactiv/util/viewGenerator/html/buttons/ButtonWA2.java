@@ -33,7 +33,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 
 /**
- * 
  * @author neysseri
  * @version
  */
@@ -47,10 +46,7 @@ public class ButtonWA2 extends AbstractButton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -88,7 +84,7 @@ public class ButtonWA2 extends AbstractButton {
         .append("/1px.gif\"></td>");
     str.append("<td nowrap class=\"buttonStyle\"><a href=\"").append(action)
         .append("\" class=\"buttonStyle\">&nbsp;").append(label).append(
-            "&nbsp;</a></td>");
+        "&nbsp;</a></td>");
     str.append("<td class=\"buttonColorDark\"><img src=\"").append(iconsPath)
         .append("/1px.gif\"></td>");
     str.append("<td bgcolor=\"#666666\"><img src=\"").append(iconsPath).append(

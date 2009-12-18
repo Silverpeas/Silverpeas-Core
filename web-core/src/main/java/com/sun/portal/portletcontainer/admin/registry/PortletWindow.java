@@ -31,8 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * PortletWindow represents the PortletWindow Element in
- * portlet-window-registry.xml
+ * PortletWindow represents the PortletWindow Element in portlet-window-registry.xml
  */
 public class PortletWindow extends AbstractPortletRegistryElement {
 

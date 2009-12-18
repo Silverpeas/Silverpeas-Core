@@ -55,8 +55,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SpaceModel {
@@ -72,14 +70,13 @@ public class SpaceModel {
   private ArrayList spaceColumns;
 
   /**
-   * ArrayList portlets : Linear list of all portlets of this space whatever is
-   * the column where it reside
+   * ArrayList portlets : Linear list of all portlets of this space whatever is the column where it
+   * reside
    */
   private ArrayList portlets;
 
   /**
-   * boolean isAdministrator : true if the current user is an administrator of
-   * the space
+   * boolean isAdministrator : true if the current user is an administrator of the space
    */
   private boolean isAdministrator;
 
@@ -93,9 +90,8 @@ public class SpaceModel {
   // *****************************************************
 
   /**
-   * Empty constructor to satisfy the J2EE requirement for the
-   * &lt;jsp:useBean&gt; tag Should never be called
-   * 
+   * Empty constructor to satisfy the J2EE requirement for the &lt;jsp:useBean&gt; tag Should never
+   * be called
    */
   public SpaceModel() throws PortletException {
     throw new PortletException("SpaceModel.SpaceModel()",
@@ -104,9 +100,7 @@ public class SpaceModel {
 
   /**
    * SpaceModel
-   * 
-   * @param String
-   *          aSpaceId
+   * @param String aSpaceId
    */
   public SpaceModel(String aSpaceId) {
     spaceId = aSpaceId;
@@ -121,9 +115,7 @@ public class SpaceModel {
 
   /**
    * setIsAdministrator
-   * 
-   * @param isAdmin
-   *          true if the user is administrator
+   * @param isAdmin true if the user is administrator
    */
   public void setIsAdministrator(boolean isAdmin) {
     isAdministrator = isAdmin;
@@ -131,7 +123,6 @@ public class SpaceModel {
 
   /**
    * getIsAdministrator
-   * 
    * @return the returned boolean
    */
   public boolean getIsAdministrator() {
@@ -140,9 +131,7 @@ public class SpaceModel {
 
   /**
    * setUserId
-   * 
-   * @param aUserId
-   *          parameter for setUserId
+   * @param aUserId parameter for setUserId
    */
   public void setUserId(int aUserId) {
     userId = aUserId;
@@ -150,7 +139,6 @@ public class SpaceModel {
 
   /**
    * getUserId
-   * 
    * @return the returned int
    */
   public int getUserId() {
@@ -159,7 +147,6 @@ public class SpaceModel {
 
   /**
    * getSpaceId
-   * 
    * @return the returned int
    */
   public int getSpaceId() {
@@ -168,10 +155,7 @@ public class SpaceModel {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getname() {
@@ -180,7 +164,6 @@ public class SpaceModel {
 
   /**
    * getcolumnsCount
-   * 
    * @return the returned int
    */
   public int getcolumnsCount() {
@@ -192,9 +175,7 @@ public class SpaceModel {
 
   /**
    * getColumn
-   * 
-   * @param col
-   *          parameter for getColumn
+   * @param col parameter for getColumn
    * @return the returned SpaceColumn
    */
   public SpaceColumn getColumn(int col) {
@@ -203,7 +184,6 @@ public class SpaceModel {
 
   /**
    * getColumnsRatios
-   * 
    * @return the ratios to be used in the frameset tag.
    */
   public String getColumnsRatios() {
@@ -229,7 +209,6 @@ public class SpaceModel {
 
   /**
    * Retrieve a portlet by Its index in the space Model
-   * 
    */
   public Portlet getPortlets(int index) {
     return (Portlet) portlets.get(index);
@@ -237,10 +216,7 @@ public class SpaceModel {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getPortletCount() {
@@ -249,10 +225,7 @@ public class SpaceModel {
 
   /**
    * getPortlet
-   * 
-   * @param col
-   *          parameter for getPortlet
-   * 
+   * @param col parameter for getPortlet
    * @return the returned Portlet
    */
   public Portlet getPortlet(int col, int row) {
@@ -265,7 +238,6 @@ public class SpaceModel {
 
   /**
    * return -1 if not found.
-   * 
    */
   public int getPortletIndex(int instanceId) {
     int ret = -1;
@@ -286,7 +258,6 @@ public class SpaceModel {
 
   /**
    * Update all the indexes of the portlet.
-   * 
    */
   private void updatePortletIndexes() {
     for (int i = 0; i < portlets.size(); i++) {
@@ -309,7 +280,6 @@ public class SpaceModel {
 
   /**
    * Insert a column to the space model at the specified position
-   * 
    */
   public void addColumn(SpaceColumn aColumn, int col) {
     spaceColumns.add(col, aColumn);
@@ -318,7 +288,6 @@ public class SpaceModel {
 
   /**
    * Add a column to the space model
-   * 
    */
   public void addColumn(SpaceColumn aColumn) {
     spaceColumns.add(aColumn);
@@ -332,9 +301,8 @@ public class SpaceModel {
   }
 
   /**
-   * Insert a single portlet to the SpaceModel at the specified col, before the
-   * specified row if the col is invalid a new one is created and added to the
-   * spaceModel
+   * Insert a single portlet to the SpaceModel at the specified col, before the specified row if the
+   * col is invalid a new one is created and added to the spaceModel
    */
   public void addPortlet(int col, int row, Portlet aPortlet) {
     SpaceColumn sc;
@@ -361,8 +329,8 @@ public class SpaceModel {
   }
 
   /**
-   * Append a single portlet to the SpaceModel to the specified column. if the
-   * column is invalid, create a new one.
+   * Append a single portlet to the SpaceModel to the specified column. if the column is invalid,
+   * create a new one.
    */
   public void addPortlet(int colNum, Portlet aPortlet) {
     SpaceColumn sc;
@@ -390,9 +358,7 @@ public class SpaceModel {
 
   /**
    * removeColumn
-   * 
-   * @param col
-   *          parameter for removeColumn
+   * @param col parameter for removeColumn
    */
   public void removeColumn(int col) {
     // get the columns
@@ -407,30 +373,22 @@ public class SpaceModel {
   }
 
   /**
-   * // portletIndex is the general portlet space index, i.e. index in the
-   * portlets ArrayList
-   * 
+   * // portletIndex is the general portlet space index, i.e. index in the portlets ArrayList
    */
 
   /*
-   * public void removePortlet(int portletIndex) { // retrieve the portlet
-   * Portlet portlet = (Portlet)portlets.get(portletIndex) ; // retrieve the
-   * portletIndex in the column int col = portlet.getColumnNumber() ; // remove
-   * the portlet from the SpaceColumn SpaceColumn sc =
-   * (SpaceColumn)spaceColumns.get(col) ; int row = portlet.getRow() ;
-   * sc.removePortlet(row) ; // remove the portlet from the space
-   * portlets.remove(portletIndex) ; if (sc.getPortletCount() == 0) {
-   * spaceColumns.remove(col) ; } // renumerote les portlets
-   * updatePortletIndexes() ; }
+   * public void removePortlet(int portletIndex) { // retrieve the portlet Portlet portlet =
+   * (Portlet)portlets.get(portletIndex) ; // retrieve the portletIndex in the column int col =
+   * portlet.getColumnNumber() ; // remove the portlet from the SpaceColumn SpaceColumn sc =
+   * (SpaceColumn)spaceColumns.get(col) ; int row = portlet.getRow() ; sc.removePortlet(row) ; //
+   * remove the portlet from the space portlets.remove(portletIndex) ; if (sc.getPortletCount() ==
+   * 0) { spaceColumns.remove(col) ; } // renumerote les portlets updatePortletIndexes() ; }
    */
 
   /**
    * Remove the portlet from the in memory spaceModel
-   * 
-   * @param col
-   *          is the index of the column in spaceColumns, first col is 0
-   * @param row
-   *          is the index of the portlet in the column, first row is 0
+   * @param col is the index of the column in spaceColumns, first col is 0
+   * @param row is the index of the portlet in the column, first row is 0
    */
   public void removePortlet(int col, int row) {
     // retrieve the column where the portlet reside

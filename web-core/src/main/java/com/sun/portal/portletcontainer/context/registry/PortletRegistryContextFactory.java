@@ -24,8 +24,7 @@
 package com.sun.portal.portletcontainer.context.registry;
 
 /**
- * PortletRegistryContextFactory is responsible to creating the
- * PortletRegistryContext object.
+ * PortletRegistryContextFactory is responsible to creating the PortletRegistryContext object.
  */
 public interface PortletRegistryContextFactory {
 

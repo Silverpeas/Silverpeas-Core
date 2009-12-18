@@ -74,11 +74,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 
 /**
- * This class manage the informations needed for groups navigation and browse
- * 
- * PRE-REQUIRED : the Group passed in the constructor MUST BE A VALID GROUP
- * (with Id, etc...)
- * 
+ * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
+ * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
  * @t.leroi
  */
 public class JobDomainSettings extends SilverpeasSettings {
@@ -105,26 +102,26 @@ public class JobDomainSettings extends SilverpeasSettings {
 
   static public void sortGroups(Group[] toSort) {
     Arrays.sort(toSort, new Comparator() {
-      public int compare(Object o1, Object o2) {
+        public int compare(Object o1, Object o2) {
         return ((Group) o1).compareTo((Group) o2);
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
   }
 
   static public void sortUsers(UserDetail[] toSort) {
     Arrays.sort(toSort, new Comparator() {
-      public int compare(Object o1, Object o2) {
+        public int compare(Object o1, Object o2) {
         return ((UserDetail) o1).compareTo((UserDetail) o2);
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
   }

@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -47,8 +46,6 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public OperationPaneSilverpeasV5Web20() {
@@ -57,12 +54,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconPath
    * @param altText
    * @param action
-   * 
    * @see
    */
   public void addOperation(String iconPath, String altText, String action) {
@@ -81,8 +75,6 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void addLine() {
@@ -93,10 +85,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -107,8 +96,8 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     result.append(
         "<div align=\"right\"><span id=\"menutoggle\">"
-            + GraphicElementFactory.getSettings().getString("ActionsLabel",
-                "Opérations") + "<img src=\"").append(getIconsPath()).append(
+        + GraphicElementFactory.getSettings().getString("ActionsLabel",
+        "Opérations") + "<img src=\"").append(getIconsPath()).append(
         "/ptr.gif\"></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");
@@ -130,16 +119,15 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
         .append("YAHOO.util.Event.onContentReady(\"menuwithgroups\", function () {");
 
     /*
-     * Instantiate a Menu: The first argument passed to the constructor is the
-     * id of the element in the page representing the Menu; the second is an
-     * object literal of configuration properties.
+     * Instantiate a Menu: The first argument passed to the constructor is the id of the element in
+     * the page representing the Menu; the second is an object literal of configuration properties.
      */
     result
         .append("var oMenu = new YAHOO.widget.Menu(\"menuwithgroups\", { position: \"dynamic\", iframe: true, context: [\"menutoggle\", \"tr\", \"br\"] });");
 
     /*
-     * Call the "render" method with no arguments since the markup for this Menu
-     * instance is already exists in the page.
+     * Call the "render" method with no arguments since the markup for this Menu instance is already
+     * exists in the page.
      */
     result.append("oMenu.render();");
 

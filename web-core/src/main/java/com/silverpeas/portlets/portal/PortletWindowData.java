@@ -29,9 +29,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
- * The PortletWindowData is responsible for providing the data related to the
- * Portlet Window to the view. The information includes title, portlet content,
- * view ,edit and help URLs.
+ * The PortletWindowData is responsible for providing the data related to the Portlet Window to the
+ * view. The information includes title, portlet content, view ,edit and help URLs.
  */
 public interface PortletWindowData {
 

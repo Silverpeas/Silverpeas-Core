@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
  * Abstract class of the NavigationList
- * 
  * @author lloiseau
  * @version 1.0
  */
@@ -63,17 +62,11 @@ public abstract class AbstractNavigationList implements NavigationList {
   }
 
   /**
-   * Add an item with label, number of elements and information in the
-   * navigation list
-   * 
-   * @param label
-   *          string that describe the item
-   * @param nbelem
-   *          give the number of element contained by the item For exemple, if
-   *          the item is a directory, "nbelem" is the number of files you can
-   *          find in this directory
-   * @param info
-   *          It can be everything ... (only string)
+   * Add an item with label, number of elements and information in the navigation list
+   * @param label string that describe the item
+   * @param nbelem give the number of element contained by the item For exemple, if the item is a
+   * directory, "nbelem" is the number of files you can find in this directory
+   * @param info It can be everything ... (only string)
    */
   public void addItem(String label, String URL, int nbelem, String info) {
     items.add(new Item(label, URL, nbelem, info));
@@ -81,11 +74,8 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Add an item with label and information in the navigation list
-   * 
-   * @param label
-   *          string that describe the item
-   * @param info
-   *          It can be everything ... (only string)
+   * @param label string that describe the item
+   * @param info It can be everything ... (only string)
    */
   public void addItem(String label, String URL, String info) {
     items.add(new Item(label, URL, info));
@@ -93,9 +83,7 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Add an item with label and information in the navigation list
-   * 
-   * @param label
-   *          string that describe the item
+   * @param label string that describe the item
    */
   public void addItem(String label, String URL) {
     items.add(new Item(label, URL));
@@ -103,7 +91,6 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Get the items collection
-   * 
    * @return The items collection
    */
   public Collection getItems() {
@@ -112,9 +99,7 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Set the title of the NavigationList
-   * 
-   * @param title
-   *          String that wil appear on the top of the NavigationList
+   * @param title String that wil appear on the top of the NavigationList
    */
   public void setTitle(String title) {
     this.title = title;
@@ -122,7 +107,6 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Get the list's title
-   * 
    * @return The title
    */
   public String getTitle() {
@@ -131,9 +115,7 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * You can set the number of columns you want for your list Default is 3
-   * 
-   * @param col
-   *          int Specify the number of column
+   * @param col int Specify the number of column
    */
   public void setNbcol(int col) {
     this.nbCol = col;
@@ -141,7 +123,6 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Get the number of column of the list
-   * 
    * @return The number of columns
    */
   public int getNbcol() {
@@ -150,14 +131,12 @@ public abstract class AbstractNavigationList implements NavigationList {
 
   /**
    * Print the NavigationList in an html format
-   * 
    * @return The NavigationList representation
    */
   public abstract String print();
 
   /**
    * Give the path for the pics...
-   * 
    * @return String Return the path
    */
   public String getIconsPath() {
@@ -165,15 +144,10 @@ public abstract class AbstractNavigationList implements NavigationList {
   }
 
   /**
-   * Add an item with label, number of elements and sub links in the navigation
-   * list
-   * 
-   * @param label
-   *          string that describe the item
-   * @param nbelem
-   *          give the number of element contained by the item For exemple, if
-   *          the item is a directory, "nbelem" is the number of files you can
-   *          find in this directory
+   * Add an item with label, number of elements and sub links in the navigation list
+   * @param label string that describe the item
+   * @param nbelem give the number of element contained by the item For exemple, if the item is a
+   * directory, "nbelem" is the number of files you can find in this directory
    */
   public void addItemSubItem(String label, String URL, int nbelem,
       Collection links) {

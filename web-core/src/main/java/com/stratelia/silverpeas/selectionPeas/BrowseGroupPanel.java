@@ -112,7 +112,7 @@ public class BrowseGroupPanel extends BrowsePanelProvider {
     } else {
       m_Ids = m_oc
           .searchGroupsIds(false, m_SelectionExtraParams.getComponentId(),
-              m_SelectionExtraParams.getProfileIds(), modelGroup);
+          m_SelectionExtraParams.getProfileIds(), modelGroup);
     }
 
     verifIndexes();

@@ -45,8 +45,7 @@ public class IconPaneTag extends TagSupport {
   }
 
   /**
-   * @param orientation
-   *          the orientation to set
+   * @param orientation the orientation to set
    */
   public void setOrientation(String orientation) {
     this.orientation = orientation;
@@ -60,8 +59,7 @@ public class IconPaneTag extends TagSupport {
   }
 
   /**
-   * @param spacing
-   *          the spacing to set
+   * @param spacing the spacing to set
    */
   public void setSpacing(String spacing) {
     this.spacing = spacing;

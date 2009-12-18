@@ -63,7 +63,7 @@ public class ExternalAccessFilter implements Filter {
       if (securityData != null) {
         if ((controller == null)
             || (!controller.getCurrentUserDetail().getLogin().equals(
-                securityData.getUserId()))) {
+            securityData.getUserId()))) {
           LoginPasswordAuthentication authentication = new LoginPasswordAuthentication();
           String key = authentication.authenticate(securityData.getUserId(),
               securityData.getDomainId(), req);

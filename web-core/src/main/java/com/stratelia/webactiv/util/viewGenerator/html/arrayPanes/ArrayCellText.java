@@ -58,12 +58,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
-    Comparable {
+public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Comparable {
   private String text;
   private String alignement = null;
   private String color = null;
@@ -74,11 +71,8 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param text
    * @param line
-   * 
    * @see
    */
   public ArrayCellText(String text, ArrayLine line) {
@@ -148,10 +142,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -194,10 +185,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param object
-   * 
    * @see
    */
   public void setCompareOn(Comparable object) {
@@ -206,10 +194,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Comparable getCompareOn() {
@@ -218,12 +203,8 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public int compareTo(final java.lang.Object other) {

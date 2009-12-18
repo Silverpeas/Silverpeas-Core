@@ -47,8 +47,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ArrayPaneStatusBean {
@@ -58,10 +56,7 @@ public class ArrayPaneStatusBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param firstVisibleLine
-   * 
    * @see
    */
   public void setFirstVisibleLine(int firstVisibleLine) {
@@ -70,10 +65,7 @@ public class ArrayPaneStatusBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getFirstVisibleLine() {
@@ -82,10 +74,7 @@ public class ArrayPaneStatusBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param maximumVisibleLine
-   * 
    * @see
    */
   public void setMaximumVisibleLine(int maximumVisibleLine) {
@@ -94,10 +83,7 @@ public class ArrayPaneStatusBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getMaximumVisibleLine() {
@@ -106,10 +92,7 @@ public class ArrayPaneStatusBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sortColumn
-   * 
    * @see
    */
   public void setSortColumn(int sortColumn) {
@@ -118,10 +101,7 @@ public class ArrayPaneStatusBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getSortColumn() {

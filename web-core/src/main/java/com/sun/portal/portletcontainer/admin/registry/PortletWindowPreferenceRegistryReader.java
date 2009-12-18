@@ -31,8 +31,7 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryReader;
  * PortletWindowPreferenceRegistryReader is responsible for reading the
  * portlet-window-preference-registry.xml file
  */
-public class PortletWindowPreferenceRegistryReader extends
-    PortletRegistryReader {
+public class PortletWindowPreferenceRegistryReader extends PortletRegistryReader {
 
   public PortletWindowPreferenceRegistryReader(String registryLocation,
       String context) {

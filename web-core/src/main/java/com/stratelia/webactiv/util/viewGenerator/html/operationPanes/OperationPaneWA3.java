@@ -36,7 +36,6 @@ import java.util.Vector;
 
 /**
  * The default implementation of ArrayPane interface
- * 
  * @author squere
  * @version 1.0
  */
@@ -44,8 +43,6 @@ public class OperationPaneWA3 extends AbstractOperationPane {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public OperationPaneWA3() {
@@ -54,12 +51,9 @@ public class OperationPaneWA3 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param iconPath
    * @param altText
    * @param action
-   * 
    * @see
    */
   public void addOperation(String iconPath, String altText, String action) {
@@ -69,17 +63,15 @@ public class OperationPaneWA3 extends AbstractOperationPane {
     operation.append("<tr>\n");
     operation.append("<td valign=\"top\" align=center><a id=\"")
         .append(altText).append("\" href=\"").append(action).append(
-            "\"><img src=\"").append(iconPath).append("\" alt=\"").append(
-            altText).append("\" title=\"").append(altText).append(
-            "\" border=\"0\"></a></td>\n");
+        "\"><img src=\"").append(iconPath).append("\" alt=\"").append(
+        altText).append("\" title=\"").append(altText).append(
+        "\" border=\"0\"></a></td>\n");
     operation.append("</tr>\n");
     stack.add(operation.toString());
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void addLine() {
@@ -92,10 +84,7 @@ public class OperationPaneWA3 extends AbstractOperationPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {

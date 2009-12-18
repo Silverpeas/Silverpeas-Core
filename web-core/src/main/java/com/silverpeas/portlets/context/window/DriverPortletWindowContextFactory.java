@@ -31,12 +31,10 @@ import com.sun.portal.container.PortletWindowContextException;
 import com.sun.portal.container.PortletWindowContextFactory;
 
 /**
- * DriverPortletWindowContextFactory provides the implementation of the abstract
- * methods of PortletWindowContextFactory.
- * 
+ * DriverPortletWindowContextFactory provides the implementation of the abstract methods of
+ * PortletWindowContextFactory.
  */
-public class DriverPortletWindowContextFactory implements
-    PortletWindowContextFactory {
+public class DriverPortletWindowContextFactory implements PortletWindowContextFactory {
 
   private PortletWindowContext portletWindowContext;
 

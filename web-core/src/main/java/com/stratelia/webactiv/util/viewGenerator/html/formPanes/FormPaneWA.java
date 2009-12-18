@@ -36,7 +36,6 @@ import javax.servlet.jsp.PageContext;
 
 /**
  * The default implementation of FormPane abstract class
- * 
  * @author frageade
  * @version 1.0
  */
@@ -44,13 +43,9 @@ public class FormPaneWA extends FormPane {
 
   /**
    * Generic class to display a typical WA form pane.
-   * 
-   * @param String
-   *          form name
-   * @param String
-   *          form action url
-   * @param PageContext
-   *          form page context
+   * @param String form name
+   * @param String form action url
+   * @param PageContext form page context
    */
   public FormPaneWA(String nam, String url, PageContext pc) {
     super(nam, url, pc);
@@ -60,10 +55,7 @@ public class FormPaneWA extends FormPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String print() {
@@ -106,14 +98,10 @@ public class FormPaneWA extends FormPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param trueActionPage
    * @param submitPage
    * @param modifyActionCode
-   * 
    * @return
-   * 
    * @see
    */
   public String printHeader(String trueActionPage, String submitPage,
@@ -139,8 +127,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + "\n}";
     retour = retour + "\n</script>";
     retour = retour + "\n<!--TABLE CONTENU -->";
-    retour = retour
-        + "\n<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=couleurFondCadre>";
+    retour =
+        retour
+            +
+            "\n<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=couleurFondCadre>";
     retour = retour + "\n<FORM name=\"" + name + "\" action=\"" + submitPage
         + "\" method=\"post\" size=30>";
     if (reply) {
@@ -164,8 +154,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + "\n</td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr>";
     retour = retour
@@ -178,8 +170,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + "\n</font></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr>";
     retour = retour
@@ -195,8 +189,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + "\n</td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr>";
     retour = retour
@@ -218,9 +214,11 @@ public class FormPaneWA extends FormPane {
       retour = retour + " disabled ";
     }
     retour = retour + "onClick=\"javascript:clickPubliArchiDemandes();\">";
-    retour = retour
-        + "\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
-        + message.getString("Non") + " ";
+    retour =
+        retour
+            +
+            "\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
+            + message.getString("Non") + " ";
     retour = retour
         + "\n<input type=\"radio\" name=\"publieurArchivageDemandes\" value=\"false\"";
     if (!publieurArchivageDemandes) {
@@ -232,8 +230,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + ">\n</span></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
     retour = retour + "\n</tr>";
     if (reply) {
       retour = retour + "\n<tr>";
@@ -247,9 +247,11 @@ public class FormPaneWA extends FormPane {
       if (publieurArchivageReponses) {
         retour = retour + " checked";
       }
-      retour = retour
-          + ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
-          + message.getString("Non") + " ";
+      retour =
+          retour
+              +
+              ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
+              + message.getString("Non") + " ";
       retour = retour
           + "\n<input type=\"radio\" name=\"publieurArchivageReponses\" value=\"false\"";
       if (!publieurArchivageReponses) {
@@ -259,8 +261,10 @@ public class FormPaneWA extends FormPane {
       retour = retour + "\n</tr>";
     }
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr>";
     retour = retour
@@ -278,9 +282,11 @@ public class FormPaneWA extends FormPane {
     if (utilisateurArchivageDemandes) {
       retour = retour + " checked";
     }
-    retour = retour
-        + ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
-        + message.getString("Non") + " ";
+    retour =
+        retour
+            +
+            ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
+            + message.getString("Non") + " ";
     retour = retour
         + "\n<input type=\"radio\" name=\"utilisateurArchivageDemandes\" value=\"false\"";
     if (!utilisateurArchivageDemandes) {
@@ -289,8 +295,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + ">\n</span></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr>";
     retour = retour
@@ -306,9 +314,11 @@ public class FormPaneWA extends FormPane {
     if (reply) {
       retour = retour + " disabled ";
     }
-    retour = retour
-        + ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
-        + message.getString("Non") + " ";
+    retour =
+        retour
+            +
+            ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
+            + message.getString("Non") + " ";
     retour = retour
         + "\n<input type=\"radio\" name=\"utilisateurEnvoiDemandes\" value=\"false\" ";
     if (!utilisateurEnvoiDemandes) {
@@ -321,8 +331,10 @@ public class FormPaneWA extends FormPane {
     retour = retour + "\n</span></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" align=\"right\"><img src=\"icons/1px.gif\" width=\"1\" height=\"1\"></td>";
     retour = retour + "\n</tr>";
     if (reply) {
       retour = retour + "\n<tr>";
@@ -336,9 +348,11 @@ public class FormPaneWA extends FormPane {
       if (utilisateurArchivageReponses) {
         retour = retour + " checked";
       }
-      retour = retour
-          + ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
-          + message.getString("Non") + " ";
+      retour =
+          retour
+              +
+              ">\n<img src=\"icons/1pxg.gif\" width=\"1\" height=\"20\" valign=\"absmiddle\" align=\"absmiddle\">&nbsp;"
+              + message.getString("Non") + " ";
       retour = retour
           + "\n<input type=\"radio\" name=\"utilisateurArchivageReponses\" value=\"false\"";
       if (!utilisateurArchivageReponses) {
@@ -348,8 +362,10 @@ public class FormPaneWA extends FormPane {
       retour = retour + "\n</tr>";
     }
     retour = retour + "\n<tr bgcolor=\"#999999\">";
-    retour = retour
-        + "\n<td colspan=\"2\" valign=\"top\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
+    retour =
+        retour
+            +
+            "\n<td colspan=\"2\" valign=\"top\"><img src=\"icons/1px.gif\" width=\"1\" height=\"2\"></td>";
     retour = retour + "\n</tr>";
     retour = retour + "\n</FORM>";
     retour = retour + "\n</table>";
@@ -366,14 +382,10 @@ public class FormPaneWA extends FormPane {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param trueActionPage
    * @param deleteActionCode
    * @param modifyActionCode
-   * 
    * @return
-   * 
    * @see
    */
   public String printDemo(String trueActionPage, String deleteActionCode,

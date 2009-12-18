@@ -40,8 +40,8 @@ import javax.servlet.jsp.PageContext;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
- * The ArrayPane interface gives us the skeleton for all funtionnalities we need
- * to display typical WA array table pane. Exemple : <BR>
+ * The ArrayPane interface gives us the skeleton for all funtionnalities we need to display typical
+ * WA array table pane. Exemple : <BR>
  * <CODE>
  * // Build a new ArrayPane.<BR>
  * ArrayPane arrayPane = graphicFactory.getArrayPane("MyTodoArrayPane", pageContext);<BR>
@@ -55,7 +55,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
  * arrayLine.addArrayCellText();<BR>
  * arrayLine.addArrayCellLink("Un nom", "javascript:onClick=viewToDo()");<BR>
  * </CODE>
- * 
  * @author squere
  * @version 1.0
  */
@@ -67,23 +66,17 @@ public interface ArrayPane extends SimpleGraphicElement {
   public static final String INDEX_PARAMETER_NAME = "ArrayPaneIndex";
 
   /**
-   * Generic class to display a typical WA array table pane. A unique name
-   * identifier is to be used in html pages for this array specific actions
-   * (exemple : sort on a specific column)
-   * 
-   * @param name
-   *          A unique name in the page to display
+   * Generic class to display a typical WA array table pane. A unique name identifier is to be used
+   * in html pages for this array specific actions (exemple : sort on a specific column)
+   * @param name A unique name in the page to display
    */
   public void init(String name, PageContext pageContext);
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param request
    * @param session
-   * 
    * @see
    */
   public void init(String name, javax.servlet.ServletRequest request,
@@ -91,13 +84,10 @@ public interface ArrayPane extends SimpleGraphicElement {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param name
    * @param url
    * @param request
    * @param session
-   * 
    * @see
    */
   public void init(String name, String url,
@@ -105,149 +95,117 @@ public interface ArrayPane extends SimpleGraphicElement {
 
   /**
    * Add a new column to the table.
-   * 
-   * @param title
-   *          The column title to display
-   * @return The new column header. You can use this object to modify the
-   *         default display options.
+   * @param title The column title to display
+   * @return The new column header. You can use this object to modify the default display options.
    */
   public ArrayColumn addArrayColumn(String title);
 
   /**
-   * Add a line to the table. Be carefull : each line form the array has to
-   * contain the same cell number. If not, the array will contain some empty
-   * cells, and won't be sortable.
-   * 
-   * @return an ArrayLine, to be used to add cells and to modify default display
-   *         options.
+   * Add a line to the table. Be carefull : each line form the array has to contain the same cell
+   * number. If not, the array will contain some empty cells, and won't be sortable.
+   * @return an ArrayLine, to be used to add cells and to modify default display options.
    */
   public ArrayLine addArrayLine();
 
   /**
    * Set the array title, to be displayed on the first html table.
-   * 
-   * @param title
-   *          The title
+   * @param title The title
    */
   public void setTitle(String title);
 
   /**
    * Get the title
-   * 
    * @return The title
    */
   public String getTitle();
 
   /**
    * Get the unique name
-   * 
    * @return The name of this object in the http page
    */
   public String getName();
 
   /**
-   * Set the maximum line number visible in the table. If the number of line is
-   * greater than this maximum, only the first lines will be visible, and some
-   * buttons to view next and previous lines will be added.
-   * 
-   * @param maximum
-   *          The maximum number of visible lines
+   * Set the maximum line number visible in the table. If the number of line is greater than this
+   * maximum, only the first lines will be visible, and some buttons to view next and previous lines
+   * will be added.
+   * @param maximum The maximum number of visible lines
    */
   public void setVisibleLineNumber(int maximum);
 
   /**
    * Modify the column number the sort will be based on.
-   * 
-   * @param columnNumber
-   *          The column to be sorted
+   * @param columnNumber The column to be sorted
    */
   public void setColumnToSort(int columnNumber);
 
   /**
-   * Modify the column behaviour. Useful if you have a passive column which does
-   * not need to trigger an hyperlink when its header is cliked
-   * 
+   * Modify the column behaviour. Useful if you have a passive column which does not need to trigger
+   * an hyperlink when its header is cliked
    * @deprecated
-   * @param columnNumber
-   *          The column to be set
+   * @param columnNumber The column to be set
    */
   public void setColumnBehaviour(int columnNumber, int mode);
 
   /**
    * Get the column to be sorted
-   * 
    * @return The column number.
    */
   public int getColumnToSort();
 
   /**
    * Print the array line in an html format.
-   * 
    * @return The html code, representing the array pane
    */
   public String print();
 
   /**
    * Get the session in which the ArrayPane will keep its state.
-   * 
    * @return The session
    */
   public HttpSession getSession();
 
   /**
-   * Get the request that can contains some parameters for the ArrayPane (sort
-   * action...)
-   * 
+   * Get the request that can contains some parameters for the ArrayPane (sort action...)
    * @return The entering request
    */
   public ServletRequest getRequest();
 
   /**
-   * change the routing address (the url of the page to which the column header
-   * refer) in the rare cases when you may not want it to be derived from the
-   * calling page. This method is called by the constructor if you precise an
-   * url to the GraphicElementFactory.
+   * change the routing address (the url of the page to which the column header refer) in the rare
+   * cases when you may not want it to be derived from the calling page. This method is called by
+   * the constructor if you precise an url to the GraphicElementFactory.
    */
   public void setRoutingAddress(String address);
 
   /**
-   * Set all array columns to be sortable or not. By default, all colums are
-   * sortable.
-   * 
-   * @param sortable
-   *          Set sortable to false if you want all the table to be unsortable.
+   * Set all array columns to be sortable or not. By default, all colums are sortable.
+   * @param sortable Set sortable to false if you want all the table to be unsortable.
    */
   public void setSortable(boolean sortable);
 
   /**
-   * Get global array columns behaviour for sort. By default, all colums are
-   * sortable.
-   * 
+   * Get global array columns behaviour for sort. By default, all colums are sortable.
    * @return True, if the array is sortable, false if not.
    */
   public boolean getSortable();
 
   /**
    * Change the sort mode for all columns that could handle this mode.
-   * 
-   * @param mode
-   *          The new sort mode.
+   * @param mode The new sort mode.
    * @deprecated
    */
   public void setSortMode(int mode);
 
   /**
    * Get the sort mode for all columns.
-   * 
    * @return The sort mode.
    * @deprecated
    */
   public int getSortMode();
 
   /**
-   * Change presentation parameters for cells. Allows for more compact lines if
-   * need be.
-   * 
+   * Change presentation parameters for cells. Allows for more compact lines if need be.
    * @deprecated
    */
   public void setCellsConfiguration(int spacing, int padding, int borderWidth);

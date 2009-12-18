@@ -37,13 +37,12 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 
 /**
- * AbstractPortletRegistryElement provides partial implementation of the
- * PortletRegistryElement interface. It has implementation for the methods that
- * are common to all elements like PortletApp, PortletWindow or
- * PortletWindowPreference
+ * AbstractPortletRegistryElement provides partial implementation of the PortletRegistryElement
+ * interface. It has implementation for the methods that are common to all elements like PortletApp,
+ * PortletWindow or PortletWindowPreference
  */
-public abstract class AbstractPortletRegistryElement implements
-    PortletRegistryTags, PortletRegistryElement {
+public abstract class AbstractPortletRegistryElement implements PortletRegistryTags,
+    PortletRegistryElement {
 
   private String name;
   private String userName;

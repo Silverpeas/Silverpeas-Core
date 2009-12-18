@@ -24,30 +24,24 @@
 package com.sun.portal.portletcontainer.driver.admin;
 
 /**
- * A <code>PortletAdminDataException</code> is thrown when there are errors
- * related to the portlet admin console like deployment of portlet, creation of
- * portlet window.
+ * A <code>PortletAdminDataException</code> is thrown when there are errors related to the portlet
+ * admin console like deployment of portlet, creation of portlet window.
  */
 public class PortletAdminDataException extends Exception {
 
   /**
    * Constructs a new exception with the specified message
-   * 
-   * @param msg
-   *          The descriptive message.
+   * @param msg The descriptive message.
    */
   public PortletAdminDataException(String msg) {
     super(msg);
   }
 
   /**
-   * Constructs a new exception with the specified message, and the original
-   * <code>exception</code> or <code>error</code>
-   * 
-   * @param msg
-   *          The descriptive message.
-   * @param cause
-   *          The original <code>exception</code> or <code>error</code>.
+   * Constructs a new exception with the specified message, and the original <code>exception</code>
+   * or <code>error</code>
+   * @param msg The descriptive message.
+   * @param cause The original <code>exception</code> or <code>error</code>.
    */
   public PortletAdminDataException(String msg, Throwable cause) {
     super(msg, cause);
