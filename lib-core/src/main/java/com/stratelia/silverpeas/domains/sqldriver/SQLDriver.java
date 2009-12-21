@@ -37,569 +37,606 @@ import java.util.*;
 import com.stratelia.webactiv.beans.admin.*;
 
 public class SQLDriver extends AbstractDomainDriver {
-  protected Connection openedConnection = null;
-  protected boolean inTransaction = false;
-  protected String passwordEncryption = null;
-  protected SQLSettings drvSettings = new SQLSettings();
-  protected SQLUserTable localUserMgr = new SQLUserTable(drvSettings);
-  protected SQLGroupTable localGroupMgr = new SQLGroupTable(drvSettings);
-  protected SQLGroupUserRelTable localGroupUserRelMgr = new SQLGroupUserRelTable(
-      drvSettings);
+	protected Connection openedConnection = null;
+	protected boolean inTransaction = false;
+	protected String passwordEncryption = null;
+	protected SQLSettings drvSettings = new SQLSettings();
+	protected SQLUserTable localUserMgr = new SQLUserTable(drvSettings);
+	protected SQLGroupTable localGroupMgr = new SQLGroupTable(drvSettings);
+	protected SQLGroupUserRelTable localGroupUserRelMgr = new SQLGroupUserRelTable(
+			drvSettings);
 
-  /**
-   * Constructor
-   */
-  public SQLDriver() {
+	/**
+	 * Constructor
+	 */
+	public SQLDriver() {
 
-  }
+	}
 
-  /**
-   * Virtual method that performs extra initialization from a properties file. To overload by the
-   * class who need it.
-   */
-  public void initFromProperties(ResourceLocator rs) throws Exception {
-    passwordEncryption = rs.getString("database.SQLPasswordEncryption");
-    drvSettings.initFromProperties(rs);
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seecom.stratelia.webactiv.beans.admin.AbstractDomainDriver#
+	 * getGroupMemberGroupIds(java.lang.String)
+	 */
+	public String[] getGroupMemberGroupIds(String groupId) throws Exception {
+		Group group = getGroup(groupId);
+		if ((group != null) && (group.getSuperGroupId() != null)) {
+			return new String[] { group.getSuperGroupId() };
+		} else
+			return null;
+	}
 
-  /**
-   * Get an DomainSQL schema from the pool.
-   */
-  private void openConnection() throws AdminException {
-    if (openedConnection == null) {
-      SilverTrace.info("admin", "SQLDriver.openConnection()",
-          "root.MSG_GEN_ENTER_METHOD");
-      try {
-        Class.forName(drvSettings.getClassName());
-        openedConnection = DriverManager.getConnection(
-            drvSettings.getJDBCUrl(), drvSettings.getAccessLogin(), drvSettings
-            .getAccessPasswd());
-      } catch (Exception e) {
-        throw new AdminException("SQLDriver.openConnection",
-            SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-      }
-    }
-  }
+	/**
+	 * Virtual method that performs extra initialization from a properties file.
+	 * To overload by the class who need it.
+	 */
+	public void initFromProperties(ResourceLocator rs) throws Exception {
+		passwordEncryption = rs.getString("database.SQLPasswordEncryption");
+		drvSettings.initFromProperties(rs);
+	}
 
-  /**
-   * Release the DomainSQL schema.
-   */
-  public void closeConnection() throws AdminException {
-    if ((openedConnection != null) && (!inTransaction)) {
-      try {
-        openedConnection.close();
-      } catch (Exception e) {
-        throw new AdminException("SQLDriver.closeConnection",
-            SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
-      } finally {
-        openedConnection = null;
-      }
-    }
-  }
+	/**
+	 * Get an DomainSQL schema from the pool.
+	 */
+	private void openConnection() throws AdminException {
+		if (openedConnection == null) {
+			SilverTrace.info("admin", "SQLDriver.openConnection()",
+					"root.MSG_GEN_ENTER_METHOD");
+			try {
+				Class.forName(drvSettings.getClassName());
+				openedConnection = DriverManager.getConnection(drvSettings
+						.getJDBCUrl(), drvSettings.getAccessLogin(),
+						drvSettings.getAccessPasswd());
+			} catch (Exception e) {
+				throw new AdminException("SQLDriver.openConnection",
+						SilverpeasException.ERROR,
+						"root.EX_CONNECTION_OPEN_FAILED", e);
+			}
+		}
+	}
 
-  /**
-   * @param m_User
-   * @return String
-   */
-  public String createUser(UserDetail ud) throws Exception {
-    try {
-      int userId;
+	/**
+	 * Release the DomainSQL schema.
+	 */
+	public void closeConnection() throws AdminException {
+		if ((openedConnection != null) && (!inTransaction)) {
+			try {
+				openedConnection.close();
+			} catch (Exception e) {
+				throw new AdminException("SQLDriver.closeConnection",
+						SilverpeasException.ERROR,
+						"root.EX_CONNECTION_CLOSE_FAILED", e);
+			} finally {
+				openedConnection = null;
+			}
+		}
+	}
 
-      this.openConnection();
-      userId = localUserMgr.createUser(openedConnection, ud);
-      localUserMgr.updateUserPassword(openedConnection, userId, "");
-      localUserMgr.updateUserPasswordValid(openedConnection, userId, false);
-      return idAsString(userId);
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.createUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", ud.getFirstName()
-          + " " + ud.getLastName(), e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+	/**
+	 * @param m_User
+	 * @return String
+	 */
+	public String createUser(UserDetail ud) throws Exception {
+		try {
+			int userId;
 
-  /**
-   * @param userId
-   */
-  public void deleteUser(String userId) throws Exception {
-    try {
-      this.openConnection();
-      localGroupUserRelMgr.removeAllUserRel(openedConnection, idAsInt(userId));
-      localUserMgr.deleteUser(openedConnection, idAsInt(userId));
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.deleteUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "userId : "
-          + userId, e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			this.openConnection();
+			userId = localUserMgr.createUser(openedConnection, ud);
+			localUserMgr.updateUserPassword(openedConnection, userId, "");
+			localUserMgr.updateUserPasswordValid(openedConnection, userId,
+					false);
+			return idAsString(userId);
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.createUser",
+					SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", ud
+							.getFirstName()
+							+ " " + ud.getLastName(), e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * @param m_User
-   */
-  public void updateUserFull(UserFull uf) throws Exception {
-    try {
-      this.openConnection();
+	/**
+	 * @param userId
+	 */
+	public void deleteUser(String userId) throws Exception {
+		try {
+			this.openConnection();
+			localGroupUserRelMgr.removeAllUserRel(openedConnection,
+					idAsInt(userId));
+			localUserMgr.deleteUser(openedConnection, idAsInt(userId));
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.deleteUser",
+					SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER",
+					"userId : " + userId, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-      localUserMgr.updateUser(openedConnection, uf);
+	/**
+	 * @param m_User
+	 */
+	public void updateUserFull(UserFull uf) throws Exception {
+		try {
+			this.openConnection();
 
-      int userId = idAsInt(uf.getSpecificId());
+			localUserMgr.updateUser(openedConnection, uf);
 
-      // MAJ Specific Properties (except password)
-      String[] specificProps = getPropertiesNames();
-      DomainProperty theProp;
+			int userId = idAsInt(uf.getSpecificId());
 
-      for (int i = 0; i < specificProps.length; i++) {
-        theProp = getProperty(specificProps[i]);
-        localUserMgr.updateUserSpecificProperty(openedConnection, userId,
-            theProp, uf.getValue(theProp.getName()));
-      }
+			// MAJ Specific Properties (except password)
+			String[] specificProps = getPropertiesNames();
+			DomainProperty theProp;
 
-      // PWD specific treatment
-      if (drvSettings.isUserPasswordAvailable()) {
-        String fromPwd = localUserMgr.getUserPassword(openedConnection, userId);
-        String toPwd = "";
-        if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
-            && !uf.getPassword().equals(fromPwd)) {
-          toPwd = UnixMD5Crypt.crypt(uf.getPassword());
-        } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
-            && !uf.getPassword().equals(fromPwd)) {
-          toPwd = CryptMD5.crypt(uf.getPassword());
-        } else {
-          toPwd = uf.getPassword();
-        }
-        localUserMgr.updateUserPassword(openedConnection, userId, toPwd);
-        localUserMgr.updateUserPasswordValid(openedConnection, userId, uf
-            .isPasswordValid());
-      }
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.updateUserFull",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", uf
-          .getFirstName()
-          + " " + uf.getLastName(), e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			for (int i = 0; i < specificProps.length; i++) {
+				theProp = getProperty(specificProps[i]);
+				localUserMgr.updateUserSpecificProperty(openedConnection,
+						userId, theProp, uf.getValue(theProp.getName()));
+			}
 
-  /**
-   * @param m_User
-   */
-  public void updateUserDetail(UserDetail ud) throws Exception {
-    try {
-      this.openConnection();
-      localUserMgr.updateUser(openedConnection, ud);
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.updateUserDetail",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud
-          .getFirstName()
-          + " " + ud.getLastName(), e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			// PWD specific treatment
+			if (drvSettings.isUserPasswordAvailable()) {
+				String fromPwd = localUserMgr.getUserPassword(openedConnection,
+						userId);
+				String toPwd = "";
+				if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
+						&& !uf.getPassword().equals(fromPwd)) {
+					toPwd = UnixMD5Crypt.crypt(uf.getPassword());
+				} else if (Authentication.ENC_TYPE_MD5
+						.equals(passwordEncryption)
+						&& !uf.getPassword().equals(fromPwd)) {
+					toPwd = CryptMD5.crypt(uf.getPassword());
+				} else {
+					toPwd = uf.getPassword();
+				}
+				localUserMgr
+						.updateUserPassword(openedConnection, userId, toPwd);
+				localUserMgr.updateUserPasswordValid(openedConnection, userId,
+						uf.isPasswordValid());
+			}
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.updateUserFull",
+					SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", uf
+							.getFirstName()
+							+ " " + uf.getLastName(), e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * @param userId
-   * @return User
-   */
-  public UserDetail getUser(String userId) throws Exception {
-    try {
-      this.openConnection();
-      return localUserMgr.getUser(openedConnection, idAsInt(userId));
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getUser", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER", "userId : " + userId, e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+	/**
+	 * @param m_User
+	 */
+	public void updateUserDetail(UserDetail ud) throws Exception {
+		try {
+			this.openConnection();
+			localUserMgr.updateUser(openedConnection, ud);
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.updateUserDetail",
+					SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud
+							.getFirstName()
+							+ " " + ud.getLastName(), e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  public UserFull getUserFull(String id) throws Exception {
-    try {
-      this.openConnection();
-      int userId = idAsInt(id);
-      UserFull uf = null;
-      UserDetail ud = localUserMgr.getUser(openedConnection, userId);
-      if (ud != null) {
-        uf = new UserFull(this, ud);
+	/**
+	 * @param userId
+	 * @return User
+	 */
+	public UserDetail getUser(String userId) throws Exception {
+		try {
+			this.openConnection();
+			return localUserMgr.getUser(openedConnection, idAsInt(userId));
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getUser",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_USER",
+					"userId : " + userId, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-        if (drvSettings.isUserPasswordAvailable()) {
-          uf.setPasswordAvailable(true);
-          uf
-              .setPassword(localUserMgr.getUserPassword(openedConnection,
-              userId));
-          uf.setPasswordValid(localUserMgr.getUserPasswordValid(
-              openedConnection, userId));
-        }
-        String[] specificProps = getPropertiesNames();
-        DomainProperty theProp;
-        String value;
+	public UserFull getUserFull(String id) throws Exception {
+		try {
+			this.openConnection();
+			int userId = idAsInt(id);
+			UserFull uf = null;
+			UserDetail ud = localUserMgr.getUser(openedConnection, userId);
+			if (ud != null) {
+				uf = new UserFull(this, ud);
 
-        for (int i = 0; i < specificProps.length; i++) {
-          theProp = getProperty(specificProps[i]);
-          value = localUserMgr.getUserSpecificProperty(openedConnection,
-              userId, theProp);
-          uf.setValue(theProp.getName(), value);
-        }
-      }
-      return uf;
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getUserFull",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "userId : " + id,
-          e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+				if (drvSettings.isUserPasswordAvailable()) {
+					uf.setPasswordAvailable(true);
+					uf.setPassword(localUserMgr.getUserPassword(
+							openedConnection, userId));
+					uf.setPasswordValid(localUserMgr.getUserPasswordValid(
+							openedConnection, userId));
+				}
+				String[] specificProps = getPropertiesNames();
+				DomainProperty theProp;
+				String value;
 
-  /**
-   * @return User[]
-   */
-  public UserDetail[] getAllUsers() throws Exception {
-    try {
-      this.openConnection();
-      return (UserDetail[]) (localUserMgr.getAllUsers(openedConnection)
-          .toArray(new UserDetail[0]));
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getAllUsers",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_USERS", e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+				for (int i = 0; i < specificProps.length; i++) {
+					theProp = getProperty(specificProps[i]);
+					value = localUserMgr.getUserSpecificProperty(
+							openedConnection, userId, theProp);
+					uf.setValue(theProp.getName(), value);
+				}
+			}
+			return uf;
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getUserFull",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_USER",
+					"userId : " + id, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  public UserDetail[] getUsersBySpecificProperty(String propertyName,
-      String propertyValue) throws Exception {
-    DomainProperty property = getProperty(propertyName);
-    if (property == null) {
-      // This property is not defined in this domain
-      return null;
-    } else {
-      try {
-        this.openConnection();
-        return (UserDetail[]) (localUserMgr.getUsersBySpecificProperty(
-            openedConnection, property.getMapParameter(), propertyValue)
-            .toArray(new UserDetail[0]));
-      } catch (Exception e) {
-        throw new AdminException("SQLDriver.getUsersBySpecificProperty",
-            SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
-      } finally {
-        this.closeConnection();
-      }
-    }
-  }
+	/**
+	 * @return User[]
+	 */
+	public UserDetail[] getAllUsers() throws Exception {
+		try {
+			this.openConnection();
+			return (UserDetail[]) (localUserMgr.getAllUsers(openedConnection)
+					.toArray(new UserDetail[0]));
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getAllUsers",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_USERS", e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * @param m_Group
-   * @return String
-   */
-  public String createGroup(Group group) throws Exception {
-    try {
-      int theGrpId = -1;
-      String theGrpIdStr = null;
+	public UserDetail[] getUsersBySpecificProperty(String propertyName,
+			String propertyValue) throws Exception {
+		DomainProperty property = getProperty(propertyName);
+		if (property == null) {
+			// This property is not defined in this domain
+			return null;
+		} else {
+			try {
+				this.openConnection();
+				return (UserDetail[]) (localUserMgr.getUsersBySpecificProperty(
+						openedConnection, property.getMapParameter(),
+						propertyValue).toArray(new UserDetail[0]));
+			} catch (Exception e) {
+				throw new AdminException(
+						"SQLDriver.getUsersBySpecificProperty",
+						SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
+			} finally {
+				this.closeConnection();
+			}
+		}
+	}
 
-      this.openConnection();
-      theGrpId = localGroupMgr.createGroup(openedConnection, group);
-      theGrpIdStr = Integer.toString(theGrpId);
-      // Add the users in the group
-      String[] asUserIds = group.getUserIds();
-      for (int nI = 0; nI < asUserIds.length; nI++)
-        if (asUserIds[nI] != null && asUserIds[nI].length() > 0)
-          addUserInGroup(asUserIds[nI], theGrpIdStr);
+	/**
+	 * @param m_Group
+	 * @return String
+	 */
+	public String createGroup(Group group) throws Exception {
+		try {
+			int theGrpId = -1;
+			String theGrpIdStr = null;
 
-      return theGrpIdStr;
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.createGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", group.getName(),
-          e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			this.openConnection();
+			theGrpId = localGroupMgr.createGroup(openedConnection, group);
+			theGrpIdStr = Integer.toString(theGrpId);
+			// Add the users in the group
+			String[] asUserIds = group.getUserIds();
+			for (int nI = 0; nI < asUserIds.length; nI++)
+				if (asUserIds[nI] != null && asUserIds[nI].length() > 0)
+					addUserInGroup(asUserIds[nI], theGrpIdStr);
 
-  /**
-   * @param groupId
-   */
-  public void deleteGroup(String groupId) throws Exception {
-    try {
-      int gid;
+			return theGrpIdStr;
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.createGroup",
+					SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", group
+							.getName(), e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-      this.openConnection();
-      ArrayList allSubGroups = new ArrayList();
-      allSubGroups.add(localGroupMgr.getGroup(openedConnection,
-          idAsInt(groupId)));
+	/**
+	 * @param groupId
+	 */
+	public void deleteGroup(String groupId) throws Exception {
+		try {
+			int gid;
 
-      while (allSubGroups.size() > 0) {
-        gid = idAsInt(((Group) allSubGroups.remove(0)).getSpecificId());
-        // Add sub groups
-        allSubGroups.addAll(localGroupMgr.getDirectSubGroups(openedConnection,
-            gid));
-        // Remove the group
-        localGroupUserRelMgr.removeAllGroupRel(openedConnection, gid);
-        localGroupMgr.deleteGroup(openedConnection, gid);
-      }
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.deleteGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "groupId : "
-          + groupId, e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			this.openConnection();
+			ArrayList allSubGroups = new ArrayList();
+			allSubGroups.add(localGroupMgr.getGroup(openedConnection,
+					idAsInt(groupId)));
 
-  /**
-   * @param m_Group
-   */
-  public void updateGroup(Group group) throws Exception {
-    ArrayList alAddUsers = new ArrayList();
-    int groupId = idAsInt(group.getSpecificId());
+			while (allSubGroups.size() > 0) {
+				gid = idAsInt(((Group) allSubGroups.remove(0)).getSpecificId());
+				// Add sub groups
+				allSubGroups.addAll(localGroupMgr.getDirectSubGroups(
+						openedConnection, gid));
+				// Remove the group
+				localGroupUserRelMgr.removeAllGroupRel(openedConnection, gid);
+				localGroupMgr.deleteGroup(openedConnection, gid);
+			}
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.deleteGroup",
+					SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP",
+					"groupId : " + groupId, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-    try {
-      if (group == null || group.getName().length() == 0
-          || group.getSpecificId().length() == 0)
-        throw new AdminException("SQLDriver.updateGroup",
-            SilverpeasException.ERROR, "admin.EX_ERR_INVALID_GROUP");
+	/**
+	 * @param m_Group
+	 */
+	public void updateGroup(Group group) throws Exception {
+		ArrayList alAddUsers = new ArrayList();
+		int groupId = idAsInt(group.getSpecificId());
 
-      this.openConnection();
+		try {
+			if (group == null || group.getName().length() == 0
+					|| group.getSpecificId().length() == 0)
+				throw new AdminException("SQLDriver.updateGroup",
+						SilverpeasException.ERROR, "admin.EX_ERR_INVALID_GROUP");
 
-      // Update the group node
-      localGroupMgr.updateGroup(openedConnection, group);
+			this.openConnection();
 
-      // Update the users if necessary
-      ArrayList asOldUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(
-          openedConnection, groupId);
-      // Compute the users list
-      String[] asNewUsersId = group.getUserIds();
+			// Update the group node
+			localGroupMgr.updateGroup(openedConnection, group);
 
-      for (int nJ = 0; nJ < asNewUsersId.length; nJ++) {
-        if (!asOldUsersId.remove(asNewUsersId[nJ]))
-          alAddUsers.add(asNewUsersId[nJ]);
-      }
+			// Update the users if necessary
+			ArrayList asOldUsersId = localGroupUserRelMgr
+					.getDirectUserIdsOfGroup(openedConnection, groupId);
+			// Compute the users list
+			String[] asNewUsersId = group.getUserIds();
 
-      // Remove the users that are not in this group anymore
-      for (int nI = 0; nI < asOldUsersId.size(); nI++)
-        localGroupUserRelMgr.removeGroupUserRel(openedConnection, groupId,
-            idAsInt(((String) asOldUsersId.get(nI))));
+			for (int nJ = 0; nJ < asNewUsersId.length; nJ++) {
+				if (!asOldUsersId.remove(asNewUsersId[nJ]))
+					alAddUsers.add(asNewUsersId[nJ]);
+			}
 
-      // Add the new users of the group
-      for (int nI = 0; nI < alAddUsers.size(); nI++)
-        localGroupUserRelMgr.createGroupUserRel(openedConnection, groupId,
-            idAsInt(((String) alAddUsers.get(nI))));
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.updateGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "groupId : "
-          + group.getSpecificId(), e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			// Remove the users that are not in this group anymore
+			for (int nI = 0; nI < asOldUsersId.size(); nI++)
+				localGroupUserRelMgr.removeGroupUserRel(openedConnection,
+						groupId, idAsInt(((String) asOldUsersId.get(nI))));
 
-  /**
-   * @param groupId
-   * @return Group
-   */
-  public Group getGroup(String groupId) throws Exception {
-    try {
-      this.openConnection();
-      Group valret = localGroupMgr.getGroup(openedConnection, idAsInt(groupId));
-      if (valret != null) {
-        // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(
-            openedConnection, idAsInt(groupId));
-        valret.setUserIds((String[]) asUsersId.toArray(new String[0]));
-      }
-      return valret;
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getGroup", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_GROUP", "groupId : " + groupId, e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			// Add the new users of the group
+			for (int nI = 0; nI < alAddUsers.size(); nI++)
+				localGroupUserRelMgr.createGroupUserRel(openedConnection,
+						groupId, idAsInt(((String) alAddUsers.get(nI))));
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.updateGroup",
+					SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP",
+					"groupId : " + group.getSpecificId(), e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * @param groupName
-   * @return Group
-   */
-  public Group getGroupByName(String groupName) throws Exception {
-    try {
-      this.openConnection();
-      Group valret = localGroupMgr.getGroupByName(openedConnection, groupName);
-      return valret;
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getGroupByName",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "groupName : "
-          + groupName, e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+	/**
+	 * @param groupId
+	 * @return Group
+	 */
+	public Group getGroup(String groupId) throws Exception {
+		try {
+			this.openConnection();
+			Group valret = localGroupMgr.getGroup(openedConnection,
+					idAsInt(groupId));
+			if (valret != null) {
+				// Get the selected users for this group
+				ArrayList asUsersId = localGroupUserRelMgr
+						.getDirectUserIdsOfGroup(openedConnection,
+								idAsInt(groupId));
+				valret.setUserIds((String[]) asUsersId.toArray(new String[0]));
+			}
+			return valret;
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getGroup",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP",
+					"groupId : " + groupId, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * @param groupId
-   * @return Group[]
-   */
-  public Group[] getGroups(String groupId) throws Exception {
-    try {
-      this.openConnection();
-      ArrayList ar = localGroupMgr.getDirectSubGroups(openedConnection,
-          idAsInt(groupId));
-      Iterator it = ar.iterator();
+	/**
+	 * @param groupName
+	 * @return Group
+	 */
+	public Group getGroupByName(String groupName) throws Exception {
+		try {
+			this.openConnection();
+			Group valret = localGroupMgr.getGroupByName(openedConnection,
+					groupName);
+			return valret;
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getGroupByName",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP",
+					"groupName : " + groupName, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-      while (it.hasNext()) {
-        Group theGroup = (Group) it.next();
+	/**
+	 * @param groupId
+	 * @return Group[]
+	 */
+	public Group[] getGroups(String groupId) throws Exception {
+		try {
+			this.openConnection();
+			ArrayList ar = localGroupMgr.getDirectSubGroups(openedConnection,
+					idAsInt(groupId));
+			Iterator it = ar.iterator();
 
-        // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(
-            openedConnection, idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
-      }
+			while (it.hasNext()) {
+				Group theGroup = (Group) it.next();
 
-      return (Group[]) ar.toArray(new Group[0]);
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS",
-          "father group id : " + groupId, e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+				// Get the selected users for this group
+				ArrayList asUsersId = localGroupUserRelMgr
+						.getDirectUserIdsOfGroup(openedConnection,
+								idAsInt(theGroup.getSpecificId()));
+				theGroup
+						.setUserIds((String[]) asUsersId.toArray(new String[0]));
+			}
 
-  /**
-   * @return Group[]
-   */
-  public Group[] getAllGroups() throws Exception {
-    try {
-      this.openConnection();
-      ArrayList ar = localGroupMgr.getAllGroups(openedConnection);
-      Iterator it = ar.iterator();
+			return (Group[]) ar.toArray(new Group[0]);
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getGroups",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS",
+					"father group id : " + groupId, e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-      while (it.hasNext()) {
-        Group theGroup = (Group) it.next();
+	/**
+	 * @return Group[]
+	 */
+	public Group[] getAllGroups() throws Exception {
+		try {
+			this.openConnection();
+			ArrayList ar = localGroupMgr.getAllGroups(openedConnection);
+			Iterator it = ar.iterator();
 
-        // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(
-            openedConnection, idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
-      }
+			while (it.hasNext()) {
+				Group theGroup = (Group) it.next();
 
-      return (Group[]) ar.toArray(new Group[0]);
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getAllGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUPS", e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+				// Get the selected users for this group
+				ArrayList asUsersId = localGroupUserRelMgr
+						.getDirectUserIdsOfGroup(openedConnection,
+								idAsInt(theGroup.getSpecificId()));
+				theGroup
+						.setUserIds((String[]) asUsersId.toArray(new String[0]));
+			}
 
-  /**
-   * @return Group[]
-   */
-  public Group[] getAllRootGroups() throws Exception {
-    try {
-      this.openConnection();
-      ArrayList ar = localGroupMgr.getDirectSubGroups(openedConnection, -1);
-      Iterator it = ar.iterator();
+			return (Group[]) ar.toArray(new Group[0]);
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getAllGroups",
+					SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_GROUPS", e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-      while (it.hasNext()) {
-        Group theGroup = (Group) it.next();
+	/**
+	 * @return Group[]
+	 */
+	public Group[] getAllRootGroups() throws Exception {
+		try {
+			this.openConnection();
+			ArrayList ar = localGroupMgr.getDirectSubGroups(openedConnection,
+					-1);
+			Iterator it = ar.iterator();
 
-        // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(
-            openedConnection, idAsInt(theGroup.getSpecificId()));
-        theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
-      }
+			while (it.hasNext()) {
+				Group theGroup = (Group) it.next();
 
-      return (Group[]) ar.toArray(new Group[0]);
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.getAllRootGroups",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ROOT_GROUPS", e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+				// Get the selected users for this group
+				ArrayList asUsersId = localGroupUserRelMgr
+						.getDirectUserIdsOfGroup(openedConnection,
+								idAsInt(theGroup.getSpecificId()));
+				theGroup
+						.setUserIds((String[]) asUsersId.toArray(new String[0]));
+			}
 
-  /**
-   * @param userId
-   * @param groupId
-   */
-  public void addUserInGroup(String userId, String groupId) throws Exception {
-    try {
-      this.openConnection();
-      localGroupUserRelMgr.createGroupUserRel(openedConnection,
-          idAsInt(groupId), idAsInt(userId));
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.addUserInGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER_IN_GROUP",
-          "userId : '" + userId + "', groupId : '" + groupId + "'", e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+			return (Group[]) ar.toArray(new Group[0]);
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.getAllRootGroups",
+					SilverpeasException.ERROR,
+					"admin.EX_ERR_GET_ALL_ROOT_GROUPS", e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * @param userId
-   * @param groupId
-   */
-  public void removeUserFromGroup(String userId, String groupId)
-      throws Exception {
-    try {
-      this.openConnection();
-      localGroupUserRelMgr.removeGroupUserRel(openedConnection,
-          idAsInt(groupId), idAsInt(userId));
+	/**
+	 * @param userId
+	 * @param groupId
+	 */
+	public void addUserInGroup(String userId, String groupId) throws Exception {
+		try {
+			this.openConnection();
+			localGroupUserRelMgr.createGroupUserRel(openedConnection,
+					idAsInt(groupId), idAsInt(userId));
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.addUserInGroup",
+					SilverpeasException.ERROR,
+					"admin.EX_ERR_ADD_USER_IN_GROUP", "userId : '" + userId
+							+ "', groupId : '" + groupId + "'", e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-    } catch (Exception e) {
-      throw new AdminException("SQLDriver.removeUserFromGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_REMOVE_USER_FROM_GROUP",
-          "userId : '" + userId + "', groupId : '" + groupId + "'", e);
-    } finally {
-      this.closeConnection();
-    }
-  }
+	/**
+	 * @param userId
+	 * @param groupId
+	 */
+	public void removeUserFromGroup(String userId, String groupId)
+			throws Exception {
+		try {
+			this.openConnection();
+			localGroupUserRelMgr.removeGroupUserRel(openedConnection,
+					idAsInt(groupId), idAsInt(userId));
 
-  /**
-   * Start a new transaction
-   */
-  public void startTransaction(boolean bAutoCommit) throws Exception {
-    inTransaction = true;
-    openConnection();
-    if (openedConnection != null) {
-      openedConnection.setAutoCommit(bAutoCommit);
-    }
-  }
+		} catch (Exception e) {
+			throw new AdminException("SQLDriver.removeUserFromGroup",
+					SilverpeasException.ERROR,
+					"admin.EX_ERR_REMOVE_USER_FROM_GROUP", "userId : '"
+							+ userId + "', groupId : '" + groupId + "'", e);
+		} finally {
+			this.closeConnection();
+		}
+	}
 
-  /**
-   * Commit transaction
-   */
-  public void commit() throws Exception {
-    try {
-      if (openedConnection != null) {
-        openedConnection.commit();
-      }
-      inTransaction = false;
-      closeConnection();
-    } catch (AdminPersistenceException e) {
-      throw new AdminException("SQLDriver.commit", SilverpeasException.ERROR,
-          "root.EX_ERR_COMMIT", e);
-    }
-  }
+	/**
+	 * Start a new transaction
+	 */
+	public void startTransaction(boolean bAutoCommit) throws Exception {
+		inTransaction = true;
+		openConnection();
+		if (openedConnection != null) {
+			openedConnection.setAutoCommit(bAutoCommit);
+		}
+	}
 
-  /**
-   * Rollback transaction
-   */
-  public void rollback() throws Exception {
-    try {
-      if (openedConnection != null) {
-        openedConnection.rollback();
-      }
-      inTransaction = false;
-      closeConnection();
-    } catch (AdminPersistenceException e) {
-      throw new AdminException("SQLDriver.rollback", SilverpeasException.ERROR,
-          "admin.EX_ERR_ROLLBACK", e);
-    }
-  }
+	/**
+	 * Commit transaction
+	 */
+	public void commit() throws Exception {
+		try {
+			if (openedConnection != null) {
+				openedConnection.commit();
+			}
+			inTransaction = false;
+			closeConnection();
+		} catch (AdminPersistenceException e) {
+			throw new AdminException("SQLDriver.commit",
+					SilverpeasException.ERROR, "root.EX_ERR_COMMIT", e);
+		}
+	}
+
+	/**
+	 * Rollback transaction
+	 */
+	public void rollback() throws Exception {
+		try {
+			if (openedConnection != null) {
+				openedConnection.rollback();
+			}
+			inTransaction = false;
+			closeConnection();
+		} catch (AdminPersistenceException e) {
+			throw new AdminException("SQLDriver.rollback",
+					SilverpeasException.ERROR, "admin.EX_ERR_ROLLBACK", e);
+		}
+	}
 }
