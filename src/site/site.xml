@@ -46,6 +46,12 @@
       <item name="Introduction" href="index.html"/>
       <item name="Installation" href="installation.html"/>
     </menu>
+    <menu name="CAS">
+      <item name="Introduction" href="cas/SSO-CAS.html"/>
+      <item name="Certificates Configuration" href="cas/certificates.html"/>
+      <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html"/>
+      <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html"/>
+    </menu>
     <menu ref="reports" />
   </body>
 </project>
