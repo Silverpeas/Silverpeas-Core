@@ -173,7 +173,15 @@ public class SilverpeasLoginModule implements LoginModule {
     } catch (UnsupportedCallbackException uce) {
       throw new LoginException(uce.getCallback().toString() + " not available");
     } catch (AdminException e) {
-      throw new LoginException(e.getMessage());
+    	StringBuffer message = new StringBuffer(e.getMessage());
+    	Throwable ex = e.getNested();
+    	int i = 0;
+    	while ( (ex != null) && (i<10) ) {
+    		i++;
+    		message.append(" - nested : ").append(ex.getMessage());
+    		ex = ex.getCause();
+    	}
+    	throw new LoginException(message.toString());
     }
     if (authenticated) {
       return !principals.isEmpty();
