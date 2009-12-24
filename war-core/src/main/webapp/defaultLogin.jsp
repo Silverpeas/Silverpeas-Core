@@ -121,9 +121,31 @@ function checkForm()
 				document.EDform.storePassword.click();
 		}		
 	<% } %>
-	document.EDform.action="AuthenticationServlet";
-	document.EDform.submit();
+    if (document.forms["EDform"].elements["Login"].value.length == 0) {
+        alert("Veuillez renseigner votre login");
+        return false;
+    } else {
+        document.forms["EDform"].action = "<%=m_context%>/AuthenticationServlet";
+        document.forms["EDform"].submit();
+    }
 }
+
+function checkLogin() {
+    if (document.forms["EDform"].elements["Login"].value.length == 0) {
+        alert("Veuillez renseigner votre login");
+        return false;
+    }
+}
+
+function loginQuestion() {
+    if (document.forms["EDform"].elements["Login"].value.length == 0) {
+        alert("Veuillez renseigner votre login");
+    } else {
+        document.forms["EDform"].action = "<%=m_context%>/CredentialsServlet/LoginQuestion";
+        document.forms["EDform"].submit();
+    }
+}
+
 -->
 </script>
 </head>
@@ -150,6 +172,17 @@ function checkForm()
 <%@ include file="inputPassword.jsp" %>
             </td>
           </tr>
+			<% if( forgottenPwdActive) {
+			%>
+	          <tr> 
+	            <td colspan="2" nowrap align="right" style="padding-bottom: 10px;">
+	            <span class="txtpetitblanc"><a href="javascript:loginQuestion()" style="font-weight: normal; text-decoration: none; color: #FFF;">J'ai oubli&eacute; mon mot de passe</a>&nbsp;</span>
+	            </td>
+	          </tr>
+				   
+			<%
+			}
+			%>
           <% 
           	if (domains != null && domains.size() == 1) 
           	{
@@ -169,7 +202,7 @@ function checkForm()
           {
           	%>  
           	<tr> 
-          		<td colspan="2" align="center" valign="top" nowrap><span class="txtpetitblanc"><%=homePageBundle.getString(errorCode)%></td>
+          		<td colspan="2" align="center" valign="top" nowrap style="border-top: 1px solid gray; padding-top: 10px; padding-bottom: 10px"><span class="txtpetitblanc"><%=homePageBundle.getString(errorCode)%></td>
         	</tr>
         <% } %>
 	<% 
@@ -181,9 +214,6 @@ function checkForm()
             </td>
         </tr>
 <%	} %>
-          <tr> 
-            <td colspan="2">&nbsp;</td>
-          </tr>
           <tr> 
             <td colspan="2" bgcolor="#000000"><img src="<%=m_context%>/util/icons/colorPix/1px.gif"></td>
           </tr>
@@ -232,7 +262,7 @@ function checkForm()
 	nbCookiesFound=0;
 	var domainId = <%=domainId%>;
 
-	/* Si le domainId n'est pas dans la requête, alors récupération depuis le cookie */
+	/* Si le domainId n'est pas dans la requï¿½te, alors rï¿½cupï¿½ration depuis le cookie */
 	if(domainId == null && GetCookie("defaultDomain") != null)
     { <%
 		for (int i = 0 ; i < domains.size() && domains.size() > 1; i++)

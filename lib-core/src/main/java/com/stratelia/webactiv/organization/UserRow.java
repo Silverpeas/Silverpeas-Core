@@ -33,4 +33,6 @@ public class UserRow {
   public String loginMail = "";
   public String eMail = "";
   public String accessLevel = "";
+  public String loginQuestion = "";
+  public String loginAnswer 	= "";
 }

@@ -42,7 +42,7 @@ String sServletPath = request.getServletPath();
 String sPathInfo = request.getPathInfo();
 if(sPathInfo != null)
     sURI = sURI.substring(0,sURI.lastIndexOf(sPathInfo));
-String m_context = ".."+ sURI.substring(0,sURI.lastIndexOf(sServletPath));
+String m_context = sURI.substring(0,sURI.lastIndexOf(sServletPath));
 
 // Get the authentication settings
 ResourceLocator authenticationSettings		= new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
@@ -54,6 +54,9 @@ ResourceLocator generalMultilang	= new ResourceLocator("com.stratelia.webactiv.m
 
 String logo = general.getString("logo", m_context+"/admin/jsp/icons/logo_silverpeasBig.gif");
 String styleSheet = general.getString("defaultStyleSheet", m_context+"/util/styleSheets/globalSP.css");
+
+// Is "forgotten password" feature active ?
+boolean forgottenPwdActive = general.getBoolean("forgottenPwdActive", false);		
 
 // Get a LoginPasswordAuthentication object
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();

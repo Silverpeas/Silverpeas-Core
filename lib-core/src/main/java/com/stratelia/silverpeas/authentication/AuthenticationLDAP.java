@@ -398,4 +398,55 @@ public class AuthenticationLDAP extends Authentication {
     return (String[]) (baseDNs.toArray(new String[0]));
   }
 
+  protected void internalResetPassword(String login, String newPassword) throws AuthenticationException
+  {
+  	// Connection must be secure, checking it...
+		if (!m_IsSecured) {
+			Exception e = new UnsupportedOperationException(
+				"LDAP connection must be secured to allow password update");
+			throw new AuthenticationException("AuthenticationLDAP.changePassword",
+				SilverpeasException.ERROR, "authentication.EX_CANT_CHANGE_USERPASSWORD", e);
+		}
+
+		LDAPEntry fe = null;
+		LDAPSearchResults res = null;
+		String userFullDN = null;
+		String searchString = m_UserLoginFieldName + "=" + login;
+		String[] strAttributes = {"sAMAccountName", "memberOf"};
+
+		try {
+			// Bind as the admin for the search
+			m_LDAPConnection.bind(m_AccessLogin, m_AccessPasswd);
+
+			// Get user DN
+			SilverTrace.info("authentication", "AuthenticationLDAP.changePassword()",
+				"root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
+			res = m_LDAPConnection.search(
+				m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
+			if (!res.hasMore()) {
+				throw new AuthenticationBadCredentialException(
+					"AuthenticationLDAP.internalResetPassword()", SilverpeasException.ERROR,
+					"authentication.EX_USER_NOT_FOUND", "User=" + login + ";LoginField="
+					+ m_UserLoginFieldName);
+			}
+			fe = res.next();
+			userFullDN = (String) fe.getDN();
+
+			// Convert password to UTF-16LE
+			String newQuotedPassword = "\"" + newPassword + "\"";
+			byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
+
+			// prepare password change
+			LDAPModification[] mods = new LDAPModification[1];
+			mods[0] = new LDAPModification(LDAPModification.REPLACE,
+				new LDAPAttribute("unicodePwd", newUnicodePassword));
+
+			// Perform the update
+			m_LDAPConnection.modify(userFullDN, mods);
+		} catch (Exception ex) {
+			throw new AuthenticationHostException("AuthenticationLDAP.internalResetPassword()",
+				SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
+		}
+	}
+  
 }

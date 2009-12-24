@@ -3211,6 +3211,8 @@ public class Admin extends Object {
     try {
       return m_DDManager.getAllDomains();
     } catch (Exception e) {
+        System.out.println("FAILURE : " + e.getMessage());
+        e.printStackTrace();
       throw new AdminException("Admin.getAllDomains",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_DOMAINS", e);
     }
@@ -3318,11 +3320,18 @@ public class Admin extends Object {
    */
   public String authenticate(String sKey, String sSessionId,
       boolean isAppInMaintenance) throws AdminException {
+  	return authenticate(sKey, sSessionId, isAppInMaintenance, true);
+	}
+
+  /**
+	 * Get the user id for the given login password */
+  public String authenticate(String sKey, String sSessionId, boolean isAppInMaintenance, boolean removeKey) throws AdminException
+  {
     String sUserId = null;
 
     try {
       // Authenticate the given user
-      Hashtable loginDomain = m_DDManager.authenticate(sKey);
+      Hashtable loginDomain = m_DDManager.authenticate(sKey, removeKey);
       if ((!loginDomain.containsKey("login"))
           || (!loginDomain.containsKey("domainId"))) {
         throw new AdminException("Admin.authenticate",

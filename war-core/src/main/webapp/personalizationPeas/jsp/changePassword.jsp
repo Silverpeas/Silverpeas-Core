@@ -163,7 +163,36 @@ out.println(gef.getLookStyleSheet());
 	        <td valign="top" class="txtlibform"><%=resource.getString("NewPassword")%> :</td>
 	        <td valign="baseline"><%=resource.getString("ModifyPasswordNotAllowed1")+"<br>"+resource.getString("ModifyPasswordNotAllowed2")%></td>
 	    </tr>
-    <% } %>
+    <% } 
+
+    if ("true".equals(general.getString("userLoginQuestionEnabled"))) {
+        String userLoginQuestion = userObject.getLoginQuestion();
+        String userLoginAnswer = userObject.getLoginAnswer();
+%>
+        <tr>
+            <td class="txtlibform" valign="baseline"><%=resource.getString("LoginQuestion")%> :</td>
+            <td valign="baseline"><select name="userLoginQuestion">
+                    <option value=""<%if ("".equals(userLoginQuestion)) {%> selected<%}%>></option><%
+
+        int questionsCount = Integer.parseInt(general.getString("loginQuestion.count"));
+        String question;
+        for (int i = 1; i <= questionsCount; i++)
+        {
+            question = general.getString("loginQuestion." + i);
+%>
+                    <option value="<%=question%>"<%if (question.equals(userLoginQuestion)) {%> selected<%}%>><%=question%></option><%
+
+        }
+%>
+                </select></td>     
+        </tr>
+        <tr>
+            <td class="txtlibform" valign="baseline"><%=resource.getString("LoginAnswer")%> :</td>
+            <td valign="baseline"><input type="text" name="userLoginAnswer" value="<%=userLoginAnswer%>" size="50" maxlength="99"/></td>
+        </tr><%
+
+    }
+%>
 
 	<%//rajout des champs LDAP complémentaires
 	if (displayInfosLDAP && action.equals("userMS")) {

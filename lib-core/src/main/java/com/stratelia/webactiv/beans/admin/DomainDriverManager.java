@@ -264,6 +264,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       uf.setSpecificId(ur.specificId);
       uf.setDomainId(idAsString(ur.domainId));
       uf.setAccessLevel(ur.accessLevel);
+      uf.setLoginQuestion(ur.loginQuestion);
+      uf.setLoginAnswer(ur.loginAnswer);
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.getUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
@@ -687,6 +689,18 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @return boolean
    */
   public Hashtable authenticate(String sKey) throws Exception {
+	   return authenticate(sKey, true);
+  }
+
+  /**
+	 * 
+	 * @param 		sKey			anthentication key
+	 * @param 		removeKey		remove after 
+	 * @return
+	 * @throws Exception
+	 */
+  public Hashtable authenticate(String sKey, boolean removeKey) throws Exception
+  {
     Hashtable loginDomainId = new Hashtable();
     try {
       // Start transaction
@@ -703,7 +717,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
       loginDomainId.put("domainId", idAsString(ksr.domainId));
 
       // Remove key from keytore in database
-      organization.keyStore.removeKeyStoreRecord(idAsInt(sKey));
+      if (removeKey) {
+    	  organization.keyStore.removeKeyStoreRecord(idAsInt(sKey));
+      }
 
       // Commit transaction
       this.commit();

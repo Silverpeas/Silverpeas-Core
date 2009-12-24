@@ -54,16 +54,28 @@
     <param-value>sun-portlet.xml</param-value>
   </context-param>
 
+
   <filter>
     <!-- PortletAppEngine Filter -->
     <filter-name>PortletAppEngineFilter</filter-name>
     <filter-class>com.sun.portal.portletcontainer.appengine.PortletAppEngineFilter</filter-class>
   </filter>
+  <filter>
+    <!-- Login Filter -->
+    <filter-name>LoginFilter</filter-name>
+    <filter-class>com.stratelia.webactiv.filter.LoginFilter</filter-class>
+  </filter>
+
   <filter-mapping>
     <!-- PAE Filter Mapping -->
     <filter-name>PortletAppEngineFilter</filter-name>
     <servlet-name>PortletAppEngineServlet</servlet-name>
     <dispatcher>INCLUDE</dispatcher>
+  </filter-mapping>
+  <filter-mapping>
+    <!-- Login Filter Mapping-->
+    <filter-name>LoginFilter</filter-name>
+    <servlet-name>LoginServlet</servlet-name>
   </filter-mapping>
 
   <listener>
@@ -85,6 +97,12 @@
     <display-name>AuthenticationNTLMServlet</display-name>
     <servlet-name>AuthenticationNTLMServlet</servlet-name>
     <servlet-class>com.stratelia.silverpeas.servlets.AuthenticationNTLMServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>CredentialsServlet</servlet-name>
+    <display-name>CredentialsServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.servlets.CredentialsServlet</servlet-class>
   </servlet>
   <servlet>
     <display-name>OnlineFileServer</display-name>
@@ -469,6 +487,10 @@
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
     <url-pattern>/AuthenticationServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>CredentialsServlet</servlet-name>
+    <url-pattern>/CredentialsServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>AuthenticationNTLMServlet</servlet-name>

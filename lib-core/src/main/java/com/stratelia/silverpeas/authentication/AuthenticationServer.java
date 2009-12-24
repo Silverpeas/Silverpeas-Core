@@ -264,4 +264,100 @@ public class AuthenticationServer extends Object {
   public boolean isPasswordChangeAllowed() {
     return m_allowPasswordChange;
   }
+
+  public void resetPassword(String login, String newPassword) throws AuthenticationException
+  {
+      if (!m_allowPasswordChange)
+      {
+      	throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.resetPassword",
+      		SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+      }
+      
+      if ((login == null) || (login.length() <= 0))
+      {
+          throw new AuthenticationException("AuthenticationServer.resetPassword",
+          	SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
+      }
+      
+      Authentication autObj;
+      boolean bNotFound = true;
+      AuthenticationException lastException = null;
+      int i = 0;
+      while ((i < m_nbServers) && bNotFound)
+      {
+          autObj = (Authentication) m_AutServers.elementAt(i);
+          if (autObj.getEnabled())
+          {
+              try
+              {
+                  autObj.resetPassword(login, newPassword);
+                  bNotFound = false;
+              }
+              catch (AuthenticationPwdChangeNotAvailException ex)
+              {
+                  SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
+                  	"authentication.EX_PASSWD_CHANGE_NOTAVAILABLE",
+                  	"ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
+                  lastException = ex;
+              }
+              catch (AuthenticationHostException ex)
+              {
+                  if (m_FallbackType.equals("none"))
+                  {
+                      throw ex;
+                  }
+                  else
+                  {
+                      SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
+                      	"authentication.EX_AUTHENTICATION_HOST_ERROR",
+                      	"ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
+                      lastException = ex;
+                  }
+              }
+              catch (AuthenticationBadCredentialException ex)
+              {
+                  if (m_FallbackType.equals("none") || m_FallbackType.equals("ifNotRejected"))
+                  {
+                      throw ex;
+                  }
+                  else
+                  {
+                      SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
+                      	"authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
+                      	"ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
+                      lastException = ex;
+                  }
+              }
+              catch (AuthenticationException ex)
+              {
+                  if (m_FallbackType.equals("none"))
+                  {
+                      throw ex;
+                  }
+                  else
+                  {
+                      SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
+                      	"authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
+                      	"ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
+                      lastException = ex;
+                  }
+              }
+          }
+          i++;
+      }
+      if (bNotFound)
+      {
+          if (lastException == null)
+          {
+              throw new AuthenticationException("AuthenticationServer.resetPassword",
+              	SilverpeasException.ERROR, "authentication.EX_NO_SERVER_AVAILABLE");
+          }
+          else
+          {
+              throw new AuthenticationException("AuthenticationServer.resetPassword",
+              	SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR",
+              	lastException);
+          }
+      }
+  }
 }

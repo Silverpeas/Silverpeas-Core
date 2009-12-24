@@ -1060,6 +1060,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllDomain",
           "admin.EX_ERR_GET_DOMAIN", e);
+      e.printStackTrace();
       return null;
     }
   }

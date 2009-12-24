@@ -316,6 +316,15 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
               + " - userLastName=" + userLastName + " userEmail="
               + userEmail);
 
+			String userLoginQuestion = request.getParameter("userLoginQuestion");
+			userLoginQuestion = (userLoginQuestion != null
+				? EncodeHelper.htmlStringToJavaString(userLoginQuestion)
+				: currentUser.getLoginQuestion());
+			String userLoginAnswer = request.getParameter("userLoginAnswer");
+			userLoginAnswer = (userLoginAnswer != null
+				? EncodeHelper.htmlStringToJavaString(userLoginAnswer)
+				: currentUser.getLoginAnswer());
+          
           // process extra properties
           HashMap properties = new HashMap();
           Enumeration parameters = request.getParameterNames();
@@ -330,15 +339,17 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
             }
           }
 
-          personalizationScc.modifyUser(currentUser.getId(), EncodeHelper
-              .htmlStringToJavaString(userLastName), EncodeHelper
-              .htmlStringToJavaString(userFirstName), EncodeHelper
-              .htmlStringToJavaString(userEmail), EncodeHelper
-              .htmlStringToJavaString(request.getParameter("userAccessLevel")),
-              EncodeHelper.htmlStringToJavaString(request
-              .getParameter("OldPassword")), EncodeHelper
-              .htmlStringToJavaString(request.getParameter("NewPassword")),
-              properties);
+			personalizationScc.modifyUser(
+					currentUser.getId(),
+					EncodeHelper.htmlStringToJavaString(userLastName),
+					EncodeHelper.htmlStringToJavaString(userFirstName),
+					EncodeHelper.htmlStringToJavaString(userEmail),
+					EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+					EncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
+					EncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
+					userLoginQuestion,
+					userLoginAnswer,
+					properties);
           request.setAttribute("Message", personalizationScc
               .getString("MessageOK"));
         } catch (AuthenticationBadCredentialException e) {

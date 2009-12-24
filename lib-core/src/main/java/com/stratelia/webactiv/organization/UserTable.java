@@ -45,7 +45,7 @@ public class UserTable extends Table {
   }
 
   static final private String USER_COLUMNS =
-      "id,specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel";
+  	"id,specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,loginQuestion,loginAnswer";
 
   /**
    * Fetch the current user row from a resultSet.
@@ -62,6 +62,8 @@ public class UserTable extends Table {
     u.loginMail = rs.getString(7);
     u.eMail = rs.getString(8);
     u.accessLevel = rs.getString(9);
+	u.loginQuestion = rs.getString(10);
+	u.loginAnswer = rs.getString(11);
 
     return u;
   }
@@ -593,6 +595,8 @@ public class UserTable extends Table {
         "ST_User.email", concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel,
         "ST_User.accessLevel", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.loginQuestion, "ST_User.loginQuestion", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer", concatAndOr, andOr);
     if (concatAndOr) {
       theQuery.append(") AND (accessLevel <> 'R')");
     } else {
@@ -661,6 +665,8 @@ public class UserTable extends Table {
         concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel,
         "accessLevel", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.loginQuestion, "loginQuestion", concatAndOr, andOr);
+    concatAndOr = addParamToQuery(params, theQuery, userModel.loginAnswer, "loginAnswer", concatAndOr, andOr);
     if (concatAndOr) {
       theQuery.append(") AND (accessLevel <> 'R')");
     } else {
@@ -719,7 +725,8 @@ public class UserTable extends Table {
   }
 
   static final private String INSERT_USER = "insert into ST_User ("
-      + USER_COLUMNS + ") values (?,?,?,?,?,?,?,?,?)";
+      + USER_COLUMNS + ") values (?,?,?,?,?,?,?,?,?,?,?)";
+  
 
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
@@ -737,6 +744,8 @@ public class UserTable extends Table {
     insert.setString(7, truncate(u.loginMail, 100));
     insert.setString(8, truncate(u.eMail, 100));
     insert.setString(9, truncate(u.accessLevel, 1));
+    insert.setString(10, truncate(u.loginQuestion,100));
+    insert.setString(11, truncate(u.loginAnswer,100));
   }
 
   /**
@@ -748,10 +757,19 @@ public class UserTable extends Table {
     updateRow(UPDATE_USER, user);
   }
 
-  static final private String UPDATE_USER = "update ST_User set"
-      + " specificId = ?," + " domainId = ?," + " login = ?,"
-      + " firstName = ?," + " lastName = ?," + " loginMail = ?,"
-      + " email = ?," + " accessLevel = ?" + " where id = ?";
+  static final private String UPDATE_USER
+  = "update ST_User set"
+  + " specificId = ?,"
+  + " domainId = ?,"
+  + " login = ?,"
+  + " firstName = ?,"
+  + " lastName = ?,"
+  + " loginMail = ?,"
+  + " email = ?,"
+  + " accessLevel = ?,"
+  + " loginQuestion = ?,"
+  + " loginAnswer = ?"
+  + " where id = ?";
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
@@ -765,8 +783,10 @@ public class UserTable extends Table {
     update.setString(6, truncate(u.loginMail, 100));
     update.setString(7, truncate(u.eMail, 100));
     update.setString(8, truncate(u.accessLevel, 1));
-
-    update.setInt(9, u.id);
+    update.setString(9, truncate(u.loginQuestion,100));
+    update.setString(10, truncate(u.loginAnswer,100));
+    
+	update.setInt(11, u.id);
   }
 
   /**

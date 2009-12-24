@@ -1022,7 +1022,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
   public void modifyUser(String idUser, String userLastName,
       String userFirstName, String userEMail, String userAccessLevel,
-      String oldPassword, String newPassword, HashMap properties)
+      String oldPassword, String newPassword, 
+      String userLoginQuestion, String userLoginAnswer, HashMap properties)
       throws PeasCoreException, AuthenticationException {
     UserFull theModifiedUser = null;
     String idRet = null;
@@ -1043,6 +1044,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
       theModifiedUser.seteMail(userEMail);
+	  theModifiedUser.setLoginQuestion(userLoginQuestion);
+	  theModifiedUser.setLoginAnswer(userLoginAnswer);
 
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {

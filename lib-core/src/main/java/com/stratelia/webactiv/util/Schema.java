@@ -223,6 +223,7 @@ public abstract class Schema {
       SilverTrace.info("util", "Schema.getConnection",
           "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
     }
+    
     return connection;
   }
 

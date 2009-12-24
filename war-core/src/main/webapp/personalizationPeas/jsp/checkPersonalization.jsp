@@ -94,6 +94,7 @@
 
 	ResourcesWrapper 	resource 	= (ResourcesWrapper) request.getAttribute("resources");
 	ResourceLocator 	rs 			= new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+	ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
 
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
