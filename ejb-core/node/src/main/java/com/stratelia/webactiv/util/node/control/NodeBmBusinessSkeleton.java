@@ -76,6 +76,18 @@ public interface NodeBmBusinessSkeleton {
   public ArrayList getSubTreeByStatus(NodePK pk, String status)
       throws RemoteException;
 
+  public ArrayList getSubTreeByStatus(NodePK pk, String status, String sorting)
+      throws RemoteException;
+
+  public ArrayList getSubTreeByLevel(NodePK pk, int level)
+      throws RemoteException;
+
+  public ArrayList getSubTreeByLevel(NodePK pk, int level, String sorting)
+      throws RemoteException;
+
+  public ArrayList getSubTree(NodePK pk, String status, int level,
+      String sorting) throws RemoteException;
+
   /**
    * Method declaration
    * 

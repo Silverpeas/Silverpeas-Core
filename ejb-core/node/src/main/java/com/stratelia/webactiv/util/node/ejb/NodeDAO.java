@@ -498,25 +498,38 @@ public class NodeDAO {
    * @return A collection of NodeDetail
    * @since 1.6
    */
-  public static List getAllHeaders(Connection con, NodePK nodePK)
-      throws SQLException {
-    return getAllHeaders(con, nodePK, null);
+  public static List getAllHeaders(Connection con, NodePK nodePK) throws SQLException
+  {
+    return getAllHeaders(con, nodePK, null, 0);
   }
-
+  
+  public static List getAllHeaders(Connection con, NodePK nodePK, String sorting) throws SQLException
+  {
+    return getAllHeaders(con, nodePK, sorting, 0);
+  }
+  
+  public static List getAllHeaders(Connection con, NodePK nodePK, int level) throws SQLException
+  {
+    return getAllHeaders(con, nodePK, null, level);
+  }
+  
   /**
    * Get all nodeDetails
-   * 
    * @return A collection of NodeDetail
    * @since 1.6
    */
-  public static List getAllHeaders(Connection con, NodePK nodePK, String sorting)
-      throws SQLException {
+  public static List getAllHeaders(Connection con, NodePK nodePK, String sorting, int level) throws SQLException {
     ArrayList headers = new ArrayList();
     StringBuffer nodeStatement = new StringBuffer();
 
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where instanceId ='").append(
         nodePK.getComponentName()).append("'");
+
+    if (level > 0) {
+      nodeStatement.append(" and nodeLevelNumber = ").append(level);
+    }
+
     if (StringUtil.isDefined(sorting))
       nodeStatement.append(" order by ").append(sorting);
     else

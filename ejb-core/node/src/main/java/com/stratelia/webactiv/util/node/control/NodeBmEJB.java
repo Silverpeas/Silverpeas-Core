@@ -284,34 +284,49 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
   }
 
   public ArrayList getSubTree(NodePK pk) throws RemoteException {
-    SilverTrace.info("node", "NodeBmEJB.getSubTree()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
-    return getSubTreeByStatus(pk, null);
+    SilverTrace.info("node", "NodeBmEJB.getSubTree()", "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
+    return getSubTree(pk, null, 0, null);
   }
 
   public ArrayList getSubTree(NodePK pk, String sorting) throws RemoteException {
-    SilverTrace.info("node", "NodeBmEJB.getSubTree()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk + " sorting=" + sorting);
-    return getSubTreeByStatus(pk, null, sorting);
+    SilverTrace.info("node", "NodeBmEJB.getSubTree()", "root.MSG_GEN_ENTER_METHOD",
+      "pk = " + pk+" sorting="+sorting);
+    return getSubTree(pk, null, 0, sorting);
   }
 
-  public ArrayList getSubTreeByStatus(NodePK pk, String status)
-      throws RemoteException {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk + ", status = " + status);
-    return getSubTreeByStatus(pk, status, null);
+  public ArrayList getSubTreeByStatus(NodePK pk, String status) throws RemoteException {
+    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
+      "pk = " + pk + ", status = " + status);
+    return getSubTree(pk, status, 0, null);
+  }
+  
+  public ArrayList getSubTreeByStatus(NodePK pk, String status, String sorting) throws RemoteException {
+    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
+      "pk = " + pk + ", status = " + status + ", sorting=" + sorting);
+    return getSubTree(pk, status, 0, sorting);
+  }
+  
+  public ArrayList getSubTreeByLevel(NodePK pk, int level) throws RemoteException {
+    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
+      "pk = " + pk + ", level = " + level);
+    return getSubTree(pk, null, level, null);
+  }
+  
+  public ArrayList getSubTreeByLevel(NodePK pk, int level, String sorting) throws RemoteException {
+    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
+      "pk = " + pk + ", level = " + level + ", sorting=" + sorting);
+    return getSubTree(pk, null, level, sorting);
   }
 
-  public ArrayList getSubTreeByStatus(NodePK pk, String status, String sorting)
-      throws RemoteException {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk + ", status = " + status
-            + " sorting=" + sorting);
+  public ArrayList getSubTree(NodePK pk, String status, int level, String sorting) throws RemoteException {
+    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
+      "pk = " + pk + ", status = " + status + ", level = " + level + ", sorting=" + sorting);
     Connection con = getConnection();
-    ArrayList result = null;
+        ArrayList result = null;
 
-    try {
-      List headers = NodeDAO.getAllHeaders(con, pk, sorting);
+        try
+        {
+            List headers = NodeDAO.getAllHeaders(con, pk, sorting, level);
 
       NodeDetail root = NodeDAO.loadRow(con, pk);
       root.setChildrenDetails(new ArrayList());
@@ -337,9 +352,15 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
       result = new ArrayList();
 
-      root = (NodeDetail) tree.get(root.getNodePK().getId());
-
-      result = (ArrayList) processNode(result, tree, root);
+      if (level == 0) {
+        root = (NodeDetail) tree.get(root.getNodePK().getId());
+        result = (ArrayList) processNode(result, tree, root);       
+      } else {
+        it = headers.iterator();
+        while (it.hasNext()) {
+          result.add((NodeDetail) it.next());
+        }
+      }
 
       return result;
     } catch (Exception re) {
