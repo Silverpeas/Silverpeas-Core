@@ -489,37 +489,36 @@ public class LoginPasswordAuthentication {
     }
   }
 
-  
-	public void resetPassword(String login, String newPassword, String domainId)
-	throws AuthenticationException {
-		// Test data coming from calling page
-		if (login == null || domainId == null || newPassword == null) {
-			throw new AuthenticationBadCredentialException(
-				"LoginPasswordAuthentication.resetPassword", SilverpeasException.ERROR,
-				"authentication.EX_NULL_VALUE_DETECTED");
-		}
-		
-		Connection connection = null;
-		
-		try {
-			// Open connection
-			connection = openConnection();
+  public void resetPassword(String login, String newPassword, String domainId)
+      throws AuthenticationException {
+    // Test data coming from calling page
+    if (login == null || domainId == null || newPassword == null) {
+      throw new AuthenticationBadCredentialException(
+          "LoginPasswordAuthentication.resetPassword", SilverpeasException.ERROR,
+          "authentication.EX_NULL_VALUE_DETECTED");
+    }
 
-			// Get authentification server name
-			String authenticationServerName = getAuthenticationServerName(connection, domainId);
+    Connection connection = null;
 
-			// Build a AuthenticationServer instance
-			AuthenticationServer authenticationServer = new AuthenticationServer(
-				authenticationServerName);
-			// Authentification test
-			authenticationServer.resetPassword(login, newPassword);
-		} catch (AuthenticationException ex) {
-			SilverTrace.error("authentication", "LoginPasswordAuthentication.resetPassword()",
-				"authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
-			throw ex;
-		} finally {
-			closeConnection(connection);
-		}
-	}
+    try {
+      // Open connection
+      connection = openConnection();
+
+      // Get authentification server name
+      String authenticationServerName = getAuthenticationServerName(connection, domainId);
+
+      // Build a AuthenticationServer instance
+      AuthenticationServer authenticationServer = new AuthenticationServer(
+          authenticationServerName);
+      // Authentification test
+      authenticationServer.resetPassword(login, newPassword);
+    } catch (AuthenticationException ex) {
+      SilverTrace.error("authentication", "LoginPasswordAuthentication.resetPassword()",
+          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
+      throw ex;
+    } finally {
+      closeConnection(connection);
+    }
+  }
 
 }

@@ -695,8 +695,8 @@ public class UserManager extends Object {
     ur.lastName = user.getLastName();
     ur.eMail = user.geteMail();
     ur.accessLevel = user.getAccessLevel();
-	ur.loginQuestion	= user.getLoginQuestion();
-	ur.loginAnswer		= user.getLoginAnswer();
+    ur.loginQuestion = user.getLoginQuestion();
+    ur.loginAnswer = user.getLoginAnswer();
 
     return ur;
   }
@@ -715,8 +715,8 @@ public class UserManager extends Object {
     user.setLastName(ur.lastName);
     user.seteMail(ur.eMail);
     user.setAccessLevel(ur.accessLevel);
-	user.setLoginQuestion(ur.loginQuestion);
-	user.setLoginAnswer(ur.loginAnswer);
+    user.setLoginQuestion(ur.loginQuestion);
+    user.setLoginAnswer(ur.loginAnswer);
 
     return user;
   }

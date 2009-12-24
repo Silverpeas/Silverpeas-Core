@@ -310,8 +310,6 @@ public abstract class Table {
       return getRows(rs);
       // }
     } catch (SQLException e) {
-        System.out.println("FAILURE : " + e.getMessage());
-        e.printStackTrace();
       throw new AdminPersistenceException("Table.getRows",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
@@ -326,7 +324,7 @@ public abstract class Table {
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
-    
+
     try {
       SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query
           + "  id: " + id);

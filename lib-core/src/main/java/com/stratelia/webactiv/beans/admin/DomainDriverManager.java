@@ -689,18 +689,16 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @return boolean
    */
   public Hashtable authenticate(String sKey) throws Exception {
-	   return authenticate(sKey, true);
+    return authenticate(sKey, true);
   }
 
   /**
-	 * 
-	 * @param 		sKey			anthentication key
-	 * @param 		removeKey		remove after 
-	 * @return
-	 * @throws Exception
-	 */
-  public Hashtable authenticate(String sKey, boolean removeKey) throws Exception
-  {
+   * @param sKey anthentication key
+   * @param removeKey remove after
+   * @return
+   * @throws Exception
+   */
+  public Hashtable authenticate(String sKey, boolean removeKey) throws Exception {
     Hashtable loginDomainId = new Hashtable();
     try {
       // Start transaction
@@ -718,7 +716,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Remove key from keytore in database
       if (removeKey) {
-    	  organization.keyStore.removeKeyStoreRecord(idAsInt(sKey));
+        organization.keyStore.removeKeyStoreRecord(idAsInt(sKey));
       }
 
       // Commit transaction

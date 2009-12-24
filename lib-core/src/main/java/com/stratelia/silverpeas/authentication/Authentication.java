@@ -151,31 +151,30 @@ public abstract class Authentication extends Object {
     return (true);
   }
 
-  
   public boolean resetPassword(String login, String newPassword)
-  throws AuthenticationException {
-  	if ((login == null) || (login.length() == 0)) {
-			throw new AuthenticationException("AuthenticationServer.resetPassword",
-				SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
-		}
-  	
-		// Authenticate
-		try {
-			openConnection();
-			internalResetPassword(login, newPassword);
-			closeConnection();
-		} finally {
-			try {
-				closeConnection();
-			} catch (AuthenticationException closeEx) {
-				// The exception that could occur in the emergency stop is not interesting.
-				SilverTrace.error("authentication", "Authentication.resetPassword",
-					"root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
-			}
-		}
-		return true;
-	}
-  
+      throws AuthenticationException {
+    if ((login == null) || (login.length() == 0)) {
+      throw new AuthenticationException("AuthenticationServer.resetPassword",
+          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
+    }
+
+    // Authenticate
+    try {
+      openConnection();
+      internalResetPassword(login, newPassword);
+      closeConnection();
+    } finally {
+      try {
+        closeConnection();
+      } catch (AuthenticationException closeEx) {
+        // The exception that could occur in the emergency stop is not interesting.
+        SilverTrace.error("authentication", "Authentication.resetPassword",
+            "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
+      }
+    }
+    return true;
+  }
+
   /**
    * This method systematically throws UnsupportedOperationException ! So you have to override this
    * method to offer password update capabilities
@@ -191,12 +190,11 @@ public abstract class Authentication extends Object {
         "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
   }
 
-  
   protected void internalResetPassword(String login, String newPassword)
-  throws AuthenticationException {
+      throws AuthenticationException {
     throw new AuthenticationPwdChangeNotAvailException(
         "AuthenticationServer.internalResetPassword", SilverpeasException.ERROR,
         "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
   }
-  
+
 }
