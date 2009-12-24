@@ -55,7 +55,9 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
+ * Classe de gestion des attachments dans le moteur d'importExport de
+ * silverpeas.
+ * 
  * @author sdevolder
  */
 public class AttachmentImportExport {
@@ -65,18 +67,29 @@ public class AttachmentImportExport {
 
   // Methodes
   /**
-   * Methode utilisee par l'import massive du moteur d'importExport de silverpeaseffectuant la copie
-   * de fichier ainsi que sa liaison avec une publication cible.
-   * @param pubId - publication dans laquelle creer l'attachement
-   * @param componentId - id du composant contenant la publication (necessaire pour determiner le
-   * chemin physique du fichier importe)
-   * @param attachmentDetail - objet contenant les details necessaires a la creation du fichier
-   * importe et a sa liaison avec la publication
+   * Methode utilisee par l'import massive du moteur d'importExport de
+   * silverpeaseffectuant la copie de fichier ainsi que sa liaison avec une
+   * publication cible.
+   * 
+   * @param pubId
+   *          - publication dans laquelle creer l'attachement
+   * @param componentId
+   *          - id du composant contenant la publication (necessaire pour
+   *          determiner le chemin physique du fichier importe)
+   * @param attachmentDetail
+   *          - objet contenant les details necessaires a la creation du fichier
+   *          importe et a sa liaison avec la publication
    * @throws AttachmentException
    */
   public void importAttachment(String pubId, String componentId,
       AttachmentDetail attachmentDetail, boolean indexIt) {
-    this.copyFile(componentId, attachmentDetail);
+    importAttachment(pubId, componentId, attachmentDetail, indexIt, true);
+  }
+
+  public void importAttachment(String pubId, String componentId,
+      AttachmentDetail attachmentDetail, boolean indexIt,
+      boolean updateLogicalName) {
+    this.copyFile(componentId, attachmentDetail, updateLogicalName);
     if (attachmentDetail.getSize() > 0)
       this.addAttachmentToPublication(pubId, componentId, attachmentDetail,
           AbstractForm.CONTEXT_FORM_FILE, indexIt);
@@ -134,9 +147,9 @@ public class AttachmentImportExport {
   }
 
   private AttachmentDetail copyFile(String componentId,
-      AttachmentDetail a_Detail) {
+      AttachmentDetail a_Detail, boolean updateLogicalName) {
     String path = getPath(componentId);
-    return copyFile(componentId, a_Detail, path);
+    return copyFile(componentId, a_Detail, path, updateLogicalName);
   }
 
   private AttachmentDetail copyFileWysiwyg(String componentId,
@@ -166,16 +179,25 @@ public class AttachmentImportExport {
   /**
    * M�thode de copie de fichier utilis�e par la m�thode
    * importAttachement(String,String,AttachmentDetail)
-   * @param componentId - id du composant contenant la publication � laquelle est destin�
-   * l'attachement
-   * @param a_Detail - objet contenant les informations sur le fichier � copier
-   * @param path - chemin o� doit �tre copi� le fichier
-   * @return renvoie l'objet des informations sur le fichier � copier compl�t� par les
-   * nouvelles donn�es issues de la copie
+   * 
+   * @param componentId
+   *          - id du composant contenant la publication � laquelle est destin�
+   *          l'attachement
+   * @param a_Detail
+   *          - objet contenant les informations sur le fichier � copier
+   * @param path
+   *          - chemin o� doit �tre copi� le fichier
+   * @return renvoie l'objet des informations sur le fichier � copier compl�t�
+   *         par les nouvelles donn�es issues de la copie
    * @throws AttachmentException
    */
   public AttachmentDetail copyFile(String componentId,
       AttachmentDetail a_Detail, String path) {
+    return copyFile(componentId, a_Detail, path, true);
+  }
+
+  public AttachmentDetail copyFile(String componentId,
+      AttachmentDetail a_Detail, String path, boolean updateLogicalName) {
 
     String fileToUpload = a_Detail.getPhysicalName();
 
@@ -190,7 +212,7 @@ public class AttachmentImportExport {
     while (fileToCreate.exists()) {
       SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
           "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists="
-          + fileToCreate.getAbsolutePath());
+              + fileToCreate.getAbsolutePath());
 
       // To prevent overwriting
       physicalName = new Long(new Date().getTime()).toString() + "." + type;
@@ -212,7 +234,9 @@ public class AttachmentImportExport {
     a_Detail.setSize(size);
     a_Detail.setType(mimeType);
     a_Detail.setPhysicalName(physicalName);
-    a_Detail.setLogicalName(logicalName);
+    if(updateLogicalName){
+      a_Detail.setLogicalName(logicalName);
+    }
 
     AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
     a_Detail.setPK(pk);
@@ -252,12 +276,17 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode utilis�e par la m�thode importAttachement(String,String,AttachmentDetail) pour
-   * creer un attachement sur la publication cr��e dans la m�thode cit�e.
-   * @param pubId - id de la publication dans laquelle cr�er l'attachment
-   * @param componentId - id du composant contenant la publication
-   * @param a_Detail - obejt contenant les informations n�c�ssaire � la cr�ation de
-   * l'attachment
+   * M�thode utilis�e par la m�thode
+   * importAttachement(String,String,AttachmentDetail) pour creer un attachement
+   * sur la publication cr��e dans la m�thode cit�e.
+   * 
+   * @param pubId
+   *          - id de la publication dans laquelle cr�er l'attachment
+   * @param componentId
+   *          - id du composant contenant la publication
+   * @param a_Detail
+   *          - obejt contenant les informations n�c�ssaire � la cr�ation de
+   *          l'attachment
    * @return AttachmentDetail cr��
    */
   private AttachmentDetail addAttachmentToPublication(String pubId,
@@ -294,7 +323,7 @@ public class AttachmentImportExport {
       {
         if ((ad_toCreate.getSize() != a_Detail.getSize())
             && updateRule
-            .equalsIgnoreCase(AttachmentDetail.IMPORT_UPDATE_RULE_ADD)) {
+                .equalsIgnoreCase(AttachmentDetail.IMPORT_UPDATE_RULE_ADD)) {
           logicalName = a_Detail.getLogicalName();
           int Extposition = logicalName.lastIndexOf(".");
           if (Extposition != -1)
@@ -329,11 +358,15 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode de r�cup�ration des attachements et de copie des fichiers dans le dossier
-   * d'exportation
-   * @param pk - PrimaryKey de l'obijet dont on veut les attachments?
-   * @param exportPath - R�pertoire dans lequel copier les fichiers
-   * @param relativeExportPath chemin relatif du fichier copi�
+   * M�thode de r�cup�ration des attachements et de copie des fichiers dans le
+   * dossier d'exportation
+   * 
+   * @param pk
+   *          - PrimaryKey de l'obijet dont on veut les attachments?
+   * @param exportPath
+   *          - R�pertoire dans lequel copier les fichiers
+   * @param relativeExportPath
+   *          chemin relatif du fichier copi�
    * @return une liste des attachmentDetail trouv�s
    */
   public Vector getAttachments(WAPrimaryKey pk, String exportPath,
@@ -370,8 +403,8 @@ public class AttachmentImportExport {
             // Le nom physique correspond maintenant au fichier copi�
             attDetail.setPhysicalName(relativeExportPath
                 + File.separator
-                + FileServerUtils.replaceAccentChars(attDetail
-                .getLogicalName()));
+                + FileServerUtils
+                    .replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (IOException ex) {
             // TODO: gerer ou ne pas gerer telle est la question
@@ -384,8 +417,8 @@ public class AttachmentImportExport {
           try {
             copyAttachment(attDetail, pk, exportPath);
             // Le nom physique correspond maintenant au fichier copi
-            attDetail
-                .setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
+            attDetail.setLogicalName(FileServerUtils
+                .replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (Exception ex) {
             // TODO: gerer ou ne pas gerer telle est la question
@@ -413,10 +446,12 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode r�cup�rant le chemin d'acc�s au dossier de stockage des fichiers import�s
-   * dans un composant.
-   * @param componentId - id du composant dont on veut r�cuperer le chemin de stockage de ses
-   * fichiers import�s
+   * M�thode r�cup�rant le chemin d'acc�s au dossier de stockage des fichiers
+   * import�s dans un composant.
+   * 
+   * @param componentId
+   *          - id du composant dont on veut r�cuperer le chemin de stockage de
+   *          ses fichiers import�s
    * @return le chemin recherch�
    */
   private String getPath(String componentId) {
