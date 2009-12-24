@@ -68,7 +68,7 @@ public class POPUPListener extends AbstractListener {
       if (p_Message.getTargetParam().get("DATE") != null) {
         message.append("Date : "
             + DateUtil.dateToString(((Date) p_Message.getTargetParam().get(
-                "DATE")), "") + "\n");
+            "DATE")), "") + "\n");
       }
       message.append(p_Message.getMessage());
       SilverMessageFactory.push(p_Message.getTargetReceipt(), p_Message);

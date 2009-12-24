@@ -36,8 +36,7 @@ import org.apache.jackrabbit.core.nodetype.compact.ParseException;
 
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 
-public abstract class AbstractJcrRegisteringTestCase extends
-    AbstractJcrTestCase {
+public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase {
 
   protected static boolean registred = false;
 

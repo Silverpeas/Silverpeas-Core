@@ -40,8 +40,6 @@ import com.stratelia.silverpeas.util.LongText;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -57,8 +55,9 @@ public class SILVERMAILPersistence {
 
     if (p_Msg != null) {
       try {
-        dao = SilverpeasBeanDAOFactory
-            .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
+        dao =
+            SilverpeasBeanDAOFactory
+                .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
         smb.setUserId(p_Msg.getUserId());
         smb.setSenderName(p_Msg.getSenderName());
         smb.setFolderId(0); // 0 = INBOX
@@ -98,8 +97,9 @@ public class SILVERMAILPersistence {
 
     try {
       // find all message
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
+      dao =
+          SilverpeasBeanDAOFactory
+              .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
       collectionMessageBean = dao.findByWhereClause(pk, whereClause);
       // if any
       if (collectionMessageBean.isEmpty() == false) {
@@ -125,7 +125,7 @@ public class SILVERMAILPersistence {
             SilverTrace.debug("silvermail",
                 "SILVERMAILListener.getMessageOfFolder()",
                 "PB converting body id to LongText", "Message Body = "
-                    + pmb.getBody());
+                + pmb.getBody());
             body = pmb.getBody();
           }
           silverMailMessage.setBody(body);
@@ -140,7 +140,7 @@ public class SILVERMAILPersistence {
       throw new SILVERMAILException(
           "SILVERMAILPersistence.getMessageOfFolder()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "UserId="
-              + Long.toString(p_UserId) + ";Folder=" + p_FolderName, e);
+          + Long.toString(p_UserId) + ";Folder=" + p_FolderName, e);
     }
 
     return folderMessageList;
@@ -157,8 +157,9 @@ public class SILVERMAILPersistence {
     IdPK pk = new IdPK();
 
     try {
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
+      dao =
+          SilverpeasBeanDAOFactory
+              .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
       pk.setIdAsLong(p_Id);
       smb = (SILVERMAILMessageBean) dao.findByPrimaryKey(pk);
       if (smb != null) {
@@ -179,7 +180,7 @@ public class SILVERMAILPersistence {
         } catch (Exception e) {
           SilverTrace.debug("silvermail", "SILVERMAILListener.getMessage()",
               "PB converting body id to LongText", "Message Body = "
-                  + smb.getBody());
+              + smb.getBody());
           body = smb.getBody();
         }
         result.setBody(body);
@@ -190,7 +191,7 @@ public class SILVERMAILPersistence {
     } catch (com.stratelia.webactiv.persistence.PersistenceException e) {
       throw new SILVERMAILException("SILVERMAILPersistence.getMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId="
-              + Long.toString(p_Id), e);
+          + Long.toString(p_Id), e);
     }
 
     markMessageAsReaden(smb);
@@ -206,8 +207,9 @@ public class SILVERMAILPersistence {
     IdPK pk = new IdPK();
 
     try {
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
+      dao =
+          SilverpeasBeanDAOFactory
+              .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
       pk.setIdAsLong(p_Id);
       try {
         int longTextId = -1;
@@ -224,7 +226,7 @@ public class SILVERMAILPersistence {
     } catch (Exception e) {
       throw new SILVERMAILException("SILVERMAILPersistence.deleteMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_DEL_MSG", "MsgId="
-              + Long.toString(p_Id), e);
+          + Long.toString(p_Id), e);
     }
   }
 
@@ -243,15 +245,16 @@ public class SILVERMAILPersistence {
     SilverpeasBeanDAO dao;
 
     try {
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
+      dao =
+          SilverpeasBeanDAOFactory
+              .getDAO("com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
       smb.setReaden(1);
       dao.update(smb);
     } catch (com.stratelia.webactiv.persistence.PersistenceException e) {
       throw new SILVERMAILException(
           "SILVERMAILPersistence.markMessageAsReaden()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId="
-              + smb.getPK().getId(), e);
+          + smb.getPK().getId(), e);
     }
   }
 

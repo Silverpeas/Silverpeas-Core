@@ -41,7 +41,6 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
 /**
- *
  * @author ehugonnet
  */
 public abstract class AbstractTestDao extends JndiBasedDBTestCase {

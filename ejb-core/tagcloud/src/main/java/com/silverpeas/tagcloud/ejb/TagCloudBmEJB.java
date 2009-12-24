@@ -69,8 +69,7 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param tagCloud
-   *          The tagcloud to create in database.
+   * @param tagCloud The tagcloud to create in database.
    * @throws RemoteException
    */
   public void createTagCloud(TagCloud tagCloud) throws RemoteException {
@@ -87,8 +86,7 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param pk
-   *          The primary key of the tagcloud to delete from database.
+   * @param pk The primary key of the tagcloud to delete from database.
    * @throws RemoteException
    */
   public void deleteTagCloud(TagCloudPK pk, int type) throws RemoteException {
@@ -105,8 +103,7 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param instanceId
-   *          The id of the instance which tagclouds are searched for.
+   * @param instanceId The id of the instance which tagclouds are searched for.
    * @return The list of tagclouds corresponding to the instance.
    * @throws RemoteException
    */
@@ -116,11 +113,8 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param instanceId
-   *          The id of the instance which tagclouds are searched for.
-   * @param maxCount
-   *          The maximum number of required tagclouds (all are returned it is
-   *          lower than 0).
+   * @param instanceId The id of the instance which tagclouds are searched for.
+   * @param maxCount The maximum number of required tagclouds (all are returned it is lower than 0).
    * @return The list of tagclouds corresponding to the instance.
    * @throws RemoteException
    */
@@ -173,8 +167,7 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param externalId
-   *          The id of the element which tagclouds are searched for.
+   * @param externalId The id of the element which tagclouds are searched for.
    * @return The list of tagclouds corresponding to the element.
    * @throws RemoteException
    */
@@ -191,15 +184,11 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param tags
-   *          The searched tags.
-   * @param instanceId
-   *          The id of the instance.
-   * @param type
-   *          The type of elements referenced by the tagclouds (publications or
-   *          forums).
-   * @return The list of tagclouds which correspond to the tag and the id of the
-   *         instance given as parameters.
+   * @param tags The searched tags.
+   * @param instanceId The id of the instance.
+   * @param type The type of elements referenced by the tagclouds (publications or forums).
+   * @return The list of tagclouds which correspond to the tag and the id of the instance given as
+   * parameters.
    * @throws RemoteException
    */
   public Collection getTagCloudsByTags(String tags, String instanceId, int type)
@@ -217,10 +206,8 @@ public class TagCloudBmEJB implements SessionBean {
   }
 
   /**
-   * @param instanceId
-   *          The id of the instance.
-   * @param externalId
-   *          The id of the element.
+   * @param instanceId The id of the instance.
+   * @param externalId The id of the element.
    * @return The list of tagclouds corresponding to the ids given as parameters.
    * @throws RemoteException
    */

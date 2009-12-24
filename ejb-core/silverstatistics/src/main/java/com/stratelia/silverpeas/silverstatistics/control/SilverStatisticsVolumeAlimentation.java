@@ -37,10 +37,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
- * This is the alimentation for the statistics on volume. It gets the number of
- * elements from each components from each space. All components must implements
- * the ComponentStatisticsInterface.
- * 
+ * This is the alimentation for the statistics on volume. It gets the number of elements from each
+ * components from each space. All components must implements the ComponentStatisticsInterface.
  * @author sleroux
  */
 public class SilverStatisticsVolumeAlimentation {
@@ -61,8 +59,6 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public static void makeVolumeAlimentationForAllComponents() {
@@ -102,25 +98,25 @@ public class SilverStatisticsVolumeAlimentation {
                 .iterator();
 
             while (iteratorUserIdCountVolume.hasNext()) {
-              UserIdCountVolumeCouple currentUserIdCountVolume = (UserIdCountVolumeCouple) iteratorUserIdCountVolume
-                  .next();
+              UserIdCountVolumeCouple currentUserIdCountVolume =
+                  (UserIdCountVolumeCouple) iteratorUserIdCountVolume
+                      .next();
 
               /*
                * System.out.println("\n addStatVolume = "+" userId= "+
                * currentUserIdCountVolume.getUserId()+" countVolume=  "+
-               * currentUserIdCountVolume.getCountVolume()+" name= "+
-               * ci.getName()+" spaceId= "+
+               * currentUserIdCountVolume.getCountVolume()+" name= "+ ci.getName()+" spaceId= "+
                * currentSpaceId+" compoId= "+currentComponentsId);
                */
               SilverTrace
                   .debug(
-                      "silverstatistics",
-                      "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
-                      "userId= " + currentUserIdCountVolume.getUserId()
-                          + " countVolume=  "
-                          + currentUserIdCountVolume.getCountVolume()
-                          + " name= " + ci.getName() + " spaceId= "
-                          + currentSpaceId + " compoId= " + currentComponentsId);
+                  "silverstatistics",
+                  "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
+                  "userId= " + currentUserIdCountVolume.getUserId()
+                  + " countVolume=  "
+                  + currentUserIdCountVolume.getCountVolume()
+                  + " name= " + ci.getName() + " spaceId= "
+                  + currentSpaceId + " compoId= " + currentComponentsId);
 
               // notify statistics
               SilverStatisticsManager.getInstance().addStatVolume(
@@ -137,10 +133,7 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private static ArrayList getAllSpacesAndAllSubSpacesId() {
@@ -166,12 +159,8 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param spaceId
-   * 
    * @return
-   * 
    * @see
    */
   private static ArrayList getAllComponentsInst(String spaceId) {
@@ -183,13 +172,9 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param spaceId
    * @param componentId
-   * 
    * @return
-   * 
    * @see
    */
   private static Collection getCollectionUserIdCountVolume(String spaceId,
@@ -200,14 +185,14 @@ public class SilverStatisticsVolumeAlimentation {
     try {
       SilverTrace
           .info(
-              "silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
+          "silverstatistics",
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
       SilverTrace
           .info(
-              "silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
+          "silverstatistics",
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
 
       String className = getComponentStatisticsClassName(ci.getName());
       if (className != null) {
@@ -220,17 +205,17 @@ public class SilverStatisticsVolumeAlimentation {
     } catch (ClassNotFoundException ce) {
       SilverTrace
           .info(
-              "silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",
-              "component = " + ci.getName(), ce);
+          "silverstatistics",
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",
+          "component = " + ci.getName(), ce);
     } catch (Exception e) {
       SilverTrace
           .error(
-              "silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
-              "component = " + ci.getName(), e);
+          "silverstatistics",
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
+          "component = " + ci.getName(), e);
     }
     return c;
   }
@@ -246,11 +231,11 @@ public class SilverStatisticsVolumeAlimentation {
       componentStatisticsClassName = null;
       SilverTrace
           .error(
-              "silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
-              "No statistic implementation class for component '"
-                  + componentName + "'");
+          "silverstatistics",
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
+          "No statistic implementation class for component '"
+          + componentName + "'");
     }
 
     return componentStatisticsClassName;
@@ -276,7 +261,7 @@ public class SilverStatisticsVolumeAlimentation {
       SilverTrace.debug("silverstatistics",
           "SilverStatisticsVolumeAlimentation.agregateUser)",
           "eltIn.getUserId() = " + eltIn.getUserId()
-              + "eltIn.getCountVolume() = " + eltIn.getCountVolume());
+          + "eltIn.getCountVolume() = " + eltIn.getCountVolume());
 
       if (eltOut == null) {
         myArrayList.add(eltIn);
@@ -287,7 +272,7 @@ public class SilverStatisticsVolumeAlimentation {
         SilverTrace.debug("silverstatistics",
             "SilverStatisticsVolumeAlimentation.agregateUser)",
             "eltOut.getUserId() = " + eltOut.getUserId()
-                + "eltOut.getCountVolume() = " + eltOut.getCountVolume());
+            + "eltOut.getCountVolume() = " + eltOut.getCountVolume());
       }
 
     }

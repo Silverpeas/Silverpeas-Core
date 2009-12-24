@@ -62,8 +62,6 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public final class SilverStatisticsSender {
@@ -77,12 +75,8 @@ public final class SilverStatisticsSender {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws NamingException
-   * 
    * @see
    */
   protected Context getInitialContext() throws NamingException {
@@ -94,8 +88,6 @@ public final class SilverStatisticsSender {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SilverStatisticsSender() throws Exception {
@@ -126,12 +118,8 @@ public final class SilverStatisticsSender {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param message
-   * 
    * @throws JMSException
-   * 
    * @see
    */
   public void send(String message) throws JMSException {
@@ -145,10 +133,7 @@ public final class SilverStatisticsSender {
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws JMSException
-   * 
    * @see
    */
   public void close() throws JMSException {

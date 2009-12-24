@@ -44,7 +44,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * This is the DAO Object for purge, agregat on the month
- * 
  * @author sleroux
  */
 public class SilverStatisticsManagerDAO {
@@ -53,15 +52,11 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param valueKeys
    * @param conf
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void insertDataStatsCumul(Connection con, String StatsType,
@@ -169,15 +164,11 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param valueKeys
    * @param conf
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void putDataStatsCumul(Connection con, String StatsType,
@@ -351,14 +342,10 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param conf
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void makeStatCumul(Connection con, String StatsType,
@@ -431,14 +418,10 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param conf
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void deleteTablesOfTheDay(Connection con, String StatsType,
@@ -459,14 +442,10 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param conf
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void purgeTablesCumul(Connection con, String StatsType,
@@ -510,12 +489,8 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param conf
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void makeStatAllCumul(StatisticsConfig conf) {
@@ -574,10 +549,7 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private static Connection getConnection() {
@@ -595,10 +567,7 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private static void freeConnection(Connection con) {

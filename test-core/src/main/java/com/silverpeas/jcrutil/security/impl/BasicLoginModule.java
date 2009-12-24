@@ -60,10 +60,10 @@ public class BasicLoginModule implements LoginModule {
   @Override
   public void initialize(Subject subject, CallbackHandler callbackHandler,
       Map sharedState, Map options) {
-    if(! options.containsKey(LoginModuleConfig.PARAM_ANONYMOUS_ID)) {
+    if (!options.containsKey(LoginModuleConfig.PARAM_ANONYMOUS_ID)) {
       options.put(LoginModuleConfig.PARAM_ANONYMOUS_ID, "anonymous");
     }
-    if(! options.containsKey(LoginModuleConfig.PARAM_ADMIN_ID)) {
+    if (!options.containsKey(LoginModuleConfig.PARAM_ADMIN_ID)) {
       options.put(LoginModuleConfig.PARAM_ADMIN_ID, SilverpeasSystemPrincipal.SYSTEM);
     }
     this.module = new SimpleLoginModule();
@@ -76,7 +76,7 @@ public class BasicLoginModule implements LoginModule {
   public boolean login() throws LoginException {
     try {
       CredentialsCallback ccb = new CredentialsCallback();
-      callbackHandler.handle(new Callback[]{ccb});
+      callbackHandler.handle(new Callback[] { ccb });
       isRoot = (ccb.getCredentials() instanceof SilverpeasSystemCredentials);
       return isRoot || this.module.login();
     } catch (java.io.IOException ioe) {
@@ -93,4 +93,3 @@ public class BasicLoginModule implements LoginModule {
     return this.module.logout();
   }
 }
-

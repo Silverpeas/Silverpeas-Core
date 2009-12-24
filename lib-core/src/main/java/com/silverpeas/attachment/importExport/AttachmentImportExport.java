@@ -384,7 +384,8 @@ public class AttachmentImportExport {
           try {
             copyAttachment(attDetail, pk, exportPath);
             // Le nom physique correspond maintenant au fichier copi
-            attDetail.setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
+            attDetail
+                .setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (Exception ex) {
             // TODO: gerer ou ne pas gerer telle est la question

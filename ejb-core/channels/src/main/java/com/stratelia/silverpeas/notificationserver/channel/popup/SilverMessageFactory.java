@@ -40,22 +40,20 @@ import com.stratelia.silverpeas.silvertrace.*;
 import com.stratelia.silverpeas.util.LongText;
 
 /**
- * 
  * @author dblot
  * @version
  */
 public class SilverMessageFactory {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public SilverMessageFactory() {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * pop read
+   * -------------------------------------------------------------------------- pop read
    */
   public static SilverMessage read(String p_UserId) {
     SilverMessage silverMessage = null;
@@ -94,7 +92,7 @@ public class SilverMessageFactory {
         } catch (Exception e) {
           SilverTrace.debug("popup", "SilverMessageFactory.read()",
               "PB converting body id to LongText", "Message Body = "
-                  + pmb.getBody());
+              + pmb.getBody());
           msg = pmb.getBody();
         }
         if (msg != null) {
@@ -123,8 +121,7 @@ public class SilverMessageFactory {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * pop del
+   * -------------------------------------------------------------------------- pop del
    */
   public static void del(String p_MsgId) {
     try {
@@ -159,8 +156,7 @@ public class SilverMessageFactory {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * push
+   * -------------------------------------------------------------------------- push
    */
   public static void push(String p_UserId, NotificationData p_Message) {
     SilverpeasBeanDAO dao;

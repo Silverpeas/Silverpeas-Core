@@ -55,7 +55,7 @@ public class POPUPPersistence {
         smb.setMsgTime(p_Msg.getTime());
         SilverTrace.debug("popup", "POPUPPersistence.getMessage()",
             "Date et time", DateUtil.date2SQLDate(new Date()) + "-"
-                + DateUtil.getFormattedTime(new Date()));
+            + DateUtil.getFormattedTime(new Date()));
         dao.add(smb);
       } catch (Exception e) {
         throw new POPUPException("POPUPPersistence.addMessage()",
@@ -93,7 +93,7 @@ public class POPUPPersistence {
         } catch (Exception e) {
           SilverTrace.debug("popup", "POPUPListener.getMessage()",
               "PB converting body id to LongText", "Message Body = "
-                  + smb.getBody());
+              + smb.getBody());
           body = smb.getBody();
         }
         result.setBody(body);
@@ -104,7 +104,7 @@ public class POPUPPersistence {
     } catch (com.stratelia.webactiv.persistence.PersistenceException e) {
       throw new POPUPException("POPUPPersistence.getMessage()",
           SilverpeasException.ERROR, "POPUP.EX_CANT_READ_MSG", "MsgId="
-              + Long.toString(p_Id), e);
+          + Long.toString(p_Id), e);
     }
     return result;
   }
@@ -131,7 +131,7 @@ public class POPUPPersistence {
     } catch (Exception e) {
       throw new POPUPException("POPUPPersistence.deleteMessage()",
           SilverpeasException.ERROR, "POPUP.EX_CANT_DEL_MSG", "MsgId="
-              + Long.toString(p_Id), e);
+          + Long.toString(p_Id), e);
     }
   }
 
@@ -147,7 +147,7 @@ public class POPUPPersistence {
     } catch (Exception e) {
       throw new POPUPException("POPUPPersistence.getUserLogin()",
           SilverpeasException.ERROR, "POPUP.EX_CANT_GET_USER_LOGIN", "UserId="
-              + Long.toString(userId), e);
+          + Long.toString(userId), e);
     }
     return result;
   }

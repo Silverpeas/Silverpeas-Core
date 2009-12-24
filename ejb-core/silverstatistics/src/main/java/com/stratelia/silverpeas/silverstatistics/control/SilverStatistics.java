@@ -54,8 +54,6 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface SilverStatistics extends javax.ejb.EJBObject {

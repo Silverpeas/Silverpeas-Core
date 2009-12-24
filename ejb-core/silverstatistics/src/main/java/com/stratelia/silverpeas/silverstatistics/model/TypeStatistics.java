@@ -33,8 +33,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author SLR
  */
 

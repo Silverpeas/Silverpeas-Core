@@ -26,7 +26,6 @@
 
 package com.stratelia.webactiv.clipboard.control.ejb;
 
-
 import javax.ejb.EJBObject;
 
 /**
@@ -34,5 +33,4 @@ import javax.ejb.EJBObject;
  */
 public interface ClipboardBm extends EJBObject, Clipboard {
 
-  
 }

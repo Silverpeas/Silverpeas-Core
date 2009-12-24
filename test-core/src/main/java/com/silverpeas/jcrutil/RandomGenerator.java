@@ -36,7 +36,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 23.
-   * 
    * @return a random int between 0 and 23.
    */
   public static int getRandomHour() {
@@ -45,7 +44,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 59.
-   * 
    * @return a random int between 0 and 59.
    */
   public static int getRandomMinutes() {
@@ -54,7 +52,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 11.
-   * 
    * @return a random int between 0 and 11.
    */
   public static int getRandomMonth() {
@@ -63,7 +60,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 2019 and 2019.
-   * 
    * @return a random int between 2019 and 2019.
    */
   public static int getRandomYear() {
@@ -72,7 +68,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random int between 0 and 31.
-   * 
    * @return a random int between 0 and 31.
    */
   public static int getRandomDay() {
@@ -81,7 +76,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random long.
-   * 
    * @return a random long.
    */
   public static long getRandomLong() {
@@ -90,7 +84,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random String of size 32.
-   * 
    * @return a random String of 32 chars.
    */
   public static String getRandomString() {
@@ -99,7 +92,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random language
-   * 
    * @return a random valid language.
    */
   public static String getRandomLanguage() {
@@ -108,7 +100,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random boolean.
-   * 
    * @return a random boolean.
    */
   public static boolean getRandomBoolean() {
@@ -117,7 +108,6 @@ public class RandomGenerator {
 
   /**
    * Generate a random int.
-   * 
    * @return a random int.
    */
   public static int getRandomInt() {
@@ -126,9 +116,7 @@ public class RandomGenerator {
 
   /**
    * Generate a random int in the 0 inclusive max exclusive.
-   * 
-   * @param max
-   *          the exclusive maximum of the random int.
+   * @param max the exclusive maximum of the random int.
    * @return a random int.
    */
   public static int getRandomInt(int max) {
@@ -167,7 +155,6 @@ public class RandomGenerator {
     return calendar;
   }
 
-
   public static Calendar getCalendarAfter(Calendar date) {
     Calendar endDate = Calendar.getInstance();
     endDate.setTimeInMillis(date.getTimeInMillis());
@@ -175,10 +162,10 @@ public class RandomGenerator {
     return endDate;
   }
 
-   public static Calendar getCalendarBefore(Calendar date) {
+  public static Calendar getCalendarBefore(Calendar date) {
     Calendar beforeDate = Calendar.getInstance();
     beforeDate.setTimeInMillis(date.getTimeInMillis());
-    beforeDate.add(Calendar.DAY_OF_MONTH, - 1 - random.nextInt(10));
+    beforeDate.add(Calendar.DAY_OF_MONTH, -1 - random.nextInt(10));
     return date;
   }
 }

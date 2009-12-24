@@ -89,12 +89,9 @@ import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
-    SessionBean {
+public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, SessionBean {
 
   private String currentUserId;
   private String defaultLanguage = null;
@@ -108,8 +105,6 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public PersonalizationBmEJB() {
@@ -117,12 +112,8 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param user
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void setActor(String userId) throws RemoteException {
@@ -131,10 +122,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -179,14 +167,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   private PersonalizeDetail getPersonalizeDetail() throws RemoteException {
@@ -211,21 +195,17 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
       SilverTrace.info("personalization",
           "PersonalizationBmEJB.getPersonalizeDetail()",
           "root.MSG_GEN_PARAM_VALUE", "thesaurusStatus = "
-              + personalizeDetail.getThesaurusStatus());
+          + personalizeDetail.getThesaurusStatus());
     }
     return personalizeDetail;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param languages
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public void setLanguages(Vector languages) throws RemoteException {
@@ -247,14 +227,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public Vector getLanguages() throws RemoteException {
@@ -292,14 +268,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public String getFavoriteLanguage() throws RemoteException {
@@ -319,14 +291,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public String getFavoriteLook() throws RemoteException {
@@ -356,14 +324,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param look
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public void setFavoriteLook(String look) throws RemoteException {
@@ -424,14 +388,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public boolean getThesaurusStatus() throws RemoteException {
@@ -461,14 +421,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param thesaurusStatus
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public void setThesaurusStatus(boolean thesaurusStatus)
@@ -486,7 +442,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
           "PersonalizationBmEJB.setThesaurusStatus()",
           SilverpeasRuntimeException.ERROR,
           "personalization.EX_CANT_SET_THESAURUS_STATUS", "thesaurusStatus="
-              + thesaurusStatus, e);
+          + thesaurusStatus, e);
     } finally {
       freeConnection(con);
     }
@@ -494,14 +450,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public boolean getDragAndDropStatus() throws RemoteException {
@@ -531,14 +483,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param dragAndDropStatus
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public void setDragAndDropStatus(boolean dragAndDropStatus)
@@ -556,7 +504,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
           "PersonalizationBmEJB.setDragAndDropStatus()",
           SilverpeasRuntimeException.ERROR,
           "personalization.EX_CANT_SET_DRAGDROP_STATUS", "dragAndDropStatus="
-              + dragAndDropStatus, e);
+          + dragAndDropStatus, e);
     } finally {
       freeConnection(con);
     }
@@ -564,14 +512,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public boolean getOnlineEditingStatus() throws RemoteException {
@@ -596,20 +540,16 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getOnlineEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "onlineEditingStatus = "
-            + onlineEditingStatus);
+        + onlineEditingStatus);
     return onlineEditingStatus;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param onlineEditingStatus
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public void setOnlineEditingStatus(boolean onlineEditingStatus)
@@ -617,7 +557,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.setOnlineEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "onlineEditingStatus = "
-            + onlineEditingStatus);
+        + onlineEditingStatus);
     Connection con = getConnection();
 
     try {
@@ -636,14 +576,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
-   * 
    * @see
    */
   public boolean getWebdavEditingStatus() throws RemoteException {
@@ -668,18 +604,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getWebdavEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "webdavEditingStatus = "
-            + webdavEditingStatus);
+        + webdavEditingStatus);
     return webdavEditingStatus;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param webdavEditingStatus
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void setWebdavEditingStatus(boolean webdavEditingStatus)
@@ -687,7 +619,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.setWebdavEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "webdavEditingStatus = "
-            + webdavEditingStatus);
+        + webdavEditingStatus);
     Connection con = getConnection();
 
     try {
@@ -714,11 +646,8 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
-   * 
    * @see
    */
   public void ejbRemove() throws javax.ejb.EJBException,
@@ -729,11 +658,8 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
-   * 
    * @see
    */
   public void ejbActivate() throws javax.ejb.EJBException,
@@ -744,11 +670,8 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
-   * 
    * @see
    */
   public void ejbPassivate() throws javax.ejb.EJBException,
@@ -761,7 +684,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton,
       throws javax.ejb.EJBException, java.rmi.RemoteException {
     SilverTrace
         .debug("personalization", "PersonalizationBmEJB.setSessionContext()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
   }
 
 }

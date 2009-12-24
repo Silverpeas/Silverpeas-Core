@@ -71,6 +71,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   public AbstractJcrTestCase(String name) {
     super(name);
   }
+
   protected Calendar calend;
   protected DataSource datasource;
 
@@ -202,7 +203,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
 
   @Override
   protected String[] getConfigLocations() {
-    return new String[]{"spring-in-memory-jcr.xml"};
+    return new String[] { "spring-in-memory-jcr.xml" };
   }
 
   @Override
@@ -296,13 +297,13 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
     Context currentContext = ic;
     StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-    while(tokenizer.hasMoreTokens()) {
+    while (tokenizer.hasMoreTokens()) {
       String name = tokenizer.nextToken();
-      if(tokenizer.hasMoreTokens()) {
+      if (tokenizer.hasMoreTokens()) {
         try {
           currentContext = (Context) currentContext.lookup(name);
-        }catch(javax.naming.NameNotFoundException nnfex) {
-           currentContext = currentContext.createSubcontext(name);
+        } catch (javax.naming.NameNotFoundException nnfex) {
+          currentContext = currentContext.createSubcontext(name);
         }
       } else {
         currentContext.rebind(name, ref);

@@ -30,15 +30,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
- * 
  * @author eDurand
  * @version 1.0
  */
 
 public class SILVERMAILException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public SILVERMAILException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -46,13 +45,10 @@ public class SILVERMAILException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public SILVERMAILException(String callingClass, int errorLevel,
@@ -62,13 +58,10 @@ public class SILVERMAILException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public SILVERMAILException(String callingClass, int errorLevel,
@@ -78,14 +71,11 @@ public class SILVERMAILException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public SILVERMAILException(String callingClass, int errorLevel,
@@ -94,8 +84,7 @@ public class SILVERMAILException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "silvermail";

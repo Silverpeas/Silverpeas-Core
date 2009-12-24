@@ -39,24 +39,17 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * This is the alimentation statistics DAO Object
- * 
- * 
  * @author sleroux
  */
 public class SilverStatisticsDAO {
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param valueKeys
    * @param conf
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void insertDataStats(Connection con, String StatsType,
@@ -149,17 +142,12 @@ public class SilverStatisticsDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param StatsType
    * @param valueKeys
    * @param conf
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void putDataStats(Connection con, String StatsType,

@@ -68,7 +68,8 @@ public class SimpleAccessManager implements AccessManager {
   }
 
   @Override
-  public void init(AMContext amc, AccessControlProvider acp, WorkspaceAccessManager wam) throws AccessDeniedException, Exception {
+  public void init(AMContext amc, AccessControlProvider acp, WorkspaceAccessManager wam)
+      throws AccessDeniedException, Exception {
   }
 
   @Override

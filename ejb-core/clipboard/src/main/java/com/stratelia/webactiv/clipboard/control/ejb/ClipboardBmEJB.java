@@ -40,8 +40,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 /**
- * A SearchEngineEJB search the web'activ index and give access to the retrieved
- * index entries.
+ * A SearchEngineEJB search the web'activ index and give access to the retrieved index entries.
  */
 public class ClipboardBmEJB implements SessionBean {
   private ClipboardSelection m_LastObject = null;
@@ -59,7 +58,6 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Copy a node.
-   * 
    */
   public void add(ClipboardSelection objectToCopy) throws RemoteException {
     try {
@@ -127,7 +125,6 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Paste a node.
-   * 
    */
   public ClipboardSelection getObject() {
     m_Count += 1;
@@ -136,7 +133,6 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Return al the objects.
-   * 
    */
   public Collection getObjects() {
     m_Count += 1;
@@ -145,7 +141,6 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Return the selected objects.
-   * 
    */
   public Collection getSelectedObjects() throws RemoteException {
     try {
@@ -199,10 +194,10 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.getObject()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.getObject() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
       throw new RemoteException(
           "ERROR occured in ClipboardBmEJB.getObject() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
     }
   }
 
@@ -230,10 +225,10 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.setSelected()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.setSelected() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
       throw new RemoteException(
           "ERROR occured in ClipboardBmEJB.setSelected() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
     }
   }
 
@@ -247,10 +242,10 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.remove()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.remove() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
       throw new RemoteException(
           "ERROR occured in ClipboardBmEJB.remove() index = "
-              + Integer.toString(index), e);
+          + Integer.toString(index), e);
     }
   }
 
@@ -310,10 +305,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Method getMessageError
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getMessageError() {
@@ -332,10 +324,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * - Method setMessageError
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public void setMessageError(String messageID, Exception e) {
@@ -344,9 +333,7 @@ public class ClipboardBmEJB implements SessionBean {
   }
 
   /**
-   * Create a ClipboardBm.
-   * 
-   * The results set is initialized empty.
+   * Create a ClipboardBm. The results set is initialized empty.
    */
   public void ejbCreate(String name) throws CreateException, RemoteException {
     m_LastObject = null;

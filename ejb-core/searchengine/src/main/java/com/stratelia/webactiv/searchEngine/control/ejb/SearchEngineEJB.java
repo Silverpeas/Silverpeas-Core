@@ -35,15 +35,11 @@ import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.searchEngine.model.WAIndexSearcher;
 
 /**
- * A SearchEngineEJB search the web'activ index and give access to the retrieved
- * index entries.
+ * A SearchEngineEJB search the web'activ index and give access to the retrieved index entries.
  */
-public class SearchEngineEJB implements SessionBean,
-    SearchEngineBmBusinessSkeleton {
+public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkeleton {
   /**
-   * Create a SearchEngineBm.
-   * 
-   * The results set is initialized empty.
+   * Create a SearchEngineBm. The results set is initialized empty.
    */
   public void ejbCreate() throws CreateException, RemoteException {
     results = new MatchingIndexEntry[0];
@@ -58,19 +54,16 @@ public class SearchEngineEJB implements SessionBean,
   }
 
   /**
-   * Return the count of matching document retrived by the last search.
-   * 
-   * Return 0 if called before the fisrt search.
+   * Return the count of matching document retrived by the last search. Return 0 if called before
+   * the fisrt search.
    */
   public int getResultLength() throws RemoteException {
     return results.length;
   }
 
   /**
-   * Return the index entry at the given position i (counted from 0) from all
-   * the entries retrived by the last search.
-   * 
-   * Return null if the given position i is out of bounds.
+   * Return the index entry at the given position i (counted from 0) from all the entries retrived
+   * by the last search. Return null if the given position i is out of bounds.
    */
   public MatchingIndexEntry get(int i) throws RemoteException {
     if (0 <= i && i < results.length)
@@ -80,11 +73,9 @@ public class SearchEngineEJB implements SessionBean,
   }
 
   /**
-   * Return the entries comprised between the position min upto the position
-   * max, from all the entries retrived by the last search.
-   * 
-   * The positions min and max are counted from 0 and included in the range. If
-   * min or max is out of bounds : the range is resize to fit the results set.
+   * Return the entries comprised between the position min upto the position max, from all the
+   * entries retrived by the last search. The positions min and max are counted from 0 and included
+   * in the range. If min or max is out of bounds : the range is resize to fit the results set.
    */
   public MatchingIndexEntry[] getRange(int min, int max) throws RemoteException {
     if (min < 0)

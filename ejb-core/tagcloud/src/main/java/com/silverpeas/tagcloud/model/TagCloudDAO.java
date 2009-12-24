@@ -51,10 +51,8 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param con
-   *          The database connection.
-   * @param tagCloud
-   *          The tagcloud to insert into database.
+   * @param con The database connection.
+   * @param tagCloud The tagcloud to insert into database.
    * @throws SQLException
    */
   public static void createTagCloud(Connection con, TagCloud tagCloud)
@@ -85,10 +83,8 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param con
-   *          The database connection.
-   * @param pk
-   *          The primary key of the tagcloud to delete from the database.
+   * @param con The database connection.
+   * @param pk The primary key of the tagcloud to delete from the database.
    * @throws SQLException
    */
   public static void deleteTagCloud(Connection con, TagCloudPK pk, int type)
@@ -96,7 +92,7 @@ public class TagCloudDAO {
     String query = new StringBuffer(100).append("DELETE FROM ").append(
         TABLE_NAME).append(" WHERE ").append(COLUMN_INSTANCEID).append(" = ?")
         .append(" AND ").append(COLUMN_EXTERNALID).append(" = ?").append(
-            " AND ").append(COLUMN_EXTERNALTYPE).append(" = ?").toString();
+        " AND ").append(COLUMN_EXTERNALTYPE).append(" = ?").toString();
     PreparedStatement prepStmt = con.prepareStatement(query);
     try {
       int index = 1;
@@ -110,10 +106,8 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param con
-   *          The database connection.
-   * @param instanceId
-   *          The id of the instance which the tagclouds are searched for.
+   * @param con The database connection.
+   * @param instanceId The id of the instance which the tagclouds are searched for.
    * @return The list of tagclouds corresponding to the instance id.
    * @throws SQLException
    */
@@ -121,8 +115,8 @@ public class TagCloudDAO {
       String instanceId) throws SQLException {
     String query = new StringBuffer(100).append("SELECT ").append(ALL_COLUMNS)
         .append(" FROM ").append(TABLE_NAME).append(" WHERE ").append(
-            COLUMN_INSTANCEID).append(" = ?").append(" ORDER BY ").append(
-            COLUMN_TAG).append(" ASC").toString();
+        COLUMN_INSTANCEID).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC").toString();
 
     PreparedStatement prepStmt = con.prepareStatement(query);
     prepStmt.setString(1, instanceId);
@@ -141,10 +135,8 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param con
-   *          The database connection.
-   * @param externalId
-   *          The id of the element which the tagclouds are searched for.
+   * @param con The database connection.
+   * @param externalId The id of the element which the tagclouds are searched for.
    * @return The list of tagclouds corresponding to the element id.
    * @throws SQLException
    */
@@ -152,10 +144,10 @@ public class TagCloudDAO {
       throws SQLException {
     String query = new StringBuffer(100).append("SELECT ").append(ALL_COLUMNS)
         .append(" FROM ").append(TABLE_NAME).append(" WHERE ").append(
-            COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
-            COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
-            COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
-            COLUMN_TAG).append(" ASC").toString();
+        COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC").toString();
 
     PreparedStatement prepStmt = con.prepareStatement(query);
     prepStmt.setString(1, pk.getInstanceId());
@@ -176,17 +168,11 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param con
-   *          The database connection.
-   * @param tags
-   *          The tags which returned tagclouds must contain.
-   * @param instanceId
-   *          The id of the instance.
-   * @param type
-   *          The type of elements referenced by the tagclouds (publications or
-   *          forums).
-   * @return The list of tagclouds corresponding to the tag and the instance id
-   *         given as parameters.
+   * @param con The database connection.
+   * @param tags The tags which returned tagclouds must contain.
+   * @param instanceId The id of the instance.
+   * @param type The type of elements referenced by the tagclouds (publications or forums).
+   * @return The list of tagclouds corresponding to the tag and the instance id given as parameters.
    * @throws SQLException
    */
   public static Collection getTagCloudsByTags(Connection con, String tags,
@@ -233,12 +219,9 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param con
-   *          The database connection.
-   * @param instanceId
-   *          The id of the instance.
-   * @param externalId
-   *          The id of the element.
+   * @param con The database connection.
+   * @param instanceId The id of the instance.
+   * @param externalId The id of the element.
    * @return The list of tagclouds corresponding to the ids given as parameters.
    * @throws SQLException
    */
@@ -247,9 +230,9 @@ public class TagCloudDAO {
     StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
         ALL_COLUMNS).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
         .append(COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
-            COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
-            COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
-            COLUMN_TAG).append(" ASC");
+        COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC");
 
     PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
     prepStmt.setString(1, instanceId);
@@ -274,9 +257,9 @@ public class TagCloudDAO {
     StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
         COLUMN_TAG).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
         .append(COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
-            COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
-            COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
-            COLUMN_TAG).append(" ASC");
+        COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC");
 
     PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
     prepStmt.setString(1, pk.getInstanceId());
@@ -300,8 +283,7 @@ public class TagCloudDAO {
   }
 
   /**
-   * @param rs
-   *          The resultset describing the tagcloud.
+   * @param rs The resultset describing the tagcloud.
    * @return The tagcloud corresponding to the resultset given as parameter.
    * @throws SQLException
    */

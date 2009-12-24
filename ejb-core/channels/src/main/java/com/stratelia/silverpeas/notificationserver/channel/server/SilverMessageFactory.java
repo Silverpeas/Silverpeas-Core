@@ -42,22 +42,20 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 
 /**
- * 
  * @author neysseri
  * @version
  */
 public class SilverMessageFactory {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public SilverMessageFactory() {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * pop read
+   * -------------------------------------------------------------------------- pop read
    */
   public static SilverMessage read(String userId, String sessionId) {
     SilverMessage silverMessage = null;
@@ -87,7 +85,7 @@ public class SilverMessageFactory {
         } catch (Exception e) {
           SilverTrace.debug("server", "SilverMessageFactory.read()",
               "PB converting body id to LongText", "Message Body = "
-                  + smb.getBody());
+              + smb.getBody());
           msg = smb.getBody();
         }
         if (msg != null) {
@@ -101,15 +99,14 @@ public class SilverMessageFactory {
     } catch (PersistenceException e) {
       SilverTrace.error("server", "SilverMessageFactory.read()",
           "server.EX_CANT_READ_MSG", "UserId=" + userId + ", sessionId = "
-              + sessionId, e);
+          + sessionId, e);
     }
 
     return silverMessage;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * pop del
+   * -------------------------------------------------------------------------- pop del
    */
   public static void del(String p_MsgId) {
     try {
@@ -137,8 +134,7 @@ public class SilverMessageFactory {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * pop push
+   * -------------------------------------------------------------------------- pop push
    */
   public static void push(String userId, String p_Message, String sessionId) {
     SilverpeasBeanDAO dao;

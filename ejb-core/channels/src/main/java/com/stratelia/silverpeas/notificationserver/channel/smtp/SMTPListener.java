@@ -94,7 +94,7 @@ public class SMTPListener extends AbstractListener {
     } catch (NotificationServerException e) {
       SilverTrace.error("smtp", "SMTPListner.onMessage()",
           "smtp.EX_CANT_PROCESS_MSG", "JMS Message = " + msg.toString()
-              + ", Payload = " + m_payload == null ? "" : m_payload, e);
+          + ", Payload = " + m_payload == null ? "" : m_payload, e);
     }
   }
 
@@ -167,17 +167,12 @@ public class SMTPListener extends AbstractListener {
   }
 
   /**
-   * send email to destination using SMTP protocol and JavaMail 1.3 API
-   * (compliant with MIME format).
-   * 
-   * @param pFrom
-   *          : from field that will appear in the email header.
-   * @param pTo
-   *          : the email target destination.
-   * @param pSubject
-   *          : the subject of the email.
-   * @param pMessage
-   *          : the message or payload of the email.
+   * send email to destination using SMTP protocol and JavaMail 1.3 API (compliant with MIME
+   * format).
+   * @param pFrom : from field that will appear in the email header.
+   * @param pTo : the email target destination.
+   * @param pSubject : the subject of the email.
+   * @param pMessage : the message or payload of the email.
    */
   private void sendEmail(String pFrom, String pTo, String pSubject,
       String pMessage, boolean htmlFormat) throws NotificationServerException {
@@ -257,7 +252,7 @@ public class SMTPListener extends AbstractListener {
       if (m_SmtpAuthentication) {
         SilverTrace.info("smtp", "SMTPListner.sendEmail()",
             "root.MSG_GEN_PARAM_VALUE", "m_Host = " + m_Host + " m_Port="
-                + m_Port + " m_User=" + m_User);
+            + m_Port + " m_User=" + m_User);
         transport.connect(m_Host, m_Port, m_User, m_Pwd);
         email.saveChanges();
       } else
@@ -281,73 +276,45 @@ public class SMTPListener extends AbstractListener {
 
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API.
-   * 
-   * @param pFrom
-   *          : from field that will appear in the email header.
-   * @param pTo
-   *          : the email target destination.
-   * @param pSubject
-   *          : the subject of the email.
-   * @param pMessage
-   *          : the message or payload of the email.
-   * @param pAttachmentId
-   *          : id of the attachment.5
-   * @param PAttachmentName
-   *          : name of the attachment.
+   * @param pFrom : from field that will appear in the email header.
+   * @param pTo : the email target destination.
+   * @param pSubject : the subject of the email.
+   * @param pMessage : the message or payload of the email.
+   * @param pAttachmentId : id of the attachment.5
+   * @param PAttachmentName : name of the attachment.
    */
 
   /*
-   * A finir, car il faut modifier le path de l'Upload de Silverpeas private
-   * void sendEmailWithAttachment( String pFrom, String pTo, String pSubject,
-   * String pMessage, String pAttachmentId, String pAttachmentName) throws
-   * NotificationServerException { //retrieves system properties and set up
-   * Delivery Status Notification //@see RFC1891
-   * 
-   * Properties properties; javax.mail.Session session; InternetAddress
-   * fromAddress; InternetAddress[] toAddress; MimeMessage email; Transport
-   * transport = null;
-   * 
-   * properties = System.getProperties(); properties.put("mail.smtp.host",
-   * m_Host); session = javax.mail.Session.getInstance(properties, null); try{
-   * fromAddress = new InternetAddress(pFrom); //use InternetAddress structure.
-   * toAddress = null;
-   * 
-   * //parsing destination address for compliance with RFC822 try { toAddress =
+   * A finir, car il faut modifier le path de l'Upload de Silverpeas private void
+   * sendEmailWithAttachment( String pFrom, String pTo, String pSubject, String pMessage, String
+   * pAttachmentId, String pAttachmentName) throws NotificationServerException { //retrieves system
+   * properties and set up Delivery Status Notification //@see RFC1891 Properties properties;
+   * javax.mail.Session session; InternetAddress fromAddress; InternetAddress[] toAddress;
+   * MimeMessage email; Transport transport = null; properties = System.getProperties();
+   * properties.put("mail.smtp.host", m_Host); session = javax.mail.Session.getInstance(properties,
+   * null); try{ fromAddress = new InternetAddress(pFrom); //use InternetAddress structure.
+   * toAddress = null; //parsing destination address for compliance with RFC822 try { toAddress =
    * InternetAddress.parse(pTo, false); } catch (AddressException e) { throw new
-   * NotificationServerException(e, "Invalid Address"); }
-   * 
-   * email = new MimeMessage( session ); email.setFrom( fromAddress );
-   * email.setRecipients( javax.mail.Message.RecipientType.TO, toAddress );
-   * email.setSubject( pSubject ); email.setText( pMessage );
-   * 
-   * // create the message part MimeBodyPart messageBodyPart = new
-   * MimeBodyPart(); Multipart multipart = new MimeMultipart();
-   * multipart.addBodyPart(messageBodyPart);
-   * 
-   * // Part two is attachment messageBodyPart = new MimeBodyPart(); DataSource
-   * source = new
-   * FileDataSource("C:\\Dev\\web\\Upload\\D"+pAttachmentId+"\\"+pAttachmentName
-   * ); messageBodyPart.setDataHandler( new DataHandler(source));
-   * messageBodyPart.setFileName(pAttachmentName);
-   * multipart.addBodyPart(messageBodyPart);
-   * 
-   * // Put parts in message email.setContent(multipart);
-   * 
-   * // set the Date: header email.setSentDate(new Date());
-   * 
-   * //create a Transport connection (TCP) transport =
-   * session.getTransport("smtp"); //redefine the TransportListener interface.
-   * TransportListener transportListener = new TransportListener() { public void
-   * messageDelivered(TransportEvent e) { //catch all messages delivered to the
-   * SMTP server. } public void messageNotDelivered(TransportEvent e) { //catch
-   * all messages NOT delivered to the SMTP server. } public void
-   * messagePartiallyDelivered(TransportEvent e) { } };
-   * 
-   * //add Transport Listener to the transport connection.
-   * transport.addTransportListener(transportListener); transport.connect();
+   * NotificationServerException(e, "Invalid Address"); } email = new MimeMessage( session );
+   * email.setFrom( fromAddress ); email.setRecipients( javax.mail.Message.RecipientType.TO,
+   * toAddress ); email.setSubject( pSubject ); email.setText( pMessage ); // create the message
+   * part MimeBodyPart messageBodyPart = new MimeBodyPart(); Multipart multipart = new
+   * MimeMultipart(); multipart.addBodyPart(messageBodyPart); // Part two is attachment
+   * messageBodyPart = new MimeBodyPart(); DataSource source = new
+   * FileDataSource("C:\\Dev\\web\\Upload\\D"+pAttachmentId+"\\"+pAttachmentName );
+   * messageBodyPart.setDataHandler( new DataHandler(source));
+   * messageBodyPart.setFileName(pAttachmentName); multipart.addBodyPart(messageBodyPart); // Put
+   * parts in message email.setContent(multipart); // set the Date: header email.setSentDate(new
+   * Date()); //create a Transport connection (TCP) transport = session.getTransport("smtp");
+   * //redefine the TransportListener interface. TransportListener transportListener = new
+   * TransportListener() { public void messageDelivered(TransportEvent e) { //catch all messages
+   * delivered to the SMTP server. } public void messageNotDelivered(TransportEvent e) { //catch all
+   * messages NOT delivered to the SMTP server. } public void
+   * messagePartiallyDelivered(TransportEvent e) { } }; //add Transport Listener to the transport
+   * connection. transport.addTransportListener(transportListener); transport.connect();
    * transport.sendMessage(email,toAddress); } catch (Exception e) { throw new
-   * NotificationServerException(e,""); } finally { if( transport != null ) {
-   * try{ transport.close(); }catch(Exception e){} } } }
+   * NotificationServerException(e,""); } finally { if( transport != null ) { try{
+   * transport.close(); }catch(Exception e){} } } }
    */
 
   class ByteArrayDataSource implements DataSource {
@@ -390,8 +357,7 @@ public class SMTPListener extends AbstractListener {
     }
 
     /**
-     * Return an InputStream for the data. Note - a new stream must be returned
-     * each time.
+     * Return an InputStream for the data. Note - a new stream must be returned each time.
      */
     public InputStream getInputStream() throws IOException {
       if (data == null)

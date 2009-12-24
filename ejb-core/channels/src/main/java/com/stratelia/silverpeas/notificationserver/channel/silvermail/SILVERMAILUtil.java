@@ -32,8 +32,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -44,8 +42,6 @@ public class SILVERMAILUtil {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SILVERMAILUtil(String userId, String language) {
@@ -55,12 +51,8 @@ public class SILVERMAILUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param folderName
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getFolderMessageList(String folderName)
@@ -71,12 +63,8 @@ public class SILVERMAILUtil {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param resName
-   * 
    * @return
-   * 
    * @see
    */
   public String getString(String resName) {

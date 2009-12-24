@@ -32,7 +32,6 @@ package com.stratelia.silverpeas.notificationserver.channel.server;
  */
 
 /**
- * 
  * @author neysseri
  * @version
  */
@@ -43,8 +42,8 @@ public class SilverMessage {
   private String m_ID = null;
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public SilverMessage(String what, String content) {
     this.m_What = what;
@@ -52,8 +51,8 @@ public class SilverMessage {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public SilverMessage(String what) {
     this.m_What = what;
@@ -61,40 +60,39 @@ public class SilverMessage {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getWhat return what
+   * -------------------------------------------------------------------------- getWhat return what
    */
   public String getWhat() {
     return m_What;
   };
 
   /**
-   * --------------------------------------------------------------------------
-   * getContent return content
+   * -------------------------------------------------------------------------- getContent return
+   * content
    */
   public String getContent() {
     return m_Content;
   };
 
   /**
-   * --------------------------------------------------------------------------
-   * setContent set the content
+   * -------------------------------------------------------------------------- setContent set the
+   * content
    */
   public void setContent(String content) {
     m_Content = content;
   };
 
   /**
-   * --------------------------------------------------------------------------
-   * setContent set the ID
+   * -------------------------------------------------------------------------- setContent set the
+   * ID
    */
   public void setID(String ID) {
     m_ID = ID;
   };
 
   /**
-   * --------------------------------------------------------------------------
-   * setContent get the ID
+   * -------------------------------------------------------------------------- setContent get the
+   * ID
    */
   public String getID() {
     return m_ID;

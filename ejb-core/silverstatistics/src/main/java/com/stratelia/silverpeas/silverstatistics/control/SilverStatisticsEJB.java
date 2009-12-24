@@ -45,8 +45,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author SLR
  */
 
@@ -59,15 +57,10 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
    * @param data
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void putStats(String typeOfStats, String data) {
@@ -89,7 +82,7 @@ public class SilverStatisticsEJB implements SessionBean {
       } catch (SQLException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "silverstatistics.MSG_ALIMENTATION_BD", "typeOfStats = "
-                + typeOfStats + ", dataArray = " + dataArray, e);
+            + typeOfStats + ", dataArray = " + dataArray, e);
       } catch (StatisticsRuntimeException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "MSG_CONNECTION_BD");
@@ -100,8 +93,8 @@ public class SilverStatisticsEJB implements SessionBean {
     } else {
       SilverTrace
           .error("silverstatistics", "SilverStatisticsEJB.putStats",
-              "MSG_CONFIG_DATAS", "data en entree=" + data + " pour "
-                  + typeOfStats);
+          "MSG_CONFIG_DATAS", "data en entree=" + data + " pour "
+          + typeOfStats);
     }
   }
 
@@ -115,10 +108,7 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -134,10 +124,7 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -153,8 +140,6 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SilverStatisticsEJB() {
@@ -162,8 +147,6 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbCreate() {
@@ -171,8 +154,6 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -180,8 +161,6 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -189,8 +168,6 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -198,10 +175,7 @@ public class SilverStatisticsEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {

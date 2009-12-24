@@ -33,21 +33,15 @@ import javax.ejb.EJBHome;
 
 /**
  * Interface declaration
- * 
- * 
  * @author SLR
  */
 public interface SilverStatisticsHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   SilverStatistics create() throws RemoteException, CreateException;

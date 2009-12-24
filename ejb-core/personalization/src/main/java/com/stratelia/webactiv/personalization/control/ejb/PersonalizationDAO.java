@@ -33,23 +33,18 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PersonalizationDAO {
 
-  public static final String PERSONALCOLUMNNAMES = "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, onlineEditingStatus, webdavEditingStatus";
+  public static final String PERSONALCOLUMNNAMES =
+      "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, onlineEditingStatus, webdavEditingStatus";
   public static final String PERSONALTABLENAME = "Personalization";
 
   /**
    * Method declaration
-   * 
-   * 
    * @param str
-   * 
    * @return
-   * 
    * @see
    */
   private static Vector String2Vector(String str) {
@@ -70,12 +65,8 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param vector
-   * 
    * @return
-   * 
    * @see
    */
   private static String Vector2String(Vector vector) {
@@ -90,14 +81,9 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static PersonalizeDetail getPersonalizeDetailFromResultSet(
@@ -128,10 +114,10 @@ public class PersonalizationDAO {
     SilverTrace.info("personalization",
         "PersonalizationDAO.getPersonalizeDetailFromResultSet()",
         "root.MSG_GEN_PARAM_VALUE", "thesaurusStatus = "
-            + new Boolean(thesaurusStatus).toString() + ", dragDropStatus = "
-            + new Boolean(dragDropStatus).toString()
-            + ", onlineEditingStatus = "
-            + new Boolean(onlineEditingStatus).toString());
+        + new Boolean(thesaurusStatus).toString() + ", dragDropStatus = "
+        + new Boolean(dragDropStatus).toString()
+        + ", onlineEditingStatus = "
+        + new Boolean(onlineEditingStatus).toString());
     PersonalizeDetail result = new PersonalizeDetail(String2Vector(languages),
         look, personalWS, thesaurusStatus, dragDropStatus, onlineEditingStatus,
         webdavEditingStatus);
@@ -140,15 +126,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static PersonalizeDetail getPersonalizeDetail(Connection con,
@@ -182,14 +163,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param languages
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void setLanguages(Connection con, String userId,
@@ -231,14 +208,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param look
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void setFavoriteLook(Connection con, String userId, String look)
@@ -263,14 +236,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param thesaurusStatus
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void setThesaurusStatus(Connection con, String userId,
@@ -297,14 +266,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param thesaurusStatus
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void setDragAndDropStatus(Connection con, String userId,
@@ -331,14 +296,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param onlineEditingStatus
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void setOnlineEditingStatus(Connection con, String userId,
@@ -365,14 +326,10 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param webdavEditingStatus
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void setWebdavEditingStatus(Connection con, String userId,
@@ -399,16 +356,12 @@ public class PersonalizationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param userId
    * @param languages
    * @param look
    * @param thesaurusStatus
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void insertPersonalizeDetail(Connection con, String userId,

@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -58,7 +56,7 @@ public class ZipManager {
    * @throws IOException
    */
   public static long compressPathToZip(String filename, String outfilename)
-          throws FileNotFoundException, IOException {
+      throws FileNotFoundException, IOException {
     ZipOutputStream zos = null;
     File file = new File(filename);
     try {
@@ -88,7 +86,7 @@ public class ZipManager {
         File[] listcontenuPath = file.listFiles();
         for (File file1 : listcontenuPath) {
           compressPathToZip(file1.getPath(), file.getName() + File.separatorChar
-                  + file1.getName(), outfilename, zos);
+              + file1.getName(), outfilename, zos);
         }
       }
       zos.close();
@@ -114,8 +112,8 @@ public class ZipManager {
    * @throws IOException
    */
   private static void compressPathToZip(String filename, String fileToCreate,
-          String outfilename, ZipOutputStream zos) throws FileNotFoundException,
-          IOException {
+      String outfilename, ZipOutputStream zos) throws FileNotFoundException,
+      IOException {
     File file = new File(filename);
     if (file.isFile()) // cas fichier
     {
@@ -133,11 +131,11 @@ public class ZipManager {
     } else {
       String[] listContenuStringPath = file.list();
       List<File> listcontenuPath = ZipManager.convertListStringToListFile(
-              listContenuStringPath, file.getPath());
+          listContenuStringPath, file.getPath());
       for (File file1 : listcontenuPath) {
         compressPathToZip(file1.getPath(), fileToCreate
-                + File.separator + file1.getName(),
-                outfilename, zos);
+            + File.separator + file1.getName(),
+            outfilename, zos);
       }
     }
   }
@@ -150,7 +148,7 @@ public class ZipManager {
    * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private static List<File> convertListStringToListFile(String[] listFileName,
-          String path) {
+      String path) {
     List<File> listFile = new ArrayList<File>();
     if (listFileName == null) {
       return null;
@@ -172,8 +170,8 @@ public class ZipManager {
    * @throws IOException
    */
   public static void compressStreamToZip(InputStream inputStream,
-          String filePathNameToCreate, String outfilename)
-          throws FileNotFoundException, IOException {
+      String filePathNameToCreate, String outfilename)
+      throws FileNotFoundException, IOException {
 
     FileOutputStream os = null;
     ZipOutputStream zos = null;
@@ -214,11 +212,11 @@ public class ZipManager {
   public static void extract(File source, File dest) throws UtilException {
     if (source == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
-              "util.EXE_SOURCE_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
+          "util.EXE_SOURCE_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
     if (dest == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
-              "util.EXE_DESTINATION_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
+          "util.EXE_DESTINATION_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
     extractFile(source, dest);
   }
@@ -257,20 +255,20 @@ public class ZipManager {
           }
         } catch (FileNotFoundException ex) {
           SilverTrace.warn("util", "ZipManager.extractFile()",
-                  "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
+              "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
         }
       }
     } catch (IOException ioe) {
       SilverTrace.warn("util", "ZipManager.extractFile()",
-              "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
-              + srcF.getPath(), ioe);
+          "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
+          + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
           zf.close();
         } catch (IOException e) {
           SilverTrace.warn("util", "ZipManager.expandFile()",
-                  "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
+              "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
         }
       }
     }
@@ -294,15 +292,15 @@ public class ZipManager {
       }
     } catch (IOException ioe) {
       SilverTrace.warn("util", "ZipManager.getNbFiles()",
-              "util.EXE_ERROR_WHILE_COUNTING_FILE", "sourceFile = "
-              + srcF.getPath(), ioe);
+          "util.EXE_ERROR_WHILE_COUNTING_FILE", "sourceFile = "
+          + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
           zf.close();
         } catch (IOException e) {
           SilverTrace.warn("util", "ZipManager.getNbFiles()",
-                  "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
+              "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
         }
       }
     }

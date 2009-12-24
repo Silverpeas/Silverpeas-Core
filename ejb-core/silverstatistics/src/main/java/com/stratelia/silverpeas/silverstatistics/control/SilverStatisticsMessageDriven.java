@@ -70,20 +70,15 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class SilverStatisticsMessageDriven implements MessageDrivenBean,
-    MessageListener {
+public class SilverStatisticsMessageDriven implements MessageDrivenBean, MessageListener {
   private StatisticsConfig myStatsConfig;
   private SilverStatistics silverStatistics = null;
   private MessageDrivenContext ctx;
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbCreate() {
@@ -91,8 +86,6 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -100,10 +93,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setMessageDrivenContext(MessageDrivenContext sc) {
@@ -127,10 +117,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param m
-   * 
    * @see ejbjar.xml for transaction management
    */
   public void onMessage(Message m) {
@@ -172,8 +159,8 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean,
         } else {
           SilverTrace
               .error("silverstatistics",
-                  "SilverStatisticsMessageDriven.onMessage", "Mauvais message",
-                  msg);
+              "SilverStatisticsMessageDriven.onMessage", "Mauvais message",
+              msg);
         }
       }
     } catch (Exception e) {
@@ -184,10 +171,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private SilverStatistics getSilverStatistics() {
@@ -195,7 +179,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean,
       try {
         SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME,
-                SilverStatisticsHome.class);
+            SilverStatisticsHome.class);
 
         silverStatistics = silverStatisticsHome.create();
       } catch (Exception e) {

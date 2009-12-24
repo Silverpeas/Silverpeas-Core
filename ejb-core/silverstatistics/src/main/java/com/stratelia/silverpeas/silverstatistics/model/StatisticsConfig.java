@@ -38,8 +38,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author SLR
  */
 
@@ -65,8 +63,6 @@ public class StatisticsConfig {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public StatisticsConfig() {
@@ -75,12 +71,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws SilverStatisticsConfigException
-   * 
    * @see
    */
   public int init() throws SilverStatisticsConfigException {
@@ -197,12 +189,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getAllKeys(String typeOfStats) {
@@ -212,13 +200,9 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
    * @param keyName
-   * 
    * @return
-   * 
    * @see
    */
   public String getKeyType(String typeOfStats, String keyName) {
@@ -228,12 +212,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
-   * 
    * @return
-   * 
    * @see
    */
   public String getTableName(String typeOfStats) {
@@ -243,12 +223,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
-   * 
    * @return
-   * 
    * @see
    */
   public String getModeCumul(String typeOfStats) {
@@ -258,12 +234,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isRun(String typeOfStats) {
@@ -281,12 +253,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param idFamilyStats
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isExist(String idFamilyStats) {
@@ -295,12 +263,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param idFamilyStats
-   * 
    * @return
-   * 
    * @see
    */
   public int getNumberOfKeys(String idFamilyStats) {
@@ -310,13 +274,9 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
    * @param keyName
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isCumulKey(String typeOfStats, String keyName) {
@@ -326,13 +286,9 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param StatsType
    * @param keyName
-   * 
    * @return
-   * 
    * @see
    */
   public int indexOfKey(String StatsType, String keyName) {
@@ -342,10 +298,7 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getAllTypes() {
@@ -354,12 +307,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
-   * 
    * @return
-   * 
    * @see
    */
   public int getPurge(String typeOfStats) {
@@ -368,10 +317,7 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isValidConfigFile() {
@@ -403,13 +349,9 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param typeOfStats
    * @param dataArray
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isGoodDatas(String typeOfStats, ArrayList dataArray) {
