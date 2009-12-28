@@ -79,6 +79,7 @@ public class ZipManagerTest {
     int nbEntries = 0;
     while (entries.hasMoreElements()) {
       ZipEntry entry = entries.nextElement();
+      System.out.println("Compressed entry: " + entry.getName());
       nbEntries++;
     }
     assertEquals(5, nbEntries);

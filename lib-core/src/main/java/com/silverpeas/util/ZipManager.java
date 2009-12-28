@@ -151,7 +151,7 @@ public class ZipManager {
       String path) {
     List<File> listFile = new ArrayList<File>();
     if (listFileName == null) {
-      return null;
+      return listFile;
     }
     for (String fileName : listFileName) {
       listFile.add(new File(path + File.separator + fileName));
@@ -161,7 +161,7 @@ public class ZipManager {
 
   /**
    * Méthode permettant la création et l'organisation d'un fichier zip en lui passant directement
-   * un flux d'entrée TODO: A TESTER!!
+   * un flux d'entrée
    * @param inputStream - flux de données à enregistrer dans le zip
    * @param filePathNameToCreate - chemin et nom du fichier porté par les données du flux dans le
    * zip
