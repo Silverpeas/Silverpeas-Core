@@ -44,8 +44,9 @@ import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.jasig.cas.client.util.AbstractCasFilter;
+import org.jasig.cas.client.validation.Assertion;
 
-import edu.yale.its.tp.cas.client.filter.CASFilter;
 
 /**
  * The class AuthenticationServlet is called to authenticate user in Silverpeas
@@ -87,7 +88,10 @@ public class AuthenticationServlet extends HttpServlet {
     }
 
     // CAS authentication
-    String casUser = (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
+    String casUser = null;
+    if(session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION) != null) {
+      casUser = ((Assertion) session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION)).getPrincipal().getName();
+    }   
     boolean casMode = (casUser != null);
 
     String stringKey = convert2Alpha(session.getId());
