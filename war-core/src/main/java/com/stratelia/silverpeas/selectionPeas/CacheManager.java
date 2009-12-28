@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
@@ -46,10 +47,10 @@ abstract public class CacheManager {
   public final static int CM_ELEMENT = 1;
   public final static int CM_NBTOT = 2;
 
-  protected Hashtable m_ElementCache = new Hashtable();
-  protected Hashtable m_SetCache = new Hashtable();
-  protected HashSet m_SelectedElements = new HashSet();
-  protected HashSet m_SelectedSets = new HashSet();
+  protected Hashtable<String, PanelLine> m_ElementCache = new Hashtable<String, PanelLine>();
+  protected Hashtable<String, PanelLine> m_SetCache = new Hashtable<String, PanelLine>();
+  protected HashSet<String> m_SelectedElements = new HashSet<String>();
+  protected HashSet<String> m_SelectedSets = new HashSet<String>();
   protected ResourceLocator m_Local = null;
   protected ResourceLocator m_Global = null;
   protected ResourceLocator m_Icon = null;
@@ -133,17 +134,17 @@ abstract public class CacheManager {
   }
 
   public void unselectAll() {
-    Enumeration en;
+    Enumeration<PanelLine> en;
 
     en = getCache(CM_SET).elements();
     while (en.hasMoreElements()) {
-      ((PanelLine) en.nextElement()).m_Selected = false;
+      en.nextElement().m_Selected = false;
     }
     getSelected(CM_SET).clear();
 
     en = getCache(CM_ELEMENT).elements();
     while (en.hasMoreElements()) {
-      ((PanelLine) en.nextElement()).m_Selected = false;
+      en.nextElement().m_Selected = false;
     }
     getSelected(CM_ELEMENT).clear();
   }
@@ -165,7 +166,9 @@ abstract public class CacheManager {
   public void setSelected(int what, String[] ids, boolean isSelected) {
     if (ids != null) {
       for (int i = 0; i < ids.length; i++) {
-        setSelected(what, ids[i], isSelected);
+        if (StringUtil.isDefined(ids[i])) {
+          setSelected(what, ids[i], isSelected);
+        }
       }
     }
   }
@@ -179,33 +182,33 @@ abstract public class CacheManager {
   }
 
   public PanelLine[] getSelectedLines(int what) {
-    Enumeration en = getCache(what).elements();
-    ArrayList ar = new ArrayList();
+    Enumeration<PanelLine> en = getCache(what).elements();
+    ArrayList<PanelLine> ar = new ArrayList<PanelLine>();
     PanelLine parc;
     PanelLine[] valret;
 
     while (en.hasMoreElements()) {
-      parc = (PanelLine) en.nextElement();
+      parc = en.nextElement();
       if (parc.m_Selected) {
         ar.add(parc);
       }
     }
     valret = (PanelLine[]) ar.toArray(new PanelLine[0]);
     Arrays.sort(valret, new Comparator() {
-        public int compare(Object o1, Object o2) {
+      public int compare(Object o1, Object o2) {
         return ((PanelLine) o1).m_Values[0].toUpperCase().compareTo(
             ((PanelLine) o2).m_Values[0].toUpperCase());
-        }
+      }
 
       public boolean equals(Object o) {
         return false;
-        }
+      }
 
     });
     return valret;
   }
 
-  protected Hashtable getCache(int what) {
+  protected Hashtable<String, PanelLine> getCache(int what) {
     if (what == CM_SET) {
       return m_SetCache;
     } else if (what == CM_ELEMENT) {
@@ -215,7 +218,7 @@ abstract public class CacheManager {
     }
   }
 
-  protected HashSet getSelected(int what) {
+  protected HashSet<String> getSelected(int what) {
     if (what == CM_SET) {
       return m_SelectedSets;
     } else if (what == CM_ELEMENT) {
