@@ -71,9 +71,10 @@ public class ZipManagerTest {
             + "test-classes" + File.separatorChar + "ZipSample";
     String outfilename = base + File.separatorChar + "target" + File.separatorChar
             + "temp" + File.separatorChar + "testCompressPathToZip.zip";
-    long expResult = 806L;
+    long expResult = 800L;
     long result = ZipManager.compressPathToZip(path, outfilename);
-    assertEquals(expResult, result);
+    assertTrue(expResult - 200L < result);
+    assertTrue(result < expResult + 200L);
     ZipFile zipFile = new ZipFile(new File(outfilename));
     Enumeration<? extends ZipEntry> entries = zipFile.entries();
     int nbEntries = 0;
