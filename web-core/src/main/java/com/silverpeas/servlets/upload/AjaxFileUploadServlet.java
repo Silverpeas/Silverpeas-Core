@@ -93,7 +93,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       session.setAttribute("FILE_UPLOAD_PATHS", paths);
       for (Iterator i = items.iterator(); i.hasNext();) {
         FileItem fileItem = (FileItem) i.next();
-        if (!fileItem.isFormField()) {
+        if (!fileItem.isFormField() && fileItem.getSize() > 0L) {
           String filename = fileItem.getName();
           if (filename.indexOf('/') >= 0) {
             filename = filename.substring(filename.lastIndexOf('/') + 1);
