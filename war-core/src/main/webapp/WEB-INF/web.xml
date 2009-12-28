@@ -94,11 +94,6 @@
     <servlet-class>com.stratelia.silverpeas.servlets.AuthenticationServlet</servlet-class>
   </servlet>
   <servlet>
-    <display-name>AuthenticationNTLMServlet</display-name>
-    <servlet-name>AuthenticationNTLMServlet</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.servlets.AuthenticationNTLMServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>CredentialsServlet</servlet-name>
     <display-name>CredentialsServlet</display-name>
     <description>no description</description>
@@ -491,10 +486,6 @@
   <servlet-mapping>
     <servlet-name>CredentialsServlet</servlet-name>
     <url-pattern>/CredentialsServlet/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AuthenticationNTLMServlet</servlet-name>
-    <url-pattern>/AuthenticationNTLM</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>FileServer</servlet-name>
