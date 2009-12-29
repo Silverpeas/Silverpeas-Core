@@ -32,16 +32,16 @@ public class TagCloudUtil {
   // For each line, the characters contained in the first string has to be
   // replaced by the
   // character of the second string.
-	private static final String[][] TAG_DATA = {
-    {"(Ç)", 			"C"},
-    {"(À|Á|Â|Ã|Ä|Å|Æ)", "A"},
-    {"(È|É|Ê|Ë)", 		"E"},
-    {"(Ì|Í|Î|Ï)", 		"I"},
-    {"(Ò|Ó|Ô|Õ|Ö)", 	"O"},
-    {"(Ù|Ú|Û|Ü)", 		"U"},
-    {"(Ý)", 			"Y"}
-	};
-	
+  private static final String[][] TAG_DATA = {
+      { "(Ç)", "C" },
+      { "(À|Á|Â|Ã|Ä|Å|Æ)", "A" },
+      { "(È|É|Ê|Ë)", "E" },
+      { "(Ì|Í|Î|Ï)", "I" },
+      { "(Ò|Ó|Ô|Õ|Ö)", "O" },
+      { "(Ù|Ú|Û|Ü)", "U" },
+      { "(Ý)", "Y" }
+      };
+
   /**
    * @param s The string to convert into a valid tag.
    * @return The tag corresponding to the string given as parameter.
