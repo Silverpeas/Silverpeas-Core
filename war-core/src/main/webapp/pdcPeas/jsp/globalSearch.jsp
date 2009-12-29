@@ -199,6 +199,7 @@ List 			choiceNbResToDisplay = (List) request.getAttribute("ChoiceNbResToDisplay
 Integer			nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer			sortValue			= (Integer) request.getAttribute("SortValue");
 String			sortOrder			= (String) request.getAttribute("SortOrder");
+List			webTabs				= (List) request.getAttribute("WebTabs");
 
 boolean isXmlSearchVisible = false;
 if (XmlSearch != null)
@@ -592,6 +593,14 @@ if (!isPDCSubscription) {
 	
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "LastResults", searchType==0);
+	if (webTabs != null)
+	{
+		for (int i=0; i<webTabs.size(); i++)
+		{
+			GoogleTab webTab = (GoogleTab) webTabs.get(i);
+			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
+		}
+	}
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);
 	if ( isXmlSearchVisible )

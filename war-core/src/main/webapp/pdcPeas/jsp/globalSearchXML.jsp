@@ -34,6 +34,7 @@ List 				xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
 PagesContext		context		= (PagesContext) request.getAttribute("context"); 
+List				webTabs		= (List) request.getAttribute("WebTabs");
 
 Form form = null;
 String selectedTemplate = null;
@@ -97,6 +98,14 @@ function viewXmlSearch(){
 
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "LastResults", false);
+	if (webTabs != null)
+	{
+		for (int i=0; i<webTabs.size(); i++)
+		{
+			GoogleTab webTab = (GoogleTab) webTabs.get(i);
+			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
+		}
+	}
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
 	tabs.addTab(resource.getString("pdcPeas.SearchXml"), "#", true);	
