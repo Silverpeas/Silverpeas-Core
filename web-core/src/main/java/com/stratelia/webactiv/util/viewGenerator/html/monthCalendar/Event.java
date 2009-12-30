@@ -56,6 +56,7 @@ public class Event extends Object {
   private String place = null;
   private String color = null;
   private String instanceId = null;
+  private String tooltip = null;
 
   /**
    * Creates new Event
@@ -73,6 +74,7 @@ public class Event extends Object {
     this.place = event.getPlace();
     this.color = event.getColor();
     this.instanceId = event.getInstanceId();
+    this.tooltip = event.getTooltip();
   }
 
   private void init(String id, String name, Date sDate, Date eDate, String url,
@@ -394,4 +396,11 @@ public class Event extends Object {
     this.instanceId = instanceId;
   }
 
+  public String getTooltip() {
+    return tooltip;
+  }
+
+  public void setTooltip(String tooltip) {
+    this.tooltip = tooltip;
+  }
 }

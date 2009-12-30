@@ -21,18 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * MonthCalendarWA1.java
- * this class inplement monthCalendar viewGenerator
- * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar
- * Created on 18 juin 2001, 10:26
- * @author Jean-Claude GROCCIA
- * jgroccia@silverpeas.com
- */
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -332,9 +324,19 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
             html.append("<a href=\"javascript:onClick=clickEvent(").append(
                 evt[z].getId()).append(", '");
             html.append(DateUtil.date2SQLDate(day.getDate())).append("', '");
-            html.append(evt[z].getInstanceId()).append("')\" title=\"").append(
-                EncodeHelper.javaStringToHtmlString(evt[z].getName())).append(
-                "\">").append(title).append("</a>");
+            html.append(evt[z].getInstanceId()).append("')\"");
+            if (StringUtil.isDefined(evt[z].getTooltip())) {
+              html.append(" onmouseover=\"return overlib('").append(
+                  EncodeHelper.javaStringToJsString(evt[z].getTooltip())).append("', CAPTION, '")
+                  .append(
+                  EncodeHelper.javaStringToJsString(evt[z].getName())).append(
+                  "');\" onmouseout=\"return nd();\">");
+            } else {
+              html.append(" title=\"")
+                  .append(EncodeHelper.javaStringToHtmlString(evt[z].getName()))
+                  .append("\">");
+            }
+            html.append(title).append("</a>");
             if (evt[z].getStartHour() != null
                 && evt[z].getStartHour().length() > 0) {
               html.append("&nbsp;(").append(evt[z].getStartHour());
