@@ -41,7 +41,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
+/**
+ * Utility class for file uploading.
+ * @author ehugonnet
+ */
 public class FileUploadUtil {
 
   public static final boolean isRequestMultipart(HttpServletRequest request) {

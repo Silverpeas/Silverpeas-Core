@@ -212,7 +212,9 @@ public class AjaxFileUploadServlet extends HttpServlet {
       pathBuilder.append(path.replace("\\", "\\\\").replace("'", "\\'"));
       pathBuilder.append("',");
     }
-    pathBuilder.deleteCharAt(pathBuilder.length() - 1);
+    if(! paths.isEmpty()) {
+      pathBuilder.deleteCharAt(pathBuilder.length() - 1);
+    }
     pathBuilder.append(']');
     return pathBuilder.toString();
   }

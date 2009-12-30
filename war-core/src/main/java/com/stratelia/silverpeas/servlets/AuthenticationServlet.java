@@ -59,6 +59,7 @@ public class AuthenticationServlet extends HttpServlet {
   /**
    * Method invoked when called from a form or directly by URL
    */
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     // Get the session
@@ -96,7 +97,7 @@ public class AuthenticationServlet extends HttpServlet {
 
     String stringKey = convert2Alpha(session.getId());
     // New field names in login form
-    boolean isNewEncryptMode = (request.getParameter("Var2") != null);
+    boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
 
     String sLogin;
     String sPassword;
@@ -149,9 +150,12 @@ public class AuthenticationServlet extends HttpServlet {
       sDecodedPassword = ((sCryptedPassword == null || sCryptedPassword
           .length() == 0) ? sPassword : decode(sPassword));
     }
-    session.setAttribute("Silverpeas_pwdForHyperlink", sDecodedPassword);
-
+    session.setAttribute("Silverpeas_pwdForHyperlink", sDecodedPassword);    
     String sDomainId = request.getParameter("DomainId");
+    if(casMode) {
+      sDomainId = authenticationSettings.getString("cas.authentication.domainId", "0");
+    }
+
     String testKey = request.getParameter("TestKey");
     String authentificationKey = null;
     if (!StringUtil.isDefined(testKey)) {

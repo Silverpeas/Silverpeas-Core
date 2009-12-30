@@ -39,8 +39,8 @@ public class StringUtil {
       "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
 
   public static boolean isDefined(String parameter) {
-    return (parameter != null && parameter.length() > 0 && !parameter
-        .equalsIgnoreCase("null"));
+    return (parameter != null && parameter.length() > 0 && !"null"
+        .equalsIgnoreCase(parameter));
   }
 
   public static boolean isInteger(String id) {

@@ -44,9 +44,9 @@ public class KeyStoreTable extends Table {
   protected KeyStoreRow fetchKeyStore(ResultSet rs) throws SQLException {
     KeyStoreRow k = new KeyStoreRow();
 
-    k.key = rs.getInt(1);
-    k.login = rs.getString(2);
-    k.domainId = rs.getInt(3);
+    k.key = rs.getInt("userKey");
+    k.login = rs.getString("login");
+    k.domainId = rs.getInt("domainId");
 
     return k;
   }

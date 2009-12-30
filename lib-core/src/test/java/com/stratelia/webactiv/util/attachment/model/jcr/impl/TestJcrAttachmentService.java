@@ -126,7 +126,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     service.createAttachment(attachment, "en");
     Session session = null;
     try {
-      session = BasicDaoFactory.getAuthentifiedSession("bsimpson", "bart");
+      session = BasicDaoFactory.getSystemSession();
       Node pathNode = session.getRootNode().getNode("attachments");
       assertNotNull(pathNode);
       assertEquals("nt:folder", pathNode.getPrimaryNodeType().getName());
@@ -198,7 +198,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     service.createAttachment(attachment, null);
     Session session = null;
     try {
-      session = BasicDaoFactory.getAuthentifiedSession("bsimpson", "bart");
+      session = BasicDaoFactory.getSystemSession();
       Node pathNode = session.getRootNode().getNode("attachments");
       assertNotNull(pathNode);
       assertEquals("nt:folder", pathNode.getPrimaryNodeType().getName());
@@ -269,7 +269,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     service.createAttachment(attachment, I18NHelper.defaultLanguage);
     Session session = null;
     try {
-      session = BasicDaoFactory.getAuthentifiedSession("bsimpson", "bart");
+      session = BasicDaoFactory.getSystemSession();
       Node content = session.getRootNode().getNode(
           "attachments/" + instanceId + "/"
               + "Attachment/tests/simpson/bart/100/test_update.txt/jcr:content");
@@ -313,7 +313,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     service.deleteAttachment(attachment, null);
     Session session = null;
     try {
-      session = BasicDaoFactory.getAuthentifiedSession("bsimpson", "bart");
+      session = BasicDaoFactory.getSystemSession();
       Node pathNode = session.getRootNode().getNode("attachments");
       assertNotNull(pathNode);
       assertEquals("nt:folder", pathNode.getPrimaryNodeType().getName());
