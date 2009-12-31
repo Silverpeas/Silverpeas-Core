@@ -29,6 +29,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.importExport.report.ExportPDFReport;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.importExport.report.ImportReport;
@@ -40,9 +42,11 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.apache.commons.fileupload.FileItem;
+import com.stratelia.webactiv.util.WAAttributeValuePair;
 
 public class ImportExportRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 1L;
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -72,13 +76,13 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC; // get
-                                                                                                // the
-                                                                                                // session
-                                                                                                // controller
-                                                                                                // to
-                                                                                                // inform
-                                                                                                // the
-                                                                                                // request
+    // the
+    // session
+    // controller
+    // to
+    // inform
+    // the
+    // request
     String destination = "";
 
     try {
@@ -98,25 +102,34 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
         }
         ImportReport importReport =
             importExportSC.processImport(file.getAbsolutePath(), (ResourcesWrapper) request
-                .getAttribute("resources"));
+            .getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
       } else if (function.equals("ExportItems")) {
-        List itemPKs = (List) request.getAttribute("selectedResultsWa");
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
 
         if (itemPKs != null && itemPKs.size() > 0) {
-          ExportReport report =
-              importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
+          importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
+
+          destination = "/importExportPeas/jsp/pingExport.jsp";
+        } else {
+          destination = "/importExportPeas/jsp/nothingToExport.jsp";
+        }
+      } else if ("ExportItemsPing".equals(function)) {
+        if (importExportSC.isExportInProgress()) {
+          destination = "/importExportPeas/jsp/pingExport.jsp";
+        } else {
+          ExportReport report = importExportSC.getExportReport();
 
           request.setAttribute("ExportReport", report);
 
           destination = "/importExportPeas/jsp/downloadZip.jsp";
-        } else {
-          destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("ExportPDF")) {
-        List itemPKs = (List) request.getAttribute("selectedResultsWa");
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
 
         if (itemPKs != null && itemPKs.size() > 0) {
@@ -134,7 +147,8 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportComponent")) {
-        List itemPKs = (List) request.getAttribute("selectedResultsWa");
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         if (itemPKs != null && itemPKs.size() > 0) {
           ExportReport report =
               importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, null, null);
@@ -144,14 +158,15 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportPublications")) {
-        List itemPKs = (List) request.getAttribute("selectedResultsWa");
+        List<WAAttributeValuePair> itemPKs =
+            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         ArrayList combination = (ArrayList) request.getAttribute("Combination");
         String timeCriteria = (String) request.getAttribute("TimeCriteria");
 
         if (itemPKs != null && itemPKs.size() > 0) {
           ExportReport report =
               importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, combination,
-                  timeCriteria);
+              timeCriteria);
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {

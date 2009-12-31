@@ -34,15 +34,21 @@ import com.silverpeas.importExport.report.ImportReport;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.WAAttributeValuePair;
 
 /**
  * @author neysseri
  */
 public class ImportExportSessionController extends AbstractComponentSessionController {
+
+  ExportThread m_theThread = null;
+  Exception m_ErrorOccured = null;
+  ExportReport m_ExportReport = null;
+
   public ImportExportSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext, String multilangBundle,
-      String iconBundle) {
+      ComponentContext componentContext, String multilangBundle, String iconBundle) {
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
   }
 
@@ -62,14 +68,47 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    * (objectId and instanceId)
    * @throws ImportExportException
    */
-  public ExportReport processExport(String language, List itemsToExport,
-      String rootId) throws ImportExportException {
-    ImportExport importExport = new ImportExport();
+  public void processExport(String language, List<WAAttributeValuePair> itemsToExport, String rootId)
+      throws ImportExportException {
+    SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
+        "root.MSG_GEN_ENTER_METHOD");
+    if (m_theThread == null) {
+      m_theThread = new ExportXMLThread(this, itemsToExport, language, rootId);
+      m_ErrorOccured = null;
+      m_ExportReport = null;
+      m_theThread.startTheThread();
+      SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
+          "root.MSG_GEN_PARAM_VALUE", "------------THREAD EXPORT LANCE-----------");
+    } else {
+      SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
+          "root.MSG_GEN_PARAM_VALUE", "------------!!!! EXPORT : DEUXIEME APPEL !!!!!-----------");
+    }
+  }
 
-    ExportReport report = importExport.processExport(getUserDetail(), language,
-        itemsToExport, rootId);
+  public boolean isExportInProgress() {
+    if (m_theThread == null) {
+      return false;
+    } else {
+      return m_theThread.isEnCours();
+    }
+  }
 
-    return report;
+  public Exception getErrorOccured() {
+    return m_ErrorOccured;
+  }
+
+  public ExportReport getExportReport() {
+    if (m_ErrorOccured != null) {
+      return new ExportReport();
+    } else {
+      return m_ExportReport;
+    }
+  }
+
+  public void threadFinished() {
+    m_ErrorOccured = m_theThread.getErrorOccured();
+    m_ExportReport = m_theThread.getReport();
+    m_theThread = null;
   }
 
   /**
@@ -82,7 +121,8 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    * @return
    * @throws ImportExportException
    */
-  public ExportPDFReport processExportPDF(String language, List itemsToExport,
+  public ExportPDFReport processExportPDF(String language,
+      List<WAAttributeValuePair> itemsToExport,
       String rootId) throws ImportExportException {
     ImportExport importExport = new ImportExport();
 
@@ -99,7 +139,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    * @param timeCriteria
    * @throws ImportExportException
    */
-  public ExportReport processExportKmax(String language, List itemsToExport,
+  public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
       ArrayList combination, String timeCriteria) throws ImportExportException {
     ImportExport importExport = new ImportExport();
     ExportReport report = importExport.processExportKmax(getUserDetail(),
