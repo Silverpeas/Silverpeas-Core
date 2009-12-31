@@ -44,6 +44,9 @@ import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
  * A QueryDescription packs a query with the different spaces and components to be searched.
  */
 public class QueryDescription implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
+  
   /**
    * The no parameters constructor builds an empty query. The setQuery and addSpaceComponentPair()
    * methods should be called to initialize the query. Other criterium (language, creation date ...)
@@ -129,7 +132,7 @@ public class QueryDescription implements Serializable {
    * Return the set of all the component's instances whose the documents must be searched. The
    * return Set is a set of SpaceComponentPair.
    */
-  public Set getSpaceComponentPairSet() {
+  public Set<SpaceComponentPair> getSpaceComponentPairSet() {
     return spaceComponentPairSet;
   }
 
@@ -192,11 +195,11 @@ public class QueryDescription implements Serializable {
     return requestedCreatedAfter;
   }
 
-  public void setXmlQuery(Hashtable xmlQuery) {
+  public void setXmlQuery(Hashtable<String, String> xmlQuery) {
     this.xmlQuery = xmlQuery;
   }
 
-  public Hashtable getXmlQuery() {
+  public Hashtable<String, String> getXmlQuery() {
     return xmlQuery;
   }
 
@@ -208,7 +211,7 @@ public class QueryDescription implements Serializable {
     this.xmlTitle = xmlTitle;
   }
 
-  public List getMultiFieldQuery() {
+  public List<FieldDescription> getMultiFieldQuery() {
     return multiFieldQuery;
   }
 
@@ -222,19 +225,19 @@ public class QueryDescription implements Serializable {
       return;
 
     if (multiFieldQuery == null)
-      multiFieldQuery = new ArrayList();
+      multiFieldQuery = new ArrayList<FieldDescription>();
 
     multiFieldQuery.add(fieldQuery);
   }
 
-  public void addFieldQueries(List fieldQueries) {
+  public void addFieldQueries(List<FieldDescription> fieldQueries) {
     if (multiFieldQuery == null)
-      multiFieldQuery = new ArrayList();
+      multiFieldQuery = new ArrayList<FieldDescription>();
 
     multiFieldQuery.addAll(fieldQueries);
   }
 
-  public void setFieldQueries(List fieldQueries) {
+  public void setFieldQueries(List<FieldDescription> fieldQueries) {
     clearMultiFieldQuery();
     addFieldQueries(fieldQueries);
   }
@@ -273,10 +276,10 @@ public class QueryDescription implements Serializable {
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.util.indexEngine.SpecialChars", "");
 
-      Enumeration replacements = resource.getKeys();
+      Enumeration<String> replacements = resource.getKeys();
 
       while (replacements.hasMoreElements()) {
-        String oldChars = (String) replacements.nextElement();
+        String oldChars = replacements.nextElement();
         String newChars = resource.getString(oldChars);
 
         replacer.setReplacement(oldChars, newChars);
@@ -294,11 +297,16 @@ public class QueryDescription implements Serializable {
     }
   }
 
+  public boolean isPeriodDefined() {
+    return StringUtil.isDefined(requestedCreatedAfter) ||
+        StringUtil.isDefined(requestedCreatedBefore);
+  }
+
   /**
    * The searched components' instance is built empty. To be searched any space or component must be
    * explicitly added with the addSpaceComponent() method. This Set is a set of SpaceComponentPair.
    */
-  private Set spaceComponentPairSet = new HashSet();
+  private Set<SpaceComponentPair> spaceComponentPairSet = new HashSet<SpaceComponentPair>();
 
   /**
    * The query defaults to the empty query. This is an error to set the query to null : a query is
@@ -321,8 +329,8 @@ public class QueryDescription implements Serializable {
   private String requestedAuthor = null;
   private String requestedCreatedBefore = null;
   private String requestedCreatedAfter = null;
-  private Hashtable xmlQuery = null;
+  private Hashtable<String, String> xmlQuery = null;
   private String xmlTitle = null;
-  private List multiFieldQuery = null;
+  private List<FieldDescription> multiFieldQuery = null;
 
 }

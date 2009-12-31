@@ -120,7 +120,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private QueryParameters queryParameters = null; // Current parameters for
   // plain search
   private VersioningUtil versioningUtil = new VersioningUtil();
-  private List componentList = null;
+  private List<String> componentList = null;
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
   private List globalResult = new ArrayList(); // used by global search
@@ -323,7 +323,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "root.MSG_GEN_ENTER_METHOD");
     MatchingIndexEntry[] plainSearchResults = null;
     if (getQueryParameters() != null
-        && (getQueryParameters().getKeywords() != null || getQueryParameters()
+        && (getQueryParameters().isDefined() || getQueryParameters()
         .getXmlQuery() != null)) {
       QueryDescription query = getQueryParameters().getQueryDescription(
           getUserId(), "*");
@@ -683,7 +683,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return sortedResultsToDisplay;
   }
 
-  private void setExtraInfoToResultsToDisplay(List results) {
+  private void setExtraInfoToResultsToDisplay(List<GlobalSilverResult> results) {
     String titleLink = "";
     String downloadLink = "";
     String resultType = "";
@@ -695,7 +695,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     GlobalSilverResult result = null;
     MatchingIndexEntry indexEntry = null;
     for (int r = 0; r < results.size(); r++) {
-      result = (GlobalSilverResult) results.get(r);
+      result = results.get(r);
       indexEntry = result.getIndexEntry();
 
       resultType = indexEntry.getObjectType();
@@ -843,8 +843,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param results - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres d'entrée
    */
-  private List matchingIndexEntries2GlobalSilverResults(
-      List matchingIndexEntries) throws Exception {
+  private List<GlobalSilverResult> matchingIndexEntries2GlobalSilverResults(
+      List<MatchingIndexEntry> matchingIndexEntries) throws Exception {
     SilverTrace
         .info(
         "pdcPeas",
@@ -852,21 +852,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "root.MSG_GEN_ENTER_METHOD");
 
     if (matchingIndexEntries == null || matchingIndexEntries.size() == 0) {
-      return new ArrayList();
+      return new ArrayList<GlobalSilverResult>();
     }
 
     String title = null;
     String place = null;
 
-    LinkedList returnedObjects = new LinkedList();
-    Hashtable places = null;
+    LinkedList<String> returnedObjects = new LinkedList<String>();
+    Hashtable<String, String> places = null;
 
-    ArrayList results = new ArrayList();
+    List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
 
     String componentId = null;
     MatchingIndexEntry result = null;
     for (int i = 0; i < matchingIndexEntries.size(); i++) {
-      result = (MatchingIndexEntry) matchingIndexEntries.get(i);
+      result = matchingIndexEntries.get(i);
 
       // reinitialisation
       title = result.getTitle();
@@ -934,17 +934,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         place = getString("pdcPeas.pdc");
       } else {
         if (places == null) {
-          places = new Hashtable();
+          places = new Hashtable<String, String>();
         }
 
-        place = (String) places.get(componentId);
+        place = places.get(componentId);
 
         if (place == null) {
           ComponentInstLight componentInst = getOrganizationController()
               .getComponentInstLight(componentId);
-          place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
-              + componentInst.getLabel(getLanguage());
-          places.put(componentId, place);
+          if (componentInst != null) {
+            place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
+                + componentInst.getLabel(getLanguage());
+            places.put(componentId, place);
+          }
         }
       }
 
@@ -961,17 +963,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return results;
   }
 
-  private List globalSilverContents2GlobalSilverResults(
-      List globalSilverContents) throws Exception {
+  private List<GlobalSilverResult> globalSilverContents2GlobalSilverResults(
+      List<GlobalSilverContent> globalSilverContents) throws Exception {
     if (globalSilverContents == null || globalSilverContents.size() == 0) {
-      return new ArrayList();
+      return new ArrayList<GlobalSilverResult>();
     }
-    ArrayList results = new ArrayList();
+    List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
     GlobalSilverContent gsc = null;
     GlobalSilverResult gsr = null;
     String encodedURL = null;
     for (int i = 0; i < globalSilverContents.size(); i++) {
-      gsc = (GlobalSilverContent) globalSilverContents.get(i);
+      gsc = globalSilverContents.get(i);
       gsr = new GlobalSilverResult(gsc);
       encodedURL = URLEncoder.encode(gsc.getURL());
       gsr.setTitleLink("javaScript:submitContent('" + encodedURL + "','"
@@ -1084,13 +1086,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.showOnlyPertinentAxisAndValues = showOnlyPertinentAxisAndValues;
   }
 
-  public void setCurrentComponentIds(List componentList) {
+  public void setCurrentComponentIds(List<String> componentList) {
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.setCurrentComponentIds()",
         "root.MSG_GEN_ENTER_METHOD", "# componentId = " + componentList.size());
     String componentId = null;
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
-      componentId = (String) componentList.get(i);
+      componentId = componentList.get(i);
       SilverTrace.debug("pdcPeas",
           "PdcSearchSessionController.setCurrentComponentIds()",
           "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
@@ -1098,13 +1100,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.componentList = componentList;
   }
 
-  public List getCurrentComponentIds() {
+  public List<String> getCurrentComponentIds() {
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getCurrentComponentIds()",
         "root.MSG_GEN_ENTER_METHOD");
     String componentId = null;
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
-      componentId = (String) componentList.get(i);
+      componentId = componentList.get(i);
       SilverTrace.info("pdcPeas",
           "PdcSearchSessionController.getCurrentComponentIds()",
           "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
@@ -1325,13 +1327,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return getPdc().getSelectedSilverContents();
   }
 
-  public List getInstanceIdsFromComponentName(String componentName) {
+  public List<String> getInstanceIdsFromComponentName(String componentName) {
     CompoSpace[] compoIds = getOrganizationController().getCompoForUser(
         getUserId(), componentName);
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getInstanceIdsFromComponentName",
         "root.MSG_GEN_PARAM_VALUE", "compoIds = " + compoIds.toString());
-    ArrayList instanceIds = new ArrayList();
+    List<String> instanceIds = new ArrayList<String>();
     for (int i = 0; i < compoIds.length; i++) {
       instanceIds.add(((CompoSpace) compoIds[i]).getComponentId());
     }
@@ -1345,7 +1347,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ThesaurusManager thesaurus = new ThesaurusManager();
   private boolean activeThesaurus = false; // thesaurus actif
   private Jargon jargon = null;// jargon utilisé par l'utilisateur
-  private Map synonyms = new HashMap();
+  private Map<String, Collection> synonyms = new HashMap<String, Collection>();
   private static final int QUOTE_CHAR = new Integer('"').intValue();
   private static String[] KEYWORDS = null;
 
@@ -1722,7 +1724,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
         + component);
 
-    componentList = new ArrayList();
+    componentList = new ArrayList<String>();
 
     if (space == null) {
       String[] allowedComponentIds = getUserAvailComponentIds();

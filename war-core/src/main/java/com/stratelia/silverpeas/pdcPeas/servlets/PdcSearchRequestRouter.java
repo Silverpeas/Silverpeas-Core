@@ -486,7 +486,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
             "root.MSG_GEN_ENTER_METHOD");
 
-        String mode = (String) request.getParameter("mode");
+        String mode = request.getParameter("mode");
         if ("clear".equals(mode)) {
           clearUserChoices(pdcSC);
           pdcSC.resetResultPage();
@@ -496,7 +496,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         String resultPage = request.getParameter("ResultPage");
         pdcSC.setResultPage(resultPage);
 
-        String searchType = (String) request.getParameter("searchType");
+        String searchType = request.getParameter("searchType");
         if (searchType != null && !"".equals(searchType)) {
           if ("Normal".equals(searchType))
             pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
@@ -510,9 +510,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         boolean pdcUsedDuringSearch = false;
 
         // recupere les parametres
-        String icId = (String) request.getParameter("icId");
-
-        String query = null;
+        String icId = request.getParameter("icId");
 
         QueryParameters searchParameters = null;
 
@@ -523,9 +521,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           searchParameters =
               PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, false);
         }
-
-        if (searchParameters != null)
-          query = searchParameters.getKeywords();
 
         if (pdcSC.getSearchContext() != null && !pdcSC.getSearchContext().isEmpty()) {
           pdcUsedDuringSearch = true;
@@ -545,7 +540,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
             "root.MSG_GEN_PARAM_VALUE", "avant search");
         // the query string contains something
-        if (query != null && !query.equals("")) {
+        if (searchParameters.isDefined()) {
           // We have to search objects from classical search and merge it eventually with result
           // from PDC
           MatchingIndexEntry[] ie = pdcSC.search(); // launch the classical research
@@ -1117,8 +1112,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * Cette méthode permet de mettre dans la request et dans le sessionController les données
-   * utiles à la navigation. permettra de naviguer à l'aide des boutons précédent et suivant
+   * Cette méthode permet de mettre dans la request et dans le sessionController les données utiles
+   * à la navigation. permettra de naviguer à l'aide des boutons précédent et suivant
    * @param request - HttpServletRequest pour donner l'information à la globalResult.jsp
    * @param len - la taille du tableau/liste résultat
    */
@@ -1203,7 +1198,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       // dans la liste résultat (alSilverContentIds).
       allSilverContentIds.retainAll(alSilverContentIds);
 
-      List silverContentTempo = null;
+      List<SilverContentInterface> silverContentTempo = null;
       if (contentP != null) {
         // we are going to search only SilverContent of this instanceId
         ContentInterface contentInterface = (ContentInterface) contentP.getContentInterface();

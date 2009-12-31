@@ -38,14 +38,18 @@ import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TermQuery;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -66,6 +70,7 @@ public class WAIndexSearcher {
   /**
    * The primary and secondary factor are used to give a better score to entries whose title or
    * abstract match the query.
+   * 
    * @see #merge
    */
   private int primaryFactor = 3;
@@ -123,10 +128,8 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws com.stratelia.webactiv.searchEngine.model.ParseException {
-    if (query.isEmpty())
-      return new MatchingIndexEntry[0];
 
-    List results = null;
+    List<MatchingIndexEntry> results = null;
 
     Searcher searcher = getSearcher(query.getSpaceComponentPairSet());
 
@@ -137,28 +140,66 @@ public class WAIndexSearcher {
         if (query.getMultiFieldQuery() != null) {
           results = makeList(getMultiFieldHits(query, searcher), query);
         } else {
-          List contentMatchingResults = makeList(getHits(query,
-              IndexManager.CONTENT, searcher), query);
+          if (!StringUtil.isDefined(query.getQuery())) {
+            Hits hits = null;
+            RangeQuery rangeQuery = null;
+            if (query.isPeriodDefined()) {
+              String beginDate = query.getRequestedCreatedAfter();
+              if (!StringUtil.isDefined(beginDate)) {
+                beginDate = "1977/12/13";
+              }
+              String endDate = query.getRequestedCreatedBefore();
+              if (!StringUtil.isDefined(endDate)) {
+                endDate = "2100/01/01";
+              }
 
-          if (contentMatchingResults.size() > 0) {
-            List headerMatchingResults = makeList(getHits(query,
-                IndexManager.HEADER, searcher), query);
+              Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
+              Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
 
-            if (headerMatchingResults.size() > 0) {
-              results = merge(headerMatchingResults, primaryFactor,
-                  contentMatchingResults, secondaryFactor);
-            } else {
-              results = contentMatchingResults;
+              rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
             }
+
+            if (StringUtil.isDefined(query.getRequestedAuthor())) {
+              Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
+              TermQuery authorQuery = new TermQuery(authorTerm);
+              if (rangeQuery == null) {
+                hits = searcher.search(authorQuery);
+              } else {
+                BooleanQuery booleanQuery = new BooleanQuery();
+                booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
+                booleanQuery.add(authorQuery, BooleanClause.Occur.MUST);
+
+                hits = searcher.search(booleanQuery);
+              }
+            } else {
+              hits = searcher.search(rangeQuery);
+            }
+
+            results = makeList(hits, query);
           } else {
-            results = new ArrayList(); // empty results list.
+            List<MatchingIndexEntry> contentMatchingResults =
+                makeList(getHits(query, IndexManager.CONTENT, searcher), query);
+
+            if (contentMatchingResults.size() > 0) {
+              List<MatchingIndexEntry> headerMatchingResults =
+                  makeList(getHits(query, IndexManager.HEADER, searcher), query);
+
+              if (headerMatchingResults.size() > 0) {
+                results = merge(headerMatchingResults, primaryFactor,
+                    contentMatchingResults, secondaryFactor);
+              } else {
+                results = contentMatchingResults;
+              }
+            } else {
+              results = new ArrayList<MatchingIndexEntry>(); // empty results list.
+            }
           }
         }
       }
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
-      results = new ArrayList();
+      results = new ArrayList<MatchingIndexEntry>();
     } finally {
       try {
         if (searcher != null)
@@ -175,6 +216,7 @@ public class WAIndexSearcher {
 
   /**
    * Returns the lucene hits of the query
+   * 
    * @param searchField the search field within the index.
    */
   private Hits getHits(QueryDescription query, String searchField,
@@ -195,7 +237,7 @@ public class WAIndexSearcher {
         String[] queries = new String[I18NHelper.getNumberOfLanguages()];
 
         int l = 0;
-        Iterator languages = I18NHelper.getLanguages();
+        Iterator<String> languages = I18NHelper.getLanguages();
         while (languages.hasNext()) {
           language = (String) languages.next();
 
@@ -252,7 +294,7 @@ public class WAIndexSearcher {
     Hits hits = null;
 
     try {
-      Hashtable xmlQuery = query.getXmlQuery();
+      Hashtable<String, String> xmlQuery = query.getXmlQuery();
       String xmlTitle = query.getXmlTitle();
 
       int nbFields = xmlQuery.size();
@@ -303,7 +345,7 @@ public class WAIndexSearcher {
     Hits hits = null;
 
     try {
-      List fieldQueries = query.getMultiFieldQuery();
+      List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
       String keyword = query.getQuery();
 
       int nbFields = fieldQueries.size();
@@ -322,7 +364,7 @@ public class WAIndexSearcher {
 
       FieldDescription fieldQuery;
       for (int f = 0; f < fieldQueries.size(); f++) {
-        fieldQuery = (FieldDescription) fieldQueries.get(f);
+        fieldQuery = fieldQueries.get(f);
 
         flags[f] = BooleanClause.Occur.MUST;
         fields[f] = fieldQuery.getFieldName();
@@ -355,8 +397,8 @@ public class WAIndexSearcher {
    * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results list.
    */
-  private List makeList(Hits hits, QueryDescription query) throws IOException {
-    List results = new ArrayList();
+  private List<MatchingIndexEntry> makeList(Hits hits, QueryDescription query) throws IOException {
+    List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
     String today = DateUtil.today2SQLDate();
     String user = query.getSearchingUser();
     String beforeDate = query.getRequestedCreatedBefore();
@@ -434,9 +476,9 @@ public class WAIndexSearcher {
             indexEntry = new MatchingIndexEntry(IndexEntryPK.create(doc
                 .get(IndexManager.KEY)));
 
-            Iterator languages = I18NHelper.getLanguages();
+            Iterator<String> languages = I18NHelper.getLanguages();
             while (languages.hasNext()) {
-              String language = (String) languages.next();
+              String language = languages.next();
 
               if (I18NHelper.isDefaultLanguage(language)) {
                 indexEntry.setTitle(doc.get(IndexManager.TITLE), language);
@@ -482,30 +524,31 @@ public class WAIndexSearcher {
    * should not occurs as the secondary is extracted from the CONTENT index which contains all the
    * HEADER contents from which is extracted the primary list.
    */
-  private List merge(List primaryList, int primaryFactor, List secondaryList,
+  private List<MatchingIndexEntry> merge(List<MatchingIndexEntry> primaryList, int primaryFactor,
+      List<MatchingIndexEntry> secondaryList,
       int secondaryFactor) {
-    List result = new ArrayList();
+    List<MatchingIndexEntry> result = new ArrayList<MatchingIndexEntry>();
 
     float newScore = 0;
     MatchingIndexEntry primaryEntry = null;
     MatchingIndexEntry secondaryEntry = null;
 
     // Create a map key -> entry for the primaryList.
-    Map primaryMap = new HashMap();
-    Iterator i = primaryList.iterator();
+    Map<IndexEntryPK, MatchingIndexEntry> primaryMap =
+        new HashMap<IndexEntryPK, MatchingIndexEntry>();
+    Iterator<MatchingIndexEntry> i = primaryList.iterator();
 
     while (i.hasNext()) {
-      primaryEntry = (MatchingIndexEntry) i.next();
+      primaryEntry = i.next();
       primaryMap.put(primaryEntry.getPK(), primaryEntry);
     }
 
-    Iterator j = secondaryList.iterator();
+    Iterator<MatchingIndexEntry> j = secondaryList.iterator();
 
     while (j.hasNext()) {
-      secondaryEntry = (MatchingIndexEntry) j.next();
+      secondaryEntry = j.next();
 
-      primaryEntry = (MatchingIndexEntry) primaryMap
-          .get(secondaryEntry.getPK());
+      primaryEntry = primaryMap.get(secondaryEntry.getPK());
       if (primaryEntry != null) {
         newScore = secondaryFactor * secondaryEntry.getScore();
         newScore += primaryFactor * primaryEntry.getScore();
@@ -528,14 +571,14 @@ public class WAIndexSearcher {
   /**
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
-  private Searcher getSearcher(Set spaceComponentPairSet) {
-    List searcherList = new ArrayList();
-    Set indexPathSet = getIndexPathSet(spaceComponentPairSet);
+  private Searcher getSearcher(Set<SpaceComponentPair> spaceComponentPairSet) {
+    List<Searcher> searcherList = new ArrayList<Searcher>();
+    Set<String> indexPathSet = getIndexPathSet(spaceComponentPairSet);
 
-    Iterator i = indexPathSet.iterator();
+    Iterator<String> i = indexPathSet.iterator();
 
     while (i.hasNext()) {
-      String path = (String) i.next();
+      String path = i.next();
       Searcher searcher = getSearcher(path);
 
       if (searcher != null) {
@@ -557,16 +600,16 @@ public class WAIndexSearcher {
    * Build the set of all the path to the directories index corresponding the given (space,
    * component) pairs.
    */
-  private Set getIndexPathSet(Set spaceComponentPairSet) {
-    Set pathSet = new HashSet();
+  private Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
+    Set<String> pathSet = new HashSet<String>();
 
-    Iterator i = spaceComponentPairSet.iterator();
+    Iterator<SpaceComponentPair> i = spaceComponentPairSet.iterator();
 
     SpaceComponentPair pair = null;
     String space = null;
     String component = null;
     while (i.hasNext()) {
-      pair = (SpaceComponentPair) i.next();
+      pair = i.next();
       space = pair.getSpace();
       component = pair.getComponent();
 
