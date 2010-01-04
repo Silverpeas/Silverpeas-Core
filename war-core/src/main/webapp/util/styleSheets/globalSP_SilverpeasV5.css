@@ -38,7 +38,7 @@ BODY {
 IMG {
   border:0
 }
-TD {
+TD, div {
   font-family: "Verdana", "Arial", sans-serif;
   font-size: 10px
 }
@@ -1489,34 +1489,67 @@ td.boxed_Domain a:hover
 /*- [ portlet END ] --------------------------- */
 
 /**** Composant Blog *****/
-#blog #bandeau {
+#blog {
+	text-align:center;
+}
+#blog #blogContainer {
+	/*width:750px; */
+	margin: 0 auto;
+	text-align:left;
+}
+#blog #blogContainer #bandeau {
   background-image: url(/silverpeas/blog/jsp/icons/fondBandeau.jpg);
   background-repeat: repeat-x;
   height: 90px;
+  text-align:center;
+  line-height: 90px;
+  margin-top:10px;
 }
-#blog #bandeau a {
+#blog #blogContainer #bandeau a {
   font-size: 18px;
   font-weight: bold;
   text-align: center;
 }
+#blog #blogContainer #backHomeBlog {
+	/** text-align: center; **/
+}
 
-#blog .colonneGauche {
-  width: 100%;
+#blog #blogContainer #postsList, #blog #blogContainer #viewPost {
+	width:70%;
+	padding:10px;
+	float: left;	
 }
-#blog .colonneDroite {
-  width: 200px;
+
+#blog #blogContainer #postsList div.post {
+	margin-bottom:15px;
 }
-#blog .blog {
-  width: 98%;
-  font-size: 10px;
-  padding: 5px;
+#blog #blogContainer #navBlog {
+	width:180px;
+	float: right;
+	margin-bottom:15px;
+	margin-right: 15px;
 }
-#blog .versCommentaires {
+
+#blog #blogContainer #footer {
+	clear:both;
+}
+
+#blog .versCommentaires, #blog .categoryTicket, #blog .creatorTicket {
   color: #999999;
 }
+
+#blog .comment {
+ color: black;
+}
+
 #blog .versTopic {
   color: #999999;
 }
+
+#blog #operationBlog a {
+	color: #999999;
+}
+
 #blog .separateur {
   background-image: url(/silverpeas/blog/jsp/icons/separateur.gif);
   background-repeat: repeat-x;
@@ -1547,6 +1580,7 @@ td.boxed_Domain a:hover
   background-repeat: repeat-x;
   height: 20px;
 }
+
 #blog #titreTopics a {
   text-decoration: none;
   font-size: 16px;
@@ -1559,6 +1593,7 @@ td.boxed_Domain a:hover
 }
 
 #blog .titreTicket {
+  width:550px;
   font-size: 16px;
   font-weight: bold;
   color: #666666;
