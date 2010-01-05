@@ -14,7 +14,9 @@ CREATE TABLE ST_User
     email       varchar(100),
     login       varchar(50)   NOT NULL,
     loginMail   varchar(100),
-    accessLevel char(1)       DEFAULT 'U' NOT NULL
+    accessLevel char(1)       DEFAULT 'U' NOT NULL,
+	loginquestion varchar(200),
+  	loginanswer varchar(200)
 );
 
 CREATE TABLE ST_Group
