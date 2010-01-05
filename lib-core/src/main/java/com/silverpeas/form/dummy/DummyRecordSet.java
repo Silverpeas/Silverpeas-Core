@@ -89,12 +89,12 @@ public class DummyRecordSet implements RecordSet {
   public void delete(DataRecord record) throws FormException {
   }
 
-  public void clone(String originalExternalId, String cloneExternalId)
-      throws FormException {
+  public void clone(String originalExternalId, String originalComponentId, String cloneExternalId, String cloneComponentId) throws FormException
+  {
   }
 
-  public void merge(String fromExternalId, String toExternalId)
-      throws FormException {
+  public void merge(String fromExternalId, String fromComponentId, String toExternalId, String toComponentId) throws FormException 
+  {
   }
 
   public void indexRecord(String recordId, String formName,
