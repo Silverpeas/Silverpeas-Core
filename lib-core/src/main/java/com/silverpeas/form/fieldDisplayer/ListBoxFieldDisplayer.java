@@ -118,7 +118,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "ListBoxFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
@@ -138,11 +138,11 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     html += " >\n";
     html += "<OPTION value=\"\"></OPTION>\n";
     if (parameters.containsKey("keys")) {
-      keys = (String) parameters.get("keys");
+      keys = parameters.get("keys");
     }
 
     if (parameters.containsKey("values")) {
-      values = (String) parameters.get("values");
+      values = parameters.get("values");
     } else {
       values = keys;
     }

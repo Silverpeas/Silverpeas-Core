@@ -120,7 +120,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
     JdbcField jdbcField = null;
 
     if (!field.getTypeName().equals(JdbcField.TYPE)) {
@@ -133,7 +133,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.isNull()) {
       value = field.getValue(language);
     }
-    Collection listRes = null; // liste de valeurs String
+    Collection<String> listRes = null; // liste de valeurs String
 
     // Parameters
     String driverName = null;
@@ -144,22 +144,22 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
     String valueFieldType = "1"; // valeurs possibles 1 = choix restreint a la liste ou 2 = saisie
     // libre, par defaut 1
     if (parameters.containsKey("driverName")) {
-      driverName = (String) parameters.get("driverName");
+      driverName = parameters.get("driverName");
     }
     if (parameters.containsKey("url")) {
-      url = (String) parameters.get("url");
+      url = parameters.get("url");
     }
     if (parameters.containsKey("login")) {
-      login = (String) parameters.get("login");
+      login = parameters.get("login");
     }
     if (parameters.containsKey("password")) {
-      password = (String) parameters.get("password");
+      password = parameters.get("password");
     }
     if (parameters.containsKey("query")) {
-      query = (String) parameters.get("query");
+      query = parameters.get("query");
     }
     if (parameters.containsKey("valueFieldType")) {
-      valueFieldType = (String) parameters.get("valueFieldType"); // valeurs possibles 1 = choix
+      valueFieldType = parameters.get("valueFieldType"); // valeurs possibles 1 = choix
       // restreint a la liste ou 2 =
       // saisie libre, par defaut 1
     }
@@ -239,13 +239,12 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
       html += "<script type=\"text/javascript\">\n";
       html += "listArray" + fieldName + " = [\n";
 
-      Iterator itRes = listRes.iterator();
+      Iterator<String> itRes = listRes.iterator();
       String val;
       while (itRes.hasNext()) {
-        val = (String) itRes.next();
+        val = itRes.next();
 
         html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
-
       }
 
       // supprime derniere virgule inutile

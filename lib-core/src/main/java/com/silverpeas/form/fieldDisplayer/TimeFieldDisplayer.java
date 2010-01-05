@@ -125,7 +125,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
     String fieldName = template.getFieldName();
     SilverTrace.info("form", "TimeFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE",
         "fieldName=" + fieldName);
-    Map parameters = template.getParameters(pageContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     if (field == null) {
       return;
@@ -137,7 +137,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     String defaultParam =
-        (parameters.containsKey("default") ? (String) parameters.get("default") : "");
+        (parameters.containsKey("default") ? parameters.get("default") : "");
     String defaultValue = "";
     if ("now".equalsIgnoreCase(defaultParam) && !pageContext.isIgnoreDefaultValues()) {
       defaultValue = DateUtil.formatTime(new Date());

@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.form.DataRecord;
@@ -39,8 +40,10 @@ import com.silverpeas.form.RecordTemplate;
  * (index,GenericFieldTemplate))
  */
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
-  private Map fields = new HashMap();
-  private ArrayList fieldList = new ArrayList();
+  
+  private static final long serialVersionUID = 1L;
+  private Map<String, IndexedFieldTemplate> fields = new HashMap<String, IndexedFieldTemplate>();
+  private List<FieldTemplate> fieldList = new ArrayList<FieldTemplate>();
   private String templateName;
 
   /**
@@ -50,22 +53,22 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   public GenericRecordTemplate() {
   }
 
-  public ArrayList getFieldList() {
+  public List<FieldTemplate> getFieldList() {
     return fieldList;
   }
 
-  public void setFieldList(ArrayList fieldList) {
+  public void setFieldList(List<FieldTemplate> fieldList) {
     this.fieldList = fieldList;
   }
 
-  public Map getFields() {
+  public Map<String, IndexedFieldTemplate> getFields() {
     if (fields == null || fields.size() == 0) {
       Iterator fieldsIter = fieldList.iterator();
 
       while (fieldsIter.hasNext()) {
         GenericFieldTemplate field = (GenericFieldTemplate) fieldsIter.next();
         field.setTemplateName(templateName);
-        addFieldTemplate((FieldTemplate) field);
+        addFieldTemplate(field);
       }
     }
 
@@ -93,10 +96,10 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
    */
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldsArray = new FieldTemplate[getFields().keySet().size()];
-    Iterator fieldsEnum = getFields().values().iterator();
+    Iterator<IndexedFieldTemplate> fieldsEnum = getFields().values().iterator();
 
     while (fieldsEnum.hasNext()) {
-      IndexedFieldTemplate field = (IndexedFieldTemplate) fieldsEnum.next();
+      IndexedFieldTemplate field = fieldsEnum.next();
       fieldsArray[field.index] = field.fieldTemplate;
     }
 
@@ -156,6 +159,8 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 }
 
 final class IndexedFieldTemplate implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
   public final int index;
   public final FieldTemplate fieldTemplate;
 

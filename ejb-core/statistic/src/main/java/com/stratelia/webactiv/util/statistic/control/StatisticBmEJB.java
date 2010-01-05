@@ -51,62 +51,19 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.ejb.HistoryNodePublicationActorDAO;
 import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
+import com.stratelia.webactiv.util.statistic.model.HistoryNodePublicationActorDetail;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-
-/*
- * CVS Informations
- *
- * $Id: StatisticBmEJB.java,v 1.9 2008/03/13 07:53:55 sfariello Exp $
- *
- * $Log: StatisticBmEJB.java,v $
- * Revision 1.9  2008/03/13 07:53:55  sfariello
- * no message
- *
- * Revision 1.8  2008/03/12 14:30:07  sfariello
- * ordonner la liste des utilisateurs par date de dernière consultation dans le contrôle de lecture
- *
- * Revision 1.7  2007/08/09 14:28:50  neysseri
- * no message
- *
- * Revision 1.6  2007/06/27 15:02:56  sfariello
- * Ajout détail des lectures par utilisateur
- *
- * Revision 1.5  2007/06/25 09:11:46  sfariello
- * no message
- *
- * Revision 1.4  2007/06/22 16:29:43  sfariello
- * no message
- *
- * Revision 1.3  2007/06/14 08:37:55  neysseri
- * no message
- *
- * Revision 1.2.2.1  2007/05/23 15:54:36  sfariello
- * no message
- *
- * Revision 1.2  2007/01/11 13:40:05  sfariello
- * Généralisation des statistiques aux foreignPK
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.9  2002/01/22 09:25:48  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.8  2001/12/26 12:01:47  nchaix
- * no message
- *
- */
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class StatisticBmEJB implements SessionBean {
+
+  private static final long serialVersionUID = 1L;
+
   private final String historyRootTableName = "SB_Publication_History";
   private final String historyTableName = "SB_Statistic_History";
   private String dbName = JNDINames.STATISTIC_DATASOURCE;
@@ -116,7 +73,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   * 
    * @see
    */
   public StatisticBmEJB() {
@@ -124,9 +80,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -142,9 +96,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param con
-   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -160,24 +112,20 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param fatherPK
    * @deprecated : A SUPPRIMER APRES TESTS
    * @return
-   * 
    * @see
    */
-  public Collection getNodesUsage(NodePK fatherPK) {
+  public Collection<StatisticResultDetail> getNodesUsage(NodePK fatherPK) {
     SilverTrace.info("statistic", "StatisticBmEJB.getNodesUsage",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
-      Collection result = HistoryNodePublicationActorDAO.getNodesUsage(con,
+      return HistoryNodePublicationActorDAO.getNodesUsage(con,
           historyRootTableName, fatherPK);
-
-      return result;
     } catch (Exception e) {
       throw new StatisticRuntimeException("StatisticBmEJB().getNodesUsage()",
           SilverpeasRuntimeException.ERROR,
@@ -189,7 +137,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param userId
    * @param nodePK
    * @param pubPK
@@ -217,10 +164,8 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param userId
    * @param foreignPK
-   * 
    * @see
    */
   public void addStat(String userId, ForeignPK foreignPK, int actionType,
@@ -245,14 +190,12 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param pubPK
-   * 
    * @return
-   * 
    * @see
    */
-  public Collection getReadingHistoryByPublication(PublicationPK pubPK) {
+  public Collection<HistoryNodePublicationActorDetail> getReadingHistoryByPublication(
+      PublicationPK pubPK) {
     SilverTrace.info("statistic",
         "StatisticBmEJB.getReadingHistoryByPublication",
         "root.MSG_GEN_ENTER_METHOD");
@@ -267,8 +210,9 @@ public class StatisticBmEJB implements SessionBean {
       // récupérer
       // dans la nouvelle historyTableName
       ForeignPK foreignPK = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
-      Collection result = HistoryObjectDAO.getHistoryDetailByPublication(con,
-          historyTableName, foreignPK);
+      Collection<HistoryNodePublicationActorDetail> result =
+          HistoryObjectDAO.getHistoryDetailByPublication(con,
+              historyTableName, foreignPK);
 
       return result;
     } catch (Exception e) {
@@ -281,7 +225,7 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
-  public int getCount(List foreignPKs, int action, String objectType) {
+  public int getCount(List<ForeignPK> foreignPKs, int action, String objectType) {
     int nb = 0;
     Connection con = null;
     try {
@@ -321,14 +265,11 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param foreignPK
-   * 
    * @return
-   * 
    * @see
    */
-  public Collection getHistoryByAction(ForeignPK foreignPK, int action,
+  public Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
       String objectType) {
     SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByAction",
         "root.MSG_GEN_ENTER_METHOD");
@@ -336,7 +277,7 @@ public class StatisticBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      Collection result = HistoryObjectDAO.getHistoryDetailByObject(con,
+      Collection<HistoryObjectDetail> result = HistoryObjectDAO.getHistoryDetailByObject(con,
           historyTableName, foreignPK, objectType);
 
       return result;
@@ -350,7 +291,7 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
-  public Collection getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
+  public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
       String objectType, String userId) {
     SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObjectAndUser",
         "root.MSG_GEN_ENTER_METHOD");
@@ -358,10 +299,8 @@ public class StatisticBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      Collection result = HistoryObjectDAO.getHistoryDetailByObjectAndUser(con,
+      return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con,
           historyTableName, foreignPK, objectType, userId);
-
-      return result;
     } catch (Exception e) {
       throw new StatisticRuntimeException(
           "StatisticBmEJB().getHistoryByObjectAndUser()",
@@ -372,11 +311,30 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
-  public Collection getHistoryByObject(ForeignPK foreignPK, int action,
-      String objectType) {
+  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType) {
+    OrganizationController orga = new OrganizationController();
+    UserDetail[] allUsers = orga.getAllUsers(foreignPK.getInstanceId());
+
+    return getHistoryByObject(foreignPK, action, objectType, allUsers);
+  }
+
+  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType,
+      List<String> userIds) {
+    if (userIds == null || userIds.size() == 0) {
+      return getHistoryByObject(foreignPK, action, objectType);
+    } else {
+      OrganizationController orga = new OrganizationController();
+      UserDetail[] users = orga.getUserDetails((String[]) userIds.toArray(new String[] {}));
+
+      return getHistoryByObject(foreignPK, action, objectType, users);
+    }
+  }
+
+  private Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType,
+      UserDetail[] users) {
     SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObject()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection list = null;
+    Collection<HistoryObjectDetail> list = null;
     try {
       list = getHistoryByAction(foreignPK, action, objectType);
     } catch (Exception e) {
@@ -385,22 +343,22 @@ public class StatisticBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "statistic.EX_IMPOSSIBLE_DOBTENIR_LETAT_DES_LECTURES", e);
     }
-    String[] userIds = new String[list.size()];
+    String[] readerIds = new String[list.size()];
     Date[] date = new Date[list.size()];
-    Iterator it = list.iterator();
+    Iterator<HistoryObjectDetail> it = list.iterator();
     int i = 0;
     while (it.hasNext()) {
-      HistoryObjectDetail historyObject = (HistoryObjectDetail) it.next();
-      userIds[i] = historyObject.getUserId();
+      HistoryObjectDetail historyObject = it.next();
+      readerIds[i] = historyObject.getUserId();
       date[i] = historyObject.getDate();
       i++;
     }
     OrganizationController orga = new OrganizationController();
-    UserDetail[] allUsers = orga.getAllUsers(foreignPK.getInstanceId());
-    UserDetail[] controlledUsers = orga.getUserDetails(userIds);
+    UserDetail[] allUsers = users;
+    UserDetail[] controlledUsers = orga.getUserDetails(readerIds);
 
     // création de la liste de tous les utilisateur ayant le droit de lecture
-    Collection statByUser = new ArrayList();
+    Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
     for (int k = 0; k < allUsers.length; k++) {
       if (allUsers[k] != null) {
         HistoryByUser historyByUser = new HistoryByUser(allUsers[k], null, 0);
@@ -409,8 +367,8 @@ public class StatisticBmEJB implements SessionBean {
     }
 
     // création d'une liste des accès par utilisateur
-    Hashtable byUser = new Hashtable();
-    Hashtable nbAccessbyUser = new Hashtable();
+    Hashtable<UserDetail, Date> byUser = new Hashtable<UserDetail, Date>();
+    Hashtable<UserDetail, Integer> nbAccessbyUser = new Hashtable<UserDetail, Integer>();
     for (int j = 0; j < controlledUsers.length; j++) {
       if (controlledUsers[j] != null) {
         // regarder si la date en cours est > à la date enregistrée...
@@ -437,9 +395,9 @@ public class StatisticBmEJB implements SessionBean {
 
     // mise à jour de la date de dernier accès et du nombre d'accès pour les
     // utilisateurs ayant lu
-    Iterator itStat = statByUser.iterator();
+    Iterator<HistoryByUser> itStat = statByUser.iterator();
     while (itStat.hasNext()) {
-      HistoryByUser historyByUser = (HistoryByUser) itStat.next();
+      HistoryByUser historyByUser = itStat.next();
       UserDetail user = historyByUser.getUser();
       // recherche de la date de dernier accès
       Date lastAccess = (Date) byUser.get(user);
@@ -454,7 +412,7 @@ public class StatisticBmEJB implements SessionBean {
     // tri de la liste pour mettre en premier les users ayant consulté
     LastAccessComparatorDesc comparateur = new LastAccessComparatorDesc();
 
-    Collections.sort((List) statByUser, comparateur);
+    Collections.sort((List<HistoryByUser>) statByUser, comparateur);
 
     SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObject()",
         "root.MSG_GEN_EXIT_METHOD");
@@ -463,11 +421,8 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param foreignPK
-   * 
    * @return
-   * 
    * @see
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
@@ -492,9 +447,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @throws CreateException
-   * 
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -502,7 +455,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -510,7 +462,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -518,7 +469,6 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -526,9 +476,7 @@ public class StatisticBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {

@@ -96,7 +96,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
       out.println("		}");
     }
 
-    Map parameters = template.getParameters(pagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
     String contentType = (String) parameters.get(TextField.CONTENT_TYPE);
     if (contentType != null) {
       if (contentType.equals(TextField.CONTENT_TYPE_INT)) {
@@ -119,7 +119,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     String nbMaxCar = (parameters.containsKey("maxLength")
-        ? (String) parameters.get("maxLength") : Util.getSetting("nbMaxCar"));
+        ? parameters.get("maxLength") : Util.getSetting("nbMaxCar"));
     out.println("		if (! isValidText(field, " + nbMaxCar + ")) {");
     out.println("			errorMsg+=\"  - '" + label + "' " +
         Util.getString("ContainsTooLargeText", language)
@@ -151,13 +151,13 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
 
     String fieldName = template.getFieldName();
 
-    Map parameters = template.getParameters(pageContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     // Suggestions used ?
     String paramSuggestions =
-        parameters.containsKey("suggestions") ? (String) parameters.get("suggestions") : "false";
+        parameters.containsKey("suggestions") ? parameters.get("suggestions") : "false";
     boolean useSuggestions = Boolean.valueOf(paramSuggestions).booleanValue();
-    List suggestions = null;
+    List<String> suggestions = null;
     if (useSuggestions) {
       TextFieldImpl textField = (TextFieldImpl) field;
       suggestions =
@@ -166,7 +166,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     String defaultValue =
-        (parameters.containsKey("default") ? (String) parameters.get("default") : "");
+        (parameters.containsKey("default") ? parameters.get("default") : "");
     if (pageContext.isIgnoreDefaultValues()) {
       defaultValue = "";
     }
@@ -180,11 +180,11 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     input.setID(template.getFieldName());
     input.setValue(EncodeHelper.javaStringToHtmlString(value));
     input.setType(template.isHidden() ? Input.hidden : Input.text);
-    input.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength")
+    input.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
         : "1000");
-    input.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "50");
+    input.setSize(parameters.containsKey("size") ? parameters.get("size") : "50");
     if (parameters.containsKey("border")) {
-      input.setBorder(Integer.parseInt((String) parameters.get("border")));
+      input.setBorder(Integer.parseInt(parameters.get("border")));
     }
     if (template.isDisabled()) {
       input.setDisabled(true);

@@ -53,21 +53,15 @@ import javax.ejb.EJBHome;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface StatisticBmHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   StatisticBm create() throws RemoteException, CreateException;

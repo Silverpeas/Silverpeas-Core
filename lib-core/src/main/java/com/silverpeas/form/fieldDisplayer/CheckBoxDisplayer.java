@@ -123,7 +123,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String selectedValues = "";
-    ArrayList valuesFromDB = new ArrayList();
+    List<String> valuesFromDB = new ArrayList<String>();
     String keys = "";
     String values = "";
     String html = "";
@@ -133,7 +133,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "CheckBoxDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
@@ -150,16 +150,16 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("keys")) {
-      keys = (String) parameters.get("keys");
+      keys = parameters.get("keys");
     }
 
     if (parameters.containsKey("values")) {
-      values = (String) parameters.get("values");
+      values = parameters.get("values");
     }
 
     try {
       if (parameters.containsKey("cols")) {
-        cols = (Integer.valueOf((String) parameters.get("cols"))).intValue();
+        cols = (Integer.valueOf(parameters.get("cols"))).intValue();
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
@@ -301,12 +301,12 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     String keys = "";
     String values = "";
-    Map parameters = template.getParameters(pagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
     if (parameters.containsKey("keys")) {
-      keys = (String) parameters.get("keys");
+      keys = parameters.get("keys");
     }
     if (parameters.containsKey("values")) {
-      values = (String) parameters.get("values");
+      values = parameters.get("values");
     }
 
     // if either keys or values is not filled

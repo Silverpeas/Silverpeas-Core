@@ -136,11 +136,11 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     String language = pagesContext.getLanguage();
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
     String fieldName = template.getFieldName();
 
     String defaultParam =
-        (parameters.containsKey("default") ? (String) parameters.get("default") : "");
+        (parameters.containsKey("default") ? parameters.get("default") : "");
     String defaultValue = "";
     if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues())
       defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
@@ -154,11 +154,11 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     input.setName(fieldName);
     input.setValue(EncodeHelper.javaStringToHtmlString(value));
     input.setType(template.isHidden() ? Input.hidden : Input.text);
-    input.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength")
+    input.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
         : "10");
-    input.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "13");
+    input.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
     if (parameters.containsKey("border")) {
-      input.setBorder(Integer.parseInt((String) parameters.get("border")));
+      input.setBorder(Integer.parseInt(parameters.get("border")));
     }
     if (template.isDisabled()) {
       input.setDisabled(true);

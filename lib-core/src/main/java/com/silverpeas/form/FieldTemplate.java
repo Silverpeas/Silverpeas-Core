@@ -92,7 +92,7 @@ public interface FieldTemplate {
    * Returns a Map (String -> String) of named parameters which can be used by the displayer
    * (max-size, length ...).
    */
-  public Map getParameters(String language);
+  public Map<String, String> getParameters(String language);
 
   /**
    * Returns an empty Field built on this template.

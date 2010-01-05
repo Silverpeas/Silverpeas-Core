@@ -25,6 +25,7 @@
 --%>
 <%@ page import="java.io.IOException,javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException,
                  java.rmi.RemoteException,javax.ejb.FinderException,java.util.Date"%>
+<%@ page import="java.util.List"%>
 <%@ include file="checkStatistic.jsp" %>
 
 <%
@@ -34,6 +35,7 @@
     String url 			= request.getParameter("url");
     String componentId 	= request.getParameter("componentId");
     String objectType	= request.getParameter("objectType");
+    List 	userIds 	= (List) request.getAttribute("UserIds");
     %>
     <script language="javascript">
     function editDetail(userId, actorName)
@@ -46,7 +48,7 @@
     StatisticBm statisticBm =  statisticHome.create();
     
     ForeignPK foreignPK = new ForeignPK(id, componentId);
-    Collection readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType);
+    Collection readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType, userIds);
     
     // affichage des contrôles de lecture
     ArrayPane arrayPane = gef.getArrayPane("readingControl", "ReadingControl", request, session);
@@ -54,7 +56,8 @@
     arrayPane.addArrayColumn(generalMessage.getString("GML.user"));
     arrayPane.addArrayColumn(messages.getString("statistic.lastAccess"));
     arrayPane.addArrayColumn(messages.getString("statistic.nbAccess"));
-    arrayPane.addArrayColumn(messages.getString("statistic.detail"));
+    ArrayColumn columnDetail = arrayPane.addArrayColumn(messages.getString("statistic.detail"));
+    columnDetail.setSortable(false);
     
     Iterator it = readingState.iterator();
     while (it.hasNext())
@@ -77,6 +80,8 @@
         int nbAccess = historyByUser.getNbAccess();
         ligne.addArrayCellText(nbAccess);
         
+        if (haveRead != null)
+        {
         String historyUserId = historyByUser.getUser().getId();
         IconPane iconPane = gef.getIconPane();
 		Icon detailIcon = iconPane.addIcon();
@@ -84,6 +89,7 @@
 		detailIcon.setProperties(m_context + "/util/icons/info.gif", messages.getString("statistic.detail"), "javascript:editDetail('"+historyUserId+"','"+actorName+"')");
 
    		ligne.addArrayCellIconPane(iconPane);
+        }
      }
     	
     out.println(arrayPane.print());  

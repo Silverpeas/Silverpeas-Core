@@ -196,7 +196,7 @@ public class GenericRecordSetManager {
     cache.remove(externalId);
   }
 
-  static private HashMap cache = new HashMap();
+  static private HashMap<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
 
   /**
    * Returns the DataRecord registered by the pair (templateId, recordId)
@@ -231,7 +231,7 @@ public class GenericRecordSetManager {
     }
   }
 
-  static public List getLanguagesOfRecord(IdentifiedRecordTemplate template,
+  static public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
       String externalId) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.getLanguagesOfRecord",
         "root.MSG_GEN_PARAM_VALUE", "externalId = " + externalId);
@@ -278,14 +278,14 @@ public class GenericRecordSetManager {
 
   static public void cloneRecord(IdentifiedRecordTemplate templateFrom,
       String recordIdFrom, IdentifiedRecordTemplate templateTo,
-      String recordIdTo, Hashtable fileIds) throws FormException {
+      String recordIdTo, Hashtable<String, String> fileIds) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
         "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom
         + ", recordIdTo = " + recordIdTo);
 
-    Iterator languages = I18NHelper.getLanguages();
+    Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
-      String language = (String) languages.next();
+      String language = languages.next();
 
       GenericDataRecord record = (GenericDataRecord) getRecord(templateFrom,
           recordIdFrom, language);
@@ -302,7 +302,7 @@ public class GenericRecordSetManager {
             // Remplacement de l'ancien id par le nouveau
             String oldId = field.getStringValue();
             if (oldId != null) {
-              String newId = (String) fileIds.get(oldId);
+              String newId = fileIds.get(oldId);
               field.setStringValue(newId);
             }
           } else {
@@ -858,13 +858,13 @@ public class GenericRecordSetManager {
     }
   }
 
-  static private List selectLanguagesOfRecord(Connection con,
+  static private List<String> selectLanguagesOfRecord(Connection con,
       IdentifiedRecordTemplate template, String externalId)
       throws SQLException, FormException {
     PreparedStatement select = null;
     ResultSet rs = null;
 
-    List languages = new ArrayList();
+    List<String> languages = new ArrayList<String>();
     try {
       select = con.prepareStatement(SELECT_RECORD);
 

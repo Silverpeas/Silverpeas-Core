@@ -33,24 +33,21 @@ import com.silverpeas.util.ForeignPK;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class HistoryObjectDetail implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+  
   private Date date;
   private String userId;
   private ForeignPK foreignPK;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param date
    * @param userId
    * @param foreignPK
-   * 
    * @see
    */
   public HistoryObjectDetail(Date date, String userId, ForeignPK foreignPK) {
@@ -61,10 +58,7 @@ public class HistoryObjectDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date getDate() {
@@ -73,10 +67,7 @@ public class HistoryObjectDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getUserId() {
@@ -85,10 +76,7 @@ public class HistoryObjectDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ForeignPK getForeignPK() {

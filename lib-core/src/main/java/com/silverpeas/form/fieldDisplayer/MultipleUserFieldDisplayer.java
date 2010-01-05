@@ -131,11 +131,11 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
     String selectUserImg = Util.getIcon("userPanel");
     String selectUserLab = Util.getString("userPanel", language);
 
-    Map parameters = template.getParameters(PagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(PagesContext.getLanguage());
     String rows =
-        (parameters.containsKey("rows")) ? (String) parameters.get("rows") : ROWS_DEFAULT_VALUE;
+        (parameters.containsKey("rows")) ? parameters.get("rows") : ROWS_DEFAULT_VALUE;
     String cols =
-        (parameters.containsKey("cols")) ? (String) parameters.get("cols") : COLS_DEFAULT_VALUE;
+        (parameters.containsKey("cols")) ? parameters.get("cols") : COLS_DEFAULT_VALUE;
     boolean usersOfInstanceOnly =
         (parameters.containsKey("usersOfInstanceOnly") && "Yes".equals(parameters
         .get("usersOfInstanceOnly")));

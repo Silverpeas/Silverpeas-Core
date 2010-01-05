@@ -36,6 +36,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * A GenericDataRecord use a Field[] and a GenericRecordTemplate.
  */
 public class GenericDataRecord implements DataRecord, Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private int id = -1;
   private String externalId = null;
   private Field[] fields = null;

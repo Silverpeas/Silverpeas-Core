@@ -43,6 +43,9 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
  * @see FieldDisplayer
  */
 public class LdapField extends TextField {
+  
+  private static final long serialVersionUID = 1L;
+
   /**
    * The ldap field type name.
    */
@@ -153,10 +156,10 @@ public class LdapField extends TextField {
     }
   }
 
-  public Collection searchLdap(LDAPConnection ldapConnection, String baseDn,
+  public Collection<String> searchLdap(LDAPConnection ldapConnection, String baseDn,
       String scope, String filter, String attribute, boolean typesOnly,
       String currentUserId) throws FormException {
-    Collection listRes = new ArrayList();
+    Collection<String> listRes = new ArrayList<String>();
 
     LDAPSearchResults searchResult = null;
 

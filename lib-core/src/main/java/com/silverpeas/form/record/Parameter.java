@@ -26,18 +26,19 @@ package com.silverpeas.form.record;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class Parameter implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private String name = "";
-  // private String value = "";
-  private ArrayList parameterValuesObj = new ArrayList();
+  private List<ParameterValue> parameterValuesObj = new ArrayList<ParameterValue>();
 
   public Parameter() {
   }
 
   public Parameter(String name, String value) {
     this.name = name;
-    // this.value = value;
   }
 
   public String getName() {
@@ -46,10 +47,10 @@ public class Parameter implements Serializable {
 
   public String getValue(String language) {
     if (parameterValuesObj != null) {
-      Iterator values = parameterValuesObj.iterator();
+      Iterator<ParameterValue> values = parameterValuesObj.iterator();
       ParameterValue pValue = null;
       while (values.hasNext()) {
-        pValue = (ParameterValue) values.next();
+        pValue = values.next();
         if (language != null && pValue.getLang().equalsIgnoreCase(language))
           return pValue.getValue();
       }
@@ -63,15 +64,11 @@ public class Parameter implements Serializable {
     this.name = name;
   }
 
-  /*
-   * public void setValue(String value) { this.value = value; }
-   */
-
-  public ArrayList getParameterValuesObj() {
+  public List<ParameterValue> getParameterValuesObj() {
     return parameterValuesObj;
   }
 
-  public void setParameterValuesObj(ArrayList parameterValuesObj) {
+  public void setParameterValuesObj(List<ParameterValue> parameterValuesObj) {
     this.parameterValuesObj = parameterValuesObj;
   }
 }

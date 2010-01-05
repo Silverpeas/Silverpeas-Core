@@ -44,6 +44,9 @@ import com.stratelia.webactiv.util.JNDINames;
  * A TextFieldImpl stores use a String attribute to store its value.
  */
 public class TextFieldImpl extends TextField {
+  
+  private static final long serialVersionUID = 1L;
+
   private String value = "";
 
   private static final String suggestionsQuery = "select distinct(f.fieldValue)"
@@ -78,9 +81,9 @@ public class TextFieldImpl extends TextField {
     return false;
   }
 
-  public List getSuggestions(String fieldName, String templateName,
+  public List<String> getSuggestions(String fieldName, String templateName,
       String componentId) {
-    List suggestions = new ArrayList();
+    List<String> suggestions = new ArrayList<String>();
 
     Connection connection = null;
     PreparedStatement statement = null;
@@ -156,14 +159,14 @@ public class TextFieldImpl extends TextField {
   }
 
   public static void printSuggestionsScripts(PagesContext pageContext,
-      String fieldName, List suggestions, PrintWriter out) {
+      String fieldName, List<String> suggestions, PrintWriter out) {
     out.println("<script type=\"text/javascript\">\n");
     out.println("listArray" + fieldName + " = [\n");
 
-    Iterator itRes = suggestions.iterator();
+    Iterator<String> itRes = suggestions.iterator();
     String val;
     while (itRes.hasNext()) {
-      val = (String) itRes.next();
+      val = itRes.next();
 
       out.println("\"" + EncodeHelper.javaStringToJsString(val) + "\"");
 

@@ -127,7 +127,7 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
     String fieldName = template.getFieldName();
     SilverTrace.info("form", "UrlFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE", "fieldName=" +
         fieldName);
-    Map parameters = template.getParameters(pageContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     if (field == null) {
       return;
@@ -139,7 +139,7 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     String defaultValue =
-        (parameters.containsKey("default") ? (String) parameters.get("default") : "");
+        (parameters.containsKey("default") ? parameters.get("default") : "");
     if (pageContext.isIgnoreDefaultValues()) {
       defaultValue = "";
     }
@@ -160,7 +160,7 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
       String paramSuggestions =
           parameters.containsKey("suggestions") ? (String) parameters.get("suggestions") : "false";
       boolean useSuggestions = Boolean.valueOf(paramSuggestions).booleanValue();
-      List suggestions = null;
+      List<String> suggestions = null;
       if (useSuggestions) {
         TextFieldImpl textField = (TextFieldImpl) field;
         suggestions =

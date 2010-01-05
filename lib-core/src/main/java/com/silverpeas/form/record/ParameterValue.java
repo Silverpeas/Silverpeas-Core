@@ -26,6 +26,8 @@ package com.silverpeas.form.record;
 import java.io.Serializable;
 
 public class ParameterValue implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private String lang = "fr";
   private String value = "";
 

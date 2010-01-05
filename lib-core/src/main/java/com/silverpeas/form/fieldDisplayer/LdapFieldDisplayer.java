@@ -119,7 +119,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
     LdapField ldapField = null;
 
     if (!field.getTypeName().equals(LdapField.TYPE)) {
@@ -132,7 +132,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.isNull()) {
       value = field.getValue(language);
     }
-    Collection listRes = null; // liste de valeurs String
+    Collection<String> listRes = null;
 
     // Parameters
     String host = null;
@@ -149,40 +149,40 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
     String valueFieldType = "1"; // valeurs possibles 1 = choix restreint à la liste ou 2 = saisie
     // libre, par défaut 1
     if (parameters.containsKey("host")) {
-      host = (String) parameters.get("host");
+      host = parameters.get("host");
     }
     if (parameters.containsKey("port")) {
-      port = (String) parameters.get("port");
+      port = parameters.get("port");
     }
     if (parameters.containsKey("version")) {
-      version = (String) parameters.get("version");
+      version = parameters.get("version");
     }
     if (parameters.containsKey("baseDN")) {
-      baseDN = (String) parameters.get("baseDN");
+      baseDN = parameters.get("baseDN");
     }
     if (parameters.containsKey("password")) {
-      password = (String) parameters.get("password");
+      password = parameters.get("password");
     }
     if (parameters.containsKey("searchBase")) {
-      searchBase = (String) parameters.get("searchBase");
+      searchBase = parameters.get("searchBase");
     }
     if (parameters.containsKey("searchScope")) {
-      searchScope = (String) parameters.get("searchScope");
+      searchScope = parameters.get("searchScope");
     }
     if (parameters.containsKey("searchFilter")) {
-      searchFilter = (String) parameters.get("searchFilter");
+      searchFilter = parameters.get("searchFilter");
     }
     if (parameters.containsKey("searchAttribute")) {
-      searchAttribute = (String) parameters.get("searchAttribute");
+      searchAttribute = parameters.get("searchAttribute");
     }
     if (parameters.containsKey("searchTypeOnly")) {
-      searchTypeOnly = (String) parameters.get("searchTypeOnly");
+      searchTypeOnly = parameters.get("searchTypeOnly");
     }
     if (parameters.containsKey("maxResultDisplayed")) {
-      maxResultDisplayed = (String) parameters.get("maxResultDisplayed");
+      maxResultDisplayed = parameters.get("maxResultDisplayed");
     }
     if (parameters.containsKey("valueFieldType")) {
-      valueFieldType = (String) parameters.get("valueFieldType"); // valeurs possibles 1 = choix
+      valueFieldType = parameters.get("valueFieldType"); // valeurs possibles 1 = choix
       // restreint à la liste ou 2 =
       // saisie libre, par défaut 1
     }
@@ -278,13 +278,12 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
       html += "<script type=\"text/javascript\">\n";
       html += "listArray" + fieldName + " = [\n";
 
-      Iterator itRes = listRes.iterator();
+      Iterator<String> itRes = listRes.iterator();
       String val;
       while (itRes.hasNext()) {
-        val = (String) itRes.next();
+        val = itRes.next();
 
         html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
-
       }
 
       // supprime dernière virgule inutile

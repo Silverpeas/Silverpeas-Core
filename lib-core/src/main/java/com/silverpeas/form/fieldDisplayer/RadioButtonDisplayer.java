@@ -130,7 +130,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "RadioButtonDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
@@ -142,26 +142,26 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("keys")) {
-      keys = (String) parameters.get("keys");
+      keys = parameters.get("keys");
     }
 
     if (parameters.containsKey("values")) {
-      values = (String) parameters.get("values");
+      values = parameters.get("values");
     }
 
     try {
       if (parameters.containsKey("cols")) {
-        cols = (Integer.valueOf((String) parameters.get("cols"))).intValue();
+        cols = (Integer.valueOf(parameters.get("cols"))).intValue();
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "RadioButtonDisplayer.display",
           "form.EX_ERR_ILLEGAL_PARAMETER_COL",
-          (String) parameters.get("cols"));
+          parameters.get("cols"));
       cols = 1;
     }
 
     if (parameters.containsKey("default") && !pageContext.isIgnoreDefaultValues()) {
-      defaultValue = (String) parameters.get("default");
+      defaultValue = parameters.get("default");
     }
 
     if (!StringUtil.isDefined(value)) {
@@ -293,12 +293,12 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     String keys = "";
     String values = "";
-    Map parameters = template.getParameters(pagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
     if (parameters.containsKey("keys")) {
-      keys = (String) parameters.get("keys");
+      keys = parameters.get("keys");
     }
     if (parameters.containsKey("values")) {
-      values = (String) parameters.get("values");
+      values = parameters.get("values");
     }
 
     // if either keys or values is not filled

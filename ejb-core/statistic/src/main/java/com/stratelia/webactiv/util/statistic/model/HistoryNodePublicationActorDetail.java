@@ -32,34 +32,14 @@ import java.util.Date;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-/*
- * CVS Informations
- * 
- * $Id: HistoryNodePublicationActorDetail.java,v 1.2 2007/06/14 08:37:55 neysseri Exp $
- * 
- * $Log: HistoryNodePublicationActorDetail.java,v $
- * Revision 1.2  2007/06/14 08:37:55  neysseri
- * no message
- *
- * Revision 1.1.1.1.20.1  2007/06/14 08:22:38  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.4  2001/12/26 12:01:47  nchaix
- * no message
- *
- */
-
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class HistoryNodePublicationActorDetail implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+  
   private Date date;
   private String userId;
   private NodePK node;
@@ -67,13 +47,10 @@ public class HistoryNodePublicationActorDetail implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param date
    * @param userId
    * @param node
    * @param pub
-   * 
    * @see
    */
   public HistoryNodePublicationActorDetail(Date date, String userId,
@@ -86,10 +63,7 @@ public class HistoryNodePublicationActorDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Date getDate() {
@@ -98,10 +72,7 @@ public class HistoryNodePublicationActorDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getUserId() {
@@ -110,10 +81,7 @@ public class HistoryNodePublicationActorDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public PublicationPK getPublicationPK() {
@@ -122,10 +90,7 @@ public class HistoryNodePublicationActorDetail implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public NodePK getNodePK() {

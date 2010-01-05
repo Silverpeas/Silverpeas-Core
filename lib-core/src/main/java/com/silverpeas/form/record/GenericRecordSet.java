@@ -34,6 +34,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
@@ -41,9 +42,12 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 /**
  * The GenericRecordSet manage DataRecord built on a RecordTemplate and saved by the
  * GenericRecordSetManager.
+ * 
  * @see DataRecord
  */
 public class GenericRecordSet implements RecordSet, Serializable {
+
+  private static final long serialVersionUID = 1L;
   private IdentifiedRecordTemplate recordTemplate = null;
 
   /**
@@ -71,6 +75,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
+   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String recordId) throws FormException {
@@ -79,6 +84,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
+   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String recordId, String language)
@@ -91,6 +97,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Inserts the given DataRecord and set its id.
+   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a not null id.
    * @throw FormException when the insert fail.
@@ -102,6 +109,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Updates the given DataRecord.
+   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a null or unknown id.
    * @throw FormException when the update fail.
@@ -114,6 +122,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
+   * 
    * @see insert
    * @see update
    * @throw FormException when the record doesn't have the required template.
@@ -185,6 +194,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Deletes the given DataRecord and set to null its id.
+   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the delete fail.
@@ -195,22 +205,41 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
   }
 
-  public void clone(String originalExternalId, String cloneExternalId)
-      throws FormException {
+  public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
+      String cloneComponentId) throws FormException {
     GenericDataRecord record = (GenericDataRecord) getRecord(originalExternalId);
     record.setInternalId(-1);
     record.setId(cloneExternalId);
     insert(record);
+
+    // clone wysiwyg fields content
+    WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
+    try {
+      wysiwygDisplayer.cloneContents(originalComponentId, originalExternalId, cloneComponentId,
+          cloneExternalId);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
-  public void merge(String fromExternalId, String toExternalId)
-      throws FormException {
+  public void merge(String fromExternalId, String fromComponentId, String toExternalId,
+      String toComponentId) throws FormException {
     GenericDataRecord fromRecord = (GenericDataRecord) getRecord(fromExternalId);
     GenericDataRecord toRecord = (GenericDataRecord) getRecord(toExternalId);
 
     fromRecord.setInternalId(toRecord.getInternalId());
     fromRecord.setId(toExternalId);
     update(fromRecord);
+
+    // merge wysiwyg fields content
+    WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
+    try {
+      wysiwygDisplayer.mergeContents(fromComponentId, fromExternalId, toComponentId, toExternalId);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
 }

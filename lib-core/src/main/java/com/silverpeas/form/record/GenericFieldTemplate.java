@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -42,6 +43,8 @@ import com.silverpeas.form.TypeManager;
  * A generic FieldTemplate implementation.
  */
 public class GenericFieldTemplate implements FieldTemplate, Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private String fieldName = null;
   private Class fieldImpl = null;
   private String typeName = null;
@@ -51,10 +54,10 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   private boolean isDisabled = false;
   private boolean isHidden = false;
   private String defaultLabel = null;
-  private Map labels = new HashMap();
-  private Map parameters = new HashMap();
-  private ArrayList labelsObj = new ArrayList();
-  private ArrayList parametersObj = new ArrayList();
+  private Map<String, String> labels = new HashMap<String, String>();
+  private Map<String, String> parameters = new HashMap<String, String>();
+  private List<Label> labelsObj = new ArrayList<Label>();
+  private List<Parameter> parametersObj = new ArrayList<Parameter>();
   private boolean isSearchable = false;
   private String templateName = null;
 
@@ -202,7 +205,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
       setLabel(label);
     else {
       if (labels == null)
-        labels = new HashMap();
+        labels = new HashMap<String, String>();
       labels.put(language, label);
     }
   }
@@ -212,7 +215,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
    */
   public void addParameter(String name, String value) {
     if (parameters == null)
-      parameters = new HashMap();
+      parameters = new HashMap<String, String>();
     parameters.put(name, value);
   }
 
@@ -279,27 +282,27 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     this.isHidden = isHidden;
   }
 
-  public Map getParameters(String language) {
+  public Map<String, String> getParameters(String language) {
     // if ((parameters == null) || (parameters.size()==0)) {
-    Iterator parametersIter = parametersObj.iterator();
+    Iterator<Parameter> parametersIter = parametersObj.iterator();
 
     while (parametersIter.hasNext()) {
-      Parameter parameter = (Parameter) parametersIter.next();
+      Parameter parameter = parametersIter.next();
       addParameter(parameter.getName(), parameter.getValue(language));
     }
     // }
     return parameters;
   }
 
-  public Hashtable getKeyValuePairs(String language) {
-    Hashtable keyValuePairs = new Hashtable();
-    Map parameters = getParameters(language);
+  public Hashtable<String, String> getKeyValuePairs(String language) {
+    Hashtable<String, String> keyValuePairs = new Hashtable<String, String>();
+    Map<String, String> parameters = getParameters(language);
 
     if (parameters == null)
       return keyValuePairs;
 
-    String keys = (String) parameters.get("keys");
-    String values = (String) parameters.get("values");
+    String keys = parameters.get("keys");
+    String values = parameters.get("values");
     if (keys != null && values != null) {
       StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
       StringTokenizer vTokenizer = new StringTokenizer(values, "##");
@@ -324,11 +327,11 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     return keyValuePairs;
   }
 
-  public Map getLabels() {
+  public Map<String, String> getLabels() {
     if (labels == null || labels.size() == 0) {
-      Iterator labelsIter = labelsObj.iterator();
+      Iterator<Label> labelsIter = labelsObj.iterator();
       while (labelsIter.hasNext()) {
-        Label label = (Label) labelsIter.next();
+        Label label = labelsIter.next();
         addLabel(label.getLabel(), label.getLanguage());
       }
     }
@@ -380,12 +383,12 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     if (labels == null)
       return new String[0];
 
-    ArrayList langs = new ArrayList();
-    Iterator iter = labels.keySet().iterator();
+    List<String> langs = new ArrayList<String>();
+    Iterator<String> iter = labels.keySet().iterator();
 
     while (iter.hasNext()) {
-      String lang = (String) iter.next();
-      langs.add((String) labels.get(lang));
+      String lang = iter.next();
+      langs.add(labels.get(lang));
     }
 
     return (String[]) langs.toArray(new String[0]);
@@ -394,28 +397,28 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Used by the castor xml mapping.
    */
-  public ArrayList getLabelsObj() {
+  public List<Label> getLabelsObj() {
     return labelsObj;
   }
 
   /**
    * Used by the castor xml mapping.
    */
-  public void setLabelsObj(ArrayList labelsObj) {
+  public void setLabelsObj(List<Label> labelsObj) {
     this.labelsObj = labelsObj;
   }
 
   /**
    * Used by the castor xml mapping.
    */
-  public ArrayList getParametersObj() {
+  public List<Parameter> getParametersObj() {
     return parametersObj;
   }
 
   /**
    * Used by the castor xml mapping.
    */
-  public void setParametersObj(ArrayList parametersObj) {
+  public void setParametersObj(List<Parameter> parametersObj) {
     this.parametersObj = parametersObj;
   }
 

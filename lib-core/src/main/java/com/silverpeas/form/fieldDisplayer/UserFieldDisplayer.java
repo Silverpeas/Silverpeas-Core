@@ -76,8 +76,6 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       PagesContext PagesContext) throws java.io.IOException {
     String language = PagesContext.getLanguage();
 
-    String fieldName = template.getFieldName();
-
     if (!template.getTypeName().equals(UserField.TYPE)) {
       SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);

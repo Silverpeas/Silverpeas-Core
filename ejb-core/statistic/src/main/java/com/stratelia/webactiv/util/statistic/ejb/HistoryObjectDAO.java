@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import com.silverpeas.util.ForeignPK;
@@ -48,27 +49,22 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class HistoryObjectDAO {
   /**
    * Method declaration
-   * 
    * @param rs
    * @param space
    * @param componentName
    * @deprecated : fonction pour récupérer les publications
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getHistoryPublicationDetails(ResultSet rs,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryPublicationDetails(ResultSet rs,
       String space, String componentName) throws SQLException {
-    ArrayList list = new ArrayList();
+    List<HistoryNodePublicationActorDetail> list = new ArrayList<HistoryNodePublicationActorDetail>();
     java.util.Date date;
     String actorId = "";
     String nodeId = "";
@@ -97,20 +93,16 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
    * @param rs
    * @param space
    * @param componentName
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getHistoryDetails(ResultSet rs, String space,
+  public static Collection<HistoryObjectDetail> getHistoryDetails(ResultSet rs, String space,
       String componentName) throws SQLException {
-    ArrayList list = new ArrayList();
+    List<HistoryObjectDetail> list = new ArrayList<HistoryObjectDetail>();
     Date date;
     String userId = "";
     String foreignId = "";
@@ -146,7 +138,6 @@ public class HistoryObjectDAO {
 
   /**
    * Constructor declaration
-   * 
    * @see
    */
   public HistoryObjectDAO() {
@@ -154,16 +145,12 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param tableName
    * @param userId
    * @param nodePK
    * @param pubPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void add(Connection con, String tableName, String userId,
@@ -203,18 +190,14 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
    * @param con
    * @param tableName
    * @param foreignPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getHistoryDetailByObject(Connection con,
+  public static Collection<HistoryObjectDetail> getHistoryDetailByObject(Connection con,
       String tableName, ForeignPK foreignPK, String objectType)
       throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
@@ -225,21 +208,19 @@ public class HistoryObjectDAO {
         + " where objectId=" + foreignPK.getId() + " and componentId='"
         + foreignPK.getInstanceId() + "'" + " and objectType='" + objectType
         + "'";
-    // + " order by dateStat desc, heureStat desc";
 
     Statement stmt = null;
     ResultSet rs = null;
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      Collection list = getHistoryDetails(rs, space, componentName);
-      return list;
+      return getHistoryDetails(rs, space, componentName);
     } finally {
       DBUtil.close(rs, stmt);
     }
   }
 
-  public static Collection getHistoryDetailByObjectAndUser(Connection con,
+  public static Collection<HistoryObjectDetail> getHistoryDetailByObjectAndUser(Connection con,
       String tableName, ForeignPK foreignPK, String objectType, String userId)
       throws SQLException {
     SilverTrace.info("statistic",
@@ -258,8 +239,7 @@ public class HistoryObjectDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      Collection list = getHistoryDetails(rs, space, componentName);
-      return list;
+      return getHistoryDetails(rs, space, componentName);
     } finally {
       DBUtil.close(rs, stmt);
     }
@@ -267,15 +247,11 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
    * @param con
    * @param tableName
    * @param foreignPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteHistoryByObject(Connection con, String tableName,
@@ -299,18 +275,15 @@ public class HistoryObjectDAO {
 
   /**
    * Method declaration
-   * 
    * @param con
    * @param tableName
    * @param foreignPK
    * @deprecated : fonction pour récupérer les publications
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getHistoryDetailByPublication(Connection con,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(Connection con,
       String tableName, ForeignPK foreignPK) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
         "root.MSG_GEN_ENTER_METHOD");
@@ -325,22 +298,21 @@ public class HistoryObjectDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      Collection list = getHistoryPublicationDetails(rs, space, componentName);
-      return list;
+      return getHistoryPublicationDetails(rs, space, componentName);
     } finally {
       DBUtil.close(rs, stmt);
     }
   }
 
-  public static int getCount(Connection con, Collection foreignPKs, int action,
+  public static int getCount(Connection con, Collection<ForeignPK> foreignPKs, int action,
       String tableName, String objectType) throws SQLException {
     int nb = 0;
     if (!foreignPKs.isEmpty()) {
-      Iterator iterator = foreignPKs.iterator();
+      Iterator<ForeignPK> iterator = foreignPKs.iterator();
       for (; iterator.hasNext();) {
         nb = nb
-            + getCount(con, (ForeignPK) iterator.next(), action, tableName,
-                objectType);
+            + getCount(con, iterator.next(), action, tableName,
+            objectType);
       }
     }
     return nb;

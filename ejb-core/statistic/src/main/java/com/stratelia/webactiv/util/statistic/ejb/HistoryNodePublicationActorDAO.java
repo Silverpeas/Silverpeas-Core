@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-// TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.statistic.ejb;
 
 import java.sql.Connection;
@@ -33,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -43,63 +43,21 @@ import com.stratelia.webactiv.util.statistic.model.HistoryNodePublicationActorDe
 import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: HistoryNodePublicationActorDAO.java,v 1.4 2007/06/14 08:37:55 neysseri Exp $
- *
- * $Log: HistoryNodePublicationActorDAO.java,v $
- * Revision 1.4  2007/06/14 08:37:55  neysseri
- * no message
- *
- * Revision 1.3.6.1  2007/06/14 08:22:38  neysseri
- * no message
- *
- * Revision 1.3  2003/11/25 08:42:38  cbonin
- * no message
- *
- * Revision 1.2  2003/11/24 13:26:30  cbonin
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.10  2002/01/22 09:25:48  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.9  2001/12/26 12:01:47  nchaix
- * no message
- *
- */
-
-/**
- * Class declaration
- * 
- * 
- * @author
- */
 public class HistoryNodePublicationActorDAO {
   static SimpleDateFormat formater = new SimpleDateFormat("yyyy/MM/dd");
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
    * @param space
    * @param componentName
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getHistoryDetails(ResultSet rs, String space,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetails(ResultSet rs, String space,
       String componentName) throws SQLException {
-    ArrayList list = new ArrayList();
+    List<HistoryNodePublicationActorDetail> list = new ArrayList<HistoryNodePublicationActorDetail>();
     java.util.Date date;
     String actorId = "";
     String nodeId = "";
@@ -130,8 +88,6 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public HistoryNodePublicationActorDAO() {
@@ -139,21 +95,18 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Get descendant node PKs of a node
-   * 
    * @return A collection of NodePK
-   * @param con
-   *          A connection to the database
-   * @param nodePK
-   *          A NodePK
+   * @param con A connection to the database
+   * @param nodePK A NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  private static Collection getDescendantPKs(Connection con, NodePK nodePK)
+  private static Collection<NodePK> getDescendantPKs(Connection con, NodePK nodePK)
       throws SQLException {
 
     String path = null;
-    ArrayList a = new ArrayList();
+    List<NodePK> a = new ArrayList<NodePK>();
     String selectQuery = "select nodePath from " + nodePK.getTableName()
         + "  where nodeId = ? and instanceId = ?";
 
@@ -201,25 +154,20 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param tableName
    * @param fatherPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getNodesUsage(Connection con, String tableName,
+  public static Collection<StatisticResultDetail> getNodesUsage(Connection con, String tableName,
       NodePK fatherPK) throws SQLException {
     SilverTrace.info("statistic",
         "HistoryNodePublicationActorDAO.getNodesUsage",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Collection sonPK_list = null;
+    Collection<NodePK> sonPK_list = null;
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
     String selectQuery = "select count(nodeId) from " + tableName
@@ -231,15 +179,15 @@ public class HistoryNodePublicationActorDAO {
       // get all descendant of a one NodePK
       sonPK_list = getDescendantPKs(con, fatherPK);
       // verify that the Collection object return is not empty;
-      ArrayList nodesUsage = new ArrayList();
+      ArrayList<StatisticResultDetail> nodesUsage = new ArrayList<StatisticResultDetail>();
       if (!sonPK_list.isEmpty()) {
-        Iterator iterator = sonPK_list.iterator();
+        Iterator<NodePK> iterator = sonPK_list.iterator();
 
         prepStmt = con.prepareStatement(selectQuery);
         // for each descendant, we compute the number of them in the
         // SB_Publication_Histaory table
         for (; iterator.hasNext();) {
-          nodeId = ((NodePK) iterator.next()).getId();
+          nodeId = (iterator.next()).getId();
           prepStmt.setInt(1, (new Integer(nodeId)).intValue());
           rs = prepStmt.executeQuery();
           // get the result
@@ -260,16 +208,12 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param tableName
    * @param userId
    * @param nodePK
    * @param pubPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void add(Connection con, String tableName, String userId,
@@ -295,19 +239,14 @@ public class HistoryNodePublicationActorDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param tableName
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getHistoryDetailByPublication(Connection con,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(Connection con,
       String tableName, PublicationPK pubPK) throws SQLException {
     SilverTrace.info("statistic",
         "HistoryNodePublicationActorDAO.getHistoryDetailByPublication",
@@ -322,8 +261,7 @@ public class HistoryNodePublicationActorDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      Collection list = getHistoryDetails(rs, space, componentName);
-      return list;
+      return getHistoryDetails(rs, space, componentName);
     } finally {
       DBUtil.close(rs, stmt);
     }

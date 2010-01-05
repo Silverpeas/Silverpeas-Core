@@ -42,6 +42,9 @@ import com.stratelia.webactiv.util.DBUtil;
  * @see FieldDisplayer
  */
 public class JdbcField extends TextField {
+  
+  private static final long serialVersionUID = 1L;
+
   /**
    * The jdbc field type name.
    */
@@ -110,10 +113,10 @@ public class JdbcField extends TextField {
     return result;
   }
 
-  public Collection selectSql(Connection jdbcConnection, String query,
+  public Collection<String> selectSql(Connection jdbcConnection, String query,
       String currentUserId) throws FormException {
 
-    Collection result = new ArrayList();
+    Collection<String> result = new ArrayList<String>();
 
     // parsing query -> dynamic variable
     query = query.replaceAll(VARIABLE_REGEX_USER_ID, currentUserId);

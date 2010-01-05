@@ -23,12 +23,14 @@
  */
 package com.silverpeas.form.fieldDisplayer;
 
-import au.id.jericho.lib.html.Source;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import au.id.jericho.lib.html.Source;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -46,11 +48,11 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import java.util.ArrayList;
 
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
  * TextFiel to a end user and can retrieve via HTTP any updated value.
+ * 
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -192,6 +194,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   * 
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
@@ -337,17 +340,17 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       } catch (Exception e) {
         throw new IOException(e.getMessage());
       }
-      List files = (List) FileFolderManager.getAllFile(fromPath);
+      List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
       for (int f = 0; f < files.size(); f++) {
-        File file = (File) files.get(f);
+        File file = files.get(f);
         String fileName = file.getName();
         if (fileName.startsWith(objectIdFrom + "_")) {
           String fieldName = fileName.substring(objectIdFrom.length() + 1);
           FileRepositoryManager.copyFile(fromPath + file.getName(), toPath +
               getFileName(fieldName, objectIdTo));
-          Iterator languages = I18NHelper.getLanguages();
+          Iterator<String> languages = I18NHelper.getLanguages();
           while (languages.hasNext()) {
-            String language = (String) languages.next();
+            String language = languages.next();
 
             if (fieldName.startsWith(language + "_")) {
               fieldName = fieldName.substring(3); // skip en_
@@ -356,6 +359,57 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
                   language));
             }
           }
+        }
+      }
+    }
+  }
+
+  public void mergeContents(String componentIdFrom, String objectIdFrom, String componentIdTo,
+      String objectIdTo) throws UtilException, IOException {
+    String[] dirs = new String[1];
+    dirs[0] = dir;
+    String fromPath = FileRepositoryManager.getAbsolutePath(componentIdFrom, dirs);
+
+    File from = new File(fromPath);
+    if (from != null && from.exists()) {
+      // Verifie si le repertoire de destination existe
+      try {
+        FileRepositoryManager.createAbsolutePath(componentIdTo, dir);
+      } catch (Exception e) {
+        throw new IOException(e.getMessage());
+      }
+
+      // Copier/coller de tous les fichiers wysiwyg de objectIdFrom vers objectIdTo
+      List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
+      for (int f = 0; f < files.size(); f++) {
+        File file = files.get(f);
+        String fileName = file.getName();
+        if (fileName.startsWith(objectIdFrom + "_")) {
+          String fieldName = fileName.substring(objectIdFrom.length() + 1);
+          String fieldContent = getContentFromFile(componentIdFrom, objectIdFrom, fieldName);
+
+          setContentIntoFile(componentIdTo, objectIdTo, fieldName, fieldContent, null);
+
+          // paste translations
+          Iterator<String> languages = I18NHelper.getLanguages();
+          while (languages.hasNext()) {
+            String language = languages.next();
+
+            if (fieldName.startsWith(language + "_")) {
+              fieldName = fieldName.substring(3); // skip en_
+              fieldContent = getContentFromFile(componentIdFrom, objectIdFrom, fieldName, language);
+              setContentIntoFile(componentIdTo, objectIdTo, fieldName, fieldContent, language);
+            }
+          }
+        }
+      }
+
+      // Delete merged files
+      for (int f = 0; f < files.size(); f++) {
+        File file = files.get(f);
+        String fileName = file.getName();
+        if (fileName.startsWith(objectIdFrom + "_")) {
+          file.delete();
         }
       }
     }

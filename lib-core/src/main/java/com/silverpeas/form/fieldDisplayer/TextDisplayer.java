@@ -106,7 +106,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     String html = "";
     String language = PagesContext.getLanguage();
 
-    Map parameters = template.getParameters(language);
+    Map<String, String> parameters = template.getParameters(language);
 
     if (!field.isNull()) {
       value = field.getValue(language);
@@ -123,14 +123,14 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("class")) {
-      classe = (String) parameters.get("class");
+      classe = parameters.get("class");
       if (classe != null) {
         classe = "class=" + classe;
       }
     }
 
     if (parameters.containsKey("values") || parameters.containsKey("keys")) {
-      Hashtable keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(language);
+      Hashtable<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(language);
       String newValue = "";
       if (value.indexOf("##") != -1) {
         // Try to display a checkbox list
@@ -139,7 +139,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
         while (tokenizer.hasMoreTokens()) {
           t = tokenizer.nextToken();
 
-          t = (String) keyValuePairs.get(t);
+          t = keyValuePairs.get(t);
           newValue += t;
 
           if (tokenizer.hasMoreTokens()) {
@@ -147,7 +147,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
           }
         }
       } else if (value != null && value.length() > 0) {
-        newValue = (String) keyValuePairs.get(value);
+        newValue = keyValuePairs.get(value);
       }
       value = newValue;
     }

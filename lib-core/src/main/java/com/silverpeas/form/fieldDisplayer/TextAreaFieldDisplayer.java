@@ -123,7 +123,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
-    Map parameters = template.getParameters(PagesContext.getLanguage());
+    Map<String, String> parameters = template.getParameters(PagesContext.getLanguage());
 
     if (!field.getTypeName().equals(TextField.TYPE))
       SilverTrace.info("form", "TextAreaFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
@@ -135,12 +135,12 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
     if (parameters.containsKey("rows")) {
-      rows = (String) parameters.get("rows");
+      rows = parameters.get("rows");
     }
     html += " rows=" + rows;
 
     if (parameters.containsKey("cols")) {
-      cols = (String) parameters.get("cols");
+      cols = parameters.get("cols");
     }
     html += " cols=" + cols;
 
