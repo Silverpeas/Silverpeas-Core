@@ -95,6 +95,8 @@ public class URLManager {
   public final static int URL_SURVEY = 5;
   public final static int URL_QUESTION = 6;
   public final static int URL_MESSAGE = 7;
+  public final static int URL_DOCUMENT = 8;
+  public final static int URL_VERSION = 9;
 
   static Properties specialsURL = null;
   static Admin admin = null;
@@ -294,6 +296,12 @@ public class URLManager {
         break;
       case URL_QUESTION:
         url += "/Question/" + id;
+        break;
+      case URL_DOCUMENT:
+        url += "/Document/" + id;
+        break;
+      case URL_VERSION:
+        url += "/Version/" + id;
         break;
     }
     return url;

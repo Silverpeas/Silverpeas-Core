@@ -49,8 +49,6 @@
          javax.naming.NamingException,
          com.stratelia.webactiv.util.viewGenerator.html.Encode,
          com.stratelia.webactiv.util.WAPrimaryKey,
-         com.oreilly.servlet.multipart.*,
-         com.oreilly.servlet.MultipartRequest,
          com.stratelia.silverpeas.peasCore.URLManager,
          com.stratelia.silverpeas.silvertrace.SilverTrace,
          com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController,
@@ -84,7 +82,6 @@
          com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.silverpeas.util.ForeignPK"%>
-<%@ page import="com.stratelia.silverpeas.util.SilverStringTokenizer"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
 

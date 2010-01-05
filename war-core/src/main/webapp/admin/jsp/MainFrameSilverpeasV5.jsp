@@ -179,9 +179,10 @@ setTimeout("init()",100);
 <% if (attachmentId != null) 
    {
    	session.putValue("RedirectToAttachmentId", null);
+   	String mapping = (String) session.getValue("RedirectToMapping");
 %>
 	<script language="javascript">
-		SP_openWindow('<%=m_sContext%>/File/<%=attachmentId%>', 'Fichier', '800', '600', 'directories=0,menubar=1,toolbar=1,scrollbars=1,location=1,alwaysRaised');
+		SP_openWindow('<%=m_sContext%>/<%=mapping%>/<%=attachmentId%>', 'Fichier', '800', '600', 'directories=0,menubar=1,toolbar=1,scrollbars=1,location=1,alwaysRaised');
 	</script>
 <% } %>
 

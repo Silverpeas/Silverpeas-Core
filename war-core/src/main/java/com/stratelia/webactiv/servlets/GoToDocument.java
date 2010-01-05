@@ -30,27 +30,36 @@ import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.silverpeas.versioning.model.Document;
+import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class GoToFile extends GoTo {
+public class GoToDocument extends GoTo {
 
   private static final long serialVersionUID = 1L;
 
-  public String getDestination(String objectId, HttpServletRequest req,
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
+      throws Exception {
+    // Check first if document exists
+    VersioningUtil versioningUtil = new VersioningUtil();
+    DocumentVersion version =
+        versioningUtil.getLastPublicVersion(new DocumentPK(Integer.parseInt(objectId)));
+    if (version == null)
+      return null;
+
+    return redirectToFile(version, req, res);
+  }
+
+  public String redirectToFile(DocumentVersion version, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     boolean isLoggedIn = isUserLogin(req);
 
-    // Check first if attachment exists
-    AttachmentDetail attachment = AttachmentController
-        .searchAttachmentByPK(new AttachmentPK(objectId));
-    if (attachment == null)
-      return null;
-
-    String componentId = attachment.getInstanceId();
-    String foreignId = attachment.getForeignKey().getId();
+    String componentId = version.getInstanceId();
+    VersioningUtil versioningUtil = new VersioningUtil();
+    Document document = versioningUtil.getDocument(version.getDocumentPK());
+    String foreignId = document.getForeignKey().getId();
 
     if (isLoggedIn) {
       boolean isAccessAuthorized = false;
@@ -60,41 +69,32 @@ public class GoToFile extends GoTo {
         isAccessAuthorized = true;
         if (componentId.startsWith("kmelia")) {
           try {
-            ComponentSecurity security = (ComponentSecurity) Class.forName(
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
-            isAccessAuthorized = security.isAccessAuthorized(componentId,
-                getUserId(req), foreignId);
+            ComponentSecurity security =
+                (ComponentSecurity) Class.forName("com.stratelia.webactiv.kmelia.KmeliaSecurity")
+                .newInstance();
+            isAccessAuthorized =
+                security.isAccessAuthorized(componentId, getUserId(req), foreignId);
           } catch (Exception e) {
-            SilverTrace.error("peasUtil", "GoToFile.doPost",
-                "root.EX_CLASS_NOT_INITIALIZED",
+            SilverTrace.error("peasUtil", "GoToDocument.doPost", "root.EX_CLASS_NOT_INITIALIZED",
                 "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
             return null;
           }
         }
 
         if (isAccessAuthorized) {
-          // res.setContentType(attachment.getType());
-          /*
-           * res.setContentType("application/x-download"); res.setContentLength(new
-           * Long(attachment.getSize()).intValue()); res.setHeader("Content-Disposition",
-           * "inline; filename=\""+attachment.getLogicalName()+'"'); String filePath =
-           * AttachmentController.createPath(componentId, "Images")+attachment.getPhysicalName();
-           * write(res, filePath);
-           */
-
-          // http://localhost:8000/silverpeas/FileServer/NV_o2o_Participant_FR.exe?ComponentId=toolbox558&UserId=9&SourceFile=1175858831259.exe&MimeType=application/octet-stream&ArchiveIt=Y&PubId=1460&NodeId=0&Directory=Attachment\Images\&logicalName=NV_o2o_Participant_FR.exe
-          res.sendRedirect(attachment.getAttachmentURL());
+          res.sendRedirect(new VersioningUtil().getDocumentVersionURL(componentId, version
+              .getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId()));
         }
       }
 
       if (!isAccessAuthorized)
-        throw new AccessForbiddenException("GoToFile.getDestination",
-            SilverpeasException.WARNING, null);
+        throw new AccessForbiddenException("GoToFile.getDestination", SilverpeasException.WARNING,
+            null);
 
       return "useless";
     }
 
-    return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId=" +
-        foreignId;
+    return "ComponentId=" + componentId + "&AttachmentId=" + version.getPk().getId() +
+        "&Mapping=Version&ForeignId=" + foreignId;
   }
 }

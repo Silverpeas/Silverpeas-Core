@@ -266,7 +266,7 @@ function perfAction(action, fileName)
             messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
             messageObj.display();
         } else if (action == "checkin") {
-        	document.forms[0].action.value="checkin";
+        	document.forms[0].Action.value="checkin";
         	toSubmit = true;
     	} else {
         	toSubmit = true;

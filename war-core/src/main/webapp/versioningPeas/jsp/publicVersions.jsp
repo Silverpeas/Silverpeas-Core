@@ -101,8 +101,10 @@ for (int i=0;i<vVersions.size();i++) {
 		spinFire += "</OBJECT>";
 		spinFire += "</div>";
     }
+    
+    String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getPk().getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getPhysicalName())+"\" border=\"0\"/></a>");
-	arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorNumber()+"."+publicVersion.getMinorNumber()+"</a>" + spinFire);
+	arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorNumber()+"."+publicVersion.getMinorNumber()+"</a>" + permalink + spinFire);
     arrayLine.addArrayCellText(versioningSC.getUserNameByID(publicVersion.getAuthorId()));
 
    	ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreationDate()));

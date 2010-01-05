@@ -87,7 +87,8 @@ else if (componentGoTo != null)
 	Session.putValue("RedirectToComponentId", componentId);
 	if (attachmentGoTo != null)
 	{
-		String foreignId = (String) request.getParameter("ForeignId");
+		String foreignId = request.getParameter("ForeignId");
+		String type		 = request.getParameter("Mapping");
 		
 		//Contruit l'url vers l'objet du composant contenant le fichier
 		strGoTo = URLManager.getURL(null, componentId)+"searchResult?Type=Publication&Id="+foreignId;
@@ -95,6 +96,7 @@ else if (componentGoTo != null)
 		
 		//Ajoute l'id de l'attachment pour ouverture automatique
 		Session.putValue("RedirectToAttachmentId", attachmentGoTo);
+		Session.putValue("RedirectToMapping", type);
 	}
 }
 else if (spaceGoTo != null)

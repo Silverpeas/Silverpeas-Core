@@ -151,6 +151,18 @@
     <servlet-class>com.stratelia.webactiv.servlets.GoToFile</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>GoToDocument</servlet-name>
+    <display-name>GoToDocument</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.servlets.GoToDocument</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToVersion</servlet-name>
+    <display-name>GoToVersion</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.servlets.GoToVersion</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>MainRequestRouter</servlet-name>
     <display-name>MainRequestRouter</display-name>
     <servlet-class>com.stratelia.webactiv.servlets.MainRequestRouter</servlet-class>
@@ -526,6 +538,14 @@
   <servlet-mapping>
     <servlet-name>GoToFile</servlet-name>
     <url-pattern>/File/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToDocument</servlet-name>
+    <url-pattern>/Document/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToVersion</servlet-name>
+    <url-pattern>/Version/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MainRequestRouter</servlet-name>

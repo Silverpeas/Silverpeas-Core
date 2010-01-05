@@ -178,8 +178,11 @@ function ShareAttachment(id)
         		  share = "<a href=\"javascript:onClick=ShareAttachment('"+ document.getPk().getId() +"')\"><img src=\""+m_context+"/util/icons/webLink.gif\" border=\"0\" alt=\""+messages.getString("attachment.share")+"\"/></a> ";
               }
           }
+          
+          String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
+          
 					arrayLine.addArrayCellLink("<img src='"+versioningSC.getDocumentVersionIconPath( document_version.getPhysicalName())+"' border=0>", "javascript:open_pu_window('"+versioningSC.getDocumentVersionShowVersionsURL()+"',"+document.getPk().getId()+");");
-					arrayLine.addArrayCellText("<a href=\"#\" onClick=\"open_pu_window('"+versioningSC.getDocumentVersionShowVersionsURL()+"',"+document.getPk().getId()+");\">"+document.getName()+"</a>"+lockedBy);
+					arrayLine.addArrayCellText("<a href=\"#\" onClick=\"open_pu_window('"+versioningSC.getDocumentVersionShowVersionsURL()+"',"+document.getPk().getId()+");\">"+document.getName()+"</a>"+permalink+lockedBy);
 					arrayLine.addArrayCellText(document_version.getMajorNumber() + "." + document_version.getMinorNumber());
 					arrayLine.addArrayCellText(resources.getOutputDate(document_version.getCreationDate()));
 					arrayLine.addArrayCellText("<img src='"+versioningSC.getDocumentVersionStatusIconPath( document.getStatus() )+"'/>");

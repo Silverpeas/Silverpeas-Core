@@ -48,7 +48,7 @@
 	if (request.getParameter("VersionType") != null && !request.getParameter("VersionType").equals(""))
 		versionType = (new Integer(request.getParameter("VersionType"))).intValue();
 
-    String action = request.getParameter("action");
+    String action = request.getParameter("Action");
     String comment = request.getParameter("comment");
 
     DocumentPK documentPK = new DocumentPK( Integer.parseInt(docId), versioningSC.getComponentId());
@@ -160,6 +160,7 @@
     String[] creators = new String[maxLine];
     String[] comments = new String[maxLine];
     String[] URLs = new String[maxLine];
+    String[] permalinks = new String[maxLine];
 
     String iconsAddVersion = m_context + "/util/icons/versionAdd.gif";
     String iconsCheckIn    = m_context + "/util/icons/versionUnlock.gif";
@@ -186,6 +187,7 @@
             filenames[j] = version.getLogicalName();
             creators[j] = versioningSC.getUserNameByID(version.getAuthorId());
             dates[j] = resources.getOutputDate(version.getCreationDate());
+            permalinks[j] = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, version.getPk().getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
             
             String xtraData = "";
           	if (StringUtil.isDefined(version.getXmlForm()))
@@ -385,22 +387,25 @@ ArrayLine arrayLine = null; // declare line object of the array
         <tr>
         	<td class="txtlibform"><%=documentNameLabel%> :</td>
              <td align="left" valign="baseline">
-                <input type="text" name="name" size="50" maxlength="100" value="<%=documentName%>"/>
-                <input type="hidden" name="DocId" size="50" maxlength="100" value="<%=docId%>"/>
+                <input type="text" name="name" size="80" maxlength="100" value="<%=documentName%>"/>
+                <input type="hidden" name="DocId" value="<%=docId%>"/>
                 <input type="hidden" name="VersionType" value="<%=versionType%>"/>
-				        <input type="hidden" name="action" value=""/>
+				<input type="hidden" name="Action" value=""/>
+				<input type="hidden" name="from_action" value="1"/>
+    			<input type="hidden" name="comment"/>
+    			<input type="hidden" name="profile" value="<%=flag%>"/>
             </td>
         </tr>
         <tr>
             <td class="txtlibform" valign="top"><%=descriptionLabel%> :</td>
-            <td align="left" valign="baseline"><textarea name="description" rows="3" cols="80"><%=documentDescription%></textarea></td>
+            <td align="left" valign="baseline"><textarea name="description" rows="4" cols="80"><%=documentDescription+"\n"+documentComments%></textarea></td>
         </tr>
-        <tr>
+        <!-- <tr>
         	<td class="txtlibform" valign="top"><%=commentsLabel%> :</td>
             <td align="left" valign="baseline"><textarea name="comments" rows="2" cols="80"><%=documentComments%></textarea></td>
-        </tr>
+        </tr> -->
 </table>
-<br>
+</form>
         <center>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
@@ -409,13 +414,10 @@ ArrayLine arrayLine = null; // declare line object of the array
         buttonPane.addButton(gef.getFormButton(okLabel, "javascript:update();", false));
 
     buttonPane.addButton(gef.getFormButton(noOkLabel, "javascript:window.close();", false));
-    out.println(buttonPane.print());
+    out.print(buttonPane.print());
 %>
         </center>
-    <input type="hidden" name="from_action" value="1">
-    <input type="hidden" name="comment">
-    <input type="hidden" name="profile" value="<%=flag%>">
-</form>
+
 <script language="javacript">
 	document.essai.name.focus();
 </script>
@@ -442,7 +444,7 @@ for (int i=j-1;i>=0;i-- ){
      if (URLs[i].startsWith("javaScript:"))
      	target = "_self";
      arrayLine.addArrayCellLink(versions[i], URLs[i], target);
-     arrayLine.addArrayCellLink(filenames[i], URLs[i], target);
+     arrayLine.addArrayCellLink(filenames[i]+permalinks[i], URLs[i], target);
 
      arrayLine.addArrayCellText(creators[i]);
      arrayLine.addArrayCellText(dates[i]);
@@ -450,7 +452,7 @@ for (int i=j-1;i>=0;i-- ){
 }
 
  	out.println(board.printAfter());
- 	
+ 	out.print("<br/>");
  	if (dragAndDropEnable && newVersionAllowed) {
  		%><table width="100%" border="0" id="DropZone">
  			<tr><td colspan="3" align="right">
