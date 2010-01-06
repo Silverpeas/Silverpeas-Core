@@ -25,6 +25,7 @@ package com.stratelia.webactiv.util.attachment.control;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import java.sql.Connection;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
@@ -39,13 +40,13 @@ public interface AttachmentBm {
   public void updateAttachment(AttachmentDetail attachDetail)
       throws AttachmentException;
 
-  public Vector getAttachmentsByForeignKey(AttachmentPK foreignKey)
+  public Vector<AttachmentDetail> getAttachmentsByForeignKey(AttachmentPK foreignKey)
       throws AttachmentException;
 
   public AttachmentDetail getAttachmentByPrimaryKey(AttachmentPK primaryKey)
       throws AttachmentException;
 
-  public Vector getAttachmentsByWorkerId(String workerId)
+  public Vector<AttachmentDetail> getAttachmentsByWorkerId(String workerId)
       throws AttachmentException;
 
   public AttachmentDetail findPrevious(AttachmentDetail ad)
@@ -54,10 +55,10 @@ public interface AttachmentBm {
   public AttachmentDetail findNext(AttachmentDetail ad)
       throws AttachmentException;
 
-  public Vector getAttachmentsByPKAndParam(AttachmentPK foreignKey,
+  public Vector<AttachmentDetail> getAttachmentsByPKAndParam(AttachmentPK foreignKey,
       String nameAttribut, String valueAttribut) throws AttachmentException;
 
-  public Vector getAttachmentsByPKAndContext(AttachmentPK foreignKey,
+  public Vector<AttachmentDetail> getAttachmentsByPKAndContext(AttachmentPK foreignKey,
       String context, Connection con) throws AttachmentException;
 
   public void deleteAttachment(AttachmentPK primaryKey)
@@ -67,14 +68,16 @@ public interface AttachmentBm {
       throws AttachmentException;
 
   // pour la gestion des retards sur les reservations de fichiers
-  public Collection getAllAttachmentByDate(Date date, boolean alert)
+  public Collection<AttachmentDetail> getAllAttachmentByDate(Date date, boolean alert)
       throws AttachmentException;
 
-  public Collection getAllAttachmentToLib(Date date) throws AttachmentException;
+  public Collection<AttachmentDetail> getAllAttachmentToLib(Date date) throws AttachmentException;
 
   public void notifyUser(NotificationMetaData notifMetaData, String senderId,
       String componentId) throws AttachmentException;
 
   public void updateXmlForm(AttachmentPK pk, String language, String xmlFormName)
       throws AttachmentException;
+
+  public void sortAttachments(List<AttachmentPK> attachmentPKs) throws AttachmentException;
 }

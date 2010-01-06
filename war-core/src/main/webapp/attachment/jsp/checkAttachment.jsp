@@ -121,11 +121,10 @@ private boolean isFileSharingEnable(MainSessionController msc, String componentI
 	
 	String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-	if (resources == null)
-		resources = new ResourcesWrapper(messages, null, null, language);
+	ResourcesWrapper attResources = new ResourcesWrapper(messages, null, null, language);
 	
 	// Pixels
 	String noColorPix       = m_Context + "/util/icons/colorPix/1px.gif";
 	String ArrayPnoColorPix = m_Context + "/util/icons/colorPix/15px.gif";
+	ResourceLocator attSettings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
 %>

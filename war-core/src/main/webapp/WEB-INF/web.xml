@@ -478,6 +478,12 @@
     <description>no description</description>
     <servlet-class>com.silverpeas.external.webConnections.servlets.WebConnectionsRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>AttachmentAjaxServlet</servlet-name>
+    <display-name>AttachmentAjaxServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.attachment.servlets.AjaxServlet</servlet-class>
+  </servlet>
   <!--
   <servlet>
     <servlet-name>AjaxFileUploadServlet</servlet-name>
@@ -775,6 +781,10 @@
   <servlet-mapping>
     <servlet-name>WebConnectionsRequestRouter</servlet-name>
     <url-pattern>/RwebConnections/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AttachmentAjaxServlet</servlet-name>
+    <url-pattern>/Attachment/*</url-pattern>
   </servlet-mapping>
   <!--
   <servlet-mapping>

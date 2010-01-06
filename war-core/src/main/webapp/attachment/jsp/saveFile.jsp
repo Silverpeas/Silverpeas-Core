@@ -30,14 +30,12 @@
 <%@ page import="java.util.StringTokenizer"%>
 
 <%
-  String id				= null;
-  String componentId	= null;
-  String context		= null;
-  String url			= null;
-  String pIndexIt		= null;
-  boolean indexIt		= true;
+  String id				= (String) session.getAttribute("Silverpeas_Attachment_ObjectId");
+  String componentId	= (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
+  String context		= (String) session.getAttribute("Silverpeas_Attachment_Context");
+  boolean indexIt		= ((Boolean) session.getAttribute("Silverpeas_Attachment_IndexIt")).booleanValue();
 
-  String path			= null;
+  String path			= AttachmentController.createPath(componentId, context);
   
   String logicalName	= null;
   String physicalName	= null;
@@ -55,19 +53,8 @@
   DiskFileUpload 	dfu 	= new DiskFileUpload();
   List 				items 	= dfu.parseRequest(request);
   
-  id 			= getParameterValue(items, "Id");
-  componentId 	= getParameterValue(items, "ComponentId");
-  context 		= getParameterValue(items, "Context");
-  path 			= getParameterValue(items, "Path");
-  url 			= getParameterValue(items, "Url");
   title 		= getParameterValue(items, "Title");
   info 			= getParameterValue(items, "Description");
-  pIndexIt 		= getParameterValue(items, "IndexIt");
-  
-  if ("1".equals(pIndexIt))
-	  indexIt = true;
-  else if ("0".equals(pIndexIt))
-	  indexIt = false;
   
   FileItem file = getUploadedFile(items, "file_upload");
   if (file != null)
@@ -152,13 +139,6 @@
 			}
 		} 
 	}
-	/*else{
-			SilverTrace.info("attachment", "SaveFile.jsp", "root.MSG_GEN_PARAM_VALUE","dir="+dir.getPath());
-			//le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le supprimer
-			FileFolderManager ffm = new FileFolderManager();
-			ffm.deleteFolder(dir.getPath());
-			isExistFile = false;
-	}*/
 %>
 <HTML>
 <HEAD>
@@ -170,11 +150,6 @@
 <%
 	Frame frame=gef.getFrame();
 	out.println(frame.printBefore());
-    String paramDelimiter = "?";
-    if (url.indexOf("?") != -1) {
-            //Il existe déjà un '?' dans la chaine url
-            paramDelimiter = "&";
-    }
 %>
 <center>
 <% if (!isExistFile){ %>
@@ -198,14 +173,13 @@
       </table><br>
      <%
         ButtonPane buttonPane2 = gef.getButtonPane();
-        buttonPane2.addButton((Button) gef.getFormButton(resources.getString("GML.back"), "javascript:window.opener.location.href='"+m_Context+ url + paramDelimiter +"Id="+id + "&Component=" + componentId + "'; window.close()", false));
+        buttonPane2.addButton((Button) gef.getFormButton(attResources.getString("GML.back"), "javascript:window.opener.location.reload();window.close();", false));
         out.println(buttonPane2.print());
-        out.println(frame.printMiddle());
         out.println(frame.printAfter());
 		%>
 <% } else { %>
 	<script language='javascript'>
-		window.opener.location.href="<%=m_Context%><%=url%><%=paramDelimiter%>" + "Id=<%=id%>&Component=<%=componentId%>";
+		window.opener.location.reload();
 		window.close();
 	</script>
 <% } %>

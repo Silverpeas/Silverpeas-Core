@@ -23,13 +23,13 @@
  */
 package com.stratelia.webactiv.util.attachment.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -351,13 +351,14 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
+   * 
    * @param con
    * @param foreignKey
    * @return
    * @throws SQLException
    * @see
    */
-  public static Vector findByForeignKey(Connection con, WAPrimaryKey foreignKey)
+  public static Vector<AttachmentDetail> findByForeignKey(Connection con, WAPrimaryKey foreignKey)
       throws SQLException {
     StringBuffer selectStatement = new StringBuffer();
     selectStatement.append("select ").append(attachmentTableColumns);
@@ -368,9 +369,9 @@ public class AttachmentDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    Vector attachments;
+    Vector<AttachmentDetail> attachments;
     try {
-      attachments = new Vector();
+      attachments = new Vector<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectStatement.toString());
 
       // this "id" is the "id" of customer object.
@@ -408,7 +409,7 @@ public class AttachmentDAO {
     }
   }
 
-  public static Vector findByWorkerId(Connection con, String workerId)
+  public static Vector<AttachmentDetail> findByWorkerId(Connection con, String workerId)
       throws SQLException {
     StringBuffer selectStatement = new StringBuffer();
     selectStatement.append("select ").append(attachmentTableColumns);
@@ -418,9 +419,9 @@ public class AttachmentDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    Vector attachments;
+    Vector<AttachmentDetail> attachments;
     try {
-      attachments = new Vector();
+      attachments = new Vector<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectStatement.toString());
 
       prepStmt.setString(1, workerId);
@@ -443,6 +444,7 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
+   * 
    * @param con
    * @param foreignKey
    * @param nameAttribut
@@ -451,7 +453,7 @@ public class AttachmentDAO {
    * @throws SQLException
    * @see
    */
-  public static Vector findByPKAndParam(Connection con,
+  public static Vector<AttachmentDetail> findByPKAndParam(Connection con,
       WAPrimaryKey foreignKey, String nameAttribut, String valueAttribut)
       throws SQLException {
     StringBuffer selectQuery = new StringBuffer();
@@ -464,7 +466,7 @@ public class AttachmentDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    Vector attachments = new Vector();
+    Vector<AttachmentDetail> attachments = new Vector<AttachmentDetail>();
 
     try {
       prepStmt = con.prepareStatement(selectQuery.toString());
@@ -491,6 +493,7 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
+   * 
    * @param con
    * @param foreignKey
    * @param context
@@ -498,7 +501,7 @@ public class AttachmentDAO {
    * @throws SQLException
    * @see
    */
-  public static Vector findByPKAndContext(Connection con,
+  public static Vector<AttachmentDetail> findByPKAndContext(Connection con,
       WAPrimaryKey foreignKey, String context) throws SQLException {
     StringBuffer selectQuery = new StringBuffer();
     selectQuery.append("select ").append(attachmentTableColumns);
@@ -517,9 +520,9 @@ public class AttachmentDAO {
     ResultSet rs = null;
     int i = 0;
 
-    Vector attachments;
+    Vector<AttachmentDetail> attachments;
     try {
-      attachments = new Vector();
+      attachments = new Vector<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectQuery.toString());
 
       prepStmt.setString(1, foreignKey.getId());
@@ -680,7 +683,7 @@ public class AttachmentDAO {
     }
   }
 
-  public static Collection getAllAttachmentByDate(Connection con, Date date,
+  public static Collection<AttachmentDetail> getAllAttachmentByDate(Connection con, Date date,
       boolean alert) throws SQLException {
     StringBuffer selectQuery = new StringBuffer();
     selectQuery.append("select ").append(attachmentTableColumns);
@@ -696,9 +699,9 @@ public class AttachmentDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    Collection attachments;
+    Collection<AttachmentDetail> attachments;
     try {
-      attachments = new ArrayList();
+      attachments = new ArrayList<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectQuery.toString());
 
       prepStmt.setString(1, DateUtil.date2SQLDate(date));
@@ -722,7 +725,7 @@ public class AttachmentDAO {
     return attachments;
   }
 
-  public static Collection getAllAttachmentToLib(Connection con, Date date)
+  public static Collection<AttachmentDetail> getAllAttachmentToLib(Connection con, Date date)
       throws SQLException {
     StringBuffer selectQuery = new StringBuffer();
     selectQuery.append("select ").append(attachmentTableColumns);
@@ -735,9 +738,9 @@ public class AttachmentDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    Collection attachments;
+    Collection<AttachmentDetail> attachments;
     try {
-      attachments = new ArrayList();
+      attachments = new ArrayList<AttachmentDetail>();
       prepStmt = con.prepareStatement(selectQuery.toString());
 
       prepStmt.setString(1, DateUtil.date2SQLDate(date));
@@ -759,6 +762,30 @@ public class AttachmentDAO {
     }
 
     return attachments;
+  }
+
+  public static void sortAttachments(Connection con, List<AttachmentPK> attachmentPKs)
+      throws SQLException {
+    StringBuffer updateQuery = new StringBuffer();
+    updateQuery.append("update ").append(attachmentTableName);
+    updateQuery.append(" set attachmentOrderNum = ? ");
+    updateQuery.append(" where attachmentId = ? ");
+    String query = updateQuery.toString();
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      AttachmentPK attachmentPK;
+      for (int i = 0; i < attachmentPKs.size(); i++) {
+        attachmentPK = attachmentPKs.get(i);
+        prepStmt.setInt(1, i);
+        prepStmt.setInt(2, Integer.parseInt(attachmentPK.getId()));
+
+        prepStmt.executeUpdate();
+      }
+
+    } finally {
+      DBUtil.close(prepStmt);
+    }
   }
 
 }

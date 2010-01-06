@@ -1,31 +1,18 @@
-/**
- * Copyright (C) 2000 - 2009 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+/*
+Copyright (c) 2009, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.8.0r4
+*/
 .yui-overlay,
 .yui-panel-container {
     visibility: hidden;
     position: absolute;
     z-index: 2;
+}
+
+.yui-panel {
+    position:relative;
 }
 
 .yui-panel-container form {
@@ -116,7 +103,7 @@ PLEASE NOTE:
 ** For more information on this issue, see:
 
    + https://bugzilla.mozilla.org/show_bug.cgi?id=187435
-   + SourceForge bug #1723530
+   + YUILibrary bug #1723530
 
 */
 
@@ -157,7 +144,7 @@ PLEASE NOTE:
     padding-bottom: 1px;
 }
 
-.yui-effect-fade .underlay {
+.yui-effect-fade .underlay, .yui-effect-fade .yui-tt-shadow {
     display:none;
 }
 
@@ -171,7 +158,19 @@ PLEASE NOTE:
 */
 
 .yui-tt-shadow {
-
     position: absolute;
+}
 
+.yui-override-padding {
+    padding:0 !important;
+}
+
+.yui-panel-container .container-close {
+    overflow:hidden;
+    text-indent:-10000em;
+    text-decoration:none;
+}
+
+.yui-overlay.yui-force-redraw, .yui-panel-container.yui-force-redraw {
+    margin-bottom:1px;
 }

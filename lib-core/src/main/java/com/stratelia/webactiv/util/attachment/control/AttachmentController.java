@@ -98,6 +98,7 @@ public class AttachmentController {
   /**
    * to create file attached to an object who is identified by "PK" AttachmentDetail object contains
    * a attribute who identifie the link by a foreign key.
+   * 
    * @param attchdetail - an AttachmentDetail to create
    * @param indexIt - indicates if attachment must be indexed or not
    * @return AttachmentDetail just created
@@ -139,6 +140,7 @@ public class AttachmentController {
 
   /**
    * to update file information (title and description) AttachmentDetail object to update.
+   * 
    * @param attchdetail :AttachmentDetail.
    * @param indexIt - indicates if attachment must be indexed or not
    * @author Nicolas EYSSERIC
@@ -283,14 +285,15 @@ public class AttachmentController {
 
   /**
    * to search all file attached to an object who is identified by "PK"
+   * 
    * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
-   * this key must be transformed to AttachmentPK
+   *          this key must be transformed to AttachmentPK
    * @return java.util.Vector: a collection of AttachmentDetail
    * @exception AttachmentRuntimeException when is impossible to search
    * @author Jean-Claude Groccia
    * @version 1.0
    */
-  public static Vector searchAttachmentByCustomerPK(WAPrimaryKey foreignKey) {
+  public static Vector<AttachmentDetail> searchAttachmentByCustomerPK(WAPrimaryKey foreignKey) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
         .getSpace(), foreignKey.getComponentName());
 
@@ -318,7 +321,7 @@ public class AttachmentController {
     unindexAttachmentsByForeignKey(fromPK);
 
     AttachmentPK pk = new AttachmentPK(fromPK.getId(), fromPK.getInstanceId());
-    Vector attachments = getAttachmentBm().getAttachmentsByForeignKey(pk);
+    Vector<AttachmentDetail> attachments = getAttachmentBm().getAttachmentsByForeignKey(pk);
 
     if (attachments != null) {
       SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
@@ -331,7 +334,7 @@ public class AttachmentController {
     File toFile = null;
 
     for (int a = 0; (attachments != null) && (a < attachments.size()); a++) {
-      attachment = (AttachmentDetail) attachments.get(a);
+      attachment = attachments.get(a);
 
       // move file on disk
       fromFile = new File(fromAbsolutePath + "Attachment" + File.separator
@@ -421,6 +424,7 @@ public class AttachmentController {
 
   /**
    * to search all file attached
+   * 
    * @param pk : AttachmentPK: the primary key of object AttachmentDetail
    * @return java.util.Vector: a collection of AttachmentDetail
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -441,8 +445,9 @@ public class AttachmentController {
 
   /**
    * to search all file attached by primary key of customer object and mime type of file attached
+   * 
    * @param pk : com.stratelia.webactiv.util.WAPrimaryKey:the primary key of customer object but
-   * this key must be transformed to AttachmentPK
+   *          this key must be transformed to AttachmentPK
    * @param String : the mime type of file attached
    * @return java.util.Vector, a vector of AttachmentDetail
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -450,7 +455,7 @@ public class AttachmentController {
    * @author Jean-Claude Groccia
    * @version 1.0
    */
-  public static Vector searchAttachmentByPKAndMimeType(WAPrimaryKey foreignKey,
+  public static Vector<AttachmentDetail> searchAttachmentByPKAndMimeType(WAPrimaryKey foreignKey,
       String mimeType) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
         .getSpace(), foreignKey.getComponentName());
@@ -464,15 +469,16 @@ public class AttachmentController {
     }
   }
 
-  public static Vector searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
+  public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
       String context) {
     return searchAttachmentByPKAndContext(foreignKey, context, null);
   }
 
   /**
    * to search all file attached by primary key of customer object and context of file attached
+   * 
    * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
-   * this key must be transformed to AttachmentPK
+   *          this key must be transformed to AttachmentPK
    * @param context : String: the context attribute of file attached
    * @return java.util.Vector, a vector of AttachmentDetail
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -481,7 +487,7 @@ public class AttachmentController {
    * @version 1.0
    */
   // méthode pour wysiwig pb de gestion d'exception
-  public static Vector searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
+  public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
       String context, Connection con) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
         .getSpace(), foreignKey.getComponentName());
@@ -497,6 +503,7 @@ public class AttachmentController {
 
   /**
    * to provide applicationIndexer service
+   * 
    * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object
    * @return void
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -506,10 +513,10 @@ public class AttachmentController {
   public static void attachmentIndexer(WAPrimaryKey fk) {
 
     try {
-      Iterator it = searchAttachmentByCustomerPK(fk).iterator();
+      Iterator<AttachmentDetail> it = searchAttachmentByCustomerPK(fk).iterator();
 
       while (it.hasNext()) {
-        AttachmentDetail detail = (AttachmentDetail) (it.next());
+        AttachmentDetail detail = it.next();
         createIndex(detail);
       }
     } catch (Exception fe) {
@@ -521,8 +528,9 @@ public class AttachmentController {
 
   /**
    * to delete all file attached to an customer object
+   * 
    * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
-   * this key must be transformed to AttachmentPK
+   *          this key must be transformed to AttachmentPK
    * @return void
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    * @exception AttachmentRuntimeException when is impossible to delete
@@ -532,13 +540,13 @@ public class AttachmentController {
   public static void deleteAttachmentByCustomerPK(WAPrimaryKey foreignKey) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
         .getComponentName());
-    Vector attachmentDetails = searchAttachmentByCustomerPK(fk);
+    Vector<AttachmentDetail> attachmentDetails = searchAttachmentByCustomerPK(fk);
     deleteAttachment(attachmentDetails);
   }
 
   public static void deleteAttachmentsByCustomerPKAndContext(
       WAPrimaryKey foreignKey, String context) {
-    Vector attachmentDetails = searchAttachmentByPKAndContext(foreignKey,
+    Vector<AttachmentDetail> attachmentDetails = searchAttachmentByPKAndContext(foreignKey,
         context);
     deleteAttachment(attachmentDetails);
   }
@@ -546,11 +554,11 @@ public class AttachmentController {
   public static void unindexAttachmentsByForeignKey(WAPrimaryKey foreignKey) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
         .getSpace(), foreignKey.getComponentName());
-    Vector attachmentDetails = searchAttachmentByCustomerPK(fk);
-    Iterator it = attachmentDetails.iterator();
+    Vector<AttachmentDetail> attachmentDetails = searchAttachmentByCustomerPK(fk);
+    Iterator<AttachmentDetail> it = attachmentDetails.iterator();
 
     while (it.hasNext()) {
-      AttachmentDetail aD = (AttachmentDetail) (it.next());
+      AttachmentDetail aD = it.next();
       deleteIndex(aD);
     }
   }
@@ -558,13 +566,13 @@ public class AttachmentController {
   public static void deleteWysiwygAttachmentByCustomerPK(WAPrimaryKey foreignKey) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey
         .getSpace(), foreignKey.getComponentName());
-    Vector attachmentDetails = searchAttachmentByCustomerPK(fk);
+    Vector<AttachmentDetail> attachmentDetails = searchAttachmentByCustomerPK(fk);
 
     // Astuce pour que seuls les attachements wysiwyg soit effacés
     int i = 0;
 
     while (i < attachmentDetails.size()) {
-      AttachmentDetail attDetail = (AttachmentDetail) attachmentDetails.get(i);
+      AttachmentDetail attDetail = attachmentDetails.get(i);
 
       if (!((attDetail.getContext().charAt(0) >= '0') && (attDetail
           .getContext().charAt(0) <= '9'))) {
@@ -579,6 +587,7 @@ public class AttachmentController {
 
   /**
    * to delete one file attached.
+   * 
    * @param attachDetail : the attachmentDetail object to deleted
    * @return void
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -663,6 +672,7 @@ public class AttachmentController {
 
   /**
    * to delete a list of file attached.
+   * 
    * @param java .util.Vector attachDetail: the vector of attachmentDetail object to deleted
    * @return void
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -670,17 +680,18 @@ public class AttachmentController {
    * @author Jean-Claude Groccia
    * @version 1.0
    */
-  public static void deleteAttachment(Vector vectorAttachmentDetail) {
-    Iterator it = vectorAttachmentDetail.iterator();
+  public static void deleteAttachment(Vector<AttachmentDetail> vectorAttachmentDetail) {
+    Iterator<AttachmentDetail> it = vectorAttachmentDetail.iterator();
 
     while (it.hasNext()) {
-      AttachmentDetail aD = (AttachmentDetail) (it.next());
+      AttachmentDetail aD = it.next();
       deleteAttachment(aD);
     }
   }
 
   /**
    * to delete one file attached.
+   * 
    * @param attachDetail : the attachmentDetail object to deleted
    * @return void
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
@@ -718,23 +729,25 @@ public class AttachmentController {
   /**
    * to create file attached to an object who is identified by "PK" AttachmentDetail object contains
    * a attribute who identifie the father by a foreign key.
+   * 
    * @param vectorAttchdetail : java.util.Vector contains a list of AttachmentDetail object.
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    * @exception AttachmentRuntimeException when is impossible to create
    * @author Jean-Claude Groccia
    * @version 1.0
    */
-  public static void createAttachment(Vector vectorAttachmentDetail) {
-    Iterator it = vectorAttachmentDetail.iterator();
+  public static void createAttachment(Vector<AttachmentDetail> vectorAttachmentDetail) {
+    Iterator<AttachmentDetail> it = vectorAttachmentDetail.iterator();
 
     while (it.hasNext()) {
-      AttachmentDetail aD = (AttachmentDetail) (it.next());
+      AttachmentDetail aD = it.next();
       createAttachment(aD);
     }
   }
 
   /**
    * Method to build the attachment Context
+   * 
    * @param str : String: the string of repertories
    * @param token : String: the token séparating the repertories
    * @return: String : the string separating by token of attachmentDetail.context.
@@ -745,6 +758,7 @@ public class AttachmentController {
 
   /**
    * to create path
+   * 
    * @deprecated Warning: the token separing the repertories is ","
    * @param spaceId : type String: the name of space
    * @param componentId : type String: the name of component
@@ -757,6 +771,7 @@ public class AttachmentController {
 
   /**
    * To create path Warning: the token separing the repertories is ","
+   * 
    * @param spaceId : type String: the name of space
    * @param componentId : type String: the name of component
    * @param context : type String: string made up of the repertories separated by token ","
@@ -810,6 +825,7 @@ public class AttachmentController {
 
   /**
    * to get mime type of the file param extensionFile : type String
+   * 
    * @author Mohammed Hguig
    * @varsion 1.0
    */
@@ -842,19 +858,19 @@ public class AttachmentController {
     return mimeType;
   }
 
-  public static List getLanguagesOfAttachments(ForeignPK foreignPK) {
-    List languages = new ArrayList();
-    Vector attachments = searchAttachmentByPKAndContext(foreignPK, "Images");
+  public static List<String> getLanguagesOfAttachments(ForeignPK foreignPK) {
+    List<String> languages = new ArrayList<String>();
+    Vector<AttachmentDetail> attachments = searchAttachmentByPKAndContext(foreignPK, "Images");
     AttachmentDetail detail = null;
-    Iterator itLanguages = null;
+    Iterator<String> itLanguages = null;
     String language = null;
 
-    for (int v = 0; (attachments != null) && (v < attachments.size()); v++) {
-      detail = (AttachmentDetail) attachments.get(v);
+    for (int v = 0; attachments != null && v < attachments.size(); v++) {
+      detail = attachments.get(v);
       itLanguages = detail.getLanguages();
 
       while ((itLanguages != null) && itLanguages.hasNext()) {
-        language = (String) itLanguages.next();
+        language = itLanguages.next();
 
         if (!languages.contains(language)) {
           languages.add(language);
@@ -869,6 +885,7 @@ public class AttachmentController {
   /**
    * to delete file on server param atDetail: type AttachmentDetail: the object AttachmentDetail to
    * deleted
+   * 
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    * @author Jean-Claude Groccia
    * @version 1.0
@@ -907,6 +924,7 @@ public class AttachmentController {
 
   /**
    * Method declaration
+   * 
    * @param detail
    * @see
    */
@@ -922,10 +940,10 @@ public class AttachmentController {
       String fk = detail.getForeignKey().getId();
 
       try {
-        Iterator languages = detail.getLanguages();
+        Iterator<String> languages = detail.getLanguages();
 
         while (languages.hasNext()) {
-          String language = (String) languages.next();
+          String language = languages.next();
           AttachmentDetailI18N translation = (AttachmentDetailI18N) detail
               .getTranslation(language);
 
@@ -1014,6 +1032,7 @@ public class AttachmentController {
 
   /**
    * Method declaration
+   * 
    * @param detail
    * @see
    */
@@ -1042,15 +1061,16 @@ public class AttachmentController {
 
   /**
    * to copy all files attached to an object who is identified by "PK" to an other object
+   * 
    * @param foreignKeyFrom : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
-   * object source
+   *          object source
    * @param foreignKeyTo : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
-   * object destination
+   *          object destination
    * @exception AttachmentRuntimeException
    * @author SCO
    * @version 1.0
    */
-  public static Hashtable copyAttachmentByCustomerPK(
+  public static Hashtable<String, String> copyAttachmentByCustomerPK(
       WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo)
       throws AttachmentRuntimeException {
     SilverTrace.debug("attachment",
@@ -1058,12 +1078,12 @@ public class AttachmentController {
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
         + ", foreignKeyTo=" + foreignKeyTo);
 
-    Vector attsToCopy = searchAttachmentByCustomerPK(foreignKeyFrom);
+    Vector<AttachmentDetail> attsToCopy = searchAttachmentByCustomerPK(foreignKeyFrom);
 
     return copyAttachments(attsToCopy, foreignKeyFrom, foreignKeyTo);
   }
 
-  public static Hashtable copyAttachmentByCustomerPKAndContext(
+  public static Hashtable<String, String> copyAttachmentByCustomerPKAndContext(
       WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo, String context)
       throws AttachmentRuntimeException {
     SilverTrace.debug("attachment",
@@ -1071,19 +1091,19 @@ public class AttachmentController {
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
         + ", foreignKeyTo=" + foreignKeyTo);
 
-    Vector attsToCopy = searchAttachmentByPKAndContext(foreignKeyFrom, context);
+    Vector<AttachmentDetail> attsToCopy = searchAttachmentByPKAndContext(foreignKeyFrom, context);
 
     return copyAttachments(attsToCopy, foreignKeyFrom, foreignKeyTo);
   }
 
-  private static Hashtable copyAttachments(Vector attsToCopy,
+  private static Hashtable<String, String> copyAttachments(Vector<AttachmentDetail> attsToCopy,
       WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo)
       throws AttachmentRuntimeException {
     SilverTrace.debug("attachment", "AttachmentController.copyAttachments",
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
         + ", foreignKeyTo=" + foreignKeyTo);
 
-    Hashtable ids = new Hashtable();
+    Hashtable<String, String> ids = new Hashtable<String, String>();
 
     if (attsToCopy != null) {
       AttachmentPK atPK = new AttachmentPK(null, foreignKeyTo.getSpace(),
@@ -1157,6 +1177,7 @@ public class AttachmentController {
    * to copy one file to another on server param attDetailFrom: type AttachmentDetail: the object
    * AttachmentDetail to copy param attDetailTo: type AttachmentDetail: the object AttachmentDetail
    * to create
+   * 
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    * @author SCO
    * @version 1.0
@@ -1194,6 +1215,7 @@ public class AttachmentController {
 
   /**
    * Checkin a file
+   * 
    * @param String attachmentId
    * @param String componentId
    * @param String updateMode
@@ -1296,6 +1318,7 @@ public class AttachmentController {
 
   /**
    * Checkout a file for update by user
+   * 
    * @param String attachmentId
    * @param String userId
    * @throws AttachmentException
@@ -1307,6 +1330,7 @@ public class AttachmentController {
 
   /**
    * Checkout a file for update by user
+   * 
    * @param String attachmentId
    * @param String userId
    * @param String fileLanguage
@@ -1324,12 +1348,12 @@ public class AttachmentController {
 
       // Check if user haven't check out another file with same name
       // to prevent overwriting
-      Iterator checkOutFiles = getAttachmentBm().getAttachmentsByWorkerId(
+      Iterator<AttachmentDetail> checkOutFiles = getAttachmentBm().getAttachmentsByWorkerId(
           userId).iterator();
       AttachmentDetail checkOutFile = null;
 
       while (checkOutFiles.hasNext()) {
-        checkOutFile = (AttachmentDetail) checkOutFiles.next();
+        checkOutFile = checkOutFiles.next();
 
         if (checkOutFile.getLogicalName(language).equalsIgnoreCase(
             attachmentDetail.getLogicalName(language))) {
@@ -1411,6 +1435,7 @@ public class AttachmentController {
 
   /**
    * Get a UserDetail
+   * 
    * @param String userId
    * @throws AttachmentException
    */
@@ -1423,15 +1448,15 @@ public class AttachmentController {
 
   public static void cloneAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey) throws AttachmentException {
-    Vector attachments = getAttachmentBm().getAttachmentsByPKAndParam(
+    Vector<AttachmentDetail> attachments = getAttachmentBm().getAttachmentsByPKAndParam(
         fromForeignKey, "Context", "Images");
-    Iterator iAttachments = attachments.iterator();
+    Iterator<AttachmentDetail> iAttachments = attachments.iterator();
 
     AttachmentDetail a = null;
     AttachmentDetail clone = null;
 
     while (iAttachments.hasNext()) {
-      a = (AttachmentDetail) iAttachments.next();
+      a = iAttachments.next();
       clone = (AttachmentDetail) a.clone();
 
       // The file must be copied
@@ -1453,11 +1478,11 @@ public class AttachmentController {
       AttachmentPK toForeignKey) throws AttachmentException {
 
     // On part des fichiers d'origine
-    Vector attachments = getAttachmentBm().getAttachmentsByPKAndParam(
+    Vector<AttachmentDetail> attachments = getAttachmentBm().getAttachmentsByPKAndParam(
         fromForeignKey, "Context", "Images");
-    Iterator iAttachments = attachments.iterator();
+    Iterator<AttachmentDetail> iAttachments = attachments.iterator();
 
-    Vector clones = getAttachmentBm().getAttachmentsByPKAndParam(toForeignKey,
+    Vector<AttachmentDetail> clones = getAttachmentBm().getAttachmentsByPKAndParam(toForeignKey,
         "Context", "Images");
 
     // recherche suppressions et modifications
@@ -1465,7 +1490,7 @@ public class AttachmentController {
     AttachmentDetail clone = null;
 
     while (iAttachments.hasNext()) {
-      attachmentDetail = (AttachmentDetail) iAttachments.next();
+      attachmentDetail = iAttachments.next();
 
       // Ce fichier existe-il toujours ?
       clone = searchClone(attachmentDetail, clones);
@@ -1489,12 +1514,12 @@ public class AttachmentController {
     if (clones.size() > 0) {
 
       // Il s'agit d'ajouts
-      Iterator iClones = clones.iterator();
+      Iterator<AttachmentDetail> iClones = clones.iterator();
 
       clone = null;
 
       while (iClones.hasNext()) {
-        clone = (AttachmentDetail) iClones.next();
+        clone = iClones.next();
 
         clone.setForeignKey(fromForeignKey);
         clone.setCloneId(null);
@@ -1507,13 +1532,13 @@ public class AttachmentController {
   }
 
   private static AttachmentDetail searchClone(
-      AttachmentDetail attachmentDetail, Vector clones) {
-    Iterator iClones = clones.iterator();
+      AttachmentDetail attachmentDetail, Vector<AttachmentDetail> clones) {
+    Iterator<AttachmentDetail> iClones = clones.iterator();
 
     AttachmentDetail clone = null;
 
     while (iClones.hasNext()) {
-      clone = (AttachmentDetail) iClones.next();
+      clone = iClones.next();
 
       if ((clone.getCloneId() != null)
           && clone.getCloneId().equals(attachmentDetail.getPK().getId())) {
@@ -1547,5 +1572,9 @@ public class AttachmentController {
   public static void addXmlForm(AttachmentPK pk, String language,
       String xmlFormName) throws AttachmentException {
     getAttachmentBm().updateXmlForm(pk, language, xmlFormName);
+  }
+
+  public static void sortAttachments(List<AttachmentPK> attachmentPKs) throws AttachmentException {
+    getAttachmentBm().sortAttachments(attachmentPKs);
   }
 }

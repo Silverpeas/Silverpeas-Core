@@ -85,11 +85,11 @@ public class AttachmentBmImpl implements AttachmentBm {
         // if (oldLang.equalsIgnoreCase(attachDetail.getLanguage()))
         if ("-1".equals(attachDetail.getTranslationId())) {
           // Default language = translation
-          List translations = AttachmentI18NDAO.getTranslations(con,
+          List<AttachmentDetailI18N> translations = AttachmentI18NDAO.getTranslations(con,
               attachDetail.getPK());
 
           if (translations != null && translations.size() > 0) {
-            AttachmentDetailI18N translation = (AttachmentDetailI18N) translations
+            AttachmentDetailI18N translation = translations
                 .get(0);
 
             attachDetail.setPhysicalName(translation.getPhysicalName());
@@ -157,7 +157,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public Vector getAttachmentsByForeignKey(AttachmentPK foreignKey)
+  public Vector<AttachmentDetail> getAttachmentsByForeignKey(AttachmentPK foreignKey)
       throws AttachmentException {
     Connection con = getConnection();
     try {
@@ -171,7 +171,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public Vector getAttachmentsByWorkerId(String workerId)
+  public Vector<AttachmentDetail> getAttachmentsByWorkerId(String workerId)
       throws AttachmentException {
     Connection con = getConnection();
     try {
@@ -224,7 +224,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public Vector getAttachmentsByPKAndParam(AttachmentPK foreignKey,
+  public Vector<AttachmentDetail> getAttachmentsByPKAndParam(AttachmentPK foreignKey,
       String nameAttribut, String valueAttribut) throws AttachmentException {
     Connection con = getConnection();
     try {
@@ -238,7 +238,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public Vector getAttachmentsByPKAndContext(AttachmentPK foreignKey,
+  public Vector<AttachmentDetail> getAttachmentsByPKAndContext(AttachmentPK foreignKey,
       String context, Connection con) throws AttachmentException {
     if (con == null) {
       SilverTrace.info("attachment",
@@ -290,7 +290,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public Collection getAllAttachmentByDate(Date date, boolean alert)
+  public Collection<AttachmentDetail> getAllAttachmentByDate(Date date, boolean alert)
       throws AttachmentException {
     Connection con = getConnection();
     try {
@@ -303,7 +303,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public Collection getAllAttachmentToLib(Date date) throws AttachmentException {
+  public Collection<AttachmentDetail> getAllAttachmentToLib(Date date) throws AttachmentException {
     Connection con = getConnection();
     try {
       return AttachmentDAO.getAllAttachmentToLib(con, date);
@@ -357,6 +357,18 @@ public class AttachmentBmImpl implements AttachmentBm {
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.updateXmlForm()",
           SilverpeasException.ERROR, "EX_RECORD_NOT_UPDATE_ATTACHMENT", se);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  public void sortAttachments(List<AttachmentPK> attachmentPKs) throws AttachmentException {
+    Connection con = getConnection();
+    try {
+      AttachmentDAO.sortAttachments(con, attachmentPKs);
+    } catch (SQLException se) {
+      throw new AttachmentException("AttachmentBmImpl.sortAttachments()",
+          SilverpeasException.ERROR, "EX_ERROR_WHEN_SORTING_ATTACHMENTS", se);
     } finally {
       closeConnection(con);
     }

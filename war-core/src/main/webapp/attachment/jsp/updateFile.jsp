@@ -29,46 +29,26 @@
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
 
 <%
-	String id			= "";
-	String componentId	= "";
-	String context		= "";
-	String url			= "";
-	String title		= "";
-	String attachmentId	= "";
+	String componentId	= (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
+	String context		= (String) session.getAttribute("Silverpeas_Attachment_Context");
 	long size	= 0;
 	String type			= "";
     String mimeType 	= "";
-    String description 	= "";
 	String logicalName	= "";
 	String physicalName	= "";
-	String dNdVisible 	= "";
 	
-	String pIndexIt		= null;
-	boolean indexIt		= true;
-   
-	AttachmentPK		atPK	= null;
-	AttachmentDetail	ad		= null;
-		
+	boolean indexIt		= ((Boolean) session.getAttribute("Silverpeas_Attachment_IndexIt")).booleanValue();
+   	
 	DiskFileUpload 	dfu 	= new DiskFileUpload();
 	List 			items 	= dfu.parseRequest(request);
 	  
-	  id 			= getParameterValue(items, "Id");
-	  componentId 	= getParameterValue(items, "ComponentId");
-	  context 		= getParameterValue(items, "Context");
-	  url 			= getParameterValue(items, "Url");
-	  title 		= getParameterValue(items, "Title");
-	  description	= getParameterValue(items, "Description");
-	  pIndexIt 		= getParameterValue(items, "IndexIt");
-	  attachmentId 	= getParameterValue(items, "IdAttachment");
-	  dNdVisible 	= getParameterValue(items, "DNDVisible");
+	String  title 		= getParameterValue(items, "Title");
+	String  description	= getParameterValue(items, "Description");
+	String attachmentId = getParameterValue(items, "IdAttachment");
+	    
 	  
-	  if ("1".equals(pIndexIt))
-		  indexIt = true;
-	  else if ("0".equals(pIndexIt))
-		  indexIt = false;
-	  
-	  atPK	= new AttachmentPK(attachmentId, componentId);
-	  ad	= AttachmentController.searchAttachmentByPK(atPK);
+	  AttachmentPK	 	atPK	= new AttachmentPK(attachmentId, componentId);
+	  AttachmentDetail 	ad		= AttachmentController.searchAttachmentByPK(atPK);
 	  
 	  //Just to retrieve i18n infos
 	  AttachmentDetail dummy = new AttachmentDetail();
@@ -155,18 +135,11 @@
 	I18NHelper.setI18NInfo(ad, items);
 		
 	AttachmentController.updateAttachment(ad, indexIt);
-
-	String paramDelimiter = "?";
-	if (url.indexOf("?") != -1) {
-			//Il existe déjà un '?' dans la chaine url
-			paramDelimiter = "&";
-	}
-	String returnURL = URLManager.getApplicationURL()+ url + paramDelimiter + "Id="+id+"&Component="+componentId+"&IndexIt="+pIndexIt+"&DNDVisible="+dNdVisible;
 %>
 <HTML>
 	<BODY>
 	<script language='javascript'>
-		window.opener.location.href='<%=returnURL%>';
+		window.opener.location.reload();
 		window.close();
 	</script>
 	</BODY>	

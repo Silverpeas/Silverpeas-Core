@@ -29,18 +29,10 @@
 
 <%
   //initialisation des variables
-  String id				= request.getParameter("Id");
-  String componentId	= request.getParameter("ComponentId");
-  String context		= request.getParameter("Context");
-  String url			= request.getParameter("Url");
   String attachmentId	= request.getParameter("IdAttachment");
-  String indexIt		= request.getParameter("IndexIt");
-  String dNdVisible 	= request.getParameter("DNDVisible");
-
-  //récupération des fichiers attachés à un événement
-  //create foreignKey with componentId and custumer id
-  //use AttachmentPK to build the foreign key of customer object.
-
+  
+  String componentId	= (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
+  
   AttachmentPK		primaryKey = new AttachmentPK(attachmentId, componentId);
   AttachmentDetail	attachment = AttachmentController.searchAttachmentByPK(primaryKey);
 
@@ -48,10 +40,10 @@
   String info		= attachment.getInfo(language);
   String fileName	= attachment.getLogicalName(language);
 
-  if (title == null || title.length()==0)
+  if (!StringUtil.isDefined(title))
 	title = "";
 
-  if (info == null || info.length()==0)
+  if (!StringUtil.isDefined(info))
 	info = "";
 
   Window window = gef.getWindow();
@@ -59,21 +51,26 @@
 
 <HTML>
 <HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<TITLE><%=attResources.getString("GML.popupTitle")%></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/i18n.js"></script>
+<script type="text/javascript" src="<%=m_Context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
 <script language='Javascript'>
 var attachmentMandatory = false;
 
 function update()
 {
 	if (attachmentMandatory && isWhitespace(document.updateForm.file_upload.value))
+	{
 		alert("<%=messages.getString("nomVide")%>");
+	}
 	else
+	{	
 		document.updateForm.submit();
+	}
 }
 
 <%
@@ -113,10 +110,10 @@ function removeTranslation()
 <%
 	ButtonPane buttonPane = gef.getButtonPane();
 	
-	Button update = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:update()", false);
+	Button update = (Button) gef.getFormButton(attResources.getString("GML.validate"), "javascript:update()", false);
 	buttonPane.addButton(update);
 
-	Button close = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:window.close()", false);
+	Button close = (Button) gef.getFormButton(attResources.getString("GML.cancel"), "javascript:window.close()", false);
 	buttonPane.addButton(close);
 	
 	Frame frame	= gef.getFrame();
@@ -129,9 +126,9 @@ function removeTranslation()
 
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<form name="updateForm" action="<%=m_Context%>/attachment/jsp/updateFile.jsp" method="POST" enctype="multipart/form-data">
-		<%=I18NHelper.getFormLine(resources, attachment, resources.getLanguage())%>
+		<%=I18NHelper.getFormLine(attResources, attachment, attResources.getLanguage())%>
 		<tr align="justify">
-			<td class="txtlibform" nowrap align="left"><%=resources.getString("GML.file")%> :</td>
+			<td class="txtlibform" nowrap align="left"><%=attResources.getString("GML.file")%> :</td>
 			<td id="fileName"><%=fileName%></td>
 		</td>
 		</tr>
@@ -139,27 +136,22 @@ function removeTranslation()
 			<td class="txtlibform" nowrap align="left"><%=messages.getString("fichierJoint")%> :</td>
 			<td>
 				<input type="file" name="file_upload" size="60" class="INPUT">
-				<input type="hidden" name="Id" value="<%=id%>">
-				<input type="hidden" name="ComponentId" value="<%=componentId%>">
-				<input type="hidden" name="Context" value="<%=context%>">
-				<input type="hidden" name="Url" value="<%=url%>">
 				<input type="hidden" name="IdAttachment" value="<%=attachmentId%>">
-				<input type="hidden" name="IndexIt" value="<%=indexIt%>">
 			</td>
 		</tr>
 		<tr>
-			<td class="txtlibform" nowrap align="left"><%=messages.getString("Title")%> :</td>
+			<td class="txtlibform" nowrap><%=messages.getString("Title")%> :</td>
 			<td><input type="text" name="Title" size="60" id="fileTitle" value="<%=title%>"></td>
 		</tr>
 		<tr>
-			<td class="txtlibform" nowrap align="left" valign="top"><%=resources.getString("GML.description")%> :</td>
+			<td class="txtlibform" nowrap align="left" valign="top"><%=attResources.getString("GML.description")%> :</td>
 			<td><textarea name="Description" cols="60" rows="3" id="fileDesc"><%=info%></textarea></td>
 		</tr>
 		</form>
 	</table>
 <%
 	out.println(board.printAfter());
-	out.println("<BR>"+buttonPane.print());
+	out.println("<BR/>"+buttonPane.print());
 	out.println("</CENTER>");
 	out.println(frame.printAfter());
 %>

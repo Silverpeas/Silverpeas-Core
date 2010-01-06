@@ -23,13 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%
 	String url = (String) request.getAttribute("urlToReload");
+	String reloadOpener = (String) request.getAttribute("ReloadOpener");
 %>
 
 <SCRIPT LANGUAGE="JavaScript">
-<% if (url != null && url.length() > 0) { %>
+<% if (StringUtil.isDefined(url)) { %>
 	self.opener.location = '<%=url%>';
+<% } else if ("yes".equalsIgnoreCase(reloadOpener) || "true".equalsIgnoreCase(reloadOpener)) { %>
+	self.opener.location.reload();
 <% } %>
 	self.close();
 </SCRIPT>

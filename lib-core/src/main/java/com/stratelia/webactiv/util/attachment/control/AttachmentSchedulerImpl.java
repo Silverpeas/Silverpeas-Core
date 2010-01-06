@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -55,7 +56,7 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
             .getString("ScheduledProcessActify");
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
 
-        Vector jobList = SimpleScheduler.getJobList(this);
+        Vector<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
         if (jobList != null && jobList.size() > 0) {
           SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
           SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);

@@ -44,7 +44,7 @@
 
 <HTML>
 <HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<TITLE><%=attResources.getString("GML.popupTitle")%></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
@@ -113,7 +113,7 @@ function Attachment(action)
 </head>
 <body>
 <%
-	Button toAdd = (Button) gef.getFormButton(resources.getString("GML.add"), "javascript:Attachment('add')", false);
+	Button toAdd = (Button) gef.getFormButton(attResources.getString("GML.add"), "javascript:Attachment('add')", false);
 
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(toAdd);
@@ -133,16 +133,10 @@ function Attachment(action)
 
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<form name="addForm" action="<%=m_Context%>/attachment/jsp/saveFile.jsp" method="POST" enctype="multipart/form-data">
-		<%=I18NHelper.getFormLine(resources)%>
+		<%=I18NHelper.getFormLine(attResources)%>
 		<tr align="justify">
 		<td class="txtlibform" nowrap align="left"><%=messages.getString("fichierJoint")%> :</td>
 				<td>
-					<input type="hidden" name="Id" value="<%=id%>">
-					<input type="hidden" name="ComponentId" value="<%=componentId%>">
-					<input type="hidden" name="Context" value="<%=context%>">
-					<input type="hidden" name="Path" value="<%=path%>">
-					<input type="hidden" name="Url" value="<%=url%>">
-					<input type="hidden" name="IndexIt" value="<%=indexIt%>">
 					<input type="file" name="file_upload" size="60" class="INPUT">
 				</td>
 		</td>
@@ -152,7 +146,7 @@ function Attachment(action)
 			<td><input type="text" name="Title" size="60"></td>
 		</tr>
 		<tr>
-			<td class="txtlibform" nowrap align="left" valign="top"><%=resources.getString("GML.description")%> :</td>
+			<td class="txtlibform" nowrap align="left" valign="top"><%=attResources.getString("GML.description")%> :</td>
 			<td><textarea name="Description" cols="60" rows="3"></textarea></td>
 		</tr>
 		<tr>
@@ -175,7 +169,6 @@ function Attachment(action)
 	<input type="hidden" name="Id" value="<%=id%>">
 	<input type="hidden" name="ComponentId" value="<%=componentId%>">
 	<input type="hidden" name="Context" value="<%=context%>">
-	<input type="hidden" name="Path" value="<%=path%>">
 	<input type="hidden" name="Url" value="<%=url%>">
 	<input type="hidden" name="Title">
 	<input type="hidden" name="Description">

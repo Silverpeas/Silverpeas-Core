@@ -24,10 +24,156 @@
 
 --%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+<%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
 <script src="<%=m_Context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
 <script src="<%=m_Context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
+<script src="<%=m_Context%>/util/javaScript/jquery/ui.core.js" type="text/javascript"></script>
+<script src="<%=m_Context%>/util/javaScript/jquery/ui.sortable.js" type="text/javascript"></script>
+
+<link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
+
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/modal-message.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
+
+<script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
+
+<script type="text/javascript" src="<%=m_Context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/yui/container/container_core-min.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/yui/animation/animation-min.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/yui/menu/menu-min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="<%=m_Context %>/util/yui/menu/assets/menu.css"/>
+
+<style>
+<!--
+a.yuimenuitemlabel-disabled:hover {
+	color: #B9B9B9;
+} 
+
+ul#attachmentList.ui-sortable {
+	cursor:default;
+}
+
+ul#attachmentList {
+	list-style-type: none;
+	margin-left: 0px;
+	padding-left: 0px;
+}
+
+ul#attachmentList li.attachmentListItem {
+	margin:0;
+  	padding:10px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize {
+	white-space: nowrap;
+}
+
+ul#attachmentList li.attachmentListItem .lineMain {
+	white-space: nowrap;
+}
+
+-->
+</style>
+
+<%!
+
+void displayActions(AttachmentDetail attachment, boolean useXMLForm, boolean useFileSharing, boolean useWebDAV, String userId, String language, ResourcesWrapper resources, String httpServerBase, JspWriter out) throws IOException
+{
+	String attachmentId = attachment.getPK().getId();
+	String webDavOK = "false";
+	if (useWebDAV && attachment.isOpenOfficeCompatible())
+		webDavOK = "true";
+	
+	//out.println("<span align=\"right\"><span id=\"menutoggle"+attachmentId+"\">"+"<img src=\""+GraphicElementFactory.getIconsPath()+"/ptr.gif\"></span></span>");
+    
+	out.println("<div id=\"basicmenu"+attachmentId+"\" class=\"yuimenu\">");
+	out.println("<div class=\"bd\">");
+		out.println("<ul class=\"first-of-type\">");
+			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout("+attachmentId+","+webDavOK+")\">"+resources.getString("checkOut")+"</a></li>");
+		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload("+attachmentId+","+webDavOK+")\">"+resources.getString("attachment.checkOutAndDownload")+"</a></li>");
+		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit("+attachmentId+")\">"+resources.getString("attachment.checkOutAndEditOnline")+"</a></li>");
+		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin("+attachmentId+","+attachment.isOpenOfficeCompatible()+")\">"+resources.getString("checkIn")+"</a></li>");
+		out.println("</ul>");
+		out.println("<ul>");
+			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"+attachmentId+"')\">"+resources.getString("GML.modify")+"</a></li>");
+			if (useXMLForm)
+			{
+				out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('"+attachmentId+"','"+language+"')\">"+resources.getString("attachment.xmlForm.Edit")+"</a></li>");
+			}
+			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('"+attachment.getLogicalName(language)+"',"+attachmentId+")\">"+resources.getString("GML.delete")+"</a></li>");
+		out.println("</ul>");
+		if (useFileSharing) 
+		{
+			out.println("<ul>");
+				out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('"+attachmentId+"')\">"+resources.getString("attachment.share")+"</a></li>");
+			out.println("</ul>");
+		}
+	out.println("</div>");
+	out.println("</div>");
+
+	out.println("<script type=\"text/javascript\">");
+	    
+			out.println("var oMenu"+attachmentId+";");
+			out.println("var webDav"+attachmentId+" = \""+URLEncoder.encode(httpServerBase+attachment.getWebdavUrl(language))+"\";");
+			out.println("YAHOO.util.Event.onContentReady(\"basicmenu"+attachmentId+"\", function () {");			    
+				out.println("oMenu"+attachmentId+" = new YAHOO.widget.ContextMenu(\"basicmenu"+attachmentId+"\", { trigger: \"img_"+attachmentId+"\", hidedelay: 100, effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+				out.println("oMenu"+attachmentId+".render();");
+				if (attachment.isReadOnly())
+				{
+					if (userId.equals(attachment.getWorkerId()))
+					{
+						out.println("oMenu"+attachmentId+".getItem(3).cfg.setProperty(\"disabled\", false);");
+					}
+					out.println("oMenu"+attachmentId+".getItem(0).cfg.setProperty(\"disabled\", true);");
+					out.println("oMenu"+attachmentId+".getItem(1).cfg.setProperty(\"disabled\", true);");
+					out.println("oMenu"+attachmentId+".getItem(2).cfg.setProperty(\"disabled\", true);");
+					
+					if (useWebDAV && attachment.isOpenOfficeCompatible() && userId.equals(attachment.getWorkerId()))
+					{
+						out.println("oMenu"+attachmentId+".getItem(2).cfg.setProperty(\"disabled\", false);");
+					}
+					
+					//disable delete
+					if (useXMLForm)
+					{
+						out.println("oMenu"+attachmentId+".getItem(2,1).cfg.setProperty(\"disabled\", true);");
+					}
+					else
+					{
+						out.println("oMenu"+attachmentId+".getItem(1,1).cfg.setProperty(\"disabled\", true);");
+					}
+					
+					if (!userId.equals(attachment.getWorkerId()))
+					{
+						//disable update
+						out.println("oMenu"+attachmentId+".getItem(0, 1).cfg.setProperty(\"disabled\", true);");
+						
+						//disable xmlForm
+						if (useXMLForm)
+						{
+							out.println("oMenu"+attachmentId+".getItem(1,1).cfg.setProperty(\"disabled\", true);");
+						}
+					}
+				}
+				else
+				{
+					out.println("oMenu"+attachmentId+".getItem(3).cfg.setProperty(\"disabled\", true);");
+				}
+				if (!useWebDAV || !attachment.isOpenOfficeCompatible())
+					out.println("oMenu"+attachmentId+".getItem(2).cfg.setProperty(\"disabled\", true);");
+				//out.println("YAHOO.util.Event.addListener(\"menutoggle"+attachmentId+"\", \"mouseover\", oMenu"+attachmentId+".show, null, oMenu"+attachmentId+");");
+				out.println("YAHOO.util.Event.addListener(\"basicmenu"+attachmentId+"\", \"mouseover\", oMenu"+attachmentId+".show);");
+				out.println("YAHOO.util.Event.addListener(\"basicmenu"+attachmentId+"\", \"mouseout\", oMenu"+attachmentId+".hide);");
+			out.println("});");
+	    
+	out.println("</script>");
+}
+
+%>
 
 <%
 	//initialisation des variables
@@ -35,9 +181,21 @@
 	String componentId 	= request.getParameter("ComponentId");
 	String context 		= request.getParameter("Context");
 	String fromAlias	= request.getParameter("Alias");
+	String profile		= request.getParameter("Profile");
+	String sIndexIt		= request.getParameter("IndexIt");
+	String callbackURL  = request.getParameter("CallbackUrl");
+	String xmlForm 		= m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "XmlFormForFiles");;
 	
-	ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-
+	boolean useXMLForm 	= StringUtil.isDefined(xmlForm);
+	boolean useFileSharing = (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".equalsIgnoreCase(profile));
+	boolean contextualMenuEnabled = ("admin".equalsIgnoreCase(profile) || "publisher".equalsIgnoreCase(profile) || "writer".equalsIgnoreCase(profile));
+	String iconStyle = "";
+    if (contextualMenuEnabled)
+    	iconStyle = "style=\"cursor:move\"";
+    
+    boolean webdavEditingEnable = m_MainSessionCtrl.isWebDAVEditingEnabled() && attSettings.getBoolean("OnlineEditingEnable", false);
+	boolean dragAndDropEnable 	= m_MainSessionCtrl.isDragNDropEnabled() && attSettings.getBoolean("DragAndDropEnable", false);
+	
 	boolean displayUniversalLinks = URLManager.displayUniversalLinks();
 
 	String attachmentPosition = "right";
@@ -64,17 +222,34 @@
 	if (!StringUtil.isDefined(contentLanguage))
 		contentLanguage = null;
   
-   	boolean spinfireViewerEnable = settings.getBoolean("SpinfireViewerEnable", false);
+   	boolean spinfireViewerEnable = attSettings.getBoolean("SpinfireViewerEnable", false);
+   	
+   	String sURI = request.getRequestURI();
+    String sRequestURL = request.getRequestURL().toString();
+    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
+        - request.getRequestURI().length());
+    
+    session.setAttribute("Silverpeas_Attachment_ObjectId", id);
+    session.setAttribute("Silverpeas_Attachment_ComponentId", componentId);
+    session.setAttribute("Silverpeas_Attachment_Context", context);
+    session.setAttribute("Silverpeas_Attachment_Profile", profile);
+    
+    boolean indexIt = true;
+    if ("1".equals(sIndexIt))
+		indexIt = true;
+	else if ("0".equals(sIndexIt))
+		indexIt = false;
+    session.setAttribute("Silverpeas_Attachment_IndexIt", new Boolean(indexIt));
 
-  	//récupération des fichiers attachés à un événement
-  	//create foreignKey with componentId and customer id
-  	//use AttachmentPK to build the foreign key of customer object.
+    //Example: http://myserver
+    String httpServerBase = GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase", m_sAbsolute);
+
 	AttachmentPK foreignKey =  new AttachmentPK(id, componentId);
 
 	Vector 		attachments 	= AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
   	Iterator 	itAttachments 	= attachments.iterator();
 
-	if (itAttachments.hasNext())
+	if (itAttachments.hasNext() || !profile.equals("user"))
   	{
 		Board board	= gef.getBoard();
   		out.println(board.printBefore());
@@ -84,7 +259,7 @@
   		if (attachmentPosition != null && "right".equals(attachmentPosition))
   		{
 	  		out.println("<TABLE width=\"150\">");
-	  		out.println("<TR><TD align=\"center\"><img src=\""+m_Context+"/util/icons/attachedFiles.gif\"></td></TR>");
+	  		out.println("<TR><TD align=\"center\"><img src=\""+m_Context+"/util/icons/attachedFiles.gif\"/></td></TR>");
 	  	}
 	  	else
 	  	{
@@ -98,6 +273,8 @@
 		String 	info	= "";
 		String	url		= "";
 		int a = 1; 
+		out.println("<tr><td>");
+		out.println("<ul id=\"attachmentList\">");
 		while (itAttachments.hasNext()) {
 			attachmentDetail = (AttachmentDetail) itAttachments.next();
 			title	= attachmentDetail.getTitle(contentLanguage);
@@ -108,40 +285,57 @@
 				author = "<BR/><i>"+attachmentDetail.getAuthor(contentLanguage)+"</i>";
 			
 			if ("bottom".equals(attachmentPosition) && a==1)
-				out.println("<TR>");
+				out.println("<TR id=\"attachment"+attachmentDetail.getPK().getId()+"\">");
 			else if ("right".equals(attachmentPosition))
-				out.println("<TR>");
+			{
+				out.println("<li id=\"attachment_"+attachmentDetail.getPK().getId()+"\" class=\"attachmentListItem\">");
+			}
 				
-		    out.println("<TD valign=\"top\">");
-		    out.println("<NOBR>");
+		    //out.println("<TD valign=\"top\">");
+		    out.print("<span class=\"lineMain\">");
 		    if (showIcon)
-		    	out.println("<img src=\""+attachmentDetail.getAttachmentIcon(contentLanguage)+"\" width=\"20\" valign=\"absmiddle\">");
+		    	out.println("<img id=\"img_"+attachmentDetail.getPK().getId()+"\" src=\""+attachmentDetail.getAttachmentIcon(contentLanguage)+"\" width=\"20\" valign=\"absmiddle\" "+iconStyle+">");
 		    
 		    url = attachmentDetail.getAttachmentURL(contentLanguage);
 		    if ("1".equals(fromAlias))
 		    	url = attachmentDetail.getAliasURL(contentLanguage);
 		    			
-		    out.println("<A href=\""+url+"\" target=_blank>"+title+"</A>");
-		    out.println("</NOBR>");
+		    out.println("<a id=\"url"+attachmentDetail.getPK().getId()+"\" href=\""+url+"\" target=_blank>"+title+"</a>");
 		    
 		    if (displayUniversalLinks)
 			{
 				String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getPK().getId());
 				String linkIcon = m_Context+"/util/icons/link.gif";
-				out.print(" <a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("CopyLink")+"\" title=\""+messages.getString("CopyLink")+"\" target=_blank></a>");
+				out.print(" <a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" valign=\"absmiddle\" alt=\""+attResources.getString("CopyLink")+"\" title=\""+attResources.getString("CopyLink")+"\" target=_blank></a>");
 			}
 		    
-		    out.println("<BR>");
-		    		    
+		    if (contextualMenuEnabled)
+		    {
+			    displayActions(attachmentDetail, useXMLForm, useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources, httpServerBase, out);
+			    out.println("<br/>");
+			    if (attachmentDetail.isReadOnly())
+			    {
+			    	out.println("<div id=\"worker"+attachmentDetail.getPK().getId()+"\" style=\"visibility:visible\">"+attResources.getString("readOnly")+" "+m_MainSessionCtrl.getOrganizationController().getUserDetail(attachmentDetail.getWorkerId()).getDisplayedName()+" "+attResources.getString("at")+" "+attResources.getOutputDate(attachmentDetail.getReservationDate())+"</div>");
+			    }
+			    else
+			    {
+			    	out.println("<div id=\"worker"+attachmentDetail.getPK().getId()+"\" style=\"visibility:hidden\"></div>");
+			    }
+		    }
+		    else
+		    {
+		    	out.println("<br/>");
+		    }
+		    out.print("</span>");
+			
+		    out.println("<span class=\"lineSize\">");
 			if (showFileSize)
-				out.println(attachmentDetail.getAttachmentFileSize(contentLanguage));
+				out.print(attachmentDetail.getAttachmentFileSize(contentLanguage));
 			if (showFileSize && showDownloadEstimation)
-				out.println(" / ");
+				out.print(" / ");
 			if (showDownloadEstimation)
-				out.println(attachmentDetail.getAttachmentDownloadEstimation(contentLanguage));
-			/*if (showDownloadEstimation || showFileSize)
-				out.println("<br/>");*/
-			//title = attachmentDetail.getTitle(contentLanguage);
+				out.print(attachmentDetail.getAttachmentDownloadEstimation(contentLanguage));
+			out.println("</span>");
 		    if (StringUtil.isDefined(attachmentDetail.getTitle(contentLanguage)) && showTitle)
 			    out.println("<br/>"+attachmentDetail.getLogicalName(contentLanguage));
 			if (StringUtil.isDefined(info) && showInfo)
@@ -151,7 +345,7 @@
 			{
 				String xmlURL = m_Context+"/RformTemplate/jsp/View?width=400&ObjectId="+attachmentDetail.getPK().getId()+"&ObjectLanguage="+contentLanguage+"&ComponentId="+componentId+"&ObjectType=Attachment&XMLFormName="+URLEncoder.encode(attachmentDetail.getXmlForm(contentLanguage));
 				%>
-				<br/><a rel="<%=xmlURL%>" href="#" title="<%=title %>"><%=messages.getString("attachment.xmlForm.View")%></a>
+				<br/><a rel="<%=xmlURL%>" href="#" title="<%=title %>"><%=attResources.getString("attachment.xmlForm.View")%></a>
 				<%
 			}
 
@@ -178,10 +372,10 @@
 					<PARAM NAME="ZoomFit" VALUE="1">
 					</OBJECT>
 				</div>
-				<br>
+				<br/>
 				<%
 		    }
-			out.println("</TD>");
+			//out.println("</TD>");
 			
 			if ("bottom".equals(attachmentPosition) && a<nbAttachmentPerLine)
 				out.println("<TD width=\"30\">&nbsp;</TD>");
@@ -192,18 +386,31 @@
 				if (itAttachments.hasNext())
 					out.println("<TR><TD colspan=\""+(2*nbAttachmentPerLine-1)+"\">&nbsp;</TD></TR>");
 			}
-			else if ("right".equals(attachmentPosition))
+			/*else if ("right".equals(attachmentPosition))
 			{
 				out.println("</TR>");
 				if (itAttachments.hasNext())
 					out.println("<TR><TD>&nbsp;</TD></TR>");
-			}
+			}*/
 			author = "";
 			if (a==3)
 				a = 1;
 			else
 				a++;
 		}
+		out.println("</ul>");
+		out.println("</td></tr>");
+		%>
+		<% if (contextualMenuEnabled && dragAndDropEnable) { %>
+			<tr><td align="right">
+			<a href="javascript:showHideDragDrop('<%=httpServerBase+m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanationShort_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
+		    <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
+			</td>
+		<% } %>
+		<% if (contextualMenuEnabled && !dragAndDropEnable) { %>
+			<tr><td align="right"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add") %>...</a></td></tr>
+		<% } %>
+		<%
     	out.println("</TABLE>");
     	out.println(board.printAfter());
    }
@@ -246,8 +453,8 @@ $(document).ready(function()
             text: '<img class="throbber" src="<%=m_Context%>/util/icons/inProgress.gif" alt="Loading..." />',
             url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
             title: {
-               text: '<%=messages.getString("attachment.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-               button: '<%=resources.getString("GML.close")%>' // Show a close link in the title
+               text: '<%=attResources.getString("attachment.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+               button: '<%=attResources.getString("GML.close")%>' // Show a close link in the title
             }
          },
          position: {
@@ -276,4 +483,246 @@ $(document).ready(function()
       })
    });
 });
+
+<% if (contextualMenuEnabled) { %>
+
+function checkout(id, webdav)
+{
+	if (id > 0) {
+		$.get('<%=m_Context%>/Attachment', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'}, 
+		function(data){
+			var oMenu = eval("oMenu"+id);
+			oMenu.getItem(3).cfg.setProperty("disabled", false);
+			oMenu.getItem(0).cfg.setProperty("disabled", true);
+			oMenu.getItem(1).cfg.setProperty("disabled", true);
+			if (!webdav)
+			{
+				oMenu.getItem(2).cfg.setProperty("disabled", true);
+			}
+			//disable delete
+			<% if (useXMLForm) { %>
+				oMenu.getItem(2,1).cfg.setProperty("disabled", true);
+			<% } else { %>
+				oMenu.getItem(1,1).cfg.setProperty("disabled", true);
+			<% } %>
+			$('#worker'+id).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
+			$('#worker'+id).css({'visibility':'visible'});
+		});
+	}
+}
+
+function checkoutAndDownload(id, webdav)
+{
+	checkout(id, webdav);
+
+	var url = $('#url'+id).attr('href');
+	window.open(url);
+}
+
+function checkoutAndEdit(id)
+{
+	checkout(id, true);
+
+	var url = "<%=httpServerBase+m_Context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
+	window.open(url);
+}
+
+function checkin(id,webdav)
+{
+	if (id > 0) {
+		var webdavUpdate = 'false';
+		if (webdav)
+		{
+			if(confirm('<%=attResources.getString("confirm.checkin.message")%>')) {
+				webdavUpdate='true';
+			}
+		}
+		//alert(forceRelease);
+		$.get('<%=m_Context%>/Attachment', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkin',update_attachment:webdavUpdate,force_release:forceRelease}, 
+				function(data){
+					data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+					if (data == "locked")
+					{
+						displayWarning();
+					}
+					else 
+					{
+						if (data == "ok")
+						{
+							menuCheckin(id);
+						}
+					}
+				}, "html");
+	}
+}
+
+function menuCheckin(id)
+{
+	var oMenu = eval("oMenu"+id);
+	oMenu.getItem(3).cfg.setProperty("disabled", true);
+	oMenu.getItem(0).cfg.setProperty("disabled", false);
+	oMenu.getItem(1).cfg.setProperty("disabled", false);
+	oMenu.getItem(2).cfg.setProperty("disabled", false);
+
+	//enable delete
+	<% if (useXMLForm) { %>
+		oMenu.getItem(2,1).cfg.setProperty("disabled", false);
+	<% } else { %>
+		oMenu.getItem(1,1).cfg.setProperty("disabled", false);
+	<% } %>
+	
+	$('#worker'+id).html("");
+	$('#worker'+id).css({'visibility':'hidden'});
+}
+
+function AddAttachment()
+{
+	<%
+		String winAddHeight = "240";
+		if (I18NHelper.isI18N)
+			winAddHeight = "270";
+	%>
+	SP_openWindow("<%=m_Context%>/attachment/jsp/addAttFiles.jsp", "test", "600", "<%=winAddHeight%>","scrollbars=no, resizable, alwaysRaised");
+}
+
+function deleteAttachment(attachmentName, attachmentId)
+{
+	messageObj.setCssClassMessageBox(false);
+	messageObj.setSource('<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?IdAttachment='+attachmentId+'&Name='+attachmentName);
+	messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes	
+	messageObj.display();
+}
+
+function removeAttachment(attachmentId)
+{
+	var sLanguages = "";
+	var boxItems = document.removeForm.languagesToDelete;
+	if (boxItems != null){
+		//at least one checkbox exists
+		var nbBox = boxItems.length;
+		//alert("nbBox = "+nbBox);
+		if ( (nbBox == null) && (boxItems.checked) ){
+			//there's only once checkbox
+			sLanguages += boxItems.value+",";
+		} else{
+			for (i=0;i<boxItems.length ;i++ ){
+				if (boxItems[i].checked){
+					sLanguages += boxItems[i].value+",";
+				}
+			}
+		}
+	}
+
+	//alert("sLanguages = "+sLanguages);
+	
+	$.get('<%=m_Context%>/Attachment', { id:attachmentId,Action:'Delete',languagesToDelete:sLanguages}, 
+			function(data){
+				data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+				if (data == "attachmentRemoved")
+				{
+					$('#attachment_'+attachmentId).remove();
+				}
+				else
+				{
+					if (data == "translationsRemoved")
+					{
+						reloadIncludingPage();
+					}
+				}
+				closeMessage();
+			});
+}
+
+function reloadIncludingPage()
+{
+	<% if (!StringUtil.isDefined(callbackURL)) { %>
+		document.location.reload();
+	<% } else { %>
+		document.location.href = "<%=m_sAbsolute+m_Context+callbackURL%>";
+	<% } %>
+}
+
+function updateAttachment(attachmentId)
+{
+	<%
+		String winHeight = "220";
+		if (I18NHelper.isI18N)
+			winHeight = "240";
+	%>
+	var url = "<%=m_Context%>/attachment/jsp/toUpdateFile.jsp?IdAttachment="+attachmentId;
+	SP_openWindow(url, "test", "650", "<%=winHeight%>","scrollbars=no, resizable, alwaysRaised");
+}
+
+<% if (useXMLForm) { %>
+function EditXmlForm(id, lang)
+{
+	SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm)%>&ReloadOpener=true", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
+}
+<% } %>
+
+// Suppression du fichier
+messageObj = new DHTML_modalMessage();	// We only create one object of this class
+messageObj.setShadowOffset(5);	// Large shadow
+
+var forceRelease = "false";
+function closeMessage(force)
+{
+	forceRelease = force;
+	messageObj.close(); 
+}
+
+function displayWarning()
+{
+	messageObj.setSize(300,80);
+	messageObj.setCssClassMessageBox(false);   
+	messageObj.setSource('<%=m_Context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>' );
+	messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
+	messageObj.display();
+}
+
+$(document).ready(function(){
+	$("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'hand', handle: 'img'}); 
+});
+
+$('#attachmentList').bind('sortupdate', function(event, ui) {
+	var reg=new RegExp("attachment", "g");
+	
+	var data = $('#attachmentList').sortable('serialize');
+	data += "#";
+	var tableau=data.split(reg);
+	var param = "";
+	for (var i=0; i<tableau.length; i++)
+	{
+		if (i != 0)
+			param += ","
+				
+		param += tableau[i].substring(3, tableau[i].length-1);
+	}
+	  sortAttachments(param);
+	});
+
+function sortAttachments(orderedList)
+{
+	//alert(orderedList);
+	$.get('<%=m_Context%>/Attachment', { orderedList:orderedList,Action:'Sort'}, 
+			function(data){
+				data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+				if (data == "error")
+				{
+					alert("Une erreur s'est produite !");
+				}
+			});
+}
+
+function uploadCompleted(s)
+{
+	reloadIncludingPage();
+}
+
+function ShareAttachment(id)
+{
+	var url = "<%=m_Context%>/RfileSharing/jsp/NewTicket?FileId="+id+"&ComponentId=<%=componentId%>";
+	SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
+}
+<% } %>
 </script>

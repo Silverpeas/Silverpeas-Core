@@ -37,6 +37,8 @@ public class FormTemplateSessionController extends AbstractComponentSessionContr
   private String objectType;
   private String xmlFormName;
   private String objectLanguage;
+	private String reloadOpener;
+	private String urlToReload;
 
   public FormTemplateSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
@@ -83,5 +85,19 @@ public class FormTemplateSessionController extends AbstractComponentSessionContr
   public void setObjectLanguage(String objectLanguage) {
     this.objectLanguage = objectLanguage;
   }
+	public String getReloadOpener() {
+		return reloadOpener;
+	}
 
+	public void setReloadOpener(String reloadOpener) {
+		this.reloadOpener = reloadOpener;
+	}
+
+	public String getUrlToReload() {
+		return urlToReload;
+	}
+
+	public void setUrlToReload(String urlToReload) {
+		this.urlToReload = urlToReload;
+	}
 }

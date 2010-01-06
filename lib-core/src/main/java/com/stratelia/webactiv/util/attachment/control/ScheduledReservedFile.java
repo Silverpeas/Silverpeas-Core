@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -54,7 +55,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      Vector jobList = SimpleScheduler.getJobList(this);
+      Vector<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
       if (jobList != null && jobList.size() > 0)
         SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS);
       SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS, cron, this,
@@ -111,15 +112,15 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
           "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
 
-      Collection attachments = getAttachmentBm().getAllAttachmentByDate(
+      Collection<AttachmentDetail> attachments = getAttachmentBm().getAllAttachmentByDate(
           expiryDate, false);
       SilverTrace.info("attachment",
           "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + attachments.size());
 
-      Iterator it = attachments.iterator();
+      Iterator<AttachmentDetail> it = attachments.iterator();
       while (it.hasNext()) {
-        AttachmentDetail att = (AttachmentDetail) it.next();
+        AttachmentDetail att = it.next();
         messageBody.append(message.getString("attachment.notifName")).append(
             " '").append(att.getLogicalName()).append("'");
         messageBody_en.append(message_en.getString("attachment.notifName"))
@@ -150,9 +151,9 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       messageBody = new StringBuffer();
       messageBody_en = new StringBuffer();
 
-      Iterator itA = attachments.iterator();
+      Iterator<AttachmentDetail> itA = attachments.iterator();
       while (itA.hasNext()) {
-        AttachmentDetail att = (AttachmentDetail) itA.next();
+        AttachmentDetail att = itA.next();
         messageBody.append(message.getString("attachment.notifName")).append(
             " '").append(att.getLogicalName()).append("' ");
         messageBody_en.append(message_en.getString("attachment.notifName"))
@@ -183,9 +184,9 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       messageBody = new StringBuffer();
       messageBody_en = new StringBuffer();
 
-      Iterator itL = attachments.iterator();
+      Iterator<AttachmentDetail> itL = attachments.iterator();
       while (itL.hasNext()) {
-        AttachmentDetail att = (AttachmentDetail) itL.next();
+        AttachmentDetail att = itL.next();
 
         // envoyer une notif
         messageBody.append(message.getString("attachment.notifName")).append(

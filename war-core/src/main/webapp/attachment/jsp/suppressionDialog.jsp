@@ -26,58 +26,45 @@
 <%@ include file="checkAttachment.jsp"%>
 
 <%
-String objectId			= request.getParameter("Id");
-String componentId		= request.getParameter("ComponentId");
-String url				= request.getParameter("Url");
 String attachmentName 	= request.getParameter("Name");
 String attachmentId		= request.getParameter("IdAttachment");
-String indexIt			= request.getParameter("IndexIt");
-String languages		= request.getParameter("Languages");
+String componentId		= (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
 
-StringTokenizer tokenizer = new StringTokenizer(languages, ",");
+AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId, componentId));
+int nbTranslations = attachment.getTranslations().size();
+Iterator languages = attachment.getLanguages();
 %>
 
-<html>
-<title></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<head>
-</head>
-<body>
 <%
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(gef.getFormButton(resources.getString("GML.delete"), "javascript:document.removeForm.submit();", false));
-	buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
+	buttonPane.addButton(gef.getFormButton(attResources.getString("GML.delete"), "javascript:onClick=removeAttachment("+attachmentId+");", false));
+	buttonPane.addButton(gef.getFormButton(attResources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
 %>
 	<center>
-	<form name="removeForm" action="<%=m_Context%>/attachment/jsp/removeFile.jsp" method="POST">
-		<input type="hidden" name="ComponentId" value="<%=componentId%>"/>
-		<input type="hidden" name="IdAttachment" value="<%=attachmentId%>"/>
-		<input type="hidden" name="Url" value="<%=url%>"/>
-		<input type="hidden" name="Id" value="<%=objectId%>"/>
-		<input type="hidden" name="IndexIt" value="<%=indexIt%>"/>
+	<form name="removeForm" action="<%=m_Context %>/Attachment" method="POST">
+		<input type="hidden" name="id" value="<%=attachmentId%>"/>
+		<input type="hidden" name="Action" value="Delete"/>
 		<table>
 			<tr>
 				<td align="center">
 					<br/>
-					<% if (I18NHelper.isI18N && StringUtil.isDefined(languages) && tokenizer.countTokens() > 1) { %>
+					<% if (I18NHelper.isI18N && nbTranslations > 1) { %>
 						<table border="0">
-						<tr><td colspan="2"><%=resources.getStringWithParam("attachment.suppressionWhichTranslations", attachmentName)%></td></tr>
-						<tr><td><input type="checkbox" name="languagesToDelete" value="all"/></td><td width="100%"><%=Encode.convertHTMLEntities(resources.getString("attachment.allTranslations"))%></td></tr>
+						<tr><td colspan="2"><%=attResources.getStringWithParam("attachment.suppressionWhichTranslations", attachmentName)%></td></tr>
+						<tr><td><input type="checkbox" id="languagesToDelete" name="languagesToDelete" value="all"/></td><td width="100%"><%=Encode.convertHTMLEntities(attResources.getString("attachment.allTranslations"))%></td></tr>
 						<%
 							String attLanguage = null;
-							while (tokenizer.hasMoreTokens())
+							while (languages.hasNext())
 							{
-								attLanguage = tokenizer.nextToken();
+								attLanguage = (String) languages.next();
 								%>
-									<tr><td><input type="checkbox" name="languagesToDelete" value="<%=attLanguage%>"/></td><td><%=Encode.convertHTMLEntities(I18NHelper.getLanguageLabel(attLanguage, language))%></td></tr>
+									<tr><td><input type="checkbox" id="languagesToDelete" name="languagesToDelete" value="<%=attLanguage%>"/></td><td><%=Encode.convertHTMLEntities(I18NHelper.getLanguageLabel(attLanguage, language))%></td></tr>
 								<%
 							}
 						%>
 						</table>
 					<% } else { %>
-						<%=Encode.convertHTMLEntities(resources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
+						<%=Encode.convertHTMLEntities(attResources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
 					<% } %>
 					<br/>
 					<%=buttonPane.print()%>
@@ -86,5 +73,3 @@ out.println(gef.getLookStyleSheet());
 		</table>
 	</form>
 	</center>
-</body>
-</html>

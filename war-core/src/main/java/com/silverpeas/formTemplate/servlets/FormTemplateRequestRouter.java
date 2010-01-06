@@ -28,8 +28,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -39,8 +38,8 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -49,6 +48,8 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class FormTemplateRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 1L;
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -94,12 +95,16 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         String objectType = request.getParameter("ObjectType");
         String objectLanguage = request.getParameter("ObjectLanguage");
         String xmlFormName = request.getParameter("XMLFormName");
+        String reloadOpener = request.getParameter("ReloadOpener");
+        String urlToReload = request.getParameter("UrlToReload");
 
         controller.setComponentId(componentId);
         controller.setObjectId(objectId);
         controller.setObjectType(objectType);
         controller.setObjectLanguage(objectLanguage);
         controller.setXmlFormName(xmlFormName);
+        controller.setReloadOpener(reloadOpener);
+        controller.setUrlToReload(urlToReload);
 
         String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -110,7 +115,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
         PublicationTemplateImpl pubTemplate =
             (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
-                componentId + ":" + objectType + ":" + xmlFormShortName, xmlFormName);
+            componentId + ":" + objectType + ":" + xmlFormShortName, xmlFormName);
         Form formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
 
@@ -122,7 +127,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
         PagesContext pageContext =
             new PagesContext("myForm", "2", controller.getLanguage(), false, componentId,
-                controller.getUserId());
+            controller.getUserId());
         pageContext.setObjectId(objectId);
 
         request.setAttribute("XMLForm", formUpdate);
@@ -133,7 +138,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         destination = "/form/jsp/edit.jsp";
       } else if (function.equals("Update")) {
         // Save changes
-        List items = getRequestItems(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         String xmlFormName = controller.getXmlFormName();
         String xmlFormShortName =
@@ -146,7 +151,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
         PublicationTemplate pub =
             PublicationTemplateManager.getPublicationTemplate(componentId + ":" + objectType + ":" +
-                xmlFormShortName);
+            xmlFormShortName);
 
         RecordSet set = pub.getRecordSet();
         Form form = pub.getUpdateForm();
@@ -163,7 +168,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
         PagesContext context =
             new PagesContext("myForm", "3", controller.getLanguage(), false, componentId,
-                controller.getUserId());
+            controller.getUserId());
         context.setObjectId(objectId);
         context.setContentLanguage(objectLanguage);
 
@@ -179,6 +184,8 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         // launch event
         CallBackManager.invoke(callbackAction, Integer.parseInt(controller.getUserId()),
             componentId, params);
+        request.setAttribute("ReloadOpener", controller.getReloadOpener());
+        request.setAttribute("urlToReload", controller.getUrlToReload());
 
         destination = "/form/jsp/close.jsp";
       } else if (function.equals("View")) {
@@ -194,7 +201,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         if (StringUtil.isDefined(xmlFormName) && StringUtil.isDefined(objectId)) {
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(componentId + ":" + objectType + ":" + xmlFormName);
+              .getPublicationTemplate(componentId + ":" + objectType + ":" + xmlFormName);
 
           Form formView = pubTemplate.getViewForm();
 
@@ -207,7 +214,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
           PagesContext pageContext =
               new PagesContext("myForm", "2", controller.getLanguage(), false, componentId,
-                  controller.getUserId());
+              controller.getUserId());
           pageContext.setObjectId(objectId);
 
           request.setAttribute("XMLForm", formView);
@@ -227,13 +234,6 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
     SilverTrace.info("form", "FormTemplateRequestRouter.getDestination()",
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
-  }
-
-  private List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
   }
 
 }

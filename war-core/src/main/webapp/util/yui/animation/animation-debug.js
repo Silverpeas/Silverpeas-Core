@@ -1,8 +1,8 @@
 /*
-Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Copyright (c) 2009, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.net/yui/license.txt
-version: 2.5.2
+version: 2.8.0r4
 */
 (function() {
 
@@ -89,11 +89,16 @@ Anim.prototype = {
      * @param {String} unit The unit ('px', '%', etc.) of the value.
      */
     setAttribute: function(attr, val, unit) {
+        var el = this.getEl();
         if ( this.patterns.noNegatives.test(attr) ) {
             val = (val > 0) ? val : 0;
         }
 
-        Y.Dom.setStyle(this.getEl(), attr, val + unit);
+        if (attr in el && !('style' in el && attr in el.style)) {
+            el[attr] = val;
+        } else {
+            Y.Dom.setStyle(el, attr, val + unit);
+        }
     },                        
     
     /**
@@ -114,11 +119,15 @@ Anim.prototype = {
         var pos = !!( a[3] ); // top or left
         var box = !!( a[2] ); // width or height
         
-        // use offsets for width/height and abs pos top/left
-        if ( box || (Y.Dom.getStyle(el, 'position') == 'absolute' && pos) ) {
-            val = el['offset' + a[0].charAt(0).toUpperCase() + a[0].substr(1)];
-        } else { // default to zero for other 'auto'
-            val = 0;
+        if ('style' in el) {
+            // use offsets for width/height and abs pos top/left
+            if ( box || (Y.Dom.getStyle(el, 'position') == 'absolute' && pos) ) {
+                val = el['offset' + a[0].charAt(0).toUpperCase() + a[0].substr(1)];
+            } else { // default to zero for other 'auto'
+                val = 0;
+            }
+        } else if (attr in el) {
+            val = el[attr];
         }
 
         return val;
@@ -537,7 +546,7 @@ YAHOO.util.AnimMgr = new function() {
      */
     this.unRegister = function(tween, index) {
         index = index || getIndex(tween);
-        if (!tween.isAnimated() || index == -1) {
+        if (!tween.isAnimated() || index === -1) {
             return false;
         }
         
@@ -610,7 +619,7 @@ YAHOO.util.AnimMgr = new function() {
     
     var getIndex = function(anim) {
         for (var i = 0, len = queue.length; i < len; ++i) {
-            if (queue[i] == anim) {
+            if (queue[i] === anim) {
                 return i; // note return;
             }
         }
@@ -643,6 +652,8 @@ YAHOO.util.AnimMgr = new function() {
             tween.currentFrame += tweak;      
         }
     };
+    this._queue = queue;
+    this._getIndex = getIndex;
 };
 /**
  * Used to calculate Bezier splines for any number of control points.
@@ -710,6 +721,7 @@ YAHOO.util.Bezier = new function() {
     
     ColorAnim.NAME = 'ColorAnim';
 
+    ColorAnim.DEFAULT_BGCOLOR = '#fff';
     // shorthand
     var Y = YAHOO.util;
     YAHOO.extend(ColorAnim, Y.Anim);
@@ -752,19 +764,19 @@ YAHOO.util.Bezier = new function() {
 
     proto.getAttribute = function(attr) {
         var el = this.getEl();
-        if (  this.patterns.color.test(attr) ) {
+        if (this.patterns.color.test(attr) ) {
             var val = YAHOO.util.Dom.getStyle(el, attr);
             
+            var that = this;
             if (this.patterns.transparent.test(val)) { // bgcolor default
-                var parent = el.parentNode; // try and get from an ancestor
-                val = Y.Dom.getStyle(parent, attr);
-            
-                while (parent && this.patterns.transparent.test(val)) {
-                    parent = parent.parentNode;
+                var parent = YAHOO.util.Dom.getAncestorBy(el, function(node) {
+                    return !that.patterns.transparent.test(val);
+                });
+
+                if (parent) {
                     val = Y.Dom.getStyle(parent, attr);
-                    if (parent.tagName.toUpperCase() == 'HTML') {
-                        val = '#fff';
-                    }
+                } else {
+                    val = ColorAnim.DEFAULT_BGCOLOR;
                 }
             }
         } else {
@@ -851,7 +863,7 @@ YAHOO.util.Easing = {
     },
     
     /**
-     * Begins slowly and accelerates towards end. (quadratic)
+     * Begins slowly and accelerates towards end.
      * @method easeIn
      * @param {Number} t Time value used to compute current value
      * @param {Number} b Starting value
@@ -864,7 +876,7 @@ YAHOO.util.Easing = {
     },
 
     /**
-     * Begins quickly and decelerates towards end.  (quadratic)
+     * Begins quickly and decelerates towards end.
      * @method easeOut
      * @param {Number} t Time value used to compute current value
      * @param {Number} b Starting value
@@ -877,7 +889,7 @@ YAHOO.util.Easing = {
     },
     
     /**
-     * Begins slowly and decelerates towards end. (quadratic)
+     * Begins slowly and decelerates towards end.
      * @method easeBoth
      * @param {Number} t Time value used to compute current value
      * @param {Number} b Starting value
@@ -894,7 +906,7 @@ YAHOO.util.Easing = {
     },
     
     /**
-     * Begins slowly and accelerates towards end. (quartic)
+     * Begins slowly and accelerates towards end.
      * @method easeInStrong
      * @param {Number} t Time value used to compute current value
      * @param {Number} b Starting value
@@ -907,7 +919,7 @@ YAHOO.util.Easing = {
     },
     
     /**
-     * Begins quickly and decelerates towards end.  (quartic)
+     * Begins quickly and decelerates towards end.
      * @method easeOutStrong
      * @param {Number} t Time value used to compute current value
      * @param {Number} b Starting value
@@ -920,7 +932,7 @@ YAHOO.util.Easing = {
     },
     
     /**
-     * Begins slowly and decelerates towards end. (quartic)
+     * Begins slowly and decelerates towards end.
      * @method easeBothStrong
      * @param {Number} t Time value used to compute current value
      * @param {Number} b Starting value
@@ -1381,4 +1393,4 @@ YAHOO.util.Easing = {
 
     Y.Scroll = Scroll;
 })();
-YAHOO.register("animation", YAHOO.util.Anim, {version: "2.5.2", build: "1076"});
+YAHOO.register("animation", YAHOO.util.Anim, {version: "2.8.0r4", build: "2449"});

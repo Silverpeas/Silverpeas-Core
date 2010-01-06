@@ -70,25 +70,35 @@
   String componentId = request.getParameter("ComponentId");
   String context = request.getParameter("Context");
   String url = request.getParameter("Url");
-  String indexIt = request.getParameter("IndexIt"); //indexIt can be 0 or 1 or notdefined (used only by kmelia actually)
+  String sIndexIt = request.getParameter("IndexIt"); //indexIt can be 0 or 1 or notdefined (used only by kmelia actually)
   String checkOutStatus = request.getParameter("CheckOutStatus");
   String contentLanguage = request.getParameter("Language");
   String xmlForm = request.getParameter("XMLFormName");
   
+  session.setAttribute("Silverpeas_Attachment_ObjectId", id);
+  session.setAttribute("Silverpeas_Attachment_ComponentId", componentId);
+  session.setAttribute("Silverpeas_Attachment_Context", context);
+    
   if (!StringUtil.isDefined(contentLanguage))
     contentLanguage = null;
 
   String profile = request.getParameter("Profile");
   if (!StringUtil.isDefined(profile))
     profile = "user";
+  
+  session.setAttribute("Silverpeas_Attachment_Profile", profile);
 
   boolean originWysiwyg = false;
   if (request.getParameter("OriginWysiwyg") != null)
     originWysiwyg = (new Boolean(request.getParameter("OriginWysiwyg")))
         .booleanValue();
 
-  if (!StringUtil.isDefined(indexIt))
-    indexIt = "1";
+  	boolean indexIt = true;
+  	if ("1".equals(sIndexIt))
+		indexIt = true;
+	else if ("0".equals(sIndexIt))
+		indexIt = false;
+  	session.setAttribute("Silverpeas_Attachment_IndexIt", new Boolean(indexIt));
 
   boolean openUrl = false;
   if (request.getParameter("OpenUrl") != null)
@@ -110,6 +120,7 @@
 %>
 <link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
 
+<script type="text/javascript" src="<%=m_Context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
@@ -298,6 +309,46 @@ function handleError() {
 		messageObj.display();
 	}
 
+	function removeAttachment(attachmentId)
+	{
+		var sLanguages = "";
+		var boxItems = document.removeForm.languagesToDelete;
+		if (boxItems != null){
+			//at least one checkbox exists
+			var nbBox = boxItems.length;
+			//alert("nbBox = "+nbBox);
+			if ( (nbBox == null) && (boxItems.checked) ){
+				//there's only once checkbox
+				sLanguages += boxItems.value+",";
+			} else{
+				for (i=0;i<boxItems.length ;i++ ){
+					if (boxItems[i].checked){
+						sLanguages += boxItems[i].value+",";
+					}
+				}
+			}
+		}
+
+		//alert("sLanguages = "+sLanguages);
+		
+		$.get('<%=m_Context%>/Attachment', { id:attachmentId,Action:'Delete',languagesToDelete:sLanguages}, 
+				function(data){
+					data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+					if (data == "attachmentRemoved")
+					{
+						$('#attachment_'+attachmentId).remove();
+					}
+					else
+					{
+						if (data == "translationsRemoved")
+						{
+							document.location.reload();
+						}
+					}
+					closeMessage();
+				});
+	}
+
 </script>
 <script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
 <CENTER>
@@ -319,7 +370,7 @@ function handleError() {
 <% if (dragAndDropEnable) { %>
   <tr>
     <td align="right">
-	<a href="javascript:showHideDragDrop('<%=httpServerBase+m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanation_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
+	<a href="javascript:showHideDragDrop('<%=httpServerBase+m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanation_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','<%=pathInstallerJre%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
     </td>
   </tr>
@@ -345,17 +396,16 @@ function handleError() {
       </tr>
       <tr>
         <td align="center"><b><%=messages.getString("type")%></b></td>
-        <td align="left"><b><%=resources.getString("GML.file")%></b></td>
+        <td align="left"><b><%=attResources.getString("GML.file")%></b></td>
         <td align="left"><b><%=messages.getString("Title")%></b></td>
-        <td align="left"><b><%=resources.getString("GML.description")%></b></td>
-        <td align="left"><b><%=resources.getString("GML.size")%></b></td>
-        <td align="left"><b><%=resources.getString("uploadDate")%></b></td>
-        <td align="center"><b><%=resources.getString("GML.operations")%></b></td>
+        <td align="left"><b><%=attResources.getString("GML.description")%></b></td>
+        <td align="left"><b><%=attResources.getString("GML.size")%></b></td>
+        <td align="left"><b><%=attResources.getString("uploadDate")%></b></td>
+        <td align="center"><b><%=attResources.getString("GML.operations")%></b></td>
       </tr>
       <tr>
         <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>"></td>
       </tr>
-      <tr>
         <%
           String nameWritten;
           String lastDirContext = "";
@@ -376,6 +426,7 @@ function handleError() {
 
             //String urlAttachment_zip 	= attachmentDetail.getAttachmentURL()+"&zip="+zip+"&fileName="+attachmentDetail.getLogicalName();
         %>
+		<tr id="attachment_<%=attachmentDetail.getPK().getId()%>">
         <td class="odd" align="center">
         <%
           if (attachmentDetail.isReadOnly()
@@ -457,11 +508,11 @@ function handleError() {
 
        out.print(displayedName + " ");
        out.print(messages.getString("at") + " "
-           + resources.getOutputDate(attachmentDetail.getReservationDate()));
-       if (StringUtil.isDefined(resources.getOutputDate(attachmentDetail
+           + attResources.getOutputDate(attachmentDetail.getReservationDate()));
+       if (StringUtil.isDefined(attResources.getOutputDate(attachmentDetail
            .getExpiryDate())))
          out.print(" " + messages.getString("until") + " "
-             + resources.getOutputDate(attachmentDetail.getExpiryDate()));
+             + attResources.getOutputDate(attachmentDetail.getExpiryDate()));
        out.println(")");
        out.print("<br>");
      }
@@ -547,7 +598,7 @@ function handleError() {
             if (attachmentDetail.isReadOnly()) {
               if (userId.equals(attachmentDetail.getWorkerId())) {
                 updateIcon.setProperties(m_Context + "/util/icons/update.gif",
-                    resources.getString("GML.modify"),
+                    attResources.getString("GML.modify"),
                     "javascript:onClick=updateAttachment('" + attachmentId + "');");
                 deleteIcon.setProperties(ArrayPnoColorPix, "", "");
                 shareIcon.setProperties(ArrayPnoColorPix, "", "");
@@ -558,9 +609,9 @@ function handleError() {
               }
             } else {
               updateIcon.setProperties(m_Context + "/util/icons/update.gif",
-            		  resources.getString("GML.modify"),
+            		  attResources.getString("GML.modify"),
                   "javascript:onClick=updateAttachment('" + attachmentId + "')");
-              deleteIcon.setProperties(m_Context + "/util/icons/delete.gif", resources.getString("GML.delete"),
+              deleteIcon.setProperties(m_Context + "/util/icons/delete.gif", attResources.getString("GML.delete"),
                   "javascript:onClick=DeleteConfirmAttachment('"+ Encode.javaStringToJsString(logicalName) + "','"
                       + attachmentId + "', '"+attLanguages+"')");
               
@@ -618,7 +669,7 @@ function handleError() {
 %> <br>
 <%
   ButtonPane buttonPane2 = gef.getButtonPane();
-  buttonPane2.addButton((Button) gef.getFormButton(resources.getString("GML.add"), "javascript:AddAttachment()", false));
+  buttonPane2.addButton((Button) gef.getFormButton(attResources.getString("GML.add"), "javascript:AddAttachment()", false));
   out.println(buttonPane2.print());
 %>
 </CENTER>
