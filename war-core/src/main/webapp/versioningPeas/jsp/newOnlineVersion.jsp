@@ -44,6 +44,7 @@
   String[] radioButtonLabel = { messages.getString("public"), messages.getString("archive") };
   pageContext.setAttribute("radios", radioButtonLabel);
   
+  String documentId = (String) request.getAttribute("DocumentId");
   Form 				formUpdate 	= (Form) request.getAttribute("XMLForm");
   DataRecord 			data 		= (DataRecord) request.getAttribute("XMLData"); 
   String				xmlFormName = (String) request.getAttribute("XMLFormName");
@@ -65,6 +66,11 @@ function addNewVersion()
 {
 	if (isCorrectForm())
 		document.addForm.submit();
+}
+function checkIn()
+{
+	window.opener.checkin('<%=documentId%>', false);
+	window.close();
 }
 </script>
 <% if (formUpdate != null) { %>
@@ -89,6 +95,7 @@ function addNewVersion()
       <input type="hidden" name="componentId" value="<c:out value="${param.ComponentId}" />" />
       <input type="hidden" name="spaceId" value="<c:out value="${param.SpaceId}" />" />
       <input type="hidden" name="documentId" value="<c:out value="${param.documentId}" />" />
+	  <input type="hidden" name="Callback" value="<c:out value="${param.Callback}" />" />
       <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
         <tr>
           <td class="txtlibform"><%=versionTypeLabel%> :</td>
@@ -116,7 +123,8 @@ function addNewVersion()
     <%
       ButtonPane buttonPane = gef.getButtonPane();
       buttonPane.addButton(gef.getFormButton(okLabel, "javascript:addNewVersion();", false));
-      buttonPane.addButton(gef.getFormButton(nokLabel,"javascript:parent.document.forms[0].action.value='checkin';parent.document.forms[0].submit();", false));
+      buttonPane.addButton(gef.getFormButton(nokLabel, "javascript:window.close();", false));
+      buttonPane.addButton(gef.getFormButton(messages.getString("versioning.checkin.abort"),"javascript:checkIn();", false));
       out.println("<center>");
       out.println(buttonPane.print());
       out.println("</center>");

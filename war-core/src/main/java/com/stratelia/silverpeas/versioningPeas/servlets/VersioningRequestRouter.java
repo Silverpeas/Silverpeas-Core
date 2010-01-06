@@ -24,15 +24,15 @@
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
@@ -44,8 +44,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -64,9 +64,11 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.StringTokenizer;
 
 public class VersioningRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 1L;
+
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new VersioningSessionController(mainSessionCtrl, componentContext);
@@ -125,14 +127,14 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("ChangeOrder")) {
         String lines = request.getParameter("lines");
         Document document = versioningSC.getEditingDocument();
-        ArrayList users = document.getWorkList();
+        ArrayList<Worker> users = document.getWorkList();
         if (lines != null) {
           int users_count = (new Integer(lines)).intValue();
           if (users_count == users.size()) {
-            ArrayList new_users = new ArrayList(users_count);
+            ArrayList<Worker> new_users = new ArrayList<Worker>(users_count);
 
             for (int i = 0; i < users_count; i++) {
-              Worker user = (Worker) users.get(i);
+              Worker user = users.get(i);
               boolean v_value = false;
 
               // Validator
@@ -185,7 +187,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         document.setCurrentWorkListOrder(new Integer(listType).intValue());
         ProfileInst profile = versioningSC
             .getProfile(VersioningSessionController.WRITER);
-        ArrayList workers = new ArrayList();
+        ArrayList<Worker> workers = new ArrayList<Worker>();
         if (profile != null) {
           if (listType.equals(VersioningSessionController.WRITERS_LIST_ORDERED)) {
             // Need to merge users from groups with other users
@@ -194,8 +196,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
                 .getAllGroups(), workers);
             versioningSC.setAlreadyMerged(true);
           } else {
-            ArrayList workersUsers = new ArrayList();
-            ArrayList workersGroups = new ArrayList();
+            ArrayList<Worker> workersUsers = new ArrayList<Worker>();
+            ArrayList<Worker> workersGroups = new ArrayList<Worker>();
 
             workersGroups = versioningSC.convertGroupsToWorkers(workers,
                 profile.getAllGroups());
@@ -212,10 +214,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewWritersList", versioningSC, request);
       } else if (function.startsWith("SaveListType")) {
         Document document = versioningSC.getEditingDocument();
-        ArrayList users = document.getWorkList();
-        ArrayList updateUsers = new ArrayList();
+        ArrayList<Worker> users = document.getWorkList();
+        ArrayList<Worker> updateUsers = new ArrayList<Worker>();
         for (int i = 0; i < users.size(); i++) {
-          Worker user = (Worker) users.get(i);
+          Worker user = users.get(i);
           // Set approval rights to users
           String chvi = request.getParameter("chv" + i);
           boolean v_value = false;
@@ -228,6 +230,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         versioningSC.updateDocument(document);
         destination = getDestination("ViewWritersList", versioningSC, request);
       } else if (function.startsWith("ViewVersions")) {
+        request.setAttribute("Document", versioningSC.getEditingDocument());
         destination = rootDestination + "versions.jsp";
       } else if (function.equals("SelectUsersGroupsProfileInstance")) {
         String role = (String) request.getParameter("Role");
@@ -243,11 +246,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         versioningSC.updateDocumentProfile(profile);
         if (role.equals(VersioningSessionController.WRITER)) {
 
-          ArrayList oldWorkers = versioningSC.getEditingDocument()
+          ArrayList<Worker> oldWorkers = versioningSC.getEditingDocument()
               .getWorkList();
-          ArrayList workers = new ArrayList();
-          ArrayList workersUsers = new ArrayList();
-          ArrayList workersGroups = new ArrayList();
+          ArrayList<Worker> workers = new ArrayList<Worker>();
+          ArrayList<Worker> workersUsers = new ArrayList<Worker>();
+          ArrayList<Worker> workersGroups = new ArrayList<Worker>();
 
           workersGroups = versioningSC.convertGroupsToWorkers(oldWorkers,
               profile.getAllGroups());
@@ -256,10 +259,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           workersUsers = versioningSC.convertUsersToWorkers(oldWorkers, profile
               .getAllUsers());
           workers.addAll(workersUsers);
-          ArrayList sortedWorkers = new ArrayList();
+          ArrayList<Worker> sortedWorkers = new ArrayList<Worker>();
           if (workers != null) {
             for (int i = 0; i < workers.size(); i++) {
-              Worker sortedWorker = ((Worker) workers.get(i));
+              Worker sortedWorker = workers.get(i);
               sortedWorker.setOrder(i);
               sortedWorkers.add(sortedWorker);
             }
@@ -325,9 +328,12 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "newVersion.jsp";
       } else if (function.equals("AddNewOnlineVersion")) {
+        String documentId = request.getParameter("documentId");
+
+        request.setAttribute("DocumentId", documentId);
         // Display xmlForm if used
         if (StringUtil.isDefined(versioningSC.getXmlForm()))
-          setXMLFormIntoRequest(request.getParameter("documentId"), versioningSC, request);
+          setXMLFormIntoRequest(documentId, versioningSC, request);
 
         destination = rootDestination + "newOnlineVersion.jsp";
       } else if (function.equals("ChangeValidator")) {
@@ -346,32 +352,40 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             versioningSC.getSpaceId(), componentId);
 
         Document document = versioningSC.getDocument(documentPK);
-        List publicVersions = versioningSC
+        List<DocumentVersion> publicVersions = versioningSC
             .getPublicDocumentVersions(documentPK);
 
         request.setAttribute("Document", document);
         request.setAttribute("PublicVersions", publicVersions);
         request.setAttribute("Alias", isAlias);
         destination = "/versioningPeas/jsp/publicVersions.jsp";
+      } else if ("ViewAllVersions".equals(function)) {
+        return viewVersions(request, versioningSC);
       } else if ("saveOnline".equals(function)) {
-        List items = getRequestItems(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
-        String documentId = getParameterValue(items, "documentId");
+        String documentId = FileUploadUtil.getParameter(items, "documentId");
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
             versioningSC.getSpaceId(), versioningSC.getComponentId());
         Document document = versioningSC.getDocument(documentPK);
         String userId = componentSC.getUserId();
-        String radio = getParameterValue(items, "radio");
-        String comments = getParameterValue(items, "comments");
+        String radio = FileUploadUtil.getParameter(items, "radio");
+        String comments = FileUploadUtil.getParameter(items, "comments");
         boolean force = "true".equalsIgnoreCase(request.getParameter("force_release"));
+
+        String callback = FileUploadUtil.getParameter(items, "Callback");
+        request.setAttribute("Callback", callback);
         destination = "/versioningPeas/jsp/documentSaved.jsp";
 
         boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
 
         DocumentVersionPK newVersionPK =
             saveOnline(document, versioningSC, comments, radio, Integer.parseInt(userId), force,
-                addXmlForm);
+            addXmlForm);
         if (newVersionPK != null) {
+          request.setAttribute("DocumentId", documentId);
+          DocumentVersion version = versioningSC.getLastVersion(documentPK);
+          request.setAttribute("Version", version);
           if (addXmlForm) {
             saveXMLData(versioningSC, newVersionPK, items);
           }
@@ -394,7 +408,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             .getUserId()).intValue(), new Date());
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
-        request.setAttribute("DocId", documentId);
+        request.setAttribute("Document", document);
         destination = rootDestination + "versions.jsp";
       } else if (function.equals("DeleteDocumentRequest")) {
         String documentId = request.getParameter("DocId");
@@ -425,19 +439,15 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         saveNewDocument(request, versioningSC);
         destination = getDestination("ViewVersions", versioningSC, request);
       } else if (function.equals("SaveNewVersion")) {
-        List items = getRequestItems(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
-        String name = getParameterValue(items, "name");
-        String description = getParameterValue(items, "description");
-        String type = getParameterValue(items, "type");
-        String comments = getParameterValue(items, "comments");
-        String radio = getParameterValue(items, "radio");
-        String publicationId = getParameterValue(items, "publicationId");
-        String versionType = getParameterValue(items, "versionType");
-        String documentId = getParameterValue(items, "documentId");
+        String type = FileUploadUtil.getParameter(items, "type");
+        String comments = FileUploadUtil.getParameter(items, "comments");
+        String radio = FileUploadUtil.getParameter(items, "radio");
+        String documentId = FileUploadUtil.getParameter(items, "documentId");
 
         // Save file on disk
-        FileItem fileItem = getUploadedFile(items, "file_upload");
+        FileItem fileItem = FileUploadUtil.getFile(items, "file_upload");
         ResourceLocator settings =
             new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
         boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
@@ -468,7 +478,6 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
         // create DocumentVersion
         String componentId = versioningSC.getComponentId();
-        ForeignPK pubPK = new ForeignPK(publicationId, componentId);
         DocumentPK docPK = new DocumentPK(Integer.parseInt(documentId), "useless", componentId);
         int userId = Integer.parseInt(versioningSC.getUserId());
 
@@ -479,18 +488,17 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           destination = rootDestination + "documentLocked.jsp";
         } else {
 
-          List versions = versioningSC.getDocumentVersions(docPK);
+          List<DocumentVersion> versions = versioningSC.getDocumentVersions(docPK);
           int majorNumber = 0;
           int minorNumber = 1;
           if (versions != null && versions.size() > 0) {
-            documentVersion = (DocumentVersion) versions.get(versions.size() - 1);
+            documentVersion = versions.get(versions.size() - 1);
             majorNumber = documentVersion.getMajorNumber();
             minorNumber = documentVersion.getMinorNumber();
-            Document currdoc = versioningSC.getEditingDocument();
             DocumentVersion newVersion =
                 new DocumentVersion(null, docPK, majorNumber, minorNumber, userId, new Date(),
-                    comments, Integer.parseInt(radio), documentVersion.getStatus(),
-                    physicalName, logicalName, mimeType, size, componentId);
+                comments, Integer.parseInt(radio), documentVersion.getStatus(),
+                physicalName, logicalName, mimeType, size, componentId);
 
             boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
             if (addXmlForm)
@@ -523,7 +531,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
                 String destFile =
                     FileRepositoryManager.getTemporaryPath() + actifyWorkingPath + File.separator +
-                        logicalName;
+                    logicalName;
                 FileRepositoryManager.copyFile(versioningSC.createPath(componentId, null) +
                     File.separator + physicalName, destFile);
               }
@@ -613,12 +621,12 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     int size = 0;
     DocumentPK docPK = new DocumentPK(-1, versioningSC.getComponentId());
 
-    List items = getRequestItems(request);
-    String comments = getParameterValue(items, "comments");
-    int versionType = new Integer(getParameterValue(items, "versionType"))
+    List<FileItem> items = FileUploadUtil.parseRequest(request);
+    String comments = FileUploadUtil.getParameter(items, "comments");
+    int versionType = new Integer(FileUploadUtil.getParameter(items, "versionType"))
         .intValue();
 
-    FileItem fileItem = getUploadedFile(items, "file_upload");
+    FileItem fileItem = FileUploadUtil.getFile(items, "file_upload");
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.Attachment", "");
     boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
@@ -663,9 +671,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     // Document
     docPK = new DocumentPK(-1, versioningSC.getComponentId());
 
-    String name = getParameterValue(items, "name");
-    String publicationId = getParameterValue(items, "publicationId");
-    String description = getParameterValue(items, "description");
+    String name = FileUploadUtil.getParameter(items, "name");
+    String publicationId = FileUploadUtil.getParameter(items, "publicationId");
+    String description = FileUploadUtil.getParameter(items, "description");
 
     PublicationPK pubPK = new PublicationPK(publicationId, versioningSC
         .getComponentId());
@@ -701,37 +709,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
-  }
-
-  private String getParameterValue(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
-  }
-
-  private FileItem getUploadedFile(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item;
-      }
-    }
-    return null;
-  }
-
   private void saveXMLData(VersioningSessionController versioningSC,
-      DocumentVersionPK newVersionPK, List items) throws Exception {
+      DocumentVersionPK newVersionPK, List<FileItem> items) throws Exception {
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName) && newVersionPK != null) {
       String xmlFormShortName = xmlFormName.substring(
@@ -769,7 +748,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   }
 
   private boolean isXMLFormEmpty(VersioningSessionController versioningSC,
-      List items) throws Exception {
+      List<FileItem> items) throws Exception {
     boolean isEmpty = true;
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName)) {
@@ -852,5 +831,29 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     request.setAttribute("XMLData", data);
     request.setAttribute("XMLFormName", xmlFormName);
     request.setAttribute("PagesContext", pageContext);
+  }
+
+  private String viewVersions(HttpServletRequest request, VersioningSessionController versioningSC)
+      throws RemoteException {
+    String documentId = request.getParameter("DocId");
+    String isAlias = request.getParameter("Alias");
+    String componentId = request.getParameter("ComponentId");
+    versioningSC.setComponentId(componentId);
+    DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
+        versioningSC.getSpaceId(), componentId);
+
+    Document document = versioningSC.getDocument(documentPK);
+
+    List<DocumentVersion> versions = null;
+    if ("user".equals(versioningSC.getProfile())) {
+      versions = versioningSC.getPublicDocumentVersions(documentPK);
+    } else {
+      versions = versioningSC.getDocumentVersions(documentPK);
+    }
+
+    request.setAttribute("Document", document);
+    request.setAttribute("Versions", versions);
+    request.setAttribute("Alias", isAlias);
+    return "/versioningPeas/jsp/publicVersions.jsp";
   }
 }

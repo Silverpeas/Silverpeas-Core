@@ -235,9 +235,9 @@
 		ResourceLocator attachmentSettings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
 		MainSessionController   m_MainSessionCtrl   = (MainSessionController) session.getAttribute("SilverSessionController");
 		String onlineEditingFolder = attachmentSettings.getString("OnlineEditingFolder", "C:\\\\Documents Silverpeas\\\\");
-		boolean onlineEditingEnable =  m_MainSessionCtrl.getPersonalization().getOnlineEditingStatus() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
-		boolean webdavEditingEnable = m_MainSessionCtrl.getPersonalization().getWebdavEditingStatus() &&  attachmentSettings.getBoolean("OnlineEditingEnable", false);
-		boolean dragAndDropEnable 	= m_MainSessionCtrl.getPersonalization().getDragAndDropStatus() && attachmentSettings.getBoolean("DragAndDropEnable", false);
+		boolean onlineEditingEnable = m_MainSessionCtrl.isOnlineEditingEnabled() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
+		boolean webdavEditingEnable = m_MainSessionCtrl.isWebDAVEditingEnabled() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
+		boolean dragAndDropEnable 	= m_MainSessionCtrl.isDragNDropEnabled() && attachmentSettings.getBoolean("DragAndDropEnable", false);
 		String sURI = request.getRequestURI();
 		String sRequestURL = request.getRequestURL().toString();
 		String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
@@ -255,5 +255,6 @@
 		String saveListIcon = m_context + "/util/icons/saveAccessList.gif";
 		String userPanelDeleteIcon = m_context + "/util/icons/userPanelPeas_to_del.gif";
 		
-
+		ResourceLocator attMessages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
+		ResourcesWrapper attResources = new ResourcesWrapper(attMessages, null, null, m_MainSessionCtrl.getFavoriteLanguage());
 %>

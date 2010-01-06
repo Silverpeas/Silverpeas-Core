@@ -29,6 +29,7 @@ package com.stratelia.silverpeas.versioning.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.versioning.importExport.VersionsType;
@@ -36,6 +37,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class Document implements java.io.Serializable, Cloneable {
 
+  private static final long serialVersionUID = 1L;
   public final static int STATUS_CHECKINED = 0;
   public final static int STATUS_CHECKOUTED = 1;
 
@@ -48,10 +50,11 @@ public class Document implements java.io.Serializable, Cloneable {
   private Date lastCheckOutDate;
   private String additionalInfo;
   private String instanceId;
-  private ArrayList workList;
+  private ArrayList<Worker> workList;
   private ArrayList readList;
   private int typeWorkList;
   private int currentWorkListOrder;
+  private int orderNumber;
 
   private Date alertDate = null; // date d'alerte pour la notification
   // intermediaire
@@ -64,7 +67,7 @@ public class Document implements java.io.Serializable, Cloneable {
 
   public Document(DocumentPK pk, WAPrimaryKey foreignKey, String name,
       String description, int status, int ownerId, Date lastCheckOutDate,
-      String additionalInfo, String instanceId, ArrayList workList,
+      String additionalInfo, String instanceId, ArrayList<Worker> workList,
       ArrayList readList, int typeWorkList, int currentWorkListOrder) {
     this.pk = pk;
     this.foreignKey = foreignKey;
@@ -153,11 +156,11 @@ public class Document implements java.io.Serializable, Cloneable {
     this.instanceId = instanceId;
   }
 
-  public ArrayList getWorkList() {
+  public ArrayList<Worker> getWorkList() {
     return workList;
   }
 
-  public void setWorkList(ArrayList workList) {
+  public void setWorkList(ArrayList<Worker> workList) {
     this.workList = workList;
   }
 
@@ -231,5 +234,13 @@ public class Document implements java.io.Serializable, Cloneable {
 
   public void setVersionsType(VersionsType versionsType) {
     this.versionsType = versionsType;
+  }
+
+  public int getOrderNumber() {
+    return orderNumber;
+  }
+
+  public void setOrderNumber(int orderNumber) {
+    this.orderNumber = orderNumber;
   }
 }

@@ -595,8 +595,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public List getAttributeContext() {
-    List al = new ArrayList();
+  public List<String> getAttributeContext() {
+    List<String> al = new ArrayList<String>();
     al.add(spaceId);
     al.add(componentId);
     al.add(spaceLabel);
@@ -827,10 +827,10 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @author Nicolas Eysseric
    * @version 3.0
    */
-  public List getPublicDocumentVersions(DocumentPK documentPK)
+  public List<DocumentVersion> getPublicDocumentVersions(DocumentPK documentPK)
       throws RemoteException {
     initEJB();
-    List publicVersions = versioning_bm
+    List<DocumentVersion> publicVersions = versioning_bm
         .getAllPublicDocumentVersions(documentPK);
     return publicVersions;
   }
@@ -841,7 +841,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    * @throws RemoteException
    */
-  @SuppressWarnings("unchecked")
   public List<DocumentVersion> getDocumentFilteredVersions(
       DocumentPK documentPK, int user_id) throws RemoteException {
     initEJB();
@@ -1553,7 +1552,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @throws RemoteException
    */
   @SuppressWarnings("unchecked")
-  public List<Worker> getAccessListUsers(String role) throws RemoteException {
+  public List getAccessListUsers(String role) throws RemoteException {
     if (READER.equals(role)) {
       return getVersioningBm().getReadersAccessListUsers(getComponentId());
     }
@@ -1566,7 +1565,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @throws RemoteException
    */
   @SuppressWarnings("unchecked")
-  public List<Worker> getAccessListGroups(String role) throws RemoteException {
+  public List getAccessListGroups(String role) throws RemoteException {
     if (READER.equals(role)) {
       return getVersioningBm().getReadersAccessListGroups(getComponentId());
     }
@@ -1706,22 +1705,23 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param usersIds
    * @return
    */
-  public ArrayList convertUsersToWorkers(ArrayList workers, ArrayList usersIds) {
+  public ArrayList<Worker> convertUsersToWorkers(ArrayList<Worker> workers,
+      ArrayList<String> usersIds) {
     // For all users generate Workers and put them to HashMap
-    Iterator userIterator = usersIds.iterator();
-    Iterator workersIterator = workers.iterator();
+    Iterator<String> userIterator = usersIds.iterator();
+    Iterator<Worker> workersIterator = workers.iterator();
 
-    TreeMap mapWorkers = new TreeMap();
-    TreeMap mapCurrentWorkers = new TreeMap();
+    TreeMap<String, Worker> mapWorkers = new TreeMap<String, Worker>();
+    TreeMap<String, Worker> mapCurrentWorkers = new TreeMap<String, Worker>();
 
     Worker worker = null;
     UserDetail userDetail = null;
 
-    ArrayList newListWorkers = new ArrayList();
+    ArrayList<Worker> newListWorkers = new ArrayList<Worker>();
 
     // Remove workers (users) not in usersIds
     while (workersIterator.hasNext()) {
-      worker = (Worker) workersIterator.next();
+      worker = workersIterator.next();
       if (usersIds.contains(String.valueOf(worker.getId()))
           && worker.getType().equals(SET_TYPE_USER) && worker.isUsed())
         mapCurrentWorkers.put(
@@ -1734,8 +1734,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     boolean isSaved = false;
     int lastOrder = workers.size();
     while (userIterator.hasNext()) {
-      userDetail = getOrganizationController().getUserDetail(
-          (String) userIterator.next());
+      userDetail = getOrganizationController().getUserDetail(userIterator.next());
       if (!mapCurrentWorkers.containsKey(SET_TYPE_USER + userDetail.getId())) {
         worker = new Worker(Integer.parseInt(userDetail.getId()), 0,
             lastOrder++, false, true, document.getInstanceId(), SET_TYPE_USER,
@@ -1752,22 +1751,23 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param groupIds
    * @return
    */
-  public ArrayList convertGroupsToWorkers(ArrayList workers, ArrayList groupIds) {
+  public ArrayList<Worker> convertGroupsToWorkers(ArrayList<Worker> workers,
+      ArrayList<String> groupIds) {
     // For all users generate Workers and put them to HashMap
-    Iterator groupIterator = groupIds.iterator();
-    Iterator workersIterator = workers.iterator();
+    Iterator<String> groupIterator = groupIds.iterator();
+    Iterator<Worker> workersIterator = workers.iterator();
 
-    TreeMap mapWork = new TreeMap();
-    TreeMap mapCurrentWorkers = new TreeMap();
+    TreeMap<String, Worker> mapWork = new TreeMap<String, Worker>();
+    TreeMap<String, Worker> mapCurrentWorkers = new TreeMap<String, Worker>();
 
     Worker worker = null;
     Group groupDetail = null;
 
-    ArrayList newListWorkers = new ArrayList();
+    ArrayList<Worker> newListWorkers = new ArrayList<Worker>();
 
     // Remove workers (groups) not in groupIds
     while (workersIterator.hasNext()) {
-      worker = (Worker) workersIterator.next();
+      worker = workersIterator.next();
       if (groupIds.contains(String.valueOf(worker.getId()))
           && worker.getType().equals(SET_TYPE_GROUP) && worker.isUsed())
         mapCurrentWorkers.put(
@@ -1781,7 +1781,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     int lastOrder = workers.size();
     while (groupIterator.hasNext()) {
       groupDetail = getOrganizationController().getGroup(
-          (String) groupIterator.next());
+          groupIterator.next());
       if (!mapCurrentWorkers.containsKey(SET_TYPE_GROUP + groupDetail.getId())) {
         worker = new Worker(Integer.parseInt(groupDetail.getId()), lastOrder++,
             0, false, true, document.getInstanceId(), SET_TYPE_GROUP, isSaved,
@@ -1798,18 +1798,18 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param workers
    * @return workers
    */
-  public ArrayList mergeUsersFromGroupsWithWorkers(ArrayList groups,
-      ArrayList workers) {
-    ArrayList mergedWorkers = new ArrayList();
+  public ArrayList<Worker> mergeUsersFromGroupsWithWorkers(ArrayList groups,
+      ArrayList<Worker> workers) {
+    ArrayList<Worker> mergedWorkers = new ArrayList<Worker>();
     Worker worker = null;
-    TreeMap mapWork = new TreeMap();
+    TreeMap<Integer, Worker> mapWork = new TreeMap<Integer, Worker>();
 
     int lastIndexWorkers = workers.size();
 
-    Iterator workersIterator = workers.iterator();
+    Iterator<Worker> workersIterator = workers.iterator();
     // 1. Keep users from Workers
     while (workersIterator.hasNext()) {
-      worker = (Worker) workersIterator.next();
+      worker = workersIterator.next();
       if (worker.getType().equals(SET_TYPE_USER)) {
         mapWork.put(new Integer(worker.getId()), worker);
       } else {
@@ -1841,7 +1841,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public void deleteWorkers() throws RemoteException {
     getVersioningBm().deleteWorkList(getEditingDocument(), false);
-    getEditingDocument().setWorkList(new ArrayList());
+    getEditingDocument().setWorkList(new ArrayList<Worker>());
   }
 
   /**
@@ -1850,11 +1850,11 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public void deleteWorkers(boolean keepSaved) throws RemoteException {
     Document document = getEditingDocument();
-    ArrayList workers = document.getWorkList();
-    ArrayList updatedWorkers = new ArrayList();
-    Iterator workersIterator = workers.iterator();
+    ArrayList<Worker> workers = document.getWorkList();
+    ArrayList<Worker> updatedWorkers = new ArrayList<Worker>();
+    Iterator<Worker> workersIterator = workers.iterator();
     while (workersIterator.hasNext()) {
-      Worker worker = (Worker) workersIterator.next();
+      Worker worker = workersIterator.next();
       worker.setUsed(false);
       updatedWorkers.add(worker);
     }
@@ -1863,7 +1863,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
     // Delete workers non used and non saved
     getVersioningBm().deleteWorkList(document, keepSaved);
-    document.setWorkList(new ArrayList());
+    document.setWorkList(new ArrayList<Worker>());
     getVersioningBm().updateWorkList(document);
   }
 
@@ -1873,11 +1873,11 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param setType
    * @throws RemoteException
    */
-  public void setWorkerValidator(ArrayList workers, int setTypeId,
+  public void setWorkerValidator(ArrayList<Worker> workers, int setTypeId,
       String setType) throws RemoteException {
-    Iterator workersIterator = workers.iterator();
+    Iterator<Worker> workersIterator = workers.iterator();
     while (workersIterator.hasNext()) {
-      Worker worker = (Worker) workersIterator.next();
+      Worker worker = workersIterator.next();
       if (worker.getId() == setTypeId && worker.getType().equals(setType))
         worker.setApproval(true);
       if (worker.getId() != setTypeId
@@ -1917,5 +1917,16 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   public void setXmlForm(String xmlForm) {
     this.xmlForm = xmlForm;
+  }
+
+  public String sortDocuments(List<DocumentPK> pks) {
+    try {
+      getVersioningBm().sortDocuments(pks);
+      return "ok";
+    } catch (RemoteException e) {
+      SilverTrace.error("versioningPeas", "VersioningSessionController.sortDocuments",
+          "MSG_ERROR_CANT_SORT_DOCUMENTS", e);
+      return e.getMessage();
+    }
   }
 }

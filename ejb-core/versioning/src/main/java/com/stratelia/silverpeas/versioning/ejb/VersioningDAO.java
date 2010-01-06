@@ -60,14 +60,13 @@ public class VersioningDAO {
   public final static String GET_DOCUMENT_BYID_QUERY = "SELECT d.documentId, "
       + " d.documentName, d.documentDescription, d.documentStatus, d.documentOwnerId, "
       + " d.documentCheckoutDate, d.documentInfo, d.foreignId, d.instanceId, d.typeWorkList, "
-      + " d.currentWorkListOrder, d.alertDate, d.expiryDate " + " FROM "
+      + " d.currentWorkListOrder, d.alertDate, d.expiryDate, d.documentordernum " + " FROM "
       + documentTableName + " d WHERE d.documentId = ? ";
 
   public final static String GET_DOCUMENT_VERSION_BYID_QUERY = "SELECT d.* FROM "
       + versionTableName + " d WHERE d.versionId = ? ";
 
   /**
-   * 
    * @param conn
    * @param pk
    * @return
@@ -113,21 +112,20 @@ public class VersioningDAO {
   public final static String GET_DOCUMENT_BYFORID_QUERY = "SELECT d.documentId, "
       + " d.documentName, d.documentDescription, d.documentStatus, d.documentOwnerId, "
       + " d.documentCheckoutDate, d.documentInfo, d.foreignId, d.instanceId, d.typeWorkList, "
-      + " d.currentWorkListOrder, d.alertDate, d.expiryDate "
+      + " d.currentWorkListOrder, d.alertDate, d.expiryDate, d.documentordernum "
       + " FROM "
       + documentTableName
       + " d WHERE d.foreignId = ? and d.instanceId = ? ORDER BY d.documentId ";
 
   /**
    * Get documents
-   * 
    * @param conn
    * @param foreignID
    * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static ArrayList getDocuments(Connection conn, WAPrimaryKey foreignID)
+  public static List<Document> getDocuments(Connection conn, WAPrimaryKey foreignID)
       throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException("VersioningDAO.getDocuments",
@@ -140,7 +138,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = new ArrayList();
+    List<Document> result = new ArrayList<Document>();
 
     try {
       prepStmt = conn.prepareStatement(GET_DOCUMENT_BYFORID_QUERY);
@@ -150,7 +148,7 @@ public class VersioningDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("VersioningDAO.getDocuments",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", foreignID
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -169,24 +167,23 @@ public class VersioningDAO {
   public final static String GET_DOCUMENTS_BYINSTANCEID_QUERY = "SELECT documentId, "
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
-      + " currentWorkListOrder, alertDate, expiryDate "
+      + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
       + " FROM "
       + documentTableName + " WHERE instanceId = ? ";
 
   /**
-   * 
    * @param con
    * @param instanceId
    * @return
    * @throws SQLException
    */
-  public static ArrayList getDocumentsByInstanceId(Connection con,
+  public static List<Document> getDocumentsByInstanceId(Connection con,
       String instanceId) throws SQLException {
     SilverTrace.info("versioning", "VersioningDAO.getDocumentsByInstanceId()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId = " + instanceId);
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = new ArrayList();
+    List<Document> result = new ArrayList<Document>();
 
     try {
       prepStmt = con.prepareStatement(GET_DOCUMENTS_BYINSTANCEID_QUERY);
@@ -250,9 +247,9 @@ public class VersioningDAO {
     doc.getForeignKey().setComponentName(doc.getInstanceId());
 
     // ArrayList readers = getReaders(con, doc.getPk());
-    ArrayList workers = WorkListDAO.getWorkers(con, doc.getPk());
+    List<Worker> workers = WorkListDAO.getWorkers(con, doc.getPk());
     // doc.setReadList(readers);
-    doc.setWorkList(workers);
+    doc.setWorkList((ArrayList<Worker>) workers);
 
     try {
       String alertDate = rs.getString(12);
@@ -277,18 +274,22 @@ public class VersioningDAO {
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_CANT_PARSE_DATE", e);
     }
 
+    doc.setOrderNumber(rs.getInt(14));
     return doc;
   }
 
-  public final static String CREATE_DOCUMENT_QUERY = "INSERT INTO "
-      + documentTableName
-      + " (documentId, documentName, documentDescription, documentStatus, documentOwnerId, "
-      + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, currentWorkListOrder, alertDate, expiryDate) "
-      + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  public final static String CREATE_DOCUMENT_QUERY =
+      "INSERT INTO "
+          +
+          documentTableName
+          +
+          " (documentId, documentName, documentDescription, documentStatus, documentOwnerId, "
+          +
+          " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, currentWorkListOrder, alertDate, expiryDate, documentordernum) "
+          + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   /**
    * Create Document
-   * 
    * @param conn
    * @param document
    * @param initialVersion
@@ -305,10 +306,12 @@ public class VersioningDAO {
     }
     if ((document == null)
         || (document != null && ((document.getPk() == null) || (document
-            .getForeignKey() == null)))) {
+        .getForeignKey() == null)))) {
       throw new VersioningRuntimeException("VersioningDAO.createDocument",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
+    int maxOrderNumber = getMaxOrderNumber(conn, document.getForeignKey());
+    maxOrderNumber++;
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
     formatter.setLenient(false);
     PreparedStatement prepStmt = null;
@@ -362,25 +365,25 @@ public class VersioningDAO {
         prepStmt.setString(13, null);
       }
 
+      prepStmt.setInt(14, maxOrderNumber);
       int rownum = prepStmt.executeUpdate();
       if (rownum < 1) {
         throw new VersioningRuntimeException("VersioningDAO.createDocument",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_RECORD_INSERTION_FAILED");
       }
 
-      ArrayList readers = document.getReadList();
       /*
-       * if (readers != null && readers.size() != 0) { for (int i = 0; i <
-       * readers.size(); i++) { Reader reader = (Reader) readers.get(i);
-       * reader.setDocumentId(newId);
-       * reader.setInstanceId(document.getPk().getComponentName()); }
-       * ReadListDAO.addReaders(conn, readers); }
+       * List readers = document.getReadList();
+       * if (readers != null && readers.size() != 0) { for (int i = 0; i < readers.size(); i++) {
+       * Reader reader = (Reader) readers.get(i); reader.setDocumentId(newId);
+       * reader.setInstanceId(document.getPk().getComponentName()); } ReadListDAO.addReaders(conn,
+       * readers); }
        */
 
-      ArrayList workers = document.getWorkList();
+      List<Worker> workers = document.getWorkList();
       if (workers != null && workers.size() != 0) {
         for (int i = 0; i < workers.size(); i++) {
-          Worker worker = (Worker) workers.get(i);
+          Worker worker = workers.get(i);
           worker.setDocumentId(newId);
           worker.setInstanceId(document.getPk().getComponentName());
         }
@@ -400,14 +403,17 @@ public class VersioningDAO {
     return result;
   }
 
-  public final static String UPDATE_DOCUMENT_QUERY = "UPDATE "
-      + documentTableName
-      + " SET documentName = ? , documentDescription = ? , documentStatus = ? , documentOwnerId = ? , "
-      + " documentCheckoutDate = ?, documentInfo = ? , foreignId = ? , instanceId = ? , typeWorkList = ? ,"
-      + " currentWorkListOrder = ?, alertDate = ?, expiryDate = ?  WHERE documentId = ? ";
+  public final static String UPDATE_DOCUMENT_QUERY =
+      "UPDATE "
+          +
+          documentTableName
+          +
+          " SET documentName = ? , documentDescription = ? , documentStatus = ? , documentOwnerId = ? , "
+          +
+          " documentCheckoutDate = ?, documentInfo = ? , foreignId = ? , instanceId = ? , typeWorkList = ? ,"
+          + " currentWorkListOrder = ?, alertDate = ?, expiryDate = ?  WHERE documentId = ? ";
 
   /**
-   * 
    * @param conn
    * @param document
    * @throws SQLException
@@ -421,7 +427,7 @@ public class VersioningDAO {
     }
     if ((document == null)
         || (document != null && ((document.getPk() == null) || (document
-            .getForeignKey() == null)))) {
+        .getForeignKey() == null)))) {
       throw new VersioningRuntimeException("VersioningDAO.updateDocument",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
@@ -473,7 +479,6 @@ public class VersioningDAO {
       + " SET foreignId = ?, instanceId = ? WHERE documentId = ? ";
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @param foreignKey
@@ -498,7 +503,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param document
    * @throws SQLException
@@ -506,10 +510,10 @@ public class VersioningDAO {
    */
   public static void updateWorkList(Connection conn, Document document)
       throws SQLException, VersioningRuntimeException {
-    ArrayList workers = document.getWorkList();
+    List<Worker> workers = document.getWorkList();
     if (workers != null && workers.size() != 0) {
       for (int i = 0; i < workers.size(); i++) {
-        Worker worker = (Worker) workers.get(i);
+        Worker worker = workers.get(i);
         worker.setDocumentId(Integer.parseInt(document.getPk().getId()));
       }
       WorkListDAO.removeAllWorkers(conn, document.getPk());
@@ -540,7 +544,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @param ownerId
@@ -597,7 +600,7 @@ public class VersioningDAO {
       throw new VersioningRuntimeException("VersioningDAO.checkDocumentOut",
           SilverpeasRuntimeException.ERROR,
           "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = "
-              + documentPK.getId());
+          + documentPK.getId());
     }
   }
 
@@ -607,7 +610,6 @@ public class VersioningDAO {
       + " WHERE documentId = ?";
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @throws SQLException
@@ -640,19 +642,24 @@ public class VersioningDAO {
       throw new VersioningRuntimeException("VersioningDAO.checkDocumentIn",
           SilverpeasRuntimeException.ERROR,
           "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = "
-              + documentPK.getId());
+          + documentPK.getId());
     }
   }
 
-  public static final String ADD_NEW_VERSION_QUERY = "INSERT INTO "
-      + versionTableName
-      + " (versionId, "
-      + " documentId, versionMajorNumber, versionMinorNumber, versionAuthorId, "
-      + " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
-      + " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+  public static final String ADD_NEW_VERSION_QUERY =
+      "INSERT INTO "
+          +
+          versionTableName
+          +
+          " (versionId, "
+          +
+          " documentId, versionMajorNumber, versionMinorNumber, versionAuthorId, "
+          +
+          " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
+          +
+          " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
-   * 
    * @param conn
    * @param newVersion
    * @return
@@ -727,16 +734,20 @@ public class VersioningDAO {
     return newVersion.getPk();
   }
 
-  public static final String UPDATE_VERSION_QUERY = "UPDATE "
-      + versionTableName
-      + " SET "
-      + " versionMajorNumber = ? , versionMinorNumber = ? , versionAuthorId = ? , "
-      + " versionCreationDate = ? , versionComments = ? , versionType = ? , versionStatus = ?, versionPhysicalname = ?, "
-      + " versionLogicalName = ? , versionMimeType = ? , versionSize = ? , instanceId = ?"
-      + " WHERE versionId = ? ";
+  public static final String UPDATE_VERSION_QUERY =
+      "UPDATE "
+          +
+          versionTableName
+          +
+          " SET "
+          +
+          " versionMajorNumber = ? , versionMinorNumber = ? , versionAuthorId = ? , "
+          +
+          " versionCreationDate = ? , versionComments = ? , versionType = ? , versionStatus = ?, versionPhysicalname = ?, "
+          + " versionLogicalName = ? , versionMimeType = ? , versionSize = ? , instanceId = ?"
+          + " WHERE versionId = ? ";
 
   /**
-   * 
    * @param conn
    * @param version
    * @throws SQLException
@@ -751,7 +762,7 @@ public class VersioningDAO {
     }
     if ((version == null)
         || (version != null && ((version.getPk() == null) || (version
-            .getDocumentPK() == null)))) {
+        .getDocumentPK() == null)))) {
       throw new VersioningRuntimeException(
           "VersioningDAO.updateDocumentVersion", SilverTrace.TRACE_LEVEL_DEBUG,
           "root.EX_NULL_VALUE_OBJECT_OR_PK");
@@ -795,22 +806,24 @@ public class VersioningDAO {
     }
   }
 
-  public static final String GET_VERSIONS_QUERY = "SELECT v.versionId, "
-      + " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
-      + " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
-      + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
-      + " FROM " + versionTableName
-      + " v WHERE v.documentId = ? ORDER BY v.versionId ";
+  public static final String GET_VERSIONS_QUERY =
+      "SELECT v.versionId, "
+          +
+          " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
+          +
+          " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
+          + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
+          + " FROM " + versionTableName
+          + " v WHERE v.documentId = ? ORDER BY v.versionId DESC";
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static ArrayList getDocumentVersions(Connection conn,
+  public static List<DocumentVersion> getDocumentVersions(Connection conn,
       DocumentPK documentPK) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException("VersioningDAO.getDocumentVersions",
@@ -823,7 +836,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = new ArrayList();
+    List<DocumentVersion> result = new ArrayList<DocumentVersion>();
 
     try {
       prepStmt = conn.prepareStatement(GET_VERSIONS_QUERY);
@@ -849,17 +862,19 @@ public class VersioningDAO {
     return result;
   }
 
-  public static final String GET_LAST_VERSION_QUERY = "SELECT v.versionId, "
-      + " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
-      + " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
-      + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
-      + " FROM " + versionTableName + " v WHERE  " + " (v.documentId = ?) AND "
-      + " (versionMajorNumber = (select max(versionMajorNumber) FROM "
-      + versionTableName + " a WHERE "
-      + " a.documentId = ? AND a.versionType = 0 )  )";
+  public static final String GET_LAST_VERSION_QUERY =
+      "SELECT v.versionId, "
+          +
+          " v.documentId, v.versionMajorNumber , v.versionMinorNumber, v.versionAuthorId, "
+          +
+          " v.versionCreationDate, v.versionComments, v.versionType, v.versionStatus, v.versionPhysicalname, "
+          + " v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
+          + " FROM " + versionTableName + " v WHERE  " + " (v.documentId = ?) AND "
+          + " (versionMajorNumber = (select max(versionMajorNumber) FROM "
+          + versionTableName + " a WHERE "
+          + " a.documentId = ? AND a.versionType = 0 )  )";
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @return
@@ -893,7 +908,7 @@ public class VersioningDAO {
         throw new VersioningRuntimeException(
             "VersioningDAO.getLastDocumentVersion",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -910,7 +925,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param pk
    * @return
@@ -954,7 +968,6 @@ public class VersioningDAO {
 
   /**
    * Get document version from RseultSet
-   * 
    * @param rs
    * @return
    * @throws SQLException
@@ -1002,14 +1015,13 @@ public class VersioningDAO {
       + versionTableName + " where documentId = ? ";
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static ArrayList deleteDocument(Connection conn, DocumentPK documentPK)
+  public static void deleteDocument(Connection conn, DocumentPK documentPK)
       throws SQLException, VersioningRuntimeException {
     SilverTrace.info("versioning", "VersioningDAO.deleteDocument()",
         "root.MSG_GEN_ENTER_METHOD", "documentPK = " + documentPK.toString());
@@ -1023,8 +1035,7 @@ public class VersioningDAO {
     }
 
     PreparedStatement prepStmt = null;
-    ArrayList result = new ArrayList();
-
+    
     try {
 
       WorkListDAO.removeAllWorkers(conn, documentPK, true);
@@ -1035,7 +1046,7 @@ public class VersioningDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getWorkers",
             SilverTrace.TRACE_LEVEL_ERROR, "root.EX_WRONG_PK", documentPK
-                .toString(), e);
+            .toString(), e);
       }
 
       prepStmt.executeUpdate();
@@ -1051,7 +1062,7 @@ public class VersioningDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getWorkers",
             SilverTrace.TRACE_LEVEL_ERROR, "root.EX_WRONG_PK", documentPK
-                .toString(), e);
+            .toString(), e);
       }
 
       prepStmt.executeUpdate();
@@ -1059,8 +1070,6 @@ public class VersioningDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-
-    return result;
   }
 
   public static final String GET_ALL_PUBLIC_VERSIONS_QUERY = "SELECT versionId, "
@@ -1073,14 +1082,13 @@ public class VersioningDAO {
       + " AND versionMinorNumber = 0 " + " ORDER BY versionMajorNumber DESC";
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static List getAllPublicDocumentVersions(Connection conn,
+  public static List<DocumentVersion> getAllPublicDocumentVersions(Connection conn,
       DocumentPK documentPK) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException(
@@ -1096,7 +1104,7 @@ public class VersioningDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     DocumentVersion result = null;
-    ArrayList results = new ArrayList();
+    List<DocumentVersion> results = new ArrayList<DocumentVersion>();
     try {
       prepStmt = conn.prepareStatement(GET_ALL_PUBLIC_VERSIONS_QUERY);
       try {
@@ -1106,7 +1114,7 @@ public class VersioningDAO {
         throw new VersioningRuntimeException(
             "VersioningDAO.getAllPublicDocumentVersions",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -1118,11 +1126,10 @@ public class VersioningDAO {
       DBUtil.close(rs, prepStmt);
     }
 
-    return (List) results;
+    return results;
   }
 
   /**
-   * 
    * @param con
    * @param instanceId
    * @throws SQLException
@@ -1133,10 +1140,10 @@ public class VersioningDAO {
     SilverTrace.info("versioning",
         "VersioningDAO.deleteDocumentsByInstanceId()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId = " + instanceId);
-    List documentsOfInstance = getDocumentsByInstanceId(con, instanceId);
+    List<Document> documentsOfInstance = getDocumentsByInstanceId(con, instanceId);
     Document document = null;
     for (int d = 0; d < documentsOfInstance.size(); d++) {
-      document = (Document) documentsOfInstance.get(d);
+      document = documentsOfInstance.get(d);
       deleteDocument(con, document.getPk());
     }
   }
@@ -1144,20 +1151,19 @@ public class VersioningDAO {
   public static final String GET_ALL_FILES_RESERVED_QUERY = "SELECT d.documentId, "
       + " d.documentName, d.documentDescription, d.documentStatus, d.documentOwnerId, "
       + " d.documentCheckoutDate, d.documentInfo, d.foreignId, d.instanceId, d.typeWorkList, "
-      + " d.currentWorkListOrder, alertDate, expiryDate "
+      + " d.currentWorkListOrder, alertDate, expiryDate, documentordernum "
       + " FROM "
       + documentTableName
       + " d WHERE d.documentOwnerId = ? and d.documentStatus = 1 ";
 
   /**
-   * 
    * @param conn
    * @param ownerId
    * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static List getAllFilesReserved(Connection conn, int ownerId)
+  public static List<Document> getAllFilesReserved(Connection conn, int ownerId)
       throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException("VersioningDAO.getAllFilesReserved",
@@ -1166,7 +1172,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList results = new ArrayList();
+    List<Document> results = new ArrayList<Document>();
     try {
       prepStmt = conn.prepareStatement(GET_ALL_FILES_RESERVED_QUERY);
       try {
@@ -1186,32 +1192,31 @@ public class VersioningDAO {
       DBUtil.close(rs, prepStmt);
     }
 
-    return (List) results;
+    return results;
   }
 
   public static final String GET_ALL_ALERT_FILES_RESERVED_BY_DATE_QUERY = "SELECT documentId, "
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
-      + " currentWorkListOrder, alertDate, expiryDate "
+      + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
       + " FROM "
       + documentTableName + " d WHERE alertDate = ? ";
 
   public static final String GET_ALL_EXPIRY_FILES_RESERVED_BY_DATE_QUERY = "SELECT documentId, "
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
-      + " currentWorkListOrder, alertDate, expiryDate "
+      + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
       + " FROM "
       + documentTableName + " d WHERE expiryDate = ? ";
 
   public static final String GET_ALL_FILES_RESERVED_BY_DATE_QUERY = "SELECT documentId, "
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
-      + " currentWorkListOrder, alertDate, expiryDate "
+      + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
       + " FROM "
       + documentTableName + " d WHERE expiryDate < ? ";
 
   /**
-   * 
    * @param conn
    * @param date
    * @param alert
@@ -1219,7 +1224,7 @@ public class VersioningDAO {
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static List getAllFilesReservedByDate(Connection conn, Date date,
+  public static List<Document> getAllFilesReservedByDate(Connection conn, Date date,
       boolean alert) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException("VersioningDAO.getAllFilesReserved",
@@ -1228,7 +1233,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList results = new ArrayList();
+    List<Document> results = new ArrayList<Document>();
     try {
       if (alert)
         prepStmt = conn
@@ -1257,17 +1262,16 @@ public class VersioningDAO {
       DBUtil.close(rs, prepStmt);
     }
 
-    return (List) results;
+    return results;
   }
 
   /**
-   * 
    * @param conn
    * @param date
    * @return
    * @throws SQLException
    */
-  public static List getAllDocumentsToLib(Connection conn, Date date)
+  public static List<Document> getAllDocumentsToLib(Connection conn, Date date)
       throws SQLException {
     if (conn == null) {
       throw new VersioningRuntimeException(
@@ -1277,7 +1281,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList results = new ArrayList();
+    List<Document> results = new ArrayList<Document>();
     try {
       prepStmt = conn.prepareStatement(GET_ALL_FILES_RESERVED_BY_DATE_QUERY);
       try {
@@ -1301,11 +1305,10 @@ public class VersioningDAO {
       DBUtil.close(rs, prepStmt);
     }
 
-    return (List) results;
+    return results;
   }
 
   /**
-   * 
    * @param conn
    * @param role
    * @param componentId
@@ -1315,7 +1318,7 @@ public class VersioningDAO {
    * @throws VersioningRuntimeException
    */
   public static void insertReadersAccessList(Connection conn,
-      String componentId, ArrayList groupsIds, ArrayList usersIds)
+      String componentId, List<String> groupsIds, List<String> usersIds)
       throws SQLException, VersioningRuntimeException {
     SilverTrace.debug("versioning", "VersioningDAO.insertReadersAccessList",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1346,7 +1349,7 @@ public class VersioningDAO {
       throw new VersioningRuntimeException("VersioningDAO.insertAccessList",
           SilverpeasRuntimeException.ERROR,
           "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "componentId = "
-              + componentId);
+          + componentId);
     } else {
       insertAccessListContent(conn, newId, groupsIds, usersIds);
     }
@@ -1355,7 +1358,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param componentId
    * @param groupsIds
@@ -1365,7 +1367,7 @@ public class VersioningDAO {
    * @throws VersioningRuntimeException
    */
   public static String insertReadersAccessGroupsList(Connection conn,
-      String componentId, ArrayList groupsIds, ArrayList usersIds)
+      String componentId, List<String> groupsIds, List<String> usersIds)
       throws SQLException, VersioningRuntimeException {
     SilverTrace.debug("versioning",
         "VersioningDAO.insertReadersAccessGroupsList",
@@ -1398,7 +1400,7 @@ public class VersioningDAO {
           "VersioningDAO.insertAccessGroupsList",
           SilverpeasRuntimeException.ERROR,
           "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "componentId = "
-              + componentId);
+          + componentId);
     } else {
       insertAccessGroupsListContent(conn, newId, groupsIds, usersIds);
     }
@@ -1409,7 +1411,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param role
    * @param componentId
@@ -1419,23 +1420,22 @@ public class VersioningDAO {
    * @throws VersioningRuntimeException
    */
   private static void insertAccessListContent(Connection conn, int accessId,
-      ArrayList groupsIds, ArrayList usersIds) throws SQLException,
+      List<String> groupsIds, List<String> usersIds) throws SQLException,
       VersioningRuntimeException {
     SilverTrace.debug("versioning", "VersioningDAO.insertAccessListContent",
         "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
     for (int i = 0; i < groupsIds.size(); i++) {
-      int groupId = new Integer((String) groupsIds.get(i)).intValue();
+      int groupId = new Integer(groupsIds.get(i)).intValue();
       insertAccessListContentRow(conn, "G", groupId, accessId);
     }
 
     for (int i = 0; i < usersIds.size(); i++) {
-      int userId = new Integer((String) usersIds.get(i)).intValue();
+      int userId = new Integer(usersIds.get(i)).intValue();
       insertAccessListContentRow(conn, "U", userId, accessId);
     }
   }
 
   /**
-   * 
    * @param conn
    * @param accessId
    * @param groupsIds
@@ -1444,7 +1444,7 @@ public class VersioningDAO {
    * @throws VersioningRuntimeException
    */
   private static void insertAccessGroupsListContent(Connection conn,
-      int accessId, ArrayList groupsIds, ArrayList usersIds)
+      int accessId, List<String> groupsIds, List<String> usersIds)
       throws SQLException, VersioningRuntimeException {
     SilverTrace.debug("versioning",
         "VersioningDAO.insertAccessGroupsListContent",
@@ -1460,7 +1460,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param setType
    * @param setTypeId
@@ -1507,7 +1506,6 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param role
    * @param componentId
@@ -1540,14 +1538,13 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param profile
    * @param componentId
    * @return
    * @throws SQLException
    */
-  public static ArrayList getReadersAccessListGroups(Connection conn,
+  public static List<String> getReadersAccessListGroups(Connection conn,
       String componentId) throws SQLException {
     if (conn == null) {
       throw new VersioningRuntimeException("VersioningDAO.getAccessListGroups",
@@ -1556,7 +1553,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList results = new ArrayList();
+    List<String> results = new ArrayList<String>();
     try {
       prepStmt = conn.prepareStatement(SELECT_ACCESS_LIST_GROUPS);
       try {
@@ -1579,14 +1576,13 @@ public class VersioningDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param profile
    * @param componentId
    * @return
    * @throws SQLException
    */
-  public static ArrayList getReadersAccessListUsers(Connection conn,
+  public static List<String> getReadersAccessListUsers(Connection conn,
       String componentId) throws SQLException {
     if (conn == null) {
       throw new VersioningRuntimeException("VersioningDAO.getAccessListUsers",
@@ -1595,7 +1591,7 @@ public class VersioningDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList results = new ArrayList();
+    List<String> results = new ArrayList<String>();
     try {
       prepStmt = conn.prepareStatement(SELECT_ACCESS_LIST_USERS);
 
@@ -1678,4 +1674,55 @@ public class VersioningDAO {
       + accessListContentTableName + " where accessid in (select id from "
       + accessListTableName + " where componentId = ?)";
 
+  public static int getMaxOrderNumber(Connection con, WAPrimaryKey foreignKey) throws SQLException {
+    StringBuffer selectQuery = new StringBuffer();
+    selectQuery.append("select max(documentOrderNum)");
+    selectQuery.append(" from ").append(documentTableName);
+    selectQuery.append(" where foreignId = ? ");
+    selectQuery.append(" and instanceId = ? ");
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    try {
+      prepStmt = con.prepareStatement(selectQuery.toString());
+
+      prepStmt.setInt(1, Integer.parseInt(foreignKey.getId()));
+      prepStmt.setString(2, foreignKey.getComponentName());
+
+      rs = prepStmt.executeQuery();
+
+      if (rs.next()) {
+        return rs.getInt(1);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return 0;
+  }
+
+  public static void sortDocuments(Connection con, List<DocumentPK> pks) throws SQLException {
+    StringBuffer updateQuery = new StringBuffer();
+    updateQuery.append("update ").append(documentTableName);
+    updateQuery.append(" set documentOrderNum = ? ");
+    updateQuery.append(" where documentId = ? ");
+    updateQuery.append(" and instanceId = ? ");
+    String query = updateQuery.toString();
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      DocumentPK pk;
+      for (int i = 0; i < pks.size(); i++) {
+        pk = pks.get(i);
+        prepStmt.setInt(1, i);
+        prepStmt.setInt(2, Integer.parseInt(pk.getId()));
+        prepStmt.setString(3, pk.getInstanceId());
+
+        prepStmt.executeUpdate();
+      }
+
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 }

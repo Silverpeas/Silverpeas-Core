@@ -45,21 +45,19 @@
     String id = request.getParameter("DocId");
 		String from_action = request.getParameter("from_action");
 
-    if (id==null)
-        id = request.getParameter("DocId");
-
     String profile = (String) request.getAttribute("Profile");
 
     String name = request.getParameter("name");
     String description = request.getParameter("description");
     String comments = request.getParameter("comments");
+    
+    Document document = (Document) request.getAttribute("Document");
 
 %>
 <html>
 <TITLE><%=messages.getString("popupTitle")%></TITLE>
 <%
-		Document document = null;
-    if ( id != null )
+    if (document == null)
     {
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(id), spaceId, componentId);
         document = versioningSC.getDocument(documentPK);
@@ -67,7 +65,7 @@
     }
     else
     {
-        document = versioningSC.getEditingDocument();
+        //document = versioningSC.getEditingDocument();
         DocumentPK document_pk = document.getPk();
         spaceId = document_pk.getSpace();
         componentId = document_pk.getComponentName();

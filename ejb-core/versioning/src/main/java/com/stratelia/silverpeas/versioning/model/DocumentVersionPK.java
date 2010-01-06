@@ -29,20 +29,17 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * This object contains the info about PrimaryKey of document version
- * 
  * @author Georgy Shakirin
  * @version 1.0
  */
 
-public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
-    Cloneable {
+public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Cloneable {
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
-   * 
    * @see
    */
   public DocumentVersionPK(int id) {
@@ -51,12 +48,9 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param spaceId
    * @param componentId
-   * 
    * @see
    */
   public DocumentVersionPK(int id, String spaceId, String componentId) {
@@ -65,11 +59,8 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param pk
-   * 
    * @see
    */
   public DocumentVersionPK(int id, WAPrimaryKey pk) {
@@ -86,10 +77,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTableName() {
@@ -98,12 +86,8 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public boolean equals(Object other) {
@@ -117,10 +101,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {
@@ -129,9 +110,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable,
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

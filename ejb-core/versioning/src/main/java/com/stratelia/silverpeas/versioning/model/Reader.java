@@ -29,6 +29,8 @@ package com.stratelia.silverpeas.versioning.model;
 
 public class Reader implements java.io.Serializable, Cloneable {
 
+  private static final long serialVersionUID = 1L;
+
   /** This constant indicates that pk reference in class was not initilized */
   public static final int NULLID = -1;
 

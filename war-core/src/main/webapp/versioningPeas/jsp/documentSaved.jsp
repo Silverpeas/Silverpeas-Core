@@ -25,10 +25,26 @@
 --%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkVersion.jsp"%>
+<%
+String callback = (String) request.getAttribute("Callback");
+String documentId = (String) request.getAttribute("DocumentId");
+DocumentVersion version = (DocumentVersion) request.getAttribute("Version");
+%>
 <html>
 <head>
+<script type="text/javascript">
+function init()
+{
+	<% if (StringUtil.isDefined(callback)) { %>
+		window.opener.<%=callback%>('<%=documentId%>','<%=version.getMajorNumber()%>','<%=version.getMinorNumber()%>');
+	<% } else { %>
+		window.opener.parent.MyMain.location.reload(); 
+	<% } %>
+	window.close();
+}
+</script>
 </head>
-<body onload="window.opener.parent.MyMain.location.reload(); window.close();">
-<a href="javascript:window.opener.parent.MyMain.location.reload(); window.close();">Click</a>
+<body onload="init()">
+<a href="init();">Click</a>
 </body>
 </html>

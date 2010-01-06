@@ -484,6 +484,12 @@
     <description>no description</description>
     <servlet-class>com.silverpeas.attachment.servlets.AjaxServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>VersioningAjaxServlet</servlet-name>
+    <display-name>VersioningAjaxServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.AjaxServlet</servlet-class>
+  </servlet>
   <!--
   <servlet>
     <servlet-name>AjaxFileUploadServlet</servlet-name>
@@ -785,6 +791,10 @@
   <servlet-mapping>
     <servlet-name>AttachmentAjaxServlet</servlet-name>
     <url-pattern>/Attachment/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>VersioningAjaxServlet</servlet-name>
+    <url-pattern>/AjaxVersioning/*</url-pattern>
   </servlet-mapping>
   <!--
   <servlet-mapping>

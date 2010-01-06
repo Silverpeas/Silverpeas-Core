@@ -29,19 +29,17 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * This object contains the info about PrimaryKey of document
- * 
  * @author Georgy Shakirin
  * @version 1.0
  */
 
 public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable {
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
-   * 
    * @see
    */
   public DocumentPK(int id) {
@@ -50,12 +48,9 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param spaceId
    * @param componentId
-   * 
    * @see
    */
   public DocumentPK(int id, String spaceId, String componentId) {
@@ -64,11 +59,8 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param componentId
-   * 
    * @see
    */
   public DocumentPK(int id, String componentId) {
@@ -77,11 +69,8 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param pk
-   * 
    * @see
    */
   public DocumentPK(int id, WAPrimaryKey pk) {
@@ -98,10 +87,7 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTableName() {
@@ -110,12 +96,8 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public boolean equals(Object other) {
@@ -129,10 +111,7 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {
@@ -141,9 +120,7 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

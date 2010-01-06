@@ -432,7 +432,7 @@ ArrayLine arrayLine = null; // declare line object of the array
     }
 
 // main loop
-for (int i=j-1;i>=0;i-- ){
+for (int i=0;i<j;i++){
      arrayLine = arrayPane.addArrayLine(); // set a new line
      // build the icon of the document mimetype
      IconPane iconPane1 = gef.getIconPane();

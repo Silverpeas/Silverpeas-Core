@@ -35,7 +35,7 @@
     ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
     Document 	document 	= (Document) request.getAttribute("Document");
-    List 		vVersions 	= (List) request.getAttribute("PublicVersions");
+    List 		vVersions 	= (List) request.getAttribute("Versions");
     String		fromAlias	= (String) request.getAttribute("Alias");
 
     String componentId = document.getPk().getInstanceId();
@@ -50,7 +50,7 @@ out.println(gef.getLookStyleSheet());
 </head>
 <body>
 <%
-ArrayPane arrayPane = gef.getArrayPane("List", "ListPublicVersionsOfDocument?DocId="+id+"&Alias=null&ComponentId="+componentId, request,session);// declare an array
+ArrayPane arrayPane = gef.getArrayPane("List", "ViewAllVersions?DocId="+id+"&Alias=null&ComponentId="+componentId, request,session);// declare an array
 
 // header of the array
 ArrayColumn arrayColumn_mimeType = arrayPane.addArrayColumn(messages.getString("type"));

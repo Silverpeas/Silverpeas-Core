@@ -39,9 +39,9 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
-public class DocumentVersion implements java.io.Serializable, Cloneable,
-    MimeTypes {
+public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTypes {
 
+  private static final long serialVersionUID = 1L;
   public final static int STATUS_VALIDATION_NOT_REQ = 0;
   public final static int STATUS_VALIDATION_REQUIRED = 1;
   public final static int STATUS_VERSION_VALIDATED = 2;
@@ -224,7 +224,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * Return if a document is an Office file
-   * 
    * @return true or false
    */
   public boolean isOfficeDocument() {
@@ -233,7 +232,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
       isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(getMimeType());
       SilverTrace.info("versioning", "DocumentVersion.isOfficeDocument()",
           "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-              + isOfficeDocument);
+          + isOfficeDocument);
     }
     return isOfficeDocument;
   }
@@ -266,7 +265,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * If 3d document
-   * 
    * @return true or false
    */
   public boolean isSpinfireDocument() {
@@ -274,7 +272,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
     if (getMimeType() != null) {
       SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
           "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-              + (getMimeType().equals(SPINFIRE_MIME_TYPE)));
+          + (getMimeType().equals(SPINFIRE_MIME_TYPE)));
       isSpinfireDocument = getMimeType().equals(SPINFIRE_MIME_TYPE);
     }
     return isSpinfireDocument;
@@ -282,7 +280,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * If 3d document
-   * 
    * @return true or false
    */
   public boolean isOpenOfficeCompatibleDocument() {
@@ -292,7 +289,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
           .contains(getMimeType());
       SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
           "root.MSG_GEN_PARAM_VALUE", "isOpenOfficeCompatibleDocument = "
-              + isOpenOfficeCompatibleDocument);
+          + isOpenOfficeCompatibleDocument);
     }
     return isOpenOfficeCompatibleDocument;
   }
@@ -323,7 +320,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable,
 
   /**
    * Return the path to the document file.
-   * 
    * @return the path to the document file.
    */
   public String getDocumentPath() {

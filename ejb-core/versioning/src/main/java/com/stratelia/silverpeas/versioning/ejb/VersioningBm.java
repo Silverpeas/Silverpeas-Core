@@ -35,12 +35,13 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
+import com.stratelia.silverpeas.versioning.model.Worker;
 
 public interface VersioningBm extends javax.ejb.EJBObject {
 
   public Document getDocument(DocumentPK pk) throws RemoteException;
 
-  public ArrayList getDocuments(ForeignPK foreignPK) throws RemoteException;
+  public ArrayList<Document> getDocuments(ForeignPK foreignPK) throws RemoteException;
 
   public DocumentPK createDocument(Document docToCreate,
       DocumentVersion initialVersion) throws RemoteException;
@@ -80,7 +81,7 @@ public interface VersioningBm extends javax.ejb.EJBObject {
   public void refuseDocument(Document document, int validatorID,
       String comment, java.util.Date validationDate) throws RemoteException;
 
-  public ArrayList getDocumentVersions(DocumentPK documentPK)
+  public ArrayList<DocumentVersion> getDocumentVersions(DocumentPK documentPK)
       throws RemoteException;
 
   public DocumentVersion getLastPublicDocumentVersion(DocumentPK documentPK)
@@ -89,13 +90,13 @@ public interface VersioningBm extends javax.ejb.EJBObject {
   public DocumentVersion getLastDocumentVersion(DocumentPK documentPK)
       throws RemoteException;
 
-  public List getAllPublicDocumentVersions(DocumentPK documentPK)
+  public List<DocumentVersion> getAllPublicDocumentVersions(DocumentPK documentPK)
       throws RemoteException;
 
   public DocumentVersionPK addVersion(DocumentVersion newVersion)
       throws RemoteException;
 
-  public List getAllFilesReserved(int ownerId) throws RemoteException;
+  public List<Document> getAllFilesReserved(int ownerId) throws RemoteException;
 
   public DocumentVersion getDocumentVersion(DocumentVersionPK docVersionPK)
       throws RemoteException;
@@ -103,16 +104,16 @@ public interface VersioningBm extends javax.ejb.EJBObject {
   public void updateDocumentVersion(DocumentVersion documentVersion)
       throws RemoteException;
 
-  public List getAllFilesReservedByDate(Date date, boolean alert)
+  public List<Document> getAllFilesReservedByDate(Date date, boolean alert)
       throws RemoteException;
 
-  public Collection getAllDocumentsToLib(Date date) throws RemoteException;
+  public Collection<Document> getAllDocumentsToLib(Date date) throws RemoteException;
 
   public void notifyUser(NotificationMetaData notifMetaData, String senderId,
       String componentId) throws RemoteException;
 
-  public void saveReadersAccessList(String componentId, ArrayList groupIds,
-      ArrayList userIds) throws RemoteException;
+  public void saveReadersAccessList(String componentId, ArrayList<String> groupIds,
+      ArrayList<String> userIds) throws RemoteException;
 
   public void saveWorkersAccessList(String componentId, String documentId,
       int listType) throws RemoteException;
@@ -125,16 +126,18 @@ public interface VersioningBm extends javax.ejb.EJBObject {
   public void removeWorkersAccessList(String componentId)
       throws RemoteException;
 
-  public ArrayList getReadersAccessListGroups(String componentId)
+  public ArrayList<String> getReadersAccessListGroups(String componentId)
       throws RemoteException;
 
-  public ArrayList getWorkersAccessListGroups(String componentId)
+  public ArrayList<Worker> getWorkersAccessListGroups(String componentId)
       throws RemoteException;
 
-  public ArrayList getReadersAccessListUsers(String componentId)
+  public ArrayList<String> getReadersAccessListUsers(String componentId)
       throws RemoteException;
 
-  public ArrayList getWorkersAccessListUsers(String componentId)
+  public ArrayList<Worker> getWorkersAccessListUsers(String componentId)
       throws RemoteException;
+
+  public void sortDocuments(List<DocumentPK> pks) throws RemoteException;
 
 }

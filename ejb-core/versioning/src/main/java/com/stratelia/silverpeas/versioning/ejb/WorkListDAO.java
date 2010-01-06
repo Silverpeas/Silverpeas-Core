@@ -27,25 +27,30 @@
  */
 package com.stratelia.silverpeas.versioning.ejb;
 
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.Worker;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.silverpeas.versioning.model.Worker;
+import com.stratelia.webactiv.util.DBUtil;
 
 public class WorkListDAO {
 
   public final static String workListTableName = "SB_Document_WorkList";
 
-  public final static String ADD_WORKERS = "INSERT INTO "
-      + workListTableName
-      + " ( documentId , "
-      + " userid, orderBy, writer, approval, instanceId, settype, saved, used, listtype ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+  public final static String ADD_WORKERS =
+      "INSERT INTO "
+          +
+          workListTableName
+          +
+          " ( documentId , "
+          +
+          " userid, orderBy, writer, approval, instanceId, settype, saved, used, listtype ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   public final static String SAVE_WORKERS = "UPDATE " + workListTableName
       + " set saved = 1, listtype = ? "
@@ -80,13 +85,12 @@ public class WorkListDAO {
       + workListTableName + " set saved=0 where instanceid = ?";
 
   /**
-   * 
    * @param conn
    * @param workers
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static void addWorkers(Connection conn, ArrayList workers)
+  public static void addWorkers(Connection conn, List<Worker> workers)
       throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException("WorkListDAO.addWorkers",
@@ -133,7 +137,6 @@ public class WorkListDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @throws SQLException
@@ -145,7 +148,6 @@ public class WorkListDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @param keepSaved
@@ -175,7 +177,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.removeAllWorkers",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK
-                .toString(), e);
+            .toString(), e);
       }
 
       prepStmt.executeUpdate();
@@ -186,14 +188,13 @@ public class WorkListDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param documentPK
    * @return
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static ArrayList getWorkers(Connection conn, DocumentPK documentPK)
+  public static List<Worker> getWorkers(Connection conn, DocumentPK documentPK)
       throws SQLException, VersioningRuntimeException {
     if (conn == null) {
       throw new VersioningRuntimeException("WorkListDAO.getWorkers",
@@ -206,7 +207,7 @@ public class WorkListDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = new ArrayList();
+    List<Worker> result = new ArrayList<Worker>();
 
     try {
       prepStmt = conn.prepareStatement(GET_WORKERS_QUERY);
@@ -215,7 +216,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getWorkers",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -244,7 +245,6 @@ public class WorkListDAO {
   }
 
   /**
-   * 
    * @param conn
    * @param componentId
    * @param documentId
@@ -274,18 +274,17 @@ public class WorkListDAO {
   }
 
   /**
-   * 
    * @param con
    * @param componentId
    * @return * @return ArrayList of workers (users)
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static ArrayList getWorkersAccessListUsers(Connection con,
+  public static List<Worker> getWorkersAccessListUsers(Connection con,
       String componentId) throws SQLException, VersioningRuntimeException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = new ArrayList();
+    List<Worker> result = new ArrayList<Worker>();
 
     try {
       prepStmt = con.prepareStatement(GET_WORKERS_ACCESS_LIST_USERS);
@@ -295,7 +294,7 @@ public class WorkListDAO {
         throw new VersioningRuntimeException(
             "WorkListDAO.getWorkersAccessListUsers",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -322,18 +321,17 @@ public class WorkListDAO {
   }
 
   /**
-   * 
    * @param con
    * @param componentId
    * @return ArrayList of workers (groups)
    * @throws SQLException
    * @throws VersioningRuntimeException
    */
-  public static ArrayList getWorkersAccessListGroups(Connection con,
+  public static List<Worker> getWorkersAccessListGroups(Connection con,
       String componentId) throws SQLException, VersioningRuntimeException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = new ArrayList();
+    List<Worker> result = new ArrayList<Worker>();
 
     try {
       prepStmt = con.prepareStatement(GET_WORKERS_ACCESS_LIST_GROUPS);
@@ -343,7 +341,7 @@ public class WorkListDAO {
         throw new VersioningRuntimeException(
             "WorkListDAO.getWorkersAccessListUsers",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -371,7 +369,6 @@ public class WorkListDAO {
 
   /**
    * Get saved list type
-   * 
    * @param con
    * @param componentId
    * @return
@@ -390,7 +387,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getSavedListType()",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId
-                .toString(), e);
+            .toString(), e);
       }
 
       rs = prepStmt.executeQuery();

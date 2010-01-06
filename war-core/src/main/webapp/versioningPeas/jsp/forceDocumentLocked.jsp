@@ -57,6 +57,7 @@ out.println(gef.getLookStyleSheet());
     <input type="hidden" name="spaceId" value="<c:out value="${param.spaceId}" />" />
     <input type="hidden" name="documentId" value="<c:out value="${param.documentId}" />" />
     <input type="hidden" name="comments"  value="<c:out value="${param.comments}" />" />
+	<input type="hidden" name="Callback"  value="<c:out value="${param.Callback}" />" />
     <input type="hidden" name="force_release" value="true" />
   </form>
 
