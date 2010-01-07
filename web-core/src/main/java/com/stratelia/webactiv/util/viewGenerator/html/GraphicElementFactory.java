@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 /**
  * GraphicElementFactory.java
@@ -255,8 +253,7 @@ public class GraphicElementFactory extends Object {
     SilverTrace.info("viewgenerator",
         "GraphicElementFactory.getLookStyleSheet()",
         "root.MSG_GEN_ENTER_METHOD");
-    String standardStyle = "/util/styleSheets/globalSP_SilverpeasV4.css";
-    String v5Style = "/util/styleSheets/globalSP_SilverpeasV5.css";
+    String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     String charset = getGeneralSettings().getString("charset", "ISO-8859-1");
@@ -269,8 +266,7 @@ public class GraphicElementFactory extends Object {
     if (externalStylesheet == null) {
       code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
           contextPath).append(standardStyle).append("\">\n");
-      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
-          contextPath).append(v5Style).append("\">\n");
+     
       if (lookStyle.length() > 0) {
         code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"")
             .append(lookStyle).append("\">");

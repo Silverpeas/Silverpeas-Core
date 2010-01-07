@@ -282,7 +282,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			<% if (!settings.getString("configFile").equals("")) { %>
 				oFCKeditor.Config['CustomConfigurationsPath'] = "<%=settings.getString("configFile")%>";
 			<% } else { %>
-				oFCKeditor.Config[ "EditorAreaCSS" ] = "<%=context%>/util/styleSheets/globalSP_SilverpeasV4.css";
+				oFCKeditor.Config[ "EditorAreaCSS" ] = "<%=context%>/util/styleSheets/globalSP_SilverpeasV5.css";
 			<% } %>
 			oFCKeditor.ReplaceTextarea();
 	}	

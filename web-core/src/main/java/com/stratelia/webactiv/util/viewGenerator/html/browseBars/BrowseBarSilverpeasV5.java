@@ -21,22 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayPaneWA.java
- *
- * Created on 10 octobre 2000, 16:11
- */
 
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
-/**
- * The default implementation of ArrayPane interface
- * @author squere
- * @version 1.0
- */
+
 public class BrowseBarSilverpeasV5 extends AbstractBrowseBar {
 
   /**
@@ -57,9 +45,9 @@ public class BrowseBarSilverpeasV5 extends AbstractBrowseBar {
     String iconsPath = getIconsPath();
 
     String colspan = "";
-    if (getI18NBean() != null || getUrl() != null)
+    if (getI18NBean() != null || getUrl() != null) {
       colspan = " colspan=\"2\"";
-
+    }
     line.append("<tr>");
     line.append("<td width=\"100%\"").append(colspan).append("><img src=\"")
         .append(iconsPath).append("/1px.gif\" width=\"1\" height=\"2\"></td>");
