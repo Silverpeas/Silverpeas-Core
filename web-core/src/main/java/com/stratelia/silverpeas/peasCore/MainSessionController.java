@@ -46,6 +46,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
@@ -73,7 +74,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   private Date userLastRequest = null;
   private String userLanguage = null;
   private ContentManager contentManager = null;
-  Hashtable m_genericPanels = new Hashtable();
+  Hashtable<String, GenericPanel> m_genericPanels = new Hashtable<String, GenericPanel>();
   Selection m_selection = null;
   private String userSpace = null;
   AlertUser m_alertUser = null;
@@ -83,7 +84,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   String m_CurrentComponentId = null;
   /** Maintenance Mode **/
   static boolean appInMaintenance = false;
-  static ArrayList spacesInMaintenance = new ArrayList();
+  static ArrayList<String> spacesInMaintenance = new ArrayList<String>();
   // Last results from search engine
   private List lastResults = null;
   private boolean allowPasswordChange;
@@ -369,6 +370,45 @@ public class MainSessionController extends AdminReference implements Clipboard {
     }
   }
 
+  public synchronized boolean isOnlineEditingEnabled() {
+    try {
+      return getPersonalization().getOnlineEditingStatus();
+    } catch (NoSuchObjectException nsoe) {
+      initPersonalization();
+      return isOnlineEditingEnabled();
+    } catch (RemoteException e) {
+      SilverTrace.error("peasCore", "MainSessionController.isOnlineEditingEnabled()",
+          "peasCore.EX_CANT_GET_ONLINE_EDITING_STATUS", e);
+      return false;
+    }
+  }
+
+  public synchronized boolean isWebDAVEditingEnabled() {
+    try {
+      return getPersonalization().getWebdavEditingStatus();
+    } catch (NoSuchObjectException nsoe) {
+      initPersonalization();
+      return isWebDAVEditingEnabled();
+    } catch (RemoteException e) {
+      SilverTrace.error("peasCore", "MainSessionController.isWebDAVEditingEnabled()",
+          "peasCore.EX_CANT_GET_WEBDAV_EDITING_STATUS", e);
+      return false;
+    }
+  }
+
+  public synchronized boolean isDragNDropEnabled() {
+    try {
+      return getPersonalization().getDragAndDropStatus();
+    } catch (NoSuchObjectException nsoe) {
+      initPersonalization();
+      return isDragNDropEnabled();
+    } catch (RemoteException e) {
+      SilverTrace.error("peasCore", "MainSessionController.isDragNDropEnabled()",
+          "peasCore.EX_CANT_GET_DRAGNDROP_STATUS", e);
+      return false;
+    }
+  }
+
   // ------------------- Other functions -----------------------------
   public OrganizationController getOrganizationController() {
     if (organizationController == null) {
@@ -395,7 +435,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   /** Return the parameters for the given component */
-  public List getComponentParameters(String sComponentId) {
+  public List<SPParameter> getComponentParameters(String sComponentId) {
     return m_Admin.getComponentParameters(sComponentId);
   }
 
@@ -468,7 +508,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
         size() > 0);
   }
 
-  public List getUserManageableGroupIds() {
+  public List<String> getUserManageableGroupIds() {
     SilverTrace.info("peasCore",
         "MainSessionController.getUserManageableGroupIds",
         "root.MSG_GEN_ENTER_METHOD");

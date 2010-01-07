@@ -60,15 +60,16 @@ public class SessionInfo extends Object {
     m_DateIsAlive = m_DateLastAccess = m_DateBegin = new Date().getTime();
   }
 
+  @SuppressWarnings("unchecked")
   public void cleanSession() {
     if (m_Session != null) {
       try {
-        Enumeration spSessionAttNames = m_Session.getAttributeNames();
+        Enumeration<String> spSessionAttNames = m_Session.getAttributeNames();
         String spName;
-        ArrayList spNames = new ArrayList();
+        ArrayList<String> spNames = new ArrayList<String>();
 
         while (spSessionAttNames.hasMoreElements()) {
-          spName = (String) spSessionAttNames.nextElement();
+          spName = spSessionAttNames.nextElement();
           // SilverTrace.info("peasCore","LoginServlet.cleanSession()","root.MSG_GEN_PARAM_VALUE","spName="
           // + spName);
           if ((spName != null)
@@ -78,7 +79,7 @@ public class SessionInfo extends Object {
           }
         }
         for (int i = 0; i < spNames.size(); i++) {
-          spName = (String) spNames.get(i);
+          spName = spNames.get(i);
           try {
             Object element = m_Session.getAttribute(spName);
             SilverTrace.debug("peasCore", "SessionInfo.cleanSession()",
@@ -159,4 +160,8 @@ public class SessionInfo extends Object {
 
     return dHour + "h" + dMinute + "m" + dSecond + "s";
   }
+	public HttpSession getHttpSession()
+	{
+	  return this.m_Session;
+	}
 }

@@ -21,15 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayPaneWA.java
- * 
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
 import java.util.Vector;
@@ -37,11 +28,6 @@ import java.util.Vector;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
-/**
- * The default implementation of ArrayPane interface
- * @author squere
- * @version 1.0
- */
 public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   /**
@@ -60,7 +46,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    * @see
    */
   public void addOperation(String iconPath, String altText, String action) {
-    Vector stack = getStack();
+    Vector<String> stack = getStack();
     StringBuffer operation = new StringBuffer();
 
     if (!StringUtil.isDefined(altText))
@@ -78,9 +64,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    * @see
    */
   public void addLine() {
-    Vector stack = getStack();
-
-    stack.add("</ul>\n<ul>");
+    getStack().add("</ul>\n<ul>");
   }
 
   /**
@@ -90,7 +74,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    */
   public String print() {
     StringBuffer result = new StringBuffer();
-    Vector stack = getStack();
+    Vector<String> stack = getStack();
 
     // result.append(OperationPaneSilverpeasV4StringFactory.getPrintString1());
 
@@ -113,7 +97,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append("<!-- Page-specific script -->");
 
     result.append("<script type=\"text/javascript\">");
-
+    result.append("var oMenu;");
     // Instantiate and render the menu when it is available in the DOM
     result
         .append("YAHOO.util.Event.onContentReady(\"menuwithgroups\", function () {");
@@ -123,7 +107,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
      * the page representing the Menu; the second is an object literal of configuration properties.
      */
     result
-        .append("var oMenu = new YAHOO.widget.Menu(\"menuwithgroups\", { position: \"dynamic\", iframe: true, context: [\"menutoggle\", \"tr\", \"br\"] });");
+        .append("oMenu = new YAHOO.widget.Menu(\"menuwithgroups\", { position: \"dynamic\", iframe: true, context: [\"menutoggle\", \"tr\", \"br\"] });");
 
     /*
      * Call the "render" method with no arguments since the markup for this Menu instance is already

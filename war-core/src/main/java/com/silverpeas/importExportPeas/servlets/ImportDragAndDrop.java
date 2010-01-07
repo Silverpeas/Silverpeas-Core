@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -38,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -50,7 +48,10 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
+import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -65,6 +66,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  */
 public class ImportDragAndDrop extends HttpServlet {
 
+  private static final long serialVersionUID = 1L;
   HttpSession session;
   PrintWriter out;
 
@@ -96,6 +98,12 @@ public class ImportDragAndDrop extends HttpServlet {
     try {
       String componentId = request.getParameter("ComponentId");
       String topicId = request.getParameter("TopicId");
+      if (!StringUtil.isDefined(topicId)) {
+        String sessionId = request.getParameter("SessionId");
+        HttpSession session =
+            SessionManager.getInstance().getUserDataSession(sessionId).getHttpSession();
+        topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
+      }
       String userId = request.getParameter("UserId");
       String ignoreFolders = request.getParameter("IgnoreFolders");
       String draftMode = request.getParameter("Draft");
@@ -105,17 +113,13 @@ public class ImportDragAndDrop extends HttpServlet {
           + " userId = " + userId + " ignoreFolders = " + ignoreFolders
           + ", draftMode = " + draftMode);
 
-      DiskFileUpload dfu = new DiskFileUpload();
-      // maximum size that will be stored in memory
-      dfu.setSizeThreshold(4096);
-
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
           + File.separator + topicId
           + new Long(new Date().getTime()).toString() + File.separator;
 
-      List items = dfu.parseRequest(request);
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
 
-      String parentPath = getParameterValue(items, "userfile_parent");
+      String parentPath = FileUploadUtil.getParameter(items, "userfile_parent");
       SilverTrace.info("importExportPeas", "Drop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
 
@@ -123,7 +127,7 @@ public class ImportDragAndDrop extends HttpServlet {
       SilverTrace.info("importExportPeas", "Drop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "debut de la boucle");
       for (int i = 0; i < items.size(); i++) {
-        FileItem item = (FileItem) items.get(i);
+        FileItem item = items.get(i);
         fullFileName = item.getName();
         SilverTrace.info("importExportPeas", "Drop.doPost",
             "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
@@ -205,14 +209,4 @@ public class ImportDragAndDrop extends HttpServlet {
     }
   }
 
-  private String getParameterValue(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
-  }
 }
