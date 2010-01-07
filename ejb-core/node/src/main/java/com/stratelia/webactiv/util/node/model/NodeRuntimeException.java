@@ -27,6 +27,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class NodeRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 1L;
+
   public NodeRuntimeException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);

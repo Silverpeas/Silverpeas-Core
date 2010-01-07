@@ -30,7 +30,6 @@ import javax.ejb.EJBObject;
 
 /**
  * This is the Node BM interface.
- * 
  * @author Nicolas Eysseric
  */
 public interface NodeBm extends EJBObject, NodeBmBusinessSkeleton {

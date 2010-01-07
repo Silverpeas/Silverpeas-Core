@@ -32,14 +32,12 @@ import javax.ejb.EJBHome;
 
 /**
  * This is the Node BM Home interface.
- * 
  * @author Nicolas Eysseric
  */
 public interface NodeBmHome extends EJBHome {
 
   /**
    * Create an instance of a Node BM object
-   * 
    * @return An instanciated NodeBm
    * @see com.stratelia.webactiv.util.node.control.NodeBm
    * @exception javax.ejb.RemoteException

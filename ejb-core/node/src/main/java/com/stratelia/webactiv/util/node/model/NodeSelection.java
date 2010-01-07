@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 public class NodeSelection extends ClipboardSelection implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   static public DataFlavor NodeDetailFlavor;
   static {
     try {
@@ -50,7 +51,6 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Constructor
-   * 
    */
   public NodeSelection(NodeDetail node) {
     super();
@@ -61,7 +61,6 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
@@ -81,7 +80,6 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public IndexEntry getIndexEntry() {
     NodePK pk = nodeDetail.getNodePK();
@@ -93,8 +91,7 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
 
   /**
    * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en
-   * SilverpeasKeyData
+   * ------------------------------ Tranformation obligatoire en SilverpeasKeyData
    */
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();

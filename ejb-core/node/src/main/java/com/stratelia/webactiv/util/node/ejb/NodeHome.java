@@ -31,16 +31,13 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 /**
  * This is the Node Home interface.
- * 
  * @author Nicolas Eysseric
  */
 public interface NodeHome extends EJBHome {
 
   /**
    * Create a new Node object
-   * 
-   * @param nd
-   *          the NodeDetail which contains data
+   * @param nd the NodeDetail which contains data
    * @return the new Node
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
@@ -53,9 +50,7 @@ public interface NodeHome extends EJBHome {
 
   /**
    * Create an instance of a Node object
-   * 
-   * @param nodePK
-   *          the PK of the Node to instanciate
+   * @param nodePK the PK of the Node to instanciate
    * @return the instanciated Node if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.RemoteException
@@ -67,11 +62,8 @@ public interface NodeHome extends EJBHome {
       FinderException;
 
   /**
-   * Create a collection of instance of a Node object The collection can be
-   * empty.
-   * 
-   * @param fatherPK
-   *          the PK of the father from all the Nodes to instanciate
+   * Create a collection of instance of a Node object The collection can be empty.
+   * @param fatherPK the PK of the father from all the Nodes to instanciate
    * @return the instanciated Node's collection if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.RemoteException
@@ -79,7 +71,7 @@ public interface NodeHome extends EJBHome {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection findByFatherPrimaryKey(NodePK fatherPK)
+  public Collection<NodePK> findByFatherPrimaryKey(NodePK fatherPK)
       throws FinderException, RemoteException;
 
   public Node findByNameAndFatherId(NodePK nodePK, String name, int nodeFatherId)

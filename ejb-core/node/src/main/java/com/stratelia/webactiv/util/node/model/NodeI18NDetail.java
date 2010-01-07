@@ -27,6 +27,7 @@ import com.silverpeas.util.i18n.Translation;
 
 public class NodeI18NDetail extends Translation implements java.io.Serializable {
 
+  private static final long serialVersionUID = 1L;
   private String nodeName = null;
   private String nodeDescription = null;
 
@@ -75,7 +76,6 @@ public class NodeI18NDetail extends Translation implements java.io.Serializable 
 
   /**
    * Return the object table name
-   * 
    * @return the table name of the object
    * @since 1.0
    */

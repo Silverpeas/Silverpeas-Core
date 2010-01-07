@@ -28,6 +28,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.util.i18n.Translation;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodeI18NPK;
@@ -37,7 +38,6 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * This is the Node Data Access Object.
- * 
  * @author Nicolas Eysseric
  */
 public class NodeI18NDAO {
@@ -46,13 +46,14 @@ public class NodeI18NDAO {
       + " from Sb_Node_NodeI18N where nodeId = ?";
   static final private String REMOVE_TRANSLATION = "delete from Sb_Node_NodeI18N where id = ?";
   static final private String REMOVE_TRANSLATIONS = "delete from Sb_Node_NodeI18N where nodeId = ?";
-  static final private String INSERT_TRANSLATION = "insert into Sb_Node_NodeI18N values (?, ?, ?, ?, ?)";
-  static final private String UPDATE_TRANSLATION = "update Sb_Node_NodeI18N set lang = ? , nodeName =  ? , nodeDescription = ?  where id = ?";
+  static final private String INSERT_TRANSLATION =
+      "insert into Sb_Node_NodeI18N values (?, ?, ?, ?, ?)";
+  static final private String UPDATE_TRANSLATION =
+      "update Sb_Node_NodeI18N set lang = ? , nodeName =  ? , nodeDescription = ?  where id = ?";
   static final public String TABLE_NAME = "sb_node_nodei18n";
 
   /**
    * This class must not be instanciated
-   * 
    * @since 1.0
    */
   public NodeI18NDAO() {
@@ -64,9 +65,7 @@ public class NodeI18NDAO {
 
   /**
    * Create a NodeI18N from a ResultSet
-   * 
-   * @param rs
-   *          the ResultSet which contains data
+   * @param rs the ResultSet which contains data
    * @return the NodeI18NDetail
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
    * @exception java.sql.SQLException
@@ -93,10 +92,8 @@ public class NodeI18NDAO {
 
   /**
    * Insert into the database the data of a node
-   * 
    * @return a NodeI18NPK which contains the new row id
-   * @param nd
-   *          the NodeI18NDetail which contains data
+   * @param nd the NodeI18NDetail which contains data
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
    * @exception java.sql.SQLException
    * @since 1.0
@@ -144,10 +141,8 @@ public class NodeI18NDAO {
 
   /**
    * Update into the database the translation
-   * 
    * @return a NodeI18NPK which contains the new row id
-   * @param nd
-   *          the NodeI18NDetail which contains data
+   * @param nd the NodeI18NDetail which contains data
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
    * @exception java.sql.SQLException
    * @since 1.0
@@ -183,9 +178,7 @@ public class NodeI18NDAO {
 
   /**
    * Delete into the database a translation
-   * 
-   * @param the
-   *          translationId
+   * @param the translationId
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
    * @exception java.sql.SQLException
    * @since 1.0
@@ -212,9 +205,7 @@ public class NodeI18NDAO {
 
   /**
    * Delete all translations of a node
-   * 
-   * @param the
-   *          nodeI18NDetail of the node to delete
+   * @param the nodeI18NDetail of the node to delete
    * @see com.stratelia.webactiv.util.node.model.NodeI18NDetail
    * @exception java.sql.SQLException
    * @since 1.0
@@ -242,7 +233,7 @@ public class NodeI18NDAO {
   /**
    * Returns the rows described by the given query with one id parameter.
    */
-  public static List getTranslations(Connection con, int nodeId)
+  public static List<Translation> getTranslations(Connection con, int nodeId)
       throws SQLException {
     ResultSet rs = null;
     StringBuffer selectQuery = new StringBuffer();
@@ -250,18 +241,14 @@ public class NodeI18NDAO {
     SilverTrace.debug("node", "NodeI18NDAO.getTranslations", "root.MSG_QUERY",
         SELECT_TRANSLATIONS + "  nodeId: " + nodeId);
     selectQuery.append(SELECT_TRANSLATIONS);
-    List result = new ArrayList();
+    List<Translation> result = new ArrayList<Translation>();
 
     try {
       prepStmt = con.prepareStatement(selectQuery.toString());
       prepStmt.setInt(1, nodeId);
       rs = prepStmt.executeQuery();
-      if (rs != null) {
-        result = new ArrayList();
-
-        while (rs.next()) {
-          result.add(resultSet2NodeDetail(rs));
-        }
+      while (rs.next()) {
+        result.add(resultSet2NodeDetail(rs));
       }
     } catch (SQLException e) {
       throw new NodeRuntimeException("NodeI18NDAO.getTranslations()",

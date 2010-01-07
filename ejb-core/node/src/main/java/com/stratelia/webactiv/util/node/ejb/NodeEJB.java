@@ -34,6 +34,7 @@ import javax.ejb.EntityContext;
 import javax.ejb.FinderException;
 
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -46,11 +47,11 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 /**
  * This is the Node EJB-tier controller. It is implemented as a entity EJB.
- * 
  * @author Nicolas Eysseric
  */
 public class NodeEJB implements EntityBean {
 
+  private static final long serialVersionUID = -1001449049148326184L;
   private NodePK nodePK;
   private String name;
   private String description;
@@ -72,7 +73,6 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Get the attributes of THIS node
-   * 
    * @return a NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -89,7 +89,6 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Get the attributes of THIS node and of its children
-   * 
    * @return a NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception java.sql.SQLException
@@ -102,7 +101,7 @@ public class NodeEJB implements EntityBean {
   public NodeDetail getDetail(String sorting) throws SQLException {
     NodeDetail nd = getHeader();
     if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) {
-      Collection childrenDetails = getChildrenDetails(sorting);
+      Collection<NodeDetail> childrenDetails = getChildrenDetails(sorting);
       nd.setChildrenDetails(childrenDetails);
     }
     return nd;
@@ -110,32 +109,27 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Get the header of each child of the node
-   * 
    * @return a NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection getChildrenDetails() throws SQLException {
+  public Collection<NodeDetail> getChildrenDetails() throws SQLException {
     return getChildrenDetails(null);
   }
 
-  public Collection getChildrenDetails(String sorting) throws SQLException {
-    Collection result = null;
+  public Collection<NodeDetail> getChildrenDetails(String sorting) throws SQLException {
     Connection con = getConnection();
     try {
-      result = NodeDAO.getChildrenDetails(con, this.nodePK, sorting);
+      return NodeDAO.getChildrenDetails(con, this.nodePK, sorting);
     } finally {
       freeConnection(con);
     }
-    return result;
   }
 
   /**
    * Update the attributes of the node
-   * 
-   * @param nd
-   *          the NodeDetail which contains updated data
+   * @param nd the NodeDetail which contains updated data
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
@@ -176,11 +170,8 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Create a new Node object
-   * 
-   * @param nd
-   *          the NodeDetail which contains data
-   * @param creatorPK
-   *          the PK of the user who have create this node
+   * @param nd the NodeDetail which contains data
+   * @param creatorPK the PK of the user who have create this node
    * @return the NodePK of the new Node
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
@@ -221,8 +212,8 @@ public class NodeEJB implements EntityBean {
     this.creationDate = nd.getCreationDate();
     this.creatorId = nd.getCreatorId();
     /*
-     * if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) { this.path =
-     * nd.getPath() + newNodePK.getId(); } else { this.path = nd.getPath(); }
+     * if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) { this.path = nd.getPath() +
+     * newNodePK.getId(); } else { this.path = nd.getPath(); }
      */
     this.path = nd.getPath();
     this.level = nd.getLevel();
@@ -241,7 +232,7 @@ public class NodeEJB implements EntityBean {
   private void createTranslations(Connection con, NodeDetail node)
       throws SQLException, UtilException {
     if (node.getTranslations() != null) {
-      Iterator translations = node.getTranslations().values().iterator();
+      Iterator<Translation> translations = node.getTranslations().values().iterator();
       NodeI18NDetail translation = null;
       while (translations.hasNext()) {
         translation = (NodeI18NDetail) translations.next();
@@ -256,9 +247,7 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Create an instance of a Node object
-   * 
-   * @param pk
-   *          the PK of the Node to instanciate
+   * @param pk the PK of the Node to instanciate
    * @return the NodePK of the instanciated Node if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
@@ -295,17 +284,15 @@ public class NodeEJB implements EntityBean {
     }
   }
 
-  public Collection ejbFindByFatherPrimaryKey(NodePK fatherPk) {
+  public Collection<NodePK> ejbFindByFatherPrimaryKey(NodePK fatherPk) {
     Connection con = getConnection();
-    Collection result;
     try {
-      result = NodeDAO.selectByFatherPrimaryKey(con, fatherPk);
-      return result;
+      return NodeDAO.selectByFatherPrimaryKey(con, fatherPk);
     } catch (Exception ex) {
       throw new NodeRuntimeException("NodeEJB.ejbFindByFatherPrimaryKey()",
           SilverpeasRuntimeException.ERROR,
           "node.GETTING_NODES_BY_FATHER_FAILED", "FatherId = "
-              + fatherPk.getId(), ex);
+          + fatherPk.getId(), ex);
     } finally {
       freeConnection(con);
     }
@@ -314,7 +301,6 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Delete this Node and all its descendants
-   * 
    * @since 1.0
    */
   public void ejbRemove() {
@@ -353,22 +339,19 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Load node attributes from database
-   * 
    * @since 1.0
    */
   public void ejbLoad() {
     // try fat pk
     /*
-     * if (nodePK.nodeDetail != null) { NodeDetail nodeDetail =
-     * nodePK.nodeDetail; this.name = nodeDetail.getName(); this.description =
-     * nodeDetail.getDescription(); this.creatorId = nodeDetail.getCreatorId();
-     * this.creationDate = nodeDetail.getCreationDate(); this.path =
+     * if (nodePK.nodeDetail != null) { NodeDetail nodeDetail = nodePK.nodeDetail; this.name =
+     * nodeDetail.getName(); this.description = nodeDetail.getDescription(); this.creatorId =
+     * nodeDetail.getCreatorId(); this.creationDate = nodeDetail.getCreationDate(); this.path =
      * nodeDetail.getPath(); this.level = nodeDetail.getLevel(); this.fatherPK =
-     * nodeDetail.getFatherPK(); this.modelId = nodeDetail.getModelId();
-     * this.status = nodeDetail.getStatus(); this.type = nodeDetail.getType();
-     * this.order = nodeDetail.getOrder(); this.lang = nodeDetail.getLanguage();
-     * this.rightsDependsOn = nodeDetail.getRightsDependsOn(); nodePK.nodeDetail
-     * = null; stored = true; return; }
+     * nodeDetail.getFatherPK(); this.modelId = nodeDetail.getModelId(); this.status =
+     * nodeDetail.getStatus(); this.type = nodeDetail.getType(); this.order = nodeDetail.getOrder();
+     * this.lang = nodeDetail.getLanguage(); this.rightsDependsOn = nodeDetail.getRightsDependsOn();
+     * nodePK.nodeDetail = null; stored = true; return; }
      */
 
     Connection con = getConnection();
@@ -400,7 +383,6 @@ public class NodeEJB implements EntityBean {
 
   /**
    * Store node attributes into database
-   * 
    * @since 1.0
    */
   public void ejbStore() {
