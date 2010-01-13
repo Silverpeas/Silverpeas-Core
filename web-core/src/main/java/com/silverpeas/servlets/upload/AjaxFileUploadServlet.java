@@ -109,7 +109,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
           try {
             out = new FileOutputStream(uploadedFile);
             IOUtils.copy(fileItem.getInputStream(), out);
-            paths.add(uploadedFile.getAbsolutePath());
+            paths.add(uploadedFile.getParentFile().getName() + '/' + uploadedFile.getName());
           } finally {
             IOUtils.closeQuietly(out);
           }
@@ -149,7 +149,6 @@ public class AjaxFileUploadServlet extends HttpServlet {
       long sizeTotal = fileUploadStats.getTotalSize();
       long percentComplete =
           (long) Math.floor(((double) bytesProcessed / (double) sizeTotal) * 100.0);
-      long timeInSeconds = fileUploadStats.getElapsedTimeInSeconds();
       response.getWriter().println("<b>Upload Status:</b><br/>");
 
       if (fileUploadStats.getBytesRead() != fileUploadStats.getTotalSize()) {
