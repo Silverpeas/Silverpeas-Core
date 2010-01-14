@@ -29,88 +29,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- *
- * $Id: MonthCalendarWA1.java,v 1.14 2008/05/28 08:45:40 ehugonnet Exp $
- *
- * $Log: MonthCalendarWA1.java,v $
- * Revision 1.14  2008/05/28 08:45:40  ehugonnet
- * Imports inutiles
- *
- * Revision 1.13  2008/05/16 10:28:50  neysseri
- * no message
- *
- * Revision 1.12.2.1  2008/04/29 15:37:41  cbonin
- * evts périodiques
- *
- * Revision 1.11  2008/04/29 15:32:36  cbonin
- * evts périodiques
- *
- * Revision 1.10  2008/03/12 16:46:54  neysseri
- * no message
- *
- * Revision 1.9.6.1  2008/01/18 16:35:20  neysseri
- * no message
- *
- * Revision 1.9  2006/10/17 13:17:56  sfariello
- * Ajout paramètre d'instanciation pour affichage des week-end ou non
- *
- * Revision 1.8  2006/03/21 12:09:52  neysseri
- * no message
- *
- * Revision 1.7  2005/12/23 13:10:01  dlesimple
- * Agregation almanachs
- *
- * Revision 1.6.2.2  2005/12/23 12:24:00  dlesimple
- * Redirection vers le bon almanach
- *
- * Revision 1.6.2.1  2005/12/21 12:35:32  dlesimple
- * agregation d'almanachs
- *
- * Revision 1.6  2005/12/09 12:26:46  neysseri
- * no message
- *
- * Revision 1.5  2005/09/30 14:24:00  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.4  2005/05/17 19:15:23  neysseri
- * Correction de l'affichage des horaires d'un événement
- *
- * Revision 1.3  2005/04/14 18:35:44  neysseri
- * no message
- *
- * Revision 1.2  2004/06/24 17:16:38  neysseri
- * nettoyage eclipse
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.9  2002/05/29 09:32:16  groccia
- * portage netscape
- *
- * Revision 1.8.10.1  2002/05/07 15:24:06  fsauvand
- * no message
- *
- * Revision 1.8  2002/04/19 13:49:09  fsauvand
- * no message
- *
- * Revision 1.6  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class MonthCalendarWA1 extends AbstractMonthCalendar {
 
-  /**
-   * Creates new SilverpeasCalendarWA1
-   */
   public MonthCalendarWA1(String language) {
     super(language);
   }
@@ -305,12 +229,14 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
               html.append(">");
             }
 
-            String title = EncodeHelper
-                .javaStringToHtmlString(evt[z].getName());
+            String title = evt[z].getName();
 
             if (title.length() > 30) {
-              title = title.substring(0, 30) + "....";
+              title = title.substring(0, 30) + "...";
             }
+
+            title = EncodeHelper.javaStringToHtmlString(title);
+
             if (evt[z].getColor() != null)
               title = "<span style=\"color :" + evt[z].getColor() + "\">"
                   + title + "</span>";

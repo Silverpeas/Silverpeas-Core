@@ -26,12 +26,11 @@ package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 import java.util.Calendar;
 import java.util.Comparator;
 
-public class EventBeginDateComparatorAsc implements Comparator {
+public class EventBeginDateComparatorAsc implements Comparator<Event> {
   static public EventBeginDateComparatorAsc comparator = new EventBeginDateComparatorAsc();
 
-  public int compare(Object o1, Object o2) {
+  public int compare(Event e1, Event e2) {
     Calendar date1 = Calendar.getInstance();
-    Event e1 = (Event) o1;
     date1.setTime(e1.getStartDate());
 
     String startHour = e1.getStartHour(); // 12:30
@@ -47,7 +46,6 @@ public class EventBeginDateComparatorAsc implements Comparator {
     }
 
     Calendar date2 = Calendar.getInstance();
-    Event e2 = (Event) o2;
     date2.setTime(e2.getStartDate());
     startHour = e2.getStartHour();
     if (startHour != null && startHour.length() > 0

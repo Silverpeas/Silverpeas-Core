@@ -41,31 +41,6 @@ import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-/*
- * CVS Informations
- *
- * $Id: Week.java,v 1.4 2006/03/21 12:09:52 neysseri Exp $
- *
- * $Log: Week.java,v $
- * Revision 1.4  2006/03/21 12:09:52  neysseri
- * no message
- *
- * Revision 1.3  2005/04/14 18:35:44  neysseri
- * no message
- *
- * Revision 1.2  2004/06/24 17:16:38  neysseri
- * nettoyage eclipse
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.5  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
@@ -76,8 +51,8 @@ class Week extends Object {
   private Date endDate = null;
   private Date[] dateDayOfWeek = null;
   private Day[] dayOfWeek = null;
-  private Vector listEventWeek = null;
-  private Vector listRow = null;
+  private Vector<Event> listEventWeek = null;
+  private Vector<Row> listRow = null;
 
   /**
    * Creates the new Week
@@ -87,11 +62,11 @@ class Week extends Object {
    * @see java.util.Vector
    * @return object Week
    */
-  public Week(Day[] day, Vector listEventMonth) {
+  public Week(Day[] day, Vector<Event> listEventMonth) {
     SilverTrace.info("viewgenerator", "Week.Constructor",
         "root.MSG_GEN_ENTER_METHOD");
-    listEventWeek = new Vector();
-    listRow = new Vector();
+    listEventWeek = new Vector<Event>();
+    listRow = new Vector<Row>();
 
     this.dayOfWeek = day;
     int lg = day.length;
@@ -128,16 +103,16 @@ class Week extends Object {
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event
    * @see java.util.Vector
    */
-  private Vector initListEventWeek(Vector listEventMonth) {
-    Vector v = new Vector();
+  private Vector<Event> initListEventWeek(Vector<Event> listEventMonth) {
+    Vector<Event> v = new Vector<Event>();
 
     if (listEventMonth.isEmpty()) {
       return v;
     }
-    Iterator itEvent = listEventMonth.iterator();
+    Iterator<Event> itEvent = listEventMonth.iterator();
 
     while (itEvent.hasNext()) {
-      Event currentEvt = (Event) (itEvent.next());
+      Event currentEvt = itEvent.next();
 
       if (currentEvt.isInWeek(startDate, endDate)) {
         Date stDateEvt = null;
@@ -186,9 +161,9 @@ class Week extends Object {
    * @see com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Row
    * @see java.util.Vector
    */
-  private Vector initListRow(Vector listEventWeek) {
+  private Vector<Row> initListRow(Vector<Event> listEventWeek) {
 
-    Vector listRow = new Vector();
+    Vector<Row> listRow = new Vector<Row>();
     // il y a au moins une row dans une semaine
     Row firstRow = new Row();
 
@@ -200,21 +175,21 @@ class Week extends Object {
       return listRow;
 
     }
-    Iterator it = listEventWeek.iterator();
+    Iterator<Event> it = listEventWeek.iterator();
 
     // tant qu'il y des événements dans la semaine
     while (it.hasNext()) {
-      Event evt = (Event) (it.next());
+      Event evt = it.next();
 
       boolean resultAddEventInRow = false;
 
-      Iterator itListRow = listRow.iterator();
+      Iterator<Row> itListRow = listRow.iterator();
 
       index = -1;
 
       while (!resultAddEventInRow) {
         // récupération du row courrant
-        Row nextRow = (Row) itListRow.next();
+        Row nextRow = itListRow.next();
 
         index++;
         // esaie l'ajout de l'event dans le row courrant
@@ -258,17 +233,17 @@ class Week extends Object {
    */
   private boolean addEventInRow(Row currentRow, Event evt) {
 
-    Vector listEvent = currentRow.getListEvent();
+    Vector<Event> listEvent = currentRow.getListEvent();
 
     if (listEvent.isEmpty()) {
       currentRow.addEventIntRow(evt);
       return true;
     }
 
-    Iterator itListEvent = listEvent.iterator();
+    Iterator<Event> itListEvent = listEvent.iterator();
 
     while (itListEvent.hasNext()) {
-      Event currentEvent = (Event) (itListEvent.next());
+      Event currentEvent = itListEvent.next();
 
       if (!(evt.compareTo(currentEvent))) {
         return false;
@@ -307,7 +282,7 @@ class Week extends Object {
    * @return
    * @see
    */
-  public Vector getListEventWeek() {
+  public Vector<Event> getListEventWeek() {
     return listEventWeek;
   }
 
@@ -350,7 +325,7 @@ class Week extends Object {
    * @return
    * @see
    */
-  public Vector getListRow() {
+  public Vector<Row> getListRow() {
     return listRow;
   }
 }

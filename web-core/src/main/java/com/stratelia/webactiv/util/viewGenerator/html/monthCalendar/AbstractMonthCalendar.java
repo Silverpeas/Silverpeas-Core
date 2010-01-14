@@ -53,51 +53,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- *
- * $Id: AbstractMonthCalendar.java,v 1.7 2007/09/19 15:08:27 neysseri Exp $
- *
- * $Log: AbstractMonthCalendar.java,v $
- * Revision 1.7  2007/09/19 15:08:27  neysseri
- * no message
- *
- * Revision 1.6  2007/06/27 13:14:47  neysseri
- * no message
- *
- * Revision 1.5  2006/10/17 13:17:56  sfariello
- * Ajout paramètre d'instanciation pour affichage des week-end ou non
- *
- * Revision 1.4  2006/10/17 09:20:21  sfariello
- * no message
- *
- * Revision 1.3  2006/03/21 12:09:52  neysseri
- * no message
- *
- * Revision 1.2  2004/06/24 17:16:38  neysseri
- * nettoyage eclipse
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.5  2002/05/17 15:10:33  nchaix
- * Merge de la branche bug001 sur la branche principale
- *
- * Revision 1.4.4.3  2002/05/06 13:17:03  groccia
- * no message
- *
- * Revision 1.4.4.1  2002/05/06 08:00:55  groccia
- * resolution d'un problème lié à l'initialisation de l'objet calendar=>
- * Precision de la variable locale: Calendar.getInstance().
- * L'objet calendar n'a apparement pas le même comportement avec Locale.US.
- *
- * Revision 1.4  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
@@ -116,8 +71,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
   abstract public String print();
 
   protected Calendar cal = null;
-  private Vector listEventMonth = null;
-  private Vector listWeek = null;
+  private Vector<Event> listEventMonth = null;
+  private Vector<Week> listWeek = null;
 
   // name of first day of week
   private int firstDayOfWeek = Calendar.MONTH;
@@ -145,8 +100,8 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
     SilverTrace.info("viewgenerator", "AbstractMonthCalendar.Constructor",
         "root.MSG_GEN_ENTER_METHOD", " Language = " + language);
 
-    listEventMonth = new Vector();
-    listWeek = new Vector();
+    listEventMonth = new Vector<Event>();
+    listWeek = new Vector<Week>();
 
     cal = Calendar.getInstance();
 
@@ -178,7 +133,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * @param listEventMonth
    * @see
    */
-  public void addEvent(Vector listEventMonth) {
+  public void addEvent(Vector<Event> listEventMonth) {
     this.listEventMonth = listEventMonth;
   }
 
@@ -225,13 +180,13 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * @see com.stratelia.webactiv.util.DateUtil
    */
   private void modifiedListEventMonth() {
-    Iterator it = listEventMonth.iterator();
+    Iterator<Event> it = listEventMonth.iterator();
 
     while (it.hasNext()) {
       // limitation de la date de début de l'événement au premier jour du
       // mois
       // courrant
-      Event eventMonth = (Event) (it.next());
+      Event eventMonth = it.next();
 
       cal.set(Calendar.DAY_OF_MONTH, 1);
       Date startDateOfMonth = cal.getTime();
@@ -256,12 +211,12 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * @see: com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Day
    * @return: java.util.Vector: the vector of object Week
    */
-  private Vector initListWeek() {
+  private Vector<Week> initListWeek() {
     // tri des évenements pas dates et horaires croissants
     EventBeginDateComparatorAsc comparator = new EventBeginDateComparatorAsc();
     Collections.sort(listEventMonth, comparator);
 
-    Vector v = new Vector();
+    Vector<Week> v = new Vector<Week>();
     Calendar calY = Calendar.getInstance();
     calY.setMinimalDaysInFirstWeek(1);
     calY.setTime(cal.getTime());
@@ -431,7 +386,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    */
   protected String[] getHeaderNameDay() {
     String[] nameDay = new String[numbersDayOfWeek];
-    Week firstWeek = (Week) (listWeek.firstElement());
+    Week firstWeek = listWeek.firstElement();
 
     for (int i = 0; i < numbersDayOfWeek; i++) {
       nameDay[i] = firstWeek.getDayOfWeek(i).getName();
@@ -467,7 +422,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * @see java.util.Calendar
    */
   protected Day[] getDayOfWeek(int week) {
-    Week wk = (Week) listWeek.elementAt(week - 1);
+    Week wk = listWeek.elementAt(week - 1);
     Day[] d = wk.getDayOfWeek();
 
     return d;
@@ -483,7 +438,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * @see java.util.Calendar
    */
   protected int getNumbersOfRow(int week) {
-    Week wk = (Week) listWeek.elementAt(week - 1);
+    Week wk = listWeek.elementAt(week - 1);
 
     return wk.getListRow().size();
   }
@@ -500,7 +455,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * @see java.util.Calendar
    */
   protected Event[] getEventOfRow(int week, int row) {
-    Week wk = (Week) listWeek.elementAt(week - 1);
+    Week wk = listWeek.elementAt(week - 1);
     Row currentRow = (Row) (wk.getListRow().elementAt(row));
 
     if (currentRow.getListEvent().isEmpty()) {

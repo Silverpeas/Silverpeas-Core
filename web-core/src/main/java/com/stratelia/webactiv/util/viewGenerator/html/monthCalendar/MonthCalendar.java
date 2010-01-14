@@ -55,7 +55,7 @@ public interface MonthCalendar extends SimpleGraphicElement {
    * @param listEventMonth
    * @see
    */
-  public void addEvent(Vector listEventMonth);
+  public void addEvent(Vector<Event> listEventMonth);
 
   /**
    * Method declaration

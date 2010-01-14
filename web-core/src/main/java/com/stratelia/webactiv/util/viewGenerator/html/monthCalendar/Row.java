@@ -38,35 +38,19 @@ package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
 import java.util.Vector;
 
-/*
- * CVS Informations
- * 
- * $Id: Row.java,v 1.1.1.1 2002/08/06 14:48:19 nchaix Exp $
- * 
- * $Log: Row.java,v $
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.3  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 class Row extends Object {
 
-  private Vector listEventRow = null;
+  private Vector<Event> listEventRow = null;
 
   /**
    * Creates the new row
    */
   public Row(Event evt) {
-    listEventRow = new Vector();
+    listEventRow = new Vector<Event>();
     listEventRow.addElement(evt);
   }
 
@@ -75,7 +59,7 @@ class Row extends Object {
    * @see
    */
   public Row() {
-    listEventRow = new Vector();
+    listEventRow = new Vector<Event>();
   }
 
   /**
@@ -83,7 +67,7 @@ class Row extends Object {
    * @return
    * @see
    */
-  public Vector getListEvent() {
+  public Vector<Event> getListEvent() {
     return listEventRow;
   }
 
