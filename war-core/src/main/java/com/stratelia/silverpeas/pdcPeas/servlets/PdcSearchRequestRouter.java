@@ -1256,8 +1256,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
          * "root.MSG_GEN_PARAM_VALUE", "Error during processing size !"); }
          * gsc.setThumbnailWidth(widthAndHeight[0]); gsc.setThumbnailHeight(widthAndHeight[1]); }
          */
-        alSilverContents.add(gsc);
       }
+      alSilverContents.add(gsc);
     }
     return alSilverContents;
   }
