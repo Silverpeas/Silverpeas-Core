@@ -28,6 +28,6 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="default" class="com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcessor"/>
-  <bean id="gallery" class="com.silverpeas.gallery.GalleryGlobalSilverContentProcessor"/>
+  <bean id="gallery" class="com.silverpeas.gallery.GalleryGlobalSilverpeasContentProcessor"/>
 
 </beans>

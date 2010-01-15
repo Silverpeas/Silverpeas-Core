@@ -295,7 +295,7 @@
     <servlet-class>com.silverpeas.jcrutil.servlets.RepositoryAccessServlet</servlet-class>
     <init-param>
       <param-name>configuration</param-name>
-      <param-value>/WEB-INF/spring-jcr.xml /WEB-INF/spring-jdbc-datasource.xml</param-value>
+      <param-value>/WEB-INF/spring-jcr.xml /WEB-INF/spring-jdbc-datasource.xml /WEB-INF/spring-pdcPeas.xml</param-value>
       <description>Spring JCR configuration file</description>
     </init-param>
     <load-on-startup>1</load-on-startup>
