@@ -117,6 +117,12 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+	<dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>importExport</artifactId>
+	  <version>${project.version}</version>
+	  <scope>provided</scope>
+    </dependency>
      <dependency>
       <groupId>org.jasig.cas</groupId>
       <artifactId>cas-client-core</artifactId>
