@@ -37,10 +37,15 @@
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
-<%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
+<%@ page import="javax.ejb.RemoveException" %>
+<%@ page import="javax.ejb.CreateException"%>
+<%@ page import="java.sql.SQLException"%>
+<%@ page import="javax.naming.NamingException"%>
+<%@ page import="java.rmi.RemoteException"%>
+<%@ page import="javax.ejb.FinderException"%>
 <%@ page import="java.util.Collection, java.util.ArrayList, java.util.Iterator, java.util.Date"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.attachment.control.AttachmentController"%>
 <%@ page import="com.stratelia.webactiv.util.attachment.ejb.AttachmentException"%>
 
@@ -53,7 +58,8 @@
         String idAttachment = request.getParameter("IdAttachment");
         String fileLanguage = request.getParameter("FileLanguage");
         boolean update = Boolean.valueOf(request.getParameter("update_attachment")).booleanValue();
-        boolean force = Boolean.valueOf(request.getParameter("force_release")).booleanValue();
+        boolean force = Boolean.valueOf(request.getParameter("force_release")).booleanValue()
+                && "A".equals(((MainSessionController) session.getAttribute("SilverSessionController")).getCurrentUserDetail().getAccessLevel()) ;
         if(!AttachmentController.checkinFile(idAttachment, false, update, force, fileLanguage)) {
           if(url.indexOf('?') > 0) {
             url = url + '&';

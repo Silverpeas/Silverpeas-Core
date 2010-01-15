@@ -43,9 +43,9 @@ out.println(gef.getLookStyleSheet());
 <body>
 <%
   ButtonPane warningButtonPane = gef.getButtonPane();
-  warningButtonPane.addButton(gef.getFormButton(messages.getString("fermer"), "javascript:onClick=closeMessage('"+ "admin".equals(request.getParameter("profile")) + "')", false));
+  warningButtonPane.addButton(gef.getFormButton(messages.getString("fermer"), "javascript:onClick=closeMessage('"+ "A".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel()) + "')", false));
 %>
 <p><fmt:message key="attachment.warning.checkin.locked" bundle="${attachmentMessages}" /></p>
-<p><center><%=warningButtonPane.print()%></center></p>
+<p style="text-align:center;"><%=warningButtonPane.print()%></p>
 </body>
 </html>

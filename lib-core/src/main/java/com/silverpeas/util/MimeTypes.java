@@ -28,6 +28,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public interface MimeTypes {
+
+  public final String DEFAULT_MIME_TYPE = "application/octet-stream";
+
   public final String WORD_MIME_TYPE = "application/msword";
   public final String EXCEL_MIME_TYPE1 = "application/x-msexcel";
   public final String EXCEL_MIME_TYPE2 = "application/vnd.ms-excel";
