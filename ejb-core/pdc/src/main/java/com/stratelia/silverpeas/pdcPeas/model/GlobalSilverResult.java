@@ -34,11 +34,12 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
- * This class allows the result jsp page of the global search to show all
- * features (name, description, location)
+ * This class allows the result jsp page of the global search to show all features (name,
+ * description, location)
  */
-public class GlobalSilverResult extends GlobalSilverContent implements
-    java.io.Serializable {
+public class GlobalSilverResult extends GlobalSilverContent implements java.io.Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private String titleLink = null;
   private String downloadLink = null;
   private String creatorName = null;
@@ -52,6 +53,11 @@ public class GlobalSilverResult extends GlobalSilverContent implements
     super.setLocation(gsc.getLocation());
     super.setURL(gsc.getURL());
     super.setScore(1);
+    
+    super.setThumbnailHeight(gsc.getThumbnailHeight());
+    super.setThumbnailMimeType(gsc.getThumbnailMimeType());
+    super.setThumbnailWidth(gsc.getThumbnailWidth());
+    super.setThumbnailURL(gsc.getThumbnailURL());
   }
 
   public GlobalSilverResult(MatchingIndexEntry mie) {
@@ -65,7 +71,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements
     if (mie.getThumbnail() != null) {
       super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
           mie.getThumbnail(), mie.getThumbnailMimeType(), mie
-              .getThumbnailDirectory()));
+          .getThumbnailDirectory()));
 
       String[] directory = new String[1];
       directory[0] = mie.getThumbnailDirectory();
@@ -155,6 +161,6 @@ public class GlobalSilverResult extends GlobalSilverContent implements
 
     return (getId().equals(((GlobalSilverResult) other).getId()))
         && (getInstanceId()
-            .equals(((GlobalSilverResult) other).getInstanceId()));
+        .equals(((GlobalSilverResult) other).getInstanceId()));
   }
 }
