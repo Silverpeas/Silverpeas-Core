@@ -34,6 +34,8 @@ import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
  * description, location)
  */
 public class GlobalSilverContent extends AbstractI18NBean implements java.io.Serializable {
+
+  private static final long serialVersionUID = 1L;
   private String name = "";
   private String description = "";
   private String url = "";
@@ -86,9 +88,9 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
     init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie
         .getComponent(), mie.getCreationDate(), null, mie.getCreationUser());
 
-    Iterator languages = mie.getLanguages();
+    Iterator<String> languages = mie.getLanguages();
     while (languages.hasNext()) {
-      String language = (String) languages.next();
+      String language = languages.next();
       GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
           mie.getTitle(language), mie.getPreview(language));
       addTranslation(gscI18N);
@@ -102,13 +104,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
         .getCreatorId());
     this.creationDate = sci.getSilverCreationDate();
 
-    Iterator languages = sci.getLanguages();
-    while (languages != null && languages.hasNext()) {
-      String language = (String) languages.next();
-      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
-          sci.getName(language), sci.getDescription(language));
-      addTranslation(gscI18N);
-    }
+    processLanguages(sci);
   }
 
   // constructor
@@ -121,9 +117,13 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
     this.creatorFirstName = creatorFirstName;
     this.creatorLastName = creatorLastName;
 
-    Iterator languages = sci.getLanguages();
+    processLanguages(sci);
+  }
+
+  private void processLanguages(SilverContentInterface sci) {
+    Iterator<String> languages = sci.getLanguages();
     while (languages != null && languages.hasNext()) {
-      String language = (String) languages.next();
+      String language = languages.next();
       GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language,
           sci.getName(language), sci.getDescription(language));
       addTranslation(gscI18N);

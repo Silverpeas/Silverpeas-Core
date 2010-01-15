@@ -50,17 +50,20 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * (documentation, ....)
  */
 public class ContentManager extends Object implements java.io.Serializable {
+
+  private static final long serialVersionUID = 1L;
   // Container peas
   private static boolean s_bDescriptorsRead = false;
-  private static ArrayList s_acContentPeas = null;
+  private static ArrayList<ContentPeas> s_acContentPeas = null;
 
   // Association componentId instanceId association (cache)
   // private static List s_asAssoInstanceId = null;
   // private static List s_asAssoComponentId = null;
-  private static Hashtable assoComponentIdInstanceId = null;
+  private static Hashtable<String, String> assoComponentIdInstanceId = null;
 
   // Association SilverContentId (the key) internalContentId (the value) (cache)
-  private static HashMap assoSilverContentIdInternalComponentId = new HashMap(
+  private static HashMap<String, String> assoSilverContentIdInternalComponentId =
+      new HashMap<String, String>(
       1000);
 
   // Datebase properties
@@ -70,7 +73,7 @@ public class ContentManager extends Object implements java.io.Serializable {
 
   static {
     try {
-      assoComponentIdInstanceId = new Hashtable(loadAsso(null));
+      assoComponentIdInstanceId = new Hashtable<String, String>(loadAsso(null));
     } catch (ContentManagerException e) {
       SilverTrace.error("contentManager", "ContentManager.initStatic",
           "root.EX_CLASS_NOT_INITIALIZED",
@@ -110,7 +113,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       ContentPeas contentBlog = new ContentPeas("blog");
 
       // Put all the existing contents in the array of contents
-      s_acContentPeas = new ArrayList();
+      s_acContentPeas = new ArrayList<ContentPeas>();
       s_acContentPeas.add(contentFB);
       s_acContentPeas.add(contentWP);
       s_acContentPeas.add(contentQR);
@@ -311,19 +314,19 @@ public class ContentManager extends Object implements java.io.Serializable {
    * Return a list of URLIcones corresponding to the rights of the given roles It is the gateway to
    * all the silverpeas contents (documentation, ....)
    */
-  public List getContentURLIcones(String sContentType, List asUserContentRoles) {
+  public List<URLIcone> getContentURLIcones(String sContentType, List<String> asUserContentRoles) {
     // !!!!!!! HARD CODED FOR THE MOMENT (call th econtentPeas instead)
 
-    ArrayList auURLIcones = new ArrayList();
+    ArrayList<URLIcone> auURLIcones = new ArrayList<URLIcone>();
 
     if (sContentType.equals("fileBoxPlus")) {
       boolean publisher = false;
       boolean admin = false;
 
-      Iterator iter = asUserContentRoles.iterator();
+      Iterator<String> iter = asUserContentRoles.iterator();
       String userRole = "";
       while (iter.hasNext()) {
-        userRole = (String) iter.next();
+        userRole = iter.next();
         if ("admin".equals(userRole))
           admin = true;
         else if ("publisher".equals(userRole))
@@ -354,10 +357,10 @@ public class ContentManager extends Object implements java.io.Serializable {
     } else if (sContentType.equals("whitePages")) {
       boolean admin = false;
 
-      Iterator iter = asUserContentRoles.iterator();
+      Iterator<String> iter = asUserContentRoles.iterator();
       String userRole = "";
       while (iter.hasNext()) {
-        userRole = (String) iter.next();
+        userRole = iter.next();
         if ("admin".equals(userRole))
           admin = true;
       }
@@ -386,10 +389,10 @@ public class ContentManager extends Object implements java.io.Serializable {
     } else if (sContentType.equals("expertLocator")) {
       boolean admin = false;
 
-      Iterator iter = asUserContentRoles.iterator();
+      Iterator<String> iter = asUserContentRoles.iterator();
       String userRole = "";
       while (iter.hasNext()) {
-        userRole = (String) iter.next();
+        userRole = iter.next();
         if ("admin".equals(userRole))
           admin = true;
       }
@@ -418,10 +421,10 @@ public class ContentManager extends Object implements java.io.Serializable {
     } else if (sContentType.equals("questionReply")) {
       boolean admin = false;
       boolean publisher = false;
-      Iterator iter = asUserContentRoles.iterator();
+      Iterator<String> iter = asUserContentRoles.iterator();
       String userRole = "";
       while (iter.hasNext()) {
-        userRole = (String) iter.next();
+        userRole = iter.next();
         if (("admin".equals(userRole)) || ("writer".equals(userRole)))
           admin = true;
         if ("publisher".equals(userRole))
@@ -750,11 +753,11 @@ public class ContentManager extends Object implements java.io.Serializable {
    * Return the sorted list containing SilverContentIds corresponding to the list containing id et
    * instanceId The list is not null and not empty !! Called when a content remove a document
    */
-  public SortedSet getSilverContentId(List documentFeature)
+  public SortedSet<Integer> getSilverContentId(List<String> documentFeature)
       throws ContentManagerException {
     Connection connection = null;
     Statement stmt = null;
-    SortedSet alSilverContentId = new TreeSet();
+    SortedSet<Integer> alSilverContentId = new TreeSet<Integer>();
     String sInternalContentId = "";
     String sComponentId = "";
     int silverContentId;
@@ -765,8 +768,8 @@ public class ContentManager extends Object implements java.io.Serializable {
       // main loop to build sql queries
       for (int i = 0; i < documentFeature.size(); i = i + 2) {
         // Get the internamContentId and theinstanceId from the list
-        sInternalContentId = (String) documentFeature.get(i);
-        sComponentId = (String) documentFeature.get(i + 1);
+        sInternalContentId = documentFeature.get(i);
+        sComponentId = documentFeature.get(i + 1);
         // Get the SilverContentId
         silverContentId = getSilverContentId(stmt, sInternalContentId,
             sComponentId, true);
@@ -920,7 +923,7 @@ public class ContentManager extends Object implements java.io.Serializable {
     return instanceId;
   }
 
-  private Hashtable getAsso() throws ContentManagerException {
+  private Hashtable<String, String> getAsso() throws ContentManagerException {
     return assoComponentIdInstanceId;
   }
 
@@ -939,12 +942,12 @@ public class ContentManager extends Object implements java.io.Serializable {
   }
 
   // Load the cache instanceId-componentId
-  private static Hashtable loadAsso(Connection connection)
+  private static Hashtable<String, String> loadAsso(Connection connection)
       throws ContentManagerException {
     boolean bCloseConnection = false;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
-    Hashtable tempAsso = new Hashtable();
+    Hashtable<String, String> tempAsso = new Hashtable<String, String>();
     try {
       if (connection == null) {
         // Open connection
@@ -962,7 +965,6 @@ public class ContentManager extends Object implements java.io.Serializable {
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
-      tempAsso = new Hashtable();
       // Fetch the results
       while (resSet.next()) {
         // s_asAssoInstanceId.add(new Integer(resSet.getInt(1)));
@@ -991,8 +993,8 @@ public class ContentManager extends Object implements java.io.Serializable {
     StringBuffer sSQLStatement = new StringBuffer(1000);
 
     JoinStatement joinStatement = new JoinStatement();
-    List alGivenTables = (List) new ArrayList();
-    List alGivenKeys = (List) new ArrayList();
+    List<String> alGivenTables = new ArrayList<String>();
+    List<String> alGivenKeys = new ArrayList<String>();
     alGivenTables.add(m_sSilverContentTable);
     alGivenKeys.add("silverContentId");
 
@@ -1030,13 +1032,13 @@ public class ContentManager extends Object implements java.io.Serializable {
    * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
-  public List getInstanceId(List alSilverContentId)
+  public List<String> getInstanceId(List<Integer> alSilverContentId)
       throws ContentManagerException {
     Connection connection = null;
     StringBuffer sSQLStatement = new StringBuffer();
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
-    List alInstanceIds = (List) new ArrayList();
+    List<String> alInstanceIds = new ArrayList<String>();
     try {
       // Open connection
       connection = DBUtil.makeConnection(m_dbName);
@@ -1053,7 +1055,7 @@ public class ContentManager extends Object implements java.io.Serializable {
       String instanceId = "";
       Integer oneSilverContentId = null;
       for (int i = 0; i < alSilverContentId.size(); i++) {
-        oneSilverContentId = (Integer) alSilverContentId.get(i);
+        oneSilverContentId = alSilverContentId.get(i);
         prepStmt.setInt(1, oneSilverContentId.intValue());
         SilverTrace.info("contentManager", "ContentManager.getInstanceId",
             "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement
@@ -1075,23 +1077,21 @@ public class ContentManager extends Object implements java.io.Serializable {
           "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
-      // closeStatementAndConnection(prepStmt, connection);
       closeConnection(connection);
     }
   }
 
   /**
-   * Cette méthode retourne une liste de SilverContentId qui se trouve sous une instance de
-   * jobPeas.
+   * Cette méthode retourne une liste de SilverContentId qui se trouve sous une instance de jobPeas.
    * @param instanceId - l'id de l'instance (trucsAstuces978)
    * @return une liste de silvercontentId
    */
-  public List getSilverContentIdByInstanceId(String instanceId)
+  public List<Integer> getSilverContentIdByInstanceId(String instanceId)
       throws ContentManagerException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
-    List allSilverContentIds = (List) new ArrayList();
+    List<Integer> allSilverContentIds = new ArrayList<Integer>();
     try {
       // Open connection
       con = DBUtil.makeConnection(m_dbName);
@@ -1112,7 +1112,6 @@ public class ContentManager extends Object implements java.io.Serializable {
       resSet = prepStmt.executeQuery();
 
       // Fetch the result
-
       while (resSet.next()) {
         allSilverContentIds.add(new Integer(resSet.getInt(1)));
       }
@@ -1126,16 +1125,15 @@ public class ContentManager extends Object implements java.io.Serializable {
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(con);
-      // closeStatementAndConnection(prepStmt, con);
     }
   }
 
-  public List getSilverContentBySilverContentIds(List alSilverContentIds)
+  public List<SilverContent> getSilverContentBySilverContentIds(List<Integer> alSilverContentIds)
       throws ContentManagerException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
-    List silverContents = (List) new ArrayList();
+    List<SilverContent> silverContents = new ArrayList<SilverContent>();
     try {
       // Open connection
       con = DBUtil.makeConnection(m_dbName);
@@ -1144,11 +1142,11 @@ public class ContentManager extends Object implements java.io.Serializable {
       int sizeOfIds = alSilverContentIds.size();
       for (int i = 0; i < sizeOfIds - 1; i++) {
         where.append(" silverContentId = "
-            + ((Integer) alSilverContentIds.get(i)).toString() + " or ");
+            + (alSilverContentIds.get(i)).toString() + " or ");
       }
       if (sizeOfIds != 0) {
         where.append(" silverContentId = "
-            + ((Integer) alSilverContentIds.get(sizeOfIds - 1)).toString());
+            + (alSilverContentIds.get(sizeOfIds - 1)).toString());
       }
 
       String sSQLStatement =
@@ -1165,7 +1163,6 @@ public class ContentManager extends Object implements java.io.Serializable {
       resSet = prepStmt.executeQuery();
 
       // Fetch the result
-
       while (resSet.next()) {
         silverContents.add(new SilverContent(resSet.getString(1), resSet
             .getString(2), resSet.getString(3)));
@@ -1180,7 +1177,6 @@ public class ContentManager extends Object implements java.io.Serializable {
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(con);
-      // closeStatementAndConnection(prepStmt, con);
     }
   }
 

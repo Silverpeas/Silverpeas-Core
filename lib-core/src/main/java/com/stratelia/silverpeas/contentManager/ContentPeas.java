@@ -35,7 +35,7 @@ public class ContentPeas extends Object {
   // the ContentInterface
   ContentInterface m_contentInterface = null; // The object
   // (class.forName(m_sContentInterface))
-  List m_asUserRoles = null; // User roles of the content
+  List<String> m_asUserRoles = null; // User roles of the content
   String m_sSessionControlBeanName = null; // Name of the bean in the session
 
   public ContentPeas(String sContentDescriptorPath) {
@@ -48,7 +48,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.silverpeas.fileBoxPlus.FileBoxPlusContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -59,7 +59,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.silverpeas.whitePages.control.WhitePagesContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("user");
       this.setUserRoles(asUserRoles);
@@ -69,7 +69,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.silverpeas.questionReply.control.QuestionReplyContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("writer");
@@ -81,7 +81,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.kmelia.KmeliaContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("writer");
@@ -93,7 +93,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.survey.SurveyContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("user");
       this.setUserRoles(asUserRoles);
@@ -102,7 +102,7 @@ public class ContentPeas extends Object {
       this.setType("toolbox");
       this
           .setContentInterfaceClass("com.stratelia.webactiv.kmelia.KmeliaContentManager");
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -113,7 +113,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.quickinfo.QuickInfoContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -123,7 +123,7 @@ public class ContentPeas extends Object {
       this.setType("almanach");
       this
           .setContentInterfaceClass("com.stratelia.webactiv.almanach.AlmanachContentManager");
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -134,7 +134,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.quizz.QuizzContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -145,7 +145,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.forums.ForumsContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("user");
       this.setUserRoles(asUserRoles);
@@ -155,7 +155,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.survey.SurveyContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("user");
       this.setUserRoles(asUserRoles);
@@ -165,7 +165,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.webSites.WebSitesContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("Publisher");
       asUserRoles.add("Reader");
 
@@ -175,7 +175,7 @@ public class ContentPeas extends Object {
       this.setType("chat");
       this
           .setContentInterfaceClass("com.stratelia.silverpeas.chat.ChatContentManager");
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -186,7 +186,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.silverpeas.infoLetter.InfoLetterContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("user");
@@ -197,7 +197,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.silverpeas.expertLocator.control.ExpertLocatorContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("user");
       this.setUserRoles(asUserRoles);
@@ -207,7 +207,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.stratelia.webactiv.webSites.WebSitesContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("Publisher");
       asUserRoles.add("Reader");
 
@@ -218,7 +218,7 @@ public class ContentPeas extends Object {
       this
           .setContentInterfaceClass("com.silverpeas.gallery.GalleryContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("publisher");
       asUserRoles.add("writer");
@@ -229,7 +229,7 @@ public class ContentPeas extends Object {
       this.setType("blog");
       this.setContentInterfaceClass("com.silverpeas.blog.BlogContentManager");
 
-      ArrayList asUserRoles = new ArrayList();
+      ArrayList<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("admin");
       asUserRoles.add("user");
       this.setUserRoles(asUserRoles);
@@ -262,11 +262,11 @@ public class ContentPeas extends Object {
     return m_contentInterface;
   }
 
-  public void setUserRoles(List asUserRoles) {
+  public void setUserRoles(List<String> asUserRoles) {
     m_asUserRoles = asUserRoles;
   }
 
-  public List getUserRoles() {
+  public List<String> getUserRoles() {
     return m_asUserRoles;
   }
 

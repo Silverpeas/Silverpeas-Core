@@ -54,5 +54,5 @@ public interface SilverContentInterface {
 
   public String getCreatorId();
 
-  public Iterator getLanguages();
+  public Iterator<String> getLanguages();
 }

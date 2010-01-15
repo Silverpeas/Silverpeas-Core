@@ -27,6 +27,8 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 
 public class SilverContent extends AbstractI18NBean implements SilverContentInterface {
+
+  private static final long serialVersionUID = 1L;
   private String silverContentName;
   private String silverContentDescription;
   private String silverContentURL;

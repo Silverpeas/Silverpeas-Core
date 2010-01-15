@@ -25,16 +25,13 @@ package com.stratelia.silverpeas.contentManager;
 
 import java.util.*;
 
-public class GSCCreationDateComparatorDesc implements Comparator {
+public class GSCCreationDateComparatorDesc implements Comparator<GlobalSilverContent> {
   static public GSCCreationDateComparatorDesc comparator = new GSCCreationDateComparatorDesc();
 
   /**
    * This result is reversed as we want a descending sort.
    */
-  public int compare(Object o1, Object o2) {
-    GlobalSilverContent gsc1 = (GlobalSilverContent) o1;
-    GlobalSilverContent gsc2 = (GlobalSilverContent) o2;
-
+  public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
     int compareResult = gsc1.getCreationDate()
         .compareTo(gsc2.getCreationDate());
     if (compareResult == 0) {

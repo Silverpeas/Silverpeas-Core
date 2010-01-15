@@ -23,29 +23,11 @@
  */
 package com.stratelia.silverpeas.contentManager;
 
-import java.util.*;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
-public class GSCDateComparatorDesc implements Comparator<GlobalSilverContent> {
-  static public GSCDateComparatorDesc comparator = new GSCDateComparatorDesc();
+public interface IGlobalSilverContentProcessor {
 
-  /**
-   * This result is reversed as we want a descending sort.
-   */
-  public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    int compareResult = gsc1.getDate().compareTo(gsc2.getDate());
-    if (compareResult == 0) {
-      // both objects have been created on the same date
-      compareResult = gsc1.getId().compareTo(gsc2.getId());
-    }
+  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
+      UserDetail creatorDetail, String location);
 
-    return 0 - compareResult;
-  }
-
-  /**
-   * This comparator equals self only. Use the shared comparator GSCDateComparatorDesc.comparator if
-   * multiples comparators are used.
-   */
-  public boolean equals(Object o) {
-    return o == this;
-  }
 }

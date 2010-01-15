@@ -42,6 +42,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
+import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -56,6 +57,7 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
+import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
@@ -81,7 +83,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
 
@@ -1227,36 +1228,19 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     SilverContentInterface sci = null;
     UserDetail creatorDetail = null;
     GlobalSilverContent gsc = null;
+    String contentProcessorId = "default";
+    if (instanceId.startsWith("gallery")) {
+      contentProcessorId = "gallery";
+    }
+    IGlobalSilverContentProcessor processor =
+        (IGlobalSilverContentProcessor) BasicDaoFactory.getBean(contentProcessorId);
+
     for (int i = 0; i < silverContentTempo.size(); i++) {
       sci = silverContentTempo.get(i);
       creatorDetail = pdcSC.getOrganizationController().getUserDetail(sci.getCreatorId());
-      if (creatorDetail != null)
-        gsc =
-            new GlobalSilverContent(sci, getLocation(instanceId, pdcSC), creatorDetail
-            .getFirstName(), creatorDetail.getLastName());
-      else
-        gsc = new GlobalSilverContent(sci, getLocation(instanceId, pdcSC), null, null);
 
-      // Special "Gallery" case
-      if (instanceId.startsWith("gallery")) {
-        String galleryDirectory = null;
-        if (galleryDirectory == null) {
-          ResourceLocator gallerySettings =
-              new ResourceLocator("com.silverpeas.gallery.settings.gallerySettings", "");
-          galleryDirectory = gallerySettings.getString("imagesSubDirectory");
-        }
-        /*
-         * TODO à reprendre pour être indépendant de Gallery String directory =
-         * galleryDirectory+sci.getId(); PhotoDetail photo = (PhotoDetail) sci;
-         * gsc.setThumbnailURL(FileServerUtils.getUrl(null, instanceId, photo.getImageName(),
-         * photo.getImageMimeType(), directory)); String[] widthAndHeight = {"60", "45"}; try {
-         * widthAndHeight = ImageHelper.getWidthAndHeight(instanceId, directory,
-         * photo.getImageName(), 60); } catch (IOException e) { SilverTrace.info("pdcPeas",
-         * "PdcSearchRequestRouter.transformSilverContentsToGlobalSilverContents",
-         * "root.MSG_GEN_PARAM_VALUE", "Error during processing size !"); }
-         * gsc.setThumbnailWidth(widthAndHeight[0]); gsc.setThumbnailHeight(widthAndHeight[1]); }
-         */
-      }
+      gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(instanceId, pdcSC));
+
       alSilverContents.add(gsc);
     }
     return alSilverContents;

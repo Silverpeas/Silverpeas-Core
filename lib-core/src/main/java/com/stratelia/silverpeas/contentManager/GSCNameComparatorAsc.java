@@ -25,13 +25,10 @@ package com.stratelia.silverpeas.contentManager;
 
 import java.util.*;
 
-public class GSCNameComparatorAsc implements Comparator {
+public class GSCNameComparatorAsc implements Comparator<GlobalSilverContent> {
   static public GSCNameComparatorAsc comparator = new GSCNameComparatorAsc();
 
-  public int compare(Object o1, Object o2) {
-    GlobalSilverContent gsc1 = (GlobalSilverContent) o1;
-    GlobalSilverContent gsc2 = (GlobalSilverContent) o2;
-
+  public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
     return gsc1.getName().compareTo(gsc2.getName());
   }
 

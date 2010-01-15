@@ -30,6 +30,8 @@ import com.silverpeas.util.i18n.Translation;
  * description, location)
  */
 public class SilverContentI18N extends Translation implements java.io.Serializable {
+
+  private static final long serialVersionUID = 1L;
   private String name = "";
   private String description = "";
 
