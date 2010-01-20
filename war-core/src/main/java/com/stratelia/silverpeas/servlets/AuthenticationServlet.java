@@ -64,6 +64,10 @@ public class AuthenticationServlet extends HttpServlet {
       throws IOException {
     // Get the session
     HttpSession session = request.getSession(true);
+    if(!StringUtil.isDefined(request.getCharacterEncoding())) {
+      request.setCharacterEncoding("UTF-8");
+    }
+    
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(

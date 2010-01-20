@@ -43,7 +43,7 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 <html>
 <head>
 <title><%=generalMultilang.getString("GML.popupTitle")%></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" href="<%=styleSheet%>">
 <style type="text/css">
 <!--
@@ -154,7 +154,7 @@ function loginQuestion() {
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td valign="top" width="45%"> 
-      <form name="EDform" action="javascript:checkForm();" method="POST">
+      <form name="EDform" action="javascript:checkForm();" method="POST" accept-charset="UTF-8">
         <input type=hidden name="do_it" value="decode_input_image">
         <input type=hidden name="DEFAULT_ACTION2" value="jf_inscriptions_req">
         <input type="hidden" name="cryptedPassword">
