@@ -24,7 +24,6 @@
 package com.silverpeas.jcrutil.servlets;
 
 import javax.jcr.Repository;
-import javax.servlet.ServletContext;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 
