@@ -249,7 +249,7 @@ void displayActions(AttachmentDetail attachment, boolean useXMLForm, boolean use
 	Vector 		attachments 	= AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
   	Iterator 	itAttachments 	= attachments.iterator();
 
-	if (itAttachments.hasNext() || !profile.equals("user"))
+	if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user")))
   	{
 		Board board	= gef.getBoard();
   		out.println(board.printBefore());
