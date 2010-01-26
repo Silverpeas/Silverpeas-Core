@@ -47,7 +47,7 @@
 
 	 <upgrade version="002">
        <create_table>
-            <file name="mssql\busCore\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="mssql\contact\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
        </create_table>
     </upgrade>
 
