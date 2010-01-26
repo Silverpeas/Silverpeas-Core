@@ -220,7 +220,7 @@ function viewOtherAgenda()
 
 function exportIcal()
 {
-	SP_openWindow('ToExportIcal','ToExportIcal','350','200','scrollbars=no, noresize, alwaysRaised');
+	SP_openWindow('ToExportIcal','ToExportIcal','345','200','scrollbars=no, noresize, alwaysRaised');
 }
 function importIcal()
 {
@@ -228,7 +228,7 @@ function importIcal()
 }
 function synchroIcal()
 {
-	SP_openWindow('ToSynchroIcal','ToSynchroIcal','700','270','scrollbars=yes, noresize, alwaysRaised');
+	SP_openWindow('ToSynchroIcal','ToSynchroIcal','750','270','scrollbars=yes, noresize, alwaysRaised');
 }
 
 function viewCurrentAgenda()
