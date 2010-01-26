@@ -1,0 +1,144 @@
+@charset "utf-8";
+/* CSS Document */
+
+* {
+	margin:0px;
+	padding:0px;
+	/*overflow:hidden;*/
+	border:none;
+	text-align:center;
+}
+body {
+	background-color:#e6e6e6;
+	font-size:12px;
+	font-family:Arial, Helvetica, sans-serif;
+	/*overflow:hidden;*/
+	color:#666666;
+	height:1000px;
+}
+#top {
+	background-color:#cccccc;
+	height:60px;
+	margin-bottom:50px;
+}
+.clear {
+	clear:both;
+}
+.page {
+	margin:0px auto;
+	width:960px;
+}
+#background {
+	background:url(images/bg.gif) no-repeat;
+	min-height:424px;
+	height:800px;
+}
+.cadre{
+	/*height:285px;*/
+	margin:0 auto;
+	padding-top:30px;
+	width:460px;
+}
+input{
+	background-color:#FAFAFA;
+	border:1px solid #DAD9D9;
+	display:block;
+	padding:5px;
+	width:448px;
+	text-align:left;
+}
+select {
+	background-color:#fafafa;
+	border:1px solid #dad9d9;
+	padding:5px;
+	width:250px;
+	text-align:left;
+	float:left;
+}
+select option {
+	text-align:left;
+}
+.titre {
+	color:#D2D2D2;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:48px;
+	position:relative;
+	top:24px;
+	left:555px;
+	text-align:left;
+}
+
+#header {
+	margin-bottom:18px;
+}
+.logo {
+	float:left;
+}
+.information {
+	float:right;
+	margin-top:30px;
+	font-size:14px;
+	text-align:left;	
+}
+
+.information span {
+	color:red;
+}
+p label {
+	display:block;
+	margin-bottom:10px;
+	/*padding-bottom:5px;*/
+}
+p label span {
+	display:block;
+	padding:4px 0px 2px 0px;
+	font-size:11px;
+	font-weight:bold;
+	color:#333333;
+	text-align:left;
+}
+.submit {
+	position:relative;
+	/*right:-172px;*/
+	text-align:left;
+	top:-10px;
+}
+.caractere {
+	height:44px;
+}
+.noDisplay {
+	display:none;
+}
+
+.forgottenPwd a {
+	font-size: 10px;
+	color:#999999;
+}
+
+.rememberPwd {
+	font-size: 10px;
+	color:#999999;
+}
+
+#storePassword{
+	background-color:transparent;
+	border:0px;
+	display:inline;
+	padding-bottom:0px;
+	width:15px;
+	text-align:left;
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
+.questionSelection {
+	float:right;
+	margin-top:10px;
+	font-size:14px;
+	text-align:left;	
+	width: 300px;
+}
+
+#question {
+	width:400px;
+}

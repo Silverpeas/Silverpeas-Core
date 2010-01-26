@@ -37,12 +37,7 @@
 %>
 
 <%
-String sURI = request.getRequestURI();
-String sServletPath = request.getServletPath();
-String sPathInfo = request.getPathInfo();
-if(sPathInfo != null)
-    sURI = sURI.substring(0,sURI.lastIndexOf(sPathInfo));
-String m_context = sURI.substring(0,sURI.lastIndexOf(sServletPath));
+String m_context = request.getContextPath();
 
 // Get the authentication settings
 ResourceLocator authenticationSettings		= new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
@@ -52,19 +47,17 @@ ResourceLocator homePageBundle = new ResourceLocator("com.stratelia.webactiv.hom
 ResourceLocator general				= new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
 ResourceLocator generalMultilang	= new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", "");
 
-String logo = general.getString("logo", m_context+"/admin/jsp/icons/logo_silverpeasBig.gif");
-String styleSheet = general.getString("defaultStyleSheet", m_context+"/util/styleSheets/globalSP.css");
+String logo = general.getString("logo", m_context+"/images/logo.jpg");
+String styleSheet = general.getString("defaultStyleSheet", m_context+"/style.css");
 
 // Is "forgotten password" feature active ?
-boolean forgottenPwdActive = general.getBoolean("forgottenPwdActive", false);		
+boolean forgottenPwdActive = general.getBoolean("forgottenPwdActive", false);
+boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
 
 // Get a LoginPasswordAuthentication object
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
 
 // list of domains
 Hashtable domains = lpAuth.getAllDomains();
-/*Hashtable domains = new Hashtable();
-domains.put("0", "SilverpeasNico");*/
 List domainIds = new ArrayList(domains.keySet());
-//ArrayList domainsIds = lpAuth.getDomainsIds();
 %>

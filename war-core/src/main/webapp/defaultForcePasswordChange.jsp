@@ -1,127 +1,72 @@
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%--
 
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+--%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="com.silverpeas.jobDomainPeas.JobDomainSettings"%>
+<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ include file="headLog.jsp"%>
 
-<html>
+<%
+int minLengthPassword = JobDomainSettings.m_MinLengthPwd;
+ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title><%=generalMultilang.getString("GML.popupTitle")%></title>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<link rel="stylesheet" href="<%=styleSheet%>">
-		<style type="text/css">
-		<!--
-			body {  background-attachment: fixed; background-image: url(admin/jsp/icons/rayure.gif); background-repeat: repeat-x}
-		-->
-		</style>
-
-	    <script type="text/javascript">
-	    /*
-			Password Validator 0.1
-			(c) 2007 Steven Levithan <stevenlevithan.com>
-			MIT License
-		*/
-		function validatePassword (pw, options) {
-			// default options (allows any password)
-			var o = {
-				combined: 0,
-				lower:    0,
-				upper:    0,
-				alpha:    0, /* lower + upper */
-				numeric:  0,
-				special:  0,
-				length:   [0, Infinity],
-				custom:   [ /* regexes and/or functions */ ],
-				badWords: [],
-				badSequenceLength: 0,
-				noQwertySequences: false,
-				noSequential:      false
-			};
-		
-			for (var property in options)
-				o[property] = options[property];
-		
-			var	re = {
-					lower:   /[a-z]/g,
-					upper:   /[A-Z]/g,
-					alpha:   /[A-Z]/gi,
-					numeric: /[0-9]/g,
-					special: /[\W_]/g
-				},
-				rule, i;
-		
-			// enforce min/max length
-			if (pw.length < o.length[0] || pw.length > o.length[1])
-				return false;
-	
-			var combinedFound = 0;
-			
-			// enforce lower/upper/alpha/numeric/special rules
-			for (rule in re) {
-				if ((pw.match(re[rule]) || []).length > 0) {
-					combinedFound++;
-				}
-				if ((pw.match(re[rule]) || []).length < o[rule])
-					return false;
+		<link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
+		<!--[if lt IE 8]>
+			<style>
+			input{
+				background-color:#FAFAFA;
+				border:1px solid #DAD9D9;
+				width:448px;
+				text-align:left;
+			    margin-left:-10px;
+			    height:26px;
+			    line-height:24px;
+			    padding:0px 60px;
+			    display:block;
+			    padding:0px;
 			}
-	
-			// check nb combined found
-			if ( combinedFound < o[combined] ) 
-				return false;
-			
-			// enforce word ban (case insensitive)
-			for (i = 0; i < o.badWords.length; i++) {
-				if (pw.toLowerCase().indexOf(o.badWords[i].toLowerCase()) > -1)
-					return false;
-			}
-		
-			// enforce the no sequential, identical characters rule
-			if (o.noSequential && /([\S\s])\1/.test(pw))
-				return false;
-		
-			// enforce alphanumeric/qwerty sequence ban rules
-			if (o.badSequenceLength) {
-				var	lower   = "abcdefghijklmnopqrstuvwxyz",
-					upper   = lower.toUpperCase(),
-					numbers = "0123456789",
-					qwerty  = "qwertyuiopasdfghjklzxcvbnm",
-					start   = o.badSequenceLength - 1,
-					seq     = "_" + pw.slice(0, start);
-				for (i = start; i < pw.length; i++) {
-					seq = seq.slice(1) + pw.charAt(i);
-					if (
-						lower.indexOf(seq)   > -1 ||
-						upper.indexOf(seq)   > -1 ||
-						numbers.indexOf(seq) > -1 ||
-						(o.noQwertySequences && qwerty.indexOf(seq) > -1)
-					) {
-						return false;
-					}
-				}
-			}
-		
-			// enforce custom regex/function rules
-			for (i = 0; i < o.custom.length; i++) {
-				rule = o.custom[i];
-				if (rule instanceof RegExp) {
-					if (!rule.test(pw))
-						return false;
-				} else if (rule instanceof Function) {
-					if (!rule(pw))
-						return false;
-				}
-			}
-		
-			// great success!
-			return true;
-		}
+			</style>
+		<![endif]-->
+		<script type="text/javascript" src="<%=m_context%>/passwordValidator.js"></script>
+	    <script type="text/javascript">	    
 	
 		function checkPassword() {
-			var newPassword = document.forms['changePwdForm'].newPassword.value;
-			var passed = validatePassword(document.forms['changePwdForm'].newPassword.value, {
-				length:   [8, Infinity],
-				combined: 3
+			var form = document.getElementById("changePwdForm");
+			var newPassword = form.newPassword.value;
+			var passed = validatePassword(newPassword, {
+				length:   [minLengthPassword, Infinity],
+				combined: 0
 			});
-	    	if (newPassword != document.forms['changePwdForm'].confirmPassword.value) {
-	    		alert("Le mot de passe et sa confirmation ne sont pas identiques");
+	    	if (newPassword != form.confirmPassword.value) {
+	    		alert("<%=authenticationBundle.getString("authentication.password.different") %>");
 		    	return false;
 	    	}
 	    	else if (passed == false) {
@@ -129,66 +74,42 @@
 		    	return false;
 	    	}
 	    	else {
-			    return true;
+			    form.submit();
 	    	}
 	    }
 	
 	    </script>
 	</head>
-	
-	<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-		<table width="100%" border="0" cellspacing="0" cellpadding="0">
-		  <tr> 
-		    <td valign="top" width="45%"> 
-		   
-				<form name="changePwdForm" action="<%=m_context%>/CredentialsServlet/EffectiveChangePassword" method="POST">
-			    <table width="600" border="0" cellspacing="0" cellpadding="0" class="intfdcolor">
-					<tr> 
-			           <td valign="middle" colspan="2"><br>
-							<center>
-							     R&eacute;initialisation de votre mot de passe<br>
+
+<body>
+	<form id="changePwdForm" action="<%=m_context%>/CredentialsServlet/EffectiveChangePassword" method="post">
+        <div id="top"></div> <!-- Backgroud foncé -->
+        <div class="page"> <!-- Centrage horizontal des éléments (960px) -->
+            <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %></div>
+            <div id="background"> <!-- image de fond du formulaire -->    	
+                <div class="cadre">   
+                    <div id="header">
+                        <img src="<%=logo%>" class="logo" />
+                        <p class="information"><%=authenticationBundle.getString("authentication.password.init") %><br/>
 								<%
 									String message = (String) request.getAttribute("message");
 									if (message != null) {
 								%>
-									( <%=message%> )<br
+									( <%=message%> )<br/>
 								<%
 									}
-								%>
-							</center><br>
-						</td>
-					</tr>	   
-		          <tr> 
-		            <td width="150" align="right" valign="middle"><span class="txtpetitblanc"><img src="admin/jsp/icons/1px.gif" width="1" height="25" align="middle">Ancien mot de passe&nbsp;:</span></td>
-		            <td valign="middle"> 
-						<input type="password" name="oldPassword" id="oldPassword" size="30"/>
-					</td>
-				  </tr>							
-
-		          <tr> 
-		            <td align="right" valign="middle"><span class="txtpetitblanc"><img src="admin/jsp/icons/1px.gif" width="1" height="25" align="middle">Nouveau mot de passe&nbsp;:</span></td>
-		            <td valign="middle"> 
-						<input type="password" name="newPassword" id="newPassword" size="30"/>
-					</td>
-				  </tr>							
-
-		          <tr> 
-		            <td align="right" valign="middle"><span class="txtpetitblanc"><img src="admin/jsp/icons/1px.gif" width="1" height="25" align="middle">Confirmation&nbsp;:</span></td>
-		            <td valign="middle"> 
-						<input type="password" name="confirmPassword" id="confirmPassword" size="30"/>
-					</td>
-				  </tr>	
-
-					<tr bgcolor="#FFFFFF"> 
-						<td class="intfdcolor51" align="center">&nbsp;</td>
-						<td class="intfdcolor51" align="center"> 
-			                <input type=image src="<%=m_context%>/util/icons/login_fl.gif" border="0" name="image" onclick="return checkPassword()">
-						</td>
-					</tr>
-			</table>
-            </form>
-		</td>
-		</tr>
-		</table>				  						
+								%></p>
+                        <div class="clear"></div>
+                    </div>   
+					<p><label><span><%=authenticationBundle.getString("authentication.password.old") %></span><input type="password" name="oldPassword" id="oldPassword"/></label></p>
+					<p><label><span><%=authenticationBundle.getString("authentication.password.new") %> <%=authenticationBundle.getStringWithParam("authentication.password.length", Integer.toString(minLengthPassword)) %></span><input type="password" name="newPassword" id="newPassword"/></label></p>
+					<p><label><span><%=authenticationBundle.getString("authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label></p>
+					<br/>
+					<p><a href="#" class="submit" onclick="checkPassword();"><img src="<%=m_context%>/images/bt-ok.png" /></a></p>
+                </div>  
+            </div>
+        </div>
+      </form>
+	  						
 	</body>
 </html>		
