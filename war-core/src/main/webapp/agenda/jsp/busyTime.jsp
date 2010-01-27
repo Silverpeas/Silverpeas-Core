@@ -84,26 +84,7 @@ ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(ag
 
 function selectHour(hour,minute,date) 
 {
-  var i = 0;
-  while (window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 2)%>].options[i].text != hour) {
-    i++;
-  }
-  window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 2)%>].selectedIndex = i;
-  if (window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 4)%>].options.length > i+1)
-    window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 4)%>].selectedIndex = i+1;
-  else
-    window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 4)%>].selectedIndex = i;
-
-  i = 0;
-  while (window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 3)%>].options[i].text != minute) {
-    i++;
-  }
-  window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 3)%>].selectedIndex = i;
-  window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 5)%>].selectedIndex = i;
-
-  window.opener.document.forms[0].elements[<%=String.valueOf(formIndex)%>].value = date;
-  window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 1)%>].value = "";
-  window.opener.document.forms[0].elements[<%=String.valueOf(formIndex + 6)%>].checked = false;
+  window.opener.setBeginDateAndHour(date, hour, minute);
   window.close();
 }
 
@@ -300,9 +281,9 @@ function gotoPrevious()
 	out.println(window.printAfter());
 %>
 
-<FORM NAME="busyTimeForm" ACTION="busyTime.jsp" METHOD=POST >
-  <input type="hidden" name="Action">
-  <input type="hidden" name="Form" value="<%=String.valueOf(formIndex)%>">
+<FORM NAME="busyTimeForm" ACTION="busyTime.jsp" METHOD="POST">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="Form" value="<%=String.valueOf(formIndex)%>"/>
 </FORM>
 </BODY>
 </HTML>

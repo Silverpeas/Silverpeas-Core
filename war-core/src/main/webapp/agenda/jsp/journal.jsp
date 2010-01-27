@@ -297,6 +297,13 @@ function setParticipationStatus(journalId, userId, status)
   document.journalForm.submit();
 }
 
+function setBeginDateAndHour(date, hour, minutes)
+{
+	  document.getElementById("StartDate").value = date;
+	  document.getElementById("StartHour").value = hour;
+	  document.getElementById("StartMinute").value = minutes;
+}
+
 </script>
 </HEAD>
 
@@ -651,7 +658,7 @@ else
 		  <tr>
 		    <!-- affichage de la date de début de note -->
             <td class="txtlibform"><%= agenda.getString("dateDebutNote") %> :</td>
-			<td><input type="text" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+			<td><input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                 if (journal != null) 
                   if (journal.getStartDate() != null)
                     out.println("VALUE=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled");%>>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align=absmiddle>&nbsp;<a href="javascript:onClick=editDay('StartDate')"><img src="icons/calendrier.gif" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align=absmiddle title="<%=agenda.getString("afficherCalendrier")%>"></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)
@@ -659,7 +666,7 @@ else
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("heureDebutNote")%> :</td>
-			<td><SELECT name="StartHour" onChange="javascript:hourModified();"  <% if (readOnly) out.print("disabled");%>>
+			<td><SELECT name="StartHour" id="StartHour" onChange="javascript:hourModified();"  <% if (readOnly) out.print("disabled");%>>
               <%
               		boolean readOnlyMinute = false;
                 int beginHour = new Integer(settings.getString("beginHour")).intValue();
@@ -688,7 +695,7 @@ else
               %>
               </SELECT>
               :
-              <SELECT name="StartMinute" onChange="javascript:hourModified();"  <% if (readOnly || readOnlyMinute) out.print("disabled");%>>
+              <SELECT name="StartMinute" id="StartMinute" onChange="javascript:hourModified();"  <% if (readOnly || readOnlyMinute) out.print("disabled");%>>
               <%
                 for (int i = 0; i < 4; i++) {
                   String s = String.valueOf(i * 15);
