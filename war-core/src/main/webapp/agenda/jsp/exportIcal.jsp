@@ -127,16 +127,6 @@ out.println(graphicFactory.getLookStyleSheet());
 			          errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateFinNote")%>' <%=agenda.getString("MustContainsPostDateToBeginDate")%>\n";
 			          errorNb++;  
 			      }
-			            
-			      /* les 2 dates sont identiques */
-			      else if ((yearEnd == yearBegin) && (monthEnd == monthBegin) && (dayEnd == dayBegin)) {
-			          if (! document.journalForm.CompleteDay.checked) {
-			        	      if( hourMinuteEnd < hourMinuteBegin) {
-			        	    	      errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("heureFinNote")%>' <%=agenda.getString("MustContainsPostHourToBeginHour")%>\n";
-			                      errorNb++;                  
-			                }
-			          }
-			      }
 			  }    
 			  
 			  switch(errorNb)
