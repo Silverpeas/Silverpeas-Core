@@ -168,19 +168,23 @@ function reallyAdd()
 {
         if (isCorrectForm()) {
         document.todoEditForm.Action.value = "ReallyAdd";
-                document.todoEditForm.NameName.value = document.todoEditForm.Name.value;
         document.todoEditForm.submit();
         }
 }
 
 function reallyUpdate()
 {
-
-        if (isCorrectForm()) {
-        document.todoEditForm.Action.value = "ReallyUpdate";
-                document.todoEditForm.NameName.value = document.todoEditForm.Name.value;
-        document.todoEditForm.submit();
-        }
+	document.todoEditForm.Name.disabled = false;
+    document.todoEditForm.PercentCompleted.disabled = false;
+    document.todoEditForm.Description.disabled = false;
+    document.todoEditForm.StartDate.disabled = false;
+    document.todoEditForm.EndDate.disabled = false;
+    document.todoEditForm.Classification.disabled = false;
+    document.todoEditForm.Priority.disabled = false;     
+    if (isCorrectForm()) {
+     document.todoEditForm.Action.value = "ReallyUpdate";
+     document.todoEditForm.submit();
+    }
 }
 
 function deleteConfirm(name)
@@ -209,6 +213,13 @@ function editEndDay()
 
 function test(){
         document.todoEditForm.Action.value = "EditDiffusionList";
+        document.todoEditForm.Name.disabled = false;
+        document.todoEditForm.PercentCompleted.disabled = false;
+        document.todoEditForm.Description.disabled = false;
+        document.todoEditForm.StartDate.disabled = false;
+        document.todoEditForm.EndDate.disabled = false;
+        document.todoEditForm.Classification.disabled = false;
+        document.todoEditForm.Priority.disabled = false;        
         document.todoEditForm.submit(); 
 }
 
@@ -264,11 +275,7 @@ function test(){
         {
             
             //sauvegarde des valeurs saisies
-               
-                //jcg=> insertion d'un input hidden avec name="NameName" afin de pourvoir récupérer le name de le forme todoEditform (après un submit) même si celui-ci est disable
-        String name = (String) request.getParameter("Name");
-                if(name==null)
-                        name = (String) request.getParameter("NameName");
+            String name = (String) request.getParameter("Name");
             String description = (String) request.getParameter("Description");
             String priority = (String) request.getParameter("Priority");
             String classification = (String) request.getParameter("Classification");
@@ -293,7 +300,7 @@ function test(){
             }
             
             try {
-                        Date start = DateUtil.stringToDate(startDate, todo.getLanguage());
+                Date start = DateUtil.stringToDate(startDate, todo.getLanguage());
                 todoHeader.setStartDate(start);
             }
             catch (Exception e) {
@@ -317,17 +324,17 @@ function test(){
                 action = "View";
                 %>
            
-                        <Script language="JavaScript">
-                                SP_openWindow('diffusion.jsp','diffusion','750','550','scrollbars=yes, resizable, alwaysRaised');
-                        </Script>
-                        <%  
+                 <Script language="JavaScript">
+                         SP_openWindow('diffusion.jsp','diffusion','750','550','scrollbars=yes, resizable, alwaysRaised');
+                 </Script>
+                 <%  
                 } 
         }
   } //fin else  
   
   /* ReallyAdd || ReallyUpdate */ 
   if ((action.equals("ReallyAdd")) || (action.equals("ReallyUpdate"))) {
-    String name = (String) request.getParameter("NameName");
+    String name = (String) request.getParameter("Name");
     String description = (String) request.getParameter("Description");
     String priority = (String) request.getParameter("Priority");
     String classification = (String) request.getParameter("Classification");
@@ -403,6 +410,7 @@ function test(){
                         }
                         else {
                                 todo.setToDoPercentCompleted(todoHeader.getId(), percent);
+                                todo.setToDoAttendees(todoHeader.getId(), selectedUsers);
                         }
                         out.println("<BODY onLoad=gotoToDo()>");
                         out.println("</BODY>");
@@ -429,7 +437,6 @@ function test(){
 
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.todoEditForm.Name.focus();">
 <FORM NAME="todoEditForm" ACTION="todoEdit.jsp" METHOD=POST >
-        <input type="hidden" name="NameName" value="">
 
 <%
         Window window = graphicFactory.getWindow();
