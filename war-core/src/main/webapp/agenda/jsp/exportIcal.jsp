@@ -59,6 +59,8 @@ out.println(graphicFactory.getLookStyleSheet());
 <link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">
 	function calendar(indexForm, nameElement) {
 		SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&nameElem='+nameElement,'Calendrier',200,200,'');
@@ -82,10 +84,79 @@ out.println(graphicFactory.getLookStyleSheet());
 		
 		function exportIcal()
 		{
-			displayStaticMessage();
-			setTimeout("document.exportIcalForm.submit();", 500);
+			if (isCorrectForm()) {
+			 displayStaticMessage();
+			 setTimeout("document.exportIcalForm.submit();", 500);
+			}
 		}
-	
+
+		function isCorrectForm() {
+			  var errorMsg = "";
+			  var errorNb = 0;
+			  var beginDate = document.exportIcalForm.StartDate.value;
+			  var endDate = document.exportIcalForm.EndDate.value;
+
+			  var yearBegin = extractYear(beginDate, '<%=agenda.getLanguage()%>');
+			  var monthBegin = extractMonth(beginDate, '<%=agenda.getLanguage()%>');
+			  var dayBegin = extractDay(beginDate, '<%=agenda.getLanguage()%>');
+			    
+			  var yearEnd = extractYear(endDate, '<%=agenda.getLanguage()%>'); 
+			  var monthEnd = extractMonth(endDate, '<%=agenda.getLanguage()%>');
+			  var dayEnd = extractDay(endDate, '<%=agenda.getLanguage()%>'); 
+			    
+			  var beginDateOK = false;
+			  var endDateOK = false;
+
+			  if (!isWhitespace(beginDate)) {
+				    if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
+				    	  errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateDebutNote")%>' <%=agenda.getString("MustContainsCorrectDate")%>\n";
+			          errorNb++;
+			      }
+			      else beginDateOK = true;
+			  }
+			  if (!isWhitespace(endDate)) {
+			      if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
+			    	    errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateFinNote")%>' <%=agenda.getString("MustContainsCorrectDate")%>\n";
+			          errorNb++;
+			      }
+			      else endDateOK = true;
+			  }
+			        
+			  if (beginDateOK && endDateOK) {
+				    if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)==false) {
+			          errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("dateFinNote")%>' <%=agenda.getString("MustContainsPostDateToBeginDate")%>\n";
+			          errorNb++;  
+			      }
+			            
+			      /* les 2 dates sont identiques */
+			      else if ((yearEnd == yearBegin) && (monthEnd == monthBegin) && (dayEnd == dayBegin)) {
+			          if (! document.journalForm.CompleteDay.checked) {
+			        	      if( hourMinuteEnd < hourMinuteBegin) {
+			        	    	      errorMsg+="  - <%=agenda.getString("TheField")%> '<%=agenda.getString("heureFinNote")%>' <%=agenda.getString("MustContainsPostHourToBeginHour")%>\n";
+			                      errorNb++;                  
+			                }
+			          }
+			      }
+			  }    
+			  
+			  switch(errorNb)
+			  {
+			        case 0 :
+			            result = true;
+			            break;
+			        case 1 :
+			            errorMsg = "<%=agenda.getString("ThisFormContains")%> 1 <%=agenda.getString("Error")%> : \n" + errorMsg;
+			            window.alert(errorMsg);
+			            result = false;
+			            break;
+			        default :
+			            errorMsg = "<%=agenda.getString("ThisFormContains")%> " + errorNb + " <%=agenda.getString("Errors")%> :\n" + errorMsg;
+			            window.alert(errorMsg);
+			            result = false;
+			            break;
+			  }
+			  return result; 
+		}
 </script>
 </HEAD>
 	  
