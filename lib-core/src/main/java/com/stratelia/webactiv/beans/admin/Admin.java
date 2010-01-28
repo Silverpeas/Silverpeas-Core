@@ -1043,6 +1043,7 @@ public class Admin extends Object {
       indexEntry.setPreView(componentInst.getDescription());
       // indexEntry.setCreationDate(componentInst.getCreateDate());
       // indexEntry.setCreationUser();
+      indexEntry.setCreationUser(componentInst.getCreatorUserId());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }
