@@ -10,6 +10,7 @@
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>lib-core</artifactId>
+  <version>${project.parent.version}</version>
   <packaging>jar</packaging>
   <name>Lib Core</name>
 

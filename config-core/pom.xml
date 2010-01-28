@@ -10,6 +10,7 @@
 	
   <groupId>com.silverpeas.core</groupId>
   <artifactId>config-core</artifactId>
+  <version>${project.parent.version}</version>
   <packaging>pom</packaging>
   <name>Configuration Core</name>
 
