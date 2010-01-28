@@ -492,7 +492,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           int majorNumber = 0;
           int minorNumber = 1;
           if (versions != null && versions.size() > 0) {
-            documentVersion = versions.get(versions.size() - 1);
+            documentVersion = versions.get(0);
             majorNumber = documentVersion.getMajorNumber();
             minorNumber = documentVersion.getMinorNumber();
             DocumentVersion newVersion =
