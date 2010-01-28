@@ -120,6 +120,13 @@ function loginQuestion() {
     	form.submit();
     }
 }
+
+function checkSubmit(ev)
+{
+	var touche = ev.keyCode;
+	if (touche == 13)
+		checkForm();
+}
 -->
 </script>
 
@@ -143,7 +150,7 @@ function loginQuestion() {
                         <div class="clear"></div>
                     </div>   
                     <p><label><span><%=authenticationBundle.getString("authentication.logon.login") %></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
-                    <p><label><span><%=authenticationBundle.getString("authentication.logon.password") %></span><input type="password" name="Password" id="Password"/></label></p>
+                    <p><label><span><%=authenticationBundle.getString("authentication.logon.password") %></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
 							  
 					 <% if (domains != null && domains.size() == 1) { %>
                             <input class="noDisplay"type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
