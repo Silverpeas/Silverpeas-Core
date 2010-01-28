@@ -194,17 +194,19 @@ public class ApplicationIndexer extends Object {
 
     String packageName = compoInst.getName();
     String className = firstLetterToUpperCase(compoInst.getName());
-    if (compoInst.getName().equalsIgnoreCase("toolbox")) {
+    if (packageName.equalsIgnoreCase("toolbox")) {
       packageName = "kmelia";
       className = firstLetterToUpperCase("kmelia");
-    } else if (compoInst.getName().equalsIgnoreCase("bookmark")) {
+    } else if (packageName.equalsIgnoreCase("bookmark")) {
       packageName = "webSites";
       className = firstLetterToUpperCase("webSites");
-    } else if (compoInst.getName().equalsIgnoreCase("pollingStation")) {
+    } else if (packageName.equalsIgnoreCase("pollingStation")) {
       packageName = "survey";
       className = firstLetterToUpperCase("survey");
+    } else if (packageName.equalsIgnoreCase("webPages")) {
+      packageName = "webpages";
+      className = firstLetterToUpperCase("webPages");
     }
-
     try {
       cii = (ComponentIndexerInterface) Class
           .forName(
