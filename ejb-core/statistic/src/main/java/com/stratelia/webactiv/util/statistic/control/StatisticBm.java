@@ -71,7 +71,8 @@ public interface StatisticBm extends EJBObject {
    * @throws RemoteException
    * @see
    */
-  public Collection<HistoryNodePublicationActorDetail> getReadingHistoryByPublication(PublicationPK pub)
+  public Collection<HistoryNodePublicationActorDetail> getReadingHistoryByPublication(
+      PublicationPK pub)
       throws RemoteException;
 
   /**
@@ -86,9 +87,12 @@ public interface StatisticBm extends EJBObject {
 
   public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
       String objectType, String userId) throws RemoteException;
-    public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType) throws RemoteException;
-    
-    public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType, List<String> userIds) throws RemoteException;
+
+  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+      String objectType) throws RemoteException;
+
+  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+      String objectType, List<String> userIds) throws RemoteException;
 
   /**
    * Method declaration
@@ -140,5 +144,16 @@ public interface StatisticBm extends EJBObject {
    * @see
    */
   public int getCount(ForeignPK foreignPK, String objectType)
+      throws RemoteException;
+
+  /**
+   * Methode declaration
+   * @param foreignPK
+   * @param actionType
+   * @param objectType
+   * @return
+   * @throws RemoteException
+   */
+  public void moveStat(ForeignPK toForeignPK, int actionType, String objectType)
       throws RemoteException;
 }

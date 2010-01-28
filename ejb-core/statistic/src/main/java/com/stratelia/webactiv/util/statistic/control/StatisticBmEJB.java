@@ -212,7 +212,7 @@ public class StatisticBmEJB implements SessionBean {
       ForeignPK foreignPK = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
       Collection<HistoryNodePublicationActorDetail> result =
           HistoryObjectDAO.getHistoryDetailByPublication(con,
-              historyTableName, foreignPK);
+          historyTableName, foreignPK);
 
       return result;
     } catch (Exception e) {
@@ -311,14 +311,16 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
-  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType) {
+  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+      String objectType) {
     OrganizationController orga = new OrganizationController();
     UserDetail[] allUsers = orga.getAllUsers(foreignPK.getInstanceId());
 
     return getHistoryByObject(foreignPK, action, objectType, allUsers);
   }
 
-  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType,
+  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+      String objectType,
       List<String> userIds) {
     if (userIds == null || userIds.size() == 0) {
       return getHistoryByObject(foreignPK, action, objectType);
@@ -330,7 +332,8 @@ public class StatisticBmEJB implements SessionBean {
     }
   }
 
-  private Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action, String objectType,
+  private Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+      String objectType,
       UserDetail[] users) {
     SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObject()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -440,6 +443,21 @@ public class StatisticBmEJB implements SessionBean {
           "StatisticBmEJB().deleteHistoryByAction",
           SilverpeasRuntimeException.ERROR,
           "statistic.CANNOT_DELETE_HISTORY_STATISTICS_PUBLICATION", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+  public void moveStat(ForeignPK toForeignPK, int actionType, String objectType) {
+    SilverTrace.info("statistic", "StatisticBmEJB.deleteHistoryByAction",
+        "root.MSG_GEN_ENTER_METHOD");
+    Connection con = null;
+    try {
+      con = getConnection();
+      HistoryObjectDAO.move(con, historyTableName, toForeignPK, actionType, objectType);
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("StatisticBmEJB().addObjectToHistory()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
     } finally {
       freeConnection(con);
     }

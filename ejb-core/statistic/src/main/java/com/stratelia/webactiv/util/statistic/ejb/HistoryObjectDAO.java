@@ -62,9 +62,11 @@ public class HistoryObjectDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection<HistoryNodePublicationActorDetail> getHistoryPublicationDetails(ResultSet rs,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryPublicationDetails(
+      ResultSet rs,
       String space, String componentName) throws SQLException {
-    List<HistoryNodePublicationActorDetail> list = new ArrayList<HistoryNodePublicationActorDetail>();
+    List<HistoryNodePublicationActorDetail> list =
+        new ArrayList<HistoryNodePublicationActorDetail>();
     java.util.Date date;
     String actorId = "";
     String nodeId = "";
@@ -283,7 +285,8 @@ public class HistoryObjectDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(Connection con,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(
+      Connection con,
       String tableName, ForeignPK foreignPK) throws SQLException {
     SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
         "root.MSG_GEN_ENTER_METHOD");
@@ -341,6 +344,27 @@ public class HistoryObjectDAO {
       return nb;
     } finally {
       DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  public static void move(Connection con, String tableName, ForeignPK toForeignPK, int actionType,
+      String objectType) throws SQLException {
+    SilverTrace.info("statistic", "HistoryObjectDAO.move", "root.MSG_GEN_ENTER_METHOD");
+
+    String insertStatement =
+        "update " + tableName +
+            " set componentId = ? where objectId = ? and actionType = ? and objectType = ?";
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(insertStatement);
+      prepStmt.setString(1, toForeignPK.getInstanceId());
+      prepStmt.setString(2, toForeignPK.getId());
+      prepStmt.setInt(3, actionType);
+      prepStmt.setString(4, objectType);
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
     }
   }
 }
