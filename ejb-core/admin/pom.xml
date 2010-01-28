@@ -6,12 +6,11 @@
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>admin</artifactId>
-  <version>${parent.version}</version>
+  <version>${project.parent.version}</version>
   <packaging>ejb</packaging>
   <name>EJB Admin</name>
 </project>
