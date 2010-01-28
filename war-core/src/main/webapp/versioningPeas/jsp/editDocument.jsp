@@ -199,23 +199,7 @@
             versionURL = versioningSC.getDocumentVersionURL(version.getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId());
 
 			if (lastVersion.getPk().getId().equals(version.getPk().getId())){
-				if (onlineEditingEnable && lastVersion.isOfficeDocument()  && ClientBrowserUtil.isInternetExplorer(request) && ClientBrowserUtil.isWindows(request)){
-					//Not yet checkout OR the current user is different from user who's modifying the document
-					if (iStatus == Document.STATUS_CHECKINED || (document.getOwnerId() != user_id && lastVersion.getAuthorId() != user_id && !"admin".equals(flag) ))	{
-					  URLs[j++] = versionURL;
-    				} else {
-			   			String fileName = lastVersion.getLogicalName();
-						String fileURL 	= versioningSC.getDocumentVersionURL("Versioning", fileName, lastVersion.getPhysicalName(), lastVersion.getMimeType());
-						SilverTrace.info("versioningPeas", "editDocument.jsp", "root.MSG_GEN_PARAM_VALUE", "fileURL ="+fileURL);
-						String contextFileServer = m_context+"/FileServer/";
-						int index = fileURL.indexOf(contextFileServer);
-						SilverTrace.info("versioningPeas", "editDocument.jsp", "root.MSG_GEN_PARAM_VALUE", "index ="+index);
-						fileURL = m_context + "/OnlineFileServer/" + fileURL.substring(index+contextFileServer.length());
-						String onlineURL = fileURL;
-						SilverTrace.info("versioningPeas", "editDocument.jsp", "root.MSG_GEN_PARAM_VALUE", "onlineURL ="+onlineURL);
-	              		URLs[j++] = "javaScript:openFile('"+Encode.javaStringToJsString(onlineURL)+"', '"+Encode.javaStringToJsString(fileName)+"', '"+docId+"', '"+Encode.javaStringToJsString(versionURL)+"');";
-	    			}
-	    		} else if (lastVersion.isOpenOfficeCompatibleDocument() && webdavEditingEnable) {
+				if (lastVersion.isOpenOfficeCompatibleDocument() && webdavEditingEnable) {
 	      			if (iStatus == Document.STATUS_CHECKINED || (document.getOwnerId() != user_id && lastVersion.getAuthorId() != user_id && !"admin".equals(flag) )) {
 	        			URLs[j++] = versionURL;
 	      			} else {

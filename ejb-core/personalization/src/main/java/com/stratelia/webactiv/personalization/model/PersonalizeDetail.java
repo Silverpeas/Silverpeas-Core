@@ -27,7 +27,8 @@ import java.util.Vector;
 
 public class PersonalizeDetail implements java.io.Serializable {
 
-  private Vector languages = null;
+  private static final long serialVersionUID = 9192830552642027995L;
+  private Vector<String> languages = null;
   private String look = null;
   private String collaborativeWorkSpaceId;
   private boolean thesaurusStatus;
@@ -35,7 +36,7 @@ public class PersonalizeDetail implements java.io.Serializable {
   private boolean onlineEditingStatus;
   private boolean webdavEditingStatus;
 
-  public PersonalizeDetail(Vector languages, String look,
+  public PersonalizeDetail(Vector<String> languages, String look,
       String collaborativeWorkSpaceId, boolean thesaurusStatus,
       boolean dragDropStatus, boolean onlineEditingStatus,
       boolean webdavEditingStatus) {
@@ -48,11 +49,11 @@ public class PersonalizeDetail implements java.io.Serializable {
     this.webdavEditingStatus = webdavEditingStatus;
   }
 
-  public void setLanguages(Vector languages) {
+  public void setLanguages(Vector<String> languages) {
     this.languages = languages;
   }
 
-  public Vector getLanguages() {
+  public Vector<String> getLanguages() {
     return this.languages;
   }
 

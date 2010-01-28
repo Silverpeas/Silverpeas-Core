@@ -47,11 +47,11 @@ public class PersonalizationDAO {
    * @return
    * @see
    */
-  private static Vector String2Vector(String str) {
+  private static Vector<String> String2Vector(String str) {
     int begin = 0;
     int end = 0;
     String element;
-    Vector vector = new Vector();
+    Vector<String> vector = new Vector<String>();
 
     end = str.indexOf(',', begin);
     while (end != -1) {
@@ -69,7 +69,7 @@ public class PersonalizationDAO {
    * @return
    * @see
    */
-  private static String Vector2String(Vector vector) {
+  private static String Vector2String(Vector<String> vector) {
     String elements = "";
     int nbElements = vector.size();
 
@@ -170,7 +170,7 @@ public class PersonalizationDAO {
    * @see
    */
   public static void setLanguages(Connection con, String userId,
-      Vector languages) throws SQLException {
+      Vector<String> languages) throws SQLException {
     SilverTrace.info("personalization", "PersonalizationDAO.setLanguages()",
         "root.MSG_GEN_ENTER_METHOD", "userId =" + userId);
     String updateStatement = "update " + PERSONALTABLENAME
@@ -365,7 +365,7 @@ public class PersonalizationDAO {
    * @see
    */
   public static void insertPersonalizeDetail(Connection con, String userId,
-      Vector languages, String look, String defaultPersonalWSId,
+      Vector<String> languages, String look, String defaultPersonalWSId,
       boolean thesaurusStatus, boolean dragAndDropStatus,
       boolean onlineEditingStatus, boolean webdavEditingStatus)
       throws SQLException {

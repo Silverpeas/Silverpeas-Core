@@ -234,8 +234,6 @@
 		String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 		ResourceLocator attachmentSettings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
 		MainSessionController   m_MainSessionCtrl   = (MainSessionController) session.getAttribute("SilverSessionController");
-		String onlineEditingFolder = attachmentSettings.getString("OnlineEditingFolder", "C:\\\\Documents Silverpeas\\\\");
-		boolean onlineEditingEnable = m_MainSessionCtrl.isOnlineEditingEnabled() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
 		boolean webdavEditingEnable = m_MainSessionCtrl.isWebDAVEditingEnabled() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
 		boolean dragAndDropEnable 	= m_MainSessionCtrl.isDragNDropEnabled() && attachmentSettings.getBoolean("DragAndDropEnable", false);
 		String sURI = request.getRequestURI();
@@ -247,7 +245,7 @@
 		BrowseBar 		browseBar 		= window.getBrowseBar();
 		OperationPane 	operationPane 	= window.getOperationPane();
 		
-    String userPanelIcon = m_context + "/util/icons/readingControl.gif";
+    	String userPanelIcon = m_context + "/util/icons/readingControl.gif";
 		String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
 		String groupSrc = m_context + "/util/icons/groupe.gif";
 		String userSrc = m_context + "/util/icons/user.gif";

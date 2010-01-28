@@ -53,11 +53,6 @@
   //Example: http://myserver
   String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 	
-  String onlineEditingFolder = settings.getString("OnlineEditingFolder",
-      "C:\\\\Documents Silverpeas\\\\");
-  boolean onlineEditingEnable = m_MainSessionCtrl.getPersonalization()
-      .getOnlineEditingStatus()
-      && settings.getBoolean("OnlineEditingEnable", false);
   boolean webdavEditingEnable = m_MainSessionCtrl.getPersonalization()
       .getWebdavEditingStatus()
       && settings.getBoolean("OnlineEditingEnable", false);
@@ -118,6 +113,7 @@
   Window window = gef.getWindow();
   Board board = gef.getBoard();
 %>
+
 <link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
 
 <script type="text/javascript" src="<%=m_Context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
@@ -126,29 +122,6 @@
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
 <script language='Javascript'>
-var activex = true;
-var attachmentId_bis;
-var filename_bis;
-
-function handleError() {
-	activex = false;
-    window.onerror = null;
-    checkinOfficeFile(attachmentId_bis, filename_bis);
-}
-
-	function openFile(fileURL, fileName, attachmentId, classicalFileURL)
-	{
-		if (navigator.appName == 'Microsoft Internet Explorer')
-		{
-			ucPass.Download(fileName, '<%=m_sAbsolute%>'+fileURL, '<%=onlineEditingFolder%>', '<%=m_sAbsolute+m_Context%>/FileUploader/upload', 'non', '<%=userId%>', attachmentId, '<%=language%>', '<%=contentLanguage%>');
-			location.href="<%=m_Context+url%>";
-		}
-		else
-		{
-			SP_openWindow(classicalFileURL, "test", "600", "240", "scrollbars, resizable, alwaysRaised");
-		}
-	}
-
 	function checkoutOfficeFile(attachmentId)
 	{
 		document.attachmentForm.action = "<%=m_Context%>/attachment/jsp/checkOut.jsp";
@@ -158,34 +131,12 @@ function handleError() {
 
 	function checkinOfficeFile(attachmentId, fileName)
 	{
-		attachmentId_bis = attachmentId;
-        filename_bis = fileName;
-
-		if (navigator.appName == 'Microsoft Internet Explorer' && <%=onlineEditingEnable%> && activex)
-		{
-			window.onerror = handleError;
-			var yesno = ucPass.CheckIn(fileName, '<%=onlineEditingFolder%>', '<%=m_sAbsolute+m_Context%>/FileUploader/upload', 'non', '<%=userId%>', attachmentId, '<%=language%>', '<%=contentLanguage%>');
-			window.onerror = null;
-			if (yesno == 'oui')
-				location.href="<%=m_Context+url%>";
-			else
-			{
-				document.attachmentForm.action = "<%=m_Context%>/attachment/jsp/checkIn.jsp";
-				document.attachmentForm.IdAttachment.value = attachmentId;
-				document.attachmentForm.submit();
-			}
-		}
-		else
-		{
-			document.attachmentForm.action = "<%=m_Context%>/attachment/jsp/checkIn.jsp";
-			document.attachmentForm.IdAttachment.value = attachmentId;
-			document.attachmentForm.submit();
-		}
+		document.attachmentForm.action = "<%=m_Context%>/attachment/jsp/checkIn.jsp";
+		document.attachmentForm.IdAttachment.value = attachmentId;
+		document.attachmentForm.submit();
 	}
   
   function checkinOpenOfficeFile(attachmentId, fileName) {
-    attachmentId_bis = attachmentId;
-    filename_bis = fileName;
     if(confirm('<%=messages.getString("confirm.checkin.message")%>')) {
       document.attachmentForm.update_attachment.value='true';
     }
@@ -202,14 +153,6 @@ function handleError() {
 		%>
 		SP_openWindow("<%=m_Context%>/attachment/jsp/addAttFiles.jsp?Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&Url=<%=URLEncoder.encode(url)%>", "test", "600", "<%=winAddHeight%>","scrollbars=no, resizable, alwaysRaised");
 	}
-
-	/*function DeleteConfirmAttachment(t, id)
-	{
-	    if (window.confirm("<%=messages.getString("suppressionConfirmation")%> '" + t + "' ?")){
-	          document.attachmentForm.IdAttachment.value = id;
-	          document.attachmentForm.submit();
-	    }
-	}*/
 
 	function UpAttachment(id)
 	{
@@ -430,17 +373,6 @@ function handleError() {
         <td class="odd" align="center">
         <%
           if (attachmentDetail.isReadOnly()
-                && attachmentDetail.isOfficeDocument(contentLanguage)
-                && onlineEditingEnable
-                && ClientBrowserUtil.isInternetExplorer(request)
-                && ClientBrowserUtil.isWindows(request)
-                && (userId.equals(attachmentDetail.getWorkerId()) || profile
-                    .equals("admin"))) {
-        %> <a id="msoffice"
-          href="javaScript:openFile('<%=Encode.javaStringToJsString(onlineURL)%>', '<%=Encode.javaStringToJsString(logicalName)%>', '<%=attachmentId%>', '<%=Encode.javaStringToJsString(urlAttachment)%>');"><img
-          src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0"></a></td>
-        <%
-          } else if (attachmentDetail.isReadOnly()
                 && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
                 && webdavEditingEnable
                 && (userId.equals(attachmentDetail.getWorkerId()) || profile
@@ -476,16 +408,6 @@ function handleError() {
         %> <a href="javascript:SelectFile('<%=Encode.javaStringToJsString(urlAttachment)%>');"><%=attachmentDetail.getLogicalName(contentLanguage)%></a> <%
    } else {
        if (attachmentDetail.isReadOnly()
-           && attachmentDetail.isOfficeDocument(contentLanguage)
-           && onlineEditingEnable
-           && ClientBrowserUtil.isInternetExplorer(request)
-           && ClientBrowserUtil.isWindows(request)
-           && (userId.equals(attachmentDetail.getWorkerId()) || profile
-               .equals("admin"))) {
- %> <a id="msoffice_name"
-          href="javaScript:openFile('<%=Encode.javaStringToJsString(onlineURL)%>', '<%=Encode.javaStringToJsString(logicalName)%>', '<%=attachmentId%>', '<%=Encode.javaStringToJsString(urlAttachment)%>');"><%=logicalName%></a>
-        <%
-          } else if (attachmentDetail.isReadOnly()
                   && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
                   && webdavEditingEnable
                   && (userId.equals(attachmentDetail.getWorkerId()) || profile
@@ -553,19 +475,6 @@ function handleError() {
                       .getString("checkOut"),
                   "javascript:onClick=checkoutOfficeFile(" + attachmentId + ")");
             } else if (attachmentDetail.isReadOnly()
-                && attachmentDetail.isOfficeDocument()
-                && ClientBrowserUtil.isInternetExplorer(request)
-                && ClientBrowserUtil.isWindows(request)
-                && (userId.equals(attachmentDetail.getWorkerId()) ||
-                    "admin".equals(profile))
-                && (onlineEditingEnable || !webdavEditingEnable)) {
-              //Checkin allowed
-              Icon checkinIcon = iconPane.addIcon();
-              checkinIcon.setProperties(m_Context + "/util/icons/checkinFile.gif",
-                  messages.getString("checkIn"),
-                  "javascript:onClick=checkinOfficeFile('" + attachmentId + "','"
-                      + Encode.javaStringToJsString(logicalName) + "');");
-            } else if (attachmentDetail.isReadOnly()
                 && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
                 && webdavEditingEnable
                 && (userId.equals(attachmentDetail.getWorkerId()) || profile
@@ -574,7 +483,7 @@ function handleError() {
               checkinIcon.setProperties(m_Context + "/util/icons/checkinFile.gif",
                   messages.getString("checkIn"),
                   "javascript:onClick=checkinOpenOfficeFile('" + attachmentId
-                      + "','" + Encode.javaStringToJsString(logicalName) + "');");
+                      + "','" + EncodeHelper.javaStringToJsString(logicalName) + "');");
             } else if (attachmentDetail.isReadOnly()
                 && (userId.equals(attachmentDetail.getWorkerId()) || profile
                     .equals("admin"))) {
@@ -673,10 +582,6 @@ function handleError() {
   out.println(buttonPane2.print());
 %>
 </CENTER>
-<% if (onlineEditingEnable) { %>
-	<OBJECT ID="ucPass" CLASSID="CLSID:60FFD28D-9C2B-41ED-9928-05ABDA287AEC" CODEBASE="/weblib/onlineEditing/SilverpeasOnlineEdition.CAB#version=4,1,0,0"></OBJECT>
-<% } %>
-
 <%
 	if ("true".equalsIgnoreCase(dNdVisible))
 	{

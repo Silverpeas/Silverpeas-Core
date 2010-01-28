@@ -137,19 +137,6 @@
 	    document.forms[0].submit();
 	}
 
-	function openFile(fileURL, fileName, attachmentId, classicalFileURL)
-	{
-		if (navigator.appName == 'Microsoft Internet Explorer')
-		{
-			ucPass.Download(fileName, '<%=m_sAbsolute%>'+fileURL, '<%=onlineEditingFolder%>', '<%=m_sAbsolute+m_context%>/FileUploader/upload', 'oui', '<%=user_id%>', attachmentId, '<%=m_MainSessionCtrl.getFavoriteLanguage()%>','<%=m_MainSessionCtrl.getFavoriteLanguage()%>');
-			document.forms[0].submit();
-		}
-		else
-		{
-			SP_openWindow(classicalFileURL, "test", "600", "240", "scrollbars, resizable, alwaysRaised");
-		}
-	}
-
 	function showDnD()
 	{
 		<%
@@ -213,16 +200,6 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="Javascript">
-var activex = true;
-var action_bis;
-var filename_bis;
-
-function handleError() {
-	activex = false;
-    window.onerror = null;
-    perfAction(action_bis, filename_bis);
-}
-
 function goToUserPanel(action)
 {
 	url = action;
@@ -250,12 +227,7 @@ function perfAction(action, fileName)
     }
     else
     {
-        if (action == "checkin" && navigator.appName == 'Microsoft Internet Explorer'  && <%=isOffice%> && <%=onlineEditingEnable%> && activex)	{
-    		window.onerror = handleError;
-    		var yesno = ucPass.CheckIn('<%=Encode.javaStringToJsString(last_version.getLogicalName())%>', '<%=onlineEditingFolder%>', '<%=m_sAbsolute+m_context%>/FileUploader/upload', 'oui', '<%=user_id%>', '<%=id%>', '<%=m_MainSessionCtrl.getFavoriteLanguage()%>','<%=m_MainSessionCtrl.getFavoriteLanguage()%>');
-    		window.onerror = null;
-    		toSubmit = true;
-    	} else if (action == "checkin" &&  <%=webdavEditingEnable%> && <%=isOpenOffice%>) {
+        if (action == "checkin" &&  <%=webdavEditingEnable%> && <%=isOpenOffice%>) {
             messageObj = new DHTML_modalMessage();  // We only create one object of this class
             messageObj.setShadowOffset(5);  // Large shadow
             //messageObj.setSize(550,300);
@@ -279,8 +251,5 @@ function perfAction(action, fileName)
 		document.forms[0].submit();
 	}
 </script>
-<% if(onlineEditingEnable) { %>
-<OBJECT ID="ucPass" CLASSID="CLSID:60FFD28D-9C2B-41ED-9928-05ABDA287AEC" CODEBASE="<%=m_sAbsolute%>/weblib/onlineEditing/SilverpeasOnlineEdition.CAB#version=4,1,0,0"></OBJECT>
-<% } %>
 </body>
 </html>

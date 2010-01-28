@@ -59,106 +59,7 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/*
- * CVS Informations
- *
- * $Id: PersonalizationSessionController.java,v 1.17 2007/08/01 15:50:56
- * sfariello Exp $
- *
- * $Log: PersonalizationSessionController.java,v $
- * Revision 1.18  2008/05/20 12:32:42  neysseri
- * no message
- *
- * Revision 1.17.4.2  2008/05/06 09:38:59  ehugonnet
- * Ajout du champ webdavEditingStatus
- *
- * Revision 1.17.4.1  2008/05/06 08:14:39  ehugonnet
- * Ajout du champ webdavEditingStatus
- * Revision 1.17 2007/08/01
- * 15:50:56 sfariello Externalisation des langues
- *
- * Revision 1.16 2007/06/12 07:52:26 neysseri no message
- *
- * Revision 1.15.2.1 2007/05/04 10:22:06 cbonin Personnalisation de l'activation
- * de l'applet de drag and drop et de l'active X d'édition de documents Office
- * en ligne
- *
- * Revision 1.14 2007/05/04 09:42:23 cbonin Personnalisation de l'activation de
- * l'applet de drag and drop et de l'active X d'édition de documents Office en
- * ligne
- *
- * Revision 1.13 2007/04/20 14:24:40 neysseri no message
- *
- * Revision 1.12.2.1 2007/03/16 15:53:08 cbonin *** empty log message ***
- *
- * Revision 1.12 2007/02/27 15:42:03 neysseri no message
- *
- * Revision 1.11 2007/02/02 10:25:46 neysseri no message
- *
- * Revision 1.10 2007/01/04 09:32:03 cbonin Modif de la méthode modifyUser pour
- * ajouter les infos custom de l'utilisateur
- *
- * Revision 1.9.2.1 2007/01/29 08:26:15 neysseri no message
- *
- * Revision 1.9 2005/07/25 16:07:15 neysseri Ajout de l'onglet "Identité"
- *
- * Revision 1.8.2.2 2005/07/25 14:25:58 neysseri no message
- *
- * Revision 1.8.2.1 2005/06/02 17:03:37 sdevolder *** empty log message ***
- *
- * Revision 1.8 2004/12/29 09:32:15 dlesimple Modification mot de passe
- *
- * Revision 1.7 2004/12/15 13:45:37 dlesimple Modification mot de passe
- * utilisateur
- *
- * Revision 1.6 2004/11/30 17:01:24 neysseri no message
- *
- * Revision 1.5 2003/07/01 22:50:59 cbonin Enlever les colonnes Type et Usage,
- * faire des messages de confirmation de suppression, bug liste des KMServices
- * en double
- *
- * Revision 1.4 2002/12/20 13:35:16 neysseri no message
- *
- * Revision 1.3 2002/12/19 09:21:40 neysseri ThesaurusInPreference branch
- * merging
- *
- * Revision 1.2.10.1 2002/12/17 15:15:39 dlesimple ThesaurusInPreference
- *
- * Revision 1.2 2002/10/09 07:55:39 neysseri no message
- *
- * Revision 1.1.1.1.6.7 2002/10/04 16:02:17 pbialevich no message
- *
- * Revision 1.1.1.1.6.6 2002/10/04 15:03:37 pbialevich no message
- *
- * Revision 1.1.1.1.6.5 2002/10/04 13:59:52 pbialevich no message
- *
- * Revision 1.1.1.1.6.4 2002/09/28 16:38:36 gshakirin no message
- *
- * Revision 1.1.1.1.6.3 2002/09/28 14:38:21 gshakirin no message
- *
- * Revision 1.1.1.1.6.2 2002/09/27 16:30:54 abudnikau Personalization task
- *
- * Revision 1.1.1.1.6.1 2002/09/27 16:04:36 abudnikau Personalization task
- *
- * Revision 1.1.1.1 2002/08/06 14:47:55 nchaix no message
- *
- * Revision 1.2 2002/03/29 12:16:17 neysseri Avertit le MainSessionController
- * que la langue de l'utilisateur a changé
- *
- * Revision 1.1 2002/01/30 11:07:43 tleroi Move Bus peas to BusIHM
- *
- * Revision 1.1 2002/01/28 14:44:05 tleroi Split clipboard and personalization
- *
- * Revision 1.17 2002/01/22 09:29:38 tleroi Use URLManager
- *
- * Revision 1.16 2002/01/21 10:37:38 tleroi Change EJB management
- *
- * Revision 1.15 2002/01/18 18:04:07 tleroi Centralize URLS + Stabilisation Lot
- * 2 - SilverTrace et Exceptions
- *
- * Revision 1.14 2002/01/16 10:58:05 tleroi Lot 2 Request Routers
- *
- */
+
 
 /**
  * Class declaration
@@ -169,7 +70,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   private String favoriteLook = null;
   private Boolean thesaurusStatus = null;
   private Boolean dragAndDropStatus = null;
-  private Boolean onlineEditingStatus = null;
   private Boolean webdavEditingStatus = null;
   private AdminController m_AdminCtrl = null;
   private NotificationManager notificationManager = null;
@@ -229,8 +129,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     return this.favoriteLanguage;
   }
 
-  public synchronized List getAllLanguages() {
-    List allLanguages = new ArrayList();
+  public synchronized List<String> getAllLanguages() {
+    List<String> allLanguages = new ArrayList<String>();
     try {
       StringTokenizer st = new StringTokenizer(
           resources.getString("languages"), ",");
@@ -261,10 +161,10 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws SQLException
    * @see
    */
-  public void setLanguages(Vector languages) throws PeasCoreException {
+  public void setLanguages(Vector<String> languages) throws PeasCoreException {
     try {
       getPersonalization().setLanguages(languages);
-      this.favoriteLanguage = (String) languages.firstElement();
+      this.favoriteLanguage = languages.firstElement();
 
       // Change language in MainSessionController
       setLanguageToMainSessionController(favoriteLanguage);
@@ -291,7 +191,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws SQLException
    * @see
    */
-  public Vector getLanguages() throws PeasCoreException {
+  @SuppressWarnings("unchecked")
+  public Vector<String> getLanguages() throws PeasCoreException {
     try {
       return getPersonalization().getLanguages();
     } catch (NoSuchObjectException nsoe) {
@@ -463,48 +364,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "PersonalizationSessionController.setDragAndDropStatus()",
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_SET_DRAGDROP_STATUS", e);
-    }
-  }
-
-  // ******************* Methods for Online Editing Office document
-  // *************************
-  public boolean getOnlineEditingStatus() throws PeasCoreException {
-    try {
-      if (onlineEditingStatus == null)
-        onlineEditingStatus = new Boolean(getPersonalization()
-            .getOnlineEditingStatus());
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.getOnlineEditingStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      return getOnlineEditingStatus();
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getOnlineEditingStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_ONLINE_EDITING_STATUS", e);
-    }
-
-    return onlineEditingStatus.booleanValue();
-  }
-
-  public void setOnlineEditingStatus(boolean onlineEditingStatus)
-      throws PeasCoreException {
-    try {
-      getPersonalization().setOnlineEditingStatus(onlineEditingStatus);
-      this.onlineEditingStatus = new Boolean(onlineEditingStatus);
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setOnlineEditingStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setOnlineEditingStatus(onlineEditingStatus);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setOnlineEditingStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_ONLINE_EDITING_STATUS", e);
     }
   }
 
@@ -814,11 +673,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   /**
    * Supprime les doublons
    */
-  private ArrayList getDistinctInstanceIds(String[] givenInstancesIds)
+  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds)
       throws PeasCoreException {
-    ArrayList instancesIds = new ArrayList();
+    ArrayList<String> instancesIds = new ArrayList<String>();
     String instanceId = null;
-    ArrayList intermed = new ArrayList();
+    ArrayList<String> intermed = new ArrayList<String>();
 
     for (int i = 0; i < givenInstancesIds.length; i++) {
       instanceId = givenInstancesIds[i];
@@ -837,66 +696,47 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   /**
    * Retourne la liste des composants
    */
-  public ArrayList getInstanceList() throws PeasCoreException {
+  public ArrayList<Properties> getInstanceList() throws PeasCoreException {
 
     // Liste des instances triés par nom de composants
-    ArrayList sortedComponentList;
+    ArrayList<Properties> sortedComponentList;
     // Get the id list of all available Instances for this user
     String[] instancesIds = getUserAvailComponentIds();
 
     // Create the final ArrayList
-    ArrayList ar = new ArrayList(instancesIds.length);
+    ArrayList<Properties> ar = new ArrayList<Properties>(instancesIds.length);
 
     try {
       // supprime les doublons
-      ArrayList arrayInstancesIds = getDistinctInstanceIds(instancesIds);
+      ArrayList<String> arrayInstancesIds = getDistinctInstanceIds(instancesIds);
 
       String instanceId = null;
       Properties p = null;
       // for each instanceId
       for (int i = 0; i < arrayInstancesIds.size(); i++) {
-        instanceId = (String) arrayInstancesIds.get(i);
+        instanceId = arrayInstancesIds.get(i);
 
-        // ComponentInst instance =
-        // getOrganizationController().getComponentInst(instanceId);
         p = new Properties();
 
         p.setProperty("instanceId", extractLastNumber(instanceId));
-        // p.setProperty("instance", instance.getLabel()) ;
-        // p.setProperty("component", instance.getName()) ;
-        // p.setProperty("description", instance.getDescription()) ;
         p.setProperty("fullName", notificationManager
             .getComponentFullName(instanceId));
         ar.add(p);
       }
       Properties[] componentList = (Properties[]) ar.toArray(new Properties[0]);
 
-      Arrays.sort(componentList, new Comparator() {
+      Arrays.sort(componentList, new Comparator<Properties>() {
 
-        /**
-         * Method declaration
-         * @param o1
-         * @param o2
-         * @return
-         * @see
-         */
-        public int compare(Object o1, Object o2) {
-          return (((Properties) o1).getProperty("fullName"))
-              .compareTo(((Properties) o2).getProperty("fullName"));
+        public int compare(Properties o1, Properties o2) {
+          return o1.getProperty("fullName").compareTo(o2.getProperty("fullName"));
           }
 
-        /**
-         * Method declaration
-         * @param o
-         * @return
-         * @see
-         */
         public boolean equals(Object o) {
           return false;
           }
 
       });
-      sortedComponentList = new ArrayList(componentList.length);
+      sortedComponentList = new ArrayList<Properties>(componentList.length);
 
       for (int i = 0; i < componentList.length; i++) {
         Properties pp = new Properties();
@@ -945,16 +785,16 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     return s;
   }
 
-  public String buildOptions(ArrayList ar, String selectValue, String selectText) {
+  public String buildOptions(ArrayList<Properties> ar, String selectValue, String selectText) {
     return buildOptions(ar, selectValue, selectText, false);
   }
 
-  public String buildOptions(ArrayList ar, String selectValue,
+  public String buildOptions(ArrayList<Properties> ar, String selectValue,
       String selectText, boolean bSorted) {
     StringBuffer valret = new StringBuffer();
     Properties elmt = null;
     String selected;
-    ArrayList arToDisplay = ar;
+    ArrayList<Properties> arToDisplay = ar;
     int i;
 
     if (selectText != null) {
@@ -968,17 +808,17 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
-      Arrays.sort(theList, new Comparator() {
-          public int compare(Object o1, Object o2) {
-          return (((Properties) o1).getProperty("name")).toUpperCase()
-              .compareTo(((Properties) o2).getProperty("name").toUpperCase());
+      Arrays.sort(theList, new Comparator<Properties>() {
+          public int compare(Properties o1, Properties o2) {
+          return o1.getProperty("name").toUpperCase()
+              .compareTo(o2.getProperty("name").toUpperCase());
           }
 
         public boolean equals(Object o) {
           return false;
           }
                 });
-      arToDisplay = new ArrayList(theList.length);
+      arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
       }
@@ -1022,8 +862,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
   public void modifyUser(String idUser, String userLastName,
       String userFirstName, String userEMail, String userAccessLevel,
-      String oldPassword, String newPassword, 
-      String userLoginQuestion, String userLoginAnswer, HashMap properties)
+      String oldPassword, String newPassword,
+      String userLoginQuestion, String userLoginAnswer, HashMap<String, String> properties)
       throws PeasCoreException, AuthenticationException {
     UserFull theModifiedUser = null;
     String idRet = null;
@@ -1044,8 +884,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
       theModifiedUser.seteMail(userEMail);
-	  theModifiedUser.setLoginQuestion(userLoginQuestion);
-	  theModifiedUser.setLoginAnswer(userLoginAnswer);
+      theModifiedUser.setLoginQuestion(userLoginQuestion);
+      theModifiedUser.setLoginAnswer(userLoginAnswer);
 
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
@@ -1058,13 +898,13 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       }
 
       // process extra properties
-      Set keys = properties.keySet();
-      Iterator iKeys = keys.iterator();
+      Set<String> keys = properties.keySet();
+      Iterator<String> iKeys = keys.iterator();
       String key = null;
       String value = null;
       while (iKeys.hasNext()) {
-        key = (String) iKeys.next();
-        value = (String) properties.get(key);
+        key = iKeys.next();
+        value = properties.get(key);
 
         theModifiedUser.setValue(key, value);
       }

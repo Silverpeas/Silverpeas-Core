@@ -28,28 +28,14 @@ package com.stratelia.webactiv.personalization.control.ejb;
 
 import com.stratelia.webactiv.util.exception.*;
 
-/*
- * CVS Informations
- * 
- * $Id: PersonalizationRuntimeException.java,v 1.1.1.1 2002/08/06 14:47:52 nchaix Exp $
- * 
- * $Log: PersonalizationRuntimeException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:52  nchaix
- * no message
- *
- * Revision 1.1  2002/01/28 14:36:32  tleroi
- * Split clipboard and personalization
- *
- * Revision 1.2  2002/01/18 18:04:07  tleroi
- * Centralize URLS + Stabilisation Lot 2 - SilverTrace et Exceptions
- *
- */
-
 /**
  * Class declaration
  * @author t.leroi
  */
 public class PersonalizationRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = -7807478211752706400L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

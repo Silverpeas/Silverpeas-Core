@@ -44,98 +44,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- *
- * $Id: PersoPeasRequestRouter.java,v 1.20 2008/05/20 12:32:43 neysseri Exp $
- *
- * $Log: PersoPeasRequestRouter.java,v $
- * Revision 1.20  2008/05/20 12:32:43  neysseri
- * no message
- *
- * Revision 1.19.4.1  2008/05/06 09:38:59  ehugonnet
- * Ajout du champ webdavEditingStatus
- *
- * Revision 1.19  2007/08/01 15:50:56  sfariello
- * Externalisation des langues
- *
- * Revision 1.18  2007/06/12 07:52:26  neysseri
- * no message
- *
- * Revision 1.17.2.1  2007/05/04 10:23:52  cbonin
- * Personnalisation de l'activation de l'applet de drag and drop et de l'active X d'édition de documents Office en ligne
- *
- * Revision 1.16  2007/05/04 09:42:35  cbonin
- * Personnalisation de l'activation de l'applet de drag and drop et de l'active X d'édition de documents Office en ligne
- *
- * Revision 1.15  2007/04/20 14:24:40  neysseri
- * no message
- *
- * Revision 1.14.2.1  2007/03/16 15:53:23  cbonin
- * *** empty log message ***
- *
- * Revision 1.14  2007/02/27 15:42:03  neysseri
- * no message
- *
- * Revision 1.13  2007/02/02 10:25:46  neysseri
- * no message
- *
- * Revision 1.12  2007/01/04 09:35:25  cbonin
- * Ajout des champs custom de l'utilisateur
- *
- * Revision 1.11.2.1  2007/01/29 08:26:15  neysseri
- * no message
- *
- * Revision 1.11  2006/09/25 08:37:27  neysseri
- * no message
- *
- * Revision 1.10  2006/08/21 12:39:18  dlesimple
- * - Pas d'espaces dans le mot de passe
- * - Paramétrage d'affichage et de moficiation des champs de l'onglet identitié
- *
- * Revision 1.9  2005/11/23 11:11:15  neysseri
- * Modification de l'identité d'un utilisateur impossible
- * Ne concerne que les utilisateurs des domaines SQL
- *
- * Revision 1.8  2005/07/25 16:07:15  neysseri
- * Ajout de l'onglet "Identité"
- *
- * Revision 1.7.2.1  2005/06/02 16:54:53  sdevolder
- * *** empty log message ***
- *
- * Revision 1.7  2004/12/29 09:31:21  dlesimple
- * Modification mot de passe
- *
- * Revision 1.6  2004/12/15 13:45:50  dlesimple
- * Modification mot de passe utilisateur
- *
- * Revision 1.5  2004/11/30 17:02:02  neysseri
- * Espace par défaut étendu aux sous espaces + nettoyage sources
- *
- * Revision 1.4  2003/01/15 11:59:14  neysseri
- * The both tabs 'Preferences' and 'Appearence' has been merged
- *
- * Revision 1.3  2002/12/20 13:35:16  neysseri
- * no message
- *
- * Revision 1.2  2002/12/19 09:21:40  neysseri
- * ThesaurusInPreference branch merging
- *
- * Revision 1.1.1.1.16.1  2002/12/17 15:16:29  dlesimple
- * ThesaurusInPreference
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.1  2002/01/30 11:07:44  tleroi
- * Move Bus peas to BusIHM
- *
- * Revision 1.1  2002/01/28 14:44:05  tleroi
- * Split clipboard and personalization
- *
- *
- */
-
 /**
  * Class declaration
  * @author
@@ -194,7 +102,6 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
     String selectedLanguage = null;
     String thesaurusStatus = null;
     String dragDropStatus = null;
-    String onlineEditingStatus = null;
     String webdavEditingStatus = null;
     String selectedWorkSpace = null;
     String selectedLook = null;
@@ -214,9 +121,6 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
             .toString();
 
         // online editing parameter
-        onlineEditingStatus = new Boolean(personalizationScc
-            .getOnlineEditingStatus()).toString();
-        // online editing parameter
         webdavEditingStatus = new Boolean(personalizationScc
             .getWebdavEditingStatus()).toString();
 
@@ -225,7 +129,6 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("selectedLanguage", selectedLanguage);
         request.setAttribute("thesaurusStatus", thesaurusStatus);
         request.setAttribute("dragDropStatus", dragDropStatus);
-        request.setAttribute("onlineEditingStatus", onlineEditingStatus);
         request.setAttribute("webdavEditingStatus", webdavEditingStatus);
         request.setAttribute("FavoriteSpace", personalizationScc
             .getFavoriteSpace());
@@ -240,7 +143,6 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
         selectedLanguage = request.getParameter("SelectedLanguage");
         thesaurusStatus = request.getParameter("opt_thesaurusStatus");
         dragDropStatus = request.getParameter("opt_dragDropStatus");
-        onlineEditingStatus = request.getParameter("opt_onlineEditingStatus");
         webdavEditingStatus = request.getParameter("opt_webdavEditingStatus");
         selectedWorkSpace = request.getParameter("SelectedWorkSpace");
         selectedLook = request.getParameter("SelectedLook");
@@ -248,7 +150,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
         Boolean mustBeReloaded = isFramesetMustBeReloaded(selectedLanguage,
             selectedLook, personalizationScc);
 
-        Vector languages = new Vector();
+        Vector<String> languages = new Vector<String>();
         languages.add(selectedLanguage);
         personalizationScc.setLanguages(languages);
 
@@ -257,8 +159,6 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
             .booleanValue());
         personalizationScc.setDragAndDropStatus(new Boolean(dragDropStatus)
             .booleanValue());
-        personalizationScc.setOnlineEditingStatus(new Boolean(
-            onlineEditingStatus).booleanValue());
         personalizationScc.setWebdavEditingStatus(new Boolean(
             webdavEditingStatus).booleanValue());
 
@@ -316,22 +216,22 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
               + " - userLastName=" + userLastName + " userEmail="
               + userEmail);
 
-			String userLoginQuestion = request.getParameter("userLoginQuestion");
-			userLoginQuestion = (userLoginQuestion != null
-				? EncodeHelper.htmlStringToJavaString(userLoginQuestion)
-				: currentUser.getLoginQuestion());
-			String userLoginAnswer = request.getParameter("userLoginAnswer");
-			userLoginAnswer = (userLoginAnswer != null
-				? EncodeHelper.htmlStringToJavaString(userLoginAnswer)
-				: currentUser.getLoginAnswer());
-          
+          String userLoginQuestion = request.getParameter("userLoginQuestion");
+          userLoginQuestion = (userLoginQuestion != null
+              ? EncodeHelper.htmlStringToJavaString(userLoginQuestion)
+              : currentUser.getLoginQuestion());
+          String userLoginAnswer = request.getParameter("userLoginAnswer");
+          userLoginAnswer = (userLoginAnswer != null
+              ? EncodeHelper.htmlStringToJavaString(userLoginAnswer)
+              : currentUser.getLoginAnswer());
+
           // process extra properties
-          HashMap properties = new HashMap();
-          Enumeration parameters = request.getParameterNames();
+          HashMap<String, String> properties = new HashMap<String, String>();
+          Enumeration<String> parameters = request.getParameterNames();
           String parameterName = null;
           String property = null;
           while (parameters.hasMoreElements()) {
-            parameterName = (String) parameters.nextElement();
+            parameterName = parameters.nextElement();
             if (parameterName.startsWith("prop_")) {
               property = parameterName.substring(5, parameterName.length()); // remove
               // "prop_"
@@ -339,17 +239,17 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
             }
           }
 
-			personalizationScc.modifyUser(
-					currentUser.getId(),
-					EncodeHelper.htmlStringToJavaString(userLastName),
-					EncodeHelper.htmlStringToJavaString(userFirstName),
-					EncodeHelper.htmlStringToJavaString(userEmail),
-					EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
-					EncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
-					EncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
-					userLoginQuestion,
-					userLoginAnswer,
-					properties);
+          personalizationScc.modifyUser(
+              currentUser.getId(),
+              EncodeHelper.htmlStringToJavaString(userLastName),
+              EncodeHelper.htmlStringToJavaString(userFirstName),
+              EncodeHelper.htmlStringToJavaString(userEmail),
+              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              EncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
+              EncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
+              userLoginQuestion,
+              userLoginAnswer,
+              properties);
           request.setAttribute("Message", personalizationScc
               .getString("MessageOK"));
         } catch (AuthenticationBadCredentialException e) {

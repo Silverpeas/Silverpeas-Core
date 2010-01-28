@@ -69,6 +69,7 @@
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@	page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
 
 <%@ page import="org.apache.commons.fileupload.*"%>

@@ -28,7 +28,6 @@
 <%
 boolean isThesaurusEnabled	= new Boolean((String) request.getAttribute("thesaurusStatus")).booleanValue();
 boolean isDragDropEnabled	= new Boolean((String) request.getAttribute("dragDropStatus")).booleanValue();
-boolean isOnlineEditingEnabled = new Boolean((String) request.getAttribute("onlineEditingStatus")).booleanValue();
 boolean isWebdavEditingEnabled = new Boolean((String) request.getAttribute("webdavEditingStatus")).booleanValue();
 String 	selectedLanguage	= (String) request.getAttribute("selectedLanguage");
 String 	selectedLook		= (String) request.getAttribute("selectedLook");
@@ -57,7 +56,6 @@ if (reloadFrameset)
 
 String checkedThesaurus_activate 		= "";
 String checkedDragDrop_activate 		= "";
-String checkedOnlineEditing_activate 	= "";
 String checkedWebdavEditing_activate    = "";
 
 if (isThesaurusEnabled)
@@ -66,8 +64,6 @@ if (isThesaurusEnabled)
 if (isDragDropEnabled)
 	checkedDragDrop_activate = "checked";
 
-if (isOnlineEditingEnabled)
-	checkedOnlineEditing_activate = "checked";
 if (isWebdavEditingEnabled)
   checkedWebdavEditing_activate = "checked";
 %>
@@ -88,7 +84,7 @@ function checkForm()
 }
 </script>
 </HEAD>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+<BODY>
 <%
 	browseBar.setComponentName(resource.getString("PersonalizationTitleTab1"));
 	out.println(window.printBefore());
@@ -122,7 +118,7 @@ function checkForm()
 		  					selected = "selected";
 		  				}
 		  				%>
-		  				<option value=<%=langue%> <%=selected%>><%=resource.getString("language_" + langue)%></option>
+		  				<option value="<%=langue%>" <%=selected%>><%=resource.getString("language_" + langue)%></option>
 		  				<%
 		  				selected = "";
 			  		}
@@ -134,8 +130,8 @@ function checkForm()
 	<!-- Look -->
 	<% if (availableLooks.size() > 1) { %>
 	<tr>
-        <td class="txtlibform" align="left" valign="baseline"><%=resource.getString("FavoriteLook")%> :</td>
-        <td align="left" valign="baseline"><select name="SelectedLook" size="1">
+        <td class="txtlibform" valign="baseline"><%=resource.getString("FavoriteLook")%> :</td>
+        <td valign="baseline"><select name="SelectedLook" size="1">
             <% for (int i = 0; i < availableLooks.size(); i++) {
                 String lookName = (String) availableLooks.get(i);
                 if (selectedLook.equals(lookName))
@@ -151,8 +147,8 @@ function checkForm()
     <% } %>
 	<!-- defaultWorkSpace -->
     <tr>
-        <td class="txtlibform" align="left" valign="baseline"><%=resource.getString("DefaultWorkSpace")%> :</td>
-        <td align="left" valign="baseline">
+        <td class="txtlibform" valign="baseline"><%=resource.getString("DefaultWorkSpace")%> :</td>
+        <td valign="baseline">
         	<select name="SelectedWorkSpace" size="1">
                 <%
                 	if (favoriteSpace == null || favoriteSpace.equals("null"))
@@ -183,23 +179,16 @@ function checkForm()
     </tr>
 	<!-- ThesaurusState -->
     <tr>
-        <td class="txtlibform" align="left" valign="baseline"><%=resource.getString("Thesaurus")%> :</td>
-        <td align="left" valign="middle">
-			<input name="opt_thesaurusStatus" type="checkbox" value="true" <%=checkedThesaurus_activate%>>
+        <td class="txtlibform" valign="baseline"><%=resource.getString("Thesaurus")%> :</td>
+        <td valign="middle">
+			<input name="opt_thesaurusStatus" type="checkbox" value="true" <%=checkedThesaurus_activate%>/>
         </td>
     </tr>
     <!-- Drag&Drop -->
     <tr>
-        <td class="txtlibform" align="left" valign="baseline"><%=resource.getString("DragDrop")%> :</td>
-        <td align="left" valign="middle">
-			<input name="opt_dragDropStatus" type="checkbox" value="true" <%=checkedDragDrop_activate%>>
-        </td>
-    </tr>
-    <!-- Online Editing -->
-    <tr>
-        <td class="txtlibform" align="left" valign="baseline"><%=resource.getString("OnlineEditing")%> :</td>
-        <td align="left" valign="middle">
-			<input name="opt_onlineEditingStatus" type="checkbox" value="true" <%=checkedOnlineEditing_activate%>>
+        <td class="txtlibform" valign="baseline"><%=resource.getString("DragDrop")%> :</td>
+        <td valign="middle">
+			<input name="opt_dragDropStatus" type="checkbox" value="true" <%=checkedDragDrop_activate%>/>
         </td>
     </tr>
     <!-- Webdav Editing -->

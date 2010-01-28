@@ -30,9 +30,9 @@ public interface PersonalizationBmBusinessSkeleton {
 
   public void setActor(String userId) throws RemoteException;
 
-  public void setLanguages(Vector languages) throws RemoteException;
+  public void setLanguages(Vector<String> languages) throws RemoteException;
 
-  public Vector getLanguages() throws RemoteException;
+  public Vector<String> getLanguages() throws RemoteException;
 
   public String getFavoriteLanguage() throws RemoteException;
 

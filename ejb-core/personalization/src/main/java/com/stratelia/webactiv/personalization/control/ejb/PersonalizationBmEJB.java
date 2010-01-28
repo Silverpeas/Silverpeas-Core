@@ -36,63 +36,13 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
 
-/*
- * CVS Informations
- *
- * $Id: PersonalizationBmEJB.java,v 1.8 2008/05/20 12:31:58 neysseri Exp $
- *
- * $Log: PersonalizationBmEJB.java,v $
- * Revision 1.8  2008/05/20 12:31:58  neysseri
- * no message
- *
- * Revision 1.7.2.1  2008/05/13 08:01:18  ehugonnet
- * Ajout de la possibilité de configurer l'edition en ligne openoffice
- * Revision 1.7 2007/06/12 07:52:18 neysseri
- * no message
- *
- * Revision 1.6.2.1 2007/05/04 09:41:18 cbonin Personnalisation de l'activation
- * de l'applet de drag and drop et de l'active X d'édition de documents Office
- * en ligne
- *
- * Revision 1.6 2005/10/05 16:00:42 neysseri no message
- *
- * Revision 1.5 2003/11/10 16:05:13 neysseri Add some traces on clipboard calls
- *
- * Revision 1.4 2002/12/23 07:28:33 tleroi *** empty log message ***
- *
- * Revision 1.3 2002/12/19 09:21:32 neysseri ThesaurusInPreference branch
- * merging
- *
- * Revision 1.2.10.1 2002/12/17 15:14:06 dlesimple ThesaurusInPreference
- *
- * Revision 1.2 2002/10/09 07:41:03 neysseri no message
- *
- * Revision 1.1.1.1.6.4 2002/10/04 11:41:08 pbialevich throw fixed
- *
- * Revision 1.1.1.1.6.3 2002/09/28 16:38:16 gshakirin no message
- *
- * Revision 1.1.1.1.6.2 2002/09/28 14:37:13 gshakirin no message
- *
- * Revision 1.1.1.1.6.1 2002/09/27 16:06:00 abudnikau Personalization task
- *
- * Revision 1.1.1.1 2002/08/06 14:47:52 nchaix no message
- *
- * Revision 1.5 2002/01/28 14:36:32 tleroi Split clipboard and personalization
- *
- * Revision 1.6 2002/01/18 18:20:56 tleroi Centralize URLS + Stabilisation Lot 2 -
- * SilverTrace et Exceptions
- *
- * Revision 1.5 2002/01/18 18:04:07 tleroi Centralize URLS + Stabilisation Lot 2 -
- * SilverTrace et Exceptions
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, SessionBean {
 
+  private static final long serialVersionUID = 6776141343859788723L;
   private String currentUserId;
   private String defaultLanguage = null;
   private String defaultLook = "Initial";
@@ -100,7 +50,6 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
   private boolean defaultThesaurusStatus = false;
   private boolean defaultDragDropStatus = true;
   private boolean defaultOnlineEditingStatus = true;
-  private boolean defaultWebdavEditingStatus = false;
   private ResourceLocator settings = null;
 
   /**
@@ -208,7 +157,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
    * @throws SQLException
    * @see
    */
-  public void setLanguages(Vector languages) throws RemoteException {
+  public void setLanguages(Vector<String> languages) throws RemoteException {
     SilverTrace.info("personalization", "PersonalizationBmEJB.setLanguages()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
@@ -233,11 +182,11 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
    * @throws SQLException
    * @see
    */
-  public Vector getLanguages() throws RemoteException {
+  public Vector<String> getLanguages() throws RemoteException {
     SilverTrace.info("personalization", "PersonalizationBmEJB.getLanguages()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
-    Vector languages = null;
+    Vector<String> languages = null;
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
@@ -246,14 +195,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
         languages = personalizeDetail.getLanguages();
       } else {
         // the user has not defined favorite language
-        languages = new Vector();
+        languages = new Vector<String>();
         languages.add(getDefaultLanguage());
 
         // insert a new record in database
         PersonalizationDAO.insertPersonalizeDetail(con, this.currentUserId,
             languages, this.defaultLook, defaultPersonalWSId,
             this.defaultThesaurusStatus, this.defaultDragDropStatus,
-            this.defaultOnlineEditingStatus, this.defaultWebdavEditingStatus);
+            this.defaultOnlineEditingStatus, getDefaultWebDAVEditingStatus());
       }
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
@@ -264,6 +213,20 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
       freeConnection(con);
     }
     return languages;
+  }
+
+  private boolean getDefaultWebDAVEditingStatus() {
+
+    if (settings == null) {
+      settings = new ResourceLocator(
+          "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
+          "");
+    }
+
+    if (settings != null) {
+      return settings.getBoolean("DefaultWebDAVEditingStatus", true);
+    }
+    return true;
   }
 
   /**
@@ -278,12 +241,12 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getFavoriteLanguage()",
         "root.MSG_GEN_ENTER_METHOD");
-    Vector languages = getLanguages();
+    Vector<String> languages = getLanguages();
     String favoriteLanguage = getDefaultLanguage();
 
     if (languages != null) {
       if (!languages.isEmpty()) {
-        favoriteLanguage = (String) languages.firstElement();
+        favoriteLanguage = languages.firstElement();
       }
     }
     return favoriteLanguage;
@@ -586,7 +549,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getWebdavEditingStatus()",
         "root.MSG_GEN_ENTER_METHOD");
-    boolean webdavEditingStatus = defaultWebdavEditingStatus;
+    boolean webdavEditingStatus = getDefaultWebDAVEditingStatus();
     Connection con = getConnection();
 
     try {
