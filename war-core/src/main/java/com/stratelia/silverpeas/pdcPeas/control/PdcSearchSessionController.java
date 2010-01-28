@@ -171,6 +171,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     isExportEnabled = isExportLicenseOK();
     isRefreshEnabled = "true".equals(pdcSettings.getString("EnableRefresh"));
 
+    try {
+      isThesaurusEnableByUser = getActiveThesaurusByUser();
+    } catch (Exception e) {
+      isThesaurusEnableByUser = false;
+    }
+
     searchContext.setUserId(getUserId());
   }
 
@@ -1350,9 +1356,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private Map<String, Collection> synonyms = new HashMap<String, Collection>();
   private static final int QUOTE_CHAR = new Integer('"').intValue();
   private static String[] KEYWORDS = null;
+  private boolean isThesaurusEnableByUser = false;
 
-  public synchronized boolean getActiveThesaurus() throws PdcException,
-      RemoteException {
+  private synchronized boolean getActiveThesaurusByUser() throws PdcException, RemoteException {
     try {
       return getPersonalization().getThesaurusStatus();
     } catch (NoSuchObjectException nsoe) {
@@ -1360,9 +1366,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return getPersonalization().getThesaurusStatus();
     } catch (Exception e) {
       throw new PdcException("PdcSearchSessionController.getActiveThesaurus()",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_ACTIVE_THESAURUS",
-          "", e);
+          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_ACTIVE_THESAURUS", "", e);
     }
+  }
+
+  public boolean getActiveThesaurus() throws PdcException, RemoteException {
+    return this.isThesaurusEnableByUser;
   }
 
   public void initializeJargon() throws PdcException {

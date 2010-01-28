@@ -43,6 +43,7 @@ import javax.naming.NamingException;
 
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
@@ -58,8 +59,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-
 
 /**
  * Class declaration
@@ -95,6 +94,12 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     setComponentRootName(URLManager.CMP_PERSONALIZATION);
     notificationManager = new NotificationManager(getLanguage());
     m_AdminCtrl = new AdminController(getUserId());
+
+    try {
+      thesaurusStatus = getActiveThesaurusByUser();
+    } catch (Exception e) {
+      thesaurusStatus = false;
+    }
   }
 
   public int getMinLengthPwd() {
@@ -191,7 +196,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws SQLException
    * @see
    */
-  @SuppressWarnings("unchecked")
   public Vector<String> getLanguages() throws PeasCoreException {
     try {
       return getPersonalization().getLanguages();
@@ -287,24 +291,20 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   }
 
   // ******************* Methods for Thesaurus *************************
-  public boolean getThesaurusStatus() throws PeasCoreException {
+  private synchronized boolean getActiveThesaurusByUser() throws PeasCoreException, RemoteException {
     try {
-      if (thesaurusStatus == null)
-        thesaurusStatus = new Boolean(getPersonalization().getThesaurusStatus());
+      return getPersonalization().getThesaurusStatus();
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.getThesaurusStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      return getThesaurusStatus();
+      return getPersonalization().getThesaurusStatus();
     } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getThesaurusStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_THESAURUS_STATUS", e);
+      throw new PeasCoreException("PdcSearchSessionController.getActiveThesaurusByUser()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_THESAURUS_STATUS", "", e);
     }
+  }
 
-    return thesaurusStatus.booleanValue();
+  public boolean getThesaurusStatus() {
+    return this.thesaurusStatus;
   }
 
   public void setThesaurusStatus(boolean thesaurusStatus)
@@ -729,11 +729,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
         public int compare(Properties o1, Properties o2) {
           return o1.getProperty("fullName").compareTo(o2.getProperty("fullName"));
-          }
+        }
 
         public boolean equals(Object o) {
           return false;
-          }
+        }
 
       });
       sortedComponentList = new ArrayList<Properties>(componentList.length);
@@ -809,15 +809,15 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator<Properties>() {
-          public int compare(Properties o1, Properties o2) {
+        public int compare(Properties o1, Properties o2) {
           return o1.getProperty("name").toUpperCase()
               .compareTo(o2.getProperty("name").toUpperCase());
-          }
+        }
 
         public boolean equals(Object o) {
           return false;
-          }
-                });
+        }
+      });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
@@ -848,14 +848,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     UserFull valret = null;
     String IdUserCur = getUserId();
 
-    if ((IdUserCur != null) && (IdUserCur.length() > 0)) {
+    if (StringUtil.isDefined(IdUserCur)) {
       valret = getOrganizationController().getUserFull(IdUserCur);
-      // if (valret == null)
-      // {
-      // throw new
-      // personalizationPeasException("PersonalizationSessionController.getTargetUserFull()",SilverpeasException.ERROR,"personalizationPeas.EX_USER_NOT_AVAILABLE","UserId="+IdUserCur);
-      // }
-
     }
     return valret;
   }
