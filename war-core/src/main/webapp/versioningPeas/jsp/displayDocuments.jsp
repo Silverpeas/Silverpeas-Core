@@ -302,7 +302,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
     Document document;
     DocumentVersion document_version;
 	boolean attachmentsDisplayed = false;
-    if (iterator.hasNext() || !profile.equals("user")) {
+    if (iterator.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
         Board		board	= gef.getBoard();
         out.println(board.printBefore());
         out.println("<TABLE width=\"150\">");
