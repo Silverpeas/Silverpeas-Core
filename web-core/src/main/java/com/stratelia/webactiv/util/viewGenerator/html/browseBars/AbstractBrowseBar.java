@@ -37,6 +37,7 @@ import java.util.List;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.i18n.I18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
@@ -55,6 +56,9 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String language = null;
   private String url = null;
   private List languages = null;
+  
+  private String componentId = null;
+  private MainSessionController mainSessionController = null;
 
   /**
    * Constructor declaration
@@ -239,4 +243,20 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public abstract String print();
+
+  public String getComponentId() {
+    return componentId;
+  }
+
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
+
+  public MainSessionController getMainSessionController() {
+    return mainSessionController;
+  }
+
+  public void setMainSessionController(MainSessionController mainSessionController) {
+    this.mainSessionController = mainSessionController;
+  }
 }

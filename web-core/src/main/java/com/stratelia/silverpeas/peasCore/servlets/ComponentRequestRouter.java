@@ -45,8 +45,12 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public abstract class ComponentRequestRouter extends HttpServlet {
+
+  private static final long serialVersionUID = -8055016885655445663L;
+
   /**
    * This method has to be implemented in the component request Router class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -173,6 +177,15 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     request.setAttribute("myComponentURL", GeneralPropertiesManager
         .getGeneralResourceLocator().getString("ApplicationURL")
         + component.getComponentUrl());
+
+    if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
+        !"ChangeSearchTypeToExpert".equals(function)) {
+      GraphicElementFactory gef =
+          (GraphicElementFactory) session
+              .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      gef.setComponentId(component.getComponentId());
+      gef.setMainSessionController(mainSessionCtrl);
+    }
 
     // notify silverstatistics
     if (function.equals("Main") || function.startsWith("searchResult")

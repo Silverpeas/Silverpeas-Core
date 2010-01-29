@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
@@ -85,6 +86,9 @@ public class GraphicElementFactory extends Object {
 
   private String currentLookName = null;
   private String externalStylesheet = null;
+  
+  private String componentId = null;
+  private MainSessionController mainSessionController = null;
 
   /**
    * Creates new GraphicElementFactory
@@ -119,8 +123,8 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Get the settings for the factory.
-   * @return The ResourceLocator returned contains all default environment settings necessary to know
-   * wich component to instanciate, but also to know how to generate html code.
+   * @return The ResourceLocator returned contains all default environment settings necessary to
+   * know wich component to instanciate, but also to know how to generate html code.
    */
   public static ResourceLocator getSettings() {
     if (settings == null) {
@@ -548,8 +552,8 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Build a new ArrayPane.
-   * @param name The name from your array. This name has to be unique in the session. It will be used
-   * to put some information (including the sorted column), in the session. exemple :
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
    * "MyToDoArrayPane"
    * @param url The url to root sorting action. This url can contain parameters. exemple :
    * http://localhost/webactiv/Rkmelia/topicManager?topicId=12
@@ -671,7 +675,10 @@ public class GraphicElementFactory extends Object {
         .getString("BrowseBar");
 
     try {
-      return (BrowseBar) Class.forName(browseBarClassName).newInstance();
+      BrowseBar browseBar = (BrowseBar) Class.forName(browseBarClassName).newInstance();
+      browseBar.setComponentId(componentId);
+      browseBar.setMainSessionController(mainSessionController);
+      return browseBar;
     } catch (Exception e) {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getBrowseBar()",
@@ -714,5 +721,21 @@ public class GraphicElementFactory extends Object {
     }
     pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
     return pagination;
+  }
+
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
+
+  public String getComponentId() {
+    return componentId;
+  }
+
+  public void setMainSessionController(MainSessionController mainSessionController) {
+    this.mainSessionController = mainSessionController;
+  }
+
+  public MainSessionController getMainSessionController() {
+    return mainSessionController;
   }
 }

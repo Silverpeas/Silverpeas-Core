@@ -35,6 +35,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 import java.util.List;
 
 import com.silverpeas.util.i18n.I18NBean;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
@@ -86,6 +87,9 @@ public interface BrowseBar extends SimpleGraphicElement {
   public void setI18N(String url, String language);
 
   public void setI18N(List languages, String language);
+  
+  public void setComponentId(String componentId);
+  public void setMainSessionController(MainSessionController mainSessionController);
 
   /**
    * Print the browseBar in an html format.
