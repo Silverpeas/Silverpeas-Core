@@ -85,4 +85,9 @@
     <module>war-core</module>
     <module>config-core</module>
   </modules>
+
+  <properties>
+    <installer_version>1.0-RC1</installer_version>
+  </properties>
+
 </project>

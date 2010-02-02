@@ -39,12 +39,13 @@
   <!-- Powered By -->
   <poweredBy>
     <logo name="Netbeans 6.7" href="http://download.netbeans.org/netbeans/6.7.1/final/" img="http://mojo.codehaus.org/scmchangelog-maven-plugin/images/netbeans-110x32.gif" />
-    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="images/maven-feather.png" />
+    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png" />
   </poweredBy>
   <body>
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
       <item name="Installation" href="installation.html"/>
+      <item name="Migration" href="migration.html"/>
     </menu>
     <menu name="CAS">
       <item name="Introduction" href="cas/SSO-CAS.html"/>
