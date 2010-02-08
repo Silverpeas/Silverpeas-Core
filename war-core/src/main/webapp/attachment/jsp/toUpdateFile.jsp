@@ -125,7 +125,7 @@ function removeTranslation()
 %>
 
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
-		<form name="updateForm" action="<%=m_Context%>/attachment/jsp/updateFile.jsp" method="POST" enctype="multipart/form-data">
+		<form name="updateForm" action="<%=m_Context%>/attachment/jsp/updateFile.jsp" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 		<%=I18NHelper.getFormLine(attResources, attachment, attResources.getLanguage())%>
 		<tr align="justify">
 			<td class="txtlibform" nowrap align="left"><%=attResources.getString("GML.file")%> :</td>

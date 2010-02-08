@@ -50,6 +50,10 @@
 	  AttachmentPK	 	atPK	= new AttachmentPK(attachmentId, componentId);
 	  AttachmentDetail 	ad		= AttachmentController.searchAttachmentByPK(atPK);
 	  
+	   if(request.getCharacterEncoding() == null || "".equals(request.getCharacterEncoding())) {
+	     request.setCharacterEncoding("UTF-8");
+	   }
+
 	  //Just to retrieve i18n infos
 	  AttachmentDetail dummy = new AttachmentDetail();
 	  I18NHelper.setI18NInfo(dummy, items);
