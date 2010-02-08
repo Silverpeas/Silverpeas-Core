@@ -74,6 +74,20 @@ public class TestStringUtil extends TestCase {
   }
 
 
+  public void testGetBooleanValue() {
+    assertTrue(StringUtil.getBooleanValue("1"));
+    assertTrue(StringUtil.getBooleanValue("yes"));
+    assertTrue(StringUtil.getBooleanValue("YeS"));
+    assertTrue(StringUtil.getBooleanValue("trUe"));
+    assertTrue(StringUtil.getBooleanValue("oUi"));
+    assertTrue(StringUtil.getBooleanValue("Y"));
+    assertFalse(StringUtil.getBooleanValue(""));
+    assertFalse(StringUtil.getBooleanValue("no"));
+    assertFalse(StringUtil.getBooleanValue("0"));
+    assertFalse(StringUtil.getBooleanValue(null));
+  }
+
+
   public void testConvertToEncoding() throws Exception {
     assertEquals("élève", StringUtil.convertToEncoding(new String("élève".getBytes("UTF-8")), "UTF-8"));
     assertNotSame("élève", StringUtil.convertToEncoding(new String("élève".getBytes("ISO-8859-1")), "UTF-8"));
