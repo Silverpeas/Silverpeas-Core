@@ -70,6 +70,7 @@ else
 <html>
 <head>
 <title><%=message.getString("GML.popupTitle")%></title>
+<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
 <script language="javascript">
 <!--
 function MM_reloadPage(init) {  //reloads the window if Nav4 resized

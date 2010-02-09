@@ -44,6 +44,7 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMultilang.getString("GML.popupTitle")%></title>
+<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 
 <!--[if lt IE 8]>

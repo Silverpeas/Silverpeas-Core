@@ -128,6 +128,7 @@ else
 <html>
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
+<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 <!--
