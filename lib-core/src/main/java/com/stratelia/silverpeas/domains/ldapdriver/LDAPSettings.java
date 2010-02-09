@@ -354,7 +354,7 @@ public class LDAPSettings extends Object {
   public String getUsersIdFilter(String value) {
     if (LDAPUtility.isAGuid(getUsersIdField()) && (value != null)) {
       // Replace all "\\" by "\"
-      StringBuffer singleSlashValue = new StringBuffer(value.length());
+      StringBuilder singleSlashValue = new StringBuilder(value.length());
       boolean bIsFirst = true;
       char[] vca = value.toCharArray();
 
@@ -451,7 +451,7 @@ public class LDAPSettings extends Object {
   public String getGroupsIdFilter(String value) {
     if (LDAPUtility.isAGuid(getGroupsIdField()) && (value != null)) {
       // Replace all "\\" by "\"
-      StringBuffer singleSlashValue = new StringBuffer(value.length());
+      StringBuilder singleSlashValue = new StringBuilder(value.length());
       boolean bIsFirst = true;
       char[] vca = value.toCharArray();
 
