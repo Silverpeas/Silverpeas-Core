@@ -38,7 +38,7 @@
     }
     else
     {
-        browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+        browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
         browseBar.setPath(resource.getString("JDP.domainUpdate") + "...");
     }
 
@@ -95,27 +95,27 @@ out.println(board.printBefore());
     <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
         <tr>			
             <td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-            <td><input type="text" name="domainName" size="70" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(domObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
+            <td><input type="text" name="domainName" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
         </tr>
         <tr>			
             <td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
-            <td><input type="text" name="domainDescription" size="70" maxlength="399" VALUE="<%=Encode.javaStringToHtmlString(domObject.getDescription())%>"></td>
+            <td><input type="text" name="domainDescription" size="70" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>"></td>
         </tr>
         <tr>			
             <td class="txtlibform"><%=resource.getString("JDP.class")%> :</td>
-            <td><input type="text" name="domainDriver" size="70" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(domObject.getDriverClassName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
+            <td><input type="text" name="domainDriver" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getDriverClassName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
         </tr>
         <tr>			
             <td class="txtlibform"><%=resource.getString("JDP.properties")%> :</td>
-            <td><input type="text" name="domainProperties" size="70" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(domObject.getPropFileName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
+            <td><input type="text" name="domainProperties" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getPropFileName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
         </tr>
         <tr>			
             <td class="txtlibform"><%=resource.getString("JDP.serverAuthentification")%> :</td>
-            <td><input type="text" name="domainAuthentication" size="70" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(domObject.getAuthenticationServer())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
+            <td><input type="text" name="domainAuthentication" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getAuthenticationServer())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
         </tr>
         <tr>			
             <td class="txtlibform"><%=resource.getString("JDP.silverpeasServerURL")%> :</td>
-            <td><input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="<%=Encode.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
+            <td><input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"></td>
         </tr>
         <tr>			
             <td class="txtlibform"></td>
@@ -124,7 +124,7 @@ out.println(board.printBefore());
 		<% if (domObject.getId() == null || !domObject.getId().equals("0")) { %>
         <tr>			
             <td class="txtlibform"><%=resource.getString("JDP.serverTimeStamp")%> :</td>
-            <td><input type="text" name="domainTimeStamp" size="70" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(domObject.getTheTimeStamp())%>"></td>
+            <td><input type="text" name="domainTimeStamp" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getTheTimeStamp())%>"></td>
         </tr>
 		<% } %>
         <tr>

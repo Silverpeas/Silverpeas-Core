@@ -37,7 +37,7 @@
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
 
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
     if (groupsPath != null)
         browseBar.setPath(groupsPath);
     

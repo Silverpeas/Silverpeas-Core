@@ -35,7 +35,7 @@
 	int 		nbUsersPerPage = 15;
 	
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
     browseBar.setPath(groupsPath);
     
 	boolean selectedAll = false;
@@ -196,7 +196,7 @@ out.println(board.printBefore());
             	<td>
             		<input type="text" name="<%=ldapAttribute%>" size="50" maxlength="50" value="<%=value%>" onkeydown="checkSubmitToSearch(event)">
             		&nbsp;
-            		<img src="<%=resource.getIcon("JDP.info")%>" border="0" onmouseover="return overlib('<%=Encode.javaStringToJsString(description)%>', CAPTION, '<%=Encode.javaStringToJsString(resource.getString("JDP.LDAPField")+" : "+ldapAttribute)%>')" onmouseout="return nd();" align="absmiddle">
+            		<img src="<%=resource.getIcon("JDP.info")%>" border="0" onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(description)%>', CAPTION, '<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.LDAPField")+" : "+ldapAttribute)%>')" onmouseout="return nd();" align="absmiddle">
             	</td>
         </tr>
     		<%
@@ -204,7 +204,7 @@ out.println(board.printBefore());
     %>
     <tr>
 		<td><%=resource.getString("JDP.searchSyntax")%>
-  		<img src="<%=resource.getIcon("JDP.info")%>" border=0 onmouseover="return overlib('<%=Encode.javaStringToJsString(resource.getString("JDP.fieldSyntaxContent"))%>', CAPTION, '<%=Encode.javaStringToJsString(resource.getString("JDP.fieldSyntax"))%>')" onmouseout="return nd();" align="absmiddle">
+  		<img src="<%=resource.getIcon("JDP.info")%>" border=0 onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.fieldSyntaxContent"))%>', CAPTION, '<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.fieldSyntax"))%>')" onmouseout="return nd();" align="absmiddle">
 		</td>
 	</tr>
     </table>

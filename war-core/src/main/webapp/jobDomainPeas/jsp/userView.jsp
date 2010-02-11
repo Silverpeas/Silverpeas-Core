@@ -32,7 +32,7 @@
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     
     if (request.getAttribute("domainName") != null)
-        browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")));
+        browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")));
 %>
 <html>
 <head>
@@ -72,19 +72,19 @@ out.println(board.printBefore());
 <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.lastName") %> :</td>
-		<td><%=Encode.javaStringToHtmlString(userObject.getLastName())%></td>
+		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.surname") %> :</td>
-		<td><%=Encode.javaStringToHtmlString(userObject.getFirstName())%></td>
+		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.eMail") %> :</td>
-		<td><%=Encode.javaStringToHtmlString(userObject.geteMail())%></td>
+		<td><%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.login") %> :</td>
-		<td><%=Encode.javaStringToHtmlString(userObject.getLogin())%></td>
+		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%></td>
 	</tr>
 	
 	<% 
@@ -106,7 +106,7 @@ out.println(board.printBefore());
 				if("STRING".equals(userObject.getPropertyType(property)) ||
 					"USERID".equals(userObject.getPropertyType(property))) {
 					
-					out.print(Encode.javaStringToHtmlString(userObject.getValue(property)));
+					out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
 		
 				} else if("BOOLEAN".equals(userObject.getPropertyType(property))) {
 					 

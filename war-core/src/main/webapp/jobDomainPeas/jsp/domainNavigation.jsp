@@ -176,7 +176,7 @@ function viewDomain()
 								if (group.isSynchronized())
 									icon = resource.getIcon("JDP.groupSynchronized");
 								%>
-								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br><img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">&nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=Encode.javaStringToHtmlString(group.getName())%></a><br>
+								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br><img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">&nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName())%></a><br>
 								<%
                             }
 						%>

@@ -35,7 +35,7 @@
     {
 		browseBar.setComponentName(resource.getString("JDP.domainSQLAdd") + "...");
 	} else {
-	 	browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+	 	browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
         browseBar.setPath(resource.getString("JDP.domainSQLUpdate") + "...");
 	}
 
@@ -86,7 +86,7 @@ out.println(board.printBefore());
                             <%=resource.getString("GML.name")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="domainName" size="70" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(domObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
+                            <input type="text" name="domainName" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
                         </td>
                     </tr>
                     <tr>			
@@ -94,7 +94,7 @@ out.println(board.printBefore());
                             <%=resource.getString("GML.description")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="domainDescription" size="70" maxlength="399" VALUE="<%=Encode.javaStringToHtmlString(domObject.getDescription())%>"> 
+                            <input type="text" name="domainDescription" size="70" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>"> 
                         </td>
                     </tr>
                     <tr>			
@@ -102,7 +102,7 @@ out.println(board.printBefore());
                             <%=resource.getString("JDP.silverpeasServerURL")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="<%=Encode.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
+                            <input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
                         </td>
                     </tr>
                     <tr>			

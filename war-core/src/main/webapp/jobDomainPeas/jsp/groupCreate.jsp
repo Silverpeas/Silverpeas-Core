@@ -32,7 +32,7 @@
     String groupsPath = (String)request.getAttribute("groupsPath");
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
     browseBar.setPath(groupsPath);
 %>
 <html>
@@ -81,7 +81,7 @@ out.println(board.printBefore());
                             <%=resource.getString("GML.name")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="groupName" size="50" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(grObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
+                            <input type="text" name="groupName" size="50" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(grObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
                         </td>
                     </tr>
                     <tr>			
@@ -89,14 +89,14 @@ out.println(board.printBefore());
                             <%=resource.getString("GML.description")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="groupDescription" size="50" maxlength="399" VALUE="<%=Encode.javaStringToHtmlString(grObject.getDescription())%>"> 
+                            <input type="text" name="groupDescription" size="50" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(grObject.getDescription())%>"> 
                         </td>
                     </tr>
                     <tr>			
                     	<td valign="baseline" align="left" class="txtlibform"><%=resource.getString("JDP.synchroRule")%> :</td>
                     	<td align="left" valign="baseline">
-                        	<input type="text" name="groupRule" size="50" maxlength="100" VALUE="<%=Encode.javaStringToHtmlString(grObject.getRule())%>">
-                        	<img border="0" align="absmiddle" src="<%=resource.getIcon("JDP.info")%>" onmouseover="return overlib('<%=Encode.javaStringToJsString(resource.getString("JDP.synchroRuleInfo"))%>', STICKY, CAPTION, '<%=resource.getString("JDP.synchroRuleAvail")%>', CLOSETEXT, '<%=resource.getString("GML.close")%>');" onmouseout="return nd();">
+                        	<input type="text" name="groupRule" size="50" maxlength="100" VALUE="<%=EncodeHelper.javaStringToHtmlString(grObject.getRule())%>">
+                        	<img border="0" align="absmiddle" src="<%=resource.getIcon("JDP.info")%>" onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.synchroRuleInfo"))%>', STICKY, CAPTION, '<%=resource.getString("JDP.synchroRuleAvail")%>', CLOSETEXT, '<%=resource.getString("GML.close")%>');" onmouseout="return nd();">
                         </td>
                     </tr>
                     <tr> 

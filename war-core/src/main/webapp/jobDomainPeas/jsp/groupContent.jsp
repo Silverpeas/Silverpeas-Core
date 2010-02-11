@@ -41,7 +41,7 @@
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
 
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
     if (groupsPath != null)
         browseBar.setPath(groupsPath);
     
@@ -146,18 +146,18 @@ out.println(board.printBefore());
 		%>
 		<td><img src="<%=icon%>" alt="<%=resource.getString("GML.groupe") %>" title="<%=resource.getString("GML.groupe")%>" align="absmiddle"></td>
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(grObject.getName())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
 	</tr>
 	<tr>			
 	    <td></td>
 		<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.description") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(grObject.getDescription())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
 	</tr>
 	<% if (grObject.getRule() != null) { %>
 	<tr>			
     	<td></td>
     	<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("JDP.synchroRule") %> :</td>
-    	<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(grObject.getRule())%></td>
+    	<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
     </tr>
     <% } %>
 </table>
@@ -232,9 +232,9 @@ out.println(board.printAfter());
 			        else
 			        	groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
 					arrayLine.addArrayCellIconPane(iconPane1);
-					arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
+					arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
 			        arrayLine.addArrayCellText(group.getNbUsers());
-			        arrayLine.addArrayCellText(Encode.javaStringToHtmlString(group.getDescription()));
+			        arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
 		    	}
 			}
 		} 	

@@ -30,7 +30,7 @@
     Domain domObject = (Domain)request.getAttribute("domainObject");
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
     browseBar.setPath(resource.getString("JDP.domainSynchro") + "...");
 %>
 <html>
@@ -62,7 +62,7 @@ function ValidForm(){
                             <%=resource.getString("GML.name")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="domainName" size="50" maxlength="20" VALUE="<%=Encode.javaStringToHtmlString(domObject.getName())%>">
+                            <input type="text" name="domainName" size="50" maxlength="20" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>">
                         </td>
                     </tr>
                     <tr>			
@@ -70,7 +70,7 @@ function ValidForm(){
                             <%=resource.getString("GML.description")%> :
                         </td>
                         <td align=left valign="baseline">
-                            <input type="text" name="domainDescription" size="50" maxlength="20" VALUE="<%=Encode.javaStringToHtmlString(domObject.getDescription())%>"> 
+                            <input type="text" name="domainDescription" size="50" maxlength="20" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>"> 
                         </td>
                     </tr>
 			<tr>

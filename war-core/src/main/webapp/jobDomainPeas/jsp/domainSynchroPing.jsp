@@ -28,7 +28,7 @@
     Board board = gef.getBoard();
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")));
     browseBar.setPath(resource.getString("JDP.domainSynchroReport") + "...");
 %>
 <html>
