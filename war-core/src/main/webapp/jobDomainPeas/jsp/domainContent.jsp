@@ -39,7 +39,7 @@
 	String  thisDomainId 	= domObject.getId();
 	
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
 	
     // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
@@ -121,6 +121,7 @@
     	}
     }
 %>
+
 <HTML>
 <HEAD>
 <%
@@ -160,12 +161,12 @@ out.println(board.printBefore());
 						 }
 					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("GML.nom") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(domObject.getName())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getName())%></td>
 	</tr>
 	<tr>
 	    <td></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("GML.description") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(domObject.getDescription())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%></td>
 	</tr>
 	<tr>
 	    <td></td>
@@ -173,23 +174,23 @@ out.println(board.printBefore());
 			<%=resource.getString("JDP.class") %> :
 		</td>
 		<td align=left valign="baseline" width="100%">
-			<%=Encode.javaStringToHtmlString(domObject.getDriverClassName())%>
+			<%=EncodeHelper.javaStringToHtmlString(domObject.getDriverClassName())%>
 		</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("JDP.properties") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(domObject.getPropFileName())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getPropFileName())%></td>
 	</tr>
 	<tr>
 		<td></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("JDP.serverAuthentification") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(domObject.getAuthenticationServer())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getAuthenticationServer())%></td>
 	</tr>
 	<tr>
 		<td></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("JDP.silverpeasServerURL") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=Encode.javaStringToHtmlString(domObject.getSilverpeasServerURL())%></td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%></td>
 	</tr>
 </table>
 <%
@@ -262,9 +263,9 @@ out.println(board.printAfter());
 	          else
 	        	  groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
 	          arrayLine.addArrayCellIconPane(iconPane1);
-	          arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
+	          arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
 	          arrayLine.addArrayCellText(group.getNbUsers());
-	          arrayLine.addArrayCellText(Encode.javaStringToHtmlString(group.getDescription()));
+	          arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
     	  }
       }
   } 	

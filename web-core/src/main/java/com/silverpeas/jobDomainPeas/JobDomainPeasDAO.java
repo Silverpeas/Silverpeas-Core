@@ -273,7 +273,7 @@ public class JobDomainPeasDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection selectGroupSynchroInsertUpdateTableDomain_Group(
+  public static Collection<Group> selectGroupSynchroInsertUpdateTableDomain_Group(
       Domain domain) throws SQLException {
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasDAO.selectGroupSynchroInsertUpdateTableDomain_Group",
@@ -285,7 +285,7 @@ public class JobDomainPeasDAO {
     AdminController adminCtrl = new AdminController(null);
 
     // sélectionne les users dans Silverpeas
-    Collection listRes = new ArrayList();
+    Collection<Group> listRes = new ArrayList<Group>();
 
     String query = " SELECT g.id" + " FROM Domain" + domainName
         + "_Group d, ST_Group g " + " WHERE g.domainId = " + domain.getId()
@@ -321,7 +321,7 @@ public class JobDomainPeasDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection selectUserSynchroInsertUpdateTableDomain_User(
+  public static Collection<UserFull> selectUserSynchroInsertUpdateTableDomain_User(
       Domain domain) throws SQLException {
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasDAO.selectUserSynchroInsertUpdateTableDomain_User",
@@ -333,7 +333,7 @@ public class JobDomainPeasDAO {
     AdminController adminCtrl = new AdminController(null);
 
     // sélectionne les users dans Silverpeas
-    Collection listRes = new ArrayList();
+    Collection<UserFull> listRes = new ArrayList<UserFull>();
     UserFull userFull;
 
     String query = " SELECT u.id" + " FROM Domain" + domainName
@@ -415,7 +415,7 @@ public class JobDomainPeasDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection selectUserSynchroDeleteTableDomain_User(Domain domain)
+  public static Collection<UserDetail> selectUserSynchroDeleteTableDomain_User(Domain domain)
       throws SQLException {
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasDAO.selectUserSynchroDeleteTableDomain_User",
@@ -424,7 +424,7 @@ public class JobDomainPeasDAO {
     AdminController adminCtrl = new AdminController(null);
 
     // sélectionne les users dans Silverpeas
-    Collection listRes = new ArrayList();
+    Collection<UserDetail> listRes = new ArrayList<UserDetail>();
     UserDetail userDetail;
 
     String query = " SELECT id " + " FROM ST_User " + " WHERE domainId = "

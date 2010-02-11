@@ -34,8 +34,7 @@
     boolean 	isUserRW 		= ((Boolean)request.getAttribute("isUserRW")).booleanValue();
     boolean 	isX509Enabled 	= ((Boolean)request.getAttribute("isX509Enabled")).booleanValue();
     boolean		isGroupManager	= ((Boolean)request.getAttribute("isOnlyGroupManager")).booleanValue();
-    
-    System.out.println("isUserRW = "+isUserRW);
+    boolean		isUserManageableByGroupManager	= ((Boolean)request.getAttribute("userManageableByGroupManager")).booleanValue();
     
     String     	thisUserId 		= userObject.getId();
 
@@ -43,12 +42,12 @@
     browseBar.setComponentName("nom du user");
    
     if (request.getAttribute("domainName") != null && request.getAttribute("domainURL") != null)
-        browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+        browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
 
     if (groupsPath != null && groupsPath.length() > 0)
         browseBar.setPath(groupsPath);
 
-    if (isDomainRW && isUserRW && !isGroupManager)
+    if (isDomainRW && isUserRW && (!isGroupManager || (isGroupManager && isUserManageableByGroupManager)))
     {
    		operationPane.addOperation(resource.getIcon("JDP.userUpdate"),resource.getString("JDP.userUpdate"),"displayUserModify?Iduser="+thisUserId);
    		operationPane.addOperation(resource.getIcon("JDP.userDel"),resource.getString("JDP.userDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.userDelConfirm")+"','userDelete?Iduser="+thisUserId+"')");
@@ -88,18 +87,18 @@ out.println(frame.printBefore());
 <%
 out.println(board.printBefore());
 %>
-<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.lastName") %> :</td>
-		<td align=left valign="baseline"><%=Encode.javaStringToHtmlString(userObject.getLastName())%></td>
+		<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.surname") %> :</td>
-		<td align=left valign="baseline"><%=Encode.javaStringToHtmlString(userObject.getFirstName())%></td>
+		<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.eMail") %> :</td>
-		<td align=left valign="baseline"><%=Encode.javaStringToHtmlString(userObject.geteMail())%></td>
+		<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("JDP.userRights") %> :</td>
@@ -120,7 +119,7 @@ out.println(board.printBefore());
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("GML.login") %> :</td>
-		<td align="left" valign="baseline"><%=Encode.javaStringToHtmlString(userObject.getLogin())%></td>
+		<td align="left" valign="baseline"><%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%></td>
 	</tr>
 	<tr>
 		<td class="textePetitBold"><%=resource.getString("JDP.silverPassword") %> :</td>
@@ -155,7 +154,7 @@ out.println(board.printBefore());
 				if("STRING".equals(userObject.getPropertyType(property)) ||
 					"USERID".equals(userObject.getPropertyType(property))) {
 					
-					out.print(Encode.javaStringToHtmlString(userObject.getValue(property)));
+					out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
 		
 				} else if("BOOLEAN".equals(userObject.getPropertyType(property))) {
 					 

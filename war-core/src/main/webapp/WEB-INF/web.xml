@@ -208,6 +208,11 @@
     <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>JobDomainPeasAjaxServlet</servlet-name>
+    <display-name>JobDomainPeasAjaxServlet</display-name>
+    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasAjaxServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
     <display-name>JobManagerPeasRequestRouter</display-name>
     <servlet-class>com.silverpeas.jobManagerPeas.servlets.JobManagerPeasRequestRouter</servlet-class>
@@ -594,6 +599,10 @@
   <servlet-mapping>
     <servlet-name>JobDomainPeasRequestRouter</servlet-name>
     <url-pattern>/RjobDomainPeas/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JobDomainPeasAjaxServlet</servlet-name>
+    <url-pattern>/JobDomainPeasAJAXServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>

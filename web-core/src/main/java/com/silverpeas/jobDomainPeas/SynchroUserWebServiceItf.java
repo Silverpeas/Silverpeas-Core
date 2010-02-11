@@ -25,6 +25,10 @@ package com.silverpeas.jobDomainPeas;
 
 import java.util.Collection;
 
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+
 /**
  * Interface de definition des webServices pour la synchronisation des utilisateurs d'un domaine
  * @c.bonin
@@ -37,14 +41,14 @@ public interface SynchroUserWebServiceItf {
   public String insertUpdateDomainWebService(String idDomain, String nameDomain);
 
   public String insertUpdateListGroupWebService(String idDomain,
-      String nameDomain, Collection listGroupToInsertUpdate);
+      String nameDomain, Collection<Group> listGroupToInsertUpdate);
 
   public String deleteListGroupWebService(String idDomain,
-      Collection listGroupToInsertUpdate);
+      Collection<String> listGroupToInsertUpdate);
 
   public String insertUpdateListUserWebService(String idDomain,
-      Collection listUserToInsertUpdate, Collection listGroupToInsertUpdate);
+      Collection<UserFull> listUserToInsertUpdate, Collection<Group> listGroupToInsertUpdate);
 
   public String deleteListUserWebService(String idDomain,
-      Collection listUserToDelete);
+      Collection<UserDetail> listUserToDelete);
 }

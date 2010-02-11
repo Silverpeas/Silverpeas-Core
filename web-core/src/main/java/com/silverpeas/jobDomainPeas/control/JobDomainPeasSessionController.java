@@ -72,6 +72,7 @@ import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
@@ -93,7 +94,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   String m_TargetDomainId = "";
   DomainNavigationStock m_TargetDomain = null;
 
-  Vector m_GroupsPath = new Vector();
+  Vector<GroupNavigationStock> m_GroupsPath = new Vector<GroupNavigationStock>();
 
   SynchroThread m_theThread = null;
   Exception m_ErrorOccured = null;
@@ -101,12 +102,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   Selection sel = null;
 
-  List usersToImport = null;
-  Hashtable queryToImport = null;
+  List<UserDetail> usersToImport = null;
+  Hashtable<String, String> queryToImport = null;
 
   AdminController m_AdminCtrl = null;
 
-  private ArrayList listSelectedUsers = new ArrayList();
+  private ArrayList<String> listSelectedUsers = new ArrayList<String>();
 
   // pagination de la liste des résultats
   private int indexOfFirstItemToDisplay = 0;
@@ -121,7 +122,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle",
-        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasIcons");
+        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasIcons",
+        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
     setComponentRootName(URLManager.CMP_JOBDOMAINPEAS);
     m_AdminCtrl = new AdminController(getUserId());
     sel = getSelection();
@@ -191,9 +193,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return valret;
   }
 
-  public void createUser(String userLogin, String userLastName,
+  public String createUser(String userLogin, String userLastName,
       String userFirstName, String userEMail, String userAccessLevel,
-      boolean userPasswordValid, String userPassword, HashMap properties)
+      boolean userPasswordValid, String userPassword, HashMap<String, String> properties,
+      String groupId)
       throws JobDomainPeasException, JobDomainPeasTrappedException {
     UserDetail theNewUser = new UserDetail();
     String idRet = null;
@@ -244,13 +247,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // process extra properties
-      Set keys = properties.keySet();
-      Iterator iKeys = keys.iterator();
+      Set<String> keys = properties.keySet();
+      Iterator<String> iKeys = keys.iterator();
       String key = null;
       String value = null;
       while (iKeys.hasNext()) {
-        key = (String) iKeys.next();
-        value = (String) properties.get(key);
+        key = iKeys.next();
+        value = properties.get(key);
 
         uf.setValue(key, value);
       }
@@ -265,13 +268,20 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     // regroupement de l'utilisateur dans un groupe
     regroupInGroup(properties, null);
+
+    // If group is provided, add newly created user to it
+    if (StringUtil.isDefined(groupId)) {
+      m_AdminCtrl.addUserInGroup(idRet, groupId);
+    }
+
+    return idRet;
   }
 
   /**
    * Regroupement éventuel de l'utilisateur dans un groupe (pour les domaines SQL)
    * @throws JobDomainPeasException
    */
-  private void regroupInGroup(HashMap properties, String lastGroupId)
+  private void regroupInGroup(HashMap<String, String> properties, String lastGroupId)
       throws JobDomainPeasException {
 
     // Traitement du domaine SQL
@@ -287,8 +297,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       String nomRegroup = null;
       String theUserIdToRegroup = m_TargetUserId;
       String[] newUserIds;
-      List lUserIds;
-      List lNewUserIds;
+      List<String> lUserIds;
+      List<String> lNewUserIds;
       if (numPropertyRegroup > -1) {
         String nomPropertyRegroupement = SilverpeasSettings.readString(
             specificRs, "property_" + numPropertyRegroup + ".Name", null);
@@ -299,7 +309,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (lastGroupId != null) {
             Group lastGroup = m_AdminCtrl.getGroupById(lastGroupId);
             lUserIds = Arrays.asList((String[]) lastGroup.getUserIds());
-            lNewUserIds = new ArrayList(lUserIds);
+            lNewUserIds = new ArrayList<String>(lUserIds);
             lNewUserIds.remove(theUserIdToRegroup);
             newUserIds = (String[]) lNewUserIds.toArray(new String[lNewUserIds
                 .size()]);
@@ -308,14 +318,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           }
 
           // Recherche du nom du regroupement (nom du groupe)
-          Set keys = properties.keySet();
-          Iterator iKeys = keys.iterator();
+          Set<String> keys = properties.keySet();
+          Iterator<String> iKeys = keys.iterator();
           String key = null;
           String value = null;
           boolean trouve = false;
           while (iKeys.hasNext()) {
-            key = (String) iKeys.next();
-            value = (String) properties.get(key);
+            key = iKeys.next();
+            value = properties.get(key);
 
             if (key.equals(nomPropertyRegroupement)) {
               trouve = true;
@@ -347,7 +357,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
 
         lUserIds = Arrays.asList((String[]) group.getUserIds());
-        lNewUserIds = new ArrayList(lUserIds);
+        lNewUserIds = new ArrayList<String>(lUserIds);
         lNewUserIds.add(theUserIdToRegroup);
         newUserIds = (String[]) lNewUserIds.toArray(new String[lNewUserIds
             .size()]);
@@ -675,7 +685,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     // pas d'erreur, on importe les utilisateurs
-    HashMap properties;
+    HashMap<String, String> properties;
     for (int i = 0; i < csvValues.length; i++) {
       // Nom
       nom = csvValues[i][0].getValueString();
@@ -709,7 +719,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       motDePasse = csvValues[i][5].getValueString();
 
       // données spécifiques
-      properties = new HashMap();
+      properties = new HashMap<String, String>();
       if (csvReader.getM_specificNbCols() > 0) {
         if ("-1".equals(getTargetDomain().getId())
             || "0".equals(getTargetDomain().getId())) {// domaine Silverpeas
@@ -774,7 +784,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       createUser(login, nom, prenom, email, userAccessLevel, true, motDePasse,
-          properties); // l'id User créé est dans m_TargetUserId
+          properties, null); // l'id User créé est dans m_TargetUserId
 
     }
   }
@@ -830,7 +840,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void modifyUser(String idUser, String userLastName,
       String userFirstName, String userEMail, String userAccessLevel,
-      boolean userPasswordValid, String userPassword, HashMap properties)
+      boolean userPasswordValid, String userPassword, HashMap<String, String> properties)
       throws JobDomainPeasException {
     UserFull theModifiedUser = null;
     String idRet = null;
@@ -861,13 +871,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     // process extra properties
-    Set keys = properties.keySet();
-    Iterator iKeys = keys.iterator();
+    Set<String> keys = properties.keySet();
+    Iterator<String> iKeys = keys.iterator();
     String key = null;
     String value = null;
     while (iKeys.hasNext()) {
-      key = (String) iKeys.next();
-      value = (String) properties.get(key);
+      key = iKeys.next();
+      value = properties.get(key);
 
       theModifiedUser.setValue(key, value);
     }
@@ -922,26 +932,70 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     UserDetail user = getUserDetail(idUser);
 
-    idRet = m_AdminCtrl.deleteUser(idUser);
-    if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.deleteUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "UserId="
-          + idUser);
-    }
-    if (m_TargetUserId.equals(idUser)) {
-      m_TargetUserId = null;
+    boolean deleteUser = true;
+
+    // TODO : Manage deleting case for group manager
+    if (!"A".equals(getUserAccessLevel()) && !"D".equals(getUserAccessLevel()) && isGroupManager()) {
+      List<String> directGroupIds =
+          Arrays.asList(getOrganizationController().getDirectGroupIdsOfUser(idUser));
+      List<String> manageableGroupIds = getUserManageableGroupIds();
+
+      String directGroupId = null;
+      String rootGroupId = null;
+      List<String> groupIdLinksToRemove = new ArrayList<String>();
+      for (int g = 0; g < directGroupIds.size(); g++) {
+        directGroupId = directGroupIds.get(g);
+
+        // get root group of each directGroup
+        List<String> groupPath = m_AdminCtrl.getPathToGroup(directGroupId);
+        if (groupPath != null && groupPath.size() > 0) {
+          rootGroupId = groupPath.get(0);
+        } else {
+          rootGroupId = directGroupId;
+        }
+
+        // if root group is not one of manageable group, avoid deletion
+        // user belongs to another community
+        if (!manageableGroupIds.contains(rootGroupId)) {
+          deleteUser = false;
+        } else {
+          groupIdLinksToRemove.add(directGroupId);
+        }
+      }
+
+      if (!deleteUser) {
+        // removes only links between user and manageable groups
+        for (Iterator<String> iterator = groupIdLinksToRemove.iterator(); iterator.hasNext();) {
+          String groupIdLinkToRemove = iterator.next();
+          m_AdminCtrl.removeUserFromGroup(idUser, groupIdLinkToRemove);
+        }
+        
+        refresh();
+      }
     }
 
-    if ((getDomainActions() & AbstractDomainDriver.ACTION_X509_USER) != 0) {
-      // revocate user's certificate
-      revocateCertificate(user);
-    }
+    if (deleteUser) {
+      idRet = m_AdminCtrl.deleteUser(idUser);
+      if (!StringUtil.isDefined(idRet)) {
+        throw new JobDomainPeasException(
+            "JobDomainPeasSessionController.deleteUser()",
+            SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "UserId="
+            + idUser);
+      }
+      if (m_TargetUserId.equals(idUser)) {
+        m_TargetUserId = null;
+      }
 
-    refresh();
+      if ((getDomainActions() & AbstractDomainDriver.ACTION_X509_USER) != 0) {
+        // revocate user's certificate
+        revocateCertificate(user);
+      }
+
+      refresh();
+    }
   }
 
-  public Iterator getPropertiesToImport() throws JobDomainPeasException {
+  public Iterator<DomainProperty> getPropertiesToImport() throws JobDomainPeasException {
     return m_AdminCtrl.getSpecificPropertiesToImportUsers(m_TargetDomainId,
         getLanguage()).iterator();
   }
@@ -954,7 +1008,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin);
 
     idRet = m_AdminCtrl.synchronizeImportUser(m_TargetDomainId, userLogin);
-    if ((idRet == null) || (idRet.length() <= 0)) {
+    if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.importUser()",
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_USER",
@@ -981,7 +1035,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     refresh();
   }
 
-  public List searchUsers(Hashtable query) throws JobDomainPeasException {
+  public List<UserDetail> searchUsers(Hashtable<String, String> query)
+      throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.searchUsers()",
         "root.MSG_GEN_ENTER_METHOD", "query=" + query.toString());
@@ -995,11 +1050,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return usersToImport;
   }
 
-  public List getUsersToImport() {
+  public List<UserDetail> getUsersToImport() {
     return usersToImport;
   }
 
-  public Hashtable getQueryToImport() {
+  public Hashtable<String, String> getQueryToImport() {
     return queryToImport;
   }
 
@@ -1015,7 +1070,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
 
     idRet = m_AdminCtrl.synchronizeUser(idUser);
-    if ((idRet == null) || (idRet.length() <= 0)) {
+    if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.synchroUser()",
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_USER");
@@ -1032,7 +1087,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
 
     idRet = m_AdminCtrl.synchronizeRemoveUser(idUser);
-    if ((idRet == null) || (idRet.length() <= 0)) {
+    if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.unsynchroUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER");
@@ -1054,7 +1109,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } else {
       i = m_GroupsPath.size() - 1;
       while ((i >= 0)
-          && (((GroupNavigationStock) m_GroupsPath.get(i)).isThisGroup(groupId) == false)) {
+          && (m_GroupsPath.get(i).isThisGroup(groupId) == false)) {
         m_GroupsPath.removeElementAt(i);
         i--;
       }
@@ -1068,7 +1123,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (StringUtil.isDefined(groupId)) {
       i = 0;
       while ((i < m_GroupsPath.size())
-          && (((GroupNavigationStock) m_GroupsPath.get(i)).isThisGroup(groupId) == false)) {
+          && (m_GroupsPath.get(i).isThisGroup(groupId) == false)) {
         i++;
       }
       if (i < m_GroupsPath.size()) {
@@ -1084,7 +1139,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           groupId))) {
         Group targetGroup = m_AdminCtrl.getGroupById(groupId);
         if (GroupNavigationStock.isGroupValid(targetGroup)) {
-          List manageableGroupIds = null;
+          List<String> manageableGroupIds = null;
           if (isOnlyGroupManager() && !isGroupManagerOnGroup(groupId))
             manageableGroupIds = getUserManageableGroupIds();
           GroupNavigationStock newSubGroup = new GroupNavigationStock(groupId,
@@ -1105,33 +1160,33 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (m_GroupsPath.size() <= 0) {
       return null;
     }
-    return (((GroupNavigationStock) m_GroupsPath.lastElement()).getThisGroup());
+    return m_GroupsPath.lastElement().getThisGroup();
   }
 
   /**
    * @return a List with 2 elements. First one, a List of UserDetail. Last one, a List of Group.
    * @throws JobDomainPeasException
    */
-  public List getGroupManagers() throws JobDomainPeasException {
-    List usersAndGroups = new ArrayList();
-    List users = new ArrayList();
-    List groups = new ArrayList();
+  public List<List> getGroupManagers() throws JobDomainPeasException {
+    List<List> usersAndGroups = new ArrayList<List>();
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    List<Group> groups = new ArrayList<Group>();
 
     GroupProfileInst profile = m_AdminCtrl.getGroupProfile(getTargetGroup()
         .getId());
 
     if (profile != null) {
-      List groupIds = profile.getAllGroups();
+      List<String> groupIds = profile.getAllGroups();
       Group group = null;
       for (int nI = 0; nI < groupIds.size(); nI++) {
-        group = m_AdminCtrl.getGroupById((String) groupIds.get(nI));
+        group = m_AdminCtrl.getGroupById(groupIds.get(nI));
         groups.add(group);
       }
 
-      List userIds = profile.getAllUsers();
+      List<String> userIds = profile.getAllUsers();
       UserDetail user = null;
       for (int nI = 0; nI < userIds.size(); nI++) {
-        user = getUserDetail((String) userIds.get(nI));
+        user = getUserDetail(userIds.get(nI));
         users.add(user);
       }
     }
@@ -1228,8 +1283,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             "JobDomainPeasSessionController.getTargetGroup()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
-      groups = ((GroupNavigationStock) m_GroupsPath.lastElement())
-          .getGroupPage();
+      groups = m_GroupsPath.lastElement().getGroupPage();
     } else { // Domain case
       groups = m_TargetDomain.getGroupPage();
     }
@@ -1260,8 +1314,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             "JobDomainPeasSessionController.getTargetGroup()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
-      usDetails = ((GroupNavigationStock) m_GroupsPath.lastElement())
-          .getUserPage();
+      usDetails = m_GroupsPath.lastElement().getUserPage();
     } else { // Domain case
       usDetails = m_TargetDomain.getUserPage();
     }
@@ -1289,8 +1342,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     boolean[] valret = new boolean[4];
     if (isParentGroup) {
       if (m_GroupsPath.size() > 0) {
-        GroupNavigationStock theGroupStock = ((GroupNavigationStock) m_GroupsPath
-            .lastElement());
+        GroupNavigationStock theGroupStock = m_GroupsPath.lastElement();
 
         valret[0] = (!theGroupStock.isFirstGroupPage());
         valret[1] = (!theGroupStock.isLastGroupPage());
@@ -1326,7 +1378,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             "JobDomainPeasSessionController.previousGroupPage()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
-      ((GroupNavigationStock) m_GroupsPath.lastElement()).previousGroupPage();
+      m_GroupsPath.lastElement().previousGroupPage();
     } else {
       if (m_TargetDomain == null) {
         throw new JobDomainPeasException(
@@ -1345,7 +1397,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             "JobDomainPeasSessionController.nextGroupPage()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
-      ((GroupNavigationStock) m_GroupsPath.lastElement()).nextGroupPage();
+      m_GroupsPath.lastElement().nextGroupPage();
     } else {
       if (m_TargetDomain == null) {
         throw new JobDomainPeasException(
@@ -1364,7 +1416,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             "JobDomainPeasSessionController.previousUserPage()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
-      ((GroupNavigationStock) m_GroupsPath.lastElement()).previousUserPage();
+      m_GroupsPath.lastElement().previousUserPage();
     } else {
       if (m_TargetDomain == null) {
         throw new JobDomainPeasException(
@@ -1382,7 +1434,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             "JobDomainPeasSessionController.nextUserPage()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
-      ((GroupNavigationStock) m_GroupsPath.lastElement()).nextUserPage();
+      m_GroupsPath.lastElement().nextUserPage();
     } else {
       if (m_TargetDomain == null) {
         throw new JobDomainPeasException(
@@ -1400,7 +1452,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     int i;
 
     for (i = 0; i < m_GroupsPath.size(); i++) {
-      theGroup = ((GroupNavigationStock) m_GroupsPath.get(i)).getThisGroup();
+      theGroup = m_GroupsPath.get(i).getThisGroup();
       if (strPath.length() > 0) {
         strPath.append(" &gt ");
       }
@@ -1600,7 +1652,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       m_TargetDomain = null;
       m_TargetDomainId = "";
     } else {
-      List manageableGroupIds = null;
+      List<String> manageableGroupIds = null;
       if (isOnlyGroupManager())
         manageableGroupIds = getUserManageableGroupIds();
 
@@ -1702,13 +1754,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isGroupManagerOnGroup(String groupId)
       throws JobDomainPeasException {
-    List manageableGroupIds = getUserManageableGroupIds();
+    List<String> manageableGroupIds = getUserManageableGroupIds();
 
     if (manageableGroupIds.contains(groupId)) {
       // Current user is directly manager of group
       return true;
     } else {
-      List groupPath = m_AdminCtrl.getPathToGroup(groupId);
+      List<String> groupPath = m_AdminCtrl.getPathToGroup(groupId);
 
       groupPath.retainAll(manageableGroupIds);
 
@@ -1722,7 +1774,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isGroupManagerDirectlyOnCurrentGroup()
       throws JobDomainPeasException {
-    List manageableGroupIds = getUserManageableGroupIds();
+    List<String> manageableGroupIds = getUserManageableGroupIds();
 
     return manageableGroupIds.contains(getTargetGroup().getId());
   }
@@ -1744,10 +1796,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   private Group[] filterGroupsToGroupManager(Group[] groups) {
     // get all manageable groups by current user
-    List manageableGroupIds = getUserManageableGroupIds();
-    Iterator itManageableGroupsIds = null;
+    List<String> manageableGroupIds = getUserManageableGroupIds();
+    Iterator<String> itManageableGroupsIds = null;
 
-    List temp = new ArrayList();
+    List<Group> temp = new ArrayList<Group>();
 
     // filter groups
     Group group = null;
@@ -1758,7 +1810,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         temp.add(group);
       else {
         // get all subGroups of group
-        List subGroupIds = Arrays.asList(m_AdminCtrl
+        List<String> subGroupIds = Arrays.asList(m_AdminCtrl
             .getAllSubGroupIdsRecursively(group.getId()));
 
         // check if at least one manageable group is part of subGroupIds
@@ -2466,7 +2518,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (m_TargetDomain != null)
       m_TargetDomain.refresh();
     for (int i = 0; i < m_GroupsPath.size(); i++) {
-      ((GroupNavigationStock) m_GroupsPath.get(i)).refresh();
+      m_GroupsPath.get(i).refresh();
     }
     setTargetUser(null);
   }
@@ -2502,8 +2554,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     sel.setSelectedElements(SelectionUsersGroups
-        .getUserIds(((GroupNavigationStock) m_GroupsPath.lastElement())
-        .getAllUserPage()));
+        .getUserIds(m_GroupsPath.lastElement().getAllUserPage()));
 
     // Contraintes
     sel.setSetSelectable(false);
@@ -2614,7 +2665,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       // 1- Récupère la liste des groupes à synchroniser (en insert et
       // update)
-      Collection listGroupToInsertUpdate;
+      Collection<Group> listGroupToInsertUpdate;
       try {
         listGroupToInsertUpdate = JobDomainPeasDAO
             .selectGroupSynchroInsertUpdateTableDomain_Group(theDomain);
@@ -2662,7 +2713,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // 4- Récupère la liste des users à synchroniser (en insert et update)
-      Collection listUserToInsertUpdate;
+      Collection<UserFull> listUserToInsertUpdate;
       try {
         listUserToInsertUpdate = JobDomainPeasDAO
             .selectUserSynchroInsertUpdateTableDomain_User(theDomain);
@@ -2673,7 +2724,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // 5- Récupère la liste des users à synchroniser (en delete)
-      Collection listUserToDelete;
+      Collection<UserDetail> listUserToDelete;
       try {
         listUserToDelete = JobDomainPeasDAO
             .selectUserSynchroDeleteTableDomain_User(theDomain);
@@ -2815,7 +2866,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   /**
    * Get list of selected users Ids
    */
-  public ArrayList getListSelectedUsers() {
+  public ArrayList<String> getListSelectedUsers() {
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.getListUsersSelected()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
@@ -2827,7 +2878,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     listSelectedUsers.clear();
   }
 
-  public void setListSelectedUsers(ArrayList list) {
+  public void setListSelectedUsers(ArrayList<String> list) {
     listSelectedUsers = list;
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.setListSelectedUsers()", "",
@@ -2843,4 +2894,56 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return indexOfFirstItemToDisplay;
   }
 
+  public List<Group> getUserManageableGroups() {
+    List<Group> groups = new ArrayList<Group>();
+    List<String> groupIds = getUserManageableGroupIds();
+    Group[] aGroups =
+        getOrganizationController().getGroups(
+        (String[]) groupIds.toArray(new String[groupIds.size()]));
+    groups = Arrays.asList(aGroups);
+    return groups;
+  }
+
+  public UserDetail checkUser(UserDetail userToCheck) {
+    UserDetail existingUser = null;
+    UserDetail[] existingUsers = m_TargetDomain.getAllUserPage();
+    for (int i = 0; i < existingUsers.length; i++) {
+      existingUser = existingUsers[i];
+      if (userToCheck.getLastName().equalsIgnoreCase(existingUser.getLastName()) &&
+          userToCheck.getFirstName().equalsIgnoreCase(existingUser.getFirstName()) &&
+          userToCheck.geteMail().equalsIgnoreCase(existingUser.geteMail())) {
+        return existingUser;
+      }
+    }
+    return null;
+  }
+
+  
+  /**
+   * @return true if community management is activated and target user belongs to one group manageable by current user  
+   */
+  public boolean isUserInAtLeastOneGroupManageableByCurrentUser() {
+    if (!JobDomainSettings.m_UseCommunityManagement)
+      return false;
+    
+    List<String> groupIds = getUserManageableGroupIds();
+    for (Iterator<String> iterator = groupIds.iterator(); iterator.hasNext();) {
+      String groupId = iterator.next();
+      UserDetail[] users = getOrganizationController().getAllUsersOfGroup(groupId);
+      UserDetail user = getUser(m_TargetUserId, users);
+
+      if (user != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private UserDetail getUser(String userId, UserDetail[] users) {
+    for (UserDetail userDetail : users) {
+      if (userId.equals(userDetail.getId()))
+        return userDetail;
+    }
+    return null;
+  }
 }

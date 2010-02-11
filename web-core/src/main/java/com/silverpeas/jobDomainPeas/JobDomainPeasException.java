@@ -32,29 +32,13 @@ package com.silverpeas.jobDomainPeas;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/*
- * CVS Informations
- * 
- * $Id: JobDomainPeasException.java,v 1.2 2004/09/28 12:45:27 neysseri Exp $
- * 
- * $Log: JobDomainPeasException.java,v $
- * Revision 1.2  2004/09/28 12:45:27  neysseri
- * Extension de la longueur du login (de 20 a 50 caracteres) + nettoyage sources
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.1  2002/03/25 10:41:16  tleroi
- * Add jobDomainPeas
- *
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class JobDomainPeasException extends SilverpeasException {
+
+  private static final long serialVersionUID = 3322314537755637519L;
 
   /**
    * Constructor declaration

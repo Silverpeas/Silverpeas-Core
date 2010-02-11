@@ -34,6 +34,8 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
 
 /*
@@ -43,6 +45,8 @@ import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
  */
 
 public class AdminController extends AdminReference implements java.io.Serializable {
+  
+  private static final long serialVersionUID = -1605341557688427460L;
   String m_UserId = null;
 
   public AdminController(String sUserId) {
@@ -109,7 +113,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public Hashtable getTreeView(String userId, String spaceId) {
+  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId) {
     SilverTrace.info("admin", "AdminController.getTreeView",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -121,7 +125,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public List getPathToComponent(String componentId) {
+  public List<SpaceInstLight> getPathToComponent(String componentId) {
     SilverTrace.info("admin", "AdminController.getPathToComponent",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -133,7 +137,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public List getPathToSpace(String spaceId, boolean includeTarget) {
+  public List<SpaceInstLight> getPathToSpace(String spaceId, boolean includeTarget) {
     SilverTrace.info("admin", "AdminController.getPathToSpace",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -253,7 +257,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public Hashtable getAllSpaceTemplates() {
+  public Hashtable<String, SpaceTemplate> getAllSpaceTemplates() {
     return m_Admin.getAllSpaceTemplates();
   }
 
@@ -364,7 +368,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
 
   /** Return all the components names available in webactiv */
-  public Hashtable getAllComponentsNames() {
+  public Hashtable<String, String> getAllComponentsNames() {
     SilverTrace.info("admin", "AdminController.getAllComponentsNames",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -372,12 +376,12 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllComponentsNames",
           "admin.MSG_ERR_GET_ALL_COMPONENT_NAMES", e);
-      return new Hashtable();
+      return new Hashtable<String, String>();
     }
   }
 
   /** Return all the components of silverpeas read in the xmlComponent directory */
-  public Hashtable getAllComponents() {
+  public Hashtable<String, WAComponent> getAllComponents() {
     SilverTrace.info("admin", "AdminController.getAllComponents",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -385,7 +389,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllComponents",
           "admin.MSG_ERR_GET_ALL_COMPONENTS", e);
-      return new Hashtable();
+      return new Hashtable<String, WAComponent>();
     }
   }
 
@@ -510,7 +514,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Space and Component Bin
   // ----------------------------------------------
-  public List getRemovedSpaces() {
+  public List<SpaceInstLight> getRemovedSpaces() {
     try {
       return m_Admin.getRemovedSpaces();
     } catch (Exception e) {
@@ -520,7 +524,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public List getRemovedComponents() {
+  public List<ComponentInstLight> getRemovedComponents() {
     try {
       return m_Admin.getRemovedComponents();
     } catch (Exception e) {
@@ -578,7 +582,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public List getProfilesByObject(String objectId, String objectType,
+  public List<ProfileInst> getProfilesByObject(String objectId, String objectType,
       String componentId) {
     SilverTrace.info("admin", "AdminController.getProfilesByObject",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1371,7 +1375,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   }
 
   /** Return the groupIds from root to group */
-  public List getPathToGroup(String groupId) {
+  public List<String> getPathToGroup(String groupId) {
     SilverTrace.info("admin", "AdminController.getPathToGroup",
         "root.MSG_GEN_ENTER_METHOD", "groupId =" + groupId);
     try {
@@ -1503,7 +1507,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public List getSpecificPropertiesToImportUsers(String domainId,
+  public List<DomainProperty> getSpecificPropertiesToImportUsers(String domainId,
       String language) {
     SilverTrace.info("admin",
         "AdminController.getSpecificPropertiesToImportUsers",
@@ -1518,7 +1522,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public List searchUsers(String domainId, Hashtable query) {
+  public List<UserDetail> searchUsers(String domainId, Hashtable<String, String> query) {
     SilverTrace.info("admin", "AdminController.searchUsers",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -1526,7 +1530,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.searchUsers",
           "admin.MSG_ERR_SYNCHRONIZE_USER", e);
-      return new ArrayList();
+      return new ArrayList<UserDetail>();
     }
   }
 
@@ -1587,6 +1591,30 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.resetAllDBConnections",
           "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
+    }
+  }
+  
+  /** Removes the given user from the given group */
+  public void removeUserFromGroup(String sUserId, String sGroupId) {
+    SilverTrace.info("admin", "AdminController.removeUserFromGroup",
+        "root.MSG_GEN_ENTER_METHOD", "userId = "+sUserId+", groupId = "+sGroupId);
+    try {
+      m_Admin.removeUserFromGroup(sUserId, sGroupId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.removeUserFromGroup",
+          "admin.EX_ERR_REMOVE_USER_FROM_GROUP", e);
+    }
+  }
+  
+  /** Removes the given user from the given group */
+  public void addUserInGroup(String sUserId, String sGroupId) {
+    SilverTrace.info("admin", "AdminController.addUserInGroup",
+        "root.MSG_GEN_ENTER_METHOD", "userId = "+sUserId+", groupId = "+sGroupId);
+    try {
+      m_Admin.addUserInGroup(sUserId, sGroupId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.addUserInGroup",
+          "admin.EX_ERR_ADD_USER_IN_GROUP", e);
     }
   }
 }

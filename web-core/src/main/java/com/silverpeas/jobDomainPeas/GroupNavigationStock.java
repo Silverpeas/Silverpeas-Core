@@ -40,46 +40,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-/*
- * CVS Informations
- * 
- * $Id: GroupNavigationStock.java,v 1.3 2008/03/12 16:42:46 neysseri Exp $
- * 
- * $Log: GroupNavigationStock.java,v $
- * Revision 1.3  2008/03/12 16:42:46  neysseri
- * no message
- *
- * Revision 1.2.16.3  2007/12/13 15:27:59  neysseri
- * no message
- *
- * Revision 1.2.16.2  2007/12/12 16:39:12  neysseri
- * no message
- *
- * Revision 1.2.16.1  2007/12/11 15:32:08  neysseri
- * no message
- *
- * Revision 1.2  2004/09/28 12:45:27  neysseri
- * Extension de la longueur du login (de 20 a 50 caracteres) + nettoyage sources
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.5  2002/04/05 05:22:08  tleroi
- * no message
- *
- * Revision 1.4  2002/04/03 07:40:33  tleroi
- * no message
- *
- * Revision 1.3  2002/04/02 14:34:01  tleroi
- * no message
- *
- * Revision 1.1  2002/03/27 11:22:22  tleroi
- * no message
- *
- *
- *
- */
-
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
  * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
@@ -88,10 +48,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 public class GroupNavigationStock extends NavigationStock {
   Group m_NavGroup = null;
   String m_GroupId = null;
-  List manageableGroupIds = null;
+  List<String> manageableGroupIds = null;
 
   public GroupNavigationStock(String navGroup, AdminController adc,
-      List manageableGroupIds) {
+      List<String> manageableGroupIds) {
     super(adc);
     m_GroupId = navGroup;
     this.manageableGroupIds = manageableGroupIds;
@@ -130,9 +90,9 @@ public class GroupNavigationStock extends NavigationStock {
 
   private String[] filterGroupsToGroupManager(String[] groupIds) {
     // get all manageable groups by current user
-    Iterator itManageableGroupsIds = null;
+    Iterator<String> itManageableGroupsIds = null;
 
-    List temp = new ArrayList();
+    List<String> temp = new ArrayList<String>();
 
     // filter groups
     String groupId = null;
@@ -143,7 +103,7 @@ public class GroupNavigationStock extends NavigationStock {
         temp.add(groupId);
       else {
         // get all subGroups of group
-        List subGroupIds = Arrays.asList(m_adc
+        List<String> subGroupIds = Arrays.asList(m_adc
             .getAllSubGroupIdsRecursively(groupId));
 
         // check if at least one manageable group is part of subGroupIds
@@ -152,7 +112,7 @@ public class GroupNavigationStock extends NavigationStock {
         String manageableGroupId = null;
         boolean find = false;
         while (!find && itManageableGroupsIds.hasNext()) {
-          manageableGroupId = (String) itManageableGroupsIds.next();
+          manageableGroupId = itManageableGroupsIds.next();
           if (subGroupIds.contains(manageableGroupId))
             find = true;
         }

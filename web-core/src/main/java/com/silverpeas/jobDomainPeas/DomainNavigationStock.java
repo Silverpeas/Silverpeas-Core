@@ -41,36 +41,6 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-/*
- * CVS Informations
- * 
- * $Id: DomainNavigationStock.java,v 1.3 2008/03/12 16:42:46 neysseri Exp $
- * 
- * $Log: DomainNavigationStock.java,v $
- * Revision 1.3  2008/03/12 16:42:46  neysseri
- * no message
- *
- * Revision 1.2.16.1  2007/12/13 15:27:59  neysseri
- * no message
- *
- * Revision 1.2  2004/09/28 12:45:27  neysseri
- * Extension de la longueur du login (de 20 a 50 caracteres) + nettoyage sources
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.4  2002/04/05 05:22:08  tleroi
- * no message
- *
- * Revision 1.3  2002/04/03 07:40:33  tleroi
- * no message
- *
- * Revision 1.2  2002/04/02 14:34:01  tleroi
- * no message
- *
- *
- */
-
 /**
  * This class manage the informations needed for domains navigation and browse PRE-REQUIRED : the
  * Domain passed in the constructor MUST BE A VALID DOMAIN (with Id, etc...)
@@ -79,10 +49,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 public class DomainNavigationStock extends NavigationStock {
   Domain m_NavDomain = null;
   String m_DomainId = null;
-  List manageableGroupIds = null;
+  List<String> manageableGroupIds = null;
 
   public DomainNavigationStock(String navDomain, AdminController adc,
-      List manageableGroupIds) {
+      List<String> manageableGroupIds) {
     super(adc);
     m_DomainId = navDomain;
     this.manageableGroupIds = manageableGroupIds;
@@ -110,9 +80,9 @@ public class DomainNavigationStock extends NavigationStock {
 
   private Group[] filterGroupsToGroupManager(Group[] groups) {
     // get all manageable groups by current user
-    Iterator itManageableGroupsIds = null;
+    Iterator<String> itManageableGroupsIds = null;
 
-    List temp = new ArrayList();
+    List<Group> temp = new ArrayList<Group>();
 
     // filter groups
     String groupId = null;
@@ -123,7 +93,7 @@ public class DomainNavigationStock extends NavigationStock {
         temp.add(groups[g]);
       else {
         // get all subGroups of group
-        List subGroupIds = Arrays.asList(m_adc
+        List<String> subGroupIds = Arrays.asList(m_adc
             .getAllSubGroupIdsRecursively(groupId));
 
         // check if at least one manageable group is part of subGroupIds
@@ -132,7 +102,7 @@ public class DomainNavigationStock extends NavigationStock {
         String manageableGroupId = null;
         boolean find = false;
         while (!find && itManageableGroupsIds.hasNext()) {
-          manageableGroupId = (String) itManageableGroupsIds.next();
+          manageableGroupId = itManageableGroupsIds.next();
           if (subGroupIds.contains(manageableGroupId))
             find = true;
         }

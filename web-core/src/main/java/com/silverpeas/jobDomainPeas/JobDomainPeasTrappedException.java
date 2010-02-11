@@ -38,6 +38,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
  */
 public class JobDomainPeasTrappedException extends SilverpeasTrappedException {
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * Constructor declaration
    * @param callingClass

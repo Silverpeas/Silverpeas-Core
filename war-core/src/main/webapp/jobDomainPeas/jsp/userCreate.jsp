@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -35,89 +35,99 @@
     Integer     minLengthPwd = (Integer) request.getAttribute("minLengthPwd");
     Boolean		blanksAllowedInPwd = (Boolean) request.getAttribute("blanksAllowedInPwd");
     UserDetail	currentUser = (UserDetail) request.getAttribute("CurrentUser");
+    List		groups		= (List) request.getAttribute("GroupsManagedByCurrentUser");
     
     boolean bUserRW = false;
     if (userRW != null)
     	bUserRW = userRW.booleanValue();
+    
+    String currentUserAccessLevel = currentUser.getAccessLevel();
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(Encode.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
     browseBar.setPath(groupsPath);
 %>
 <html>
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
 <script language="JavaScript">
-function SubmitWithVerif(verifParams)
+function SubmitWithVerif()
 {
     var namefld = stripInitialWhitespace(document.userForm.userLastName.value);
     var errorMsg = "";
 
-    if (verifParams)
-    {
-         if (isWhitespace(namefld)) 
-            errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.lastName")+resource.getString("JDP.missingFieldEnd")%>\n";
-         
-         <% if (action.equals("userCreate")) { %>
-         	var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
-	         if (isWhitespace(loginfld)) 
-	            errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")%>\n";
-	         else if(loginfld.length < <%=minLengthLogin.intValue()%>) 
-	         	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.minLength")+" "+minLengthLogin.toString()+" "+resource.getString("JDP.caracteres")%>\n";
-	     <% } %>
-	     
-	     <% if (userObject.isPasswordAvailable()) { %>
-	     	var passwordfld = stripInitialWhitespace(document.userForm.userPassword.value);
-	     	if (<%=! blanksAllowedInPwd.booleanValue()%> && passwordfld.indexOf(" ") != -1) 
-	     		errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.noSpaces")%>\n";
-			
-	        if(passwordfld.length < <%=minLengthPwd.intValue()%>) 
-	         	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
-	     <% } %>
+	if (isWhitespace(namefld)) {
+    	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.lastName")+resource.getString("JDP.missingFieldEnd")%>\n";
     }
+        
+    <% if (action.equals("userCreate")) { %>
+    	var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
+        if (isWhitespace(loginfld)) {
+        	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")%>\n";
+        }
+        else if(loginfld.length < <%=minLengthLogin.intValue()%>) {
+        	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.minLength")+" "+minLengthLogin.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+        }
+    <% } %>
+     
+    <% if (userObject.isPasswordAvailable()) { %>
+     	var passwordfld = stripInitialWhitespace(document.userForm.userPassword.value);
+     	if (<%=! blanksAllowedInPwd.booleanValue()%> && passwordfld.indexOf(" ") != -1) 
+     		errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.noSpaces")%>\n";
+		
+        if(passwordfld.length < <%=minLengthPwd.intValue()%>) 
+         	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+     <% } %>
+    
     if (errorMsg == "")
     {
-        document.userForm.submit();
+    	<% if (action.equals("userCreate") && groups != null && groups.size() > 0) { %>
+    		var firstName = $("#userFirstName").attr("value");
+    		var lastName = $("#userLastName").attr("value");
+    		var email = $("#userEMail").attr("value");
+	    	$.post('<%=m_context%>/JobDomainPeasAJAXServlet', {FirstName:firstName,LastName:lastName,Email:email,Action:'CheckUser'},
+					function(data){
+						if (data == "ok")
+						{
+							document.userForm.submit();
+						}
+						else
+						{
+							alert("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
+						}
+					});
+		<% } else { %>
+        	document.userForm.submit();
+        <% } %>
     }
     else
     {
         window.alert(errorMsg);
     }
 }
-<% if (userObject.isPasswordAvailable()) 
-   {
-%>
+
 	function selectUnselect()
 	{
-	    var bSelected;
-	
-	    bSelected = document.userForm.userPasswordValid.checked;
-	    if (bSelected)
-	    {
-	        document.userForm.userPassword.disabled = false;
-	    }
-	    else
-	    {
-	        document.userForm.userPassword.disabled = true;
-	    }
+		<% if (userObject.isPasswordAvailable()) { %>
+		    var bSelected;
+		
+		    bSelected = document.userForm.userPasswordValid.checked;
+		    if (bSelected)
+		    {
+		        document.userForm.userPassword.disabled = false;
+		    }
+		    else
+		    {
+		        document.userForm.userPassword.disabled = true;
+		    }
+		<% } %>
 	}
-<%
-   }
-   else
-   {
-%>  
-	function selectUnselect()
-	{
-	}
-<%	
-   }
-%>	
 
 </script>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload="javascript:selectUnselect()">
-
+<body onload="javascript:selectUnselect()">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -127,61 +137,63 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 <form name="userForm" action="<%=action%>" method="POST">
-    <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) out.print(userObject.getId()); %>">
-    <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+    <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) out.print(userObject.getId()); %>"/>
+    <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
     	<tr>			
-        	<td valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.lastName") %> :</td>
-            <td align=left valign="baseline">
-            	<input type="text" name="userLastName" size="50" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(userObject.getLastName())%>" <% if (action.equals("userMS")) out.println("disabled"); %>>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> 
+        	<td valign="baseline" class="txtlibform"><%=resource.getString("GML.lastName") %> :</td>
+            <td valign="baseline">
+            	<input type="text" name="userLastName" id="userLastName" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" <% if (action.equals("userMS")) out.println("disabled"); %>/>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> 
             </td>
         </tr>
         <tr>			
-        	<td valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.surname") %> :</td>
-            <td align=left valign="baseline">
-	        	<input type="text" name="userFirstName" size="50" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(userObject.getFirstName())%>" <% if (action.equals("userMS")) out.println("disabled"); %>> 
+        	<td valign="baseline" class="txtlibform"><%=resource.getString("GML.surname") %> :</td>
+            <td valign="baseline">
+	        	<input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" <% if (action.equals("userMS")) out.println("disabled"); %>/> 
             </td>
         </tr>
         <tr>			
-        	<td valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.login") %> :</td>
-            <td align=left valign="baseline">
+        	<td valign="baseline" class="txtlibform"><%=resource.getString("GML.login") %> :</td>
+            <td valign="baseline">
             	<% if (action.equals("userCreate")) { %>
-                	<input type="text" name="userLogin" size="50" maxlength="50" VALUE="<%=Encode.javaStringToHtmlString(userObject.getLogin())%>"> &nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
+                	<input type="text" name="userLogin" size="50" maxlength="50" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
                 <% } else { %>
-                	<%=Encode.javaStringToHtmlString(userObject.getLogin())%>
+                	<%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>
                 <% } %>
             </td>
         </tr>
         <tr>			
-            <td valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.eMail") %> :</td>
-            <td align=left valign="baseline">
-                <input type="text" name="userEMail" size="50" maxlength="99" VALUE="<%=Encode.javaStringToHtmlString(userObject.geteMail())%>" <% if (action.equals("userMS")) out.println("disabled"); %>> 
+            <td valign="baseline" class="txtlibform"><%=resource.getString("GML.eMail") %> :</td>
+            <td valign="baseline">
+                <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" <% if (action.equals("userMS")) out.println("disabled"); %>/> 
             </td>
         </tr>
         <tr>
-            <td valign="baseline" align=left class="txtlibform"><%=resource.getString("JDP.userRights") %> :</td>
-            <td align=left valign="baseline">
-            	<% if (currentUser.getAccessLevel() != null && currentUser.getAccessLevel().equalsIgnoreCase("A")) { %>
-                	<INPUT TYPE="radio" NAME="userAccessLevel" VALUE="A" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("A"))) out.print("checked"); %>>&nbsp;<%=resource.getString("GML.administrateur") %><br>
-                	<INPUT TYPE="radio" NAME="userAccessLevel" VALUE="K" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("K"))) out.print("checked"); %>>&nbsp;<%=resource.getString("GML.kmmanager") %><br>
+            <td valign="baseline" class="txtlibform"><%=resource.getString("JDP.userRights") %> :</td>
+            <td valign="baseline">
+            	<% if (StringUtil.isDefined(currentUserAccessLevel) && "A".equals(currentUserAccessLevel)) { %>
+                	<input type="radio" name="userAccessLevel" value="A" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("A"))) out.print("checked"); %>/>&nbsp;<%=resource.getString("GML.administrateur") %><br/>
+                	<input type="radio" name="userAccessLevel" value="K" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("K"))) out.print("checked"); %>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
                 <% } %>
-                <% if (currentUser.getAccessLevel() != null && (currentUser.getAccessLevel().equalsIgnoreCase("A") || currentUser.getAccessLevel().equalsIgnoreCase("D"))) { %>
-                	<INPUT TYPE="radio" NAME="userAccessLevel" VALUE="D" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("D"))) out.print("checked"); %>>&nbsp;<%=resource.getString("GML.domainManager") %><br>
-                	<INPUT TYPE="radio" NAME="userAccessLevel" VALUE="U" <% if ((userObject.getAccessLevel() == null) || (userObject.getAccessLevel().length() <= 0) || (userObject.getAccessLevel().equalsIgnoreCase("U"))) out.print("checked"); %>>&nbsp;<%=resource.getString("GML.user") %><br>
-                	<INPUT TYPE="radio" NAME="userAccessLevel" VALUE="G" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("G"))) out.print("checked"); %>>&nbsp;<%=resource.getString("GML.guest") %>
+                <% if (StringUtil.isDefined(currentUserAccessLevel) && ("A".equals(currentUserAccessLevel) || "D".equals(currentUserAccessLevel))) { %>
+                	<input type="radio" name="userAccessLevel" value="D" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("D"))) out.print("checked"); %>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
+                	<input type="radio" name="userAccessLevel" value="U" <% if ((userObject.getAccessLevel() == null) || (userObject.getAccessLevel().length() <= 0) || (userObject.getAccessLevel().equalsIgnoreCase("U"))) out.print("checked"); %>/>&nbsp;<%=resource.getString("GML.user") %><br/>
+                	<input type="radio" name="userAccessLevel" value="G" <% if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("G"))) out.print("checked"); %>/>&nbsp;<%=resource.getString("GML.guest") %>
+                <% } else { %>
+					<input type="hidden" name="userAccessLevel" value="U"/><%=resource.getString("GML.user") %>
                 <% } %>
             </td>
         </tr>
         <% if (userObject.isPasswordAvailable()) { %>
             <tr>			
-                <td valign="baseline" align=left class="txtlibform"><%=resource.getString("JDP.silverPassword") %> :</td>
-                <td align=left valign="baseline">
-                    <INPUT TYPE="checkbox" NAME="userPasswordValid" VALUE="true" <% if (userObject.isPasswordValid()) out.print("checked"); %> onclick="javascript:selectUnselect()">&nbsp;<%=resource.getString("GML.yes") %><br>
+                <td valign="baseline" class="txtlibform"><%=resource.getString("JDP.silverPassword") %> :</td>
+                <td valign="baseline">
+                    <input type="checkbox" name="userPasswordValid" value="true" <% if (userObject.isPasswordValid()) out.print("checked"); %> onclick="javascript:selectUnselect()"/>&nbsp;<%=resource.getString("GML.yes") %><br/>
                 </td>
             </tr>
             <tr>			
-                <td valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.password") %> :</td>
-                <td align=left valign="baseline">
-                    <input type="password" name="userPassword" size="50" maxlength="32" VALUE="<%=Encode.javaStringToHtmlString(userObject.getPassword())%>"> 
+                <td valign="baseline" class="txtlibform"><%=resource.getString("GML.password") %> :</td>
+                <td valign="baseline">
+                    <input type="password" name="userPassword" size="50" maxlength="32" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getPassword())%>"/> 
                 </td>
             </tr>
         <% } %>
@@ -198,19 +210,19 @@ out.println(board.printBefore());
 					{
 		%>
 				<tr>			
-					<td valign="baseline" align=left class="txtlibform"><%=userObject.getSpecificLabel(resource.getLanguage(), property) %> :</td>
+					<td valign="baseline" class="txtlibform"><%=userObject.getSpecificLabel(resource.getLanguage(), property) %> :</td>
 					
 		<%
 				if("STRING".equals(userObject.getPropertyType(property)) ||
 					"USERID".equals(userObject.getPropertyType(property))) {
 		%>
-					<td align="left" valign="baseline"><input type="text" name="prop_<%=property%>" size="50" maxlength="50" value="<%=Encode.javaStringToHtmlString(userObject.getValue(property))%>"></td>
+					<td align="left" valign="baseline"><input type="text" name="prop_<%=property%>" size="50" maxlength="50" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>"></td>
 		<%
 				} else if("BOOLEAN".equals(userObject.getPropertyType(property))) {
 		%>
 					<td align="left" valign="baseline">
-						<input type="radio" name="prop_<%=property%>" value="1" <% if (userObject.getValue(property) != null && "1".equals(userObject.getValue(property))) out.print("checked"); %>><%=resource.getString("GML.yes") %>
-						<input type="radio" name="prop_<%=property%>" value="0" <% if (userObject.getValue(property) == null || "".equals(userObject.getValue(property)) || "0".equals(userObject.getValue(property))) out.print("checked"); %>><%=resource.getString("GML.no") %>
+						<input type="radio" name="prop_<%=property%>" value="1" <% if (userObject.getValue(property) != null && "1".equals(userObject.getValue(property))) out.print("checked"); %>/><%=resource.getString("GML.yes") %>
+						<input type="radio" name="prop_<%=property%>" value="0" <% if (userObject.getValue(property) == null || "".equals(userObject.getValue(property)) || "0".equals(userObject.getValue(property))) out.print("checked"); %>/><%=resource.getString("GML.no") %>
 					</td>
 		<%
 				}
@@ -222,8 +234,34 @@ out.println(board.printBefore());
         	}
         %>
         
+        <%
+        	//in case of group manager, the added user must be set to one group
+        	//if user manages only once group, user will be added to it
+        	//else if he manages several groups, manager chooses one group 
+        	if (groups != null && groups.size() > 0) {
+		%>
+				<tr>
+                	<td class="txtlibform"><%=resource.getString("GML.groupe") %> :</td>
+                	<td valign="baseline">
+                		<% if (groups.size() == 1) {
+                		  	Group group = (Group) groups.get(0); 
+                		%>
+                			<%=group.getName() %> <input type="hidden" name="GroupId" id="GroupId" value="<%=group.getId()%>"/>
+                		<% } else { %>
+                			<select id="GroupId" name="GroupId">
+                				<% for (int g=0; g<groups.size(); g++) {
+                				  	Group group = (Group) groups.get(g); 
+                				%>
+                					<option value="<%=group.getId()%>"><%=group.getName()%></option>
+                				<% } %>
+                			</select>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+                		<% } %>
+                	</td>
+            	</tr>
+		<% } %>
+        
 		<tr> 
-        	<td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+        	<td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</td>
         </tr>
     </table>
 <%
@@ -233,7 +271,7 @@ out.println(board.printAfter());
 <br/>
 		<%
 		  ButtonPane bouton = gef.getButtonPane();
-		  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
+		  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
           bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
 		  out.println(bouton.print());
 		%>
