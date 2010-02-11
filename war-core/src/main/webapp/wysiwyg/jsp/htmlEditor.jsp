@@ -65,13 +65,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String browseInformation = null;
     String[][] collectionImages = null;
 
-		//For parsing absolute url (Bug FCKEditor)
-		String server = request.getRequestURL().substring(0,request.getRequestURL().toString().lastIndexOf(URLManager.getApplicationURL()));
-	
-		String fileName = "";
-		String path = "";
-		String[][] collectionPages = null;
-		String specificURL = "";		//For Websites only
+	//For parsing absolute url (Bug FCKEditor)
+	String server = request.getRequestURL().substring(0,request.getRequestURL().toString().lastIndexOf(URLManager.getApplicationURL()));
+	int serverPort = request.getServerPort();
+
+	String fileName = "";
+	String path = "";
+	String[][] collectionPages = null;
+	String specificURL = "";		//For Websites only
 
     String wysiwygTextValue = "";
     String editedText;
@@ -113,14 +114,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) { 
 			
         		codeWysiwyg = codeWysiwyg.replaceAll("../../../../../", "/");
-        		codeWysiwyg = codeWysiwyg.replaceAll(server+":", "");
-        		codeWysiwyg = codeWysiwyg.replaceAll(server, "");
+	    		codeWysiwyg = codeWysiwyg.replaceAll(server+":"+serverPort, "");
+    			codeWysiwyg = codeWysiwyg.replaceAll(server+"/", "/");
 		
 			} else {
 				
 				codeWysiwyg = codeWysiwyg.replaceAll("../../../../", URLManager.getApplicationURL()+"/");
-        		codeWysiwyg = codeWysiwyg.replaceAll(server+":", "");
-        		codeWysiwyg = codeWysiwyg.replaceAll(server, "");
+	    		codeWysiwyg = codeWysiwyg.replaceAll(server+":"+serverPort, "");
+    			codeWysiwyg = codeWysiwyg.replaceAll(server+"/", "/");
 			}
         		
 	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
