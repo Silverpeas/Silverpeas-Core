@@ -42,4 +42,5 @@ public class SpaceRow {
 
   public int inheritanceBlocked = -1;
   public String look = null;
+  public int displaySpaceFirst = -1;
 }

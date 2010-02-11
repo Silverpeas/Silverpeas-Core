@@ -40,6 +40,7 @@ import com.silverpeas.external.filesharing.model.FileSharingInterface;
 import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
 import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
+import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -358,10 +359,30 @@ public class AjaxServletLookV5 extends HttpServlet {
       writer.write("<item open=\"" + open + "\" "
           + getSpaceAttributes(space, language, helper) + ">");
       if (open) {
-        getSubSpaces(spaceId, userId, spacePath, componentId, language,
-            orgaController, helper, writer);
-        getComponents(spaceId, componentId, userId, language, orgaController,
-            writer);
+        // Default display configuration
+        boolean spaceBeforeComponent = true;
+        // Display computing : First look at global configuration
+        if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+            JobStartPagePeasSettings.SPACEDISPLAYPOSITION_BEFORE)) {
+          spaceBeforeComponent = true;
+        } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+            JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER)) {
+          spaceBeforeComponent = false;
+        } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+            JobStartPagePeasSettings.SPACEDISPLAYPOSITION_TODEFINE)) {
+          spaceBeforeComponent = space.isDisplaySpaceFirst();
+        }
+        if (spaceBeforeComponent) {
+          getSubSpaces(spaceId, userId, spacePath, componentId, language,
+              orgaController, helper, writer);
+          getComponents(spaceId, componentId, userId, language, orgaController,
+              writer);
+        } else {
+          getComponents(spaceId, componentId, userId, language, orgaController,
+              writer);
+          getSubSpaces(spaceId, userId, spacePath, componentId, language,
+              orgaController, helper, writer);
+        }
       }
       writer.write("</item>");
     }
@@ -441,13 +462,33 @@ public class AjaxServletLookV5 extends HttpServlet {
             + " open=\"" + open + "\">");
 
         if (open) {
+          // Default display configuration
+          boolean spaceBeforeComponent = true;
+          // Display computing : First look at global configuration
+          if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+              JobStartPagePeasSettings.SPACEDISPLAYPOSITION_BEFORE)) {
+            spaceBeforeComponent = true;
+          } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+              JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER)) {
+            spaceBeforeComponent = false;
+          } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+              JobStartPagePeasSettings.SPACEDISPLAYPOSITION_TODEFINE)) {
+            spaceBeforeComponent = space.isDisplaySpaceFirst();
+          }
           // the subtree must be displayed
-          getSubSpaces(subSpaceId, userId, spacePath, targetComponentId,
-              language, orgaController, helper, out);
-
           // components of expanded space must be displayed too
-          getComponents(subSpaceId, targetComponentId, userId, language,
-              orgaController, out);
+          if (spaceBeforeComponent) {
+            getSubSpaces(subSpaceId, userId, spacePath, targetComponentId,
+                language, orgaController, helper, out);
+            getComponents(subSpaceId, targetComponentId, userId, language,
+                orgaController, out);
+          } else {
+            getComponents(subSpaceId, targetComponentId, userId, language,
+                orgaController, out);
+            getSubSpaces(subSpaceId, userId, spacePath, targetComponentId,
+                language, orgaController, helper, out);
+          }
+
         }
 
         out.write("</item>");

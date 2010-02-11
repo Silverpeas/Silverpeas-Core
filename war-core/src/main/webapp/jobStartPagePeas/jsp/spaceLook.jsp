@@ -25,6 +25,15 @@
 --%>
 <%@ include file="check.jsp" %>
 
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+
+<!-- Resource bundle configuration -->
+<fmt:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
+<!-- Retrieve current space bean -->
+<c:set var="curSpace" value="${requestScope.Space}" />
+<c:set var="spacePositionOption" value="${requestScope.displaySpaceOption}" />
+
 <%
 SpaceInst		space				= (SpaceInst) request.getAttribute("Space");
 SpaceLookHelper slh 				= (SpaceLookHelper) request.getAttribute("SpaceLookHelper");
@@ -130,6 +139,22 @@ out.println(board.printBefore());
 				</td>
 			<% } %>
 		</tr>
+  <c:if test="${spacePositionOption}">
+    <tr> 
+      <td class="txtlibform" nowrap valign="top"><fmt:message key="JSPP.SpacePosition" /> :</td>
+      <td valign="top" width="100%">
+	    <c:if test="${curSpace.displaySpaceFirst}">
+	      <input type="radio" value="1" name="SpacePosition" checked/>&nbsp;<fmt:message key="JSPP.SpacePositionFirst" />
+	      <input type="radio" value="2" name="SpacePosition" />&nbsp;<fmt:message key="JSPP.SpacePositionLast" />
+	    </c:if>
+	    <c:if test="${!curSpace.displaySpaceFirst}">
+	      <input type="radio" value="1" name="SpacePosition" />&nbsp;<fmt:message key="JSPP.SpacePositionFirst" />
+	      <input type="radio" value="2" name="SpacePosition" checked/>&nbsp;<fmt:message key="JSPP.SpacePositionLast" />
+	    </c:if>
+	    </td>
+   </tr>
+  </c:if>
+
 	</table>
 <%
 	out.println(board.printAfter());

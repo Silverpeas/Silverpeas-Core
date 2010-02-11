@@ -43,7 +43,7 @@ public class SpaceTable extends Table {
   }
 
   static final private String SPACE_COLUMNS =
-      "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look";
+      "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst";
 
   /**
    * Fetch the current space row from a resultSet.
@@ -84,6 +84,11 @@ public class SpaceTable extends Table {
     s.inheritanceBlocked = rs.getInt(16);
 
     s.look = rs.getString(17);
+
+    s.displaySpaceFirst = rs.getInt(18);
+    if (rs.wasNull()) {
+      s.displaySpaceFirst = 1;
+    }
 
     return s;
   }
@@ -306,7 +311,7 @@ public class SpaceTable extends Table {
 
   static final private String INSERT_SPACE = "insert into" + " ST_Space("
       + SPACE_COLUMNS + ")"
-      + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
@@ -354,6 +359,8 @@ public class SpaceTable extends Table {
     insert.setInt(16, s.inheritanceBlocked);
 
     insert.setString(17, s.look);
+
+    insert.setInt(18, s.displaySpaceFirst);
   }
 
   public void updateSpaceOrder(int spaceId, int orderNum)
@@ -392,7 +399,7 @@ public class SpaceTable extends Table {
       + " updateTime = ?," + " updatedBy = ?,"
             // + " removeTime = ?,"
       + " spaceStatus = ?," + " lang = ?," + " isInheritanceBlocked = ?,"
-      + " look = ? " + " where id = ?";
+      + " look = ?," + " displaySpaceFirst = ? " + " where id = ?";
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
@@ -421,7 +428,9 @@ public class SpaceTable extends Table {
     update.setInt(12, s.inheritanceBlocked);
     update.setString(13, s.look);
 
-    update.setInt(14, s.id);
+    update.setInt(14, s.displaySpaceFirst);
+
+    update.setInt(15, s.id);
     // First page parameters
   }
 

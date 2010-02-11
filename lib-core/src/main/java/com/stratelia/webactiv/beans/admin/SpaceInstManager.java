@@ -96,6 +96,7 @@ public class SpaceInstManager {
     while (translations.hasNext()) {
       spaceInst.addTranslation(translations.next());
     }
+    spaceInst.setDisplaySpaceFirst(spaceInstToCopy.isDisplaySpaceFirst());
 
     return spaceInst;
   }
@@ -265,6 +266,8 @@ public class SpaceInstManager {
 
       spaceInst.setInheritanceBlocked(space.inheritanceBlocked == 1);
       spaceInst.setLook(space.look);
+
+      spaceInst.setDisplaySpaceFirst(space.displaySpaceFirst == 1);
 
       // Get the sub spaces
       String[] asSubSpaceIds = ddManager.organization.space
@@ -770,6 +773,11 @@ public class SpaceInstManager {
       space.inheritanceBlocked = 1;
     else
       space.inheritanceBlocked = 0;
+
+    if (spaceInst.isDisplaySpaceFirst())
+      space.displaySpaceFirst = 1;
+    else
+      space.displaySpaceFirst = 0;
 
     return space;
   }

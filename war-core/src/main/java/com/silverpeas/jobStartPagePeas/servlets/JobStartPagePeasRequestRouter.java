@@ -729,11 +729,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
       if (request.getParameter("NameObject") != null
           && request.getParameter("NameObject").length() > 0) {
-        jobStartPageSC.setCreateSpaceParameters(request
-            .getParameter("NameObject"), request.getParameter("Description"),
+        jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request
+            .getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper
-            .getSelectedLanguage(request), request
-            .getParameter("SelectedLook"));
+            .getSelectedLanguage(request),
+            request.getParameter("SelectedLook"));
       }
 
       if (spaceTemplate != null && spaceTemplate.length() > 0
@@ -763,7 +763,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           .getParameter("profileIndex"));
       destination = getDestinationSpace("SetSpaceTemplateProfile",
           jobStartPageSC, request);
-    } else if (function.equals("EffectiveCreateSpace")) {
+    } else if (function.equals("EffectiveCreateSpace")) { // Space CREATE action
       String spaceId = jobStartPageSC.createSpace();
       if (spaceId != null && spaceId.length() > 0) {
         jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
@@ -969,6 +969,15 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
+      // Add spacePosition data
+      String configSpacePosition = jobStartPageSC.getConfigSpacePosition();
+      // We have to process all case because config can change
+      if ("BEFORE".equalsIgnoreCase(configSpacePosition) ||
+          "AFTER".equalsIgnoreCase(configSpacePosition)) {
+        request.setAttribute("displaySpaceOption", new Boolean(false));
+      } else {
+        request.setAttribute("displaySpaceOption", new Boolean(true));
+      }
       destination = "/jobStartPagePeas/jsp/spaceLook.jsp";
     } else if (function.equals("UpdateSpaceLook")) {
       try {
@@ -1014,7 +1023,24 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
         SpaceInst space = jobStartPageSC.getSpaceInstById();
         space.setLook(selectedLook);
+        // Retrieve global variable configuration
+        String configSpacePosition = jobStartPageSC.getConfigSpacePosition();
+        boolean isDisplaySpaceFirst = true;
+        // Use global variable if defined else use SpacePosition request parameter.
+        if ("BEFORE".equalsIgnoreCase(configSpacePosition)) {
+          isDisplaySpaceFirst = true;
+        } else if ("AFTER".equalsIgnoreCase(configSpacePosition)) {
+          isDisplaySpaceFirst = false;
+        } else {
+          String spacePosition = getParameterValue(items, "SpacePosition");
+          isDisplaySpaceFirst =
+              (StringUtil.isDefined(spacePosition) && "2".equalsIgnoreCase(spacePosition)) ? false
+                  : true;
+        }
+        // Set new space position VO
+        space.setDisplaySpaceFirst(isDisplaySpaceFirst);
 
+        // Save these changes in database
         jobStartPageSC.updateSpaceInst(space);
       } catch (Exception e) {
         throw new AdminException("JobStartPagePeasRequestRouter.AddFileToLook",

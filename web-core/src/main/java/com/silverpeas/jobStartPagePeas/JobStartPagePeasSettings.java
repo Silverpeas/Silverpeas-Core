@@ -43,6 +43,10 @@ public class JobStartPagePeasSettings {
   public static boolean isPublicParameterEnable = false;
   public static boolean useJSR168Portlets = false;
   public static boolean useComponentsCopy = false;
+  public static String SPACEDISPLAYPOSITION_AFTER = null;
+  public static String SPACEDISPLAYPOSITION_BEFORE = null;
+  public static String SPACEDISPLAYPOSITION_TODEFINE = null;
+  public static String SPACEDISPLAYPOSITION_CONFIG = null;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -63,5 +67,13 @@ public class JobStartPagePeasSettings {
         false);
     useComponentsCopy = SilverpeasSettings.readBoolean(rs, "UseComponentsCopy",
         false);
+    SPACEDISPLAYPOSITION_CONFIG =
+        SilverpeasSettings.readString(rs, "DisplaySpacePositionConfiguration", "BEFORE");
+    SPACEDISPLAYPOSITION_AFTER =
+        SilverpeasSettings.readString(rs, "DisplaySpacesAfterComponents", "AFTER");
+    SPACEDISPLAYPOSITION_BEFORE =
+        SilverpeasSettings.readString(rs, "DisplaySpacesBeforeComponents", "BEFORE");
+    SPACEDISPLAYPOSITION_TODEFINE =
+        SilverpeasSettings.readString(rs, "DisplaySpacesToDefine", "TODEFINE");
   }
 }

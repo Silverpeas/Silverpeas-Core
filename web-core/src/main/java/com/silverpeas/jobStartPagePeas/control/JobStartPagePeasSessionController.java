@@ -97,6 +97,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   SpaceTemplateProfile[] m_TemplateProfiles = new SpaceTemplateProfile[0];
   String[][] m_TemplateProfilesGroups = new String[0][0];
   String[][] m_TemplateProfilesUsers = new String[0][0];
+  // Order space / component b
+  boolean m_spaceFirst = true;
+
   // Space sort buffers
   SpaceInst[] m_BrothersSpaces = new SpaceInst[0];
   ComponentInst[] m_BrothersComponents = new ComponentInst[0];
@@ -275,6 +278,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return new Boolean(JobStartPagePeasSettings.isBackupEnable);
   }
 
+  public String getConfigSpacePosition() {
+    return JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG;
+  }
+
   /*********************** Gestion des espaces *****************************************/
   public SpaceInst[] getBrotherSpaces(boolean isNew) {
     String[] sids;
@@ -406,6 +413,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     m_TemplateProfilesGroups = new String[m_TemplateProfiles.length][0];
     m_TemplateProfilesUsers = new String[m_TemplateProfiles.length][0];
     m_look = look;
+    // Only use global variable to set spacePosition
+    if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
+        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG)) {
+      m_spaceFirst = false;
+    } else {
+      m_spaceFirst = true;
+    }
   }
 
   public String createSpace() {
@@ -426,7 +440,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String fatherId = null;
 
     if (m_ssEspace != null && m_ssEspace.equals("SousEspace")) { // on est en creation de
-                                                                 // sous-espace
+      // sous-espace
       String idSpace = spaceint1.getId();
       if (idSpace != null) {
         spaceInst.setDomainFatherId(idSpace);
@@ -455,7 +469,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
 
       if (m_ssEspace != null && m_ssEspace.equals("SousEspace")) { // on est en creation de
-                                                                   // sous-espace
+        // sous-espace
         setSubSpaceId(sSpaceInstId);
       } else {// on est en creation d'espace
         if (fatherId != null && !fatherId.equals("0")) {// dans un espace
@@ -465,6 +479,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         }
       }
     }
+    spaceInst.setDisplaySpaceFirst(m_spaceFirst);
     return sSpaceInstId;
   }
 
@@ -778,7 +793,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         "JobStartPagePeasSessionController.initUserPanelSpaceForGroupsUsers()",
         "root.MSG_GEN_PARAM_VALUE", "compoURL = " + compoURL + " hostSpaceName=" + hostSpaceName +
         " hostComponentName=" + getSpaceInstById().
-            getName() + " hostUrlTest=" + hostUrl);
+        getName() + " hostUrlTest=" + hostUrl);
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(compoURL + "CancelCreateOrUpdateSpaceProfile?Role=" + role);
 
@@ -931,7 +946,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           "JobStartPagePeasSesionController.getBrotherComponents()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '" +
           theComponent.
-              getId() + "'");
+          getId() + "'");
       if (isNew || !theComponent.getId().equals(getManagedInstanceId())) {
         m_BrothersComponents[j++] = theComponent;
       }
@@ -957,7 +972,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           "JobStartPagePeasSesionController.getComponentsOfSpace()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '" +
           theComponent.
-              getId() + "'");
+          getId() + "'");
       m_Components[j++] = theComponent;
     }
     Arrays.sort(m_BrothersComponents);
@@ -1052,12 +1067,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         String valcomp2 = ((WAComponent) o2).getSuite() + ((WAComponent) o2).
             getLabel();
         return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-        }
+      }
 
       public boolean equals(Object o) {
         return false;
-        }
-            });
+      }
+    });
     return componentsModels;
   }
 
@@ -1286,7 +1301,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String compoName = getComponentInst(getManagedInstanceId()).getLabel();
     PairObject[] hostPath =
         { new PairObject(compoName + " > " + labelProfile + " > " + generalMessage.
-            getString("GML.selection"), null) };
+        getString("GML.selection"), null) };
     sel.setHostPath(hostPath);
 
     String hostUrl = compoURL + "EffectiveUpdateInstanceProfile";
@@ -1298,7 +1313,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
         "root.MSG_GEN_PARAM_VALUE", "compoURL = " + compoURL + " hostSpaceName=" + hostSpaceName +
         " hostComponentName=" + getSpaceInstById().
-            getName() + " hostUrlTest=" + hostUrl);
+        getName() + " hostUrlTest=" + hostUrl);
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
 

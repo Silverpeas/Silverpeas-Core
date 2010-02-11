@@ -38,7 +38,8 @@ import com.stratelia.webactiv.organization.SpaceRow;
 /**
  * @author neysseri
  */
-public class SpaceInstLight extends AbstractI18NBean implements Serializable, Comparable<SpaceInstLight> {
+public class SpaceInstLight extends AbstractI18NBean implements Serializable,
+    Comparable<SpaceInstLight> {
 
   private static final long serialVersionUID = 8772050454345960478L;
   private String id = null;
@@ -63,6 +64,8 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
 
   private List<SpaceInstLight> path = null;
 
+  private boolean displaySpaceFirst = true;
+
   public SpaceInstLight() {
     id = "";
     fatherId = "";
@@ -70,6 +73,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
     description = "";
     orderNum = 0;
     level = 0;
+    displaySpaceFirst = true;
   }
 
   public SpaceInstLight(SpaceRow spaceRow) {
@@ -92,6 +96,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
       removedBy = spaceRow.removedBy;
 
       look = spaceRow.look;
+      displaySpaceFirst = (spaceRow.displaySpaceFirst == 1);
     }
   }
 
@@ -110,6 +115,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
       look = spaceInst.getLook();
 
       setTranslations(spaceInst.getTranslations());
+      displaySpaceFirst = spaceInst.isDisplaySpaceFirst();
     }
   }
 
@@ -288,6 +294,14 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
 
   public void setLook(String look) {
     this.look = look;
+  }
+
+  public boolean isDisplaySpaceFirst() {
+    return displaySpaceFirst;
+  }
+
+  public void setDisplaySpaceFirst(boolean displaySpaceFirst) {
+    this.displaySpaceFirst = displaySpaceFirst;
   }
 
 }
