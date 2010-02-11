@@ -37,10 +37,10 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
 
   public static final String ADMINSYNCHROGROUP_JOB_NAME = "AdminSynchroGroupJob";
 
-  private List synchronizedGroupIds = null;
+  private List<String> synchronizedGroupIds = null;
   private Admin admin = null;
 
-  public void initialize(String cron, Admin admin, List synchronizedGroupIds) {
+  public void initialize(String cron, Admin admin, List<String> synchronizedGroupIds) {
     try {
       this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
@@ -86,7 +86,7 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
     String groupId = null;
     for (int i = 0; synchronizedGroupIds != null
         && i < synchronizedGroupIds.size(); i++) {
-      groupId = (String) synchronizedGroupIds.get(i);
+      groupId = synchronizedGroupIds.get(i);
       try {
         admin.synchronizeGroupByRule(groupId, true);
       } catch (AdminException e) {
@@ -103,7 +103,7 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
 
   public void addGroup(String groupId) {
     if (synchronizedGroupIds == null)
-      synchronizedGroupIds = new ArrayList();
+      synchronizedGroupIds = new ArrayList<String>();
     synchronizedGroupIds.add(groupId);
   }
 

@@ -28,6 +28,8 @@ package com.stratelia.webactiv.beans.admin;
 import java.io.Serializable;
 
 public class Domain implements Serializable {
+  
+  private static final long serialVersionUID = 7451639218436788229L;
   private String id;
   private String name;
   private String description;

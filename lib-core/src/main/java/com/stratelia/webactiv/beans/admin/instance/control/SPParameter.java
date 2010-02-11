@@ -29,14 +29,16 @@ import java.util.Hashtable;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class SPParameter implements Serializable, Comparable {
+public class SPParameter implements Serializable, Comparable<SPParameter> {
+  
+  private static final long serialVersionUID = -3362630250347229416L;
   private String name = null;
   private String label = null;
   private String value = null;
   private boolean mandatory = false;
   private String updatable = null;
   private String type = null;
-  private Hashtable helps = null;
+  private Hashtable<String, String> helps = null;
   private String size = null;
   private Integer displayOrder = null;
 
@@ -56,7 +58,7 @@ public class SPParameter implements Serializable, Comparable {
   }
 
   public SPParameter(String name, String label, String value, String mandatory,
-      String updatable, String type, Hashtable helps, String size,
+      String updatable, String type, Hashtable<String, String> helps, String size,
       String defaultValue, String displayOrder, ArrayList options) {
     SilverTrace.info("admin", "SPParameter.SPParameter",
         "root.MSG_GEN_PARAM_VALUE", "name: " + name + ", value: " + value
@@ -86,7 +88,7 @@ public class SPParameter implements Serializable, Comparable {
   }
 
   public SPParameter(String name, String label, String value,
-      boolean mandatory, String updatable, String type, Hashtable helps,
+      boolean mandatory, String updatable, String type, Hashtable<String, String> helps,
       String size, String defaultValue, ArrayList options) {
     this.name = name;
     this.label = label;
@@ -138,14 +140,14 @@ public class SPParameter implements Serializable, Comparable {
     return type;
   }
 
-  public Hashtable getHelps() {
+  public Hashtable<String, String> getHelps() {
     return helps;
   }
 
   public String getHelp(String language) {
     String help = null;
     if (helps != null) {
-      help = (String) helps.get(language);
+      help = helps.get(language);
     }
     return help;
   }
@@ -181,10 +183,8 @@ public class SPParameter implements Serializable, Comparable {
     return clonedParameter;
   }
 
-  public int compareTo(Object o) {
-    SPParameter parameterToCompare = (SPParameter) o;
-
-    return getDisplayOrder().compareTo(parameterToCompare.getDisplayOrder());
+  public int compareTo(SPParameter o) {
+    return getDisplayOrder().compareTo(o.getDisplayOrder());
   }
 
   public String toString() {

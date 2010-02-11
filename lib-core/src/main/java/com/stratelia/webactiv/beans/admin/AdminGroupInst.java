@@ -33,15 +33,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AdminGroupInst implements Serializable {
+  
+  private static final long serialVersionUID = -4321791324660707809L;
   private Group m_Group; // Admin group detail of this node
-  private ArrayList m_alChildrenAdminGroupInst; // Children Admin group inst of
+  private ArrayList<AdminGroupInst> m_alChildrenAdminGroupInst; // Children Admin group inst of
 
   // this node
 
   /** Creates a new Space */
   public AdminGroupInst() {
     m_Group = null;
-    m_alChildrenAdminGroupInst = new ArrayList();
+    m_alChildrenAdminGroupInst = new ArrayList<AdminGroupInst>();
   }
 
   public Group getGroup() {
@@ -52,11 +54,11 @@ public class AdminGroupInst implements Serializable {
     m_Group = group;
   }
 
-  public void setChildrenAdminGroupInst(ArrayList alChildrenAdminGroupInst) {
+  public void setChildrenAdminGroupInst(ArrayList<AdminGroupInst> alChildrenAdminGroupInst) {
     m_alChildrenAdminGroupInst = alChildrenAdminGroupInst;
   }
 
-  public ArrayList getAllChildrenAdminGroupInst() {
+  public ArrayList<AdminGroupInst> getAllChildrenAdminGroupInst() {
     return m_alChildrenAdminGroupInst;
   }
 }

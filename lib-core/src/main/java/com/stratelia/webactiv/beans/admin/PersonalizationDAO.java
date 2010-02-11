@@ -42,9 +42,9 @@ import com.stratelia.webactiv.util.DBUtil;
 public class PersonalizationDAO {
   public static final String PERSONALTABLENAME = "Personalization";
 
-  public static Hashtable getUsersLanguage(Connection con, List userIds)
+  public static Hashtable<String, String> getUsersLanguage(Connection con, List<String> userIds)
       throws SQLException {
-    Hashtable usersLanguage = new Hashtable();
+    Hashtable<String, String> usersLanguage = new Hashtable<String, String>();
     if (userIds == null || userIds.size() == 0)
       return usersLanguage;
 
@@ -55,9 +55,9 @@ public class PersonalizationDAO {
     StringBuffer select = new StringBuffer("select id, languages from ")
         .append(PERSONALTABLENAME).append(" WHERE (");
     String userId = null;
-    Iterator it = userIds.iterator();
+    Iterator<String> it = userIds.iterator();
     while (it.hasNext()) {
-      userId = (String) it.next();
+      userId = it.next();
       select.append("id = '").append(userId).append("'");
       if (it.hasNext())
         select.append(" OR ");
@@ -86,7 +86,7 @@ public class PersonalizationDAO {
         userIds.removeAll(sUserIds);
         it = userIds.iterator();
         while (it.hasNext()) {
-          userId = (String) it.next();
+          userId = it.next();
           usersLanguage.put(userId, "fr");
         }
       }

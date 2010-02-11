@@ -186,27 +186,27 @@ public class ProfileInstManager extends Object {
   public String updateProfileInst(ProfileInst profileInst,
       DomainDriverManager ddManager, ProfileInst profileInstNew)
       throws AdminException {
-    ArrayList alOldProfileGroup = new ArrayList();
-    ArrayList alNewProfileGroup = new ArrayList();
-    ArrayList alAddGroup = new ArrayList();
-    ArrayList alRemGroup = new ArrayList();
-    ArrayList alStayGroup = new ArrayList();
-    ArrayList alOldProfileUser = new ArrayList();
-    ArrayList alNewProfileUser = new ArrayList();
-    ArrayList alAddUser = new ArrayList();
-    ArrayList alRemUser = new ArrayList();
-    ArrayList alStayUser = new ArrayList();
+    ArrayList<String> alOldProfileGroup = new ArrayList<String>();
+    ArrayList<String> alNewProfileGroup = new ArrayList<String>();
+    ArrayList<String> alAddGroup = new ArrayList<String>();
+    ArrayList<String> alRemGroup = new ArrayList<String>();
+    ArrayList<String> alStayGroup = new ArrayList<String>();
+    ArrayList<String> alOldProfileUser = new ArrayList<String>();
+    ArrayList<String> alNewProfileUser = new ArrayList<String>();
+    ArrayList<String> alAddUser = new ArrayList<String>();
+    ArrayList<String> alRemUser = new ArrayList<String>();
+    ArrayList<String> alStayUser = new ArrayList<String>();
 
     try {
       // Compute the Old profile group list
-      ArrayList alGroup = profileInst.getAllGroups();
+      ArrayList<String> alGroup = profileInst.getAllGroups();
       for (int nI = 0; nI < alGroup.size(); nI++)
-        alOldProfileGroup.add((String) alGroup.get(nI));
+        alOldProfileGroup.add(alGroup.get(nI));
 
       // Compute the New profile group list
       alGroup = profileInstNew.getAllGroups();
       for (int nI = 0; nI < alGroup.size(); nI++)
-        alNewProfileGroup.add((String) alGroup.get(nI));
+        alNewProfileGroup.add(alGroup.get(nI));
 
       // Compute the remove group list
       for (int nI = 0; nI < alOldProfileGroup.size(); nI++)
@@ -224,25 +224,25 @@ public class ProfileInstManager extends Object {
       for (int nI = 0; nI < alAddGroup.size(); nI++) {
         // Create the links between the profile and the group
         ddManager.organization.userRole.addGroupInUserRole(
-            idAsInt((String) alAddGroup.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(alAddGroup.get(nI)), idAsInt(profileInst.getId()));
       }
 
       // Remove the removed groups
       for (int nI = 0; nI < alRemGroup.size(); nI++) {
         // delete the node link Profile_Group
         ddManager.organization.userRole.removeGroupFromUserRole(
-            idAsInt((String) alRemGroup.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(alRemGroup.get(nI)), idAsInt(profileInst.getId()));
       }
 
       // Compute the Old profile User list
-      ArrayList alUser = profileInst.getAllUsers();
+      ArrayList<String> alUser = profileInst.getAllUsers();
       for (int nI = 0; nI < alUser.size(); nI++)
-        alOldProfileUser.add((String) alUser.get(nI));
+        alOldProfileUser.add(alUser.get(nI));
 
       // Compute the New profile User list
       alUser = profileInstNew.getAllUsers();
       for (int nI = 0; nI < alUser.size(); nI++)
-        alNewProfileUser.add((String) alUser.get(nI));
+        alNewProfileUser.add(alUser.get(nI));
 
       // Compute the remove User list
       for (int nI = 0; nI < alOldProfileUser.size(); nI++)
@@ -260,14 +260,14 @@ public class ProfileInstManager extends Object {
       for (int nI = 0; nI < alAddUser.size(); nI++) {
         // Create the links between the profile and the User
         ddManager.organization.userRole.addUserInUserRole(
-            idAsInt((String) alAddUser.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(alAddUser.get(nI)), idAsInt(profileInst.getId()));
       }
 
       // Remove the removed Users
       for (int nI = 0; nI < alRemUser.size(); nI++) {
         // delete the node link Profile_User
         ddManager.organization.userRole.removeUserFromUserRole(
-            idAsInt((String) alRemUser.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(alRemUser.get(nI)), idAsInt(profileInst.getId()));
       }
 
       // update the profile node

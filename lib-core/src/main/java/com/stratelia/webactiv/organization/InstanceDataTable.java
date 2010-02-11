@@ -105,16 +105,13 @@ public class InstanceDataTable extends Table {
   /**
    * Returns all the parameters of the given component (List of SPParameter)
    */
+  @SuppressWarnings("unchecked")
   public SPParameters getAllParametersInComponent(int componentId)
       throws AdminPersistenceException {
-    List rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
-    InstanceDataRow row = null;
-    SPParameter param = null;
+    List<InstanceDataRow> rows = (List<InstanceDataRow>) getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
     SPParameters params = new SPParameters();
-
-    for (int r = 0; r < rows.size(); r++) {
-      row = (InstanceDataRow) rows.get(r);
-      param = new SPParameter(row.name, row.value, row.label);
+    for(InstanceDataRow row : rows) {
+      SPParameter param = new SPParameter(row.name, row.value, row.label);
       params.addParameter(param);
     }
 

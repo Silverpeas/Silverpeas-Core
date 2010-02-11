@@ -45,13 +45,13 @@ public class SynchroReport {
   private static final String moduleName = "synchro";
 
   private static int iTraceLevel;
-  private static Vector VMessage;
+  private static Vector<String> VMessage;
   private static int iState;
 
   // Initialisation
   static {
     iTraceLevel = TRACE_LEVEL_WARN;
-    VMessage = new Vector();
+    VMessage = new Vector<String>();
     iState = STATE_NOSYNC;
   }
 
@@ -114,7 +114,7 @@ public class SynchroReport {
     String Message = null;
     synchronized (VMessage) {
       if (VMessage.size() > 0) {
-        Message = (String) VMessage.remove(0);
+        Message = VMessage.remove(0);
       }
     }
     return Message;

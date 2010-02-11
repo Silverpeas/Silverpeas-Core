@@ -486,8 +486,8 @@ public class GroupTable extends Table {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuffer theQuery;
-    Vector ids = new Vector();
-    Vector params = new Vector();
+    Vector<Integer> ids = new Vector<Integer>();
+    Vector<String> params = new Vector<String>();
 
     if ((aRoleId != null) && (aRoleId.length > 0)) {
       theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID_IN_ROLE);
@@ -546,11 +546,11 @@ public class GroupTable extends Table {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ((Integer) ids.get(i)).intValue();
+      idsArray[i] = ids.get(i).intValue();
     }
 
-    return (String[]) getIds(theQuery.toString(), idsArray,
-        (String[]) params.toArray(new String[0])).toArray(new String[0]);
+    return getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
+        new String[0]);
   }
 
   static final private String SELECT_SEARCH_GROUPSID =
@@ -572,8 +572,8 @@ public class GroupTable extends Table {
     boolean concatAndOr = false;
     String andOr;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_GROUPS);
-    Vector ids = new Vector();
-    Vector params = new Vector();
+    Vector<Integer> ids = new Vector<Integer>();
+    Vector<String> params = new Vector<String>();
 
     if (isAnd) {
       andOr = ") AND (";
@@ -599,11 +599,11 @@ public class GroupTable extends Table {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ((Integer) ids.get(i)).intValue();
+      idsArray[i] = ids.get(i).intValue();
     }
 
-    return (GroupRow[]) getRows(theQuery.toString(), idsArray,
-        (String[]) params.toArray(new String[0])).toArray(new GroupRow[0]);
+    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
+        new GroupRow[0]);
   }
 
   static final private String SELECT_SEARCH_GROUPS = "select " + GROUP_COLUMNS

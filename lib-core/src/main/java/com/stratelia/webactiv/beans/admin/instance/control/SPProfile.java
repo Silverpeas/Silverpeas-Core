@@ -29,6 +29,8 @@ import java.io.Serializable;
  * Class storing profile information for WAComponent
  */
 public class SPProfile implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private String m_strName;
   private String m_strLabel;
 

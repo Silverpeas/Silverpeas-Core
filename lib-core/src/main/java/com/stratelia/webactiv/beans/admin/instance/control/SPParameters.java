@@ -36,18 +36,20 @@ import org.w3c.dom.NodeList;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SPParameters implements Serializable {
-  private Hashtable parameters = new Hashtable();
+  
+  private static final long serialVersionUID = 1171596828032086864L;
+  private Hashtable<String, SPParameter> parameters = new Hashtable<String, SPParameter>();
 
   public SPParameters() {
   }
 
-  public SPParameters(Hashtable parameters) {
+  public SPParameters(Hashtable<String, SPParameter> parameters) {
     this.parameters = parameters;
   }
 
   public void setParameterValue(String name, String value) {
     if (parameters != null) {
-      SPParameter parameter = (SPParameter) parameters.get(name.toLowerCase());
+      SPParameter parameter = parameters.get(name.toLowerCase());
       if (parameter != null) {
         SilverTrace.info("admin", "SPParameters.setParameterValue",
             "root.MSG_GEN_PARAM_VALUE", name + " = " + value);
@@ -59,28 +61,28 @@ public class SPParameters implements Serializable {
     }
   }
 
-  public List getParameters() {
-    return (List) new ArrayList(parameters.values());
+  public List<SPParameter> getParameters() {
+    return new ArrayList<SPParameter>(parameters.values());
   }
 
-  public List getSortedParameters() {
-    List parametersToReturn = getParameters();
+  public List<SPParameter> getSortedParameters() {
+    List<SPParameter> parametersToReturn = getParameters();
     Collections.sort(parametersToReturn);
     return parametersToReturn;
   }
 
-  public void setParameters(List newParameters) {
+  public void setParameters(List<SPParameter> newParameters) {
     parameters.clear();
 
     SPParameter parameter = null;
     for (int p = 0; p < newParameters.size(); p++) {
-      parameter = (SPParameter) newParameters.get(p);
+      parameter = newParameters.get(p);
       addParameter(parameter);
     }
   }
 
   public SPParameter getParameter(String parameterName) {
-    return (SPParameter) parameters.get(parameterName.toLowerCase());
+    return parameters.get(parameterName.toLowerCase());
   }
 
   public String getParameterValue(String parameterName) {
@@ -112,10 +114,10 @@ public class SPParameters implements Serializable {
       String sParameterType = "";
       String sParameterSize = "";
       String sParameterOrder = "";
-      Hashtable sParameterHelp = null; // New parameter to display help on each
+      Hashtable<String, String> sParameterHelp = null; // New parameter to display help on each
       // parameter (key = language, value =
       // help string according to the language)
-      ArrayList sParameterOptions = null; // New parameter to display Select
+      ArrayList<ArrayList<String>> sParameterOptions = null; // New parameter to display Select
       // object
 
       Node nParameterName = null;
@@ -141,8 +143,8 @@ public class SPParameters implements Serializable {
           sParameterType = "";
           sParameterSize = "";
           sParameterOrder = "";
-          sParameterHelp = new Hashtable();
-          sParameterOptions = new ArrayList();
+          sParameterHelp = new Hashtable<String, String>();
+          sParameterOptions = new ArrayList<ArrayList<String>>();
 
           nParameterName = WADOMUtil.findNode(listParameters.item(nI),
               "ParameterName");
@@ -241,7 +243,7 @@ public class SPParameters implements Serializable {
                       .item(nH), "Value");
                   if (nParameterOptionValue != null
                       && nParameterOptionValue.getFirstChild() != null) {
-                    ArrayList sParameterOption = new ArrayList();
+                    ArrayList<String> sParameterOption = new ArrayList<String>();
                     sParameterOption.add(nParameterOptionName.getFirstChild()
                         .getNodeValue());
                     sParameterOption.add(nParameterOptionValue.getFirstChild()
@@ -268,11 +270,11 @@ public class SPParameters implements Serializable {
     }
   }
 
-  public void mergeWith(List parametersToMerge) {
+  public void mergeWith(List<SPParameter> parametersToMerge) {
     SPParameter parameterToMerge = null;
     SPParameter parameter = null;
     for (int p = 0; p < parametersToMerge.size(); p++) {
-      parameterToMerge = (SPParameter) parametersToMerge.get(p);
+      parameterToMerge = parametersToMerge.get(p);
       parameter = getParameter(parameterToMerge.getName().toLowerCase());
       if (parameter == null) {
         // Le parametre existe en base mais plus dans le xmlComponent
@@ -288,9 +290,9 @@ public class SPParameters implements Serializable {
   public Object clone() {
     SPParameters clonedParameters = new SPParameters();
     SPParameter parameter = null;
-    List params = (List) getParameters();
+    List<SPParameter> params = getParameters();
     for (int i = 0; i < params.size(); i++) {
-      parameter = (SPParameter) params.get(i);
+      parameter = params.get(i);
       clonedParameters.addParameter((SPParameter) parameter.clone());
     }
     return clonedParameters;

@@ -26,6 +26,9 @@ package com.stratelia.webactiv.organization;
 import com.stratelia.webactiv.beans.admin.AdminException;
 
 public class AdminPersistenceException extends AdminException {
+  
+  private static final long serialVersionUID = 1L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

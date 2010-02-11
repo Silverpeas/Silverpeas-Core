@@ -38,8 +38,9 @@ import com.stratelia.webactiv.organization.SpaceRow;
 /**
  * @author neysseri
  */
-public class SpaceInstLight extends AbstractI18NBean implements Serializable, Comparable {
+public class SpaceInstLight extends AbstractI18NBean implements Serializable, Comparable<SpaceInstLight> {
 
+  private static final long serialVersionUID = 8772050454345960478L;
   private String id = null;
   private String name = null;
   private String description = null;
@@ -60,7 +61,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
 
   private String look = null;
 
-  private List path = null;
+  private List<SpaceInstLight> path = null;
 
   public SpaceInstLight() {
     id = "";
@@ -258,8 +259,8 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
     return updatedBy;
   }
 
-  public int compareTo(Object o) {
-    return getOrderNum() - ((SpaceInstLight) o).getOrderNum();
+  public int compareTo(SpaceInstLight o) {
+    return getOrderNum() - o.getOrderNum();
   }
 
   public String getPath(String separator) {
@@ -270,14 +271,14 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable, Co
         if (i > 0)
           sPath += separator;
 
-        space = (SpaceInstLight) path.get(i);
+        space = path.get(i);
         sPath += space.getName();
       }
     }
     return sPath;
   }
 
-  public void setPath(List path) {
+  public void setPath(List<SpaceInstLight> path) {
     this.path = path;
   }
 

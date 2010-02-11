@@ -43,6 +43,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.WADOMUtil;
 
 /**
  * Class declaration
+ * 
  * @author
  */
 public class SpaceTemplate {
@@ -54,17 +55,19 @@ public class SpaceTemplate {
   protected boolean readOnly;
 
   protected SpaceTemplateProfile[] spaceTemplateProfiles;
-  protected ArrayList components = new ArrayList();
+  protected ArrayList<ComponentInst> components = new ArrayList<ComponentInst>();
 
   /**
    * Constructor declaration
+   * 
    * @param filename
    * @param allComponentsModels
    * @see
    */
-  public SpaceTemplate(String filename, Hashtable allComponentsModels) {
+  public SpaceTemplate(String filename, Hashtable<String, WAComponent> allComponentsModels) {
     SpaceTemplateProfile stp;
-    Hashtable templateProfiles = new Hashtable();
+    Hashtable<String, SpaceTemplateProfile> templateProfiles =
+        new Hashtable<String, SpaceTemplateProfile>();
 
     this.filename = filename;
     try {
@@ -155,8 +158,7 @@ public class SpaceTemplate {
                 + "   label: " + sComponentLabel + "   for space: "
                 + this.templateName);
 
-            WAComponent wac = (WAComponent) allComponentsModels
-                .get(sComponentName);
+            WAComponent wac = allComponentsModels.get(sComponentName);
 
             if (wac != null) {
               ci = new ComponentInst();
@@ -220,8 +222,7 @@ public class SpaceTemplate {
                     if (sTemplateName != null && sTemplateName.length() > 0
                         && sComponentProfileName != null
                         && sComponentProfileName.length() > 0) {
-                      stp = (SpaceTemplateProfile) templateProfiles
-                          .get(sTemplateName);
+                      stp = templateProfiles.get(sTemplateName);
                       if (stp != null) {
                         SilverTrace.info("admin",
                             "SpaceTemplate.SpaceTemplate",
@@ -240,8 +241,7 @@ public class SpaceTemplate {
           }
         }
       }
-      spaceTemplateProfiles = (SpaceTemplateProfile[]) templateProfiles
-          .values().toArray(new SpaceTemplateProfile[0]);
+      spaceTemplateProfiles = templateProfiles.values().toArray(new SpaceTemplateProfile[0]);
     } catch (Exception e) {
       SilverTrace.error("admin", "SpaceTemplate.SpaceTemplate",
           "admin.EX_ERR_SpaceTemplate", "Reading File : " + filename, e);
@@ -250,6 +250,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @return
    * @see
    */
@@ -259,6 +260,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param s
    * @see
    */
@@ -268,6 +270,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @return
    * @see
    */
@@ -277,6 +280,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param s
    * @see
    */
@@ -286,6 +290,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @return
    * @see
    */
@@ -295,6 +300,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param s
    * @see
    */
@@ -304,6 +310,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @return
    * @see
    */
@@ -313,6 +320,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param b
    * @see
    */
@@ -322,24 +330,27 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @return
    * @see
    */
-  public ArrayList getComponents() {
+  public ArrayList<ComponentInst> getComponents() {
     return components;
   }
 
   /**
    * Method declaration
+   * 
    * @param ar
    * @see
    */
-  public void setComponents(ArrayList ar) {
+  public void setComponents(ArrayList<ComponentInst> ar) {
     components = ar;
   }
 
   /**
    * Method declaration
+   * 
    * @return
    * @see
    */
@@ -350,19 +361,19 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param templateName
    * @return
    * @see
    */
   public SpaceInst makeSpaceInst() {
     SpaceInst valret = new SpaceInst();
-    Iterator it = components.iterator();
+    Iterator<ComponentInst> it = components.iterator();
 
     valret.setName(defaultName);
     valret.setDescription(description);
     while (it.hasNext()) {
-      valret.addComponentInst((ComponentInst) ((ComponentInst) it.next())
-          .clone());
+      valret.addComponentInst((ComponentInst) it.next().clone());
     }
     SilverTrace.info("admin", "SpaceTemplate.makeSpaceInst",
         "root.MSG_GEN_PARAM_VALUE", "defaultSpaceName : " + defaultName
@@ -376,6 +387,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param b
    * @return
    * @see
@@ -390,6 +402,7 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
+   * 
    * @param s
    * @return
    * @see

@@ -42,7 +42,7 @@ public class SQLRequest {
   /**
    * Contains the name of the database supported by SilverPeas
    */
-  private ArrayList dbName = new ArrayList();
+  private ArrayList<String> dbName = new ArrayList<String>();
 
   /**
    * the name of the client database
@@ -57,7 +57,7 @@ public class SQLRequest {
   /**
    * Contains the value of the interne tag which must be replaced.
    */
-  Hashtable internalTag = new Hashtable();
+  Hashtable<String, String> internalTag = new Hashtable<String, String>();
 
   /**
    * Contains all queries to create multiple tables for one SilverPeas component or to delete rows
@@ -235,15 +235,15 @@ public class SQLRequest {
     String queryAfterTag = "";
 
     // for each element tag, we replace them by their values
-    for (Enumeration e = internalTag.keys(); e.hasMoreElements();) {
-      String currentTag = (String) e.nextElement();
+    for (Enumeration<String> e = internalTag.keys(); e.hasMoreElements();) {
+      String currentTag = e.nextElement();
       int posTag = localQuery.indexOf(currentTag);
       while (posTag != -1) {
         // while we found the element tag, we replace it
         int endPosition = posTag + currentTag.length();
         queryBeforeTag = localQuery.substring(0, posTag);
         queryAfterTag = localQuery.substring(endPosition);
-        localQuery = queryBeforeTag + (String) internalTag.get(currentTag)
+        localQuery = queryBeforeTag + internalTag.get(currentTag)
             + queryAfterTag;
 
         posTag = localQuery.indexOf(currentTag);

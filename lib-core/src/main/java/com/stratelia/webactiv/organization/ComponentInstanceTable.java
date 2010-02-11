@@ -294,11 +294,12 @@ public class ComponentInstanceTable extends Table {
   /**
    * Returns available components for given user
    */
+  @SuppressWarnings("unchecked")
   public String[] getAvailCompoIds(int userId) throws AdminPersistenceException {
-    List instances = getRows(SELECT_AVAIL_COMPO_IDS, userId);
+    List<ComponentInstanceRow> instances = (List<ComponentInstanceRow>) getRows(SELECT_AVAIL_COMPO_IDS, userId);
     String[] ids = new String[instances.size()];
     for (int i = 0; i < instances.size(); i++) {
-      ComponentInstanceRow row = (ComponentInstanceRow) instances.get(i);
+      ComponentInstanceRow row = instances.get(i);
       ids[i] = row.componentName + row.id;
     }
     return ids;
@@ -312,14 +313,15 @@ public class ComponentInstanceTable extends Table {
       + " SELECT " + INSTANCE_COLUMNS + " FROM ST_ComponentInstance C"
       + " WHERE C.componentStatus is null" + " AND C.isPublic = 1";
 
-  public List getAvailableComponents(int userId, String componentName)
+  @SuppressWarnings("unchecked")
+  public List<ComponentInstanceRow> getAvailableComponents(int userId, String componentName)
       throws AdminPersistenceException {
     int[] ids = new int[1];
     ids[0] = userId;
     String[] params = new String[2];
     params[0] = componentName;
     params[1] = componentName;
-    return getRows(SELECT_AVAIL_COMPO_BY_NAME, ids, params);
+    return (List<ComponentInstanceRow>) getRows(SELECT_AVAIL_COMPO_BY_NAME, ids, params);
   }
 
   static final private String SELECT_AVAIL_COMPO_BY_NAME = "SELECT "

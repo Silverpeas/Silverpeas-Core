@@ -28,6 +28,7 @@ import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 
 public class ComponentI18N extends Translation {
 
+  private static final long serialVersionUID = 6602701543647924879L;
   private String name = null;
   private String description = null;
 

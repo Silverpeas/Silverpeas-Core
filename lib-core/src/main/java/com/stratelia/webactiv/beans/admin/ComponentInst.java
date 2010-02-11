@@ -39,7 +39,10 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 
-public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable, Comparable {
+public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable, Comparable<ComponentInst> {
+  
+  private static final long serialVersionUID = 1L;
+
   public final static String STATUS_REMOVED = "R";
 
   private String m_sId;
@@ -65,7 +68,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   private boolean isHidden = false;
   private boolean isInheritanceBlocked = false;
 
-  private ArrayList m_alProfileInst;
+  private ArrayList<ProfileInst> m_alProfileInst;
   private SPParameters parameters = null;
 
   /** Creates new ComponentInst */
@@ -76,18 +79,18 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     m_sDescription = "";
     m_sDomainFatherId = "";
     m_iOrderNum = 0;
-    m_alProfileInst = new ArrayList();
+    m_alProfileInst = new ArrayList<ProfileInst>();
     isPublic = false;
     isHidden = false;
   }
 
-  public int compareTo(Object o) {
-    return m_iOrderNum - ((ComponentInst) o).m_iOrderNum;
+  public int compareTo(ComponentInst o) {
+    return m_iOrderNum - o.m_iOrderNum;
   }
 
   public Object clone() {
     ComponentInst ci = new ComponentInst();
-    Iterator it;
+    Iterator<ProfileInst> it;
 
     ci.m_sId = m_sId;
     ci.m_sName = m_sName;
@@ -101,10 +104,10 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     if (m_alProfileInst == null) {
       ci.m_alProfileInst = null;
     } else {
-      ci.m_alProfileInst = new ArrayList();
+      ci.m_alProfileInst = new ArrayList<ProfileInst>();
       it = m_alProfileInst.iterator();
       while (it.hasNext()) {
-        ci.m_alProfileInst.add(((ProfileInst) it.next()).clone());
+        ci.m_alProfileInst.add((ProfileInst)it.next().clone());
       }
     }
     ci.parameters = (SPParameters) this.parameters.clone();
@@ -236,14 +239,14 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
         m_alProfileInst.remove(nI);
   }
 
-  public ArrayList getAllProfilesInst() {
+  public ArrayList<ProfileInst> getAllProfilesInst() {
     return m_alProfileInst;
   }
 
-  public List getInheritedProfiles() {
-    List profiles = new ArrayList();
+  public List<ProfileInst> getInheritedProfiles() {
+    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = (ProfileInst) m_alProfileInst.get(nI);
+      ProfileInst profile = m_alProfileInst.get(nI);
       if (profile.isInherited())
         profiles.add(profile);
     }
@@ -251,10 +254,10 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return profiles;
   }
 
-  public List getProfiles() {
-    List profiles = new ArrayList();
+  public List<ProfileInst> getProfiles() {
+    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = (ProfileInst) m_alProfileInst.get(nI);
+      ProfileInst profile = m_alProfileInst.get(nI);
       if (!profile.isInherited())
         profiles.add(profile);
     }
@@ -263,12 +266,12 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public void removeAllProfilesInst() {
-    m_alProfileInst = new ArrayList();
+    m_alProfileInst = new ArrayList<ProfileInst>();
   }
 
   public ProfileInst getProfileInst(String sProfileName) {
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = (ProfileInst) m_alProfileInst.get(nI);
+      ProfileInst profile = m_alProfileInst.get(nI);
       if (!profile.isInherited() && profile.getName().equals(sProfileName))
         return profile;
     }
@@ -277,7 +280,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public ProfileInst getInheritedProfileInst(String sProfileName) {
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = (ProfileInst) m_alProfileInst.get(nI);
+      ProfileInst profile = m_alProfileInst.get(nI);
       if (profile.isInherited() && profile.getName().equals(sProfileName))
         return profile;
     }
@@ -285,7 +288,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public ProfileInst getProfileInst(int nIndex) {
-    return (ProfileInst) m_alProfileInst.get(nIndex);
+    return m_alProfileInst.get(nIndex);
   }
 
   public void setSPParameters(SPParameters parameters) {
@@ -299,11 +302,11 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return parameters;
   }
 
-  public List getParameters() {
+  public List<SPParameter> getParameters() {
     return parameters.getParameters();
   }
 
-  public void setParameters(List parameters) {
+  public void setParameters(List<SPParameter> parameters) {
     getSPParameters().setParameters(parameters);
   }
 

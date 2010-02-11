@@ -27,9 +27,11 @@ import java.io.Serializable;
 import java.util.Vector;
 
 public class SpaceAndChildren implements Serializable {
+  
+  private static final long serialVersionUID = -733004604996095725L;
   private SpaceInstLight space = null;
-  private Vector subspaces = new Vector();
-  private Vector components = new Vector();
+  private Vector<SpaceInstLight> subspaces = new Vector<SpaceInstLight>();
+  private Vector<ComponentInstLight> components = new Vector<ComponentInstLight>();
 
   public SpaceAndChildren(SpaceInstLight space) {
     this.space = space;
@@ -43,11 +45,11 @@ public class SpaceAndChildren implements Serializable {
     components.add(component);
   }
 
-  public Vector getSubspaces() {
+  public Vector<SpaceInstLight> getSubspaces() {
     return this.subspaces;
   }
 
-  public Vector getComponents() {
+  public Vector<ComponentInstLight> getComponents() {
     return this.components;
   }
 

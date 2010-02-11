@@ -177,27 +177,27 @@ public class GroupProfileInstManager {
   public String updateGroupProfileInst(GroupProfileInst groupProfileInst,
       DomainDriverManager ddManager, GroupProfileInst groupProfileInstNew)
       throws AdminException {
-    ArrayList alOldProfileGroup = new ArrayList();
-    ArrayList alNewProfileGroup = new ArrayList();
-    ArrayList alAddGroup = new ArrayList();
-    ArrayList alRemGroup = new ArrayList();
-    ArrayList alStayGroup = new ArrayList();
-    ArrayList alOldProfileUser = new ArrayList();
-    ArrayList alNewProfileUser = new ArrayList();
-    ArrayList alAddUser = new ArrayList();
-    ArrayList alRemUser = new ArrayList();
-    ArrayList alStayUser = new ArrayList();
+    ArrayList<String> alOldProfileGroup = new ArrayList<String>();
+    ArrayList<String> alNewProfileGroup = new ArrayList<String>();
+    ArrayList<String> alAddGroup = new ArrayList<String>();
+    ArrayList<String> alRemGroup = new ArrayList<String>();
+    ArrayList<String> alStayGroup = new ArrayList<String>();
+    ArrayList<String> alOldProfileUser = new ArrayList<String>();
+    ArrayList<String> alNewProfileUser = new ArrayList<String>();
+    ArrayList<String> alAddUser = new ArrayList<String>();
+    ArrayList<String> alRemUser = new ArrayList<String>();
+    ArrayList<String> alStayUser = new ArrayList<String>();
 
     try {
       // Compute the Old spaceProfile group list
-      ArrayList alGroup = groupProfileInst.getAllGroups();
+      ArrayList<String> alGroup = groupProfileInst.getAllGroups();
       for (int nI = 0; nI < alGroup.size(); nI++)
-        alOldProfileGroup.add((String) alGroup.get(nI));
+        alOldProfileGroup.add(alGroup.get(nI));
 
       // Compute the New spaceProfile group list
       alGroup = groupProfileInstNew.getAllGroups();
       for (int nI = 0; nI < alGroup.size(); nI++)
-        alNewProfileGroup.add((String) alGroup.get(nI));
+        alNewProfileGroup.add(alGroup.get(nI));
 
       // Compute the remove group list
       for (int nI = 0; nI < alOldProfileGroup.size(); nI++)
@@ -215,7 +215,7 @@ public class GroupProfileInstManager {
       for (int nI = 0; nI < alAddGroup.size(); nI++) {
         // Create the links between the spaceProfile and the group
         ddManager.organization.groupUserRole.addGroupInGroupUserRole(
-            idAsInt((String) alAddGroup.get(nI)), idAsInt(groupProfileInst
+            idAsInt(alAddGroup.get(nI)), idAsInt(groupProfileInst
             .getId()));
       }
 
@@ -223,19 +223,19 @@ public class GroupProfileInstManager {
       for (int nI = 0; nI < alRemGroup.size(); nI++) {
         // delete the node link SpaceProfile_Group
         ddManager.organization.groupUserRole.removeGroupFromGroupUserRole(
-            idAsInt((String) alRemGroup.get(nI)), idAsInt(groupProfileInst
+            idAsInt(alRemGroup.get(nI)), idAsInt(groupProfileInst
             .getId()));
       }
 
       // Compute the Old spaceProfile User list
-      ArrayList alUser = groupProfileInst.getAllUsers();
+      ArrayList<String> alUser = groupProfileInst.getAllUsers();
       for (int nI = 0; nI < alUser.size(); nI++)
-        alOldProfileUser.add((String) alUser.get(nI));
+        alOldProfileUser.add(alUser.get(nI));
 
       // Compute the New spaceProfile User list
       alUser = groupProfileInstNew.getAllUsers();
       for (int nI = 0; nI < alUser.size(); nI++)
-        alNewProfileUser.add((String) alUser.get(nI));
+        alNewProfileUser.add(alUser.get(nI));
 
       // Compute the remove User list
       for (int nI = 0; nI < alOldProfileUser.size(); nI++)
@@ -253,7 +253,7 @@ public class GroupProfileInstManager {
       for (int nI = 0; nI < alAddUser.size(); nI++) {
         // Create the links between the spaceProfile and the User
         ddManager.organization.groupUserRole.addUserInGroupUserRole(
-            idAsInt((String) alAddUser.get(nI)), idAsInt(groupProfileInst
+            idAsInt(alAddUser.get(nI)), idAsInt(groupProfileInst
             .getId()));
       }
 
@@ -261,7 +261,7 @@ public class GroupProfileInstManager {
       for (int nI = 0; nI < alRemUser.size(); nI++) {
         // delete the node link SpaceProfile_User
         ddManager.organization.groupUserRole.removeUserFromGroupUserRole(
-            idAsInt((String) alRemUser.get(nI)), idAsInt(groupProfileInst
+            idAsInt(alRemUser.get(nI)), idAsInt(groupProfileInst
             .getId()));
       }
 

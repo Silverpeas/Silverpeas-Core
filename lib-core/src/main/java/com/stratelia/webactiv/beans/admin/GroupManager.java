@@ -187,12 +187,12 @@ public class GroupManager {
   /**
    * Get the path from root to a given group
    */
-  public List getPathToGroup(DomainDriverManager ddManager, String groupId)
+  public List<String> getPathToGroup(DomainDriverManager ddManager, String groupId)
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
-      List path = new ArrayList();
+      List<String> path = new ArrayList<String>();
 
       GroupRow superGroup = ddManager.organization.group
           .getSuperGroup(idAsInt(groupId));
@@ -673,8 +673,8 @@ public class GroupManager {
   /** Update the given group */
   public String updateGroup(DomainDriverManager ddManager, Group group,
       boolean onlyInSilverpeas) throws AdminException {
-    ArrayList alRemUsers = new ArrayList();
-    ArrayList alAddUsers = new ArrayList();
+    ArrayList<String> alRemUsers = new ArrayList<String>();
+    ArrayList<String> alAddUsers = new ArrayList<String>();
 
     if (group == null || group.getName().length() == 0
         || group.getId().length() == 0) {
@@ -758,11 +758,11 @@ public class GroupManager {
       // Remove the users that are not in this group anymore
       for (int nI = 0; nI < alRemUsers.size(); nI++)
         ddManager.organization.group.removeUserFromGroup(
-            idAsInt((String) alRemUsers.get(nI)), idAsInt(sGroupId));
+            idAsInt(alRemUsers.get(nI)), idAsInt(sGroupId));
 
       // Add the new users of the group
       for (int nI = 0; nI < alAddUsers.size(); nI++)
-        ddManager.organization.group.addUserInGroup(idAsInt((String) alAddUsers
+        ddManager.organization.group.addUserInGroup(idAsInt(alAddUsers
             .get(nI)), idAsInt(sGroupId));
 
       SynchroReport.info("GroupManager.updateGroup()", "Groupe : "
@@ -802,7 +802,7 @@ public class GroupManager {
       // ------------------------
 
       // Search the root groups
-      ArrayList alRoot = new ArrayList();
+      ArrayList<Integer> alRoot = new ArrayList<Integer>();
       for (int nI = 0; nI < aGroup.length; nI++) {
         if (aGroup[nI].getSuperGroupId() == null)
           alRoot.add(new Integer(nI));
@@ -813,8 +813,7 @@ public class GroupManager {
       for (int nI = 0; nI < alRoot.size(); nI++) {
         // Set the Group of the node
         aAdminGroupInst[nI] = new AdminGroupInst();
-        aAdminGroupInst[nI].setGroup(aGroup[((Integer) alRoot.get(nI))
-            .intValue()]);
+        aAdminGroupInst[nI].setGroup(aGroup[alRoot.get(nI).intValue()]);
 
         // Set the children group inst
         aAdminGroupInst[nI].setChildrenAdminGroupInst(this
@@ -834,9 +833,9 @@ public class GroupManager {
   /**
    * Get the list of children groups of the given group
    */
-  private ArrayList getChildrenGroupInst(DomainDriverManager ddManager,
+  private ArrayList<AdminGroupInst> getChildrenGroupInst(DomainDriverManager ddManager,
       String sFatherGroupId, Group[] aGroup) {
-    ArrayList alChildrenGroupInst = new ArrayList();
+    ArrayList<AdminGroupInst> alChildrenGroupInst = new ArrayList<AdminGroupInst>();
 
     // Search the children group
     for (int nI = 0; nI < aGroup.length; nI++)

@@ -34,6 +34,9 @@ import com.stratelia.webactiv.organization.ComponentInstanceRow;
  * The class ComponentInstLight is the representation in memory of a component instance
  */
 public class ComponentInstLight extends AbstractI18NBean implements Serializable {
+  
+  private static final long serialVersionUID = 4859368422448142768L;
+
   /* Unique identifier of the instance */
   private String m_sId;
 
@@ -61,7 +64,7 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   private String updaterName = null;
   private String removerName = null;
 
-  private List path = null;
+  private List<SpaceInstLight> path = null;
 
   /**
    * Constructor
@@ -215,14 +218,14 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
         if (i > 0)
           sPath += separator;
 
-        space = (SpaceInstLight) path.get(i);
+        space = path.get(i);
         sPath += space.getName();
       }
     }
     return sPath;
   }
 
-  public void setPath(List path) {
+  public void setPath(List<SpaceInstLight> path) {
     this.path = path;
   }
 

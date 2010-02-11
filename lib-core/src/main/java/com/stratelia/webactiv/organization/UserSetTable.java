@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -80,8 +81,7 @@ public class UserSetTable extends Table {
     String[] types = new String[] { subSetType };
     int[] ids = new int[] { subSetId };
 
-    return (UserSetRow[]) getRows(SELECT_SUPER_USERSET, types, ids).toArray(
-        new UserSetRow[0]);
+    return (UserSetRow[]) getRows(SELECT_SUPER_USERSET, types, ids).toArray(new UserSetRow[0]);
   }
 
   static final private String SELECT_SUPER_USERSET = "select superSetType, superSetId"
@@ -117,14 +117,15 @@ public class UserSetTable extends Table {
   /**
    * Returns all the sub user of the subsets of given super set
    */
+  @SuppressWarnings("unchecked")
   public UserSetRow[] getSubUser(String superSetType, int superSetId)
       throws AdminPersistenceException {
     String[] types = new String[] { superSetType };
     int[] ids = new int[] { superSetId };
 
-    ArrayList directSubUsers = getRows(SELECT_DIRECT_SUB_USER, types, ids);
+    List<UserSetRow> directSubUsers = (List<UserSetRow>) getRows(SELECT_DIRECT_SUB_USER, types, ids);
 
-    return (UserSetRow[]) directSubUsers.toArray(new UserSetRow[0]);
+    return directSubUsers.toArray(new UserSetRow[0]);
   }
 
   static final private String SELECT_DIRECT_SUB_USER = "select userSetType, userId"
@@ -594,7 +595,7 @@ public class UserSetTable extends Table {
   /**
    * Returns the rows described by the given query with (type,id) parameters.
    */
-  protected ArrayList getRows(String query, String[] types, int[] ids)
+  protected ArrayList<? extends Object> getRows(String query, String[] types, int[] ids)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;

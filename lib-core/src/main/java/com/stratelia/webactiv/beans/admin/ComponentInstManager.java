@@ -74,11 +74,10 @@ public class ComponentInstManager {
     componentInst.setLanguage(componentInstToCopy.getLanguage());
 
     // Create a copy of component translations
-    Iterator translations = componentInstToCopy.getTranslations().values()
+    Iterator<Translation> translations = componentInstToCopy.getTranslations().values()
         .iterator();
     while (translations.hasNext()) {
-      ComponentI18N translation = (ComponentI18N) translations.next();
-      componentInst.addTranslation((Translation) translation);
+      componentInst.addTranslation(translations.next());
     }
 
     componentInst.setPublic(componentInstToCopy.isPublic());
@@ -102,14 +101,14 @@ public class ComponentInstManager {
       String sComponentNodeId = idAsString(newInstance.id);
 
       // Add the parameter if necessary
-      List parameters = componentInst.getParameters();
+      List<SPParameter> parameters = componentInst.getParameters();
 
       SilverTrace.info("admin", "ComponentInstManager.createComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
 
       SPParameter parameter = null;
       for (int nI = 0; nI < parameters.size(); nI++) {
-        parameter = (SPParameter) parameters.get(nI);
+        parameter = parameters.get(nI);
         ddManager.organization.instanceData.createInstanceData(
             idAsInt(sComponentNodeId), parameter);
       }
@@ -186,7 +185,7 @@ public class ComponentInstManager {
   /**
    * Return the all the root spaces ids available in Silverpeas
    */
-  public List getRemovedComponents(DomainDriverManager ddManager)
+  public List<ComponentInstLight> getRemovedComponents(DomainDriverManager ddManager)
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
@@ -242,11 +241,10 @@ public class ComponentInstManager {
             compo.description);
         compoLight.addTranslation((Translation) translation);
 
-        List translations = ddManager.organization.instanceI18N
+        List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N
             .getTranslations(compo.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
-          ComponentInstanceI18NRow row = (ComponentInstanceI18NRow) translations
-              .get(t);
+          ComponentInstanceI18NRow row = translations.get(t);
           compoLight.addTranslation((Translation) new ComponentI18N(row));
         }
       }
@@ -321,11 +319,10 @@ public class ComponentInstManager {
             instance.name, instance.description);
         componentInst.addTranslation((Translation) translation);
 
-        List translations = ddManager.organization.instanceI18N
-            .getTranslations(instance.id);
+        List<ComponentInstanceI18NRow> translations =
+            ddManager.organization.instanceI18N.getTranslations(instance.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
-          ComponentInstanceI18NRow row = (ComponentInstanceI18NRow) translations
-              .get(t);
+          ComponentInstanceI18NRow row = translations.get(t);
           componentInst.addTranslation((Translation) new ComponentI18N(row));
         }
 
@@ -408,22 +405,22 @@ public class ComponentInstManager {
   public void updateComponentInstRecur(ComponentInst componentInst,
       DomainDriverManager ddManager, ComponentInst compoInstNew)
       throws AdminException {
-    ArrayList alOldCompoProfile = new ArrayList();
-    ArrayList alNewCompoProfile = new ArrayList();
-    ArrayList alAddProfile = new ArrayList();
-    ArrayList alRemProfile = new ArrayList();
-    ArrayList alStayProfile = new ArrayList();
+    ArrayList<String> alOldCompoProfile = new ArrayList<String>();
+    ArrayList<String> alNewCompoProfile = new ArrayList<String>();
+    ArrayList<String> alAddProfile = new ArrayList<String>();
+    ArrayList<String> alRemProfile = new ArrayList<String>();
+    ArrayList<String> alStayProfile = new ArrayList<String>();
 
     try {
       // Compute the Old component profile list
-      ArrayList alProfileInst = componentInst.getAllProfilesInst();
+      ArrayList<ProfileInst> alProfileInst = componentInst.getAllProfilesInst();
       for (int nI = 0; nI < alProfileInst.size(); nI++)
-        alOldCompoProfile.add(((ProfileInst) alProfileInst.get(nI)).getName());
+        alOldCompoProfile.add(alProfileInst.get(nI).getName());
 
       // Compute the New component profile list
       alProfileInst = compoInstNew.getAllProfilesInst();
       for (int nI = 0; nI < alProfileInst.size(); nI++)
-        alNewCompoProfile.add(((ProfileInst) alProfileInst.get(nI)).getName());
+        alNewCompoProfile.add(alProfileInst.get(nI).getName());
 
       // Compute the remove Profile list
       for (int nI = 0; nI < alOldCompoProfile.size(); nI++)
@@ -466,10 +463,10 @@ public class ComponentInstManager {
   public String updateComponentInst(DomainDriverManager ddManager,
       ComponentInst compoInstNew) throws AdminException {
     try {
-      List parameters = compoInstNew.getParameters();
+      List<SPParameter> parameters = compoInstNew.getParameters();
       for (int nI = 0; nI < parameters.size(); nI++) {
         ddManager.organization.instanceData.updateInstanceData(
-            idAsInt(compoInstNew.getId()), (SPParameter) parameters.get(nI));
+            idAsInt(compoInstNew.getId()), parameters.get(nI));
       }
 
       // Create the component node
@@ -488,12 +485,11 @@ public class ComponentInstManager {
         // Remove of a translation is required
         if (old.lang.equalsIgnoreCase(compoInstNew.getLanguage())) {
           // Default language = translation
-          List translations = ddManager.organization.instanceI18N
+          List<ComponentInstanceI18NRow> translations = ddManager.organization.instanceI18N
               .getTranslations(changedInstance.id);
 
           if (translations != null && translations.size() > 0) {
-            ComponentInstanceI18NRow translation = (ComponentInstanceI18NRow) translations
-                .get(0);
+            ComponentInstanceI18NRow translation = translations.get(0);
 
             changedInstance.lang = translation.lang;
             changedInstance.name = translation.name;
@@ -593,13 +589,13 @@ public class ComponentInstManager {
       // ddManager.organization.instance.getAvailableComponentIds(idAsInt(sUserId),
       // componentName);
 
-      List rows = ddManager.organization.instance.getAvailableComponents(
+      List<ComponentInstanceRow> rows = ddManager.organization.instance.getAvailableComponents(
           idAsInt(sUserId), componentName);
 
       String[] ids = new String[rows.size()];
       ComponentInstanceRow row = null;
       for (int i = 0; rows != null && i < rows.size(); i++) {
-        row = (ComponentInstanceRow) rows.get(i);
+        row = rows.get(i);
         ids[i] = Integer.toString(row.id);
       }
 
@@ -617,14 +613,14 @@ public class ComponentInstManager {
   /**
    * Get the component ids allowed for the given user Id
    */
-  public List getAvailComponentInstLights(DomainDriverManager ddManager,
+  public List<ComponentInstLight> getAvailComponentInstLights(DomainDriverManager ddManager,
       String sUserId, String componentName) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-      List componentRows = ddManager.organization.instance
+      List<ComponentInstanceRow> componentRows = ddManager.organization.instance
           .getAvailableComponents(idAsInt(sUserId), componentName);
-      List result = new ArrayList();
-      Iterator i = componentRows.iterator();
+      List<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
+      Iterator<ComponentInstanceRow> i = componentRows.iterator();
       while (i.hasNext()) {
         ComponentInstanceRow row = (ComponentInstanceRow) i.next();
         ComponentInstLight component = new ComponentInstLight(row);
@@ -690,7 +686,7 @@ public class ComponentInstManager {
   /**
    * Get the components allowed for the given user Id in the given space
    */
-  public List getAvailCompoInSpace(DomainDriverManager ddManager,
+  public List<ComponentInstLight> getAvailCompoInSpace(DomainDriverManager ddManager,
       String spaceId, String sUserId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
@@ -827,9 +823,9 @@ public class ComponentInstManager {
     return instance;
   }
 
-  private List componentInstanceRows2ComponentInstLights(
+  private List<ComponentInstLight> componentInstanceRows2ComponentInstLights(
       ComponentInstanceRow[] rows) {
-    List components = new ArrayList();
+    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     ComponentInstLight componentLight = null;
     for (int s = 0; rows != null && s < rows.length; s++) {
       componentLight = new ComponentInstLight((ComponentInstanceRow) rows[s]);

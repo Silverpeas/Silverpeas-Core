@@ -27,7 +27,9 @@ import java.io.Serializable;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class Group extends Object implements Serializable, Comparable {
+public class Group extends Object implements Serializable, Comparable<Group> {
+  
+  private static final long serialVersionUID = 4430574302630237352L;
   private String id = null;
   private String specificId = null;
   private String domainId = null;
@@ -187,9 +189,8 @@ public class Group extends Object implements Serializable, Comparable {
     }
   }
 
-  public int compareTo(Object o) {
-    Group other = (Group) o;
-    return (getName().toLowerCase()).compareTo(other.getName().toLowerCase());
+  public int compareTo(Group o) {
+    return (getName().toLowerCase()).compareTo(o.getName().toLowerCase());
   }
 
   public String getRule() {

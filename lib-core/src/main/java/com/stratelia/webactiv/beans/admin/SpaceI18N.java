@@ -28,6 +28,7 @@ import com.stratelia.webactiv.organization.SpaceI18NRow;
 
 public class SpaceI18N extends Translation {
 
+  private static final long serialVersionUID = 7054435736300537280L;
   private String name = null;
   private String description = null;
 

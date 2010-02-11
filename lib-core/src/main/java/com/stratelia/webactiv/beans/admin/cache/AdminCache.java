@@ -43,28 +43,35 @@ public class AdminCache extends Object {
   static private boolean m_bUseCache = true;
 
   static private boolean m_bUseSpaceInstCache = true;
-  static private Hashtable m_hSpaceInstCache = new Hashtable();
+  static private Hashtable<String, SpaceInst> m_hSpaceInstCache =
+      new Hashtable<String, SpaceInst>();
 
   static private boolean m_bUseSpaceInstLightCache = true;
-  static private Hashtable m_hSpaceInstLightCache = new Hashtable();
+  static private Hashtable<String, SpaceInstLight> m_hSpaceInstLightCache =
+      new Hashtable<String, SpaceInstLight>();
 
   static private boolean m_bUseComponentInstCache = true;
-  static private Hashtable m_hComponentInstCache = new Hashtable();
+  static private Hashtable<String, ComponentInst> m_hComponentInstCache =
+      new Hashtable<String, ComponentInst>();
 
   static private boolean m_bUseProfileInstCache = true;
-  static private Hashtable m_hProfileInstCache = new Hashtable();
+  static private Hashtable<String, ProfileInst> m_hProfileInstCache =
+      new Hashtable<String, ProfileInst>();
 
   static private boolean m_bUseUserDetailCache = true;
-  static private Hashtable m_hUserDetailCache = new Hashtable();
+  static private Hashtable<String, UserDetail> m_hUserDetailCache =
+      new Hashtable<String, UserDetail>();
 
   static private boolean m_bUseManageableSpaceIdsCache = true;
-  static private Hashtable m_hManageableSpaceIdsCache = new Hashtable();
+  static private Hashtable<String, String[]> m_hManageableSpaceIdsCache =
+      new Hashtable<String, String[]>();
 
   static private boolean m_bUseAvailCompoIdsCache = true;
-  static private Hashtable m_hAvailCompoIdsCache = new Hashtable();
+  static private Hashtable<String, Hashtable<String, String[]>> m_hAvailCompoIdsCache =
+      new Hashtable<String, Hashtable<String, String[]>>();
 
   static private boolean m_bUseProfileIdsCache = true;
-  static private Hashtable m_hProfileIdsCache = new Hashtable();
+  static private Hashtable<String, String[]> m_hProfileIdsCache = new Hashtable<String, String[]>();
 
   /**
    * Admin Constructor
@@ -79,6 +86,7 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of spaces loaded in cache
+   * 
    * @return int representing the number of spaces stored in cache
    */
   public int getNbSpacesInCache() {
@@ -87,6 +95,7 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of components loaded in cache
+   * 
    * @return int representing the number of components stored in cache
    */
   public int getNbComponentsInCache() {
@@ -95,6 +104,7 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of profiles loaded in cache
+   * 
    * @return int representing the number of profiles stored in cache
    */
   public int getNbProfilesInCache() {
@@ -144,7 +154,7 @@ public class AdminCache extends Object {
 
   public SpaceInst getSpaceInst(String spaceId) {
     if (m_bUseCache && m_bUseSpaceInstCache) {
-      return (SpaceInst) m_hSpaceInstCache.get(spaceId);
+      return m_hSpaceInstCache.get(spaceId);
     } else {
       return null;
     }
@@ -177,7 +187,7 @@ public class AdminCache extends Object {
 
   public SpaceInstLight getSpaceInstLight(String spaceId) {
     if (m_bUseCache && m_bUseSpaceInstLightCache) {
-      return (SpaceInstLight) m_hSpaceInstLightCache.get(spaceId);
+      return m_hSpaceInstLightCache.get(spaceId);
     } else {
       return null;
     }
@@ -193,32 +203,33 @@ public class AdminCache extends Object {
 
   protected void removeTokenInSpaceInst(String tokenId, boolean isGroup) {
     SpaceInst theSpace;
-    Iterator itSpace = m_hSpaceInstCache.values().iterator();
-    Iterator itComponent;
-    Iterator itProfile;
+    Iterator<SpaceInst> itSpace = m_hSpaceInstCache.values().iterator();
+    Iterator<ComponentInst> itComponent;
+    Iterator<ProfileInst> itProfile;
+    Iterator<SpaceProfileInst> itSpaceProfile;
     ComponentInst theComponent;
 
     while (itSpace.hasNext()) {
-      theSpace = (SpaceInst) itSpace.next();
+      theSpace = itSpace.next();
       // First remove it from the SpaceProfileInst
-      itProfile = theSpace.getAllSpaceProfilesInst().iterator();
-      while (itProfile.hasNext()) {
+      itSpaceProfile = theSpace.getAllSpaceProfilesInst().iterator();
+      while (itSpaceProfile.hasNext()) {
         if (isGroup) {
-          ((SpaceProfileInst) itProfile.next()).removeGroup(tokenId);
+          itSpaceProfile.next().removeGroup(tokenId);
         } else {
-          ((SpaceProfileInst) itProfile.next()).removeUser(tokenId);
+          itSpaceProfile.next().removeUser(tokenId);
         }
       }
       // Second remove it from the ProfileInst of all ComponentInst
       itComponent = theSpace.getAllComponentsInst().iterator();
       while (itComponent.hasNext()) {
-        theComponent = (ComponentInst) itComponent.next();
+        theComponent = itComponent.next();
         itProfile = theComponent.getAllProfilesInst().iterator();
         while (itProfile.hasNext()) {
           if (isGroup) {
-            ((ProfileInst) itProfile.next()).removeGroup(tokenId);
+            itProfile.next().removeGroup(tokenId);
           } else {
-            ((ProfileInst) itProfile.next()).removeUser(tokenId);
+            itProfile.next().removeUser(tokenId);
           }
         }
       }
@@ -258,7 +269,7 @@ public class AdminCache extends Object {
 
   public ComponentInst getComponentInst(String componentId) {
     if (m_bUseCache && m_bUseComponentInstCache) {
-      return (ComponentInst) m_hComponentInstCache.get(componentId);
+      return m_hComponentInstCache.get(componentId);
     } else {
       return null;
     }
@@ -273,25 +284,25 @@ public class AdminCache extends Object {
   }
 
   protected void removeTokenInComponentInst(String tokenId, boolean isGroup) {
-    Iterator itComponent = m_hComponentInstCache.values().iterator();
+    Iterator<ComponentInst> itComponent = m_hComponentInstCache.values().iterator();
     ComponentInst theComponent;
-    Iterator itProfile;
+    Iterator<ProfileInst> itProfile;
 
     while (itComponent.hasNext()) {
-      theComponent = (ComponentInst) itComponent.next();
+      theComponent = itComponent.next();
       itProfile = theComponent.getAllProfilesInst().iterator();
       while (itProfile.hasNext()) {
         if (isGroup) {
-          ((ProfileInst) itProfile.next()).removeGroup(tokenId);
+          itProfile.next().removeGroup(tokenId);
         } else {
-          ((ProfileInst) itProfile.next()).removeUser(tokenId);
+          itProfile.next().removeUser(tokenId);
         }
       }
     }
   }
 
   protected void removeSpaceComponentsInst(String spaceId) {
-    ComponentInst[] theComponents = (ComponentInst[]) m_hComponentInstCache
+    ComponentInst[] theComponents = m_hComponentInstCache
         .values().toArray(new ComponentInst[0]);
 
     for (int i = 0; i < theComponents.length; i++) {
@@ -331,7 +342,7 @@ public class AdminCache extends Object {
 
   public ProfileInst getProfileInst(String profileId) {
     if (m_bUseCache && m_bUseProfileInstCache) {
-      return (ProfileInst) m_hProfileInstCache.get(profileId);
+      return m_hProfileInstCache.get(profileId);
     } else {
       return null;
     }
@@ -346,20 +357,19 @@ public class AdminCache extends Object {
   }
 
   protected void removeTokenInProfileInst(String tokenId, boolean isGroup) {
-    Iterator itProfile = m_hProfileInstCache.values().iterator();
+    Iterator<ProfileInst> itProfile = m_hProfileInstCache.values().iterator();
 
     while (itProfile.hasNext()) {
       if (isGroup) {
-        ((ProfileInst) itProfile.next()).removeGroup(tokenId);
+        itProfile.next().removeGroup(tokenId);
       } else {
-        ((ProfileInst) itProfile.next()).removeUser(tokenId);
+        itProfile.next().removeUser(tokenId);
       }
     }
   }
 
   protected void removeComponentsProfilesInst(String componentId) {
-    ProfileInst[] theProfiles = (ProfileInst[]) m_hProfileInstCache.values()
-        .toArray(new ProfileInst[0]);
+    ProfileInst[] theProfiles = m_hProfileInstCache.values().toArray(new ProfileInst[0]);
 
     for (int i = 0; i < theProfiles.length; i++) {
       if (componentId.equals(theProfiles[i].getComponentFatherId())) {
@@ -395,7 +405,7 @@ public class AdminCache extends Object {
 
   public UserDetail getUserDetail(String userId) {
     if (m_bUseCache && m_bUseUserDetailCache) {
-      return (UserDetail) m_hUserDetailCache.get(userId);
+      return m_hUserDetailCache.get(userId);
     } else {
       return null;
     }
@@ -428,7 +438,7 @@ public class AdminCache extends Object {
 
   public String[] getManageableSpaceIds(String userId) {
     if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
-      return (String[]) m_hManageableSpaceIdsCache.get(userId);
+      return m_hManageableSpaceIdsCache.get(userId);
     } else {
       return null;
     }
@@ -448,9 +458,9 @@ public class AdminCache extends Object {
       SilverTrace.debug("admin", "AdminCache.putAvailCompoIds",
           "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
           + userId);
-      Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
+      Hashtable<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable == null) {
-        spaceTable = new Hashtable();
+        spaceTable = new Hashtable<String, String[]>();
         m_hAvailCompoIdsCache.put(spaceId, spaceTable);
       }
       spaceTable.put(userId, compoIds);
@@ -462,7 +472,7 @@ public class AdminCache extends Object {
       SilverTrace.debug("admin", "AdminCache.removeAvailCompoIds",
           "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
           + userId);
-      Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
+      Hashtable<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable != null) {
         spaceTable.remove(userId);
       }
@@ -473,10 +483,10 @@ public class AdminCache extends Object {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
       SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForUser",
           "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
-      Hashtable spaceTable;
-      Iterator itHm = m_hAvailCompoIdsCache.values().iterator();
+      Hashtable<String, String[]> spaceTable;
+      Iterator<Hashtable<String, String[]>> itHm = m_hAvailCompoIdsCache.values().iterator();
       while (itHm.hasNext()) {
-        spaceTable = (Hashtable) itHm.next();
+        spaceTable = itHm.next();
         spaceTable.remove(userId);
       }
     }
@@ -492,9 +502,9 @@ public class AdminCache extends Object {
 
   public String[] getAvailCompoIds(String spaceId, String userId) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      Hashtable spaceTable = (Hashtable) m_hAvailCompoIdsCache.get(spaceId);
+      Hashtable<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable != null) {
-        return (String[]) spaceTable.get(userId);
+        return spaceTable.get(userId);
       }
     }
     return null;
@@ -527,7 +537,7 @@ public class AdminCache extends Object {
 
   public String[] getProfileIds(String userId) {
     if (m_bUseCache && m_bUseProfileIdsCache) {
-      return (String[]) m_hProfileIdsCache.get(userId);
+      return m_hProfileIdsCache.get(userId);
     } else {
       return null;
     }

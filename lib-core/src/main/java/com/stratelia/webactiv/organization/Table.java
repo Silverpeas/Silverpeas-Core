@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -188,7 +189,7 @@ public abstract class Table {
   /**
    * Returns the ids described by the given no parameters query.
    */
-  protected ArrayList getIds(String query) throws AdminPersistenceException {
+  protected ArrayList<String> getIds(String query) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -210,7 +211,7 @@ public abstract class Table {
   /**
    * Returns the ids described by the given query with one id parameter.
    */
-  protected ArrayList getIds(String query, int id)
+  protected ArrayList<String> getIds(String query, int id)
       throws AdminPersistenceException {
     ResultSet rs = null;
 
@@ -236,7 +237,7 @@ public abstract class Table {
   /**
    * Returns the ids described by the given query with id parameters.
    */
-  protected ArrayList getIds(String query, int[] ids)
+  protected ArrayList<String> getIds(String query, int[] ids)
       throws AdminPersistenceException {
     ResultSet rs = null;
 
@@ -264,7 +265,7 @@ public abstract class Table {
   /**
    * Returns the rows described by the given query with id and String parameters.
    */
-  protected ArrayList getIds(String query, int[] ids, String[] params)
+  protected ArrayList<String> getIds(String query, int[] ids, String[] params)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -297,7 +298,7 @@ public abstract class Table {
   /**
    * Returns the rows described by the given no parameters query.
    */
-  protected ArrayList getRows(String query) throws AdminPersistenceException {
+  protected ArrayList<? extends Object> getRows(String query) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
 
@@ -320,7 +321,7 @@ public abstract class Table {
   /**
    * Returns the rows described by the given query with one id parameter.
    */
-  protected ArrayList getRows(String query, int id)
+  protected List<? extends Object> getRows(String query, int id)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -346,7 +347,7 @@ public abstract class Table {
   /**
    * Returns the rows described by the given query with id parameters.
    */
-  protected ArrayList getRows(String query, int[] ids)
+  protected ArrayList<? extends Object> getRows(String query, int[] ids)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -374,7 +375,7 @@ public abstract class Table {
   /**
    * Returns the rows described by the given query and String parameters.
    */
-  protected ArrayList getRows(String query, String[] params)
+  protected ArrayList<? extends Object> getRows(String query, String[] params)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -402,7 +403,7 @@ public abstract class Table {
   /**
    * Returns the rows described by the given query with id and String parameters.
    */
-  protected ArrayList getRows(String query, int[] ids, String[] params)
+  protected ArrayList<? extends Object> getRows(String query, int[] ids, String[] params)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -674,11 +675,11 @@ public abstract class Table {
    * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
    * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
    */
-  protected ArrayList getMatchingRows(String returnedColumns,
+  protected ArrayList<? extends Object> getMatchingRows(String returnedColumns,
       String[] matchColumns, String[] matchValues)
       throws AdminPersistenceException {
     String query = "select " + returnedColumns + " from " + tableName;
-    ArrayList notNullValues = new ArrayList();
+    ArrayList<String> notNullValues = new ArrayList<String>();
 
     String sep = " where ";
     for (int i = 0; i < matchColumns.length; i++) {
@@ -689,7 +690,7 @@ public abstract class Table {
       }
     }
 
-    return getRows(query, (String[]) notNullValues.toArray(new String[0]));
+    return getRows(query, notNullValues.toArray(new String[0]));
   }
 
   /**
@@ -738,8 +739,8 @@ public abstract class Table {
     return result;
   }
 
-  protected ArrayList getRows(ResultSet rs) throws SQLException {
-    ArrayList result = new ArrayList();
+  protected ArrayList<? extends Object> getRows(ResultSet rs) throws SQLException {
+    ArrayList<Object> result = new ArrayList<Object>();
 
     while (rs.next()) {
       result.add(fetchRow(rs));
@@ -747,8 +748,8 @@ public abstract class Table {
     return result;
   }
 
-  protected ArrayList getIds(ResultSet rs) throws SQLException {
-    ArrayList result = new ArrayList();
+  protected ArrayList<String> getIds(ResultSet rs) throws SQLException {
+    ArrayList<String> result = new ArrayList<String>();
 
     while (rs.next()) {
       result.add(String.valueOf(rs.getInt(1)));
@@ -895,7 +896,7 @@ public abstract class Table {
   private Schema schema = null;
   private String tableName = null;
 
-  protected boolean addParamToQuery(Vector theVect, StringBuffer theQuery,
+  protected boolean addParamToQuery(Vector<String> theVect, StringBuffer theQuery,
       String value, String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
 
@@ -912,7 +913,7 @@ public abstract class Table {
     return valret;
   }
 
-  protected boolean addIdToQuery(Vector theVect, StringBuffer theQuery,
+  protected boolean addIdToQuery(Vector<Integer> theVect, StringBuffer theQuery,
       int value, String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
 

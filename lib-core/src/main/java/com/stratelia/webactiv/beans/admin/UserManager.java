@@ -300,7 +300,7 @@ public class UserManager extends Object {
     }
   }
 
-  public List getManageableGroupIds(DomainDriverManager ddManager,
+  public List<String> getManageableGroupIds(DomainDriverManager ddManager,
       String sUserId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();

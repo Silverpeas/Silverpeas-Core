@@ -63,7 +63,7 @@ public class WAComponent {
   protected boolean portlet;
   protected String instanceClassName;
   protected String[] tableList = new String[0];
-  protected List profiles = new ArrayList(); // List of SPProfile objects
+  protected List<SPProfile> profiles = new ArrayList<SPProfile>();
   protected SPParameters parameters = null;
 
   public WAComponent(String filename) {
@@ -143,7 +143,7 @@ public class WAComponent {
 
   public WAComponent(String strName, String strLabel, String strDescription,
       String strSuite, boolean fIsVisible, boolean fIsPortlet,
-      String strInstanceClass, String[] astrTableList, List listProfiles) {
+      String strInstanceClass, String[] astrTableList, List<SPProfile> listProfiles) {
     setName(strName);
     setLabel(strLabel);
     setDescription(strDescription);
@@ -243,31 +243,31 @@ public class WAComponent {
     tableList = s;
   }
 
-  public List getSPProfiles() {
+  public List<SPProfile> getSPProfiles() {
     return profiles;
   }
 
-  public void setSPProfiles(List listProfiles) {
+  public void setSPProfiles(List<SPProfile> listProfiles) {
     if (listProfiles != null)
       profiles = listProfiles;
   }
 
   public String[] getProfilList() {
-    Iterator iterProfile = profiles.iterator();
-    List listNames = new ArrayList();
+    Iterator<SPProfile> iterProfile = profiles.iterator();
+    List<String> listNames = new ArrayList<String>();
 
     while (iterProfile.hasNext())
-      listNames.add(((SPProfile) iterProfile.next()).getName());
+      listNames.add(iterProfile.next().getName());
 
     return (String[]) listNames.toArray(new String[0]);
   }
 
   public String[] getProfilLabelList() {
-    Iterator iterProfile = profiles.iterator();
-    List listLabels = new ArrayList();
+    Iterator<SPProfile> iterProfile = profiles.iterator();
+    List<String> listLabels = new ArrayList<String>();
 
     while (iterProfile.hasNext())
-      listLabels.add(((SPProfile) iterProfile.next()).getLabel());
+      listLabels.add(iterProfile.next().getLabel());
 
     return (String[]) listLabels.toArray(new String[0]);
   }
@@ -280,11 +280,11 @@ public class WAComponent {
     parameters = spParameters;
   }
 
-  public List getParameters() {
+  public List<SPParameter> getParameters() {
     return this.parameters.getParameters();
   }
 
-  public List getSortedParameters() {
+  public List<SPParameter> getSortedParameters() {
     return this.parameters.getSortedParameters();
   }
 
@@ -292,7 +292,7 @@ public class WAComponent {
     String s = name + "|" + description + "|" + suite + "|"
         + ((visible) ? " Visible " : " NOT Visible ") + "|" + instanceClassName
         + "|";
-    Iterator iterProfile = profiles.iterator();
+    Iterator<SPProfile> iterProfile = profiles.iterator();
     int i = 0;
     if (tableList != null) {
       while ((i < tableList.length) && (tableList[i] != null))
@@ -302,7 +302,7 @@ public class WAComponent {
     i = 0;
 
     while (iterProfile.hasNext())
-      s += "," + ((SPProfile) iterProfile.next()).getName();
+      s += "," + iterProfile.next().getName();
 
     s = s + "|";
     return s;

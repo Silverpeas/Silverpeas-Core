@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileInst extends Object implements Serializable, Cloneable {
+  
+  private static final long serialVersionUID = 3092416162986110340L;
   private String m_sId;
   private String m_sName;
   private String m_sLabel;

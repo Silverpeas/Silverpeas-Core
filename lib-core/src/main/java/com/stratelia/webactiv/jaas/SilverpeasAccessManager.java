@@ -23,29 +23,27 @@ import javax.jcr.LoginException;
 import javax.jcr.NamespaceException;
 import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.security.auth.Subject;
 
-import com.silverpeas.jcrutil.JcrConstants;
 import org.apache.jackrabbit.core.HierarchyManager;
 import org.apache.jackrabbit.core.ItemId;
 import org.apache.jackrabbit.core.NodeId;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
 import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-import com.silverpeas.util.StringUtil;
 import org.apache.jackrabbit.core.security.authorization.PrivilegeRegistry;
-
 import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
 import org.apache.jackrabbit.spi.Name;
 import org.apache.jackrabbit.spi.Path;
 import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
+
+import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
 
 public class SilverpeasAccessManager implements AccessManager {
 
@@ -111,10 +109,10 @@ public class SilverpeasAccessManager implements AccessManager {
       if (path.getDepth() > 2 && validateNode(path)) {
         return isPathAutorized(path);
       } else if (validateFileNode(id)) {
-        Set principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
-        Iterator iter = principals.iterator();
+        Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
+        Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
         while (iter.hasNext()) {
-          SilverpeasUserPrincipal principal = (SilverpeasUserPrincipal) iter.next();
+          SilverpeasUserPrincipal principal = iter.next();
           if (checkUserIsOwner(principal, id)) {
             return true;
           }
@@ -127,6 +125,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
+   * 
    * @param principal
    * @param id
    * @return
@@ -158,6 +157,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
+   * 
    * @param principal
    * @param id
    * @return
@@ -185,11 +185,11 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   protected boolean isPathAutorized(Path path) {
-    Set principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
+    Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
     Path.Element[] elements = path.getElements();
-    Iterator iter = principals.iterator();
+    Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
     while (iter.hasNext()) {
-      SilverpeasUserPrincipal principal = (SilverpeasUserPrincipal) iter.next();
+      SilverpeasUserPrincipal principal = iter.next();
       for (int i = 0; i < elements.length; i++) {
         if (principal.getUserProfile(elements[i].getName().getLocalName()) != null) {
           return true;
@@ -201,6 +201,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
+   * 
    * @param id
    * @return
    * @throws LoginException
@@ -245,6 +246,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
+   * 
    * @param id
    * @return
    * @throws LoginException
@@ -312,10 +314,10 @@ public class SilverpeasAccessManager implements AccessManager {
       if (path.getDepth() > 2 && validateNode(path)) {
         return isPathAutorized(path);
       } else if (validateFileNode(path)) {
-        Set principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
-        Iterator iter = principals.iterator();
+        Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
+        Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
         while (iter.hasNext()) {
-          SilverpeasUserPrincipal principal = (SilverpeasUserPrincipal) iter.next();
+          SilverpeasUserPrincipal principal = iter.next();
           if (checkUserIsOwner(principal, path)) {
             return true;
           }

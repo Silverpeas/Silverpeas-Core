@@ -33,13 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpaceProfileInst extends Object implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
   private String m_sId;
   private String m_sName;
   private String m_sLabel;
   private String m_sDescription;
   private String m_sSpaceFatherId;
-  private ArrayList m_alGroups;
-  private ArrayList m_alUsers;
+  private ArrayList<String> m_alGroups;
+  private ArrayList<String> m_alUsers;
 
   private boolean isInherited = false;
 
@@ -50,8 +52,8 @@ public class SpaceProfileInst extends Object implements Serializable {
     m_sLabel = "";
     m_sDescription = "";
     m_sSpaceFatherId = "";
-    m_alGroups = new ArrayList();
-    m_alUsers = new ArrayList();
+    m_alGroups = new ArrayList<String>();
+    m_alUsers = new ArrayList<String>();
   }
 
   public void setId(String sId) {
@@ -99,7 +101,7 @@ public class SpaceProfileInst extends Object implements Serializable {
   }
 
   public String getGroup(int nIndex) {
-    return (String) m_alGroups.get(nIndex);
+    return m_alGroups.get(nIndex);
   }
 
   public void addGroup(String sGroupId) {
@@ -110,12 +112,12 @@ public class SpaceProfileInst extends Object implements Serializable {
     m_alGroups.remove(sGroupId);
   }
 
-  public ArrayList getAllGroups() {
+  public ArrayList<String> getAllGroups() {
     return m_alGroups;
   }
 
   public void removeAllGroups() {
-    m_alGroups = new ArrayList();
+    m_alGroups = new ArrayList<String>();
   }
 
   public int getNumUser() {
@@ -123,7 +125,7 @@ public class SpaceProfileInst extends Object implements Serializable {
   }
 
   public String getUser(int nIndex) {
-    return (String) m_alUsers.get(nIndex);
+    return m_alUsers.get(nIndex);
   }
 
   public void addUser(String sUserId) {
@@ -134,20 +136,20 @@ public class SpaceProfileInst extends Object implements Serializable {
     m_alUsers.remove(sUserId);
   }
 
-  public void addUsers(List users) {
+  public void addUsers(List<String> users) {
     m_alUsers.addAll(users);
   }
 
-  public void addGroups(List groups) {
+  public void addGroups(List<String> groups) {
     m_alGroups.addAll(groups);
   }
 
-  public ArrayList getAllUsers() {
+  public ArrayList<String> getAllUsers() {
     return m_alUsers;
   }
 
   public void removeAllUsers() {
-    m_alUsers = new ArrayList();
+    m_alUsers = new ArrayList<String>();
   }
 
   public boolean isInherited() {

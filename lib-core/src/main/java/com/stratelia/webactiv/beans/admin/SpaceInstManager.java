@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceI18NRow;
@@ -90,11 +91,10 @@ public class SpaceInstManager {
     spaceInst.setLanguage(spaceInstToCopy.getLanguage());
 
     // Create a copy of space translations
-    Iterator translations = spaceInstToCopy.getTranslations().values()
+    Iterator<Translation> translations = spaceInstToCopy.getTranslations().values()
         .iterator();
     while (translations.hasNext()) {
-      SpaceI18N translation = (SpaceI18N) translations.next();
-      spaceInst.addTranslation(translation);
+      spaceInst.addTranslation(translations.next());
     }
 
     return spaceInst;
@@ -300,10 +300,10 @@ public class SpaceInstManager {
           space.description);
       spaceInst.addTranslation(translation);
 
-      List translations = ddManager.organization.spaceI18N
+      List<SpaceI18NRow> translations = ddManager.organization.spaceI18N
           .getTranslations(idAsInt(sSpaceInstId));
       for (int t = 0; translations != null && t < translations.size(); t++) {
-        SpaceI18NRow row = (SpaceI18NRow) translations.get(t);
+        SpaceI18NRow row = translations.get(t);
         spaceInst.addTranslation(new SpaceI18N(row));
       }
     } catch (Exception e) {
@@ -406,7 +406,7 @@ public class SpaceInstManager {
     }
   }
 
-  public List getAllowedSubSpaces(DomainDriverManager ddManager, String userId,
+  public List<SpaceInstLight> getAllowedSubSpaces(DomainDriverManager ddManager, String userId,
       String spaceId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
@@ -448,7 +448,7 @@ public class SpaceInstManager {
   /**
    * Returns all components which has been removed but not definitely deleted
    */
-  public List getRemovedSpaces(DomainDriverManager ddManager)
+  public List<SpaceInstLight> getRemovedSpaces(DomainDriverManager ddManager)
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
@@ -467,7 +467,7 @@ public class SpaceInstManager {
    * Return subspaces of a space for a given user
    * @return a List of SpaceInstLight
    */
-  public List getSubSpacesOfUser(DomainDriverManager ddManager, String userId,
+  public List<SpaceInstLight> getSubSpacesOfUser(DomainDriverManager ddManager, String userId,
       String spaceId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
@@ -493,10 +493,10 @@ public class SpaceInstManager {
       space.addTranslation(translation);
 
       if (I18NHelper.isI18N) {
-        List translations = ddManager.organization.spaceI18N
+        List<SpaceI18NRow> translations = ddManager.organization.spaceI18N
             .getTranslations(row.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
-          SpaceI18NRow i18nRow = (SpaceI18NRow) translations.get(t);
+          SpaceI18NRow i18nRow = translations.get(t);
           space.addTranslation(new SpaceI18N(i18nRow));
         }
       }
@@ -506,9 +506,9 @@ public class SpaceInstManager {
     }
   }
 
-  private List spaceRows2SpaceInstLights(DomainDriverManager ddManager,
+  private List<SpaceInstLight> spaceRows2SpaceInstLights(DomainDriverManager ddManager,
       SpaceRow[] spaceRows) {
-    List spaces = new ArrayList();
+    List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
     SpaceInstLight spaceLight = null;
     for (int s = 0; spaceRows != null && s < spaceRows.length; s++) {
       SpaceRow row = (SpaceRow) spaceRows[s];
@@ -633,11 +633,11 @@ public class SpaceInstManager {
 
       if (spaceInstNew.isRemoveTranslation()) {
         if (oldSpace.lang.equalsIgnoreCase(spaceInstNew.getLanguage())) {
-          List translations = ddManager.organization.spaceI18N
+          List<SpaceI18NRow> translations = ddManager.organization.spaceI18N
               .getTranslations(changedSpace.id);
 
           if (translations != null && translations.size() > 0) {
-            SpaceI18NRow translation = (SpaceI18NRow) translations.get(0);
+            SpaceI18NRow translation = translations.get(0);
 
             changedSpace.lang = translation.lang;
             changedSpace.name = translation.name;

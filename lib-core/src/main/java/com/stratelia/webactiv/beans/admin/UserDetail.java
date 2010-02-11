@@ -34,7 +34,9 @@ import java.io.Serializable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-public class UserDetail extends Object implements Serializable, Comparable {
+public class UserDetail extends Object implements Serializable, Comparable<UserDetail> {
+  
+  private static final long serialVersionUID = -109886153681824159L;
   private String m_sId = null;
   private String m_sSpecificId = null;
   private String m_sDomainId = null;
@@ -312,8 +314,8 @@ public class UserDetail extends Object implements Serializable, Comparable {
         "admin.MSG_DUMP_USER", "AccessLevel : " + m_sAccessLevel);
   }
 
-  public int compareTo(Object o) {
-    UserDetail other = (UserDetail) o;
+  public int compareTo(UserDetail o) {
+    UserDetail other = o;
     return ((getLastName() + getFirstName()).toLowerCase())
         .compareTo((other.getLastName() + other.getFirstName())
         .toLowerCase());

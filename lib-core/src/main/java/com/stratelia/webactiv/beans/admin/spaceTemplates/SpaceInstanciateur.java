@@ -30,12 +30,13 @@ import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SpaceInstanciateur extends Object {
   private static ResourceLocator resources = null;
   private static String xmlPackage = "";
-  private Hashtable spaceTemplates = new Hashtable();
+  private Hashtable<String, SpaceTemplate> spaceTemplates = new Hashtable<String, SpaceTemplate>();
 
   // Init Function
   static {
@@ -50,11 +51,11 @@ public class SpaceInstanciateur extends Object {
     }
   }
 
-  public SpaceInstanciateur(Hashtable allComponentsModels) {
+  public SpaceInstanciateur(Hashtable<String, WAComponent> allComponentsModels) {
     File file = new File(xmlPackage);
     String[] list = file.list();
 
-    Vector vector = new Vector();
+    Vector<String> vector = new Vector<String>();
     for (int i = 0; list != null && i < list.length; i++) {
       if (list[i].toLowerCase().endsWith(".xml")) {
         vector.addElement(list[i].substring(0, list[i].length() - 4));
@@ -76,12 +77,12 @@ public class SpaceInstanciateur extends Object {
     }
   }
 
-  public Hashtable getAllSpaceTemplates() {
+  public Hashtable<String, SpaceTemplate> getAllSpaceTemplates() {
     return spaceTemplates;
   }
 
   public SpaceTemplateProfile[] getTemplateProfiles(String templateName) {
-    SpaceTemplate st = (SpaceTemplate) spaceTemplates.get(templateName);
+    SpaceTemplate st = spaceTemplates.get(templateName);
 
     if (st == null) {
       SilverTrace.info("admin",
@@ -99,7 +100,7 @@ public class SpaceInstanciateur extends Object {
   }
 
   public SpaceInst getSpaceToInstanciate(String templateName) {
-    SpaceTemplate st = (SpaceTemplate) spaceTemplates.get(templateName);
+    SpaceTemplate st = spaceTemplates.get(templateName);
 
     if (st == null) {
       SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",

@@ -55,7 +55,7 @@ public class Instanciateur extends Object {
   private static String m_sSpaceId = "";
   private static String m_sComponentId = "";
   private static String m_sUserId = "";
-  private static Hashtable WAComponents = new Hashtable();
+  private static Hashtable<String, WAComponent> WAComponents = new Hashtable<String, WAComponent>();
 
   // Init Function
   static {
@@ -117,6 +117,7 @@ public class Instanciateur extends Object {
     instantiateComponent(new WAComponent(fullPath));
   }
 
+  @SuppressWarnings("unchecked")
   public void instantiateComponent(WAComponent wac)
       throws InstanciationException {
     try {
@@ -146,6 +147,7 @@ public class Instanciateur extends Object {
     unInstantiateComponent(new WAComponent(fullPath));
   }
 
+  @SuppressWarnings("unchecked")
   public void unInstantiateComponent(WAComponent wac)
       throws InstanciationException {
     try {
@@ -172,16 +174,16 @@ public class Instanciateur extends Object {
     return (WAComponent) WAComponents.get(componentName);
   }
 
-  public static Hashtable getWAComponents() {
+  public static Hashtable<String, WAComponent> getWAComponents() {
     return WAComponents;
   }
 
-  public static Hashtable getAllComponentsNames() {
-    Hashtable hComponents = new Hashtable();
+  public static Hashtable<String, String> getAllComponentsNames() {
+    Hashtable<String, String> hComponents = new Hashtable<String, String>();
 
-    Enumeration e = WAComponents.elements();
+    Enumeration<WAComponent> e = WAComponents.elements();
     while (e.hasMoreElements()) {
-      WAComponent waComponent = (WAComponent) e.nextElement();
+      WAComponent waComponent = e.nextElement();
       hComponents.put(waComponent.getName(), waComponent.getLabel());
     }
 
@@ -215,7 +217,7 @@ public class Instanciateur extends Object {
     File file = new File(xmlPackage);
     String[] list = file.list();
 
-    Vector vector = new Vector();
+    Vector<String> vector = new Vector<String>();
     for (int i = 0; list != null && i < list.length; i++) {
       if (list[i].toLowerCase().endsWith(".xml")) {
         vector.addElement(list[i].substring(0, list[i].length() - 4));

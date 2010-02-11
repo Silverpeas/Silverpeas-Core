@@ -38,9 +38,9 @@ public class ProfiledObjectManager {
   public ProfiledObjectManager() {
   }
 
-  public List getProfiles(DomainDriverManager ddManager, int objectId,
+  public List<ProfileInst> getProfiles(DomainDriverManager ddManager, int objectId,
       String objectType, int componentId) throws AdminException {
-    List profiles = new ArrayList();
+    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
 
     String[] asProfileIds = null;
     try {
@@ -109,9 +109,9 @@ public class ProfiledObjectManager {
     }
   }
 
-  public List getProfiles(DomainDriverManager ddManager, int componentId)
+  public List<ProfileInst> getProfiles(DomainDriverManager ddManager, int componentId)
       throws AdminException {
-    List profiles = new ArrayList();
+    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
 
     String[] asProfileIds = null;
     try {

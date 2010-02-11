@@ -57,8 +57,9 @@ public class ComponentInstanceI18NTable extends Table {
   /**
    * Returns the Component whith the given id.
    */
-  public List getTranslations(int componentId) throws AdminPersistenceException {
-    return getRows(SELECT_TRANSLATIONS, componentId);
+  @SuppressWarnings("unchecked")
+  public List<ComponentInstanceI18NRow> getTranslations(int componentId) throws AdminPersistenceException {
+    return (List<ComponentInstanceI18NRow>) getRows(SELECT_TRANSLATIONS, componentId);
   }
 
   static final private String SELECT_TRANSLATIONS = "select " + COLUMNS

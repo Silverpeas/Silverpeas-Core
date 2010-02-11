@@ -28,11 +28,9 @@ import java.util.HashMap;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class UserFull extends UserDetail {
-  /**
-	 * 
-	 */
+  
   private static final long serialVersionUID = 1L;
-  protected HashMap m_hInfos = null;
+  protected HashMap<String, String> m_hInfos = null;
   protected AbstractDomainDriver m_pDomainDriver = null;
 
   protected String m_password = "";
@@ -42,18 +40,18 @@ public class UserFull extends UserDetail {
   /** Creates new UserFull */
   public UserFull() {
     super();
-    m_hInfos = new HashMap();
+    m_hInfos = new HashMap<String, String>();
   }
 
   public UserFull(AbstractDomainDriver domainDriver) {
     super();
-    m_hInfos = new HashMap();
+    m_hInfos = new HashMap<String, String>();
     m_pDomainDriver = domainDriver;
   }
 
   public UserFull(AbstractDomainDriver domainDriver, UserDetail toClone) {
     super(toClone);
-    m_hInfos = new HashMap();
+    m_hInfos = new HashMap<String, String>();
     m_pDomainDriver = domainDriver;
   }
 
@@ -93,14 +91,14 @@ public class UserFull extends UserDetail {
 
   }
 
-  public HashMap getSpecificDetails() {
+  public HashMap<String, String> getSpecificDetails() {
     return m_hInfos;
   }
 
   public String getValue(String propertyName, String defaultValue) {
     String valret;
 
-    valret = (String) m_hInfos.get(propertyName);
+    valret = m_hInfos.get(propertyName);
     if (valret == null) {
       valret = defaultValue;
     }
@@ -115,7 +113,7 @@ public class UserFull extends UserDetail {
     String sValret;
     boolean valret = defaultValue;
 
-    sValret = (String) m_hInfos.get(propertyName);
+    sValret = m_hInfos.get(propertyName);
     if (sValret != null) {
       if (sValret.equalsIgnoreCase("true")) {
         valret = true;
@@ -128,7 +126,7 @@ public class UserFull extends UserDetail {
 
   // Labels' getters
 
-  public HashMap getSpecificLabels(String language) {
+  public HashMap<String, String> getSpecificLabels(String language) {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getPropertiesLabels(language);
     }
@@ -139,8 +137,8 @@ public class UserFull extends UserDetail {
     String valret = null;
 
     if (m_pDomainDriver != null) {
-      HashMap theLabels = m_pDomainDriver.getPropertiesLabels(language);
-      valret = (String) theLabels.get(propertyName);
+      HashMap<String, String> theLabels = m_pDomainDriver.getPropertiesLabels(language);
+      valret = theLabels.get(propertyName);
     }
     if (valret == null) {
       valret = "";

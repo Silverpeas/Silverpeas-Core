@@ -33,7 +33,7 @@ public class DomainSynchroThread extends Thread {
   private boolean m_mustBeRunning = false;
   private boolean m_isEncours = false;
   private Exception m_ErrorOccured = null;
-  private Vector m_Domains = new Vector();
+  private Vector<String> m_Domains = new Vector<String>();
   private long m_nbSleepSec = 900; // 15 mn
 
   public DomainSynchroThread(Admin theAdmin, long nbSleepSec) {

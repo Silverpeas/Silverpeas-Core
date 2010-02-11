@@ -118,7 +118,7 @@ public class UserTable extends Table {
   /**
    * Returns the User with the given specificId and login.
    */
-  public UserRow[] getUsersBySpecificIds(int domainId, List specificIds)
+  public UserRow[] getUsersBySpecificIds(int domainId, List<String> specificIds)
       throws AdminPersistenceException {
     if (specificIds == null || specificIds.size() == 0)
       return null;
@@ -128,7 +128,7 @@ public class UserTable extends Table {
     for (int s = 0; s < specificIds.size(); s++) {
       if (s != 0)
         clauseIN.append(", ");
-      specificId = (String) specificIds.get(s);
+      specificId = specificIds.get(s);
       clauseIN.append("'").append(
           LDAPUtility.dblBackSlashesForDNInFilters(specificId)).append("'");
     }
@@ -524,7 +524,7 @@ public class UserTable extends Table {
   /**
    * Returns all the group ids manageable by the given user.
    */
-  public List getManageableGroupIds(int userId)
+  public List<String> getManageableGroupIds(int userId)
       throws AdminPersistenceException {
     return getIds(SELECT_ALL_MANAGEABLE_GROUP_IDS, userId);
   }
@@ -540,8 +540,8 @@ public class UserTable extends Table {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuffer theQuery = null;
-    Vector ids = new Vector();
-    Vector params = new Vector();
+    Vector<Integer> ids = new Vector<Integer>();
+    Vector<String> params = new Vector<String>();
 
     // WARNING !!! Ids must all be set before Params !!!!
 
@@ -597,10 +597,10 @@ public class UserTable extends Table {
         "ST_User.accessLevel", concatAndOr, andOr);
     concatAndOr =
         addParamToQuery(params, theQuery, userModel.loginQuestion, "ST_User.loginQuestion",
-            concatAndOr, andOr);
+        concatAndOr, andOr);
     concatAndOr =
         addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer",
-            concatAndOr, andOr);
+        concatAndOr, andOr);
     if (concatAndOr) {
       theQuery.append(") AND (accessLevel <> 'R')");
     } else {
@@ -610,11 +610,11 @@ public class UserTable extends Table {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ((Integer) ids.get(i)).intValue();
+      idsArray[i] = ids.get(i).intValue();
     }
 
-    return (String[]) getIds(theQuery.toString(), idsArray,
-        (String[]) params.toArray(new String[0])).toArray(new String[0]);
+    return getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
+        new String[0]);
   }
 
   static final private String SELECT_SEARCH_USERSID =
@@ -645,8 +645,8 @@ public class UserTable extends Table {
     boolean concatAndOr = false;
     String andOr;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERS);
-    Vector ids = new Vector();
-    Vector params = new Vector();
+    Vector<Integer> ids = new Vector<Integer>();
+    Vector<String> params = new Vector<String>();
 
     if (isAnd) {
       andOr = ") AND (";
@@ -671,7 +671,7 @@ public class UserTable extends Table {
         "accessLevel", concatAndOr, andOr);
     concatAndOr =
         addParamToQuery(params, theQuery, userModel.loginQuestion, "loginQuestion", concatAndOr,
-            andOr);
+        andOr);
     concatAndOr =
         addParamToQuery(params, theQuery, userModel.loginAnswer, "loginAnswer", concatAndOr, andOr);
     if (concatAndOr) {
@@ -683,11 +683,10 @@ public class UserTable extends Table {
 
     int[] idsArray = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ((Integer) ids.get(i)).intValue();
+      idsArray[i] = ids.get(i).intValue();
     }
 
-    return (UserRow[]) getRows(theQuery.toString(), idsArray,
-        (String[]) params.toArray(new String[0])).toArray(new UserRow[0]);
+    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(new UserRow[0]);
   }
 
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS

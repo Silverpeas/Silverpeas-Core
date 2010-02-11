@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class DomainDriverManager extends AbstractDomainDriver {
   public OrganizationSchema organization = null;
-  private Hashtable domainDriverInstances = new Hashtable(0);
+  private Hashtable<String, AbstractDomainDriver> domainDriverInstances = new Hashtable<String, AbstractDomainDriver>(0);
   private DomainSynchroThread theThread = null;
 
   public DomainDriverManager() {
@@ -688,7 +688,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @param domainId
    * @return boolean
    */
-  public Hashtable authenticate(String sKey) throws Exception {
+  public Hashtable<String, String> authenticate(String sKey) throws Exception {
     return authenticate(sKey, true);
   }
 
@@ -698,8 +698,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @return
    * @throws Exception
    */
-  public Hashtable authenticate(String sKey, boolean removeKey) throws Exception {
-    Hashtable loginDomainId = new Hashtable();
+  public Hashtable<String, String> authenticate(String sKey, boolean removeKey) throws Exception {
+    Hashtable<String, String> loginDomainId = new Hashtable<String, String>();
     try {
       // Start transaction
       this.startTransaction(false);
@@ -936,8 +936,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     boolean osAllocated = false;
 
     try {
-      domainDriver = (AbstractDomainDriver) domainDriverInstances
-          .get(idAsString(domainId));
+      domainDriver = domainDriverInstances.get(idAsString(domainId));
       if (domainDriver == null) {
         // Set the OrganizationSchema (if not already done)
         this.getOrganizationSchema();
@@ -1100,14 +1099,14 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   protected String[] translateUserIdsToSpecificIds(int domainId, String[] ids) {
-    Vector specificIds = null;
+    Vector<String> specificIds = null;
     int i = 0;
     UserRow ur = null;
 
     if (ids == null)
       return null;
 
-    specificIds = new Vector();
+    specificIds = new Vector<String>();
     for (i = 0; i < ids.length; i++) {
       // Get the user information
       try {

@@ -183,27 +183,27 @@ public class SpaceProfileInstManager {
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       DomainDriverManager ddManager, SpaceProfileInst spaceProfileInstNew)
       throws AdminException {
-    ArrayList alOldSpaceProfileGroup = new ArrayList();
-    ArrayList alNewSpaceProfileGroup = new ArrayList();
-    ArrayList alAddGroup = new ArrayList();
-    ArrayList alRemGroup = new ArrayList();
-    ArrayList alStayGroup = new ArrayList();
-    ArrayList alOldSpaceProfileUser = new ArrayList();
-    ArrayList alNewSpaceProfileUser = new ArrayList();
-    ArrayList alAddUser = new ArrayList();
-    ArrayList alRemUser = new ArrayList();
-    ArrayList alStayUser = new ArrayList();
+    ArrayList<String> alOldSpaceProfileGroup = new ArrayList<String>();
+    ArrayList<String> alNewSpaceProfileGroup = new ArrayList<String>();
+    ArrayList<String> alAddGroup = new ArrayList<String>();
+    ArrayList<String> alRemGroup = new ArrayList<String>();
+    ArrayList<String> alStayGroup = new ArrayList<String>();
+    ArrayList<String> alOldSpaceProfileUser = new ArrayList<String>();
+    ArrayList<String> alNewSpaceProfileUser = new ArrayList<String>();
+    ArrayList<String> alAddUser = new ArrayList<String>();
+    ArrayList<String> alRemUser = new ArrayList<String>();
+    ArrayList<String> alStayUser = new ArrayList<String>();
 
     try {
       // Compute the Old spaceProfile group list
-      ArrayList alGroup = spaceProfileInst.getAllGroups();
+      ArrayList<String> alGroup = spaceProfileInst.getAllGroups();
       for (int nI = 0; nI < alGroup.size(); nI++)
-        alOldSpaceProfileGroup.add((String) alGroup.get(nI));
+        alOldSpaceProfileGroup.add(alGroup.get(nI));
 
       // Compute the New spaceProfile group list
       alGroup = spaceProfileInstNew.getAllGroups();
       for (int nI = 0; nI < alGroup.size(); nI++)
-        alNewSpaceProfileGroup.add((String) alGroup.get(nI));
+        alNewSpaceProfileGroup.add(alGroup.get(nI));
 
       // Compute the remove group list
       for (int nI = 0; nI < alOldSpaceProfileGroup.size(); nI++)
@@ -221,7 +221,7 @@ public class SpaceProfileInstManager {
       for (int nI = 0; nI < alAddGroup.size(); nI++) {
         // Create the links between the spaceProfile and the group
         ddManager.organization.spaceUserRole.addGroupInSpaceUserRole(
-            idAsInt((String) alAddGroup.get(nI)), idAsInt(spaceProfileInst
+            idAsInt(alAddGroup.get(nI)), idAsInt(spaceProfileInst
             .getId()));
       }
 
@@ -229,19 +229,19 @@ public class SpaceProfileInstManager {
       for (int nI = 0; nI < alRemGroup.size(); nI++) {
         // delete the node link SpaceProfile_Group
         ddManager.organization.spaceUserRole.removeGroupFromSpaceUserRole(
-            idAsInt((String) alRemGroup.get(nI)), idAsInt(spaceProfileInst
+            idAsInt(alRemGroup.get(nI)), idAsInt(spaceProfileInst
             .getId()));
       }
 
       // Compute the Old spaceProfile User list
-      ArrayList alUser = spaceProfileInst.getAllUsers();
+      ArrayList<String> alUser = spaceProfileInst.getAllUsers();
       for (int nI = 0; nI < alUser.size(); nI++)
-        alOldSpaceProfileUser.add((String) alUser.get(nI));
+        alOldSpaceProfileUser.add(alUser.get(nI));
 
       // Compute the New spaceProfile User list
       alUser = spaceProfileInstNew.getAllUsers();
       for (int nI = 0; nI < alUser.size(); nI++)
-        alNewSpaceProfileUser.add((String) alUser.get(nI));
+        alNewSpaceProfileUser.add(alUser.get(nI));
 
       // Compute the remove User list
       for (int nI = 0; nI < alOldSpaceProfileUser.size(); nI++)
@@ -259,23 +259,20 @@ public class SpaceProfileInstManager {
       for (int nI = 0; nI < alAddUser.size(); nI++) {
         // Create the links between the spaceProfile and the User
         ddManager.organization.spaceUserRole.addUserInSpaceUserRole(
-            idAsInt((String) alAddUser.get(nI)), idAsInt(spaceProfileInst
-            .getId()));
+            idAsInt(alAddUser.get(nI)), idAsInt(spaceProfileInst.getId()));
       }
 
       // Remove the removed Users
       for (int nI = 0; nI < alRemUser.size(); nI++) {
         // delete the node link SpaceProfile_User
         ddManager.organization.spaceUserRole.removeUserFromSpaceUserRole(
-            idAsInt((String) alRemUser.get(nI)), idAsInt(spaceProfileInst
-            .getId()));
+            idAsInt(alRemUser.get(nI)), idAsInt(spaceProfileInst.getId()));
       }
 
       // update the spaceProfile node
       SpaceUserRoleRow changedSpaceUserRole = makeSpaceUserRoleRow(spaceProfileInstNew);
       changedSpaceUserRole.id = idAsInt(spaceProfileInstNew.getId());
-      ddManager.organization.spaceUserRole
-          .updateSpaceUserRole(changedSpaceUserRole);
+      ddManager.organization.spaceUserRole.updateSpaceUserRole(changedSpaceUserRole);
 
       return idAsString(changedSpaceUserRole.id);
     } catch (Exception e) {

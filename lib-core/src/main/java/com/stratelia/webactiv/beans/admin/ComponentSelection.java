@@ -32,6 +32,8 @@ import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 public class ComponentSelection extends ClipboardSelection implements Serializable {
+  
+  private static final long serialVersionUID = 4750709802063183409L;
   static public DataFlavor ComponentDetailFlavor;
   static {
     try {

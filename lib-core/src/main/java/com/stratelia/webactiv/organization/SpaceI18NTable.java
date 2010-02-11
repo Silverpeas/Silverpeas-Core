@@ -56,8 +56,9 @@ public class SpaceI18NTable extends Table {
   /**
    * Returns the Space whith the given id.
    */
-  public List getTranslations(int spaceId) throws AdminPersistenceException {
-    return getRows(SELECT_TRANSLATIONS, spaceId);
+  @SuppressWarnings("unchecked")
+  public List<SpaceI18NRow> getTranslations(int spaceId) throws AdminPersistenceException {
+    return (List<SpaceI18NRow>) getRows(SELECT_TRANSLATIONS, spaceId);
   }
 
   static final private String SELECT_TRANSLATIONS = "select " + COLUMNS

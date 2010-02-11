@@ -30,11 +30,11 @@ import java.util.Map;
 public class SilverpeasUserPrincipal implements Principal {
 
   private String userId;
-  private Map entries;
+  private Map<String, SilverpeasUserProfileEntry> entries;
 
   public SilverpeasUserPrincipal(String userId) {
     this.userId = userId;
-    this.entries = new HashMap(100);
+    this.entries = new HashMap<String, SilverpeasUserProfileEntry>(100);
   }
 
   public void addUserProfile(SilverpeasUserProfileEntry entry) {
@@ -42,7 +42,7 @@ public class SilverpeasUserPrincipal implements Principal {
   }
 
   public SilverpeasUserProfileEntry getUserProfile(String componentId) {
-    return (SilverpeasUserProfileEntry) this.entries.get(componentId);
+    return this.entries.get(componentId);
   }
 
   public String getUserId() {

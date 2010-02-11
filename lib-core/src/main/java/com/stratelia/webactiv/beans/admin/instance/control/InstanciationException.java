@@ -32,6 +32,9 @@ package com.stratelia.webactiv.beans.admin.instance.control;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class InstanciationException extends SilverpeasException {
+  
+  private static final long serialVersionUID = -1672193197127561120L;
+
   /*
    * @Deprecated
    */
