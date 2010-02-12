@@ -38,8 +38,10 @@
   </skin>
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans 6.7" href="http://download.netbeans.org/netbeans/6.7.1/final/" img="http://mojo.codehaus.org/scmchangelog-maven-plugin/images/netbeans-110x32.gif" />
+    <logo name="Netbeans 6.8" href="http://netbeans.org/downloads/index.html" img="http://netbeans.org/images_www/collateral/68/netbeans-110x32.png" />
+    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="images/eclipse_bckgr_logo_fc_xsm.jpg" />
     <logo name="Maven2.2.x" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png" />
+    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="images/zeroturnaround.gif" />
   </poweredBy>
   <body>
     <menu name="Overview">
