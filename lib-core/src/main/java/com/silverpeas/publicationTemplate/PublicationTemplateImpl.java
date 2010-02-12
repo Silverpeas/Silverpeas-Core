@@ -86,7 +86,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private Form updateForm = null;
   private Form viewForm = null;
   private Form searchForm = null;
-  private ArrayList templateFiles = new ArrayList();
+  private ArrayList<TemplateFile> templateFiles = new ArrayList<TemplateFile>();
 
   /**
    * Returns the RecordTemplate of the publication data item.
@@ -196,9 +196,9 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         "root.MSG_GEN_PARAM_VALUE", "name=" + name);
     Form form = null;
     if (templateFiles != null) {
-      Iterator files = templateFiles.iterator();
+      Iterator<TemplateFile> files = templateFiles.iterator();
       while (files.hasNext()) {
-        TemplateFile file = (TemplateFile) files.next();
+        TemplateFile file = files.next();
         if (file.getName().compareToIgnoreCase(name) == 0) {
           form = getForm(file.getFileName(), file.getTypeName());
           return form;
@@ -371,14 +371,14 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return externalId;
   }
 
-  public void setTemplatesObj(ArrayList templatesObj) {
+  public void setTemplatesObj(ArrayList<TemplateFile> templatesObj) {
     this.templateFiles = templatesObj;
   }
 
   /**
    *
    */
-  public ArrayList getTemplatesObj() {
+  public ArrayList<TemplateFile> getTemplatesObj() {
     return templateFiles;
   }
 
@@ -580,5 +580,22 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   public boolean isSearchable() {
     return (searchFileName != null && searchFileName.trim().length() > 0);
+  }
+
+  public PublicationTemplateImpl basicClone() {
+    PublicationTemplateImpl template = new PublicationTemplateImpl();
+    template.setName(getName());
+    template.setDescription(getDescription());
+    template.setThumbnail(getThumbnail());
+    template.setFileName(getFileName());
+    template.setVisible(isVisible());
+    template.setViewFileName(getViewFileName());
+    template.setUpdateFileName(getUpdateFileName());
+    template.setSearchFileName(getSearchFileName());
+    template.setDataFileName(getDataFileName());
+    template.setViewTypeFile(getViewTypeFile());
+    template.setUpdateTypeFile(getUpdateTypeFile());
+    template.setExternalId(getExternalId());
+    return template;
   }
 }

@@ -60,7 +60,8 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  */
 public class PublicationTemplateManager {
   // map externalId -> PublicationTemplate
-  private static Map pubTemplate = new HashMap();
+  private static Map<String, PublicationTemplate> pubTemplate =
+      new HashMap<String, PublicationTemplate>();
 
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
   private static Map<String, PublicationTemplateImpl> templates =
@@ -167,7 +168,7 @@ public class PublicationTemplateManager {
       PublicationTemplateImpl publicationTemplate =
           (PublicationTemplateImpl) templates.get(xmlFileName);
       if (publicationTemplate != null)
-        return publicationTemplate;
+        return publicationTemplate.basicClone();
 
       // Format these url
       String xmlFilePath = makePath(templateDir, xmlFileName);
@@ -185,7 +186,7 @@ public class PublicationTemplateManager {
 
       templates.put(xmlFileName, publicationTemplate);
 
-      return publicationTemplate;
+      return publicationTemplate.basicClone();
     } catch (MappingException me) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " + xmlFileName,
@@ -280,17 +281,17 @@ public class PublicationTemplateManager {
     }
   }
 
-  public static List getPublicationTemplates(boolean onlyVisibles)
+  public static List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
       throws PublicationTemplateException {
-    List templates = new ArrayList();
+    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
     try {
-      Collection templateNames = FileFolderManager.getAllFile(templateDir);
+      Collection<File> templateNames = FileFolderManager.getAllFile(templateDir);
       File templateFile = null;
-      Iterator iterator = templateNames.iterator();
+      Iterator<File> iterator = templateNames.iterator();
       PublicationTemplate template = null;
       String fileName = null;
       while (iterator.hasNext()) {
-        templateFile = (File) iterator.next();
+        templateFile = iterator.next();
         fileName = templateFile.getName();
         template =
             loadPublicationTemplate(fileName.substring(fileName.lastIndexOf(File.separator) + 1,
@@ -309,18 +310,20 @@ public class PublicationTemplateManager {
     return templates;
   }
 
-  public static List getPublicationTemplates() throws PublicationTemplateException {
+  public static List<PublicationTemplate> getPublicationTemplates()
+      throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
 
-  public static List getSearchablePublicationTemplates() throws PublicationTemplateException {
-    List searchableTemplates = new ArrayList();
+  public static List<PublicationTemplate> getSearchablePublicationTemplates()
+      throws PublicationTemplateException {
+    List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
 
-    List templates = getPublicationTemplates();
-    Iterator iterator = templates.iterator();
+    List<PublicationTemplate> templates = getPublicationTemplates();
+    Iterator<PublicationTemplate> iterator = templates.iterator();
     PublicationTemplate template = null;
     while (iterator.hasNext()) {
-      template = (PublicationTemplate) iterator.next();
+      template = iterator.next();
       if (template.getSearchForm() != null)
         searchableTemplates.add(template);
     }
