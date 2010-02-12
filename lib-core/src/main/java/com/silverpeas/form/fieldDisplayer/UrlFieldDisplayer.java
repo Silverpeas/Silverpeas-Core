@@ -41,6 +41,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 
@@ -149,12 +150,14 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (template.isReadOnly() && !template.isHidden()) {
-      if (!value.startsWith("http") && !value.startsWith("ftp:")) {
-        value = "http://" + value;
+      if (StringUtil.isDefined(value)) {
+        if (!value.startsWith("http") && !value.startsWith("ftp:")) {
+          value = "http://" + value;
+        }
+        html =
+            "<A TARGET=\"_blank\" HREF=\"" + value + "\">" +
+            EncodeHelper.javaStringToHtmlString(value) + "</A>";
       }
-      html =
-          "<A TARGET=\"_blank\" HREF=\"" + value + "\">" +
-          EncodeHelper.javaStringToHtmlString(value) + "</A>";
     } else {
       // Suggestions used ?
       String paramSuggestions =

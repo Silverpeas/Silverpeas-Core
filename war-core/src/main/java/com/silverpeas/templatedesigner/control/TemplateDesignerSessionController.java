@@ -50,7 +50,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private static int SCOPE_UPDATE = 2;
   private static int SCOPE_SEARCH = 3;
 
-  private List languages = null;
+  private List<String> languages = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -65,16 +65,16 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         "com.silverpeas.templatedesigner.settings.templateDesignerIcons");
   }
 
-  public List getLanguages() {
+  public List<String> getLanguages() {
     if (languages == null) {
-      languages = new ArrayList();
+      languages = new ArrayList<String>();
       languages.add("fr");
       languages.add("en");
     }
     return languages;
   }
 
-  public List getTemplates() throws TemplateDesignerException {
+  public List<PublicationTemplate> getTemplates() throws TemplateDesignerException {
     try {
       updateInProgress = false;
       template = null;
@@ -145,34 +145,33 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     saveTemplate();
   }
 
-  private static String string2fileName(String text)
-	{
-		String newText = text.toLowerCase();
-		newText = newText.replace('é', 'e');
-		newText = newText.replace('\'', '_');
-		newText = newText.replace(' ', '_');
-		newText = newText.replace('è', 'e');
-		newText = newText.replace('ë', 'e');
-		newText = newText.replace('ê', 'e');
-		newText = newText.replace('ö', 'o');
-		newText = newText.replace('ô', 'o');
-		newText = newText.replace('õ', 'o');
-		newText = newText.replace('ò', 'o');
-		newText = newText.replace('ï', 'i');
-		newText = newText.replace('î', 'i');
-		newText = newText.replace('ì', 'i');
-		newText = newText.replace('ñ', 'n');
-		newText = newText.replace('ü', 'u');
-		newText = newText.replace('û', 'u');
-		newText = newText.replace('ù', 'u');
-		newText = newText.replace('ç', 'c');
-		newText = newText.replace('à', 'a');
-		newText = newText.replace('ä', 'a');
-		newText = newText.replace('ã', 'a');
-		newText = newText.replace('â', 'a');
-		newText = newText.replace('°', '_');
-		return newText;
-	}
+  private static String string2fileName(String text) {
+    String newText = text.toLowerCase();
+    newText = newText.replace('é', 'e');
+    newText = newText.replace('\'', '_');
+    newText = newText.replace(' ', '_');
+    newText = newText.replace('è', 'e');
+    newText = newText.replace('ë', 'e');
+    newText = newText.replace('ê', 'e');
+    newText = newText.replace('ö', 'o');
+    newText = newText.replace('ô', 'o');
+    newText = newText.replace('õ', 'o');
+    newText = newText.replace('ò', 'o');
+    newText = newText.replace('ï', 'i');
+    newText = newText.replace('î', 'i');
+    newText = newText.replace('ì', 'i');
+    newText = newText.replace('ñ', 'n');
+    newText = newText.replace('ü', 'u');
+    newText = newText.replace('û', 'u');
+    newText = newText.replace('ù', 'u');
+    newText = newText.replace('ç', 'c');
+    newText = newText.replace('à', 'a');
+    newText = newText.replace('ä', 'a');
+    newText = newText.replace('ã', 'a');
+    newText = newText.replace('â', 'a');
+    newText = newText.replace('°', '_');
+    return newText;
+  }
 
   public void updateTemplate(PublicationTemplateImpl updatedTemplate)
       throws TemplateDesignerException {
@@ -244,7 +243,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     updateInProgress = true;
   }
 
-  public Iterator getFields() {
+  public Iterator<FieldTemplate> getFields() {
     if (getRecordTemplate(SCOPE_DATA).getFieldList() != null)
       return getRecordTemplate(SCOPE_DATA).getFieldList().iterator();
     return null;
@@ -252,9 +251,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   public FieldTemplate getField(String fieldName)
       throws TemplateDesignerException {
-    Iterator fields = getFields();
+    Iterator<FieldTemplate> fields = getFields();
     while (fields != null && fields.hasNext()) {
-      FieldTemplate field = (FieldTemplate) fields.next();
+      FieldTemplate field = fields.next();
       if (field.getFieldName().equalsIgnoreCase(fieldName))
         return field;
     }
@@ -303,23 +302,35 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   private void saveTemplateFields() throws TemplateDesignerException {
     try {
-      List fields = getRecordTemplate(SCOPE_DATA).getFieldList();
+      List<FieldTemplate> fields = getRecordTemplate(SCOPE_DATA).getFieldList();
 
       getRecordTemplate(SCOPE_UPDATE).getFieldList().clear();
       getRecordTemplate(SCOPE_VIEW).getFieldList().clear();
       getRecordTemplate(SCOPE_SEARCH).getFieldList().clear();
 
       getRecordTemplate(SCOPE_UPDATE).getFieldList().addAll(fields);
-      getRecordTemplate(SCOPE_VIEW).getFieldList().addAll(fields);
 
-      Iterator it = fields.iterator();
+      Iterator<FieldTemplate> it = fields.iterator();
       FieldTemplate field = null;
       while (it.hasNext()) {
-        field = (FieldTemplate) it.next();
+        field = it.next();
+
+        // process search.xml
         if (field.isSearchable())
           getRecordTemplate(SCOPE_SEARCH).getFieldList().add(field);
         else
           getRecordTemplate(SCOPE_SEARCH).getFieldList().remove(field);
+
+        // process view.xml (set field to simpletext)
+        GenericFieldTemplate cloneField = (GenericFieldTemplate) field.clone();
+        String cloneDisplayer = cloneField.getDisplayerName();
+        if ("wysiwyg".equals(cloneDisplayer) || "url".equals(cloneDisplayer) ||
+            "image".equals(cloneDisplayer) || "file".equals(cloneDisplayer)) {
+          cloneField.setReadOnly(true);
+        } else {
+          cloneField.setDisplayerName("simpletext");
+        }
+        getRecordTemplate(SCOPE_VIEW).getFieldList().add(cloneField);
       }
 
       // Save others xml files (data.xml, view.xml, update.xml

@@ -47,6 +47,9 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
+  
+  private static final long serialVersionUID = 1117593114737219878L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -89,7 +92,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
 
     try {
       if (function.startsWith("Main")) {
-        List templates = templateDesignerSC.getTemplates();
+        List<PublicationTemplate> templates = templateDesignerSC.getTemplates();
 
         request.setAttribute("Templates", templates);
 
@@ -304,9 +307,9 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     field.setTypeName(fieldType);
     field.setSearchable(searchable);
 
-    Enumeration paramNames = request.getParameterNames();
+    Enumeration<String> paramNames = request.getParameterNames();
     while (paramNames.hasMoreElements()) {
-      String paramName = (String) paramNames.nextElement();
+      String paramName = paramNames.nextElement();
       if (paramName.startsWith("Param_")) {
         String xmlParameterName = paramName.substring(6);
         String xmlParameterValue = request.getParameter(paramName);

@@ -23,15 +23,18 @@
  */
 package com.silverpeas.form.dummy;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.silverpeas.form.*;
-import com.silverpeas.form.fieldType.*;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.fieldType.TextFieldImpl;
 
 /**
  * A dummy FieldTemplate.
  */
 public class DummyFieldTemplate implements FieldTemplate {
+
   private Field field;
 
   public DummyFieldTemplate() {
@@ -129,5 +132,10 @@ public class DummyFieldTemplate implements FieldTemplate {
 
   public String getTemplateName() {
     return "dummy";
+  }
+  
+  public FieldTemplate clone()
+  {
+    return new DummyFieldTemplate();
   }
 }

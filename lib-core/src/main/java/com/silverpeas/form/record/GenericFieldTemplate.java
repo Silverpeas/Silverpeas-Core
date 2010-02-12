@@ -43,7 +43,7 @@ import com.silverpeas.form.TypeManager;
  * A generic FieldTemplate implementation.
  */
 public class GenericFieldTemplate implements FieldTemplate, Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private String fieldName = null;
   private Class fieldImpl = null;
@@ -437,5 +437,31 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   public void setTemplateName(String templateName) {
     this.templateName = templateName;
   }
+  
+  @Override
+  public GenericFieldTemplate clone() {
+    GenericFieldTemplate clone = null;
+    try {
+      clone = new GenericFieldTemplate();
+      clone.setDisabled(this.isDisabled());
+      clone.setDisplayerName(this.getDisplayerName());
+      clone.setFieldName(this.getFieldName());
+      clone.setHidden(this.isHidden());
+      clone.setLabel(this.getLabel());
+      clone.setLabelsObj(this.getLabelsObj());
+      clone.setMandatory(this.isMandatory());
+      clone.setParametersObj(this.getParametersObj());
+      clone.setReadOnly(this.isReadOnly());
+      clone.setSearchable(this.isSearchable());
+      clone.setTemplateName(this.getTemplateName());
+      clone.setTypeName(this.getTypeName());
+    } catch (FormException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return clone;
+  }
+
+
 
 }
