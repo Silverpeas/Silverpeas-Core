@@ -103,5 +103,4 @@ public interface FieldTemplate {
 
   public String getTemplateName();
   
-  public FieldTemplate clone();
 }
