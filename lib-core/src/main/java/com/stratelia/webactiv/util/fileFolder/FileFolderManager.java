@@ -47,6 +47,7 @@ import java.util.Iterator;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.io.FileUtils;
 
 public class FileFolderManager {
 
@@ -244,24 +245,23 @@ public class FileFolderManager {
    * createFolder : creation d'un repertoire Param = chemin du repertoire
    */
   public static void createFolder(String chemin) throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
-
     SilverTrace.info("util", "FileFolderManager.createFolder",
         "root.MSG_GEN_PARAM_VALUE", "chemin=" + chemin);
     File directory = new File(chemin);
     if (directory != null && directory.exists() && directory.isDirectory()) {
-      // The directory already exists !
     } else {
       createFolder(directory);
     }
   }
 
   public static void createFolder(File directory) throws UtilException {
-    if (!directory.mkdirs()) {
+    try {
+      FileUtils.forceMkdir(directory);
+    }catch(IOException ioex) {
       SilverTrace.error("util", "FileFolderManager.createFolder",
-          "util.EX_REPOSITORY_CREATION", directory.getPath());
+          "util.EX_REPOSITORY_CREATION", directory.getPath(), ioex);
       throw new UtilException("FileFolderManager.createFolder",
-          "util.EX_REPOSITORY_CREATION", directory.getPath());
+          "util.EX_REPOSITORY_CREATION", directory.getPath(), ioex);
     }
   }
 

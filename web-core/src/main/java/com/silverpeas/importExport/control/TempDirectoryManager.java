@@ -27,12 +27,12 @@
 package com.silverpeas.importExport.control;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.io.IOException;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.io.FileFilter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.AgeFileFilter;
 
 /**
  * @author sdevolder
@@ -43,7 +43,7 @@ public class TempDirectoryManager {
    * Méthode purgeant le dossier Temporaire de silverpeas pour une limite ramenée au standard de 2
    * jours
    */
-  public static void purgeTempDir() {
+  public static void purgeTempDir() throws IOException {
     purgeTempDir(2);
   }
 
@@ -52,80 +52,20 @@ public class TempDirectoryManager {
    * plus de nbJours. Tous les répertoires vides à l'issue de cette purge sont également effacés
    * @param nbJour - nombre de jours limite pour la conservation d'un fichier
    */
-  public static void purgeTempDir(int nbJour) {
+  public static void purgeTempDir(int nbJour) throws IOException {
 
     // Transformation de temps de conservation de fichier en millisecondes
-    long ecartTemps = nbJour * 24 * 3600 * 1000;
+    long age = System.currentTimeMillis() - (nbJour * 24 * 3600 * 1000);
     // Récupération du dossier Temp
     String pathTempDir = FileRepositoryManager.getTemporaryPath();
     File dir = new File(pathTempDir);
-    // Parcours du dossier Temp
-    String[] listContenuStringPath = dir.list();
-    List listcontenuPath = convertListStringToListFile(listContenuStringPath,
-        dir.getPath());
-    Iterator itListcontenuPath = listcontenuPath.iterator();
-    while (itListcontenuPath.hasNext()) {
-      File file = (File) itListcontenuPath.next();
-      if (file.isFile()) {
-        // Test sur la condition de suppression du fichier
-        Date now = new Date();
-        if (now.getTime() - file.lastModified() > ecartTemps)
-          file.delete();
-      } else {// file est un dossier
-        purgeTempDir(file, ecartTemps);
-      }
-    }
-  }
-
-  /**
-   * Méthode récursive privée utilisée par public void purgeTempDir(int nbJour) purgeant le
-   * dossier Temporaire de silverpeas de tous les fichiers datés. de plus de nbJours. Tous les
-   * répertoires vides à l'issue de cette purge sont également effacés.
-   * @param dir - sous dossier du répertoire Temporaire à purger
-   * @param ecartTemps - Durée de conservation des fichiers en millisecondes
-   */
-  private static void purgeTempDir(File dir, long ecartTemps) {
-    // Parcours du dossier dir
-    String[] listContenuStringPath = dir.list();
-    List listcontenuPath = convertListStringToListFile(listContenuStringPath,
-        dir.getPath());
-    if (listcontenuPath != null) {
-      Iterator itListcontenuPath = listcontenuPath.iterator();
-      while (itListcontenuPath.hasNext()) {
-        File file = (File) itListcontenuPath.next();
+    if (dir.exists()) {
+      File[] files = dir.listFiles((FileFilter) new AgeFileFilter(age));
+      for (File file : files) {
         if (file.isFile()) {
-          // Test sur la condition de suppression du fichier
-          Date now = new Date();
-          if (now.getTime() - file.lastModified() > ecartTemps)
-            file.delete();
-        } else {// file est un dossier
-          purgeTempDir(file, ecartTemps);
+          FileUtils.forceDelete(file);
         }
       }
     }
-    // Si le dossier est maintenant vide on l'efface aussi
-    if (dir != null && dir.list() != null && dir.list().length == 0)
-      dir.delete();
-  }
-
-  /**
-   * Transforme la table des chaines de caractères de nom de fichier en une liste de fichiers pour
-   * le chemin passé en paramètre
-   * @param listFileName - table des nom de fichier sous forme de chaine de caractères.
-   * @param path - chemin des fichiers contenu dans les chaines de caractères.
-   * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
-   */
-  private static List convertListStringToListFile(String[] listFileName,
-      String path) {
-
-    List listFile = new ArrayList();
-
-    if (listFileName == null)
-      return null;
-
-    for (int i = 0; i < listFileName.length; i++) {
-      listFile.add(new File(path + File.separator + listFileName[i]));
-    }
-    return listFile;
   }
 }

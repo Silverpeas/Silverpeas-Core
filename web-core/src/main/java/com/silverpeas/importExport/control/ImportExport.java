@@ -114,7 +114,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 public class ImportExport {
 
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.importExport.settings.mapping", "");
+          "com.silverpeas.importExport.settings.mapping", "");
   public final static String iframePublication = "publications";
   public final static String iframeIndexPublications = "indexPublications";
 
@@ -131,7 +131,7 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public void upLoadSilverpeasExchange(SilverPeasExchangeType silverPeasExchangeType,
-      String xmlToExportPath) throws ImportExportException {
+          String xmlToExportPath) throws ImportExportException {
 
     Writer writer = null;
     Mapping mapping = new Mapping();
@@ -164,19 +164,19 @@ public class ImportExport {
 
     } catch (MappingException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename : ", me);
+              "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename : ", me);
     } catch (MarshalException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_UNMARSHALLING_FAILED", "XML Filename : ", me);
+              "importExport.EX_UNMARSHALLING_FAILED", "XML Filename : ", me);
     } catch (ValidationException ve) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename : ", ve);
+              "importExport.EX_PARSING_FAILED", "XML Filename : ", ve);
     } catch (IOException ioe) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename : ", ioe);
+              "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename : ", ioe);
     } catch (Exception ioe) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange", "importExport.",
-          "XML Filename : ", ioe);
+              "XML Filename : ", ioe);
     } finally {
       if (writer != null) {
         try {
@@ -195,10 +195,10 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName)
-      throws ImportExportException {
+          throws ImportExportException {
 
     SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-        "root.MSG_GEN_ENTER_METHOD", "xmlFileName = " + xmlFileName);
+            "root.MSG_GEN_ENTER_METHOD", "xmlFileName = " + xmlFileName);
 
     try {
       InputSource xmlInputSource = new InputSource(xmlFileName);
@@ -207,12 +207,12 @@ public class ImportExport {
 
       // Load and parse default XML schema for import/export
       SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema",
-          "com.sun.org.apache.xerces.internal.jaxp.validation.XMLSchemaFactory", null);
+              "com.sun.org.apache.xerces.internal.jaxp.validation.XMLSchemaFactory", null);
       Schema schema = schemaFactory.newSchema(new StreamSource(xsdSystemId));
 
       // Create an XML parser for loading XML import file
       SAXParserFactory factory = SAXParserFactory.newInstance(
-          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl", null);
+              "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl", null);
       factory.setValidating(false);
       factory.setNamespaceAware(true);
       factory.setSchema(schema);
@@ -229,8 +229,7 @@ public class ImportExport {
 
       } catch (SAXException ex) {
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName)
-            .append(" is not valid according to default schema").toString());
+                "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName).append(" is not valid according to default schema").toString());
 
         // If case the default schema is not the one specified by the
         // XML import file, try to get the right XML-schema and
@@ -260,9 +259,8 @@ public class ImportExport {
         }
 
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder(
-            "Trying again using schema specification located at ")).append(altXsdSystemId)
-            .toString());
+                "root.MSG_GEN_PARAM_VALUE", (new StringBuilder(
+                "Trying again using schema specification located at ")).append(altXsdSystemId).toString());
 
         // Try again to load, parse and validate the XML import file,
         // using the new schema specification
@@ -275,7 +273,7 @@ public class ImportExport {
       }
 
       SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-          "root.MSG_GEN_PARAM_VALUE", "XML Validation complete");
+              "root.MSG_GEN_PARAM_VALUE", "XML Validation complete");
 
       // Mapping file for Castor
       String mappingDir = settings.getString("mappingDir");
@@ -290,44 +288,43 @@ public class ImportExport {
       unmar.setValidation(false);
 
       // Unmarshall the process model
-      SilverPeasExchangeType silverpeasExchange = (SilverPeasExchangeType) unmar
-          .unmarshal(xmlInputSource);
+      SilverPeasExchangeType silverpeasExchange = (SilverPeasExchangeType) unmar.unmarshal(xmlInputSource);
       SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-          "root.MSG_GEN_PARAM_VALUE", "Unmarshalling complete");
+              "root.MSG_GEN_PARAM_VALUE", "Unmarshalling complete");
       return silverpeasExchange;
 
     } catch (MappingException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
-          + me.getLocalizedMessage(), me);
+              "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
+              + me.getLocalizedMessage(), me);
     } catch (MarshalException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_UNMARSHALLING_FAILED", "XML Filename " + xmlFileName + ": "
-          + me.getLocalizedMessage(), me);
+              "importExport.EX_UNMARSHALLING_FAILED", "XML Filename " + xmlFileName + ": "
+              + me.getLocalizedMessage(), me);
     } catch (ValidationException ve) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + ve.getLocalizedMessage(), ve);
+              "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
+              + ve.getLocalizedMessage(), ve);
     } catch (IOException ioe) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
-          + ioe.getLocalizedMessage(), ioe);
+              "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
+              + ioe.getLocalizedMessage(), ioe);
     } catch (ParserConfigurationException ex) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + ex.getLocalizedMessage(), ex);
+              "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
+              + ex.getLocalizedMessage(), ex);
     } catch (SAXNotRecognizedException snre) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + snre.getLocalizedMessage(), snre);
+              "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
+              + snre.getLocalizedMessage(), snre);
     } catch (SAXNotSupportedException snse) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + snse.getLocalizedMessage(), snse);
+              "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
+              + snse.getLocalizedMessage(), snse);
     } catch (SAXException se) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + se.getLocalizedMessage(), se);
+              "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
+              + se.getLocalizedMessage(), se);
     }
   }
 
@@ -377,7 +374,7 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public ImportReport processImport(UserDetail userDetail, String xmlFileName)
-      throws ImportExportException {
+          throws ImportExportException {
 
     SilverPeasExchangeType silverExType = null;
     ImportReportManager.init();
@@ -398,8 +395,7 @@ public class ImportExport {
     if (silverExType.getNodeTreesType() != null) {
       // Traitement de l'élément <topicTrees>
       NodeTreesTypeManager typeMgr = new NodeTreesTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getNodeTreesType(), silverExType
-          .getTargetComponentId());
+      typeMgr.processImport(userDetail, silverExType.getNodeTreesType(), silverExType.getTargetComponentId());
     }
 
     // Créations unitaires de nouvelles publications ou modifications
@@ -407,16 +403,14 @@ public class ImportExport {
     if (silverExType.getPublicationsType() != null) {
       // Traitement de l'élément <publications>
       PublicationsTypeManager typeMgr = new PublicationsTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getPublicationsType(), silverExType
-          .getTargetComponentId(), silverExType.isPOIUsed());
+      typeMgr.processImport(userDetail, silverExType.getPublicationsType(), silverExType.getTargetComponentId(), silverExType.isPOIUsed());
     }
 
     // Cas des imports en masse de thèmes et de publications
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
       RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(), silverExType
-          .isPOIUsed());
+      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(), silverExType.isPOIUsed());
     }
     ImportReportManager.setEndDate(new Date());
 
@@ -433,24 +427,20 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public ExportReport processExport(UserDetail userDetail, List listItemsToExport)
-      throws ImportExportException {
+          throws ImportExportException {
     return processExport(userDetail, "fr", listItemsToExport);
   }
 
   public ExportReport processExport(UserDetail userDetail, String language, List listItemsToExport)
-      throws ImportExportException {
+          throws ImportExportException {
     return processExport(userDetail, language, listItemsToExport, null);
   }
 
   public ExportReport processExport(UserDetail userDetail, String language, List listItemsToExport,
-      String rootId) throws ImportExportException {
+          String rootId) throws ImportExportException {
     // pour le multilangue
     ResourceLocator resourceLocator = new ResourceLocator(
-        "com.silverpeas.importExport.multilang.importExportBundle", language);
-
-    // Purge le répertoire Temp de Silverpeas
-    TempDirectoryManager.purgeTempDir();
-
+            "com.silverpeas.importExport.multilang.importExportBundle", language);
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     PdcImportExport pdcIE = new PdcImportExport();
     NodeImportExport nodeIE = new NodeImportExport();
@@ -461,13 +451,13 @@ public class ImportExport {
     ExportReport exportReport = new ExportReport();
 
     try {
+      // Purge le répertoire Temp de Silverpeas
+      TempDirectoryManager.purgeTempDir();
       // Stockage de la date de démarage de l'export dans l'objet rapport
       exportReport.setDateDebut(new Date());
       // Création du dossier d'export
       String thisExportDir = generateExportDirName(userDetail, "export");
-
       String tempDir = FileRepositoryManager.getTemporaryPath();
-
       File fileExportDir = new File(tempDir + thisExportDir);
       if (!fileExportDir.exists()) {
         try {
@@ -476,14 +466,13 @@ public class ImportExport {
           throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
         }
       }
-
       // Exportation des publications
       PublicationsType publicationsType;
       try {
         // création des répertoires avec le nom des thèmes et des
         // publications
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), true);
+                fileExportDir.getPath(), true);
         if (publicationsType == null) {
           // les noms des thèmes et des publication est trop long ou au moins >
           // 200 caractères
@@ -498,13 +487,13 @@ public class ImportExport {
               FileFolderManager.deleteFolder(fileExportDir.getPath());
             } catch (Exception ex) {
               throw new ImportExportException("ImportExport", "importExport.EX_CANT_DELETE_FOLDER",
-                  ex);
+                      ex);
             }
             thisExportDir = generateExportDirName(userDetail, "export");
             tempDir = FileRepositoryManager.getTemporaryPath();
             fileExportDir = new File(tempDir + thisExportDir);
             publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail,
-                listItemsToExport, fileExportDir.getPath(), false);
+                    listItemsToExport, fileExportDir.getPath(), false);
           } catch (IOException e) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
           }
@@ -540,7 +529,7 @@ public class ImportExport {
           listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
         }
       }
-      if (listClassifyPosition.size() != 0) {
+      if (listClassifyPosition.isEmpty()) {
         silverPeasExch.setPdcType(pdcIE.getPdc(listClassifyPosition));
       }
 
@@ -572,7 +561,7 @@ public class ImportExport {
         // Création des sommaires HTML par Thèmes
         // --------------------------------------
         HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
-            resourceLocator);
+                resourceLocator);
         FileWriter fileWriter = null;
 
         Hashtable topicIds = new Hashtable();
@@ -581,8 +570,7 @@ public class ImportExport {
         while (itPubli.hasNext()) {
           PublicationType publicationType = (PublicationType) itPubli.next();
           // pour chaque publication : parcourir ses noeuds
-          Iterator itTopic = publicationType.getNodePositionsType().getListNodePositionType()
-              .iterator();
+          Iterator itTopic = publicationType.getNodePositionsType().getListNodePositionType().iterator();
           while (itTopic.hasNext()) {
             NodePositionType nodePositionType = (NodePositionType) itTopic.next();
             // pour chaque topic : récupérer l'Id
@@ -607,7 +595,7 @@ public class ImportExport {
           String topicId = (String) it.next();
           // créer le fichier
           File fileTopicHTML = new File(tempDir + thisExportDir + File.separator + "indexTopic"
-              + topicId + ".html");
+                  + topicId + ".html");
 
           fileWriter = null;
           try {
@@ -625,7 +613,7 @@ public class ImportExport {
         }
         // création d'un fichier sommaire vide pour les topics vides
         File fileTopicHTML = new File(tempDir + thisExportDir + File.separator
-            + "indexTopicEmpty.html");
+                + "indexTopicEmpty.html");
         fileWriter = null;
         try {
           fileTopicHTML.createNewFile();
@@ -676,7 +664,7 @@ public class ImportExport {
           while (itFiles.hasNext()) {
             File file = (File) itFiles.next();
             File newFile = new File(tempDir + thisExportDir + File.separator + "treeview"
-                + File.separator + file.getName());
+                    + File.separator + file.getName());
             FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
           }
         } catch (Exception e) {
@@ -687,21 +675,23 @@ public class ImportExport {
 
       // Création du fichier XML de mapping
       upLoadSilverpeasExchange(silverPeasExch, fileExportDir.getPath() + File.separator
-          + "importExport.xml");
+              + "importExport.xml");
 
       // Création du zip
       try {
         String zipFileName = fileExportDir.getName() + ".zip";
         long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-            + zipFileName);
+                + zipFileName);
         exportReport.setZipFileName(zipFileName);
         exportReport.setZipFileSize(zipFileSize);
         exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName,
-            "application/zip"));
+                "application/zip"));
       } catch (Exception ex) {
       }
       // Stockage de la date de fin de l'export dans l'objet rapport
       exportReport.setDateFin(new Date());
+    } catch (IOException e1) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     } catch (NodeRuntimeException ex) {
       throw new ImportExportException("importExport", "ImportExport.processExport()", ex);
     } catch (PdcException ex) {
@@ -719,7 +709,7 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public ExportPDFReport processExportPDF(UserDetail userDetail, String language,
-      List listItemsToExport, String rootId) throws ImportExportException {
+          List listItemsToExport, String rootId) throws ImportExportException {
     ExportPDFReport report = new ExportPDFReport();
     report.setDateDebut(new Date());
 
@@ -743,7 +733,7 @@ public class ImportExport {
     try {
       // création des répertoires avec le nom des thèmes et des publications
       pdfList = pubTypeManager.processPDFExport(report, userDetail, listItemsToExport,
-          fileExportDir.getPath(), true);
+              fileExportDir.getPath(), true);
 
       AttachmentDetail attDetail;
       try {
@@ -757,7 +747,7 @@ public class ImportExport {
             attDetail = (AttachmentDetail) pdfList.get(nbFiles);
 
             PdfReader reader = new PdfReader(fileExportDir.getPath() + File.separator
-                + attDetail.getLogicalName());
+                    + attDetail.getLogicalName());
             reader.consolidateNamedDestinations();
             int nbPages = reader.getNumberOfPages();
             List bookmarks = SimpleBookmark.getBookmark(reader);
@@ -810,8 +800,7 @@ public class ImportExport {
 
     report.setPdfFileName(pdfFileName.getName());
     report.setPdfFileSize(pdfFileName.length());
-    report.setPdfFilePath(FileServerUtils.getUrlToTempDir(pdfFileName.getName(), pdfFileName
-        .getName(), "application/pdf"));
+    report.setPdfFilePath(FileServerUtils.getUrlToTempDir(pdfFileName.getName(), pdfFileName.getName(), "application/pdf"));
 
     report.setDateFin(new Date());
 
@@ -829,14 +818,12 @@ public class ImportExport {
    * @throws ImportExportException
    */
   public ExportReport processExportKmax(UserDetail userDetail, String language,
-      List listItemsToExport, ArrayList combination, String timeCriteria)
-      throws ImportExportException {
+          List listItemsToExport, ArrayList combination, String timeCriteria)
+          throws ImportExportException {
     ResourceLocator resourceLocator = new ResourceLocator(
-        "com.silverpeas.importExport.multilang.importExportBundle", language);
+            "com.silverpeas.importExport.multilang.importExportBundle", language);
 
-    // Purge le répertoire Temp de Silverpeas
-    TempDirectoryManager.purgeTempDir();
-
+   
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
@@ -848,6 +835,9 @@ public class ImportExport {
     OrganizationController orgController = new OrganizationController();
 
     try {
+       // Purge le répertoire Temp de Silverpeas
+    TempDirectoryManager.purgeTempDir();
+
       // Stockage de la date de démarage de l'export dans l'objet rapport
       exportReport.setDateDebut(new Date());
       // Création du dossier d'export
@@ -869,7 +859,7 @@ public class ImportExport {
       try {
         // création des répertoires avec le nom des publications
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), false);
+                fileExportDir.getPath(), false);
       } catch (IOException e) {
         throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
       }
@@ -899,7 +889,7 @@ public class ImportExport {
         File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
 
         HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
-            resourceLocator);
+                resourceLocator);
         FileWriter fileWriter = null;
         try {
           fileHTML.createNewFile();
@@ -908,7 +898,7 @@ public class ImportExport {
           List positionsLabels = new ArrayList();
           positionsLabels = coordinateImportExport.getCombinationLabels(combination, componentId);
           fileWriter.write(h.kmaxPublicationsToHTML(positionsLabels, timeCriteria,
-              iframePublication));
+                  iframePublication));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
@@ -942,9 +932,9 @@ public class ImportExport {
 
         String unbalancedFileNameRelativePath = "index-2.html";
         File unclassifiedFileHTML = new File(tempDir + thisExportDir + File.separator
-            + unbalancedFileNameRelativePath);
+                + unbalancedFileNameRelativePath);
         HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
-            resourceLocator);
+                resourceLocator);
         try {
           unclassifiedFileHTML.createNewFile();
           fileWriter = new FileWriter(unclassifiedFileHTML.getPath(), true);
@@ -959,19 +949,17 @@ public class ImportExport {
         }
 
         // Fill unbalanced file html index
-        List unbalancedPublications = PublicationImportExport
-            .getUnbalancedPublications(componentId);
+        List unbalancedPublications = PublicationImportExport.getUnbalancedPublications(componentId);
         Iterator unbalancedPublicationsDetails = unbalancedPublications.iterator();
         String publicationFileNameRelativePath = "";
         String componentLabel = FileServerUtils.replaceAccentChars(componentInst.getLabel());
         while (unbalancedPublicationsDetails.hasNext()) {
           PublicationDetail pubDetail = (PublicationDetail) unbalancedPublicationsDetails.next();
-          PublicationType publicationType = gedIE.getPublicationCompleteById(new Integer(pubDetail
-              .getId()).toString(), componentId);
+          PublicationType publicationType = gedIE.getPublicationCompleteById(new Integer(pubDetail.getId()).toString(), componentId);
           publicationFileNameRelativePath = componentLabel + File.separator + pubDetail.getId()
-              + File.separator + "index.html";
+                  + File.separator + "index.html";
           HtmlExportPublicationGenerator unbalanced = new HtmlExportPublicationGenerator(
-              publicationType, null, null, publicationFileNameRelativePath);
+                  publicationType, null, null, publicationFileNameRelativePath);
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
           fileWriter = null;
           try {
@@ -1045,7 +1033,7 @@ public class ImportExport {
         for (int i = 1; i <= nodesIds.size(); i++) {
           int tuple = i;
           indexFilesPositions = coordinateImportExport.coupleIds(indexFilesPositions, nodesIds, 0,
-              0, tuple, null, nbAxis);
+                  0, tuple, null, nbAxis);
         }
 
         // Create positions index files
@@ -1068,7 +1056,7 @@ public class ImportExport {
               fileWriter.close();
             } catch (Exception ex) {
               SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-                  "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
+                      "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
             }
           }
         }
@@ -1116,14 +1104,13 @@ public class ImportExport {
               nodeId = st.nextToken();
               if (!nodeId.equals("index")) {
                 NodeDetail currentNodeDetail = coordinateImportExport.getNodeHeader(new NodePK(
-                    new Integer(nodeId).toString(), componentId));
+                        new Integer(nodeId).toString(), componentId));
                 nodeIds.add(new Integer(currentNodeDetail.getId()).toString());
                 if (currentNodeDetail.getLevel() >= 3) {
                   // if subvalue of axis, add this node
                   nodeIds = addNodeToList(nodeIds, currentNodeDetail);
                 } else {
-                  List axisChildren = coordinateImportExport.getAxisChildren(currentNodeDetail
-                      .getNodePK(), false);
+                  List axisChildren = coordinateImportExport.getAxisChildren(currentNodeDetail.getNodePK(), false);
                   // if Axis, add all nodes of this axis
                   for (int i = 0; i < axisChildren.size(); i++) {
                     NodeDetail nodeDetail = (NodeDetail) axisChildren.get(i);
@@ -1136,7 +1123,7 @@ public class ImportExport {
             List otherPositionsFilesNameHTML = new ArrayList();
             int tuple = nbAxis;
             otherPositionsFilesNameHTML = coordinateImportExport.coupleIds(
-                otherPositionsFilesNameHTML, nodeIds, 0, 0, tuple, null, nbAxis);
+                    otherPositionsFilesNameHTML, nodeIds, 0, 0, tuple, null, nbAxis);
             for (int cpt = 0; cpt < otherPositionsFilesNameHTML.size(); cpt++) {
               String otherPositionFileNameHTML = (String) otherPositionsFilesNameHTML.get(cpt);
               if (!filesPositionsHTMLToFill.contains(otherPositionFileNameHTML)) {
@@ -1146,23 +1133,23 @@ public class ImportExport {
           }
 
           publicationType.getCoordinatesPositionsType().setCoordinatesPositions(
-              listCoordinatesPositions);
+                  listCoordinatesPositions);
           SilverTrace.debug("importExport", "ImportExport.processExportKmax",
-              "root.MSG_GEN_PARAM_VALUE", "coordinatePositions added");
+                  "root.MSG_GEN_PARAM_VALUE", "coordinatePositions added");
 
           publicationFileNameRelativePath = componentLabel + File.separator + pubId
-              + File.separator + "index.html";
+                  + File.separator + "index.html";
 
           HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-              null, null, publicationFileNameRelativePath);
+                  null, null, publicationFileNameRelativePath);
           exportReport.addHtmlIndex(pubId, s);
 
           Iterator itFilesPositionsHTMLToFill = filesPositionsHTMLToFill.iterator();
           while (itFilesPositionsHTMLToFill.hasNext()) {
             fileHTML = new File(exportSummaryPath + File.separator
-                + (String) itFilesPositionsHTMLToFill.next());
+                    + (String) itFilesPositionsHTMLToFill.next());
             SilverTrace.debug("importExport", "ImportExport.processExportKmax",
-                "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
+                    "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
             fileWriter = null;
             try {
               if (fileHTML.exists()) {
@@ -1174,7 +1161,7 @@ public class ImportExport {
                 fileWriter.close();
               } catch (Exception ex) {
                 SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-                    "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
+                        "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
               }
             }
           }
@@ -1183,17 +1170,17 @@ public class ImportExport {
 
       // Création du fichier XML de mapping
       upLoadSilverpeasExchange(silverPeasExch, fileExportDir.getPath() + File.separator
-          + "importExport.xml");
+              + "importExport.xml");
 
       // Création du zip
       try {
         String zipFileName = fileExportDir.getName() + ".zip";
         long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-            + zipFileName);
+                + zipFileName);
         exportReport.setZipFileName(zipFileName);
         exportReport.setZipFileSize(zipFileSize);
         exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName,
-            "application/zip"));
+                "application/zip"));
       } catch (Exception ex) {
       }
       // Stockage de la date de fin de l'export dans l'objet rapport
@@ -1211,8 +1198,7 @@ public class ImportExport {
    * @return - la chaine représentant le nom généré du répertoire d'exportation
    */
   public String generateExportDirName(UserDetail userDetail, String name) {
-    StringBuffer sb = new StringBuffer(name);
-
+    StringBuilder sb = new StringBuilder(name);
     Date date = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
     String dateFormatee = dateFormat.format(date);
@@ -1225,7 +1211,7 @@ public class ImportExport {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
       ResourceBundle resources = java.util.ResourceBundle.getBundle(
-          "com.stratelia.silverpeas.silvertrace.settings.silverTrace", new Locale("", ""));
+              "com.stratelia.silverpeas.silvertrace.settings.silverTrace", new Locale("", ""));
       String reportLogPath = resources.getString("ErrorDir");
       File file = new File(reportLogPath + File.separator + reportLogFile);
       FileWriter fileWriter = null;
@@ -1265,5 +1251,4 @@ public class ImportExport {
     }
     return nodesIds;
   }
-
 }
