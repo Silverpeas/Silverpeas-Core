@@ -115,8 +115,8 @@ public class DummyFieldTemplate implements FieldTemplate {
    * Returns a Map (String -> String) of named parameters which can be used by the displayer
    * (max-size, length ...).
    */
-  public Map getParameters(String language) {
-    return new HashMap();
+  public Map<String, String> getParameters(String language) {
+    return new HashMap<String, String>();
   }
 
   /**
@@ -132,10 +132,5 @@ public class DummyFieldTemplate implements FieldTemplate {
 
   public String getTemplateName() {
     return "dummy";
-  }
-  
-  public FieldTemplate clone()
-  {
-    return new DummyFieldTemplate();
   }
 }

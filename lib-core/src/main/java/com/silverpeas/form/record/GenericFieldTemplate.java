@@ -46,6 +46,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
 
   private static final long serialVersionUID = 1L;
   private String fieldName = null;
+  @SuppressWarnings("unchecked")
   private Class fieldImpl = null;
   private String typeName = null;
   private String displayerName = "";
@@ -83,6 +84,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
    * Builds a GenericFieldTemplate from a field name and a field implementation. You must use the
    * set and add methods to change any default value.
    */
+  @SuppressWarnings("unchecked")
   public GenericFieldTemplate(String fieldName, Class fieldImpl)
       throws FormException {
     this.fieldName = fieldName;
@@ -341,6 +343,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns an empty Field built on this template.
    */
+  @SuppressWarnings("unchecked")
   public Field getEmptyField() throws FormException {
     try {
       Class[] noParameterClass = new Class[0];

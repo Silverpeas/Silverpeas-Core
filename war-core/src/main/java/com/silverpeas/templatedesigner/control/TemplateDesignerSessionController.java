@@ -322,7 +322,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           getRecordTemplate(SCOPE_SEARCH).getFieldList().remove(field);
 
         // process view.xml (set field to simpletext)
-        GenericFieldTemplate cloneField = (GenericFieldTemplate) field.clone();
+        GenericFieldTemplate cloneField = ((GenericFieldTemplate) field).clone();
         String cloneDisplayer = cloneField.getDisplayerName();
         if ("wysiwyg".equals(cloneDisplayer) || "url".equals(cloneDisplayer) ||
             "image".equals(cloneDisplayer) || "file".equals(cloneDisplayer)) {
