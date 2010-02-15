@@ -20,1530 +20,1853 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*************************************
+*/ /*************************************
 Redefinition des style de balises HTML
 *************************************/
-
 BODY {
-  scrollbar-face-color: #FFFFFF;
-  scrollbar-shadow-color: #FFFFFF;
-  scrollbar-highlight-color: #FFFFFF;
-  scrollbar-3dlight-color: #EDEDED;
-  scrollbar-darkshadow-color: #949FB2;
-  scrollbar-track-color: #EDEDED;
-  scrollbar-arrow-color: #AFB8C9;
-  margin : 0px;
+	scrollbar-face-color: #FFFFFF;
+	scrollbar-shadow-color: #FFFFFF;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-3dlight-color: #EDEDED;
+	scrollbar-darkshadow-color: #949FB2;
+	scrollbar-track-color: #EDEDED;
+	scrollbar-arrow-color: #AFB8C9;
+	margin: 0px;
 }
+
 IMG {
-  border:0
+	border: 0
 }
-TD, div {
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px
+
+TD,div {
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px
 }
-A { 
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px;
-  text-decoration: none;
-  color: #000000}
+
+A {
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
+	text-decoration: none;
+	color: #000000
+}
+
 A:hover {
-  color: #666699;
-}
-input                             {
-  background-color: #FFFFFF;
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px;
-  color: #000000;
-  border: 1px solid #999999;
-}
-.invisible							{
-  background: transparent;
-  border: 0;
-}
-select                            {
-  background-color: #FFFFFF;
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px;
-  color: #000000;
-  border: 1px solid #999999;
+	color: #666699;
 }
 
-textarea                          {
-  background-color: #FFFFFF;
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: 10px;
-  color: #000000;
-  border: 1px solid #999999;
+input {
+	background-color: #FFFFFF;
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+	border: 1px solid #999999;
 }
-Label,legend                   { font-size: 11px; color: #666666; font-weight: bold }
-TABLE.frame                       { background-color: #CCCCCC}
-TR.frame                          { background-color: #CCCCCC}
-TD.frame                          { background-color: #CCCCCC; color: #FFFFFF; text-align: left;  font-style: normal;  font-weight: bold}
 
-TABLE.title                       { background-color: #CCCCCC}
-TR.title                          { background-color: #CCCCCC}
-TD.title                          { background-color: #CCCCCC; font-style: normal; font-size: 11pt; font-weight: bold; color: #000000}
+.invisible {
+	background: transparent;
+	border: 0;
+}
 
-TD.sommaireTitle                  { font-size: 20pt; font-weight: bold}
-TD.sommaireDescription            { font-size: 8pt; color: #000000}
-TD.sommaire                       { font-size: 12pt; font-weight: bold}	
+select {
+	background-color: #FFFFFF;
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+	border: 1px solid #999999;
+}
+
+textarea {
+	background-color: #FFFFFF;
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
+	border: 1px solid #999999;
+}
+
+Label,legend {
+	font-size: 11px;
+	color: #666666;
+	font-weight: bold
+}
+
+TABLE.frame {
+	background-color: #CCCCCC
+}
+
+TR.frame {
+	background-color: #CCCCCC
+}
+
+TD.frame {
+	background-color: #CCCCCC;
+	color: #FFFFFF;
+	text-align: left;
+	font-style: normal;
+	font-weight: bold
+}
+
+TABLE.title {
+	background-color: #CCCCCC
+}
+
+TR.title {
+	background-color: #CCCCCC
+}
+
+TD.title {
+	background-color: #CCCCCC;
+	font-style: normal;
+	font-size: 11pt;
+	font-weight: bold;
+	color: #000000
+}
+
+TD.sommaireTitle {
+	font-size: 20pt;
+	font-weight: bold
+}
+
+TD.sommaireDescription {
+	font-size: 8pt;
+	color: #000000
+}
+
+TD.sommaire {
+	font-size: 12pt;
+	font-weight: bold
+}
 
 /***************************************
 Definition des class de style Silverpeas
 ***************************************/
-.peer                             { color: #033111}
-.odd 							  { color: #000000}
-.couleurCadreExterieur            { background-color : #CCCCCC}	
-.couleurCadreInterieur            { background-color : #D1E5FF}
-.couleurFondCadre                 { background-color : #FFFFFF}
-.couleurFondOperation             { }
+.peer {
+	color: #033111
+}
+
+.odd {
+	color: #000000
+}
+
+.couleurCadreExterieur {
+	background-color: #CCCCCC
+}
+
+.couleurCadreInterieur {
+	background-color: #D1E5FF
+}
+
+.couleurFondCadre {
+	background-color: #FFFFFF
+}
+
+.couleurFondOperation {
+	
+}
 
 /* Couleur de l'interface : Frame */
-.couleurCadre                      { background-color : #DEDEDE }
-.couleurFenetre                    { background-color : #D1E5FF }
-
-/* Couleur de l'interface : TopBar et DomainsBar */																										
-.couleurInterface                 { background-color: #003311}
-.winScreen{
-  background-color : #F0F8FF;
+.couleurCadre {
+	background-color: #DEDEDE
 }
 
-.titremodule                      { font-size: 13pt; font-weight: bold; color: #000000 }
-.txtnote                          { font-size: 11px; color: #000000; text-decoration: none}
-.txtnote:hover                    { font-size: 11px; color: #000000; text-decoration: underline}
-.txttitrecol                      { font-size: 11px; color: #000000; font-weight: bold }
-.txtnav                           { font-size: 10pt; font-weight: bold; color: #000000}
-.textePetitBold                   { font-size: 11px; font-weight: bold; color: #000000}
-.textePetitBoldVert                   { font-size: 11px; font-weight: bold; color: #661666}
-.textePetitBold2                  { font-size: 11px; font-weight: bold; color: #666666}
+.couleurFenetre {
+	background-color: #D1E5FF
+}
+
+/* Couleur de l'interface : TopBar et DomainsBar */
+.couleurInterface {
+	background-color: #003311
+}
+
+.winScreen {
+	background-color: #F0F8FF;
+}
+
+.titremodule {
+	font-size: 13pt;
+	font-weight: bold;
+	color: #000000
+}
+
+.txtnote {
+	font-size: 11px;
+	color: #000000;
+	text-decoration: none
+}
+
+.txtnote:hover {
+	font-size: 11px;
+	color: #000000;
+	text-decoration: underline
+}
+
+.txttitrecol {
+	font-size: 11px;
+	color: #000000;
+	font-weight: bold
+}
+
+.txtnav {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #000000
+}
+
+.textePetitBold {
+	font-size: 11px;
+	font-weight: bold;
+	color: #000000
+}
+
+.textePetitBoldVert {
+	font-size: 11px;
+	font-weight: bold;
+	color: #661666
+}
+
+.textePetitBold2 {
+	font-size: 11px;
+	font-weight: bold;
+	color: #666666
+}
+
 .txtpetitblanc {
-  font-size: 11px;
-  font-weight: bold;
-  color: #FFFFFF}
-.txtGrandBlanc                    { font-size: 13pt; font-weight: bold; color: #FFFFFF}
-.txtlibform { 
-  font-size: 8pt;
-  font-weight: bold;
-  color: #111111;
-  padding-right: 50px;
-  vertical-align: top;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF
 }
+
+.txtGrandBlanc {
+	font-size: 13pt;
+	font-weight: bold;
+	color: #FFFFFF
+}
+
+.txtlibform {
+	font-size: 8pt;
+	font-weight: bold;
+	color: #111111;
+	padding-right: 50px;
+	vertical-align: top;
+}
+
 .txtlibform_underline {
-  font-size: 8pt;
-  font-weight: bold;
-  color: #111111;
-  text-decoration: underline
+	font-size: 8pt;
+	font-weight: bold;
+	color: #111111;
+	text-decoration: underline
 }
-.txtlibform_resa                      {
-  font-size: 8pt;
-  font-weight: bold;
-  color: #5181F6;
+
+.txtlibform_resa {
+	font-size: 8pt;
+	font-weight: bold;
+	color: #5181F6;
 }
-.texteNombreBigBold		  { font-size: 24pt; font-weight: bold; color: #607090}
-.texteLabelForm                   { font-size: 11px; color: #666666; font-weight: bold }
+
+.texteNombreBigBold {
+	font-size: 24pt;
+	font-weight: bold;
+	color: #607090
+}
+
+.texteLabelForm {
+	font-size: 11px;
+	color: #666666;
+	font-weight: bold
+}
 
 /* Agenda */
 #agenda .intfdcolor {
-  background-color: #FFFFFF;
+	background-color: #FFFFFF;
 }
-#agenda .grille {
-  background-color: #CCCCCC;
-}
-#agenda .txtlibform {
-  padding-right: 50px;
-  vertical-align: top;
-}
-.txtbigdate                       { font-size: 25pt; font-weight: bold; color: #666666 }
-.txtnav2                          { font-size: 10pt; font-weight: bold; color: #FFFFFF}	
-.txtnav21                         { font-size: 10pt; font-weight: bold; color: #AFB8C1}
-.txtnav3                          { font-size: 11px; color: #666666; text-decoration : none }
-.txtnav4                          { font-size: 11px; font-weight: bold; color: #000000}
-.txtBaseline					  { font-size: 10px; color: #666666}
-.labelFormulaire                  { font-size: 11px; font-weight: bold; color: #333333}
 
-.txtdayoff1 { 
-  font-size: 10px;
-  font-weight: normal;
-  color: #AFB8C1
+#agenda .grille {
+	background-color: #CCCCCC;
 }
+
+#agenda .txtlibform {
+	padding-right: 50px;
+	vertical-align: top;
+}
+
+.txtbigdate {
+	font-size: 25pt;
+	font-weight: bold;
+	color: #666666
+}
+
+.txtnav2 {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #FFFFFF
+}
+
+.txtnav21 {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #AFB8C1
+}
+
+.txtnav3 {
+	font-size: 11px;
+	color: #666666;
+	text-decoration: none
+}
+
+.txtnav4 {
+	font-size: 11px;
+	font-weight: bold;
+	color: #000000
+}
+
+.txtBaseline {
+	font-size: 10px;
+	color: #666666
+}
+
+.labelFormulaire {
+	font-size: 11px;
+	font-weight: bold;
+	color: #333333
+}
+
+.txtdayoff1 {
+	font-size: 10px;
+	font-weight: normal;
+	color: #AFB8C1
+}
+
 .txtdayoff2 {
-  font-size: 12px;
-  font-weight: bold;
-  color: #AFB8C1;
+	font-size: 12px;
+	font-weight: bold;
+	color: #AFB8C1;
 }
+
 .txtdayoff3 {
-  font-size: 10px;
-  font-weight: normal;
-  color: #D4D4D4;
+	font-size: 10px;
+	font-weight: normal;
+	color: #D4D4D4;
 }
 
 .date {
-  font-size: 11pt;
-  color: black
-}
-.intfdcolor { 
-  background-color: #DDDDDD;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-  background-repeat: repeat-x;
-  white-space: nowrap;
+	font-size: 11pt;
+	color: black
 }
 
-.ongletAdminOff                   { background-color: #8494B2}
-.ongletAdminOn                    { background-color: #CCCCCC}
-.intfdcolor1                      { background-color: #666666}
-.intfdcolor2                      { background-color: #EDEDED} 
-.intfdcolor3                      { background-color: #CCCCCC}
-.intfdcolor4                      { background-color: #FFFFFF}
-.intfdcolor5                      { background-color: #FFFFFF}
-.intfdcolor51                     { background-color: #EDEDED}
-.intfdcolor52                     { background-color: #F0F8FF}
-.intfdcolor6                      { background-color: #CDCDCD}
-.intfdcolor6outline               {
-  background-color: #CDCDCD;
-  border: 1px solid #AFB8C9;
+.intfdcolor {
+	background-color: #DDDDDD;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	white-space: nowrap;
 }
 
-.publicEvent                      {
-  background-color: #DDF1CF;
-  border: 0px solid;
+.ongletAdminOff {
+	background-color: #8494B2
 }
-.privateEvent                      {
-  background-color: #FFF1CF;
-  border: 0px solid;
+
+.ongletAdminOn {
+	background-color: #CCCCCC
 }
-.publicEventOutline                {
-  background-color: #DDF1CF;
-  border: 1px solid #AFB8C9;
+
+.intfdcolor1 {
+	background-color: #666666
 }
-.privateEventOutline                {
-  background-color: #FFF1CF;
-  border: 1px solid #AFB8C9;
+
+.intfdcolor2 {
+	background-color: #EDEDED
 }
-.fondCartouche                    { background-color: #E5E5E5}
-.line                   { background-color: #000000}
+
+.intfdcolor3 {
+	background-color: #CCCCCC
+}
+
+.intfdcolor4 {
+	background-color: #FFFFFF
+}
+
+.intfdcolor5 {
+	background-color: #FFFFFF
+}
+
+.intfdcolor51 {
+	background-color: #EDEDED
+}
+
+.intfdcolor52 {
+	background-color: #F0F8FF
+}
+
+.intfdcolor6 {
+	background-color: #CDCDCD
+}
+
+.intfdcolor6outline {
+	background-color: #CDCDCD;
+	border: 1px solid #AFB8C9;
+}
+
+.publicEvent {
+	background-color: #DDF1CF;
+	border: 0px solid;
+}
+
+.privateEvent {
+	background-color: #FFF1CF;
+	border: 0px solid;
+}
+
+.publicEventOutline {
+	background-color: #DDF1CF;
+	border: 1px solid #AFB8C9;
+}
+
+.privateEventOutline {
+	background-color: #FFF1CF;
+	border: 1px solid #AFB8C9;
+}
+
+.fondCartouche {
+	background-color: #E5E5E5
+}
+
+.line {
+	background-color: #000000
+}
 
 /*News*/
-.headline						  { font-size: 14pt; font-weight: bold; color: #000000; font-family: Times New Roman, Times, serif ; text-decoration: underline}
-.headline:hover					  { font-size: 14pt; font-weight: bold; color: #666666; font-family: Times New Roman, Times, serif ;   text-decoration: underline overline}
-.healineBody					  { font-size: 11pt; color: #000000 }
+.headline {
+	font-size: 14pt;
+	font-weight: bold;
+	color: #000000;
+	font-family: Times New Roman, Times, serif;
+	text-decoration: underline
+}
 
+.headline:hover {
+	font-size: 14pt;
+	font-weight: bold;
+	color: #666666;
+	font-family: Times New Roman, Times, serif;
+	text-decoration: underline overline
+}
 
+.healineBody {
+	font-size: 11pt;
+	color: #000000
+}
 
 /*********************************
 Style Utilise par le ViewGenerator
-*********************************/
-
-/* OBJETS : ButtonWA - ButtonWA2 */
+*********************************/ /* OBJETS : ButtonWA - ButtonWA2 */
 .buttonStyle {
-  background-image: url(/silverpeas/util/viewGenerator/icons/fondButton.gif);
-  background-repeat: repeat-x;
-  font-weight: normal;
+	background-image:
+		url(/silverpeas/util/viewGenerator/icons/fondButton.gif);
+	background-repeat: repeat-x;
+	font-weight: normal;
 }
 
-.buttonColorLight                 { background-color: 00a11bc}
-.buttonColorDark                  { background-color: #111111}
+.buttonColorLight {
+	background-color: 00a11bc
+}
+
+.buttonColorDark {
+	background-color: #111111
+}
 
 /* OBJETS : BrowseBarWA - BrowseBarWA2 */
-.hrefComponentName				  { font-size: 10pt; font-weight: bold; color: #000000}
-.componentName                    { font-size: 13pt; font-weight: bold}
-.navigationBarLink:hover          { font-size: 11px; font-weight: bold; color: #666666; text-decoration: underline overline}
-.hrefComponentName:hover          { font-size: 11pt; font-weight: bold; color: #666666; text-decoration: underline overline}
-.hrefComponentNameOff	          { font-size: 11pt; font-weight: bold; color: #666666; text-decoration: underline overline}
+.hrefComponentName {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #000000
+}
+
+.componentName {
+	font-size: 13pt;
+	font-weight: bold
+}
+
+.navigationBarLink:hover {
+	font-size: 11px;
+	font-weight: bold;
+	color: #666666;
+	text-decoration: underline overline
+}
+
+.hrefComponentName:hover {
+	font-size: 11pt;
+	font-weight: bold;
+	color: #666666;
+	text-decoration: underline overline
+}
+
+.hrefComponentNameOff {
+	font-size: 11pt;
+	font-weight: bold;
+	color: #666666;
+	text-decoration: underline overline
+}
 
 .hrefTreeManager:hover {
-  font : 11px;
-  background-color : Navy;
-  color : White;
-  text-decoration: none;
+	font: 11px;
+	background-color: Navy;
+	color: White;
+	text-decoration: none;
 }
+
 .hrefTreeManager:link {
-  font : 11px;
-  background-color : White;
-  color : Navy;
-  text-decoration: none;
+	font: 11px;
+	background-color: White;
+	color: Navy;
+	text-decoration: none;
 }
 
 .hrefTreeManager:vlink {
-  font : 11px;
-  background-color : Navy;
-  color : White;
-  text-decoration: none;
+	font: 11px;
+	background-color: Navy;
+	color: White;
+	text-decoration: none;
 }
 
-.componentNav                     { font-size: 11px}	
-.domainName                       { font-size: 13pt; font-weight: bold}
+.componentNav {
+	font-size: 11px
+}
+
+.domainName {
+	font-size: 13pt;
+	font-weight: bold
+}
 
 /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
 .ongletOn {
-  background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif);
-  background-repeat: repeat-x;
-  font-weight: bold;
-}                      
-.ongletOff {
-  background-image: url(/silverpeas/util/viewGenerator/icons/ongletOff.gif);
-  background-repeat: repeat-x;
-  font-weight: normal;
-  color: #999999;
+	background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif)
+		;
+	background-repeat: repeat-x;
+	font-weight: bold;
 }
 
-.ongletDark                       { background-color: #666666}
-.ongletColorLight                 { background-color: 00a11bc}
-.ongletColorDark                  { background-color: #7D7D7D}
+.ongletOff {
+	background-image:
+		url(/silverpeas/util/viewGenerator/icons/ongletOff.gif);
+	background-repeat: repeat-x;
+	font-weight: normal;
+	color: #999999;
+}
+
+.ongletDark {
+	background-color: #666666
+}
+
+.ongletColorLight {
+	background-color: 00a11bc
+}
+
+.ongletColorDark {
+	background-color: #7D7D7D
+}
 
 /* OBJETS : TabbedPaneWA - TabbedPaneWA3 */
+.titreFenetre {
+	font-size: 13pt;
+	font-weight: bold;
+	color: #666666
+}
 
-.titreFenetre                     { font-size: 13pt; font-weight: bold; color: #666666}
-.legalInformation                 { color: #111111}
-.titreFenetre2                    { font-size: 13pt; font-weight: bold; color: #FFFFFF}
-.sousTitreFenetre                 { font-size: 11pt; font-weight: bold; color: #666666}
-.styleOngletOn                    { background-color: 00a11bc; font-size: 11px; font-weight: bold; color: #000000; text-decoration: none}
-.styleOngletOff                   { background-color: #5A5A5A; font-size: 11px; color: #FFFFFF; text-decoration: none}
+.legalInformation {
+	color: #111111
+}
 
+.titreFenetre2 {
+	font-size: 13pt;
+	font-weight: bold;
+	color: #FFFFFF
+}
 
+.sousTitreFenetre {
+	font-size: 11pt;
+	font-weight: bold;
+	color: #666666
+}
+
+.styleOngletOn {
+	background-color: 00a11bc;
+	font-size: 11px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none
+}
+
+.styleOngletOff {
+	background-color: #5A5A5A;
+	font-size: 11px;
+	color: #FFFFFF;
+	text-decoration: none
+}
 
 /************************************
 Definition des class de style Portlet
 ************************************/
-.borderLineColorPortlet			  { background-color: #003366}
-.interfaceColorPortlet			  { background-color: #003311}
-.windowColorPortlet			      { background-color: #EDEDED}
-.intfdcolor11                     { background-color: #000000}
-.intfdcolor12                     { background-color: #111111}
-.intfdcolor13                     { background-color: #CCCCCC}
+.borderLineColorPortlet {
+	background-color: #003366
+}
+
+.interfaceColorPortlet {
+	background-color: #003311
+}
+
+.windowColorPortlet {
+	background-color: #EDEDED
+}
+
+.intfdcolor11 {
+	background-color: #000000
+}
+
+.intfdcolor12 {
+	background-color: #111111
+}
+
+.intfdcolor13 {
+	background-color: #CCCCCC
+}
 
 /** mailservice status highlight display */
-.MessageNotRead
-{
-  COLOR: #000000;
-  FONT-SIZE: 8pt;
-  FONT-WEIGHT: bold
+.MessageNotRead {
+	COLOR: #000000;
+	FONT-SIZE: 8pt;
+	FONT-WEIGHT: bold
 }
 
-.MessageNotReadAndHighPriority
-{
-  COLOR: #FF0000;
-  FONT-SIZE: 8pt;
-  FONT-WEIGHT: bold
+.MessageNotReadAndHighPriority {
+	COLOR: #FF0000;
+	FONT-SIZE: 8pt;
+	FONT-WEIGHT: bold
 }
 
-.MessageReadHighPriority
-{
-  COLOR: #FF0000;
-  FONT-SIZE: 8pt;
-  FONT-WEIGHT: bold
-}
-.contourintfdcolor {  
-  border-style: solid;
-  border-width: 1px 1 1 1;
-  border-color: #CCCCCC;
-  background-color: #ffffff;
+.MessageReadHighPriority {
+	COLOR: #FF0000;
+	FONT-SIZE: 8pt;
+	FONT-WEIGHT: bold
 }
 
-.eventCells{
-  background : #FFFFFF;
+.contourintfdcolor {
+	border-style: solid;
+	border-width: 1px 1 1 1;
+	border-color: #CCCCCC;
+	background-color: #ffffff;
 }
 
-.contourt3 {  
-  border-style: solid;
-  border-width: 1px 1 1 1;
-  border-color: #CCCCCC;
-  background-color: #ffffff;}
-.contourbleufondblanc {  
-  border-style: solid;
-  border-width: 1px 1 1 1;
-  border-color: #CCCCCC;
-  background-color: #ffffff;}
-.quizzscore { 
-  background-color: #CCCCCC;
-  font-size: 11pt;
-  font-weight: bold;
-  color: #607090;
-  text-decoration: none
-}
-.Titre{
-  font : bold xx-small Verdana, Geneva, Arial, Helvetica, sans-serif;
-  color : Gray;
-  line-height : 12px;
-
+.eventCells {
+	background: #FFFFFF;
 }
 
+.contourt3 {
+	border-style: solid;
+	border-width: 1px 1 1 1;
+	border-color: #CCCCCC;
+	background-color: #ffffff;
+}
+
+.contourbleufondblanc {
+	border-style: solid;
+	border-width: 1px 1 1 1;
+	border-color: #CCCCCC;
+	background-color: #ffffff;
+}
+
+.quizzscore {
+	background-color: #CCCCCC;
+	font-size: 11pt;
+	font-weight: bold;
+	color: #607090;
+	text-decoration: none
+}
+
+.Titre {
+	font: bold xx-small Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: Gray;
+	line-height: 12px;
+}
 
 /** SOGREAH2 *********************************************/
-
 .txtPersoSpace {
-  font-size: 10pt;
-  font-weight: bold;
-  color: #607090;
+	font-size: 10pt;
+	font-weight: bold;
+	color: #607090;
 }
 
-.boxed_Nav
-{
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOff.gif);
-  background-repeat: repeat-x;
-  text-align: center;
-}
-.boxed_NavActiv
-{
-  border-style: solid;
-  border-bottom-width: 0px;
-  border-left-width: 1px;
-  border-right-width: 1px;
-  border-top-width: 0px;
-  border-color: #CCCCCC;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
-  background-repeat: repeat-x;
-  text-align: center;
+td.browsebar {
+	font-family: Verdana, Arial, sans-serif;
+	color: #000000;
+	font-size: 11px;
+	text-decoration: none;
+	font-weight: bold;
 }
 
-.boxed_Domain
-{
-  border-style: solid;
-  border-width: 0px 1 1 1;
-  border-color: #CCCCCC;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOff.gif);
-  background-repeat: repeat-x;
+td.browsebar a:link {
+	font-family: verdana, Arial, sans-serif;
+	color: #000000;
+	font-size: 11px;
+	text-decoration: none;
+	font-weight: bold;
 }
 
-
-.boxed_DomainActiv
-{
-  border-style: solid;
-  border-width: 0px 1 1 1;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
-  background-repeat: repeat-x;
-  border-color: #CCCCCC;
+td.browsebar a:visited {
+	font-family: verdana, Arial, sans-serif;
+	color: #000000;
+	font-size: 11px;
+	text-decoration: none;
+	font-weight: bold;
 }
 
-
-
-.boxed_PDC_head
-{
-  border-style: solid;
-  border-width: 0 0 1 0;
-  border-color: #CCCCCC;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOff.gif);
-  background-repeat: repeat-x;
-  font-weight: bold;
-  color: #607090
-}
-.boxed_PDC
-{
-  background-color: #F0F8FF;
+td.browsebar a:active {
+	font-family: verdana, Arial, sans-serif;
+	color: #000000;
+	font-size: 11px;
+	text-decoration: none;
+	font-weight: bold;
 }
 
-td.browsebar
-{
-  font-family: Verdana, Arial, sans-serif;
-  color : #000000;
-  font-size :  11px;
-  text-decoration : none;
-  font-weight: bold;
-}
-td.browsebar a:link
-{
-  font-family: verdana, Arial, sans-serif;
-  color : #000000;
-  font-size :  11px;
-  text-decoration : none;
-  font-weight: bold;
-}
-td.browsebar a:visited
-{
-  font-family: verdana, Arial, sans-serif;
-  color : #000000;
-  font-size :  11px;
-  text-decoration : none;
-  font-weight: bold;
-}
-td.browsebar a:active
-{
-  font-family: verdana, Arial, sans-serif;
-  color : #000000;
-  font-size :  11px;
-  text-decoration: none;
-  font-weight: bold;
-}
-td.browsebar a:hover
-{
-  font-family: verdana, Arial, sans-serif;
-  color : #666699;
-  font-size :  11px;
-  text-decoration : none;
-  font-weight: bold;
+td.browsebar a:hover {
+	font-family: verdana, Arial, sans-serif;
+	color: #666699;
+	font-size: 11px;
+	text-decoration: none;
+	font-weight: bold;
 }
 
-.viewGeneratorLines
-{
-  background-color: #CCCCCC;
-}
-
-td.boxed_PDC a:link
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
- 	text-decoration: none;
-}
-td.boxed_PDC a:visited
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
-  text-decoration: none;
-}
-td.boxed_PDC a:hover
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #666699;
-  text-decoration: none;
-}
-
-
-td.boxed_Nav a:link
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
-  text-decoration: none;
-
-}
-td.boxed_Nav a:visited
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
-  text-decoration: none;
-}
-td.boxed_Nav a:hover
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #666699;
-  text-decoration: none;
-}
-
-td.boxed_NavActiv a:link
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
- 	text-decoration: none;
-}
-td.boxed_NavActiv a:visited
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
-  text-decoration: none;
-}
-td.boxed_NavActiv a:hover
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #666699;
-  text-decoration: none;
-}
-
-td.boxed_DomainActiv a:link
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
- 	text-decoration: none;
-}
-td.boxed_DomainActiv a:visited
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
-  text-decoration: none;
-}
-td.boxed_DomainActiv a:hover
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #666699;
-  text-decoration: none;
-}
-
-td.boxed_Domain a:link
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
- 	text-decoration: none;
-}
-td.boxed_Domain a:visited
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #000000;
-  text-decoration: none;
-}
-td.boxed_Domain a:hover
-{
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  COLOR: #666699;
-  text-decoration: none;
+.viewGeneratorLines {
+	background-color: #CCCCCC;
 }
 
 .selectNS {
-  background-color: #FFFFFF;
-  font-family: Verdana, "Arial", sans-serif;
-  font-size: 10px;
-  color: #000000;
+	background-color: #FFFFFF;
+	font-family: Verdana, "Arial", sans-serif;
+	font-size: 10px;
+	color: #000000;
 }
 
 .tableNavigationList {
-  border-style: solid;
-  border-width: 0px 1 1 1;
-  border-color: #CCCCCC;
-  background-color: #FFFFFF;
+	border-style: solid;
+	border-width: 0px 1 1 1;
+	border-color: #CCCCCC;
+	background-color: #FFFFFF;
 }
+
 .navigationListTitle {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
-  background-repeat: repeat-x;
-  font-size: 11px;
-  font-weight: bold;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
+	background-repeat: repeat-x;
+	font-size: 11px;
+	font-weight: bold;
 }
+
 .tableArrayPane {
-  border-style: solid;
-  border-width: 1px 1 1 1;
-  border-color: #CCCCCC;
-  background-color: #FFFFFF;
+	border-style: solid;
+	border-width: 1px 1 1 1;
+	border-color: #CCCCCC;
+	background-color: #FFFFFF;
 }
+
 .operationStyle {
-  background-image: url(/silverpeas/util/viewGenerator/icons/fondOperation.gif);
-  background-repeat: no-repeat;
+	background-image:
+		url(/silverpeas/util/viewGenerator/icons/fondOperation.gif);
+	background-repeat: no-repeat;
 }
+
 .highlight {
-  background-color: #F7C752;
-  padding-bottom : 2px;
-  padding-left : 3px;
-  padding-right : 3px;
-  padding-top : 2px;
+	background-color: #F7C752;
+	padding-bottom: 2px;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-top: 2px;
 }
-.fondPhoto { 
-  background-color: #CCCCCC;
+
+.fondPhoto {
+	background-color: #CCCCCC;
 }
-.fondPhotoNotVisible { 
-  background-color: #FF9933;
+
+.fondPhotoNotVisible {
+	background-color: #FF9933;
 }
-.fondCadre { 
-  background-color: #666666;
+
+.fondCadre {
+	background-color: #666666;
 }
-/**** Specifique LRP *****/
-.txtnavVMO						  { font-size: 7pt; font-weight: bold; color: #000000;}
-.txtnavVMOprint         { font-size: 5pt; font-weight: bold; color: #000000; font-family: Verdana, sans-serif;}
-.textePetitBoldVMO      { font-size: 5pt; font-weight: bold; color: #000000}
-.txtlibformVMO          { font-size: 6pt; font-weight: bold; color: #999999}
-.txtlibformVMOPresence  { font-size: 7pt; font-weight: bold; color: #999999}
 
 /****************************************/
 /****** Look V5 - TopBar ****************/
 /****************************************/
 #backHome {
-  float: left;
-  position: absolute;
-  left: 0px;
-  height: 85px;
-  width: 175px;
-  top: 20px;
-}
-#outils {
-  position: absolute;
-  right: 5px;
-  height: 15px;
-  width: 100%;
-  bottom: 6px;
-  text-align: right;
-  color:#999999;
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 10px
-}
-#outils a {
-  color:#999999;
-}
-#shortcuts a {
-  color: #FFFFFF;
-}
-#shortcuts td {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
-  border-width: 1px;
-  border-top-style: solid;
-  border-color: #FFFFFF;
-}
-#shortcuts td.gaucheShortcuts{
-  border-style:none;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheTop.gif);
-  width:5px;
-  height:20px;
-  background-repeat: no-repeat;
-  background-position: left top;
-}
-#shortcuts td.droiteShortcuts{
-  width:5px;
+	float: left;
+	position: absolute;
+	left: 0px;
+	height: 85px;
+	width: 175px;
+	top: 20px;
 }
 
-#shortcuts td.activeShortcut
-{
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
-  border-width: 1px;
-  border-top-style: solid;
-  border-color: #FFFFFF;
-  padding-left: 10px;
-  padding-right: 10px;
+#outils {
+	position: absolute;
+	right: 5px;
+	height: 15px;
+	width: 100%;
+	bottom: 6px;
+	text-align: right;
+	color: #999999;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px
+}
+
+#outils a {
+	color: #999999;
+}
+
+#shortcuts a {
+	color: #FFFFFF;
+}
+
+#shortcuts td {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+	border-width: 1px;
+	border-top-style: solid;
+	border-color: #FFFFFF;
+}
+
+#shortcuts td.gaucheShortcuts {
+	border-style: none;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheTop.gif);
+	width: 5px;
+	height: 20px;
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+
+#shortcuts td.droiteShortcuts {
+	width: 5px;
+}
+
+#shortcuts td.activeShortcut {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
+	border-width: 1px;
+	border-top-style: solid;
+	border-color: #FFFFFF;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 #administration {
-  bottom: 25px;
-  position: absolute;
-  right: 0px;
+	bottom: 25px;
+	position: absolute;
+	right: 0px;
 }
+
 #administration a {
-  color:#FFFFFF;
-  font-weight: bold;
+	color: #FFFFFF;
+	font-weight: bold;
 }
+
 #administration td {
-  height: 20px;
-  width: 120px;
-  text-align: center;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
-  background-repeat: repeat-x;
-  border-width: 1px;
-  border-top-style: solid;
-  border-left-style: solid;
-  border-color: #FFFFFF;
+	height: 20px;
+	width: 120px;
+	text-align: center;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
+	background-repeat: repeat-x;
+	border-width: 1px;
+	border-top-style: solid;
+	border-left-style: solid;
+	border-color: #FFFFFF;
 }
+
 /*.topBar {
 	background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/bandeauTop.jpg);
 	background-repeat: no-repeat;
 	background-position: left top;
 }*/
-
-#ticker{
-  position: absolute;
-  right: 5px;
-  height: 15px;
-  width: 100%;
-  bottom: 6px;
-  text-align: center;
-  color:#000000;
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 10px
+#ticker {
+	position: absolute;
+	right: 5px;
+	height: 15px;
+	width: 100%;
+	bottom: 6px;
+	text-align: center;
+	color: #000000;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px
 }
 
-#ticker div{ /*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
-             /*background-color: #FFFFFF;*/
-             width: 500px;
+#ticker div {
+	/*IE6 bug fix when text is bold and fade effect (alpha filter) is enabled. Style inner DIV with same color as outer DIV*/
+	/*background-color: #FFFFFF;*/
+	width: 500px;
 }
 
 /****************************************/
-/****** Look V5 - DomainsBar ************/
-/****************************************/
+	/****** Look V5 - DomainsBar ************/
+	/****************************************/
 #domainsBar {
-  margin: 10px;
-  margin-top: 0px;
+	margin: 10px;
+	margin-top: 0px;
 }
 
 #domainsBar a {
-  font-size: 11px;
-  color: #000000;
+	font-size: 11px;
+	color: #000000;
 }
 
 #redExp {
-  position : absolute;
-  top : 0px;
-  left : 0px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
 }
 
 #recherche {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/recherche.jpg);
-  background-repeat: no-repeat;
-  margin-bottom: 10px;
-  height: 60px;
-  width: 220px;
-  font-size: 10px;
-  color: #666666;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/recherche.jpg);
+	background-repeat: no-repeat;
+	margin-bottom: 10px;
+	height: 60px;
+	width: 220px;
+	font-size: 10px;
+	color: #666666;
 }
 
 #recherche #submitRecherche {
-  margin: 0px;
-  height: 60px;
+	margin: 0px;
+	height: 60px;
 }
 
 #recherche #submitRecherche input {
-  margin: 0px;
-  margin-left:15px;
-  margin-right:5px;
-  margin-top: 7px;
-  font-size: 10px;
-  color: #666666;
-  background-color:transparent;
-  border: none;
+	margin: 0px;
+	margin-left: 15px;
+	margin-right: 5px;
+	margin-top: 7px;
+	font-size: 10px;
+	color: #666666;
+	background-color: transparent;
+	border: none;
 }
-#recherche #submitRecherche form {
-  /*height: 0px;*/
+
+#recherche #submitRecherche form { /*height: 0px;*/
+	
 }
 
 #recherche #submitRecherche a {
-  margin-left:15px;
+	margin-left: 15px;
 }
 
 #recherche #bodyRecherche {
-  background-color: transparent;
-  text-align: center;
-  margin-top: -25px;
-  font-size: 10px;
-  color: #666666;
+	background-color: transparent;
+	text-align: center;
+	margin-top: -25px;
+	font-size: 10px;
+	color: #666666;
 }
 
 #recherche #bodyRecherche a {
-  font-size: 10px;
-  color: #666666;
+	font-size: 10px;
+	color: #666666;
 }
 
 #spaces {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
-  background-repeat: repeat-x;
-  background-position: top;
-  background-color: #C5ED95;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #C9C9C9;
-  border-bottom-width: none;
-}
-#spaceTransverse {
-  /*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
 	background-repeat: repeat-x;
-	background-position: top;*/
-  background-color: #8BD039;
-  border-width: 0px;
-  border-style: solid;
-  border-color: #C9C9C9;
-  border-bottom-width: none;
+	background-position: top;
+	background-color: #C5ED95;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #C9C9C9;
+	border-bottom-width: none;
 }
 
-#spaceTransverse .spaceLevel1On{
-  border-bottom-width: 0px;
+#spaceTransverse {
+	/*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
+	background-repeat: repeat-x;
+	background-position: top;*/
+	background-color: #8BD039;
+	border-width: 0px;
+	border-style: solid;
+	border-color: #C9C9C9;
+	border-bottom-width: none;
+}
+
+#spaceTransverse .spaceLevel1On {
+	border-bottom-width: 0px;
 }
 
 #basSpaceTransverse .basSpacesGauche {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  background-color: #8BD039;
-  width : 8px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	background-color: #8BD039;
+	width: 8px;
 }
+
 #basSpaceTransverse .basSpacesMilieu {
-  background-color: #8BD039;
+	background-color: #8BD039;
 }
+
 #basSpaceTransverse .basSpacesDroite {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
-  background-repeat: no-repeat;
-  background-position: right bottom;
-  background-color: #8BD039;
-  width : 8px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
+	background-repeat: no-repeat;
+	background-position: right bottom;
+	background-color: #8BD039;
+	width: 8px;
 }
 
 .spaceURL {
-  color:#FFFFFF;
+	color: #FFFFFF;
 }
+
 .spaceURLOn {
-  color:#000000;
+	color: #000000;
 }
+
 #pdc {
-  margin-top: 10px;
-  background-color: #EEEEEE;
-  padding: 3px;
-  border: 1px solid #666666;
+	margin-top: 10px;
+	background-color: #EEEEEE;
+	padding: 3px;
+	border: 1px solid #666666;
 }
+
 #pdcLabel {
-  margin-left: 2px;
-  font-size: 11px;
-  font-family: Verdana, Arial, sans-serif;
+	margin-left: 2px;
+	font-size: 11px;
+	font-family: Verdana, Arial, sans-serif;
 }
+
 #pdc a {
-  font-weight:normal;
+	font-weight: normal;
 }
-#spacePerso {
-  /*color:#FFFFFF;*/
-  background-color: #C5ED95;
-  border-right-width: 1px;
-  border-left-width: 1px;
-  border-right-style: solid;
-  border-left-style: solid;
-  border-right-color: #C9C9C9;
-  border-left-color: #C9C9C9;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
-  background-repeat: repeat-x;
-  border-width: 1px;
+
+#spacePerso { /*color:#FFFFFF;*/
+	background-color: #C5ED95;
+	border-right-width: 1px;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-right-color: #C9C9C9;
+	border-left-color: #C9C9C9;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+	background-repeat: repeat-x;
+	border-width: 1px;
 }
 
 #spacePerso .spaceURL {
-  color: #FFF;
+	color: #FFF;
 }
 
 #spacePerso .contentSpace {
-  margin-top: 7px;
-  margin-left : 10px;
+	margin-top: 7px;
+	margin-left: 10px;
 }
 
-#loginBox{
-  padding-top: 10px;
-  width : 100%;
+#loginBox {
+	padding-top: 10px;
+	width: 100%;
 }
 
 #basSpaces {
-  width : 100%;
+	width: 100%;
 }
 
 #basSpaceTransverse {
-  width : 100%;
-  margin-bottom: 10px;
-} 
+	width: 100%;
+	margin-bottom: 10px;
+}
 
 .basSpacesGauche {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  background-color: #C5ED95;
-  width : 8px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	background-color: #C5ED95;
+	width: 8px;
 }
+
 .basSpacesMilieu {
-  background-color: #C5ED95;
+	background-color: #C5ED95;
 }
+
 .basSpacesDroite {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
-  background-repeat: no-repeat;
-  background-position: right bottom;
-  background-color: #C5ED95;
-  width : 8px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
+	background-repeat: no-repeat;
+	background-position: right bottom;
+	background-color: #C5ED95;
+	width: 8px;
 }
-.spaceLevel1{
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: #FFFFFF;
-  font-weight:bold;
-  padding : 3px;
+
+.spaceLevel1 {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #FFFFFF;
+	font-weight: bold;
+	padding: 3px;
 }
-.spaceLevel1On{
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: #FFFFFF;
-  font-weight:bold;
-  padding : 3px;
+
+.spaceLevel1On {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #FFFFFF;
+	font-weight: bold;
+	padding: 3px;
 }
-.spaceLevelPerso{
-  font-weight:bold;
-  padding : 3px;
+
+.spaceLevelPerso {
+	font-weight: bold;
+	padding: 3px;
 }
+
 .browseSpace {
-  font-weight: bold;
+	font-weight: bold;
 }
+
 .browseComponent {
-  font-weight : normal;
+	font-weight: normal;
 }
+
 .browseComponentActiv {
-  font-weight : bold;
+	font-weight: bold;
 }
+
 .browseIconComponent {
-  margin-right: 2px;
+	margin-right: 2px;
 }
+
 .contentSpace {
-  margin-left : 10px;
+	margin-left: 10px;
 }
+
 .contentSpace a {
-  color:#000000;
+	color: #000000;
 }
 
 /****************************************/
-/****** Look V5 - ViewGenerator *********/
-/****************************************/
-
-/* objet window */
+	/****** Look V5 - ViewGenerator *********/
+	/****************************************/ /* objet window */
 .cellBrowseBar {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: #CCCCCC;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCCCCC;
 }
 
 .cellOperation {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: #CCCCCC;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCCCCC;
 }
 
 .cellBodyWindows {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeCellBody.jpg);
-  background-repeat: repeat-x;
-  background-position: top;
-  border-width: 1px;
-  border-left-style: solid;
-  border-right-style: solid;
-  border-color: #DEDEDE;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeCellBody.jpg);
+	background-repeat: repeat-x;
+	background-position: top;
+	border-width: 1px;
+	border-left-style: solid;
+	border-right-style: solid;
+	border-color: #DEDEDE;
 }
-.basGaucheWindow{
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/basGaucheFrame.gif);
-  background-repeat: no-repeat;
-  background-position: left ;
-  width: 15px;
-  height: 15px;
+
+.basGaucheWindow {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/basGaucheFrame.gif);
+	background-repeat: no-repeat;
+	background-position: left;
+	width: 15px;
+	height: 15px;
 }
-.basMilieuWindow{
-  border-width: 1px;
-  border-bottom-style: solid;
-  border-color: #DEDEDE;
-  height: 15px;
+
+.basMilieuWindow {
+	border-width: 1px;
+	border-bottom-style: solid;
+	border-color: #DEDEDE;
+	height: 15px;
 }
-.basDroiteWindow{
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/basDroiteFrame.gif);
-  background-repeat: no-repeat;
-  background-position: right ;
-  width: 15px;
-  height: 15px;
+
+.basDroiteWindow {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/basDroiteFrame.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+	width: 15px;
+	height: 15px;
 }
+
 /* Objet Button */
 .gaucheBoutonV5 {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheBouton.gif);
-  background-repeat: no-repeat;
-  background-position: left ;
-  width:5px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheBouton.gif);
+	background-repeat: no-repeat;
+	background-position: left;
+	width: 5px;
 }
+
 .milieuBoutonV5 {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
-  background-repeat: repeat-x;
-  color: #FFFFFF;
-  height:20px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+	background-repeat: repeat-x;
+	color: #FFFFFF;
+	height: 20px;
 }
-.milieuBoutonV5 a, #domainsBar .milieuBoutonV5 a  {
-  color: #FFFFFF;
+
+.milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
+	color: #FFFFFF;
 }
+
 .droiteBoutonV5 {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteBouton.gif);
-  background-repeat: no-repeat;
-  background-position: right ;
-  width:5px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteBouton.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+	width: 5px;
 }
 
 /* Objet Tabs */
 .gaucheOngletOn {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);
-  background-repeat: no-repeat;
-  background-position: left ;
-  width:5px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);
+	background-repeat: no-repeat;
+	background-position: left;
+	width: 5px;
 }
+
 .milieuOngletOn {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
-  background-repeat: repeat-x;
-  color: #FFFFFF;
-  height:20px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+	background-repeat: repeat-x;
+	color: #FFFFFF;
+	height: 20px;
 }
+
 .milieuOngletOn a {
-  color: #FFFFFF;
+	color: #FFFFFF;
 }
+
 .droiteOngletOn {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOn.gif);
-  background-repeat: no-repeat;
-  background-position: right ;
-  width:5px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOn.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+	width: 5px;
 }
+
 .gaucheOngletOff {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOff.gif);
-  background-repeat: no-repeat;
-  background-position: left ;
-  width:5px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOff.gif);
+	background-repeat: no-repeat;
+	background-position: left;
+	width: 5px;
 }
+
 .milieuOngletOff {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
-  background-repeat: repeat-x;
-  color: #FFFFFF;
-  height:20px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+	background-repeat: repeat-x;
+	color: #FFFFFF;
+	height: 20px;
 }
+
 .milieuOngletOff a {
-  color: #999999;
+	color: #999999;
 }
+
 .droiteOngletOff {
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOff.gif);
-  background-repeat: no-repeat;
-  background-position: right ;
-  width:5px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOff.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+	width: 5px;
 }
-.sousOnglets{
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/sousOnglets.jpg);
-  background-repeat: repeat-x;
-  height:10px;
+
+.sousOnglets {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/sousOnglets.jpg);
+	background-repeat: repeat-x;
+	height: 10px;
 }
 
 /* Objet frame */
 .tableFrame {
-  border-style: none;
-  background-color: #FFFFFF;
+	border-style: none;
+	background-color: #FFFFFF;
 }
-.hautFrame{
-  padding-top: 10px;
-}
-.milieuFrame{
-}
-.basGaucheFrame{
-}
-.basMilieuFrame{
 
+.hautFrame {
+	padding-top: 10px;
 }
-.basDroiteFrame{
+
+.milieuFrame {
+	
+}
+
+.basGaucheFrame {
+	
+}
+
+.basMilieuFrame {
+	
+}
+
+.basDroiteFrame {
+	
 }
 
 /* Objet board */
 .tableBoard {
-  border-style: solid;
-  border-width: 1px;
-  border-color: #CCCCCC;
-  background-color: #FFFFFF;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-  background-repeat: no-repeat;
-  background-position: right top;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #CCCCCC;
+	background-color: #FFFFFF;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+	background-repeat: no-repeat;
+	background-position: right top;
 }
 
 /* Objet ArrayPane */
-.ArrayColumn { 
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
-  background-repeat: repeat-x;
-  font-size: 11px;
-  font-weight: bold;
-  color: #FFFFFF;
-  height: 20px;
+.ArrayColumn {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+	background-repeat: repeat-x;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	height: 20px;
 }
-.ArrayColumn a { 
-  color:#FFFFFF;
-  background-image:none;
-  background-color:transparent;
+
+.ArrayColumn a {
+	color: #FFFFFF;
+	background-image: none;
+	background-color: transparent;
 }
-.ArrayNavigation { 
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-  background-repeat: repeat-x;
-  background-color:transparent;
-  font-size: 11px;
-  font-weight: bold;
-  color: #000000;
-  text-decoration: none;
+
+.ArrayNavigation {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	background-color: transparent;
+	font-size: 10px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+
+.ArrayNavigationOn {
+	background-color: #666666;
+	font-size: 10px;
+	font-weight: bolder;
+	color: #FFFFFF;
+	text-decoration: none
 }
 
 /*- [ general ] --------------------------- */
-
-#portletPages img { 
-  border:  0;
+#portletPages img {
+	border: 0;
 }
 
 #portletPages form {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 /*- [ portal-page ] --------------------------- */
-
 #portal-page {
-  font-size: 95%;
+	font-size: 95%;
 }
 
 /*- [ portal-header ] --------------------------- */
-
 #portletPages div#portal-header {
-  float: left;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  border-top: 8px solid #902;
-  background: #EFE6CE;
+	float: left;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border-top: 8px solid #902;
+	background: #EFE6CE;
 }
 
 #portletPages div#portal-header h1 {
-  margin: 0;
-  float: left;
-  padding: 5px 10px;
+	margin: 0;
+	float: left;
+	padding: 5px 10px;
 }
 
 #portletPages div#portal-header ul#portal-options {
-  float: right;
-  margin: 10px;
-  padding: 0;
-  list-style: none;
+	float: right;
+	margin: 10px;
+	padding: 0;
+	list-style: none;
 }
 
 #portletPages div#portal-header ul#portal-options li {
-  display: inline;
-  margin: 0;
-  padding: 0;
+	display: inline;
+	margin: 0;
+	padding: 0;
 }
 
 #portletPages div#portal-header ul#portal-options li a {
-  padding: 0 4px 0 6px;
-  border-left: 1px solid #e2c2b5;
+	padding: 0 4px 0 6px;
+	border-left: 1px solid #e2c2b5;
 }
 
 #portletPages div#portal-header ul#portal-options li a.first-child {
-  border-left: none;
+	border-left: none;
 }
 
 /*- [ admin ] --------------------------- */
-
 #portletPages h2 {
-  font-size: 12px;
+	font-size: 12px;
 }
 
 #portletPages h2#deploy-failed {
-  font-weight: bold;
-  color: red;
+	font-weight: bold;
+	color: red;
 }
 
 #portletPages h2#deploy-success {
-  font-weight: bold;
-  color: blue;
+	font-weight: bold;
+	color: blue;
 }
 
 #portletPages h2#undeploy-failed {
-  font-weight: bold;
-  color: red;
+	font-weight: bold;
+	color: red;
 }
 
 #portletPages h2#undeploy-success {
-  font-weight: bold;
-  color: blue;
+	font-weight: bold;
+	color: blue;
 }
 
 #portletPages h2#create-failed {
-  font-weight: bold;
-  color: red;
+	font-weight: bold;
+	color: red;
 }
 
 #portletPages h2#create-success {
-  font-weight: bold;
-  color: blue;
+	font-weight: bold;
+	color: blue;
 }
 
 #portletPages h2#modify-failed {
-  font-weight: bold;
-  color: red;
+	font-weight: bold;
+	color: red;
 }
 
 #portletPages h2#modify-success {
-  font-weight: bold;
-  color: blue;
+	font-weight: bold;
+	color: blue;
 }
 
 #portletPages h1#undeploy-portlet-content {
-  margin-top: 20px;
+	margin-top: 20px;
 }
 
 #portletPages h1#create-portlet-content {
-  margin-top: 20px;
+	margin-top: 20px;
 }
 
 #portletPages h1#modify-window-content {
-  margin-top: 20px;
+	margin-top: 20px;
 }
 
-#portletPages form#portal-login fieldset,
-#portletPages form#deploy-portlet fieldset,
-#portletPages form#undeploy-portlet fieldset,
-#portletPages form#modify-window fieldset,
-#portletPages form#create-portlet fieldset {
-  border: none;
-  margin: 10px;
-  padding: 0;
+#portletPages form#portal-login fieldset,#portletPages form#deploy-portlet fieldset,#portletPages form#undeploy-portlet fieldset,#portletPages form#modify-window fieldset,#portletPages form#create-portlet fieldset
+	{
+	border: none;
+	margin: 10px;
+	padding: 0;
 }
 
-#portletPages form#portal-login label,
-#portletPages form#deploy-portlet label,
-#portletPages form#undeploy-portlet label,
-#portletPages form#modify-window label,
-#portletPages form#create-portlet label { display: block; margin-bottom: 2px;}
+#portletPages form#portal-login label,#portletPages form#deploy-portlet label,#portletPages form#undeploy-portlet label,#portletPages form#modify-window label,#portletPages form#create-portlet label
+	{
+	display: block;
+	margin-bottom: 2px;
+}
 
-#portletPages form#portal-login input#submit,
-#portletPages form#portal-login input#reset { display: inline; margin: 0;}
+#portletPages form#portal-login input#submit,#portletPages form#portal-login input#reset
+	{
+	display: inline;
+	margin: 0;
+}
 
 /*- [ portal-content ] --------------------------- */
-
 #portletPages #portal-content {
-  clear: both;
-  margin: 0;
-  padding: 0px;
+	clear: both;
+	margin: 0;
+	padding: 0px;
 }
 
 #portletPages h1.portal-content-header {
-  font-size: 12px;
-  margin:  0;
-  margin-bottom: 10px;
-  padding: 0;
-  padding-bottom: 5px;
-  border-bottom: 1px solid #902;
+	font-size: 12px;
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 0;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #902;
 }
 
 /*- [ portlet-content-layout ] --------------------------- */
-
-/* Layout = 1, THICK/THIN */
-
+	/* Layout = 1, THICK/THIN */
 #portletPages #portal-content-layout #layout-1-thin {
-  align: top;
-  float: left;
-  width: 30%;
-  margin-right: 5%;
-  /* background: #B5CCE3; */
+	align: top;
+	float: left;
+	width: 30%;
+	margin-right: 5%;
+	/* background: #B5CCE3; */
 }
 
 #portletPages #portal-content-layout #layout-1-thick {
-  float: right;
-  width: 63%;
-  /* background: #EDF2F8; */
+	float: right;
+	width: 63%;
+	/* background: #EDF2F8; */
 }
 
 /* Layout = 2, THICK/THIN */
-
 #portletPages #portal-content-layout #layout-2-thick {
-  float: left;
-  width: 48%;
-  margin-right: 2%;
-  /* background: #EDF2F8; */
+	float: left;
+	width: 48%;
+	margin-right: 2%;
+	/* background: #EDF2F8; */
 }
 
 #portletPages #portal-content-layout #layout-2-thin {
-  margin-top: 0;
-  float: right;
-  width: 45%;
-  /* background: #B5CCE3; */
+	margin-top: 0;
+	float: right;
+	width: 45%;
+	/* background: #B5CCE3; */
 }
 
 /* Layout = 3, THIN/THICK/THIN */
-
 #portletPages #portal-content-layout #layout-3-left {
-  float: left;
-  width: 68%;
+	float: left;
+	width: 68%;
 }
 
 #portletPages #portal-content-layout #layout-3-left-thin {
-  float: left;
-  width: 30%;
-  margin-right: 5%;
-  /* background: #B5CCE3; */
+	float: left;
+	width: 30%;
+	margin-right: 5%;
+	/* background: #B5CCE3; */
 }
 
 #portletPages #portal-content-layout #layout-3-left-thick {
-  float: right;
-  width: 58%;
-  margin-right: 5%;
-  /* background: #EDF2F8; */
+	float: right;
+	width: 58%;
+	margin-right: 5%;
+	/* background: #EDF2F8; */
 }
 
 #portletPages #portal-content-layout #layout-3-right-thin {
-  float: right;
-  width: 30%;
-  /* background: #B5CCE3; */
+	float: right;
+	width: 30%;
+	/* background: #B5CCE3; */
 }
 
+#portletPages a {
+	color: #000;
+}
 
-#portletPages a { color:#000; }
+#portletPages .clear {
+	clear: both;
+	font-size: 1px;
+	line-height: 1px;
+}
 
-#portletPages .clear { clear:both; font-size:1px; line-height:1px; }
+#portletPages #overlay {
+	background: #666;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 2000;
+}
 
-#portletPages #overlay { background:#666; height:100%; left:0; position:absolute; top:0; width:100%; z-index:2000; }
-#portletPages #overlay #preloader { background:url(loader_bg.gif) no-repeat; height:50px; left:50%; line-height:50px; margin:-25px 0 0 -25px; position:absolute; text-align:center; top:50%; width:50px; }
-#portletPages #overlay #preloader img { margin:11px 0 0 0; vertical-align:middle; }
+#portletPages #overlay #preloader {
+	background: url(loader_bg.gif) no-repeat;
+	height: 50px;
+	left: 50%;
+	line-height: 50px;
+	margin: -25px 0 0 -25px;
+	position: absolute;
+	text-align: center;
+	top: 50%;
+	width: 50px;
+}
 
-#portletPages .ui-sortable { 
-  background-color:#FFF;
-  border:0px solid #DDD;
-  color:#222;
-  /*margin:0 15px 15px 0;
+#portletPages #overlay #preloader img {
+	margin: 11px 0 0 0;
+	vertical-align: middle;
+}
+
+#portletPages .ui-sortable {
+	background-color: #FFF;
+	border: 0px solid #DDD;
+	color: #222;
+	/*margin:0 15px 15px 0;
 	padding:0 10px 10px;*/
-  margin:0;
-  padding:0;
-  width:175px;
+	margin: 0;
+	padding: 0;
+	width: 175px;
 }
 
-#portletPages dl.sort { color:#222; margin:5px 0;}
-#portletPages dl.sort dt 
-{ 
-  /*background-color:#B3BFD1;
+#portletPages dl.sort {
+	color: #222;
+	margin: 5px 0;
+}
+
+#portletPages dl.sort dt { /*background-color:#B3BFD1;
 	color:#000000; */
-  cursor:move;
-  /*height:2em;
+	cursor: move;
+	/*height:2em;
 	line-height:2; 
 	padding:0 6px; 
 	position:relative;*/
-
-  float: left;
-  /*height: 2em;*/
-  line-height: 2;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
-  background-repeat: repeat-y;
-  background-position: right;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #DEDEDE;
-  border-right-style: none;
-  /*padding-left: 10px;*/
-  clear: both;
+	float: left;
+	/*height: 2em;*/
+	line-height: 2;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
+	background-repeat: repeat-y;
+	background-position: right;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #DEDEDE;
+	border-right-style: none;
+	/*padding-left: 10px;*/
+	clear: both;
 }
-#portletPages dl.sort dd { background-color:#FFF; margin:0; padding:0 0px; }
 
-#portletPages .ui-sortable-helper { width:175px; }
-#portletPages .placeholder { border:1px dashed #AAA; }
-
-#portletPages span.options { cursor:default; font-size:1px; line-height:1px; position:absolute; }
-#portletPages span.options a { cursor:pointer; display:block; float:left; text-indent:-9000px; }
-
-#portletPages dl.sort dt span.options { right:5px; width:60px; }
-#portletPages dl.sort dt span.options a { height:15px; width:15px; }
-#portletPages dl.sort dt span.options a.up 
-{
-  margin-top:2px;
-  margin-right:3px;
-  background-image: url(/silverpeas/admin/jsp/icons/fo_flechehaut.gif);
-  background-repeat: no-repeat;
+#portletPages dl.sort dd {
+	background-color: #FFF;
+	margin: 0;
+	padding: 0 0px;
 }
-#portletPages dl.sort dt span.options a.down 
-{ 
-  margin-top:2px;
-  margin-right:3px;
-  background-image: url(/silverpeas/admin/jsp/icons/fo_flechebas.gif);
-  background-repeat: no-repeat;
-}
-#portletPages dl.sort dt span.options a.remove 
-{ 
-  margin-right:3px;
-  background-image: url(/silverpeas/util/icons/delete.gif);
-  background-repeat: no-repeat;
-}
-#portletPages dl.sort dt span.options a.disabled { cursor:default; }
 
-#portletPages #container { float:left; }
-#portletPages #thick { float:left; width:49%; }
-#portletPages #thin { float:right; width:49%; }
+#portletPages .ui-sortable-helper {
+	width: 175px;
+}
+
+#portletPages .placeholder {
+	border: 1px dashed #AAA;
+}
+
+#portletPages span.options {
+	cursor: default;
+	font-size: 1px;
+	line-height: 1px;
+	position: absolute;
+}
+
+#portletPages span.options a {
+	cursor: pointer;
+	display: block;
+	float: left;
+	text-indent: -9000px;
+}
+
+#portletPages dl.sort dt span.options {
+	right: 5px;
+	width: 60px;
+}
+
+#portletPages dl.sort dt span.options a {
+	height: 15px;
+	width: 15px;
+}
+
+#portletPages dl.sort dt span.options a.up {
+	margin-top: 2px;
+	margin-right: 3px;
+	background-image: url(/silverpeas/admin/jsp/icons/fo_flechehaut.gif);
+	background-repeat: no-repeat;
+}
+
+#portletPages dl.sort dt span.options a.down {
+	margin-top: 2px;
+	margin-right: 3px;
+	background-image: url(/silverpeas/admin/jsp/icons/fo_flechebas.gif);
+	background-repeat: no-repeat;
+}
+
+#portletPages dl.sort dt span.options a.remove {
+	margin-right: 3px;
+	background-image: url(/silverpeas/util/icons/delete.gif);
+	background-repeat: no-repeat;
+}
+
+#portletPages dl.sort dt span.options a.disabled {
+	cursor: default;
+}
+
+#portletPages #container {
+	float: left;
+}
+
+#portletPages #thick {
+	float: left;
+	width: 49%;
+}
+
+#portletPages #thin {
+	float: right;
+	width: 49%;
+}
 
 /*- [ portlet ] --------------------------- */
-
-#portletPages div.portlet-header {
-  /*float: left;
+#portletPages div.portlet-header { /*float: left;
   height: 2em; 
   line-height: 2;
   width: 100%;
   margin: 0;
   padding: 0;
   background-color:#B3BFD1;*/
-
-  float: left;
-  height: 2em;
-  line-height: 2;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
-  background-repeat: repeat-y;
-  background-position: right;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #DEDEDE;
-  border-right-style: none;
-  padding-left: 10px;
+	float: left;
+	height: 2em;
+	line-height: 2;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
+	background-repeat: repeat-y;
+	background-position: right;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #DEDEDE;
+	border-right-style: none;
+	padding-left: 10px;
 }
 
-#portletPages h2.portlet-title {
-  /*float: left;
+#portletPages h2.portlet-title { /*float: left;
   margin:  0;
   font-size: 10px;
   font-weight: bold;*/
-
-  float: left;
-  margin:  0;
-  margin-left: 4px;
-  font-family: Verdana, Arial, sans-serif;
-  font-variant: small-caps;
-  color: #5889BB;
-  font-size: 12px;
-  font-weight: bold;
+	float: left;
+	margin: 0;
+	margin-left: 4px;
+	font-family: Verdana, Arial, sans-serif;
+	font-variant: small-caps;
+	color: #5889BB;
+	font-size: 12px;
+	font-weight: bold;
 }
 
 #portletPages ul.portlet-options {
-  float: right;
-  margin: 0;
-  margin-right: 4px;
-  padding: 0;
-  list-style: none;
+	float: right;
+	margin: 0;
+	margin-right: 4px;
+	padding: 0;
+	list-style: none;
 }
 
 #portletPages ul.portlet-options li {
-  display: inline;
-  margin: 0;
-  padding: 0;
+	display: inline;
+	margin: 0;
+	padding: 0;
 }
 
-#portletPages ul.portlet-options li a { float: left; display: block; height: 16px; width: 16px; margin: 4px 2px 4px 0; padding: 0; font-size: 83%; }
-#portletPages ul.portlet-options li a:hover { background-color: #fff; }
+#portletPages ul.portlet-options li a {
+	float: left;
+	display: block;
+	height: 16px;
+	width: 16px;
+	margin: 4px 2px 4px 0;
+	padding: 0;
+	font-size: 83%;
+}
+
+#portletPages ul.portlet-options li a:hover {
+	background-color: #fff;
+}
 
 #portletPages div.portlet-content {
-  text-align: left;
-  clear: both;
-  padding: 4px;
-  border:  1px solid #FAEFEB;
-  border-top: none;
-  color: #000;
-  cursor: default;
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 10px;
+	text-align: left;
+	clear: both;
+	padding: 4px;
+	border: 1px solid #FAEFEB;
+	border-top: none;
+	color: #000;
+	cursor: default;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
 }
 
 #portletPages div.portlet-content-minimized {
-  clear: both;
+	clear: both;
 }
 
 /*- [ portlet END ] --------------------------- */
-
-/**** Composant Blog *****/
+	/**** Composant Blog *****/
 #blog {
-	text-align:center;
-}
-#blog #blogContainer {
-	/*width:750px; */
-	margin: 0 auto;
-	text-align:left;
-}
-#blog #blogContainer #bandeau {
-  background-image: url(/silverpeas/blog/jsp/icons/fondBandeau.jpg);
-  background-repeat: repeat-x;
-  height: 90px;
-  text-align:center;
-  line-height: 90px;
-  margin-top:10px;
-}
-#blog #blogContainer #bandeau a {
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-}
-#blog #blogContainer #backHomeBlog {
-	/** text-align: center; **/
+	text-align: center;
 }
 
-#blog #blogContainer #postsList, #blog #blogContainer #viewPost {
-	width:70%;
-	padding:10px;
-	float: left;	
+#blog #blogContainer { /*width:750px; */
+	margin: 0 auto;
+	text-align: left;
+}
+
+#blog #blogContainer #bandeau {
+	background-image: url(/silverpeas/blog/jsp/icons/fondBandeau.jpg);
+	background-repeat: repeat-x;
+	height: 90px;
+	text-align: center;
+	line-height: 90px;
+	margin-top: 10px;
+}
+
+#blog #blogContainer #bandeau a {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+}
+
+#blog #blogContainer #backHomeBlog { /** text-align: center; **/
+	
+}
+
+#blog #blogContainer #postsList,#blog #blogContainer #viewPost {
+	width: 70%;
+	padding: 10px;
+	float: left;
 }
 
 #blog #blogContainer #postsList div.post {
-	margin-bottom:15px;
+	margin-bottom: 15px;
 }
+
 #blog #blogContainer #navBlog {
-	width:180px;
+	width: 180px;
 	float: right;
-	margin-bottom:15px;
+	margin-bottom: 15px;
 	margin-right: 15px;
 }
 
 #blog #blogContainer #footer {
-	clear:both;
+	clear: both;
 }
 
-#blog .versCommentaires, #blog .categoryTicket, #blog .creatorTicket {
-  color: #999999;
+#blog .versCommentaires,#blog .categoryTicket,#blog .creatorTicket {
+	color: #999999;
 }
 
 #blog .comment {
- color: black;
+	color: black;
 }
 
 #blog .versTopic {
-  color: #999999;
+	color: #999999;
 }
 
 #blog #operationBlog a {
@@ -1551,171 +1874,181 @@ td.boxed_Domain a:hover
 }
 
 #blog .separateur {
-  background-image: url(/silverpeas/blog/jsp/icons/separateur.gif);
-  background-repeat: repeat-x;
-  height: 20px;
+	background-image: url(/silverpeas/blog/jsp/icons/separateur.gif);
+	background-repeat: repeat-x;
+	height: 20px;
 }
+
 #blog .zoneRecherche {
-  font-size: 12px;
-  color: #999999;
+	font-size: 12px;
+	color: #999999;
 }
+
 #blog .inputRecherche {
-  height: 20px;
-  width: 140px;
+	height: 20px;
+	width: 140px;
 }
+
 #blog .okRecherche {
-  font-size: 14px;
-  font-weight: bolder;
+	font-size: 14px;
+	font-weight: bolder;
 }
+
 #blog .titreRecherche {
-  font-size: 12px;
-  font-weight: bold;
-  color: #999999;
+	font-size: 12px;
+	font-weight: bold;
+	color: #999999;
 }
+
 #blog #titreTopics {
-  font-size: 16px;
-  font-weight: bolder;
-  color: #666666;
-  background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
-  background-repeat: repeat-x;
-  height: 20px;
+	font-size: 16px;
+	font-weight: bolder;
+	color: #666666;
+	background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
+	background-repeat: repeat-x;
+	height: 20px;
 }
 
 #blog #titreTopics a {
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: bolder;
-  color: #666666;
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: bolder;
+	color: #666666;
 }
 
 #blog #topics a {
-  color: #999999;
+	color: #999999;
 }
 
 #blog .titreTicket {
-  width:550px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #666666;
+	width: 550px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #666666;
 }
+
 #blog .infoTicket {
-  font-size: 12px;
-  font-weight: bold;
-  color: #999999;
+	font-size: 12px;
+	font-weight: bold;
+	color: #999999;
 }
 
 #blog #titreArchive {
-  font-size: 16px;
-  font-weight: bolder;
-  color: #666666;
-  background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
-  background-repeat: repeat-x;
-  height: 20px;
+	font-size: 16px;
+	font-weight: bolder;
+	color: #666666;
+	background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
+	background-repeat: repeat-x;
+	height: 20px;
 }
+
 #blog #archives a {
-  color: #999999;
+	color: #999999;
 }
 
 #blog #titreLiens {
-  font-size: 16px;
-  font-weight: bolder;
-  color: #666666;
-  background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
-  background-repeat: repeat-x;
-  height: 20px;
+	font-size: 16px;
+	font-weight: bolder;
+	color: #666666;
+	background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
+	background-repeat: repeat-x;
+	height: 20px;
 }
+
 #blog #titreLiens a {
-  text-decoration : none;
-  font-size: 16px;
-  font-weight: bolder;
-  color: #666666;
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: bolder;
+	color: #666666;
 }
+
 #blog #liens a {
-  color: #999999;
+	color: #999999;
 }
 
 /**** Composant Classifieds *****/
 #classifieds {
-  text-align: center;
+	text-align: center;
 }
 
 #classifieds #search {
-  width: 50%;
-  margin: auto;
+	width: 50%;
+	margin: auto;
 }
 
 #classifieds #categories {
-  padding-top: 20px;
-  float: left;
+	padding-top: 20px;
+	float: left;
 }
 
 #classifieds #categories #categoryleft {
-  width: 47%;
-  float: left;
-  margin-left: 10px;
-  margin-bottom: 10px;
-  position: relative;
-  
-  background-color:#FFFFFF;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-  background-position:right top;
-  background-repeat:no-repeat;
-  border:1px solid #CCCCCC;
+	width: 47%;
+	float: left;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	position: relative;
+	background-color: #FFFFFF;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+	background-position: right top;
+	background-repeat: no-repeat;
+	border: 1px solid #CCCCCC;
 }
 
 #classifieds #categories #categoryright {
-  width: 47%;
-  float: right;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  position: relative;
-  
-  background-color:#FFFFFF;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-  background-position:right top;
-  background-repeat:no-repeat;
-  border:1px solid #CCCCCC;
+	width: 47%;
+	float: right;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	position: relative;
+	background-color: #FFFFFF;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+	background-position: right top;
+	background-repeat: no-repeat;
+	border: 1px solid #CCCCCC;
 }
 
 #classifieds #categories #categoryTitle {
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
-  background-repeat:repeat-x;
-  color:#FFFFFF;
-  height:20px;
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding-top: 3px;
-  position: relative;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+	background-repeat: repeat-x;
+	color: #FFFFFF;
+	height: 20px;
+	text-align: center;
+	font-weight: bold;
+	text-transform: uppercase;
+	padding-top: 3px;
+	position: relative;
 }
 
 #classifieds #categories #categoryContent {
-  height: 70px;
-  position: relative;
+	height: 70px;
+	position: relative;
 }
 
 #classifieds #categories #newClassified {
-  float: right;
-  padding: 5px;
+	float: right;
+	padding: 5px;
 }
 
 #classifieds #categories #categoryContent ul {
-  height: 70px;
-  /*list-style-type: disc;*/
-  margin-left: 10px;
-  list-style-type: inherit;
-  margin-top: 5px;
+	height: 70px;
+	/*list-style-type: disc;*/
+	margin-left: 10px;
+	list-style-type: inherit;
+	margin-top: 5px;
 }
 
 #classifieds #categories #categoryContent .emptyCategory {
-  float:left;
-  padding:5px;
+	float: left;
+	padding: 5px;
 }
 
 #classifieds #infos {
-  width: 96%;
-  margin-left: 10px;
-  text-align: center;
-  float: left;
-  padding: 10px;
+	width: 96%;
+	margin-left: 10px;
+	text-align: center;
+	float: left;
+	padding: 10px;
 }
