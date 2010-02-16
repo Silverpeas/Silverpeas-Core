@@ -25,6 +25,7 @@ package com.silverpeas.form;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,11 +37,12 @@ import org.apache.commons.fileupload.FileItem;
 import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+
+//import com.stratelia.webactiv.util.ResourceLocator;
 
 public abstract class AbstractForm implements Form {
 
-  private List fieldTemplates = new ArrayList();
+  private List<FieldTemplate> fieldTemplates = new ArrayList<FieldTemplate>();
   private String title = "";
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
@@ -57,7 +59,7 @@ public abstract class AbstractForm implements Form {
     }
   }
 
-  public List getFieldTemplates() {
+  public List<FieldTemplate> getFieldTemplates() {
     return fieldTemplates;
   }
 
@@ -84,12 +86,12 @@ public abstract class AbstractForm implements Form {
    * </UL>
    */
   @Override
-  public void displayScripts(JspWriter jw, PagesContext PagesContext) {
+  public void displayScripts(JspWriter jw, PagesContext pagesContext) {
     try {
-      String language = PagesContext.getLanguage();
+      String language = pagesContext.getLanguage();
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
-      Iterator itFields = null;
+      Iterator<FieldTemplate> itFields = null;
 
       if (fieldTemplates != null) {
         itFields = this.fieldTemplates.iterator();
@@ -97,15 +99,11 @@ public abstract class AbstractForm implements Form {
 
       FieldTemplate fieldTemplate = null;
       if (itFields != null && itFields.hasNext()) {
-        // while (itFields.hasNext())
-        // {
         fieldTemplate = (FieldTemplate) itFields.next();
 
-        // out.println("<script type=\"text/javascript\" src=\"/weblib/xmlforms/"+fieldTemplate.getTemplateName()+"/"+fieldTemplate.getFieldName()+".js\"></script>");
         out.println(
             "<script type=\"text/javascript\" src=\"/weblib/xmlforms/" +
             fieldTemplate.getTemplateName() + ".js\"></script>");
-        // }
       }
 
       out.println(Util.getJavascriptIncludes());
@@ -128,7 +126,7 @@ public abstract class AbstractForm implements Form {
         itFields = this.fieldTemplates.iterator();
       }
       if ((itFields != null) && (itFields.hasNext())) {
-        PagesContext pc = new PagesContext(PagesContext);
+        PagesContext pc = new PagesContext(pagesContext);
         pc.incCurrentFieldIndex(1);
         while (itFields.hasNext()) {
           fieldTemplate = (FieldTemplate) itFields.next();
@@ -194,7 +192,7 @@ public abstract class AbstractForm implements Form {
   }
 
   @Override
-  public abstract void display(JspWriter out, PagesContext PagesContext, DataRecord record);
+  public abstract void display(JspWriter out, PagesContext pagesContext, DataRecord record);
 
   /**
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
@@ -203,9 +201,9 @@ public abstract class AbstractForm implements Form {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(List items, DataRecord record, PagesContext pagesContext) {
+  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     List<String> attachmentIds = new ArrayList<String>();
-    Iterator itFields = null;
+    Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null) {
       itFields = this.fieldTemplates.iterator();
     }
@@ -213,7 +211,7 @@ public abstract class AbstractForm implements Form {
       FieldDisplayer fieldDisplayer = null;
       FieldTemplate fieldTemplate = null;
       while (itFields.hasNext()) {
-        fieldTemplate = (FieldTemplate) itFields.next();
+        fieldTemplate = itFields.next();
         if (fieldTemplate != null) {
           String fieldName = fieldTemplate.getFieldName();
           String fieldType = fieldTemplate.getTypeName();
@@ -224,9 +222,8 @@ public abstract class AbstractForm implements Form {
             }
             fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
-              attachmentIds.addAll(fieldDisplayer.update((List<FileItem>) items, record
-                  .getField(fieldName),
-                  fieldTemplate, pagesContext));
+              attachmentIds.addAll(fieldDisplayer.update(items, record
+                  .getField(fieldName), fieldTemplate, pagesContext));
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
@@ -240,9 +237,9 @@ public abstract class AbstractForm implements Form {
   }
 
   @Override
-  public boolean isEmpty(List items, DataRecord record, PagesContext pagesContext) {
+  public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     boolean isEmpty = true;
-    Iterator itFields = null;
+    Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null) {
       itFields = this.fieldTemplates.iterator();
     }
@@ -268,7 +265,7 @@ public abstract class AbstractForm implements Form {
               if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
                 isEmpty = false;
               } else {
-                String itemValue = getParameterValue(items, itemName);
+                String itemValue = getParameterValue(items, itemName, pagesContext.getEncoding());
                 isEmpty = !StringUtil.isDefined(itemValue);
               }
             }
@@ -283,50 +280,39 @@ public abstract class AbstractForm implements Form {
     return isEmpty;
   }
 
-  private boolean isInteger(String s) {
-    try {
-      Integer.parseInt(s);
-    } catch (NumberFormatException e) {
-      return false;
-    }
-    return true;
-  }
+  /*
+   * private boolean isInteger(String s) { try { Integer.parseInt(s); } catch (NumberFormatException
+   * e) { return false; } return true; }
+   */
 
-  private String getParameterValue(List items, String parameterName) {
+  private String getParameterValue(List<FileItem> items, String parameterName, String encoding)
+      throws UnsupportedEncodingException {
     SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_ENTER_METHOD",
         "parameterName = " + parameterName);
     FileItem item = getParameter(items, parameterName);
     if (item != null && item.isFormField()) {
       SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_EXIT_METHOD",
           "parameterValue = " + item.getString());
-      return item.getString();
+      return item.getString(encoding);
     }
     return null;
   }
 
-  private String getParameterValues(List items, String parameterName) {
-    SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
-        "parameterName = " + parameterName);
-    String values = "";
-    List params = getParameters(items, parameterName);
-    FileItem item = null;
-    for (int p = 0; p < params.size(); p++) {
-      item = (FileItem) params.get(p);
-      values += item.getString();
-      if (p < params.size() - 1) {
-        values += "##";
-      }
-    }
-    SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_EXIT_METHOD",
-        "parameterValue = " + values);
-    return values;
-  }
+  /*
+   * private String getParameterValues(List<FileItem> items, String parameterName) {
+   * SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
+   * "parameterName = " + parameterName); String values = ""; List<FileItem> params =
+   * getParameters(items, parameterName); FileItem item = null; for (int p = 0; p < params.size();
+   * p++) { item = params.get(p); values += item.getString(); if (p < params.size() - 1) { values +=
+   * "##"; } } SilverTrace.debug("form", "AbstractForm.getParameterValues",
+   * "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + values); return values; }
+   */
 
-  private FileItem getParameter(List items, String parameterName) {
-    Iterator iter = items.iterator();
+  private FileItem getParameter(List<FileItem> items, String parameterName) {
+    Iterator<FileItem> iter = items.iterator();
     FileItem item = null;
     while (iter.hasNext()) {
-      item = (FileItem) iter.next();
+      item = iter.next();
       if (parameterName.equals(item.getFieldName())) {
         return item;
       }
@@ -335,22 +321,16 @@ public abstract class AbstractForm implements Form {
   }
 
   // for multi-values parameter (like checkbox)
-  private List getParameters(List items, String parameterName) {
-    List parameters = new ArrayList();
-    Iterator iter = items.iterator();
-    FileItem item = null;
-    while (iter.hasNext()) {
-      item = (FileItem) iter.next();
-      if (parameterName.equals(item.getFieldName())) {
-        parameters.add(item);
-      }
-    }
-    return parameters;
-  }
+  /*
+   * private List<FileItem> getParameters(List<FileItem> items, String parameterName) {
+   * List<FileItem> parameters = new ArrayList<FileItem>(); Iterator<FileItem> iter =
+   * items.iterator(); FileItem item = null; while (iter.hasNext()) { item = iter.next(); if
+   * (parameterName.equals(item.getFieldName())) { parameters.add(item); } } return parameters; }
+   */
 
-  private boolean runOnUnix() {
-    ResourceLocator settings =
-        new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-    return settings.getBoolean("runOnSolaris", false);
-  }
+  /*
+   * private boolean runOnUnix() { ResourceLocator settings = new
+   * ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", ""); return
+   * settings.getBoolean("runOnSolaris", false); }
+   */
 }

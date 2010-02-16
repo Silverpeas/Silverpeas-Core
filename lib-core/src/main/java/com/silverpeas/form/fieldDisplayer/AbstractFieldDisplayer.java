@@ -48,7 +48,9 @@ public abstract class AbstractFieldDisplayer implements FieldDisplayer {
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String value = FileUploadUtil.getParameter(items, template.getFieldName());
+    String value =
+        FileUploadUtil
+            .getParameter(items, template.getFieldName(), null, pageContext.getEncoding());
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         !StringUtil.isDefined(value)) {
       return new ArrayList<String>();

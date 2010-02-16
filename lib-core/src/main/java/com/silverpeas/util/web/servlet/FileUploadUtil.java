@@ -25,6 +25,7 @@ package com.silverpeas.util.web.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,11 +42,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+
 /**
  * Utility class for file uploading.
  * @author ehugonnet
  */
 public class FileUploadUtil {
+
+  public static final String DEFAULT_ENCODING = "ISO-8859-1";
 
   public static final boolean isRequestMultipart(HttpServletRequest request) {
     return ServletFileUpload.isMultipartContent(request);
@@ -92,18 +96,37 @@ public class FileUploadUtil {
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
+   * @param encoding.
    * @return the parameter value from the list of FileItems. Returns the defaultValue if the
    * parameter is not found.
    */
-  public static String getParameter(List<FileItem> items, String parameterName, String defaultValue) {
+  public static String getParameter(List<FileItem> items, String parameterName,
+      String defaultValue, String encoding) {
     Iterator<FileItem> iter = items.iterator();
     while (iter.hasNext()) {
       FileItem item = iter.next();
       if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
+        try {
+          return item.getString(encoding);
+        } catch (UnsupportedEncodingException e) {
+          return item.getString();
+        }
       }
     }
     return defaultValue;
+  }
+
+  /**
+   * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
+   * is not found.
+   * @param items the items resulting from parsing the request.
+   * @param parameterName
+   * @param defaultValue the value to be returned if the parameter is not found.
+   * @return the parameter value from the list of FileItems. Returns the defaultValue if the
+   * parameter is not found.
+   */
+  public static String getParameter(List<FileItem> items, String parameterName, String defaultValue) {
+    return getParameter(items, parameterName, defaultValue, DEFAULT_ENCODING);
   }
 
   /**

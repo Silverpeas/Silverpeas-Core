@@ -27,6 +27,8 @@ import java.util.List;
 
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.fileupload.FileItem;
+
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
  * retrieve via HTTP any updated values.
@@ -45,7 +47,7 @@ public interface Form {
    * <LI>a field has not the required type.
    * </UL>
    */
-  public void displayScripts(JspWriter out, PagesContext PagesContext);
+  public void displayScripts(JspWriter out, PagesContext pagesContext);
 
   /**
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
@@ -56,7 +58,7 @@ public interface Form {
    * <LI>a field has not the required type.
    * </UL>
    */
-  public void display(JspWriter out, PagesContext PagesContext,
+  public void display(JspWriter out, PagesContext pagesContext,
       DataRecord record) throws FormException;
 
   /**
@@ -66,8 +68,8 @@ public interface Form {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(List items,
-      DataRecord record, PagesContext PagesContext)
+  public List<String> update(List<FileItem> items,
+      DataRecord record, PagesContext pagesContext)
       throws FormException;
 
   /**
@@ -77,5 +79,5 @@ public interface Form {
 
   public String toString(PagesContext pagesContext, DataRecord record);
 
-  public boolean isEmpty(List items, DataRecord record, PagesContext pagesContext);
+  public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);
 }
