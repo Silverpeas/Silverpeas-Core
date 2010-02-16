@@ -201,7 +201,7 @@ public abstract class AbstractForm implements Form {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
+  public List<String> update(List items, DataRecord record, PagesContext pagesContext) {
     List<String> attachmentIds = new ArrayList<String>();
     Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null) {
