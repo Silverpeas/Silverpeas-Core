@@ -31,11 +31,13 @@ BODY {
 	scrollbar-darkshadow-color: #949FB2;
 	scrollbar-track-color: #EDEDED;
 	scrollbar-arrow-color: #AFB8C9;
+	font-family: "Verdana", "Arial", sans-serif;
+	font-size: 10px;
 	margin: 0px;
 }
 
 IMG {
-	border: 0
+	border: 0px;
 }
 
 TD,div {
