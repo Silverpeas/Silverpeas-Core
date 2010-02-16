@@ -27,6 +27,7 @@
 <%
     Board board = gef.getBoard();
 
+	Domain 		domObject 	= (Domain)request.getAttribute("domainObject");
     UserFull 	userObject 	= (UserFull)request.getAttribute("userObject");
     String 		action 		= (String)request.getAttribute("action");
     String 		groupsPath 	= (String)request.getAttribute("groupsPath");
@@ -44,7 +45,7 @@
     String currentUserAccessLevel = currentUser.getAccessLevel();
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(groupsPath);
 %>
 <html>

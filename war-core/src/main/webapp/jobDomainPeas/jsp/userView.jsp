@@ -27,12 +27,13 @@
 <%
     Board board = gef.getBoard();
 
+	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
     UserFull	userObject 		= (UserFull)request.getAttribute("UserFull");
-    
+      	
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     
-    if (request.getAttribute("domainName") != null)
-        browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")));
+    if (domObject != null)
+        browseBar.setComponentName(getDomainLabel(domObject, resource));
 %>
 <html>
 <head>

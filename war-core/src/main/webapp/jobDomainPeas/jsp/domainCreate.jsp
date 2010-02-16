@@ -38,7 +38,7 @@
     }
     else
     {
-        browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+        browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
         browseBar.setPath(resource.getString("JDP.domainUpdate") + "...");
     }
 

@@ -25,10 +25,12 @@
 --%>
 <%@ include file="check.jsp" %>
 <%
+	Domain domObject = (Domain)request.getAttribute("domainObject");
+
     Board board = gef.getBoard();
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")));
+    browseBar.setComponentName(getDomainLabel(domObject, resource));
     browseBar.setPath(resource.getString("JDP.domainSynchroReport") + "...");
 %>
 <html>

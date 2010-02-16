@@ -27,6 +27,7 @@
 <%
     Board board = gef.getBoard();
 
+	Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
     String 	groupsPath 				= (String)request.getAttribute("groupsPath");
     boolean isDomainRW 				= ((Boolean)request.getAttribute("isDomainRW")).booleanValue();
@@ -38,10 +39,10 @@
     boolean showTabs		= false;
     
     String thisGroupId = grObject.getId();
-
+    
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
 
-    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     if (groupsPath != null)
         browseBar.setPath(groupsPath);
     
@@ -166,48 +167,12 @@ out.println(board.printAfter());
 %>
 <br>	
 <%
-    boolean[] pageNavigation = (boolean[])request.getAttribute("pageNavigation");
-	boolean toPrintBackGroup = pageNavigation[0];
-	boolean toPrintNextGroup = pageNavigation[1];
-	boolean toPrintBackUser = pageNavigation[2];
-	boolean toPrintNextUser = pageNavigation[3];
-
-    if (toPrintBackGroup || toPrintNextGroup)
-    {
-%>
-	<table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-		<tr align="center" class="buttonColorDark">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-		<tr align="center" class="intfdcolor4">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-		<tr align="center"> 
-			<td class="ArrayNavigation" height="20">
-		<%
-		if(toPrintBackGroup)
-			out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"groupToBackGroup\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-		if(toPrintNextGroup)
-			out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"groupToNextGroup\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-		%>	
-			</td>
-		</tr>
-		<tr align="center" class="buttonColorDark">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-		<tr align="center" class="intfdcolor1">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-	</table>
-<%
-    }
-
 	if (!grObject.isSynchronized())
 	{
 		ArrayPane arrayPane = gef.getArrayPane("groupe", "groupContent.jsp", request, session);
 		Group[] subGroups = (Group[])request.getAttribute("subGroups");
 	
-		arrayPane.setVisibleLineNumber(-1);
+		arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
 		//arrayPane.setTitle(resource.getString("JDP.groups"));
 
 		arrayPane.addArrayColumn("&nbsp;");
@@ -242,47 +207,16 @@ out.println(board.printAfter());
 	}
 
 	out.println("<BR/>");
-	
-	if (toPrintBackUser || toPrintNextUser)
-    {
-%>
-	<table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-		<tr align="center" class="buttonColorDark">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-		<tr align="center" class="intfdcolor4">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-		<tr align="center"> 
-			<td class="ArrayNavigation" height="20">
-		<%
-		if(toPrintBackUser)
-			out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"groupToBackUser\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-		if(toPrintNextUser)
-			out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"groupToNextUser\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-		%>	
-			</td>
-		</tr>
-		<tr align="center" class="buttonColorDark">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-		<tr align="center" class="intfdcolor1">
-			<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-		</tr>
-	</table>
-<%
-    }
 
-  ArrayPane arrayPaneUser = gef.getArrayPane("groupe", "groupContent.jsp", request, session);
+  ArrayPane arrayPaneUser = gef.getArrayPane("users", "groupContent.jsp", request, session);
   String[][] subUsers = (String[][])request.getAttribute("subUsers");
 
-  arrayPaneUser.setVisibleLineNumber(-1);
+  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
 //  arrayPaneUser.setTitle(resource.getString("GML.users"));
 
   arrayPaneUser.addArrayColumn("&nbsp;");
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-//  arrayPaneUser.addArrayColumn(resource.getString("GML.operation"));
   arrayPaneUser.setSortable(false);
 
   if (subUsers != null)
@@ -296,7 +230,6 @@ out.println(board.printAfter());
           arrayLineUser.addArrayCellIconPane(iconPane1User);
           arrayLineUser.addArrayCellLink(subUsers[i][1], (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + subUsers[i][0]);
           arrayLineUser.addArrayCellText(subUsers[i][2]);
-//          arrayLineUser.addArrayCellText("<input type=checkbox name=UserChecked value='"+subUsers[i][0]+"'>");
         }
   } 	
   out.println(arrayPaneUser.print());

@@ -36,10 +36,9 @@
     boolean isUserAddingAllowed = ((Boolean)request.getAttribute("isUserAddingAllowedForGroupManager")).booleanValue();
 
 	boolean isDomainSql 	= "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
-	String  thisDomainId 	= domObject.getId();
-	
+		
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 	
     // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
@@ -143,7 +142,7 @@ function DomainSQLSynchro(){
 
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<BODY>
 <% 
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -161,21 +160,18 @@ out.println(board.printBefore());
 						 }
 					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("GML.nom") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getName())%></td>
+		<td align=left valign="baseline" width="100%"><%=getDomainLabel(domObject, resource)%></td>
 	</tr>
 	<tr>
 	    <td></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("GML.description") %> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%></td>
 	</tr>
+	<% if (!"-1".equals(domObject.getId())) { %>
 	<tr>
 	    <td></td>
-		<td class="textePetitBold" nowrap>
-			<%=resource.getString("JDP.class") %> :
-		</td>
-		<td align=left valign="baseline" width="100%">
-			<%=EncodeHelper.javaStringToHtmlString(domObject.getDriverClassName())%>
-		</td>
+		<td class="textePetitBold" nowrap><%=resource.getString("JDP.class") %> :</td>
+		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getDriverClassName())%></td>
 	</tr>
 	<tr>
 		<td></td>
@@ -192,53 +188,17 @@ out.println(board.printBefore());
 		<td class="textePetitBold" nowrap><%=resource.getString("JDP.silverpeasServerURL") %> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%></td>
 	</tr>
+	<% } %>
 </table>
 <%
 out.println(board.printAfter());
 %>
 <br>
 <%
-    boolean[] pageNavigation = (boolean[])request.getAttribute("pageNavigation");
-	boolean toPrintBackGroup = pageNavigation[0];
-	boolean toPrintNextGroup = pageNavigation[1];
-	boolean toPrintBackUser = pageNavigation[2];
-	boolean toPrintNextUser = pageNavigation[3];
-
-    if (toPrintBackGroup || toPrintNextGroup)
-    {
-%>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor4">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center"> 
-		<td class="ArrayNavigation">
-	<%
-    if(toPrintBackGroup)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToBackGroup\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintNextGroup)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToNextGroup\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-	%>	
-		</td>
-	</tr>
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor1">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-</table>
-<%
-    }
-%>
-<%
   ArrayPane arrayPane = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
 
-  arrayPane.setVisibleLineNumber(-1);
+  arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
   //arrayPane.setTitle(resource.getString("JDP.groups"));
 
   arrayPane.addArrayColumn("&nbsp;");
@@ -271,83 +231,18 @@ out.println(board.printAfter());
   } 	
   out.println(arrayPane.print());
 %>
-<%
-	if (toPrintBackGroup || toPrintNextGroup)
-    {
-%>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor4">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center"> 
-		<td class="ArrayNavigation">
-	<%
-	if(toPrintBackGroup)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToBackGroup\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintNextGroup)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToNextGroup\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-	%>	
-		</td>
-	</tr>
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor1">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-</table>
-<%
-    }
-%>
-
 <br>
 
 <%
-	if (toPrintBackUser || toPrintNextUser)
-    {
-%>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor4">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center"> 
-		<td class="ArrayNavigation">
-	<%
-	if(toPrintBackUser)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToBackUser\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintNextUser)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToNextUser\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-	%>	
-		</td>
-	</tr>
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor1">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-</table>
-<%
-    }
-%>
-
-<%
-  ArrayPane arrayPaneUser = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
+  ArrayPane arrayPaneUser = gef.getArrayPane("users", "domainContent.jsp", request, session);
   String[][] subUsers = (String[][])request.getAttribute("subUsers");
 
-  arrayPaneUser.setVisibleLineNumber(-1);
+  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
   //arrayPaneUser.setTitle(resource.getString("GML.users"));
 
   arrayPaneUser.addArrayColumn("&nbsp;");
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-//  arrayPaneUser.addArrayColumn(resource.getString("GML.operation"));
   arrayPaneUser.setSortable(false);
 
   if (subUsers != null)
@@ -361,42 +256,11 @@ out.println(board.printAfter());
           arrayLineUser.addArrayCellIconPane(iconPane1User);
           arrayLineUser.addArrayCellLink(subUsers[i][1], (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + subUsers[i][0]);
           arrayLineUser.addArrayCellText(subUsers[i][2]);
-  //        arrayLineUser.addArrayCellText("<input type=checkbox name=UserChecked value='"+subUsers[i][0]+"'>");
         }
   } 	
   out.println(arrayPaneUser.print());
 %>
-<%
-	if (toPrintBackUser || toPrintNextUser)
-    {
-%>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor4">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center"> 
-		<td class="ArrayNavigation">
-	<%
-	if(toPrintBackGroup)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToBackUser\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintNextGroup)
-		out.println("<a href=\""+(String)request.getAttribute("myComponentURL")+"domainToNextUser\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-	%>	
-		</td>
-	</tr>
-	<tr align="center" class="buttonColorDark">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-	<tr align="center" class="intfdcolor1">
-		<td><img src="<%=resource.getIcon("JDP.px")%>" width="1" height="1"></td>
-	</tr>
-</table>
-<%
-    }
-%>
+
 </center>
 <% 
 out.println(frame.printAfter());

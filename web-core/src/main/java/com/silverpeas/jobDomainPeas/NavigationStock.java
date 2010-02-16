@@ -130,9 +130,11 @@ public class NavigationStock extends Object {
   public UserDetail[] getUserPage() {
     UserDetail[] valret = null;
     int i;
+    
+    return m_SubUsers;
 
     // Simple case : less than a page to display or display all
-    if ((JobDomainSettings.m_UsersByPage == -1)
+    /*if ((JobDomainSettings.m_UsersByPage == -1)
         || (m_SubUsers.length <= JobDomainSettings.m_UsersByPage)) {
       return m_SubUsers;
     }
@@ -144,7 +146,7 @@ public class NavigationStock extends Object {
     for (i = 0; i < valret.length; i++) {
       valret[i] = m_SubUsers[m_FirstDisplayedUser + i];
     }
-    return valret;
+    return valret;*/
   }
 
   // SubGroups functions
@@ -184,9 +186,11 @@ public class NavigationStock extends Object {
   public Group[] getGroupPage() {
     Group[] valret = null;
     int i;
+    
+    return m_SubGroups;
 
     // Simple case : less than a page to display or display all
-    if ((JobDomainSettings.m_GroupsByPage == -1)
+    /*if ((JobDomainSettings.m_GroupsByPage == -1)
         || (m_SubGroups.length <= JobDomainSettings.m_GroupsByPage)) {
       return m_SubGroups;
     }
@@ -198,6 +202,6 @@ public class NavigationStock extends Object {
     for (i = 0; i < valret.length; i++) {
       valret[i] = m_SubGroups[m_FirstDisplayedGroup + i];
     }
-    return valret;
+    return valret;*/
   }
 }

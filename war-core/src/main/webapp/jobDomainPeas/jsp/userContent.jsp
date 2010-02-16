@@ -27,6 +27,7 @@
 <%
     Board board = gef.getBoard();
 
+	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
     UserFull	userObject 		= (UserFull)request.getAttribute("userObject");
     String  	groupsPath 		= (String)request.getAttribute("groupsPath");
     boolean 	isDomainRW 		= ((Boolean)request.getAttribute("isDomainRW")).booleanValue();
@@ -37,12 +38,12 @@
     boolean		isUserManageableByGroupManager	= ((Boolean)request.getAttribute("userManageableByGroupManager")).booleanValue();
     
     String     	thisUserId 		= userObject.getId();
-
+    
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     browseBar.setComponentName("nom du user");
    
-    if (request.getAttribute("domainName") != null && request.getAttribute("domainURL") != null)
-        browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    if (domObject != null)
+        browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
     if (groupsPath != null && groupsPath.length() > 0)
         browseBar.setPath(groupsPath);

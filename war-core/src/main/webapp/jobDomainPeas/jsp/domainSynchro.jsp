@@ -30,7 +30,7 @@
     Domain domObject = (Domain)request.getAttribute("domainObject");
 
     browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(resource.getString("JDP.domainSynchro") + "...");
 %>
 <html>
@@ -52,7 +52,7 @@ out.println(board.printBefore());
 <script language='JavaScript'>
 function ValidForm(){
 	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=' + document.domainForm.IdTraceLevel.value, 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
-	document.domainForm.submit()
+	document.domainForm.submit();
 }
 </script>
 <form name="domainForm" action="domainSynchro" method="POST">

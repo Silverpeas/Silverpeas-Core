@@ -35,7 +35,7 @@
     {
 		browseBar.setComponentName(resource.getString("JDP.domainSQLAdd") + "...");
 	} else {
-	 	browseBar.setComponentName(EncodeHelper.javaStringToHtmlString((String)request.getAttribute("domainName")), (String)request.getAttribute("domainURL"));
+	 	browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
         browseBar.setPath(resource.getString("JDP.domainSQLUpdate") + "...");
 	}
 
@@ -53,10 +53,14 @@ function SubmitWithVerif(verifParams)
 
     if (verifParams)
     {
-         if (isWhitespace(namefld)) 
+         if (isWhitespace(namefld))
+         {
             errorMsg = "<% out.print(resource.getString("JDP.missingFieldStart")+resource.getString("JDP.name")+resource.getString("JDP.missingFieldEnd")); %>";
-         if (isWhitespace(urlfld)) 
+         }
+         if (isWhitespace(urlfld))
+         { 
             errorMsg = "<% out.print(resource.getString("JDP.missingFieldStart")+resource.getString("JDP.silverpeasServerURL")+resource.getString("JDP.missingFieldEnd")); %>";
+         }
     }
     if (errorMsg == "")
     {

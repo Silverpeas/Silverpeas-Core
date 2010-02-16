@@ -64,7 +64,20 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.silverpeas.jobDomainPeas.JobDomainSettings"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
+
+<%!
+String getDomainLabel(Domain domObject, ResourcesWrapper resource)
+{
+  	String domName = domObject.getName();
+	if ("-1".equals(domObject.getId()))
+	{
+		domName = resource.getString("JDP.domainMixt");  
+	}
+	return EncodeHelper.javaStringToHtmlString(domName);
+}
+%>
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");

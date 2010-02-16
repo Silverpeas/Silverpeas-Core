@@ -282,8 +282,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           UserFull user = jobDomainSC.getUser(specificId);
 
           request.setAttribute("UserFull", user);
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
 
           destination = "userView.jsp";
         } else if (function.startsWith("userSynchro")) {
@@ -322,14 +320,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.startsWith("groupSet")) {
           jobDomainSC.returnIntoGroup(null);
           jobDomainSC.goIntoGroup(request.getParameter("Idgroup"));
-        } else if (function.startsWith("groupToBackGroup")) {
-          jobDomainSC.previousGroupPage(true);
-        } else if (function.startsWith("groupToNextGroup")) {
-          jobDomainSC.nextGroupPage(true);
-        } else if (function.startsWith("groupToBackUser")) {
-          jobDomainSC.previousUserPage(true);
-        } else if (function.startsWith("groupToNextUser")) {
-          jobDomainSC.nextUserPage(true);
         } // Operation functions
         else if (function.startsWith("groupCreate")) {
           bHaveToRefreshDomain = jobDomainSC.createGroup(request
@@ -412,14 +402,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else {
           if (function.startsWith("domainContent")) {
             jobDomainSC.returnIntoGroup(null);
-          } else if (function.startsWith("domainToBackGroup")) {
-            jobDomainSC.previousGroupPage(false);
-          } else if (function.startsWith("domainToNextGroup")) {
-            jobDomainSC.nextGroupPage(false);
-          } else if (function.startsWith("domainToBackUser")) {
-            jobDomainSC.previousUserPage(false);
-          } else if (function.startsWith("domainToNextUser")) {
-            jobDomainSC.nextUserPage(false);
           } // Operation functions
           else if (function.startsWith("domainCreate")) {
             String newDomainId = jobDomainSC.createDomain(EncodeHelper
@@ -497,12 +479,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
                   "root.MSG_GEN_PARAM_VALUE", "SynchroReport="
                   + strSynchroReport);
               request.setAttribute("SynchroReport", strSynchroReport);
-              request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-                  .getName());
-              request.setAttribute("domainURL", (String) request
-                  .getAttribute("myComponentURL")
-                  + "domainContent?Iddomain="
-                  + jobDomainSC.getTargetDomain().getId());
               destination = "domainSynchroReport.jsp";
             }
           } else if (function.startsWith("domainSynchro")) {
@@ -533,12 +509,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           newGroup.setSuperGroupId(request.getParameter("Idgroup"));
           request.setAttribute("groupObject", newGroup);
           request.setAttribute("action", "groupCreate");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.groupAdd")
@@ -547,24 +517,12 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.startsWith("displayGroupModify")) {
           request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
           request.setAttribute("action", "groupModify");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.groupUpdate")
               + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupImport")) {
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.groupImport")
@@ -592,12 +550,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
           request.setAttribute("userObject", newUser);
           request.setAttribute("action", "userCreate");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.userAdd")
@@ -618,12 +570,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUsersCsvImport")) {
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.csvImport")
@@ -637,12 +583,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userModify");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.userUpdate")
@@ -659,12 +599,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.startsWith("displayUserMS")) {
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userMS");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.userUpdate")
@@ -683,12 +617,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
               .getListSelectedUsers());
           request.setAttribute("FirstUserIndex", new Integer(jobDomainSC
               .getIndexOfFirstItemToDisplay()));
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
               .getString("JDP.userImport")
@@ -712,33 +640,12 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           request.setAttribute("action", "domainSQLCreate");
           destination = "domainSQLCreate.jsp";
         } else if (function.startsWith("displayDomainModify")) {
-          request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
           request.setAttribute("action", "domainModify");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           destination = "domainCreate.jsp";
         } else if (function.startsWith("displayDomainSQLModify")) {
-          request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
           request.setAttribute("action", "domainSQLModify");
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           destination = "domainSQLCreate.jsp";
         } else if (function.startsWith("displayDomainSynchro")) {
-          request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           destination = "domainSynchro.jsp";
         } else if (function.startsWith("displayDynamicSynchroReport")) {
           SynchroReport.setTraceLevel(Integer.parseInt(request
@@ -769,23 +676,13 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
       // 2) Prepare the pages
       // --------------------
+      request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
       if (destination.equals("domainContent.jsp")) {
         long domainRight = jobDomainSC.getDomainActions();
 
-        request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
-
-        request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-            .getName());
-        request
-            .setAttribute("domainURL", (String) request
-            .getAttribute("myComponentURL")
-            + "domainContent?Iddomain="
-            + jobDomainSC.getTargetDomain().getId());
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(false));
-        request.setAttribute("pageNavigation", jobDomainSC
-            .getPageNavigation(false));
         request
             .setAttribute(
             "isDomainRW",
@@ -812,17 +709,8 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
         request.setAttribute("groupsPath", jobDomainSC.getPath((String) request
             .getAttribute("myComponentURL"), null));
-        request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-            .getName());
-        request
-            .setAttribute("domainURL", (String) request
-            .getAttribute("myComponentURL")
-            + "domainContent?Iddomain="
-            + jobDomainSC.getTargetDomain().getId());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(true));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(true));
-        request.setAttribute("pageNavigation", jobDomainSC
-            .getPageNavigation(true));
         request
             .setAttribute(
             "isDomainRW",
@@ -857,12 +745,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
               + " & AbstractDomainDriver.ACTION_X509_USER = "
               + AbstractDomainDriver.ACTION_X509_USER);
 
-          request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-              .getName());
-          request.setAttribute("domainURL", (String) request
-              .getAttribute("myComponentURL")
-              + "domainContent?Iddomain="
-              + jobDomainSC.getTargetDomain().getId());
           request
               .setAttribute(
               "isDomainRW",
@@ -899,20 +781,10 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else {
           request.setAttribute("URLForContent", "welcome");
         }
-      } else if (destination.equals("domainSynchroPing.jsp")) {
-        request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-            .getName());
       } else if (destination.equals("groupManagers.jsp")) {
         request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
         request.setAttribute("groupsPath", jobDomainSC.getPath((String) request
             .getAttribute("myComponentURL"), null));
-        request.setAttribute("domainName", jobDomainSC.getTargetDomain()
-            .getName());
-        request
-            .setAttribute("domainURL", (String) request
-            .getAttribute("myComponentURL")
-            + "domainContent?Iddomain="
-            + jobDomainSC.getTargetDomain().getId());
       }
       // 3) Concat the path
       // ------------------
