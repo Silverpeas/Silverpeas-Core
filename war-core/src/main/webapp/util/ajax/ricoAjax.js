@@ -116,13 +116,18 @@ Rico.AjaxEngine.prototype = {
           var anArg = theArgs[i];
 
           if ( anArg.name != undefined && anArg.value != undefined ) {
-            queryString += anArg.name +  "=" + escape(anArg.value);
+//Patch DLE use with accents
+//	        	  queryString += anArg.name +  "=" + escape(anArg.value);
+              queryString += anArg.name +  "=" + encodeURIComponent(anArg.value);
           }
           else {
              var ePos  = anArg.indexOf('=');
              var argName  = anArg.substring( 0, ePos );
              var argValue = anArg.substring( ePos + 1 );
-             queryString += argName + "=" + escape(argValue);
+//Patch DLE use with accents
+//	             queryString += argName + "=" + escape(argValue);
+             queryString += argName + "=" + encodeURIComponent(argValue);
+             
           }
       }
 
