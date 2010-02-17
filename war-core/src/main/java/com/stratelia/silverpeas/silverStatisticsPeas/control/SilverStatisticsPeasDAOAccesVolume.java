@@ -507,7 +507,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
         values = (String[]) resultat.get(cmpId);
         if (values != null) {
-          values[1] = (String) hashUser.get(cmpId);
+          values[2] = (String) hashUser.get(cmpId);
           resultat.put(cmpId, values);
         }
       }
