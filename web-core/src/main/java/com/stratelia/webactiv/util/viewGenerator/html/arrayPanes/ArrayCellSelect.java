@@ -40,10 +40,10 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
   // Attributs
   // -----------------------------------------------------------------------------------------------------------------
   private String name;
-  private ArrayList values = new ArrayList();
+  private ArrayList<String> values = new ArrayList<String>();
   private String size = null;
-  private ArrayList labels = new ArrayList();
-  private ArrayList selected = new ArrayList();
+  private ArrayList<String> labels = new ArrayList<String>();
+  private ArrayList<Integer> selected = new ArrayList<Integer>();
   private String cellAlign = null;
   private String color = null;
   private String bgcolor = null;
@@ -98,11 +98,11 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    * @return
    */
   public String[] getSelectedValues() {
-    ArrayList selectedValues = new ArrayList();
-    Iterator iterator = selected.iterator();
+    ArrayList<String> selectedValues = new ArrayList<String>();
+    Iterator<Integer> iterator = selected.iterator();
 
     while (iterator.hasNext()) {
-      selectedValues.add(values.get(((Integer) iterator.next()).intValue()));
+      selectedValues.add(values.get(iterator.next().intValue()));
     }
 
     return (String[]) selectedValues.toArray();
@@ -232,7 +232,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
    * @see
    */
   public String getSyntax() {
-    Iterator iterSelected = selected.iterator();
+    Iterator<Integer> iterSelected = selected.iterator();
     int iSelected = -1;
 
     syntax.setLength(0);
@@ -305,7 +305,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
 
     // Options
     if (iterSelected.hasNext())
-      iSelected = ((Integer) iterSelected.next()).intValue();
+      iSelected = iterSelected.next().intValue();
 
     for (int i = 0; i < labels.size(); i++) {
       syntax.append("\n<option value=\"");

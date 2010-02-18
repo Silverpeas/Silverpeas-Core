@@ -194,10 +194,10 @@ abstract public class CacheManager {
       }
     }
     valret = (PanelLine[]) ar.toArray(new PanelLine[0]);
-    Arrays.sort(valret, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        return ((PanelLine) o1).m_Values[0].toUpperCase().compareTo(
-            ((PanelLine) o2).m_Values[0].toUpperCase());
+    Arrays.sort(valret, new Comparator<PanelLine>() {
+      public int compare(PanelLine o1, PanelLine o2) {
+        return o1.m_Values[0].toUpperCase().compareTo(
+            o2.m_Values[0].toUpperCase());
       }
 
       public boolean equals(Object o) {

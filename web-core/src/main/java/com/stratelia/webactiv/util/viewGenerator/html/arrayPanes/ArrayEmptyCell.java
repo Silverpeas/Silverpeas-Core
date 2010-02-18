@@ -28,22 +28,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
-/*
- * CVS Informations
- * 
- * $Id: ArrayEmptyCell.java,v 1.1.1.1 2002/08/06 14:48:19 nchaix Exp $
- * 
- * $Log: ArrayEmptyCell.java,v $
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.2  2002/01/04 14:04:23  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author

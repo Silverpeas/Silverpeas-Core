@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
  */
 public abstract class AbstractOperationPane implements OperationPane {
 
-  private Vector stack = null;
+  private Vector<String> stack = null;
 
   // private String iconsPath = null;
 
@@ -52,7 +52,7 @@ public abstract class AbstractOperationPane implements OperationPane {
    * @see
    */
   public AbstractOperationPane() {
-    stack = new Vector();
+    stack = new Vector<String>();
   }
 
   /**
@@ -75,7 +75,7 @@ public abstract class AbstractOperationPane implements OperationPane {
    * @return
    * @see
    */
-  public Vector getStack() {
+  public Vector<String> getStack() {
     return this.stack;
   }
 

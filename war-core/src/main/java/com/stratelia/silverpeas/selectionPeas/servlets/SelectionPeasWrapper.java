@@ -39,6 +39,8 @@ import com.stratelia.silverpeas.selectionPeas.control.SelectionPeasWrapperSessio
  */
 public class SelectionPeasWrapper extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * Returns a new session controller
    */
