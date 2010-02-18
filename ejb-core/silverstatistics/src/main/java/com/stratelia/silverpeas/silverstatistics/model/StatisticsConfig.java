@@ -26,6 +26,7 @@
 
 package com.stratelia.silverpeas.silverstatistics.model;
 
+import com.silverpeas.util.FileUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ import java.util.StringTokenizer;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Class declaration
@@ -76,18 +79,17 @@ public class StatisticsConfig {
    * @see
    */
   public int init() throws SilverStatisticsConfigException {
-    java.util.ResourceBundle p = null;
     String TokenSeparator;
     String configTypeName = "";
 
     try {
       initGood = true;
-      p = java.util.ResourceBundle
-          .getBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics");
+      ResourceBundle resource = FileUtil.loadBundle(
+              "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
 
-      TokenSeparator = p.getString(STATSSEPARATOR);
+      TokenSeparator = resource.getString(STATSSEPARATOR);
 
-      StringTokenizer stTypeStats = new StringTokenizer(p
+      StringTokenizer stTypeStats = new StringTokenizer(resource
           .getString(STATSFAMILYTYPE), TokenSeparator);
 
       while (stTypeStats.hasMoreTokens()) {
@@ -95,12 +97,12 @@ public class StatisticsConfig {
 
         currentType.setName(stTypeStats.nextToken());
         configTypeName = currentType.getName();
-        currentType.setTableName(p.getString(STATSTABLENAME
+        currentType.setTableName(resource.getString(STATSTABLENAME
             + currentType.getName()));
 
         try {
           currentType.setIsRun(Boolean.valueOf(
-              p.getString(STATSRUN + currentType.getName())).booleanValue());
+              resource.getString(STATSRUN + currentType.getName())).booleanValue());
         } catch (MissingResourceException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init",
               "setIsRun", e);
@@ -110,7 +112,7 @@ public class StatisticsConfig {
         }
 
         try {
-          currentType.setPurge(Integer.parseInt(p.getString(STATSPURGE
+          currentType.setPurge(Integer.parseInt(resource.getString(STATSPURGE
               + currentType.getName())));
         } catch (SilverStatisticsTypeStatisticsException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init",
@@ -128,7 +130,7 @@ public class StatisticsConfig {
 
         try {
           currentType.setIsAsynchron(Boolean.valueOf(
-              p.getString(STATSASYNCHRON + currentType.getName()))
+              resource.getString(STATSASYNCHRON + currentType.getName()))
               .booleanValue());
         } catch (MissingResourceException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init",
@@ -139,7 +141,7 @@ public class StatisticsConfig {
         }
 
         try {
-          currentType.setModeCumul(p.getString(STATSMODECUMUL
+          currentType.setModeCumul(resource.getString(STATSMODECUMUL
               + currentType.getName()));
         } catch (SilverStatisticsTypeStatisticsException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init",
@@ -155,11 +157,11 @@ public class StatisticsConfig {
           // "silverstatistics.MSG_KEY_PURGE_MISSING", configTypeName, e);
         }
 
-        StringTokenizer stKeyName = new StringTokenizer(p
+        StringTokenizer stKeyName = new StringTokenizer(resource
             .getString(STATSKEYNAME + currentType.getName()), TokenSeparator);
-        StringTokenizer stKeyType = new StringTokenizer(p
+        StringTokenizer stKeyType = new StringTokenizer(resource
             .getString(STATSKEYTYPE + currentType.getName()), TokenSeparator);
-        StringTokenizer stKeyCumul = new StringTokenizer(p
+        StringTokenizer stKeyCumul = new StringTokenizer(resource
             .getString(STATSKEYSCUMUL + currentType.getName()), TokenSeparator);
 
         while (stKeyName.hasMoreTokens()) {

@@ -29,13 +29,15 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.silverpeas.util.ConfigurationClassLoader;
 
 public class ResourceBundleWrapper extends ResourceBundle {
   private ResourceBundle bundle;
   private ResourceBundle parentBundle;
+  private static ClassLoader loader = new ConfigurationClassLoader(ResourceBundleWrapper.class.getClassLoader());
 
   public ResourceBundleWrapper(String file, Locale locale, boolean hasParent) {
-    this.bundle = java.util.ResourceBundle.getBundle(file, locale);
+    this.bundle = java.util.ResourceBundle.getBundle(file, locale, loader);
     if (hasParent) {
       this.parentBundle = GeneralPropertiesManager.getGeneralMultilang(
           locale.getLanguage()).getResourceBundle();
@@ -47,10 +49,12 @@ public class ResourceBundleWrapper extends ResourceBundle {
         .equalsIgnoreCase(file));
   }
 
+  @Override
   public Enumeration<String> getKeys() {
     return this.bundle.getKeys();
   }
 
+  @Override
   protected Object handleGetObject(String key) {
     Object result = null;
     try {

@@ -26,9 +26,10 @@
  *
  * Created on 19 octobre 2000, 09:54
  */
-
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.util.ConfigurationClassLoader;
+import com.silverpeas.util.StringUtil;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -44,18 +45,16 @@ import com.stratelia.silverpeas.util.ResourceBundleWrapper;
 
 public class ResourceLocator implements Serializable {
 
+  private static ClassLoader loader = new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
   final static String m_DefaultExtension = ".properties";
-
   private String m_sPropertiesFile = null;
   private Locale m_sPropertiesLocale = null;
-
   static private Hashtable<String, Hashtable<Locale, ResourceBundle>> m_hPropertiesCache =
-      new Hashtable<String, Hashtable<Locale, ResourceBundle>>();
+          new Hashtable<String, Hashtable<Locale, ResourceBundle>>();
 
   // --------------------------------------------------------------------------------------------
   // METHODS for .properties
   // --------------------------------------------------------------------------------------------
-
   /** Creates new ResourceLocator */
   public ResourceLocator() {
   }
@@ -104,13 +103,13 @@ public class ResourceLocator implements Serializable {
     ResourceBundle bundle = null;
     // Print Cache
     // Look in the cache first
-    Hashtable<Locale, ResourceBundle> hOneProperty = m_hPropertiesCache
-        .get(sPropertyFile);
+    Hashtable<Locale, ResourceBundle> hOneProperty = m_hPropertiesCache.get(sPropertyFile);
     if (hOneProperty != null) {
       // Load the property only if the language is not in the cache
       bundle = (ResourceBundle) hOneProperty.get(m_sPropertiesLocale);
-      if (bundle != null)
+      if (bundle != null) {
         bLoadPropertyInCache = false;
+      }
     }
 
     // Load the property if not in the cache
@@ -130,8 +129,8 @@ public class ResourceLocator implements Serializable {
       } else {
         Exception e = new Exception();
         SilverTrace.error("util", "ResourceLocator.getProperties",
-            "util.MSG_NO_PROPERTY_FILE",
-            (sPropertyFile + "_" + m_sPropertiesLocale.getLanguage()), e);
+                "util.MSG_NO_PROPERTY_FILE",
+                (sPropertyFile + "_" + m_sPropertiesLocale.getLanguage()), e);
         return null;
       }
     }
@@ -144,13 +143,13 @@ public class ResourceLocator implements Serializable {
    */
   public String getString(String sAttribut) {
     ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile,
-        m_sPropertiesLocale);
+            m_sPropertiesLocale);
     try {
       return bundle.getString(sAttribut);
     } catch (MissingResourceException msrex) {
       SilverTrace.warn("util", "ResourceLocator.getString",
-          "util.MSG_NO_ATTR_VALUE", "File : " + m_sPropertiesFile
-          + " | Attribut : " + sAttribut, msrex);
+              "util.MSG_NO_ATTR_VALUE", "File : " + m_sPropertiesFile
+              + " | Attribut : " + sAttribut, msrex);
       return null;
     }
   }
@@ -173,22 +172,21 @@ public class ResourceLocator implements Serializable {
    */
   public boolean getBoolean(String sAttribut, boolean defaultValue) {
     String value = getString(sAttribut);
-    if (value == null)
+    if (value == null) {
       return defaultValue;
-
-    return value.equalsIgnoreCase("yes") || value.equals("1")
-        || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("oui");
+    }
+    return StringUtil.getBooleanValue(value);
   }
 
   public String getStringWithParam(String resName, String param) {
-    String[] params = { param };
+    String[] params = {param};
     return getStringWithParams(resName, params);
   }
 
   public String getStringWithParams(String resName, String[] params) {
     String theSt = getString(resName);
     if (theSt != null) {
-      StringBuffer theResult = new StringBuffer();
+      StringBuilder theResult = new StringBuilder();
       int theStarIndex = -1;
       int theParamIndex = 0;
       int thePreviousIndex = 0;
@@ -200,8 +198,9 @@ public class ResourceLocator implements Serializable {
         thePreviousIndex = theStarIndex + 1;
         if (thePreviousIndex < theSt.length()) {
           theStarIndex = theSt.indexOf('*', thePreviousIndex);
-        } else
+        } else {
           theStarIndex = -1;
+        }
       }
       theResult.append(theSt.substring(thePreviousIndex));
       return theResult.toString();
@@ -212,7 +211,7 @@ public class ResourceLocator implements Serializable {
   /** Return an enumeration of all keys in the property file loaded */
   public Enumeration<String> getKeys() {
     ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile,
-        m_sPropertiesLocale);
+            m_sPropertiesLocale);
     return bundle.getKeys();
   }
 
@@ -223,7 +222,7 @@ public class ResourceLocator implements Serializable {
   /** Return the properties * */
   public Properties getProperties() {
     ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile,
-        m_sPropertiesLocale);
+            m_sPropertiesLocale);
     Properties props = new Properties();
     Enumeration<String> keys = bundle.getKeys();
     while (keys.hasMoreElements()) {
@@ -239,225 +238,106 @@ public class ResourceLocator implements Serializable {
 
   public static void resetResourceLocator() {
     SilverTrace.info("util", "ResourceLocator.resetResourceLocator",
-        "root.MSG_GEN_ENTER_METHOD", "Reset Cache Resource Locator");
+            "root.MSG_GEN_ENTER_METHOD", "Reset Cache Resource Locator");
     m_hPropertiesCache.clear();
   }
 
   // --------------------------------------------------------------------------------------------
   // METHODS for .XML properties
   // --------------------------------------------------------------------------------------------
-  public static URL getResource(Object o, Locale loc, String ConfigFile,
-      String Extension) {
-    if (Extension == null)
-      Extension = m_DefaultExtension;
-    else if (!Extension.startsWith("."))
-      Extension = "." + Extension;
-    URL u = locateResource(o, loc, ConfigFile, Extension);
-    if (u != null)
-      return (u);
-    if (loc != null) {
-      u = locateResource(o, null, ConfigFile, Extension);
-      if (u != null)
-        return (u);
+  public static URL getResource(Object object, Locale loc, String configFile,
+          String extension) {
+    if (extension == null) {
+      extension = m_DefaultExtension;
     }
-    String s = ConfigFile;
-    Class C = null;
-
-    if (o == null)
-      return (null);
-
-    C = o.getClass();
-    if (C == null)
-      return (null);
-    u = C.getResource(s);
-    if (u != null)
-      return (u);
-    s = s + Extension;
-    u = C.getResource(s);
-    return (u);
+    if (!extension.startsWith(".")) {
+      extension = "." + extension;
+    }
+    URL url = locateResource(object, loc, configFile, extension);
+    if (url == null) {
+      if (loc != null) {
+        url = locateResource(object, null, configFile, extension);
+        if (url == null) {
+          if (object != null) {
+            Class clazz = object.getClass();
+            url = clazz.getResource(configFile);
+            if (url == null) {
+              url = clazz.getResource(configFile + extension);
+            }
+          }
+        }
+      }
+    }
+    return url;
   }
 
-  public static InputStream getResourceAsStream(Object o, Locale loc,
-      String ConfigFile, String Extension) {
-    if (Extension == null)
-      Extension = m_DefaultExtension;
-    else if (!Extension.startsWith("."))
-      Extension = "." + Extension;
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "Starting with args:Object = " + o + ", loc=" + loc + ", ConfigFile="
-        + ConfigFile + ", extension=" + Extension);
-    InputStream is = locateResourceAsStream(o, loc, ConfigFile, Extension);
-    if (is != null) {
-      URL u = locateResource(o, loc, ConfigFile, Extension);
-      SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-          "locateResourceAsStream found a resource in '" + u.toString() + "'");
-      return (is);
+  public static InputStream getResourceAsStream(Object object, Locale loc,
+          String configFile, String extension) {
+    if (extension == null) {
+      extension = m_DefaultExtension;
     }
-    if (loc != null) {
-      is = locateResourceAsStream(o, null, ConfigFile, Extension);
-      if (is != null) {
-        URL u = locateResource(o, null, ConfigFile, Extension);
-        SilverTrace
-            .debug("util", "ResourceLocator.getResourceAsStream",
-            "locateResourceAsStream found a resource in '" + u.toString()
-            + "'");
-
-        return (is);
+    if (!extension.startsWith(".")) {
+      extension = '.' + extension;
+    }
+    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
+            "Starting with args:Object = " + object + ", loc=" + loc + ", ConfigFile="
+            + configFile + ", extension=" + extension);
+    InputStream inputStream = locateResourceAsStream(object, loc, configFile, extension);
+    if (inputStream == null) {
+      if (loc != null) {
+        inputStream = locateResourceAsStream(object, null, configFile, extension);
       }
-    }
-    String s = ConfigFile;
-    Class C = null;
-
-    if (o == null) {
-      return (null);
-    }
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "Calling getClass for object '" + o + "'");
-
-    C = o.getClass();
-    if (C == null) {
-      SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-          "getClass for object '" + o + "' returned null");
-      return (null);
-    }
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "calling getResourceAsStream(" + s + ")");
-    is = C.getResourceAsStream(s);
-    if (is != null) {
-      return (is);
-    }
-
-    s = s + Extension;
-
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "calling getResourceAsStream(" + s + ")");
-
-    is = C.getResourceAsStream(s);
-
-    if (is != null) {
-      URL u = C.getResource(s);
-      SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-          "found a resource in '" + u.toString() + "'");
-      return (is);
-    }
-
-    // still not found. Try system resources
-    s = ConfigFile;
-
-    ClassLoader l = C.getClassLoader();
-    if (l == null) {
-      SilverTrace
-          .debug("util", "ResourceLocator.getResourceAsStream",
-          "getClassLoader returned null. Using system class loader methods instead.");
-
-      l = ClassLoader.getSystemClassLoader();
-      if (l == null) {
-        SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-            "getSystemClassLoader returned null too!");
-      } else {
-        SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-            "getSystemClassLoader worked and returned a non-null value");
+      if (inputStream == null) {
+        if (object != null) {
+          SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
+                  "Calling getClass for object '" + object + "'");
+          Class clazz = object.getClass();
+          SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
+                  "calling getResourceAsStream(" + configFile + ")");
+          inputStream = clazz.getResourceAsStream(configFile);
+          if (inputStream == null) {
+            String extendedFile = configFile + extension;
+            SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
+                    "calling getResourceAsStream(" + extendedFile + ")");
+            inputStream = clazz.getResourceAsStream(extendedFile);
+            if (inputStream == null) {
+              inputStream = loadResourceAsStream(configFile, extendedFile, clazz.getClassLoader());
+              if (inputStream == null) {
+                SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
+                        "calling getSystemResourceAsStream", extendedFile);
+                inputStream = ClassLoader.getSystemResourceAsStream(extendedFile);
+                if (inputStream == null) {
+                  SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
+                          "resource not found. Trying doPriviledged(" + extendedFile + ")" + inputStream);
+                  inputStream = getPrivileged(clazz.getClassLoader(), extendedFile);
+                }
+              }
+            }
+          }
+        }
       }
     }
     SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "calling getSystemResourceAsStream", s);
-
-    if (l != null) {
-      is = l.getSystemResourceAsStream(s);
-    } else {
-      is = ClassLoader.getSystemResourceAsStream(s);
-    }
-    if (is != null) {
-      URL u;
-      if (l != null) {
-        u = l.getSystemResource(s);
-      } else {
-        u = ClassLoader.getSystemResource(s);
-      }
-      SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-          "locateResourceAsStream found a resource in '" + u.toString() + "'");
-
-      return (is);
-    }
-
-    s = s + Extension;
-
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "calling getSystemResourceAsStream", s);
-
-    is = l.getSystemResourceAsStream(s);
-
-    if (is != null) {
-      URL u = l.getSystemResource(s);
-      SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-          "locateResourceAsStream found a resource in '" + u.toString() + "'");
-
-      return (is);
-    }
-
-    if (is == null) {
-      SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-          "resource not found. Trying doPriviledged(" + s + ")" + is);
-      is = getPrivileged(l, s);
-    }
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "returning " + is);
-    return (is);
+            "returning " + inputStream);
+    return inputStream;
   }
 
-  public static void main(String args[]) {
-    String ExtensionString = null;
-    String ConfigFileName = null;
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].compareToIgnoreCase("-config") == 0) {
-        i++;
-        if (i >= args.length) {
-          System.err.println("ERROR:missing argument after -config");
-          System.exit(1);
-        }
-        ConfigFileName = args[i];
-      } else if (args[i].compareToIgnoreCase("-debug") == 0) {
-        i++;
-        if (i >= args.length) {
-          System.err.println("ERROR:missing argument after -debug");
-          System.exit(1);
-        }
-      } else if (args[i].compareToIgnoreCase("-ext") == 0) {
-        i++;
-        if (i >= args.length) {
-          System.err.println("ERROR:missing argument after -ext");
-          System.exit(1);
-        }
-        ExtensionString = args[i];
-      } else {
-        System.err.println("Invalid argument:" + args[i]);
-        System.exit(1);
-      }
+  private static InputStream loadResourceAsStream(String configFile, String extendedFile, ClassLoader loader) {
+    InputStream inputStream = loader.getResourceAsStream(configFile);
+    if (inputStream == null) {
+      inputStream = loader.getResourceAsStream(extendedFile);
     }
-    // if no configuration file given use default
-    if (ConfigFileName == null)
-      ConfigFileName = "resources";
-
-    ResourceLocator rl = new ResourceLocator();
-    if (ResourceLocator.getResourceAsStream(rl, null, ConfigFileName,
-        ExtensionString) == null) {
-      System.err.println("Could not open resource stream");
-    }
-    URL u = ResourceLocator.getResource(rl, null, ConfigFileName,
-        ExtensionString);
-    if (u == null)
-      System.err.println("Could not find resource");
-    else
-      System.out.println("Resource found! (" + u.toString() + ")");
+    return inputStream;
   }
 
   private static URL locateResource(Object o, Locale loc, String ConfigFile,
-      String Extension) {
+          String Extension) {
     Locale lloc = null;
-    if (loc == null)
+    if (loc == null) {
       lloc = Locale.getDefault();
-    else
+    } else {
       lloc = loc;
+    }
 
     String lang = lloc.getLanguage();
     String var = lloc.getVariant();
@@ -467,18 +347,19 @@ public class ResourceLocator implements Serializable {
   }
 
   private static InputStream locateResourceAsStream(Object o, Locale loc,
-      String ConfigFile, String Extension) {
+          String ConfigFile, String Extension) {
     Locale lloc = null;
-    if (loc == null)
+    if (loc == null) {
       lloc = Locale.getDefault();
-    else
+    } else {
       lloc = loc;
+    }
 
     String lang = lloc.getLanguage();
     String var = lloc.getVariant();
     String country = lloc.getCountry();
     InputStream is = locateResourceAsStream(o, ConfigFile, Extension, lang,
-        country, var);
+            country, var);
     return (is);
   }
 
@@ -486,59 +367,46 @@ public class ResourceLocator implements Serializable {
    * This method returns the URL of a resource file. The algorithm to find it is the same as for
    * getBundle()
    */
-  private static URL locateResource(Object o, String ConfigFile,
-      String Extension, String lang, String country, String var) {
-    URL u = null;
+  private static URL locateResource(Object object, String configFile,
+          String extension, String lang, String country, String var) {
+    URL url = null;
     boolean vardone = false;
-    Class C = null;
-
-    if (o == null)
-      return (null);
-
-    C = o.getClass();
-    if (C == null)
-      return (null);
-
-    String s = ConfigFile + "_" + lang + "_" + country;
-    if (var != null && !var.equals("")) {
-      s = s + "_" + var;
-      vardone = true;
-    }
-
-    u = C.getResource(s);
-    if (u != null) {
-      // Debug.println("found resource " + s);
-      return (u);
-    }
-    s = s + Extension;
-    u = C.getResource(s);
-    if (u != null) {
-      // Debug.println("found resource " + s);
-      return (u);
-    }
-    if (vardone) {
-      s = ConfigFile + "_" + lang + "_" + country;
-      u = C.getResource(s);
-      if (u != null)
-        return (u);
-      s = s + Extension;
-      u = C.getResource(s);
-      if (u != null) {
-        // Debug.println("found resource " + s);
-        return (u);
+    if (object != null) {
+      Class clazz = object.getClass();
+      if (clazz != null) {
+        String fileName = configFile + "_" + lang + "_" + country;
+        if (StringUtil.isDefined(var)) {
+          fileName = fileName + "_" + var;
+          vardone = true;
+        }
+        url = clazz.getResource(fileName);
+        if (url == null) {
+          fileName = fileName + extension;
+          url = clazz.getResource(fileName);
+          if (url == null) {
+            if (vardone) {
+              fileName = configFile + "_" + lang + "_" + country;
+              url = clazz.getResource(fileName);
+              if (url == null) {
+                fileName = fileName + extension;
+                url = clazz.getResource(fileName);
+              }
+              if (url != null) {
+                return (url);
+              }
+            }
+            fileName = configFile + "_" + lang;
+            url = clazz.getResource(fileName);
+            if (url == null) {
+              fileName = fileName + extension;
+              url = clazz.getResource(fileName);
+            }
+          }
+        }
       }
     }
-    s = ConfigFile + "_" + lang;
-    u = C.getResource(s);
-    if (u != null) {
-      // Debug.println("found resource " + s);
-      return (u);
-    }
-    s = s + Extension;
-    u = C.getResource(s);
-    if (u != null)
-      return (u);
-    return (null);
+    return url;
+
   }
 
   /**
@@ -546,31 +414,30 @@ public class ResourceLocator implements Serializable {
    * for getBundle()
    */
   private static InputStream locateResourceAsStream(Object o,
-      String ConfigFile, String Extension, String lang, String country,
-      String var) {
+          String ConfigFile, String Extension, String lang, String country,
+          String var) {
     InputStream is = null;
     boolean vardone = false;
-    Class C = null;
 
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "Starting with args:Object = " + o + ", ConfigFile=" + ConfigFile
-        + ", extension=" + Extension + ", lang=" + lang + ", country="
-        + country + ", var =" + var);
+            "Starting with args:Object = " + o + ", ConfigFile=" + ConfigFile
+            + ", extension=" + Extension + ", lang=" + lang + ", country="
+            + country + ", var =" + var);
 
     if (o == null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "o is null. returning immediately.");
+              "o is null. returning immediately.");
       return (null);
     }
 
-    C = o.getClass();
-    if (C == null) {
+    Class clazz = o.getClass();
+    if (clazz == null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "getClass() returned null");
+              "getClass() returned null");
       return (null);
     }
     String s = ConfigFile + "_" + lang;
-    if (country != null && !country.equals("")) {
+    if (StringUtil.isDefined(country)) {
       s += "_" + country;
       if (var != null && !var.equals("")) {
         s = s + "_" + var;
@@ -578,85 +445,90 @@ public class ResourceLocator implements Serializable {
       }
     } else {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "no country specified");
+              "no country specified");
     }
 
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream", s);
-
-    is = C.getResourceAsStream(s);
+            "calling getResourceAsStream", s);
+    is = loader.getResourceAsStream(s);
     if (is != null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "found resource", s);
+              "found resource", s);
+      return is;
+    }
+    is = clazz.getResourceAsStream(s);
+    if (is != null) {
+      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
+              "found resource", s);
       return (is);
     }
 
     s = s + Extension;
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream (with extension)", s);
+            "calling getResourceAsStream (with extension)", s);
 
-    is = C.getResourceAsStream(s);
+    is = clazz.getResourceAsStream(s);
     if (is != null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "found resource (with extension)", s);
+              "found resource (with extension)", s);
       return (is);
     }
     if (vardone) {
       s = ConfigFile + "_" + lang + "_" + country;
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "calling getResourceAsStream", s);
-      is = C.getResourceAsStream(s);
+              "calling getResourceAsStream", s);
+      is = clazz.getResourceAsStream(s);
       if (is != null) {
         SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-            "found resource", s);
+                "found resource", s);
         return (is);
       }
       s = s + Extension;
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "calling getResourceAsStream", s);
+              "calling getResourceAsStream", s);
 
-      is = C.getResourceAsStream(s);
+      is = clazz.getResourceAsStream(s);
       if (is != null) {
         SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-            "found resource", s);
+                "found resource", s);
         return (is);
       }
     }
     s = ConfigFile + "_" + lang;
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream", s);
+            "calling getResourceAsStream", s);
 
-    is = C.getResourceAsStream(s);
+    is = clazz.getResourceAsStream(s);
     if (is != null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "found resource", s);
+              "found resource", s);
       return (is);
     }
     s = s + Extension;
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream (with extension)", s);
-    is = C.getResourceAsStream(s);
+            "calling getResourceAsStream (with extension)", s);
+    is = clazz.getResourceAsStream(s);
     if (is != null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "found resource", s);
+              "found resource", s);
       return (is);
     }
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "Could not find resource", s);
+            "Could not find resource", s);
     return (null);
   }
 
   private static InputStream getPrivileged(final ClassLoader l, final String s) {
-    InputStream stream = (InputStream) java.security.AccessController
-        .doPrivileged(new java.security.PrivilegedAction<Object>() {
-        public Object run() {
+    InputStream stream = (InputStream) java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Object>() {
+
+      public Object run() {
         if (l != null) {
           return l.getResourceAsStream(s);
         } else {
           return ClassLoader.getSystemResourceAsStream(s);
         }
-        }
-            });
+      }
+    });
     return (stream);
   }
 }

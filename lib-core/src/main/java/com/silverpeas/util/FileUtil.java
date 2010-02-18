@@ -43,6 +43,8 @@ import javax.activation.MimetypesFileTypeMap;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class FileUtil implements MimeTypes {
 
@@ -189,5 +191,15 @@ public class FileUtil implements MimeTypes {
         out.close();
       }
     }
+  }
+
+  /**
+   * Loads a ResourceBundle from the Silverpeas configuration directory.
+   * @param name the name of the bundle.
+   * @param locale the locale of the bundle.
+   * @return the corresponding ResourceBundle if it exists - null otherwise.
+   */
+  public static ResourceBundle loadBundle(String name, Locale locale) {
+    return ResourceBundle.getBundle(name, locale, new ConfigurationClassLoader(FileUtil.class.getClassLoader()));
   }
 }

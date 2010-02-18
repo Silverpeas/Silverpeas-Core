@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
+import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -48,6 +49,7 @@ import org.apache.log4j.Priority;
 import org.apache.log4j.net.SMTPAppender;
 
 import com.stratelia.silverpeas.silverpeasinitialize.SilverpeasInitializer;
+import org.apache.log4j.Logger;
 
 /**
  * SilverTrace is the trace tool used in silverpeas to trace debug, running infos and errors. This
@@ -731,8 +733,7 @@ public class SilverTrace {
     // Category.getRoot().getHierarchy().resetConfiguration();
     Category.getRoot().getLoggerRepository().resetConfiguration();
     try {
-      resources = java.util.ResourceBundle.getBundle(
-          "com.stratelia.silverpeas.silvertrace.settings.silverTrace",
+      resources = FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverTrace",
           new Locale("", ""));
       pathFiles = resources.getString("pathSilverTrace");
       languageMessage = resources.getString("language");
@@ -821,7 +822,7 @@ public class SilverTrace {
           && MsgTrace.stringValid(enumModulesPath)) {
         i = enumModulesPath.lastIndexOf('.');
         if ((i > 0) && ((i + 1) < enumModulesPath.length())) {
-          StringBuffer ws = new StringBuffer(enumModulesPath);
+          StringBuilder ws = new StringBuilder(enumModulesPath);
 
           ws.setCharAt(i + 1, enumModulesPath.toUpperCase().charAt(i + 1));
           enumModulesPath = ws.toString();
@@ -1062,7 +1063,9 @@ public class SilverTrace {
       try {
         DailyRollingFileAppender a1 = new DailyRollingFileAppender(
             getLayout(patternLayout), fileName, rollingMode);
-
+        if(MODULE_ROOT.equals(module)) {
+          cat = Logger.getRootLogger();
+        }
         cat.removeAppender(getAppenderName(module, APPENDER_ROLLING_FILE));
         a1.setName(getAppenderName(module, APPENDER_ROLLING_FILE));
         cat.addAppender(a1);

@@ -21,14 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.silverpeasinitialize;
 
-import java.io.*;
-import java.util.*;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.Security;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -37,7 +42,7 @@ import java.security.Security;
  */
 public class SilverpeasInitializer {
   private static boolean isInitialized = false;
-  private static String INITIALIZESETTINGS = "InitializeSettings.properties";
+  private static final String INITIALIZESETTINGS = "InitializeSettings.properties";
 
   private java.util.ResourceBundle _silverpeasinitializeSettings;
 
@@ -61,15 +66,11 @@ public class SilverpeasInitializer {
   public void startInitialize() {
     try {
       // Add properties
-      _silverpeasinitializeSettings = java.util.ResourceBundle
-          .getBundle(
+      _silverpeasinitializeSettings = FileUtil.loadBundle(
           "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
           new Locale("fr", ""));
-      if (_silverpeasinitializeSettings.getString("initialize")
-          .equalsIgnoreCase("true") == true) {
-
+      if (StringUtil.getBooleanValue(_silverpeasinitializeSettings.getString("initialize"))) {
         initPropertySystem();
-
         File[] listFileInitialize = getListInitializeSettingsFile();
 
         if (listFileInitialize != null) {

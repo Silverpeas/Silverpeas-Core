@@ -21,11 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.silvertrace;
 
+import com.silverpeas.util.FileUtil;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -244,8 +242,7 @@ public class SilverLog {
     ResourceBundle resource = null;
 
     try {
-      resource = java.util.ResourceBundle.getBundle(
-          "com.stratelia.silverpeas.silvertrace.settings.silverLog",
+      resource = FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverLog",
           new Locale("", ""));
       logDir = resource.getString("LogDir");
 

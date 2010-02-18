@@ -26,6 +26,7 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.silverpeas.util.FileUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,6 +36,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * This is the alimentation for the statistics on volume. It gets the number of elements from each
@@ -42,13 +45,13 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
  * @author sleroux
  */
 public class SilverStatisticsVolumeAlimentation {
-  static java.util.ResourceBundle resources = null;
+  static ResourceBundle resources = null;
 
   static {
     if (resources == null) {
       try {
-        resources = java.util.ResourceBundle
-            .getBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics");
+        resources = FileUtil.loadBundle(
+                "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
       } catch (Exception ex) {
         SilverTrace.error("silverstatistics",
             "SilverStatisticsVolumeAlimentation",

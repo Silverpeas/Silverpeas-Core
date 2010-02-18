@@ -26,6 +26,7 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -43,6 +44,8 @@ import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * SilverStatisticsManager is the tool used in silverpeas to compute statistics for connexions,
@@ -79,7 +82,6 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    * Init attributes
    */
   private void initSilverStatisticsManager() {
-    java.util.ResourceBundle resources = null;
 
     // init List
     directoryToScan = new Vector();
@@ -101,8 +103,8 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
       }
 
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
-      resources = java.util.ResourceBundle
-          .getBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics");
+      ResourceBundle resources = FileUtil.loadBundle(
+              "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
 
       initSchedulerStatistics(resources
           .getString("scheduledGetStatVolumeTimeStamp"), STAT_VOLUME_JOB_NAME,

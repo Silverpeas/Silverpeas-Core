@@ -21,11 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.silvertrace;
 
+import com.silverpeas.util.StringUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -188,14 +187,9 @@ public class MsgTrace {
       String propertyName, boolean defaultValue) {
     String value;
     boolean valret = defaultValue;
-
     value = resource.getString(propertyName);
     if (value != null) {
-      if (value.equalsIgnoreCase("true")) {
-        valret = true;
-      } else {
-        valret = false;
-      }
+        valret = StringUtil.getBooleanValue(value);
     }
     return valret;
   }

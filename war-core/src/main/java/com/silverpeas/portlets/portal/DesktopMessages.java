@@ -23,6 +23,7 @@
  */
 package com.silverpeas.portlets.portal;
 
+import com.silverpeas.util.FileUtil;
 import java.text.MessageFormat;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -42,7 +43,7 @@ public class DesktopMessages {
   private static ResourceBundle rb;
 
   public static void init(HttpServletRequest request) {
-    rb = PropertyResourceBundle.getBundle(RESOURCE_BASE, request.getLocale());
+    rb = FileUtil.loadBundle(RESOURCE_BASE, request.getLocale());
   }
 
   public static String getLocalizedString(String key) {

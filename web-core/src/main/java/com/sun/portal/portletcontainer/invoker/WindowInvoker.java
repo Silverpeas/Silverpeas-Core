@@ -23,6 +23,7 @@
  */
 package com.sun.portal.portletcontainer.invoker;
 
+import com.silverpeas.util.FileUtil;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1024,7 +1025,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   public ResourceBundle getResourceBundle(String base) {
     Locale locale = null;
     locale = getPortletWindowContext().getLocale();
-    return ResourceBundle.getBundle(base, locale, getClass().getClassLoader());
+    return FileUtil.loadBundle(base, locale);
   }
 
 }

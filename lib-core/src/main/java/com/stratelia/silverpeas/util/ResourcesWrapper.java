@@ -100,8 +100,7 @@ public class ResourcesWrapper {
       ResourceLocator specificIcons, String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
-    this.genericMultilang = GeneralPropertiesManager
-        .getGeneralMultilang(language);
+    this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
     this.language = language;
   }
 
@@ -116,8 +115,7 @@ public class ResourcesWrapper {
       String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
-    this.genericMultilang = GeneralPropertiesManager
-        .getGeneralMultilang(language);
+    this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
     this.language = language;
     this.specificSettings = specificSettings;
   }
@@ -128,8 +126,7 @@ public class ResourcesWrapper {
    */
   public ResourcesWrapper(ResourceLocator specificMultilang, String language) {
     this.specificMultilang = specificMultilang;
-    this.genericMultilang = GeneralPropertiesManager
-        .getGeneralMultilang(language);
+    this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
     this.language = language;
   }
 

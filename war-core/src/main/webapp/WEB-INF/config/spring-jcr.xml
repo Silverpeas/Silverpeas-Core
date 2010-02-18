@@ -32,8 +32,8 @@
     <property name="homeDir" value="${jcr.home.dir.url}" />
     <property name="configurationProperties">
       <list>
-        <value>classpath:/com/stratelia/webactiv/beans/admin/admin.properties</value>
-        <value>classpath:/com/stratelia/webactiv/util/jcr.properties</value>
+        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
+        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jcr.properties</value>
       </list>
     </property>
   </bean>
@@ -47,8 +47,8 @@
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>classpath:/com/stratelia/webactiv/beans/admin/admin.properties</value>
-        <value>classpath:/com/stratelia/webactiv/util/jcr.properties</value>
+        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
+        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jcr.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />

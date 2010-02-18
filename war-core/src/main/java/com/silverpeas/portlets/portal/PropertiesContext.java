@@ -49,13 +49,6 @@ public class PropertiesContext {
       ResourceLocator properties = new ResourceLocator(
           "com.silverpeas.portlets." + CONFIG_FILE, "");
       defaultProperties = properties.getProperties();
-      /*
-       * String configFile = PortletRegistryHelper.getConfigFileLocation() + File.separator +
-       * CONFIG_FILE; defaultConfigBundle = new FileInputStream(configFile);
-       * defaultProperties.load(defaultConfigBundle);
-       */
-      // } catch (IOException e) {
-      // System.out.println(e);
     } finally {
       if (defaultConfigBundle != null) {
         try {

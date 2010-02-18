@@ -86,6 +86,7 @@ import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -1210,7 +1211,7 @@ public class ImportExport {
   public void writeImportToLog(ImportReport importReport, ResourcesWrapper resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
-      ResourceBundle resources = java.util.ResourceBundle.getBundle(
+      ResourceBundle resources = FileUtil.loadBundle(
               "com.stratelia.silverpeas.silvertrace.settings.silverTrace", new Locale("", ""));
       String reportLogPath = resources.getString("ErrorDir");
       File file = new File(reportLogPath + File.separator + reportLogFile);

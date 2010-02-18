@@ -23,18 +23,42 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.FileUtil;
 import java.text.SimpleDateFormat;
-import java.util.*;
 
-import javax.servlet.http.*;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.notificationManager.*;
-import com.stratelia.silverpeas.scheduler.*;
-import com.stratelia.silverpeas.silverstatistics.control.*;
-import com.stratelia.silverpeas.silvertrace.*;
-import com.stratelia.webactiv.persistence.*;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.scheduler.SchedulerEvent;
+import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerException;
+import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
+
+import com.stratelia.silverpeas.silvertrace.SilverLog;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.persistence.PersistenceException;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import com.stratelia.webactiv.servlets.LogoutServlet;
+
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Vector;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Class declaration This object is a singleton used by LoginServlet : when the user log in,
@@ -84,7 +108,7 @@ public class SessionManager implements SchedulerEventHandler {
    * Init attributes
    */
   private void initSessionManager() {
-    java.util.ResourceBundle resources = null;
+   ResourceBundle resources = null;
 
     try {
       // init Hashtables
@@ -98,8 +122,7 @@ public class SessionManager implements SchedulerEventHandler {
       maxRefreshInterval = (60 + Long.parseLong(rl.getString("IntervalInSec"))) * 1000;
 
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
-      resources = java.util.ResourceBundle.getBundle(
-          "com.stratelia.silverpeas.peasCore.SessionManager",
+      resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager",
           new Locale("", ""));
       String language = resources.getString("language");
       if ((language == null) || (language.length() <= 0)) {

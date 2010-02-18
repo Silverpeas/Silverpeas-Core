@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
+import com.silverpeas.util.ConfigurationClassLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -37,9 +38,9 @@ public class MimeTypeIconTag extends TagSupport {
   private static final Properties STYLES = new Properties();
   static {
     try {
-      ClassLoader loader = TagSupport.class.getClassLoader();
-      InputStream in = loader
-          .getResourceAsStream("com/silverpeas/view/generator/mime_types_styles.properties");
+      ClassLoader loader = new ConfigurationClassLoader(TagSupport.class.getClassLoader());
+      InputStream in = loader.getResourceAsStream(
+              "com/silverpeas/view/generator/mime_types_styles.properties");
       STYLES.load(in);
     } catch (Exception e) {
       // TODO Auto-generated catch block

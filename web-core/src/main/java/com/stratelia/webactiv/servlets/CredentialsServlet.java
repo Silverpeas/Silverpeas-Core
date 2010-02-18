@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.servlets;
 
+import com.silverpeas.util.FileUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -74,15 +75,14 @@ public class CredentialsServlet extends HttpServlet {
   }
 
   private void initRessources() {
-    resources =
-        ResourceBundle.getBundle("com.stratelia.silverpeas.peasCore.SessionManager", new Locale("",
+    resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager", new Locale("",
         ""));
     String language = resources.getString("language");
     if ((language == null) || (language.length() <= 0)) {
       language = "fr";
     }
-    m_Multilang =
-        new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle", language);
+    m_Multilang = new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
+            language);
   }
 
   /**
