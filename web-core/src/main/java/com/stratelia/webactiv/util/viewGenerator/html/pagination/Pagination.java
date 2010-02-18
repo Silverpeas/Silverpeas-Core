@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
@@ -60,4 +61,8 @@ public interface Pagination extends SimpleGraphicElement {
    * @see
    */
   public String printCounter();
+  
+  public void setBaseURL(String baseUrl);
+  
+  public void setMultilang(ResourceLocator multilang);
 }

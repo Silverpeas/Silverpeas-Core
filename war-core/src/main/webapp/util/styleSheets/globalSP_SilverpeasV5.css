@@ -355,7 +355,6 @@ Definition des class de style Silverpeas
 }
 
 .intfdcolor {
-	background-color: #DDDDDD;
 	background-image:
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
 	background-repeat: repeat-x;
@@ -1366,8 +1365,65 @@ td.browsebar a:hover {
 	font-size: 10px;
 	font-weight: bolder;
 	color: #FFFFFF;
-	text-decoration: none
+	text-decoration: none;
 }
+
+.pageNav {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	white-space: nowrap;
+	margin: 0 auto;
+	display: table;
+}
+
+.pageNavContent {
+}
+
+.pageNav .pageIndex {
+	vertical-align: top;
+	background-color:#CCCCCC;
+	text-align:center;
+	vertical-align:top;
+	width:100px;
+	float: left;
+	padding: 3px;
+	margin-right: 20px;
+}
+
+.pageNav .pageOff {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	background-color: transparent;
+	font-size: 10px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+	vertical-align: top;
+	float: left;
+	padding: 3px;
+}
+
+.pageNav .pageOn {
+	background-color: #666666;
+	font-size: 10px;
+	font-weight: bolder;
+	color: #FFFFFF;
+	text-decoration: none;
+	vertical-align: top;
+	float: left;
+	padding: 3px;
+}
+
+.pageJumper {
+	float: left;
+	padding: 2px;
+} 
+
+.pageJumper .jumper {
+	visibility: hidden;
+}       
 
 /*- [ general ] --------------------------- */
 #portletPages img {

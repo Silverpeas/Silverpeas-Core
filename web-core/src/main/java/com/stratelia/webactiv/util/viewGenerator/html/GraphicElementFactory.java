@@ -83,10 +83,11 @@ public class GraphicElementFactory extends Object {
   private ResourceLocator favoriteLookSettings = null;
   private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
   private static ResourceLocator generalSettings = null;
+  private ResourceLocator multilang = null;
 
   private String currentLookName = null;
   private String externalStylesheet = null;
-  
+
   private String componentId = null;
   private MainSessionController mainSessionController = null;
 
@@ -119,6 +120,20 @@ public class GraphicElementFactory extends Object {
           "fr");
     }
     return generalSettings;
+  }
+
+  public ResourceLocator getMultilang() {
+    if (multilang == null) {
+      String language = "fr";
+      if (mainSessionController != null) {
+        language = mainSessionController.getFavoriteLanguage();
+      }
+      multilang =
+          new ResourceLocator(
+              "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
+              language);
+    }
+    return multilang;
   }
 
   /**
@@ -258,6 +273,7 @@ public class GraphicElementFactory extends Object {
         "GraphicElementFactory.getLookStyleSheet()",
         "root.MSG_GEN_ENTER_METHOD");
     String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
+    String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     String charset = getGeneralSettings().getString("charset", "ISO-8859-1");
@@ -270,7 +286,12 @@ public class GraphicElementFactory extends Object {
     if (externalStylesheet == null) {
       code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
           contextPath).append(standardStyle).append("\">\n");
-     
+      
+      code.append("<!--[if IE]>");
+      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
+          contextPath).append(standardStyleForIE).append("\">\n");
+      code.append("<![endif]-->");
+      
       if (lookStyle.length() > 0) {
         code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"")
             .append(lookStyle).append("\">");
@@ -334,13 +355,13 @@ public class GraphicElementFactory extends Object {
    * @return
    * @see
    */
-  public Vector getAvailableLooks() {
+  public Vector<String> getAvailableLooks() {
     ResourceLocator lookSettings = getLookSettings();
-    Enumeration keys = lookSettings.getKeys();
-    Vector vector = new Vector();
+    Enumeration<String> keys = lookSettings.getKeys();
+    Vector<String> vector = new Vector<String>();
 
     while (keys.hasMoreElements()) {
-      vector.add((String) keys.nextElement());
+      vector.add(keys.nextElement());
     }
     return vector;
   }
@@ -720,6 +741,7 @@ public class GraphicElementFactory extends Object {
       pagination = new PaginationSP();
     }
     pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
+    pagination.setMultilang(getMultilang());
     return pagination;
   }
 

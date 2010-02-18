@@ -1,0 +1,14 @@
+.pageNav {
+	background-color: #DDDDDD;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	white-space: nowrap;
+	margin: 0 auto;
+	position: relative; 
+	text-align: center; 
+}
+
+.pageNavContent {
+	text-align: left; display: inline; zoom: 1; 
+}
