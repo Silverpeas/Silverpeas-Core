@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,6 +54,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
  * @author
  */
 public class SelectionPeasRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -1531692630305784345L;
 
   /**
    * Method declaration
@@ -306,24 +309,16 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       SelectionPeasSessionController selectionPeasSC, HttpServletRequest request) {
     String destination = "";
 
-    selectionPeasSC.setCartSelected(CacheManager.CM_SET,
-        getSetSelected(request));
+    selectionPeasSC.setCartSelected(CacheManager.CM_SET, getValues(request
+        .getParameter("SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
+
     selectionPeasSC.setCartSelected(CacheManager.CM_ELEMENT,
-        getElementSelected(request));
+        getValues(request.getParameter("SelectedElements")), getValues(request
+        .getParameter("NonSelectedElements")));
 
     SilverTrace.info("selectionPeas", "doCartOperation()",
         "root.MSG_GEN_PARAM_VALUE", "Operation=" + op);
-    if ("GENERICPANELPREVIOUSSET".equals(op)) {
-      selectionPeasSC.previousCartPage(CacheManager.CM_SET);
-      destination = "selectionCart.jsp";
-    } else if ("GENERICPANELNEXTSET".equals(op)) {
-      selectionPeasSC.nextCartPage(CacheManager.CM_SET);
-      destination = "selectionCart.jsp";
-    } else if ("GENERICPANELPREVIOUSELEMENT".equals(op)) {
-      selectionPeasSC.previousCartPage(CacheManager.CM_ELEMENT);
-      destination = "selectionCart.jsp";
-    } else if ("GENERICPANELNEXTELEMENT".equals(op)) {
-      selectionPeasSC.nextCartPage(CacheManager.CM_ELEMENT);
+    if ("GENERICPANELChangePage".equals(op)) {
       destination = "selectionCart.jsp";
     } else if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER"))) {
       selectionPeasSC.setCartMiniFilter(request.getParameter("miniFilter"
@@ -350,24 +345,18 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
     String destination = "";
 
     if (selectionPeasSC.isMultiSelect()) {
-      selectionPeasSC.setSelected(CacheManager.CM_SET, getSetSelected(request));
+      selectionPeasSC.setSelected(CacheManager.CM_SET, getValues(request
+          .getParameter("SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
+
       selectionPeasSC.setSelected(CacheManager.CM_ELEMENT,
-          getElementSelected(request));
+          getValues(request.getParameter("SelectedElements")), getValues(request
+          .getParameter("NonSelectedElements")));
     }
 
     SilverTrace.info("selectionPeas", "doBrowseOperation()",
         "root.MSG_GEN_PARAM_VALUE", "Operation=" + op);
-    if ("GENERICPANELPREVIOUSSET".equals(op)) {
-      selectionPeasSC.previousPage(CacheManager.CM_SET);
-      destination = "selectionPeas.jsp";
-    } else if ("GENERICPANELNEXTSET".equals(op)) {
-      selectionPeasSC.nextPage(CacheManager.CM_SET);
-      destination = "selectionPeas.jsp";
-    } else if ("GENERICPANELPREVIOUSELEMENT".equals(op)) {
-      selectionPeasSC.previousPage(CacheManager.CM_ELEMENT);
-      destination = "selectionPeas.jsp";
-    } else if ("GENERICPANELNEXTELEMENT".equals(op)) {
-      selectionPeasSC.nextPage(CacheManager.CM_ELEMENT);
+
+    if ("GENERICPANELChangePage".equals(op)) {
       destination = "selectionPeas.jsp";
     } else if ("GENERICPANELZOOMTOSET".equals(op)) {
       selectionPeasSC.setParentSet(request.getParameter("setId"));
@@ -405,43 +394,23 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
   }
 
   protected String[] getFilters(HttpServletRequest request) {
-    ArrayList filters = new ArrayList();
+    ArrayList<String> filters = new ArrayList<String>();
     int i = 0;
-    String theValue = null;
-
-    theValue = request.getParameter("filter" + Integer.toString(i));
+    String theValue = request.getParameter("filter" + Integer.toString(i));
     while (theValue != null) {
       filters.add(theValue);
       i++;
       theValue = request.getParameter("filter" + Integer.toString(i));
     }
-    return (String[]) filters.toArray(new String[0]);
+    return filters.toArray(new String[0]);
   }
 
-  protected Set getElementSelected(HttpServletRequest request) {
-    HashSet selected = new HashSet();
-    int i = 0;
-    String theValue = null;
-    int nbMaxDisplayed = Integer.parseInt(request.getParameter("elementNB"));
-
-    for (i = 0; i < nbMaxDisplayed; i++) {
-      theValue = request.getParameter("element" + Integer.toString(i));
-      if ((theValue != null) && (theValue.length() > 0)) {
-        selected.add(theValue);
-      }
-    }
-    return selected;
-  }
-
-  protected Set getSetSelected(HttpServletRequest request) {
-    HashSet selected = new HashSet();
-    int i = 0;
-    String theValue = null;
-    int nbMaxDisplayed = Integer.parseInt(request.getParameter("setNB"));
-
-    for (i = 0; i < nbMaxDisplayed; i++) {
-      theValue = request.getParameter("set" + Integer.toString(i));
-      if ((theValue != null) && (theValue.length() > 0)) {
+  protected Set<String> getValues(String param) {
+    HashSet<String> selected = new HashSet<String>();
+    StringTokenizer tokenizer = new StringTokenizer(param, ",");
+    while (tokenizer.hasMoreTokens()) {
+      String theValue = tokenizer.nextToken();
+      if (StringUtil.isDefined(theValue)) {
         selected.add(theValue);
       }
     }

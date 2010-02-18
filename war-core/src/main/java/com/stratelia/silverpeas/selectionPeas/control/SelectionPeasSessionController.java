@@ -59,7 +59,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   protected GenericPanel m_SearchElementPanel = null;
   protected String m_Context = "";
   protected CacheManager m_Cm = null;
-  protected ArrayList m_SetPath = new ArrayList();
+  protected ArrayList<PanelLine> m_SetPath = new ArrayList<PanelLine>();
 
   protected BrowsePanelProvider[] m_NavBrowse = new BrowsePanelProvider[CacheManager.CM_NBTOT];
   protected PanelProvider[] m_NavCart = new PanelProvider[CacheManager.CM_NBTOT];
@@ -335,7 +335,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   }
 
   public PanelLine[] getSetPath() {
-    return (PanelLine[]) m_SetPath.toArray(new PanelLine[0]);
+    return m_SetPath.toArray(new PanelLine[0]);
   }
 
   public String[][] getInfos(int what, String theId) {
@@ -355,7 +355,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   }
 
   public PanelOperation[] getOperations(String currentFunction) {
-    ArrayList poList = new ArrayList();
+    ArrayList<PanelOperation> poList = new ArrayList<PanelOperation>();
 
     poList.add(m_Cm.getPanelOperation("DisplayBrowse"));
     if (m_Selection.isElementSelectable()) {
@@ -434,8 +434,9 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     return valret;
   }
 
-  public void setSelected(int what, Set selectedSets) {
+  public void setSelected(int what, Set<String> selectedSets, Set<String> unselectedSets) {
     m_NavBrowse[what].setSelectedElements(selectedSets);
+    m_NavBrowse[what].unsetSelectedElements(unselectedSets);
   }
 
   public void setOneSelected(int what, String selected) {
@@ -449,14 +450,6 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
 
   public PanelLine[] getPage(int what) {
     return m_NavBrowse[what].getPage();
-  }
-
-  public void nextPage(int what) {
-    m_NavBrowse[what].nextPage();
-  }
-
-  public void previousPage(int what) {
-    m_NavBrowse[what].previousPage();
   }
 
   public String getMiniFilterString(int what) {
@@ -524,20 +517,13 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     return valret;
   }
 
-  public void setCartSelected(int what, Set selectedSets) {
+  public void setCartSelected(int what, Set<String> selectedSets, Set<String> unselectedSets) {
     m_NavCart[what].setSelectedElements(selectedSets);
+    m_NavCart[what].unsetSelectedElements(unselectedSets);
   }
 
   public PanelLine[] getCartPage(int what) {
     return m_NavCart[what].getPage();
-  }
-
-  public void nextCartPage(int what) {
-    m_NavCart[what].nextPage();
-  }
-
-  public void previousCartPage(int what) {
-    m_NavCart[what].previousPage();
   }
 
   public String getCartMiniFilterString(int what) {

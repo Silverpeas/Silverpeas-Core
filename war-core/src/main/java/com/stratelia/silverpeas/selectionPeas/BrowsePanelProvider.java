@@ -70,21 +70,15 @@ abstract public class BrowsePanelProvider extends PanelProvider {
   }
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
-  public void setSelectedElements(Set elements) {
-    int i;
-    int max;
-
-    // Simple case : less than a page to display or display all
-    if ((m_NbDisplayed == -1) || (m_Ids.length <= m_NbDisplayed)) {
-      max = m_Ids.length;
-    } else if (m_Ids.length <= (m_FirstDisplayed + m_NbDisplayed)) {
-      max = m_Ids.length - m_FirstDisplayed;
-    } else {
-      max = m_NbDisplayed;
+  public void setSelectedElements(Set<String> elements) {
+    for (String element : elements) {
+      m_Cm.setSelected(m_what, element, true);
     }
-    for (i = 0; i < max; i++) {
-      m_Cm.setSelected(m_what, m_Ids[m_FirstDisplayed + i], elements
-          .contains(m_Ids[m_FirstDisplayed + i]));
+  }
+  
+  public void unsetSelectedElements(Set<String> elements) {
+    for (String element : elements) {
+      m_Cm.setSelected(m_what, element, false);
     }
   }
 

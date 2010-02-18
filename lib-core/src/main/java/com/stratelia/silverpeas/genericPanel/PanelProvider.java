@@ -45,8 +45,8 @@ abstract public class PanelProvider {
   protected int m_FirstDisplayed = 0;
   protected int m_NbDisplayed = GenericPanelSettings.m_ElementsByPage;
 
-  protected Hashtable m_ElementsCache = new Hashtable();
-  protected HashSet m_SelectedElements = new HashSet();
+  protected Hashtable<String, PanelLine> m_ElementsCache = new Hashtable<String, PanelLine>();
+  protected HashSet<String> m_SelectedElements = new HashSet<String>();
 
   protected boolean m_FilterValid = true;
 
@@ -99,12 +99,12 @@ abstract public class PanelProvider {
 
     if (m_ElementsCache.get(id) == null) {
       m_ElementsCache.put(id, getElementInfos(id));
-      valret = (PanelLine) m_ElementsCache.get(id);
+      valret = m_ElementsCache.get(id);
       if (valret != null) {
         valret.m_Selected = m_SelectedElements.contains(valret.m_Id);
       }
     } else {
-      valret = (PanelLine) m_ElementsCache.get(id);
+      valret = m_ElementsCache.get(id);
     }
     return valret;
   }
@@ -119,33 +119,20 @@ abstract public class PanelProvider {
     }
   }
 
-  public void setSelectedElements(Set elements) {
-    int i;
-    int max;
-    PanelLine theElement = null;
-
-    // Simple case : less than a page to display or display all
-    if ((m_NbDisplayed == -1) || (m_Ids.length <= m_NbDisplayed)) {
-      max = m_Ids.length;
-    } else if (m_Ids.length <= (m_FirstDisplayed + m_NbDisplayed)) {
-      max = m_Ids.length - m_FirstDisplayed;
-    } else {
-      max = m_NbDisplayed;
+  public void setSelectedElements(Set<String> elements) {   
+    for (String element : elements) {
+      setSelectedElement(element, true);
     }
-    for (i = 0; i < max; i++) {
-      theElement = getCachedElement(m_Ids[m_FirstDisplayed + i]);
-      if (elements.contains(m_Ids[m_FirstDisplayed + i])) {
-        theElement.m_Selected = true;
-        m_SelectedElements.add(m_Ids[m_FirstDisplayed + i]);
-      } else {
-        theElement.m_Selected = false;
-        m_SelectedElements.remove(m_Ids[m_FirstDisplayed + i]);
-      }
+  }
+  
+  public void unsetSelectedElements(Set<String> elements) {
+    for (String element : elements) {
+      setSelectedElement(element, false);
     }
   }
 
   public String[] getSelectedElements() {
-    return (String[]) m_SelectedElements.toArray(new String[0]);
+    return m_SelectedElements.toArray(new String[0]);
   }
 
   public int getSelectedNumber() {
@@ -216,20 +203,10 @@ abstract public class PanelProvider {
   }
 
   public PanelLine[] getPage() {
-    PanelLine[] valret = null;
-    int i;
-
-    // Simple case : less than a page to display or display all
-    if ((m_NbDisplayed == -1) || (m_Ids.length <= m_NbDisplayed)) {
-      m_FirstDisplayed = 0;
-      valret = new PanelLine[m_Ids.length];
-    } else if (m_Ids.length <= (m_FirstDisplayed + m_NbDisplayed)) {
-      valret = new PanelLine[m_Ids.length - m_FirstDisplayed];
-    } else {
-      valret = new PanelLine[m_NbDisplayed];
-    }
-    for (i = 0; i < valret.length; i++) {
-      valret[i] = getCachedElement(m_Ids[m_FirstDisplayed + i]);
+    PanelLine[] valret = new PanelLine[m_Ids.length];
+    
+    for (int i = 0; i < valret.length; i++) {
+      valret[i] = getCachedElement(m_Ids[i]);
     }
     return valret;
   }

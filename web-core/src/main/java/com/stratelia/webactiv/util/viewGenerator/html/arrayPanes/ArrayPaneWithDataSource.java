@@ -601,7 +601,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
       result +=
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
-              + "<tr align=\"center\" bgcolor=\"#999999\">\n"
+              +
+              "<tr align=\"center\" bgcolor=\"#999999\">\n"
               + "<td><img src=\""
               + iconPath
               + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
@@ -733,7 +734,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
       result +=
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"ArrayColumn\">\n"
-              + "<tr align=\"center\" bgcolor=\"#999999\">\n"
+              +
+              "<tr align=\"center\" bgcolor=\"#999999\">\n"
               + "<td><img src=\""
               + iconPath
               + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
@@ -859,6 +861,12 @@ public class ArrayPaneWithDataSource implements ArrayPane {
       return (ip + "/");
     }
     return (ip);
+  }
+
+  @Override
+  public void setPaginationJavaScriptCallback(String callback) {
+    // TODO Auto-generated method stub
+    
   }
 
 }

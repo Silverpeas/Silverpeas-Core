@@ -519,4 +519,10 @@ public class ArrayPaneWA implements ArrayPane {
         + GraphicElementFactory.getSettings().getString("IconsPath");
   }
 
+  @Override
+  public void setPaginationJavaScriptCallback(String callback) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

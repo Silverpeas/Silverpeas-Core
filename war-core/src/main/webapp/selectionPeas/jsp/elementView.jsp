@@ -50,7 +50,7 @@ MM_reloadPage(true);
 out.println(gef.getLookStyleSheet());
 %>
 </head>
-<BODY topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" SCROLL=YES>
+<BODY topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
 
 <%
 out.println(window.printBefore());
@@ -67,11 +67,11 @@ out.println(board.printBefore());
         if (infos[iInfo][0]!=null) {
             outBuffer.append("<tr>");
             outBuffer.append("	<td class='textePetitBold'>");
-            outBuffer.append(Encode.javaStringToHtmlString(infos[iInfo][0]));
+            outBuffer.append(EncodeHelper.javaStringToHtmlString(infos[iInfo][0]));
             outBuffer.append(" :");
             outBuffer.append("	</td>");
             outBuffer.append("	<td align=left valign='baseline'>");
-            outBuffer.append(Encode.javaStringToHtmlString(infos[iInfo][1]));
+            outBuffer.append(EncodeHelper.javaStringToHtmlString(infos[iInfo][1]));
             outBuffer.append("	</td>");
             outBuffer.append("</tr>");
         }

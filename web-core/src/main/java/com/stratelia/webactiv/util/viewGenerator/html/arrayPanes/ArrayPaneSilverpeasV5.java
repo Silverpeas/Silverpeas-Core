@@ -30,13 +30,15 @@
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import java.util.Vector;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.http.*;
-import javax.servlet.*;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.viewGenerator.html.*;
-import com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -44,8 +46,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @version 1.0
  */
 public class ArrayPaneSilverpeasV5 implements ArrayPane {
-  private Vector columns;
-  private Vector lines;
+  private Vector<ArrayColumn> columns;
+  private Vector<ArrayLine> lines;
   private String title = null;
   private String alignement = null;
   private String name;
@@ -69,6 +71,8 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    * @see ArrayColum.setRoutingAddress(String address)
    */
   private String m_RoutingAddress = null;
+
+  private String paginationJavaScriptCallback = null;
 
   /**
    * Default constructor as this class may be instanciated by method newInstance(), constructor
@@ -110,8 +114,8 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    */
   public void init(String name, String url,
       javax.servlet.ServletRequest request, HttpSession session) {
-    columns = new Vector();
-    lines = new Vector();
+    columns = new Vector<ArrayColumn>();
+    lines = new Vector<ArrayLine>();
     this.name = name;
     setRoutingAddress(url);
     this.session = session;
@@ -123,11 +127,11 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       session.setAttribute(getName(), state);
     }
 
-    String target = (String) request.getParameter(TARGET_PARAMETER_NAME);
+    String target = request.getParameter(TARGET_PARAMETER_NAME);
 
     if (target != null) {
       if (target.equals(name)) {
-        String action = (String) request.getParameter(ACTION_PARAMETER_NAME);
+        String action = request.getParameter(ACTION_PARAMETER_NAME);
 
         SilverTrace.info("viewgenerator",
             "ArrayPaneSilverpeasV4.ArrayPaneSilverpeasV4()",
@@ -135,7 +139,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
             + "'");
         if (action != null) {
           if (action.equals("Sort")) {
-            String newState = (String) request
+            String newState = request
                 .getParameter(COLUMN_PARAMETER_NAME);
 
             if (newState != null) {
@@ -150,7 +154,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
 
             }
           } else if (action.equals("ChangePage")) {
-            String index = (String) request.getParameter(INDEX_PARAMETER_NAME);
+            String index = request.getParameter(INDEX_PARAMETER_NAME);
             state.setFirstVisibleLine(Integer.parseInt(index));
           }
         }
@@ -309,7 +313,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     if (columns == null || columnNumber <= 0 || columnNumber > columns.size()) {
       return;
     }
-    ArrayColumn col = (ArrayColumn) (columns.get(columnNumber - 1));
+    ArrayColumn col = columns.get(columnNumber - 1);
     col.setSortable(mode == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
   }
 
@@ -352,9 +356,10 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   public String print() {
     int first = -1;
 
-    PaginationSP pagination = new PaginationSP();
-    pagination.init(lines.size(), state.getMaximumVisibleLine(), state
-        .getFirstVisibleLine());
+    GraphicElementFactory gef =
+        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    Pagination pagination =
+        gef.getPagination(lines.size(), state.getMaximumVisibleLine(), state.getFirstVisibleLine());
 
     String baseUrl = getUrl();
     if (baseUrl.indexOf("?") < 0)
@@ -408,7 +413,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append(printPseudoColumn());
     }
     for (int i = 0; i < columns.size(); i++) {
-      result.append(((ArrayColumn) columns.elementAt(i)).print());
+      result.append(columns.elementAt(i).print());
       if (m_CellsSpacing == 0) {
         result.append(printPseudoColumn());
       }
@@ -433,10 +438,9 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
 
       for (int i = first; (i < lines.size()) && (i < first + max); i++) {
         if (m_CellsSpacing == 0) {
-          result.append(((ArrayLine) lines.elementAt(i))
-              .printWithPseudoColumns());
+          result.append(lines.elementAt(i).printWithPseudoColumns());
         } else {
-          result.append(((ArrayLine) lines.elementAt(i)).print());
+          result.append(lines.elementAt(i).print());
         }
       }
     }
@@ -447,12 +451,12 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result
           .append(
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n")
-          .append("<tr align=\"center\">\n").append(
+          /*.append("<tr align=\"center\">\n").append(
           "<td class=\"viewGeneratorLines\"><img src=\"").append(
           getIconsPath()).append(
-          "/1px.gif\" width=\"1\" height=\"1\"></td>\n").append("</tr>\n")
-          .append("<tr align=\"center\"> \n").append("<td height=\"20\">");
-      result.append(pagination.printIndex());
+          "/1px.gif\" width=\"1\" height=\"1\"></td>\n").append("</tr>\n")*/
+          .append("<tr class=\"intfdcolor\"> \n").append("<td align=\"center\">");
+      result.append(pagination.printIndex(paginationJavaScriptCallback));
       result.append("</td>").append("</tr>\n").append("</table>");
     }
 
@@ -516,6 +520,11 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
 
     return generalSettings.getString("ApplicationURL")
         + GraphicElementFactory.getSettings().getString("IconsPath");
+  }
+
+  @Override
+  public void setPaginationJavaScriptCallback(String callback) {
+    paginationJavaScriptCallback = callback;
   }
 
 }

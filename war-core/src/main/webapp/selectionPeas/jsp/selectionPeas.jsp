@@ -36,13 +36,6 @@
     String selectedNumber = (String)request.getAttribute("selectedNumber");
     int c;
 
-    boolean[] pageElementNavigation = (boolean[])request.getAttribute("pageElementNavigation");
-    boolean toPrintElementBack = pageElementNavigation[0];
-	boolean toPrintElementNext = pageElementNavigation[1];
-    boolean[] pageSetNavigation = (boolean[])request.getAttribute("pageSetNavigation");
-    boolean toPrintSetBack = pageSetNavigation[0];
-	boolean toPrintSetNext = pageSetNavigation[1];
-
     boolean isSetSelectable = ((Boolean)request.getAttribute("isSetSelectable")).booleanValue();
     boolean isElementSelectable = ((Boolean)request.getAttribute("isElementSelectable")).booleanValue();
     PanelLine[] elementsToDisplay = (PanelLine[])request.getAttribute("elementsToDisplay");
@@ -119,7 +112,7 @@
 	        strPath.append("<a href=\"");
 	        strPath.append("javascript:submitOperation('GENERICPANELZOOMTOSET','','" + setPath[i].m_Id + "','')");
 	        strPath.append("\">");
-	        strPath.append(Encode.javaStringToHtmlString(setPath[i].m_Values[0]));
+	        strPath.append(setPath[i].m_Values[0]);
 	        strPath.append("</a>");
 	    }
     }
@@ -137,6 +130,7 @@
         }
     }
 %>
+
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -146,51 +140,50 @@ out.println(gef.getLookStyleSheet());
 <script language="JavaScript">
 	function selectAll(type)
 	{
-		var nbElmt = 0;
-		var isChecked = false;
-		var isElemtChecked = false;
-	
-	    eval("nbElmt = window.document.operationForm." + type + "NB.value;");
+		var isChecked = false;	
 	    eval("isChecked = window.document.operationForm." + type + "All.checked;");
-	    if(isChecked)
-	    {
-	        for(var k=0; k<nbElmt; k++)
-	        {
-	            eval("isElemtChecked = window.document.operationForm." + type + k + ".checked;");
-	            if (!isElemtChecked)
-	            {
-	                document.operationForm.selectedNumber.value = parseInt(document.operationForm.selectedNumber.value) + 1;
-	            }
-	            eval("window.document.operationForm." + type + k + ".checked=true;");
-	        }
-	    }
-	    else
-	    {
-	        for(var k=0; k<nbElmt; k++)
-	        {
-	            eval("isElemtChecked = window.document.operationForm." + type + k + ".checked;");
-	            if (isElemtChecked)
-	            {
-	                document.operationForm.selectedNumber.value = parseInt(document.operationForm.selectedNumber.value) - 1;
-	            }
-	            eval("window.document.operationForm." + type + k + ".checked=false;");
-	        }
+
+	    var boxItems;
+	    eval("boxItems = window.document.operationForm." + type + ";");
+	    if (boxItems != null){
+		    if(isChecked)
+		    {
+				for (i=0;i<boxItems.length ;i++ ){
+					if (!boxItems[i].checked){
+						boxItems[i].checked=true;
+						addToSelectedNumber(1);
+					}
+				}
+		    }
+		    else
+		    {
+				for (i=0;i<boxItems.length ;i++ ){
+					if (boxItems[i].checked){
+						boxItems[i].checked=false;
+						addToSelectedNumber(-1);
+					}
+				}
+		    }
 	    }
 	}
 	
-	function selectUnselect(objName)
+	function selectUnselect(obj)
 	{
-	    var bSelected;
+	    var bSelected = obj.checked;
 	
-	    eval("bSelected = document.operationForm." + objName + ".checked;");
 	    if (bSelected)
 	    {
-	        document.operationForm.selectedNumber.value = parseInt(document.operationForm.selectedNumber.value) + 1;
+	    	addToSelectedNumber(1);
 	    }
 	    else
 	    {
-	        document.operationForm.selectedNumber.value = parseInt(document.operationForm.selectedNumber.value) - 1;
+	    	addToSelectedNumber(-1);
 	    }
+	}
+
+	function addToSelectedNumber(number)
+	{
+		document.operationForm.selectedNumber.value = parseInt(document.operationForm.selectedNumber.value) + number;
 	}
 	
 	function submitOperation(theOperation,confirmMsg)
@@ -200,6 +193,12 @@ out.println(gef.getLookStyleSheet());
 	
 	function submitOperation(theOperation,confirmMsg,setId,elementId)
 	{
+		document.operationForm.SelectedSets.value = getObjects("set", true);
+		document.operationForm.NonSelectedSets.value = getObjects("set", false);
+
+		document.operationForm.SelectedElements.value = getObjects("element", true);
+		document.operationForm.NonSelectedElements.value = getObjects("element", false);
+		
 	    if (confirmMsg.length > 0)
 	    {
 	        if (window.confirm(confirmMsg))
@@ -211,12 +210,62 @@ out.println(gef.getLookStyleSheet());
 	        }
 	    }
 	    else
-	    {
+	    {			
 	        document.operationForm.SpecificOperation.value = theOperation;
 	        document.operationForm.setId.value = setId;
 	        document.operationForm.elementId.value = elementId;
 	        document.operationForm.submit();
 	    }
+	}
+
+	function changeSetsPage(index)
+	{
+		changePage(index, "sets");
+	}
+
+	function changeElementsPage(index)
+	{
+		changePage(index, "elements");
+	}
+
+	function changePage(index, arrayName)
+	{
+		document.operationForm.SelectedSets.value = getObjects("set", true);
+		document.operationForm.NonSelectedSets.value = getObjects("set", false);
+
+		document.operationForm.SelectedElements.value = getObjects("element", true);
+		document.operationForm.NonSelectedElements.value = getObjects("element", false);
+		
+		document.operationForm.SpecificOperation.value = "GENERICPANELChangePage";
+		document.operationForm.<%=ArrayPane.TARGET_PARAMETER_NAME%>.value = arrayName;
+		document.operationForm.<%=ArrayPane.INDEX_PARAMETER_NAME%>.value = index;
+		document.operationForm.<%=ArrayPane.ACTION_PARAMETER_NAME%>.value = "ChangePage";
+
+		document.operationForm.submit();
+	}
+
+	function getObjects(type, selected)
+	{
+		var boxItems;
+	    eval("boxItems = window.document.operationForm." + type + ";");
+	    
+		var  items = "";
+		if (boxItems != null){
+			// au moins une checkbox exist
+			var nbBox = boxItems.length;
+			if ( (nbBox == null) && (boxItems.checked == selected) ){
+				// il n'y a qu'une checkbox non selectionnée
+				items += boxItems.value+",";
+			} else{
+				// search not checked boxes 
+				for (i=0;i<boxItems.length ;i++ ){
+					if (boxItems[i].checked == selected){
+						items += boxItems[i].value+",";
+					}
+				}
+			}
+		}
+		return items;
 	}
 
 <%
@@ -292,11 +341,18 @@ out.println(gef.getLookStyleSheet());
 %>
 <center>
 <form action="<%=componentURL%>BrowseOperation" name="operationForm" method="POST">
-  <input type="hidden" name="SpecificOperation" value="">
-  <input type="hidden" name="setId" value="">
-  <input type="hidden" name="elementId" value="">
-  <input type="hidden" name="setNB" value="<%=setsToDisplay.length%>">
-  <input type="hidden" name="elementNB" value="<%=elementsToDisplay.length%>">
+  <input type="hidden" name="SpecificOperation" value=""/>
+  <input type="hidden" name="setId" value=""/>
+  <input type="hidden" name="elementId" value=""/>
+  <input type="hidden" name="setNB" value="<%=SelectionPeasSettings.m_SetByBrowsePage%>"/>
+  <input type="hidden" name="elementNB" value="<%=SelectionPeasSettings.m_ElementByBrowsePage%>"/>
+  <input type="hidden" name="<%=ArrayPane.INDEX_PARAMETER_NAME%>" value=""/>
+  <input type="hidden" name="<%=ArrayPane.TARGET_PARAMETER_NAME%>" value=""/>
+  <input type="hidden" name="<%=ArrayPane.ACTION_PARAMETER_NAME%>" value=""/>
+  <input type="hidden" name="SelectedSets" value=""/>
+  <input type="hidden" name="NonSelectedSets" value=""/>
+  <input type="hidden" name="SelectedElements" value=""/>
+  <input type="hidden" name="NonSelectedElements" value=""/>
 
 <% // ......................................................................................................................................... %>
 <% //.........................................................Display Header................................................................... %>
@@ -304,67 +360,24 @@ out.println(gef.getLookStyleSheet());
   <%
         if (isMultiSelect)
         {
+          Board board = gef.getBoard();
+          out.print(board.printBefore());
   %>
-  <table border="0" cellspacing="0" cellpadding="2" width="98%" class="contourintfdcolor">
-      <tr> 
-        <td class="intfdcolor4"> 
-          <table cellpadding="5" cellspacing="0" border="0">
-            <tr> 
-              <td> 
-                <table cellpadding=2 cellspacing=0 border=0 width="100%">
-                  <tr> 
-                    <td ><span class="txtlibform"><%=resource.getString("selectionPeas.selectedNumber")%>&nbsp;: 
-                      &nbsp;</span> </td>
-                    <td> 
-                      <input type="text" value ="<%=selectedNumber%>" name="selectedNumber" size="7" maxlength="10">
-                    </td>
-                  </tr>
-                </table>
-              </td>
+  		<table cellpadding="2" cellspacing="0" border="0" width="100%">
+        	<tr> 
+            	<td nowrap="nowrap"><span class="txtlibform"><%=resource.getString("selectionPeas.selectedNumber")%> :</span></td>
+                <td width="100%"><input type="text" value ="<%=selectedNumber%>" name="selectedNumber" size="7" maxlength="10"/></td>
             </tr>
-          </table>
-        </td>
-      </tr>
-  </table>
-  <br>
-  <br>
+        </table>
   <%
+	  		out.print(board.printAfter());
+	  		out.print("<br/><br/>");
         }
   %>
 <% // ......................................................................................................................................... %>
 <% //.........................................................Display Sets..................................................................... %>
 <% //.......................................................................................................................................... %>
-          <%
-    if (toPrintSetBack || toPrintSetNext)
-    {
-%>
-          <table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor4"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center"> 
-              <td class="ArrayNavigation"> 
-                <%
-    if(toPrintSetBack)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELPREVIOUSSET','')\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintSetNext)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELNEXTSET','')\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-	%>
-              </td>
-            </tr>
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor1"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-          </table>
-          <%
-    }
-          
+<%          
       ArrayPane arrayPane;
       ArrayColumn arrayColumn = null;
       String isChecked = "";
@@ -372,10 +385,11 @@ out.println(gef.getLookStyleSheet());
       if (isDisplaySets)
       {
 		  // Affiche un tableau
-          arrayPane = gef.getArrayPane("List", "#", request,session);
+          arrayPane = gef.getArrayPane("sets", componentURL+"BrowseOperation", request,session);
 		  // Affiche le nombre de ligne total du tableau dans la même page
-		  arrayPane.setVisibleLineNumber(-1);
+		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.m_SetByBrowsePage);
 		  arrayPane.setTitle(setText);
+		  arrayPane.setPaginationJavaScriptCallback("changeSetsPage");
           
 		  // Définition des entêtes de colonnes
           if (isSetSelectable)
@@ -412,7 +426,7 @@ out.println(gef.getLookStyleSheet());
                             isChecked = " checked";
                         else
                             isChecked = "";
-                        ArrayCellText cell0 = arrayLine.addArrayCellText("<input type=checkbox name=set" + i + " value='" + setsToDisplay[i].m_Id + "'" + isChecked + " onclick=\"javascript:selectUnselect('set" + i + "')\">");
+                        ArrayCellText cell0 = arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"set\" value=\"" + setsToDisplay[i].m_Id + "\"" + isChecked + " onclick=\"javascript:selectUnselect(this)\">");
                         cell0.setAlignement("center");
                     }
                     else
@@ -432,79 +446,17 @@ out.println(gef.getLookStyleSheet());
           out.println(arrayPane.print());
       }
 %>
-<%
-	if (toPrintSetBack || toPrintSetNext)
-    {
-%>
-          <table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor4"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center"> 
-              <td class="ArrayNavigation"> 
-                <%
-    if(toPrintSetBack)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELPREVIOUSSET','')\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintSetNext)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELNEXTSET','')\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-                %>
-              </td>
-            </tr>
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor1"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-          </table>
-<%
-    }
-%>&nbsp;
 <% // ......................................................................................................................................... %>
 <% //.........................................................Display Elements................................................................. %>
 <% //.......................................................................................................................................... %>
-
-<br>
-          <%
-    if (toPrintElementBack || toPrintElementNext)
-    {
-%>
-          <table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor4"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center"> 
-              <td class="ArrayNavigation"> 
-                <%
-    if(toPrintElementBack)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELPREVIOUSELEMENT','')\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintElementNext)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELNEXTELEMENT','')\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-	%>
-              </td>
-            </tr>
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor1"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-          </table>
-          <%
-    }
-%>
-          <%
+<br/>
+         <%
 		  // Affiche un tableau
-          arrayPane = gef.getArrayPane("List", "#", request, session);
+          arrayPane = gef.getArrayPane("elements", componentURL+"BrowseOperation", request, session);
 		  // Affiche le nombre de ligne total du tableau dans la même page
-		  arrayPane.setVisibleLineNumber(-1);
+		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.m_ElementByBrowsePage);
 		  arrayPane.setTitle(elementText);
+		  arrayPane.setPaginationJavaScriptCallback("changeElementsPage");
           
 		  // Définition des entêtes de colonnes
           if (isElementSelectable)
@@ -555,7 +507,7 @@ out.println(gef.getLookStyleSheet());
                             isChecked = " checked";
                         else
                             isChecked = "";
-                        ArrayCellText cell1 = arrayLine.addArrayCellText("<input type=checkbox name=element" + i + " value='" + elementsToDisplay[i].m_Id + "'" + isChecked + " onclick=\"javascript:selectUnselect('element" + i + "')\">");
+                        ArrayCellText cell1 = arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"element\" value=\"" + elementsToDisplay[i].m_Id + "\"" + isChecked + " onclick=\"javascript:selectUnselect(this)\">");
                         cell1.setAlignement("center");
                     }
                     else
@@ -626,41 +578,10 @@ out.println(gef.getLookStyleSheet());
 
           out.println(arrayPane.print());
 %>
-          <%
-	if (toPrintElementBack || toPrintElementNext)
-    {
-%>
-          <table width="98%" border="0" cellspacing="0" cellpadding="0" class="ArrayColumn" align="center">
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor4"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center"> 
-              <td class="ArrayNavigation"> 
-                <%
-    if(toPrintElementBack)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELPREVIOUSELEMENT','')\" class=\"ArrayNavigation\"><< "+resource.getString("GML.previous")+"&nbsp;</a>");
-	if(toPrintElementNext)
-		out.println("<a href=\"javascript:submitOperation('GENERICPANELNEXTELEMENT','')\" class=\"ArrayNavigation\">&nbsp;"+resource.getString("GML.next")+" >></a>");
-                %>
-              </td>
-            </tr>
-            <tr align="center" class="buttonColorDark"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-            <tr align="center" class="intfdcolor1"> 
-              <td><img src="<%=resource.getIcon("selectionPeas.px")%>" width="1" height="1"></td>
-            </tr>
-          </table>
-          <%
-    }
-%>&nbsp;
 <% // ......................................................................................................................................... %>
 <% //.........................................................Display End...................................................................... %>
 <% //.......................................................................................................................................... %>
-  <br><br>
+  <br/><br/>
   <%
     ButtonPane buttonPane = gef.getButtonPane();
     if (isMultiSelect)
@@ -674,7 +595,6 @@ out.println(gef.getLookStyleSheet());
 	}
 	out.println(buttonPane.print());
 %>
-
 </form>
 </center>
 <%
