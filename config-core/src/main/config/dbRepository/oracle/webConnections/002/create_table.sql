@@ -4,6 +4,6 @@ CREATE TABLE SB_webConnections_info
 	userId				int				NOT NULL,
 	componentId			varchar (50)	NOT NULL,
 	paramLogin			varchar (100)   NOT NULL,
-	paramPassword		bytea			NULL
+	paramPassword		blob			NULL
 ) 
 ;
