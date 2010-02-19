@@ -25,9 +25,7 @@ package com.silverpeas.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,6 +43,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class FileUtil implements MimeTypes {
 
@@ -89,6 +89,9 @@ public class FileUtil implements MimeTypes {
         mimeType = SPINFIRE_MIME_TYPE;
       }
     }
+    if (mimeType == null) {
+      mimeType = DEFAULT_MIME_TYPE;
+    }
     return mimeType;
   }
 
@@ -99,7 +102,7 @@ public class FileUtil implements MimeTypes {
    * @param token : type String: the token separating the repertories
    */
   public static String[] getAttachmentContext(String context) {
-    if (context == null || "".equals(context)) {
+    if (! StringUtil.isDefined(context)) {
       return new String[] { BASE_CONTEXT };
     }
     StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
@@ -118,25 +121,7 @@ public class FileUtil implements MimeTypes {
    * @throws IOException
    */
   public static byte[] readFile(File file) throws IOException {
-    FileInputStream in = null;
-    ByteArrayOutputStream out = null;
-    try {
-      out = new ByteArrayOutputStream();
-      in = new FileInputStream(file);
-      byte[] buffer = new byte[8];
-      int c = 8;
-      while ((c = in.read(buffer, 0, c)) >= 0) {
-        out.write(buffer, 0, c);
-      }
-      return out.toByteArray();
-    } finally {
-      if (in != null) {
-        in.close();
-      }
-      if (out != null) {
-        out.close();
-      }
-    }
+    return FileUtils.readFileToByteArray(file);
   }
 
   /**
@@ -147,19 +132,10 @@ public class FileUtil implements MimeTypes {
    */
   public static void writeFile(File file, InputStream data) throws IOException {
     FileOutputStream out = null;
-    BufferedInputStream in = null;
     try {
       out = new FileOutputStream(file);
-      byte[] buffer = new byte[8];
-      int c = 8;
-      while ((c = data.read(buffer, 0, c)) >= 0) {
-        out.write(buffer, 0, c);
-      }
-      out.flush();
+      IOUtils.copy(data, out);
     } finally {
-      if (in != null) {
-        in.close();
-      }
       if (out != null) {
         out.close();
       }
@@ -177,16 +153,8 @@ public class FileUtil implements MimeTypes {
     BufferedReader in = null;
     try {
       out = new FileWriter(file);
-      char[] buffer = new char[8];
-      int c = 8;
-      while ((c = data.read(buffer, 0, c)) >= 0) {
-        out.write(buffer, 0, c);
-      }
-      out.flush();
+      IOUtils.copy(data, out);
     } finally {
-      if (in != null) {
-        in.close();
-      }
       if (out != null) {
         out.close();
       }
@@ -200,6 +168,19 @@ public class FileUtil implements MimeTypes {
    * @return the corresponding ResourceBundle if it exists - null otherwise.
    */
   public static ResourceBundle loadBundle(String name, Locale locale) {
-    return ResourceBundle.getBundle(name, locale, new ConfigurationClassLoader(FileUtil.class.getClassLoader()));
+    Locale loc = locale;
+    if(loc == null){
+      loc = Locale.ROOT;
+    }
+    return ResourceBundle.getBundle(name, loc, new ConfigurationClassLoader(FileUtil.class.getClassLoader()));
+  }
+
+
+  /**
+   * Indicates if the OS is from the Microsoft Windows familly
+   * @return true if the OS is from the Microsoft Windows familly - false otherwise.
+   */
+  public static boolean isWindows() {
+    return OsEnum.getOS().isWindows();
   }
 }
