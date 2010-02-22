@@ -731,8 +731,11 @@ public class SilverTrace {
     availableModules.clear();
     // Reset all appenders and debug levels
     // Category.getRoot().getHierarchy().resetConfiguration();
-    Category.getRoot().getLoggerRepository().resetConfiguration();
+    Logger.getRootLogger().getLoggerRepository().resetConfiguration();
+    //Category.getRoot().getLoggerRepository().resetConfiguration();
     try {
+      Logger.getRootLogger().setAdditivity(true);
+      Logger.getRootLogger().setLevel(Level.ERROR);
       resources = FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverTrace",
           new Locale("", ""));
       pathFiles = resources.getString("pathSilverTrace");
@@ -1561,18 +1564,15 @@ public class SilverTrace {
    * @return
    */
   static protected Category getCategory(String module, String classToAppend) {
+    if("root".equalsIgnoreCase(module)) {
+      return Logger.getRootLogger();
+    }
     String modulePath = availableModules.getProperty(module);
 
     if (modulePath == null) {
       return null;
     } else {
-      return Category.getInstance(modulePath);
-
-      /*
-       * FOR THE MOMENT, GO TO THE MODULES' LEVEL (level 3) if (MsgTrace.stringValid(classToAppend))
-       * { return Category.getInstance(modulePath + "." + classToAppend); } else { return
-       * Category.getInstance(modulePath); }
-       */
+      return Logger.getLogger(modulePath);
     }
   }
 
