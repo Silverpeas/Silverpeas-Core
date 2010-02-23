@@ -32,6 +32,7 @@ import java.io.Serializable;
 
 public class ModelDetail implements Serializable {
 
+  private static final long serialVersionUID = -8687004760818045824L;
   private String id = null;
   private String name = null;
   private String description = null;

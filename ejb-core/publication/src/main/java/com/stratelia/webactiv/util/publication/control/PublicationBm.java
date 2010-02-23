@@ -44,8 +44,6 @@ import javax.ejb.EJBObject;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface PublicationBm extends EJBObject, PublicationBmBusinessSkeleton {

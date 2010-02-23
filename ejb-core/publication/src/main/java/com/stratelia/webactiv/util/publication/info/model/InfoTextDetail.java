@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 public class InfoTextDetail extends InfoItemDetail implements Serializable {
 
+  private static final long serialVersionUID = -3018181028926009431L;
   private String content = null;
 
   public InfoTextDetail(InfoPK infoPK, String order, String id, String content) {

@@ -36,17 +36,18 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 
 public class InfoDetail implements Serializable {
 
+  private static final long serialVersionUID = 1449129863941833416L;
   private InfoPK pk = null;
-  private Collection textList = null;
-  private Collection imageList = null;
-  private Collection linkList = null;
+  private Collection<InfoTextDetail> textList = null;
+  private Collection<InfoImageDetail> imageList = null;
+  private Collection<InfoLinkDetail> linkList = null;
   private String content = null;
 
   // added for indexation
   private int indexOperation = IndexManager.ADD;
 
-  public InfoDetail(InfoPK pk, Collection textList, Collection imageList,
-      Collection linkList, String content) {
+  public InfoDetail(InfoPK pk, Collection<InfoTextDetail> textList, Collection<InfoImageDetail> imageList,
+      Collection<InfoLinkDetail> linkList, String content) {
     setPK(pk);
     setInfoTextList(textList);
     setInfoImageList(imageList);
@@ -56,11 +57,10 @@ public class InfoDetail implements Serializable {
 
   /**
    * module info doesn't manage attachments
-   * 
    * @deprecated
    */
-  public InfoDetail(InfoPK pk, Collection textList, Collection attachmentList,
-      Collection imageList, Collection linkList, String content) {
+  public InfoDetail(InfoPK pk, Collection<InfoTextDetail> textList, Collection attachmentList,
+      Collection<InfoImageDetail> imageList, Collection<InfoLinkDetail> linkList, String content) {
     setPK(pk);
     setInfoTextList(textList);
     setInfoImageList(imageList);
@@ -78,27 +78,27 @@ public class InfoDetail implements Serializable {
     this.pk = pk;
   }
 
-  public Collection getInfoTextList() {
+  public Collection<InfoTextDetail> getInfoTextList() {
     return textList;
   }
 
-  public void setInfoTextList(Collection textList) {
+  public void setInfoTextList(Collection<InfoTextDetail> textList) {
     this.textList = textList;
   }
 
-  public Collection getInfoImageList() {
+  public Collection<InfoImageDetail> getInfoImageList() {
     return imageList;
   }
 
-  public void setInfoImageList(Collection imageList) {
+  public void setInfoImageList(Collection<InfoImageDetail> imageList) {
     this.imageList = imageList;
   }
 
-  public Collection getInfoLinkList() {
+  public Collection<InfoLinkDetail> getInfoLinkList() {
     return linkList;
   }
 
-  public void setInfoLinkList(Collection linkList) {
+  public void setInfoLinkList(Collection<InfoLinkDetail> linkList) {
     this.linkList = linkList;
   }
 
@@ -114,12 +114,12 @@ public class InfoDetail implements Serializable {
       Collection oldItems, Collection toCreateItems, Collection toUpdateItems) {
     if (newItems == null)
       return;
-    Iterator newItemsIterator = newItems.iterator();
+    Iterator<InfoItemDetail> newItemsIterator = newItems.iterator();
     while (newItemsIterator.hasNext()) {
       InfoItemDetail newItemDetail = (InfoItemDetail) newItemsIterator.next();
       boolean isToCreate = true;
       if (oldItems != null) {
-        Iterator oldItemsIterator = oldItems.iterator();
+        Iterator<InfoItemDetail> oldItemsIterator = oldItems.iterator();
         while (oldItemsIterator.hasNext()) {
           InfoItemDetail oldItemDetail = (InfoItemDetail) oldItemsIterator
               .next();

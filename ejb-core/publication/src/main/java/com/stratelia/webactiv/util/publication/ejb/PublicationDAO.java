@@ -50,7 +50,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * This is the Publication Data Access Object.
- * 
  * @author Nicolas Eysseric
  */
 public class PublicationDAO {
@@ -67,14 +66,13 @@ public class PublicationDAO {
   // used only for kmelia
   // keys : componentId
   // values : Collection of PublicationDetail
-  private static Hashtable lastPublis = new Hashtable();
+  private static Hashtable<String, Collection<PublicationDetail>> lastPublis = new Hashtable<String, Collection<PublicationDetail>>();
   private static String publicationTableName = "SB_Publication_Publi";
   private static String publicationFatherTableName = "SB_Publication_PubliFather";
   private static String nodeTableName = "SB_Node_Node";
 
   /**
    * This class must not be instanciated
-   * 
    * @since 1.0
    */
   public PublicationDAO() {
@@ -88,16 +86,16 @@ public class PublicationDAO {
   }
 
   private static void cacheLastPublis(String instanceId,
-      Collection lastPublications) {
+      Collection<PublicationDetail> lastPublications) {
     lastPublis.put(instanceId, lastPublications);
   }
 
-  private static Collection getLastPublis(String instanceId) {
-    Collection listLastPublisCache = (Collection) lastPublis.get(instanceId);
+  private static Collection<PublicationDetail> getLastPublis(String instanceId) {
+    Collection<PublicationDetail> listLastPublisCache = lastPublis.get(instanceId);
     if (listLastPublisCache != null && listLastPublisCache.size() > 0) {
-      //removing not visible publications from the cache
-      ArrayList listLastPublisCacheMAJ = new ArrayList();
-      Iterator i = listLastPublisCache.iterator();
+      // removing not visible publications from the cache
+      ArrayList<PublicationDetail> listLastPublisCacheMAJ = new ArrayList<PublicationDetail>();
+      Iterator<PublicationDetail> i = listLastPublisCache.iterator();
       PublicationDetail pubDetail = null;
       java.util.Date date = new java.util.Date();
       Calendar cDateHeureNow = Calendar.getInstance();
@@ -152,23 +150,18 @@ public class PublicationDAO {
       }
       lastPublis.put(instanceId, listLastPublisCacheMAJ);
     }
-    return (Collection) lastPublis.get(instanceId);
+    return lastPublis.get(instanceId);
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherPKs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static int getNbPubInFatherPKs(Connection con, Collection fatherPKs)
+  public static int getNbPubInFatherPKs(Connection con, Collection<NodePK> fatherPKs)
       throws SQLException {
     ResultSet rs = null;
     int result = 0;
@@ -179,10 +172,10 @@ public class PublicationDAO {
     if (fatherPKs.isEmpty()) {
       return 0;
     } else {
-      Iterator iterator = fatherPKs.iterator();
+      Iterator<NodePK> iterator = fatherPKs.iterator();
 
       if (iterator.hasNext()) {
-        nodePK = (NodePK) iterator.next();
+        nodePK = iterator.next();
         pubPK = new PublicationPK("unknown", nodePK);
         nodeId = nodePK.getId();
       }
@@ -249,16 +242,11 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherPK
    * @param fatherPath
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
@@ -281,11 +269,14 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement.append(
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
-      selectStatement.append(" and (N.nodePath like '").append(fatherPath).append("/").append(fatherPK.
+      selectStatement.append(" and (N.nodePath like '").append(fatherPath).append("/").append(
+          fatherPK.
           getId()).append("%' or N.nodeId = ").append(fatherPK.getId()).append(")");
 
       PreparedStatement prepStmt = null;
@@ -329,9 +320,9 @@ public class PublicationDAO {
     }
   }
 
-  public static Hashtable getDistribution(Connection con, String instanceId,
+  public static Hashtable<String, Integer> getDistribution(Connection con, String instanceId,
       String statusSubQuery, boolean checkVisibility) throws SQLException {
-    Hashtable result = new Hashtable();
+    Hashtable<String, Integer> result = new Hashtable<String, Integer>();
 
     StringBuffer selectStatement = new StringBuffer(128);
 
@@ -340,7 +331,6 @@ public class PublicationDAO {
         " F, ").append(publicationTableName).append(" P, ").append(
         nodeTableName).append(" N ");
     selectStatement.append("Where F.pubId = P.pubId AND F.nodeId = N.nodeId ");
-    // selectStatement.append("AND N.instanceId = ? AND P.instanceId = ? ");
     selectStatement.append("AND N.instanceId = ? ");
     selectStatement.append("AND F.instanceId = ? ");
     if (statusSubQuery != null) {
@@ -351,8 +341,10 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement.append(
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
     }
@@ -415,13 +407,9 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param detail
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void insertRow(Connection con, PublicationDetail detail)
@@ -435,7 +423,8 @@ public class PublicationDAO {
     insertStatement.append(
         " instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour,");
     insertStatement.append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) ");
-    insertStatement.append(
+    insertStatement
+        .append(
         " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
     PreparedStatement prepStmt = null;
 
@@ -538,13 +527,9 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteRow(Connection con, PublicationPK pk)
@@ -568,15 +553,10 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param primaryKey
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static PublicationPK selectByPrimaryKey(Connection con,
@@ -613,15 +593,10 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
@@ -701,7 +676,8 @@ public class PublicationDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "PublicationDAO : resultSet2PublicationDetail() : internal error : updateDate format unknown for publication.pk = "
-            + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else {
       updateDate = creationDate;
@@ -721,7 +697,8 @@ public class PublicationDAO {
     } catch (java.text.ParseException e) {
       throw new SQLException(
           "PublicationDAO : resultSet2PublicationDetail() : internal error : validateDate format unknown for publication.pk = "
-          + pk + " : " + e.toString());
+              +
+              pk + " : " + e.toString());
     }
     String validatorId = rs.getString(20);
 
@@ -748,34 +725,29 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectByFatherPK(Connection con, NodePK fatherPK)
+  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     return selectByFatherPK(con, fatherPK, null);
   }
 
-  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       boolean filterOnVisibilityPeriod) throws SQLException {
     return selectByFatherPK(con, fatherPK, null, filterOnVisibilityPeriod);
   }
 
-  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       String sorting, boolean filterOnVisibilityPeriod) throws SQLException {
     return selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod,
         null);
   }
 
-  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       String sorting, boolean filterOnVisibilityPeriod, String userId)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
@@ -826,7 +798,7 @@ public class PublicationDAO {
       }
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -838,30 +810,25 @@ public class PublicationDAO {
     }
   }
 
-  public static Collection selectByFatherPK(Connection con, NodePK fatherPK,
+  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
       String sorting) throws SQLException {
     return selectByFatherPK(con, fatherPK, sorting, true, null);
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectNotInFatherPK(Connection con, NodePK fatherPK)
+  public static Collection<PublicationDetail> selectNotInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     return selectNotInFatherPK(con, fatherPK, null);
   }
 
-  public static Collection selectNotInFatherPK(Connection con, NodePK fatherPK,
+  public static Collection<PublicationDetail> selectNotInFatherPK(Connection con, NodePK fatherPK,
       String sorting) throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
     String selectStatement = QueryStringFactory.getSelectNotInFatherPK(pubPK.getTableName());
@@ -902,7 +869,7 @@ public class PublicationDAO {
       prepStmt.setString(14, hourNow);
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -916,22 +883,17 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherIds
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static ArrayList selectByFatherIds(Connection con,
-      ArrayList fatherIds, PublicationPK pubPK, String sorting,
-      ArrayList status, boolean filterOnVisibilityPeriod) throws SQLException {
-    ArrayList list = new ArrayList();
+  public static ArrayList<PublicationDetail> selectByFatherIds(Connection con,
+      ArrayList<String> fatherIds, PublicationPK pubPK, String sorting,
+      ArrayList<String> status, boolean filterOnVisibilityPeriod) throws SQLException {
+    ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
     ResultSet rs = null;
     PublicationDetail pub = null;
 
@@ -939,11 +901,11 @@ public class PublicationDAO {
     StringBuffer whereClause = new StringBuffer(128);
 
     if (fatherIds != null) {
-      Iterator it = fatherIds.iterator();
+      Iterator<String> it = fatherIds.iterator();
 
       whereClause.append("(");
       while (it.hasNext()) {
-        fatherId = (String) it.next();
+        fatherId = it.next();
         whereClause.append(" F.nodeId = ").append(fatherId);
         if (it.hasNext()) {
           whereClause.append(" or ");
@@ -954,11 +916,14 @@ public class PublicationDAO {
     }
 
     StringBuffer selectStatement = new StringBuffer(128);
-    selectStatement.append(
+    selectStatement
+        .append(
         "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-    selectStatement.append(
+    selectStatement
+        .append(
         "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-    selectStatement.append(
+    selectStatement
+        .append(
         "		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
     selectStatement.append("from ").append(pubPK.getTableName()).append(" P, ").append(pubPK.
         getTableName()).append("Father F ");
@@ -969,8 +934,10 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement.append(
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
     }
@@ -980,12 +947,12 @@ public class PublicationDAO {
 
     if (status != null && status.size() > 0) {
       StringBuffer statusBuffer = new StringBuffer();
-      Iterator it = status.iterator();
+      Iterator<String> it = status.iterator();
 
       statusBuffer.append("(");
       String sStatus = null;
       while (it.hasNext()) {
-        sStatus = (String) it.next();
+        sStatus = it.next();
         statusBuffer.append(" P.pubStatus = '").append(sStatus).append("'");
         if (it.hasNext()) {
           statusBuffer.append(" or ");
@@ -1043,24 +1010,19 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param publicationPKs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectByPublicationPKs(Connection con,
-      Collection publicationPKs) throws SQLException {
-    ArrayList publications = new ArrayList();
-    Iterator iterator = publicationPKs.iterator();
+  public static Collection<PublicationDetail> selectByPublicationPKs(Connection con,
+      Collection<PublicationPK> publicationPKs) throws SQLException {
+    ArrayList<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    Iterator<PublicationPK> iterator = publicationPKs.iterator();
 
     while (iterator.hasNext()) {
-      PublicationPK pubPK = (PublicationPK) iterator.next();
+      PublicationPK pubPK = iterator.next();
       PublicationDetail pub = loadRow(con, pubPK);
 
       publications.add(pub);
@@ -1070,19 +1032,14 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param status
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectByStatus(Connection con, PublicationPK pubPK,
+  public static Collection<PublicationDetail> selectByStatus(Connection con, PublicationPK pubPK,
       String status) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
@@ -1098,7 +1055,7 @@ public class PublicationDAO {
       PublicationDetail pub = null;
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement.toString());
-      ArrayList list = new ArrayList();
+      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
         list.add(pub);
@@ -1109,16 +1066,19 @@ public class PublicationDAO {
     }
   }
 
-  public static Collection selectByStatus(Connection con, List componentIds,
+  public static Collection<PublicationDetail> selectByStatus(Connection con, List<String> componentIds,
       String status) throws SQLException {
-    ArrayList list = new ArrayList();
+    List<PublicationDetail> list = new ArrayList<PublicationDetail>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuffer selectStatement = new StringBuffer(128);
-      selectStatement.append(
+      selectStatement
+          .append(
           "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-      selectStatement.append(
+      selectStatement
+          .append(
           "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-      selectStatement.append(
+      selectStatement
+          .append(
           "		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
       selectStatement.append("from ").append(publicationTableName).append(
           " P, ").append(publicationTableName).append("Father F ");
@@ -1128,8 +1088,10 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement.append(
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
       selectStatement.append(" and F.pubId = P.pubId ");
@@ -1137,7 +1099,7 @@ public class PublicationDAO {
 
       String componentId = null;
       for (int c = 0; c < componentIds.size(); c++) {
-        componentId = (String) componentIds.get(c);
+        componentId = componentIds.get(c);
         if (c != 0) {
           selectStatement.append(" OR ");
         }
@@ -1196,9 +1158,9 @@ public class PublicationDAO {
     return list;
   }
 
-  public static Collection selectPKsByStatus(Connection con, List componentIds,
+  public static Collection<PublicationPK> selectPKsByStatus(Connection con, List<String> componentIds,
       String status) throws SQLException {
-    ArrayList list = new ArrayList();
+    List<PublicationPK> list = new ArrayList<PublicationPK>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuffer selectStatement = new StringBuffer(128);
       selectStatement.append("select  distinct(P.pubId), P.instanceId, P.pubUpdateDate ");
@@ -1210,8 +1172,10 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement.append(
+      selectStatement
+          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement
+          .append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
       selectStatement.append(" and F.pubId = P.pubId ");
@@ -1219,7 +1183,7 @@ public class PublicationDAO {
 
       String componentId = null;
       for (int c = 0; c < componentIds.size(); c++) {
-        componentId = (String) componentIds.get(c);
+        componentId = componentIds.get(c);
         if (c != 0) {
           selectStatement.append(", ");
         }
@@ -1274,23 +1238,18 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectAllPublications(Connection con,
+  public static Collection<PublicationDetail> selectAllPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
     return selectAllPublications(con, pubPK, null);
   }
 
-  public static Collection selectAllPublications(Connection con,
+  public static Collection<PublicationDetail> selectAllPublications(Connection con,
       PublicationPK pubPK, String sorting) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(pubPK.getTableName()).append(
@@ -1307,7 +1266,7 @@ public class PublicationDAO {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement.toString());
 
-      ArrayList list = new ArrayList();
+      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1321,19 +1280,14 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param status
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectByBeginDateDescAndStatus(Connection con,
+  public static Collection<PublicationDetail> selectByBeginDateDescAndStatus(Connection con,
       PublicationPK pubPK, String status) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
@@ -1382,7 +1336,7 @@ public class PublicationDAO {
 
       rs = prepStmt.executeQuery();
 
-      ArrayList list = new ArrayList();
+      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1397,24 +1351,19 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param status
    * @param fatherId
    * @param fetchSize
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
+  public static Collection<PublicationDetail> selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
       Connection con, PublicationPK pubPK, String status, String fatherId,
       int fetchSize) throws SQLException {
-    Collection lastPublis = getLastPublis(pubPK.getComponentName());
+    Collection<PublicationDetail> lastPublis = getLastPublis(pubPK.getComponentName());
     if (lastPublis != null) {
       return lastPublis;
     } else {
@@ -1458,7 +1407,7 @@ public class PublicationDAO {
         rs = prepStmt.executeQuery();
 
         int nbFetch = 0;
-        ArrayList list = new ArrayList();
+        List<PublicationDetail> list = new ArrayList<PublicationDetail>();
         PublicationDetail pub = null;
         while (rs.next() && nbFetch < fetchSize) {
           pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1475,18 +1424,13 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection selectByBeginDateDesc(Connection con,
+  public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
@@ -1531,7 +1475,7 @@ public class PublicationDAO {
       prepStmt.setString(13, hourNow);
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1545,18 +1489,13 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getOrphanPublications(Connection con,
+  public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
@@ -1569,7 +1508,7 @@ public class PublicationDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement.toString());
-      ArrayList list = new ArrayList();
+      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1583,18 +1522,13 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getNotOrphanPublications(Connection con,
+  public static Collection<PublicationDetail> getNotOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
@@ -1639,7 +1573,7 @@ public class PublicationDAO {
       prepStmt.setString(12, hourNow);
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1653,14 +1587,10 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param creatorId
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteOrphanPublicationsByCreatorId(Connection con,
@@ -1684,24 +1614,20 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param publisherId
    * @param nodeId
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getUnavailablePublicationsByPublisherId(
+  public static Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
       Connection con, PublicationPK pubPK, String publisherId, String nodeId)
       throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
-    selectStatement.append("select * from ").append(pubPK.getTableName()).append(" P, ").append(pubPK.
+    selectStatement.append("select * from ").append(pubPK.getTableName()).append(" P, ").append(
+        pubPK.
         getTableName()).append("Father F ");
     selectStatement.append(" where P.instanceId = ? ");
     selectStatement.append(" and F.pubId = P.pubId ");
@@ -1733,7 +1659,7 @@ public class PublicationDAO {
       }
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pubPK);
@@ -1750,35 +1676,25 @@ public class PublicationDAO {
    */
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param query
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection searchByKeywords(Connection con, String query,
+  public static Collection<PublicationDetail> searchByKeywords(Connection con, String query,
       PublicationPK pubPK) throws SQLException {
-    ArrayList result = new ArrayList();
+    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
     return result;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static PublicationDetail loadRow(Connection con, PublicationPK pk)
@@ -1810,13 +1726,9 @@ public class PublicationDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param detail
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void changeInstanceId(Connection con, PublicationPK pubPK,
@@ -1860,7 +1772,8 @@ public class PublicationDAO {
 
     StringBuffer updateQuery = new StringBuffer(128);
     updateQuery.append("update ").append(detail.getPK().getTableName());
-    updateQuery.append(
+    updateQuery
+        .append(
         " set infoId = ? , pubName = ? , pubDescription = ? , pubCreationDate = ? , pubBeginDate = ? , pubEndDate = ? , pubCreatorId = ? , pubImportance = ? , pubVersion = ? , pubKeywords = ? , pubContent = ? , pubStatus = ? , pubImage = ? , pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ? , pubAuthor = ? , pubTargetValidatorId = ? , pubCloneId = ? , pubCloneStatus = ? , lang = ? ");
     updateQuery.append(" where pubId = ? ");
     PreparedStatement prepStmt = null;
@@ -2009,7 +1922,7 @@ public class PublicationDAO {
     return pub;
   }
 
-  public static Collection selectBetweenDate(Connection con, String beginDate,
+  public static Collection<PublicationDetail> selectBetweenDate(Connection con, String beginDate,
       String endDate, String instanceId) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(publicationTableName);
@@ -2030,7 +1943,7 @@ public class PublicationDAO {
       prepStmt.setString(3, endDate);
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
         pub = resultSet2PublicationDetail(rs, null);

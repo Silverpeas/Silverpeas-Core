@@ -48,8 +48,10 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.InfoDAO;
 import com.stratelia.webactiv.util.publication.info.SeeAlsoDAO;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
+import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoLinkDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoPK;
+import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
@@ -58,141 +60,13 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: PublicationEJB.java,v 1.22 2008/10/15 08:19:48 neysseri Exp $
- *
- * $Log: PublicationEJB.java,v $
- * Revision 1.22  2008/10/15 08:19:48  neysseri
- * Utilisation systématique de la table seealso au lieu de infodetail_link
- *
- * Revision 1.21  2008/06/27 07:01:58  neysseri
- * Ajout encodage problème apostrophe Word
- *
- * Revision 1.20  2008/03/26 13:15:50  neysseri
- * no message
- *
- * Revision 1.19  2008/03/11 15:44:15  neysseri
- * no message
- *
- * Revision 1.18  2007/12/10 08:26:35  neysseri
- * no message
- *
- * Revision 1.17  2007/12/03 14:06:26  neysseri
- * no message
- *
- * Revision 1.16.6.4  2007/11/20 15:39:31  neysseri
- * no message
- *
- * Revision 1.16.6.3  2007/11/09 13:29:41  neysseri
- * no message
- *
- * Revision 1.16.6.2  2007/11/05 16:03:26  neysseri
- * no message
- *
- * Revision 1.16.6.1  2007/10/31 16:59:33  neysseri
- * no message
- *
- * Revision 1.16  2007/02/27 15:03:34  neysseri
- * no message
- *
- * Revision 1.15  2006/12/01 15:01:37  neysseri
- * no message
- *
- * Revision 1.14  2006/10/24 14:37:08  neysseri
- * Modifications apportées pour l'évolution "Publication Toujours Visible" :
- * Ajout de la notion de clone
- *
- * Revision 1.13.4.2  2006/10/20 16:18:10  neysseri
- * *** empty log message ***
- *
- * Revision 1.13.4.1  2006/10/06 16:00:30  neysseri
- * *** empty log message ***
- *
- * Revision 1.13  2006/07/06 14:17:19  neysseri
- * no message
- *
- * Revision 1.12  2006/06/23 13:14:56  neysseri
- * no message
- *
- * Revision 1.11.4.1  2006/06/23 12:47:14  neysseri
- * no message
- *
- * Revision 1.11  2006/01/05 11:01:59  neysseri
- * Ajout de l'attribut targetValidatorId : utilisateur devant valider la publication
- *
- * Revision 1.10  2005/12/02 13:11:51  neysseri
- * Ajout d'un méthode pour supprimer l'image
- *
- * Revision 1.9  2005/09/13 12:59:19  dlesimple
- * Ajout champ Auteur
- *
- * Revision 1.8  2005/05/19 14:54:15  neysseri
- * Possibilité de supprimer les Voir Aussi
- *
- * Revision 1.7  2005/02/23 19:13:55  neysseri
- * intégration Import/Export
- *
- * Revision 1.6.2.2  2005/02/17 17:33:15  neysseri
- * no message
- *
- * Revision 1.6.2.1  2005/02/08 18:00:39  tleroi
- * *** empty log message ***
- *
- * Revision 1.6  2004/06/22 15:34:59  neysseri
- * nettoyage eclipse
- *
- * Revision 1.5  2004/02/06 18:48:38  neysseri
- * Some useless methods removed !
- *
- * Revision 1.4  2004/01/09 13:48:49  neysseri
- * Adding of two new attributes beginHour and endHour to extends visibility period
- *
- * Revision 1.3  2003/08/26 09:39:27  neysseri
- * New method added.
- * This method permits to know if a publication already exists in a given instance.
- * This is a based-name search.
- *
- * Revision 1.2  2002/12/18 07:39:27  neysseri
- * Bug fixing about links between publications
- *
- * Revision 1.1.1.1  2002/08/06 14:47:52  nchaix
- * no message
- *
- * Revision 1.22  2002/07/30 07:26:00  nchaix
- * Merge branche B200006
- *
- * Revision 1.21.4.1  2002/07/22 10:04:16  mnikolaenko
- * no message
- *
- * Revision 1.21  2002/06/27 08:56:33  mguillem
- * Merge branche V2001_fevs01
- *
- * Revision 1.20.14.2  2002/05/28 11:13:14  gshakirin
- * Adding validatorId and validateDate fields
- *
- * Revision 1.20.14.1  2002/05/28 11:09:12  gshakirin
- * Adding validatorId and validateDate fields
- *
- * Revision 1.20  2002/04/16 10:02:55  santonio
- * ajout d'une methode pour transformer les carecteres speciaux comme € et ’
- *
- * Revision 1.19  2002/03/11 14:15:53  mhguig
- * mofif pour modificateur
- *
- * Revision 1.18  2002/01/11 12:40:47  neysseri
- * Stabilisation Lot 2 : Exceptions et Silvertrace
- *
- */
-
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PublicationEJB implements EntityBean {
+
+  private static final long serialVersionUID = 839570873632274272L;
   private EntityContext context;
   private PublicationPK pk;
   private InfoPK infoPK;
@@ -227,8 +101,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public PublicationEJB() {
@@ -236,7 +108,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get the attributes of THIS publication
-   * 
    * @return a PublicationDetail
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception java.sql.SQLException
@@ -268,9 +139,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Update the attributes of the publication
-   * 
-   * @param pubDetail
-   *          the PublicationDetail which contains updated data
+   * @param pubDetail the PublicationDetail which contains updated data
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
@@ -318,8 +187,7 @@ public class PublicationEJB implements EntityBean {
 
       }
       /*
-       * if(pubDetail.getUpdaterId() != null) { updaterId =
-       * pubDetail.getCreatorId(); }
+       * if(pubDetail.getUpdaterId() != null) { updaterId = pubDetail.getCreatorId(); }
        */
       updaterId = pubDetail.getUpdaterId();
       if (pubDetail.isUpdateDateMustBeSet())
@@ -355,11 +223,10 @@ public class PublicationEJB implements EntityBean {
           // Remove of a translation is required
           if (oldLang.equalsIgnoreCase(pubDetail.getLanguage())) {
             // Default language = translation
-            List translations = PublicationI18NDAO.getTranslations(con, pk);
+            List<PublicationI18N> translations = PublicationI18NDAO.getTranslations(con, pk);
 
             if (translations != null && translations.size() > 0) {
-              PublicationI18N translation = (PublicationI18N) translations
-                  .get(0);
+              PublicationI18N translation = translations.get(0);
 
               lang = translation.getLanguage();
               name = translation.getName();
@@ -462,9 +329,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Add a new father to this publication
-   * 
-   * @param fatherPK
-   *          the father NodePK
+   * @param fatherPK the father NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -503,9 +368,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Remove a father to this publication
-   * 
-   * @param fatherPK
-   *          the father NodePK to remove
+   * @param fatherPK the father NodePK to remove
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -522,9 +385,7 @@ public class PublicationEJB implements EntityBean {
   }
 
   /**
-   * Remove all fathers to this publication - this publication will be linked to
-   * no Node
-   * 
+   * Remove all fathers to this publication - this publication will be linked to no Node
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -542,26 +403,23 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get all fathers of this publication
-   * 
    * @return A collection of NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see java.util.Collection
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection getAllFatherPK() throws SQLException {
+  public Collection<NodePK> getAllFatherPK() throws SQLException {
     return getAllFatherPK(null);
   }
 
-  public Collection getAllFatherPK(String sorting) throws SQLException {
+  public Collection<NodePK> getAllFatherPK(String sorting) throws SQLException {
     SilverTrace.info("publication", "PublicationEJB.getAllFatherPK()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
 
     try {
-      Collection result = PublicationFatherDAO.getAllFatherPK(con, pk, sorting);
-
-      return result;
+      return PublicationFatherDAO.getAllFatherPK(con, pk, sorting);
     } finally {
       freeConnection(con);
     }
@@ -569,11 +427,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create or update info to this publication
-   * 
-   * @param modelPK
-   *          The modelPk corresponding to the choosen model
-   * @param infos
-   *          An InfoDetail which contains info to add to the publication
+   * @param modelPK The modelPk corresponding to the choosen model
+   * @param infos An InfoDetail which contains info to add to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.ModelPK
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @exception java.sql.SQLException
@@ -603,11 +458,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create only info associated to a model
-   * 
-   * @param modelPK
-   *          The modelPk corresponding to the choosen model
-   * @param infos
-   *          An InfoDetail which contains info to add to the publication
+   * @param modelPK The modelPk corresponding to the choosen model
+   * @param infos An InfoDetail which contains info to add to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.ModelPK
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @exception java.sql.SQLException
@@ -643,7 +495,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get all info associated to this publication
-   * 
    * @return All info are in a InfoDetail object
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @exception java.sql.SQLException
@@ -664,9 +515,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Update info associated to this publication
-   * 
-   * @param infos
-   *          An InfoDetail which contains info to update to the publication
+   * @param infos An InfoDetail which contains info to update to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @exception java.sql.SQLException
    * @since 1.0
@@ -678,23 +527,23 @@ public class PublicationEJB implements EntityBean {
     InfoDetail old = getInfoDetail();
 
     // update or create textDetail ?
-    ArrayList newText = new ArrayList();
-    ArrayList oldText = new ArrayList();
+    ArrayList<InfoTextDetail> newText = new ArrayList<InfoTextDetail>();
+    ArrayList<InfoTextDetail> oldText = new ArrayList<InfoTextDetail>();
 
     InfoDetail.selectToCreateAndToUpdateItems(infos.getInfoTextList(), old
         .getInfoTextList(), newText, oldText);
 
     // update or create imageDetail ?
-    ArrayList newImage = new ArrayList();
-    ArrayList oldImage = new ArrayList();
+    ArrayList<InfoImageDetail> newImage = new ArrayList<InfoImageDetail>();
+    ArrayList<InfoImageDetail> oldImage = new ArrayList<InfoImageDetail>();
 
     InfoDetail.selectToCreateAndToUpdateItems(infos.getInfoImageList(), old
         .getInfoImageList(), newImage, oldImage);
 
     // update or create linkDetail ?
     // update or create imageDetail ?
-    ArrayList newLink = new ArrayList();
-    ArrayList oldLink = new ArrayList();
+    ArrayList<InfoLinkDetail> newLink = new ArrayList<InfoLinkDetail>();
+    ArrayList<InfoLinkDetail> oldLink = new ArrayList<InfoLinkDetail>();
 
     InfoDetail.selectToCreateAndToUpdateItems(infos.getInfoLinkList(), old
         .getInfoLinkList(), newLink, oldLink);
@@ -718,14 +567,14 @@ public class PublicationEJB implements EntityBean {
     }
   }
 
-  public void deleteInfoLinks(List pubIds) throws SQLException {
+  public void deleteInfoLinks(List<String> pubIds) throws SQLException {
     Connection con = getConnection();
 
     try {
       String pubId = null;
       PublicationPK targetPK = null;
       for (int p = 0; p < pubIds.size(); p++) {
-        pubId = (String) pubIds.get(p);
+        pubId = pubIds.get(p);
         targetPK = new PublicationPK(pubId, this.pk.getInstanceId());
         SeeAlsoDAO.deleteLink(con, this.pk, targetPK);
       }
@@ -737,7 +586,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Get all info on publication (parameters, model and info)
-   * 
    * @return A completePublication
    * @see com.stratelia.webactiv.util.publication.model.CompletePublication
    * @exception java.sql.SQLException
@@ -758,11 +606,11 @@ public class PublicationEJB implements EntityBean {
       ModelDetail modelDetail = InfoDAO.getModelDetail(con, infoPK);
 
       // Get links
-      List links = SeeAlsoDAO.getLinks(con, pubDetail.getPK());
+      List<ForeignPK> links = SeeAlsoDAO.getLinks(con, pubDetail.getPK());
       ForeignPK link = null;
       InfoLinkDetail infoLink = null;
       for (int l = 0; l < links.size(); l++) {
-        link = (ForeignPK) links.get(l);
+        link = links.get(l);
         infoLink = new InfoLinkDetail(null, "useless", "useless", link.getId());
         infoDetail.getInfoLinkList().add(infoLink);
       }
@@ -775,9 +623,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create a new Publication object
-   * 
-   * @param pubDetail
-   *          the PublicationDetail which contains data
+   * @param pubDetail the PublicationDetail which contains data
    * @return the PublicationPK of the new Publication
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception javax.ejb.CreateException
@@ -794,14 +640,10 @@ public class PublicationEJB implements EntityBean {
 
       // Transform the 'special' caracters
       /*
-       * pubDetail.setName(Encode.transformStringForBD(pubDetail.getName()));
-       * pubDetail
-       * .setDescription(Encode.transformStringForBD(pubDetail.getDescription
-       * ()));
-       * pubDetail.setKeywords(Encode.transformStringForBD(pubDetail.getKeywords
-       * ()));
-       * pubDetail.setAuthor(Encode.transformStringForBD(pubDetail.getAuthor
-       * ()));
+       * pubDetail.setName(Encode.transformStringForBD(pubDetail.getName())); pubDetail
+       * .setDescription(Encode.transformStringForBD(pubDetail.getDescription ()));
+       * pubDetail.setKeywords(Encode.transformStringForBD(pubDetail.getKeywords ()));
+       * pubDetail.setAuthor(Encode.transformStringForBD(pubDetail.getAuthor ()));
        */
 
       try {
@@ -866,12 +708,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pubDetail
-   * 
    * @throws CreateException
-   * 
    * @see
    */
   public void ejbPostCreate(PublicationDetail pubDetail) throws CreateException {
@@ -879,11 +717,8 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create an instance of a Publication object
-   * 
-   * @param pk
-   *          the PK of the Publication to instanciate
-   * @return the PublicationPK of the instanciated Publication if it exists in
-   *         database
+   * @param pk the PK of the Publication to instanciate
+   * @return the PublicationPK of the instanciated Publication if it exists in database
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception javax.ejb.FinderException
    * @exception java.sql.SQLException
@@ -915,13 +750,9 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create an instance of a Publication object
-   * 
-   * @param pk
-   *          the PK where the Publication is instanciated
-   * @param name
-   *          the publication's name to instanciate
-   * @return the PublicationPK of the instanciated Publication if it exists in
-   *         database
+   * @param pk the PK where the Publication is instanciated
+   * @param name the publication's name to instanciate
+   * @return the PublicationPK of the instanciated Publication if it exists in database
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception javax.ejb.FinderException
    * @exception java.sql.SQLException
@@ -977,7 +808,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Load publication attributes from database
-   * 
    * @since 1.0
    */
   public void ejbLoad() {
@@ -1034,7 +864,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Store publication attributes into database
-   * 
    * @since 1.0
    */
   public void ejbStore() {
@@ -1047,9 +876,8 @@ public class PublicationEJB implements EntityBean {
     // Transform the 'special' caracters
     /*
      * name = Encode.transformStringForBD(name); description =
-     * Encode.transformStringForBD(description); keywords =
-     * Encode.transformStringForBD(keywords); auhor =
-     * Encode.transformStringForBD(author);
+     * Encode.transformStringForBD(description); keywords = Encode.transformStringForBD(keywords);
+     * auhor = Encode.transformStringForBD(author);
      */
 
     PublicationDetail detail = new PublicationDetail(pk, name, description,
@@ -1079,7 +907,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Delete this Publication and all info associated
-   * 
    * @since 1.0
    */
   public void ejbRemove() {
@@ -1113,8 +940,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -1123,8 +948,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -1133,10 +956,7 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param ec
-   * 
    * @see
    */
   public void setEntityContext(EntityContext ec) {
@@ -1145,8 +965,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void unsetEntityContext() {

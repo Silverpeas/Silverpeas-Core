@@ -28,8 +28,8 @@ package com.stratelia.webactiv.util.publication.ejb;
 
 public class QueryStringFactory extends Object {
   /**
-   * Hashtable which contains the specifics code encoded as key and their values
-   * are right code encoded
+   * Hashtable which contains the specifics code encoded as key and their values are right code
+   * encoded
    */
   private static String selectByBeginDateDescAndStatusAndNotLinkedToFatherId = null;
   private static String selectByFatherPK = null;
@@ -144,11 +144,11 @@ public class QueryStringFactory extends Object {
       StringBuffer query = new StringBuffer();
       query
           .append("select pubid, infoid, pubname, pubdescription, pubcreationdate, "
-              + "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords,"
-              + "pubcontent, pubstatus, pubimage, pubimagemimetype, pubupdatedate,"
-              + "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour,"
-              + "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus,"
-              + "lang ");
+          + "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords,"
+          + "pubcontent, pubstatus, pubimage, pubimagemimetype, pubupdatedate,"
+          + "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour,"
+          + "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus,"
+          + "lang ");
       query.append(" from ").append(tableName);
       query.append(" where pubId = ? ");
       loadRow = query.toString();

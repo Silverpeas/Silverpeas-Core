@@ -28,6 +28,7 @@ import java.util.Date;
 
 public class ValidationStep implements Serializable {
 
+  private static final long serialVersionUID = -5783286372913745898L;
   private int id = -1;
   private PublicationPK pubPK = null;
   private String userId = null;

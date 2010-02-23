@@ -32,10 +32,8 @@ package com.silverpeas.publication.importExport;
 import java.util.ArrayList;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class DBModelContentType {
 
@@ -65,8 +63,7 @@ public class DBModelContentType {
   }
 
   /**
-   * @param listImageParts
-   *          The listImageParts to set.
+   * @param listImageParts The listImageParts to set.
    */
   public void setListImageParts(ArrayList listImageParts) {
     this.listImageParts = listImageParts;
@@ -80,8 +77,7 @@ public class DBModelContentType {
   }
 
   /**
-   * @param listTextParts
-   *          The listTextParts to set.
+   * @param listTextParts The listTextParts to set.
    */
   public void setListTextParts(ArrayList listTextParts) {
     this.listTextParts = listTextParts;

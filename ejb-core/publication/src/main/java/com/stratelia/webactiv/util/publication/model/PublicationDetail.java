@@ -57,13 +57,14 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
 /**
  * This object contains the description of a publication
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PublicationDetail extends AbstractI18NBean implements
-    SilverContentInterface, Serializable {
+public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
+    Serializable {
 
+  private static final long serialVersionUID = 9199848912262605680L;
+  
   private PublicationPK pk;
   private String infoId;
   private String name;
@@ -96,7 +97,7 @@ public class PublicationDetail extends AbstractI18NBean implements
 
   // added for the taglib
   private InfoDetail infoDetail = null;
-  private List xmlFields = null;
+  private List<XMLField> xmlFields = null;
 
   // added for indexation
   private int indexOperation = IndexManager.ADD;
@@ -121,8 +122,7 @@ public class PublicationDetail extends AbstractI18NBean implements
   public static final String CLONE = "Clone";
 
   /**
-   * Constructeur par défaut: nécéssaire au mapping castor du module
-   * d'importExport
+   * Constructeur par défaut: nécéssaire au mapping castor du module d'importExport
    */
   public PublicationDetail() {
   }
@@ -818,11 +818,11 @@ public class PublicationDetail extends AbstractI18NBean implements
   /****************************************************************************************/
   /** FormTemplate exposition for taglibs */
   /****************************************************************************************/
-  public List getXmlFields() {
+  public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
 
-  public List getXmlFields(String language) {
+  public List<XMLField> getXmlFields(String language) {
     if (xmlFields == null) {
       try {
         xmlFields = getFormTemplateBm().getXMLFieldsForExport(
@@ -841,7 +841,7 @@ public class PublicationDetail extends AbstractI18NBean implements
   public String getFieldValue(String fieldNameAndLanguage) {
     SilverTrace.info("publication", "PublicationDetail.getModelContent()",
         "root.MSG_GEN_ENTER_METHOD", "fieldNameAndLanguage = "
-            + fieldNameAndLanguage);
+        + fieldNameAndLanguage);
 
     String[] params = fieldNameAndLanguage.split(",");
 
@@ -853,10 +853,10 @@ public class PublicationDetail extends AbstractI18NBean implements
     String fieldValue = "";
 
     try {
-      List xmlFields = getXmlFields(language);
+      List<XMLField> xmlFields = getXmlFields(language);
       XMLField xmlField = null;
       for (int x = 0; x < xmlFields.size(); x++) {
-        xmlField = (XMLField) xmlFields.get(x);
+        xmlField = xmlFields.get(x);
         if (fieldName.equals(xmlField.getName())) {
           fieldValue = xmlField.getValue();
           if (fieldValue == null) {
@@ -870,7 +870,7 @@ public class PublicationDetail extends AbstractI18NBean implements
                   && !attachmentId.equals("null")) {
                 AttachmentDetail attachment = AttachmentController
                     .searchAttachmentByPK(new AttachmentPK(attachmentId,
-                        "useless", getPK().getInstanceId()));
+                    "useless", getPK().getInstanceId()));
                 if (attachment != null) {
                   attachment
                       .setLogicalName(attachment.getLogicalName(language));
@@ -910,7 +910,7 @@ public class PublicationDetail extends AbstractI18NBean implements
       try {
         FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME,
-                FormTemplateBmHome.class);
+            FormTemplateBmHome.class);
         formTemplateBm = formTemplateBmHome.create();
       } catch (Exception e) {
         throw new PublicationRuntimeException(
@@ -939,7 +939,7 @@ public class PublicationDetail extends AbstractI18NBean implements
   }
 
   public String getModelContent() {
-    Collection allInfoText = null;
+    Collection<InfoTextDetail> allInfoText = null;
     StringBuffer content = new StringBuffer();
 
     InfoDetail infoDetail = getInfoDetail();
@@ -947,9 +947,9 @@ public class PublicationDetail extends AbstractI18NBean implements
       allInfoText = infoDetail.getInfoTextList();
 
     if (allInfoText != null) {
-      Iterator it = allInfoText.iterator();
+      Iterator<InfoTextDetail> it = allInfoText.iterator();
       while (it.hasNext()) {
-        InfoTextDetail textDetail = (InfoTextDetail) it.next();
+        InfoTextDetail textDetail = it.next();
         content.append(textDetail.getContent());
       }
     }
@@ -961,13 +961,13 @@ public class PublicationDetail extends AbstractI18NBean implements
         "root.MSG_GEN_ENTER_METHOD", "fieldIndex = " + fieldIndex);
     String fieldContent = "";
     InfoDetail infoDetail = getInfoDetail();
-    ArrayList allInfoText = null;
+    ArrayList<InfoTextDetail> allInfoText = null;
     if (infoDetail != null)
-      allInfoText = (ArrayList) infoDetail.getInfoTextList();
+      allInfoText = (ArrayList<InfoTextDetail>) infoDetail.getInfoTextList();
 
     if (allInfoText != null) {
       if (fieldIndex < allInfoText.size())
-        fieldContent = ((InfoTextDetail) allInfoText.get(fieldIndex))
+        fieldContent = (allInfoText.get(fieldIndex))
             .getContent();
     }
     return fieldContent;
@@ -976,20 +976,20 @@ public class PublicationDetail extends AbstractI18NBean implements
   public InfoImageDetail getImage(int fieldIndex) {
     InfoImageDetail infoImageDetail = null;
     InfoDetail infoDetail = getInfoDetail();
-    ArrayList allInfoImage = null;
+    ArrayList<InfoImageDetail> allInfoImage = null;
 
     if (infoDetail != null)
-      allInfoImage = (ArrayList) infoDetail.getInfoImageList();
+      allInfoImage = (ArrayList<InfoImageDetail>) infoDetail.getInfoImageList();
 
     if (allInfoImage != null) {
       if (fieldIndex < allInfoImage.size())
-        infoImageDetail = (InfoImageDetail) allInfoImage.get(fieldIndex);
+        infoImageDetail = allInfoImage.get(fieldIndex);
     }
     return infoImageDetail;
   }
 
-  public Map getImageMappedUrl(int fieldIndex) {
-    Map imageMappedURL = null;
+  public Map<String, String> getImageMappedUrl(int fieldIndex) {
+    Map<String, String> imageMappedURL = null;
     InfoImageDetail infoImageDetail = getImage(fieldIndex);
     if (infoImageDetail != null)
       imageMappedURL = infoImageDetail.getMappedUrl();
@@ -1009,7 +1009,7 @@ public class PublicationDetail extends AbstractI18NBean implements
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class);
+            PublicationBmHome.class);
         publicationBm = publicationBmHome.create();
       } catch (Exception e) {
         throw new PublicationRuntimeException(
@@ -1021,7 +1021,7 @@ public class PublicationDetail extends AbstractI18NBean implements
     return publicationBm;
   }
 
-  public Collection getAttachments() {
+  public Collection<AttachmentDetail> getAttachments() {
     if (getPK() == null)
       SilverTrace.info("publication", "PublicationDetail.getAttachments()",
           "root.MSG_GEN_ENTER_METHOD", "getPK() is null !");
@@ -1035,11 +1035,11 @@ public class PublicationDetail extends AbstractI18NBean implements
         .getSpace(), getPK().getComponentName());
     SilverTrace.info("publication", "PublicationDetail.getAttachments()",
         "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
-    Collection attachmentList = AttachmentController
+    Collection<AttachmentDetail> attachmentList = AttachmentController
         .searchAttachmentByPKAndContext(foreignKey, ctx);
     SilverTrace.info("publication", "PublicationDetail.getAttachments()",
         "root.MSG_GEN_PARAM_VALUE", "attachmentList.size() = "
-            + attachmentList.size());
+        + attachmentList.size());
     return attachmentList;
   }
 

@@ -36,81 +36,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: SeeAlsoDAO.java,v 1.2 2007/02/27 15:03:34 neysseri Exp $
- *
- * $Log: SeeAlsoDAO.java,v $
- * Revision 1.2  2007/02/27 15:03:34  neysseri
- * no message
- *
- * Revision 1.1  2006/12/01 15:01:37  neysseri
- * no message
- *
- * Revision 1.13  2006/09/13 13:07:31  neysseri
- * Extension de la taille du htmlDisplayer et htmlEditor grâce à plusieurs lignes en BdD
- *
- * Revision 1.12  2006/07/10 16:23:12  neysseri
- * no message
- *
- * Revision 1.11  2006/06/23 13:14:55  neysseri
- * no message
- *
- * Revision 1.10.6.1  2006/06/23 12:47:14  neysseri
- * no message
- *
- * Revision 1.10  2005/05/19 14:54:16  neysseri
- * Possibilité de supprimer les Voir Aussi
- *
- * Revision 1.9  2004/06/22 15:34:59  neysseri
- * nettoyage eclipse
- *
- * Revision 1.8  2004/02/06 18:48:03  neysseri
- * Attachments no more implemented by submodule info.
- *
- * Revision 1.7  2003/11/25 08:30:19  cbonin
- * no message
- *
- * Revision 1.6  2003/11/24 10:34:03  cbonin
- * no message
- *
- * Revision 1.5  2003/06/21 00:35:37  neysseri
- * no message
- *
- * Revision 1.4  2003/01/15 10:07:24  scotte
- * Correction : pb de deplacement des contenus des champs des modèles sous Oracle
- *
- * Revision 1.3  2002/12/20 09:17:17  cbonin
- * Report Bug OCISI :
- * utilisation du File.separator au lieu de "\"
- *
- * Revision 1.2  2002/12/18 07:39:27  neysseri
- * Bug fixing about links between publications
- *
- * Revision 1.1.1.1  2002/08/06 14:47:52  nchaix
- * no message
- *
- * Revision 1.16  2002/08/05 09:45:09  neysseri
- * Correction du bug HHB sur les méthodes :
- * - deleteInfoTextByInfoPK()
- * - deleteInfoImageByInfoPK()
- *
- * Les requetes de suppression n'était pas correctes du tout !!!
- *
- * Revision 1.15  2002/04/03 09:03:00  neysseri
- * Suppression de l'appel de la requete
- * qui récupère les attachments (remplacé pas le module attachment)
- *
- * Revision 1.14  2002/01/11 12:40:55  neysseri
- * Stabilisation Lot 2 : Exceptions et Silvertrace
- *
- */
-
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SeeAlsoDAO {
@@ -118,8 +45,6 @@ public class SeeAlsoDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SeeAlsoDAO() {
@@ -127,14 +52,10 @@ public class SeeAlsoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param infoLink
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addLink(Connection con, WAPrimaryKey objectPK,
@@ -217,18 +138,13 @@ public class SeeAlsoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static List getLinks(Connection con, WAPrimaryKey objectPK)
+  public static List<ForeignPK> getLinks(Connection con, WAPrimaryKey objectPK)
       throws SQLException {
     ResultSet rs = null;
     String selectStatement = "select targetId, targetInstanceId from "
@@ -242,7 +158,7 @@ public class SeeAlsoDAO {
 
       String targetId = "";
       String targetInstanceId = "";
-      List list = new ArrayList();
+      List<ForeignPK> list = new ArrayList<ForeignPK>();
       while (rs.next()) {
         targetId = Integer.toString(rs.getInt(1));
         targetInstanceId = rs.getString(2);

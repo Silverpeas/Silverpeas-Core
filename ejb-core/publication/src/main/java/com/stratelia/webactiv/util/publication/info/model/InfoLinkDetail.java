@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 public class InfoLinkDetail extends InfoItemDetail implements Serializable {
 
+  private static final long serialVersionUID = -907732789489953847L;
   private String targetId = null;
 
   public InfoLinkDetail(InfoPK infoPK, String order, String id, String targetId) {

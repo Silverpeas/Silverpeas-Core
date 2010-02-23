@@ -41,9 +41,8 @@ public class ValidationStepsDAO {
   private static String publicationValidationTableName = "SB_Publication_Validation";
 
   /*
-   * id int NOT NULL, pubId int NOT NULL, instanceId varchar(50) NOT NULL,
-   * userId int NOT NULL, decisionDate varchar(20) NOT NULL, decision
-   * varchar(50) NOT NULL
+   * id int NOT NULL, pubId int NOT NULL, instanceId varchar(50) NOT NULL, userId int NOT NULL,
+   * decisionDate varchar(20) NOT NULL, decision varchar(50) NOT NULL
    */
 
   public static void addStep(Connection con, ValidationStep step)
@@ -91,14 +90,14 @@ public class ValidationStepsDAO {
     }
   }
 
-  public static List getSteps(Connection con, PublicationPK pubPK)
+  public static List<ValidationStep> getSteps(Connection con, PublicationPK pubPK)
       throws SQLException {
-    List steps = new ArrayList();
+    List<ValidationStep> steps = new ArrayList<ValidationStep>();
 
     StringBuffer statement = new StringBuffer(128);
     statement.append("select * from ").append(publicationValidationTableName)
         .append(
-            " where pubId = ? and instanceId = ? order by decisionDate desc");
+        " where pubId = ? and instanceId = ? order by decisionDate desc");
     PreparedStatement prepStmt = null;
 
     try {

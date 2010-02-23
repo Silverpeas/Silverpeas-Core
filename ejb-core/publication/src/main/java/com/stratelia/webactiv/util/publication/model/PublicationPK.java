@@ -29,18 +29,18 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
 public class PublicationPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -6957633959517435029L;
+  
   // for flat pk design pattern
   public transient PublicationDetail pubDetail = null;
 
   /**
    * Constructor which set only the id
-   * 
    * @since 1.0
    */
   public PublicationPK(String id) {
@@ -48,9 +48,7 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
-   * 
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    */
   public PublicationPK(String id, String space, String componentName) {
@@ -62,9 +60,7 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
-   * 
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    */
   public PublicationPK(String id, WAPrimaryKey pk) {
@@ -73,7 +69,6 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object root table name
-   * 
    * @return the root table name of the object
    * @since 1.0
    */
@@ -83,7 +78,6 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object table name
-   * 
    * @return the table name of the object
    * @since 1.0
    */
@@ -93,9 +87,7 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Check if an another object is equal to this object
-   * 
-   * @param other
-   *          the object to compare to this PublicationPK
+   * @param other the object to compare to this PublicationPK
    * @return true if other is equals to this object
    */
   public boolean equals(Object other) {
@@ -106,7 +98,6 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

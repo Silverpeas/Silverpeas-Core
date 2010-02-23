@@ -32,10 +32,8 @@ package com.silverpeas.publication.importExport;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 
 /**
- * @author tleroi
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class PublicationContentType {
 
@@ -73,8 +71,7 @@ public class PublicationContentType {
   }
 
   /**
-   * @param wysiwygContentType
-   *          The wysiwygContentType to set.
+   * @param wysiwygContentType The wysiwygContentType to set.
    */
   public void setWysiwygContentType(WysiwygContentType wysiwygContentType) {
     this.wysiwygContentType = wysiwygContentType;

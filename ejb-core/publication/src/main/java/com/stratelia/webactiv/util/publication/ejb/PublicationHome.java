@@ -65,23 +65,16 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface PublicationHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pubDetail
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   public Publication create(PublicationDetail pubDetail)
@@ -89,15 +82,10 @@ public interface PublicationHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
-   * 
    * @return
-   * 
    * @throws FinderException
    * @throws RemoteException
-   * 
    * @see
    */
   public Publication findByPrimaryKey(PublicationPK pk) throws FinderException,

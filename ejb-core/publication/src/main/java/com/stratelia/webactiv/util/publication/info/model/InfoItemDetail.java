@@ -32,6 +32,7 @@ import java.io.Serializable;
 
 public abstract class InfoItemDetail implements Serializable {
 
+  private static final long serialVersionUID = -3245687918452017909L;
   private InfoPK pk;
   private String order = null;
   private String id = null;

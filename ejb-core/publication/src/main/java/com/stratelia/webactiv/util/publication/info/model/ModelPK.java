@@ -29,6 +29,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class ModelPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -6742576359627107740L;
+
   public ModelPK(String id) {
     super(id);
   }
@@ -59,9 +61,7 @@ public class ModelPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

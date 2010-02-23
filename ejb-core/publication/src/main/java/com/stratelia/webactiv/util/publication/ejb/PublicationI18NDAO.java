@@ -39,13 +39,12 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 
 /**
  * This is the Publication Data Access Object.
- * 
  * @author Nicolas Eysseric
  */
 public class PublicationI18NDAO {
   private static String TABLENAME = "SB_Publication_PubliI18N";
 
-  public static List getTranslations(Connection con, PublicationPK pubPK)
+  public static List<PublicationI18N> getTranslations(Connection con, PublicationPK pubPK)
       throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
     selectStatement.append("select * from ").append(TABLENAME);
@@ -58,7 +57,7 @@ public class PublicationI18NDAO {
       stmt = con.prepareStatement(selectStatement.toString());
       stmt.setInt(1, Integer.parseInt(pubPK.getId()));
       rs = stmt.executeQuery();
-      ArrayList list = new ArrayList();
+      ArrayList<PublicationI18N> list = new ArrayList<PublicationI18N>();
       while (rs.next()) {
         pub = new PublicationI18N();
         pub.setId(rs.getInt(1));
@@ -123,7 +122,7 @@ public class PublicationI18NDAO {
           "PublicationI18NDAO.updateTranslation()",
           SilverpeasRuntimeException.ERROR,
           "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "translationId = "
-              + translation.getId());
+          + translation.getId());
     }
   }
 

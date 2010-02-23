@@ -50,83 +50,14 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: InfoDAO.java,v 1.13 2006/09/13 13:07:31 neysseri Exp $
- *
- * $Log: InfoDAO.java,v $
- * Revision 1.13  2006/09/13 13:07:31  neysseri
- * Extension de la taille du htmlDisplayer et htmlEditor grâce à plusieurs lignes en BdD
- *
- * Revision 1.12  2006/07/10 16:23:12  neysseri
- * no message
- *
- * Revision 1.11  2006/06/23 13:14:55  neysseri
- * no message
- *
- * Revision 1.10.6.1  2006/06/23 12:47:14  neysseri
- * no message
- *
- * Revision 1.10  2005/05/19 14:54:16  neysseri
- * Possibilité de supprimer les Voir Aussi
- *
- * Revision 1.9  2004/06/22 15:34:59  neysseri
- * nettoyage eclipse
- *
- * Revision 1.8  2004/02/06 18:48:03  neysseri
- * Attachments no more implemented by submodule info.
- *
- * Revision 1.7  2003/11/25 08:30:19  cbonin
- * no message
- *
- * Revision 1.6  2003/11/24 10:34:03  cbonin
- * no message
- *
- * Revision 1.5  2003/06/21 00:35:37  neysseri
- * no message
- *
- * Revision 1.4  2003/01/15 10:07:24  scotte
- * Correction : pb de deplacement des contenus des champs des modèles sous Oracle
- *
- * Revision 1.3  2002/12/20 09:17:17  cbonin
- * Report Bug OCISI :
- * utilisation du File.separator au lieu de "\"
- *
- * Revision 1.2  2002/12/18 07:39:27  neysseri
- * Bug fixing about links between publications
- *
- * Revision 1.1.1.1  2002/08/06 14:47:52  nchaix
- * no message
- *
- * Revision 1.16  2002/08/05 09:45:09  neysseri
- * Correction du bug HHB sur les méthodes :
- * - deleteInfoTextByInfoPK()
- * - deleteInfoImageByInfoPK()
- *
- * Les requetes de suppression n'était pas correctes du tout !!!
- *
- * Revision 1.15  2002/04/03 09:03:00  neysseri
- * Suppression de l'appel de la requete
- * qui récupère les attachments (remplacé pas le module attachment)
- *
- * Revision 1.14  2002/01/11 12:40:55  neysseri
- * Stabilisation Lot 2 : Exceptions et Silvertrace
- *
- */
-
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class InfoDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public InfoDAO() {
@@ -136,21 +67,17 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getAllModelsDetail(Connection con)
+  public static Collection<ModelDetail> getAllModelsDetail(Connection con)
       throws SQLException {
     ResultSet rs = null;
     ModelPK mPK = new ModelPK("unknown");
-    String selectStatement = "select id, name, description, imageName, htmlDisplayer, htmlEditor from "
+    String selectStatement =
+        "select id, name, description, imageName, htmlDisplayer, htmlEditor from "
         + mPK.getTableName() + " order by id asc, partId asc";
     Statement stmt = null;
 
@@ -166,7 +93,7 @@ public class InfoDAO {
       String htmlEditor = "";
       String memId = "-1";
       ModelDetail modelDetail = null;
-      ArrayList list = new ArrayList();
+      ArrayList<ModelDetail> list = new ArrayList<ModelDetail>();
       while (rs.next()) {
         id = new Integer(rs.getInt(1)).toString();
         if (!id.equals(memId)) {
@@ -205,15 +132,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static ModelDetail getModelDetail(Connection con, InfoPK infoPK)
@@ -227,7 +149,8 @@ public class InfoDAO {
     ResultSet rs = null;
     ModelPK mPK = new ModelPK("unknown", infoPK);
     ModelDetail detail = null;
-    String selectStatement = "select M.id, M.name, M.description, M.imageName, M.htmlDisplayer, M.htmlEditor "
+    String selectStatement =
+        "select M.id, M.name, M.description, M.imageName, M.htmlDisplayer, M.htmlEditor "
         + "from "
         + mPK.getTableName()
         + " M, "
@@ -244,13 +167,10 @@ public class InfoDAO {
       prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
       rs = prepStmt.executeQuery();
       /*
-       * if (rs.next()) { String id = new Integer(rs.getInt(1)).toString();
-       * String name = rs.getString(2); String description = rs.getString(3);
-       * String imageName = rs.getString(4); String htmlDisplayer =
-       * rs.getString(5); String htmlEditor = rs.getString(6);
-       * 
-       * detail = new ModelDetail(id, name, description, imageName,
-       * htmlDisplayer, htmlEditor); }
+       * if (rs.next()) { String id = new Integer(rs.getInt(1)).toString(); String name =
+       * rs.getString(2); String description = rs.getString(3); String imageName = rs.getString(4);
+       * String htmlDisplayer = rs.getString(5); String htmlEditor = rs.getString(6); detail = new
+       * ModelDetail(id, name, description, imageName, htmlDisplayer, htmlEditor); }
        */
       boolean firstModelPartReaden = false;
       String htmlDisplayer = "";
@@ -292,15 +212,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param modelPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static ModelDetail getModelDetail(Connection con, ModelPK modelPK)
@@ -323,13 +238,10 @@ public class InfoDAO {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
       /*
-       * if (rs.next()) { String id = new Integer(rs.getInt(1)).toString();
-       * String name = rs.getString(2); String description = rs.getString(3);
-       * String imageName = rs.getString(4); String htmlDisplayer =
-       * rs.getString(5); String htmlEditor = rs.getString(6);
-       * 
-       * modelDetail = new ModelDetail(id, name, description, imageName,
-       * htmlDisplayer, htmlEditor); }
+       * if (rs.next()) { String id = new Integer(rs.getInt(1)).toString(); String name =
+       * rs.getString(2); String description = rs.getString(3); String imageName = rs.getString(4);
+       * String htmlDisplayer = rs.getString(5); String htmlEditor = rs.getString(6); modelDetail =
+       * new ModelDetail(id, name, description, imageName, htmlDisplayer, htmlEditor); }
        */
       String htmlDisplayer = "";
       String htmlEditor = "";
@@ -374,15 +286,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static InfoPK hasInfo(Connection con, PublicationPK pubPK)
@@ -422,16 +329,11 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param modelPK
    * @param pubPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static InfoPK createInfo(Connection con, ModelPK modelPK,
@@ -445,12 +347,12 @@ public class InfoDAO {
     if (infoPK != null && !infoPK.getId().equals("0")) {
       SilverTrace.info("publication", "InfoDAO.createInfo",
           "root.MSG_GEN_PARAM_VALUE", "Pub = " + pubPK.getId()
-              + ", infos existent");
+          + ", infos existent");
       return infoPK;
     } else {
       SilverTrace.info("publication", "InfoDAO.createInfo",
           "root.MSG_GEN_PARAM_VALUE", "Pub = " + pubPK.getId()
-              + ", creation infos");
+          + ", creation infos");
       infoPK = new InfoPK("unknown", modelPK);
 
       /* Recherche de la nouvelle PK de la table Info */
@@ -469,9 +371,9 @@ public class InfoDAO {
       PreparedStatement prepStmt = null;
       SilverTrace.info("publication", "InfoDAO.createInfo",
           "root.MSG_GEN_PARAM_VALUE", "InsertStatement = " + insertStatement
-              + " (" + new Integer(newId).toString() + ", "
-              + new Integer(modelPK.getId()).toString() + ", null, "
-              + pubPK.getComponentName() + " )");
+          + " (" + new Integer(newId).toString() + ", "
+          + new Integer(modelPK.getId()).toString() + ", null, "
+          + pubPK.getComponentName() + " )");
 
       try {
         prepStmt = con.prepareStatement(insertStatement);
@@ -494,14 +396,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param modelPK
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void updateInfo(Connection con, ModelPK modelPK, InfoPK infoPK)
@@ -515,9 +413,9 @@ public class InfoDAO {
     PreparedStatement prepStmt = null;
     SilverTrace.info("publication", "InfoDAO.updateInfo",
         "root.MSG_GEN_PARAM_VALUE", "UpdateStatement = " + updateStatement
-            + " (" + new Integer(infoPK.getId()).toString() + ", "
-            + new Integer(modelPK.getId()).toString() + ", null, "
-            + infoPK.getComponentName() + " )");
+        + " (" + new Integer(infoPK.getId()).toString() + ", "
+        + new Integer(modelPK.getId()).toString() + ", null, "
+        + infoPK.getComponentName() + " )");
 
     try {
       prepStmt = con.prepareStatement(updateStatement);
@@ -534,13 +432,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteInfo(Connection con, InfoPK infoPK)
@@ -563,14 +457,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infos
-   * 
    * @throws SQLException
    * @throws UtilException
-   * 
    * @see
    */
   public static void addInfoItems(Connection con, InfoDetail infos)
@@ -579,39 +469,39 @@ public class InfoDAO {
         "root.MSG_GEN_PARAM_VALUE", "Info = " + infos.getPK().getId());
 
     // Treatement of the infoText
-    Collection textList = infos.getInfoTextList();
+    Collection<InfoTextDetail> textList = infos.getInfoTextList();
 
     if (textList != null) {
-      Iterator textListIterator = textList.iterator();
+      Iterator<InfoTextDetail> textListIterator = textList.iterator();
 
       while (textListIterator.hasNext()) {
-        InfoTextDetail infoText = (InfoTextDetail) textListIterator.next();
+        InfoTextDetail infoText = textListIterator.next();
 
         addInfoText(con, infos.getPK(), infoText);
       }
     }
 
     // Treatement of the infoImage
-    Collection imageList = infos.getInfoImageList();
+    Collection<InfoImageDetail> imageList = infos.getInfoImageList();
 
     if (imageList != null) {
-      Iterator imageListIterator = imageList.iterator();
+      Iterator<InfoImageDetail> imageListIterator = imageList.iterator();
 
       while (imageListIterator.hasNext()) {
-        InfoImageDetail infoImage = (InfoImageDetail) imageListIterator.next();
+        InfoImageDetail infoImage = imageListIterator.next();
 
         addInfoImage(con, infos.getPK(), infoImage);
       }
     }
 
     // Treatement of the infoLink
-    Collection linkList = infos.getInfoLinkList();
+    Collection<InfoLinkDetail> linkList = infos.getInfoLinkList();
 
     if (linkList != null) {
-      Iterator linkListIterator = linkList.iterator();
+      Iterator<InfoLinkDetail> linkListIterator = linkList.iterator();
 
       while (linkListIterator.hasNext()) {
-        InfoLinkDetail infoLink = (InfoLinkDetail) linkListIterator.next();
+        InfoLinkDetail infoLink = linkListIterator.next();
 
         addInfoLink(con, infos.getPK(), infoLink);
       }
@@ -620,15 +510,11 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infos
    * @param infoPK
-   * 
    * @throws SQLException
    * @throws UtilException
-   * 
    * @see
    */
   public static void updateInfoItems(Connection con, InfoDetail infos,
@@ -638,11 +524,11 @@ public class InfoDAO {
 
     // Treatement of the infoText
     if (infos.getInfoTextList() != null) {
-      Collection textList = infos.getInfoTextList();
-      Iterator textListIterator = textList.iterator();
+      Collection<InfoTextDetail> textList = infos.getInfoTextList();
+      Iterator<InfoTextDetail> textListIterator = textList.iterator();
 
       while (textListIterator.hasNext()) {
-        InfoTextDetail infoText = (InfoTextDetail) textListIterator.next();
+        InfoTextDetail infoText = textListIterator.next();
 
         updateInfoText(con, infoText, infoPK);
       }
@@ -650,24 +536,24 @@ public class InfoDAO {
 
     // Treatement of the infoImage
     if (infos.getInfoImageList() != null) {
-      Collection imageList = infos.getInfoImageList();
-      Iterator imageListIterator = imageList.iterator();
+      Collection<InfoImageDetail> imageList = infos.getInfoImageList();
+      Iterator<InfoImageDetail> imageListIterator = imageList.iterator();
 
       while (imageListIterator.hasNext()) {
-        InfoImageDetail infoImage = (InfoImageDetail) imageListIterator.next();
+        InfoImageDetail infoImage = imageListIterator.next();
 
         updateInfoImage(con, infoPK, infoImage);
       }
     }
 
     // Treatement of the infoLink
-    Collection linkList = infos.getInfoLinkList();
+    Collection<InfoLinkDetail> linkList = infos.getInfoLinkList();
 
     if (linkList != null) {
-      Iterator linkListIterator = linkList.iterator();
+      Iterator<InfoLinkDetail> linkListIterator = linkList.iterator();
 
       while (linkListIterator.hasNext()) {
-        InfoLinkDetail infoLink = (InfoLinkDetail) linkListIterator.next();
+        InfoLinkDetail infoLink = linkListIterator.next();
 
         addInfoLink(con, infoPK, infoLink);
       }
@@ -676,13 +562,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteInfoItems(Connection con, InfoPK infoPK)
@@ -699,14 +581,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param infoText
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addInfoText(Connection con, InfoPK infoPK,
@@ -742,14 +620,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoText
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void updateInfoText(Connection con, InfoTextDetail infoText,
@@ -776,13 +650,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void deleteInfoTextByInfoPK(Connection con, InfoPK infoPK)
@@ -806,14 +676,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param infoImage
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addInfoImage(Connection con, InfoPK infoPK,
@@ -853,14 +719,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param infoImage
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void updateInfoImage(Connection con, InfoPK infoPK,
@@ -868,11 +730,15 @@ public class InfoDAO {
     InfoImagePK infoImagePK = new InfoImagePK("unknown", infoPK);
     String tableName = infoImagePK.getTableName();
 
-    String updateStatement = "update "
-        + tableName
-        + " set infoId = ? , "
-        + "infoImagePhysicalName = ? , infoImageLogicalName = ? , infoImageDescription = ? , infoImageType = ? , infoImageSize = ? , infoImageDisplayOrder = ? "
-        + " where infoImageId = ? ";
+    String updateStatement =
+        "update "
+            +
+            tableName
+            +
+            " set infoId = ? , "
+            +
+            "infoImagePhysicalName = ? , infoImageLogicalName = ? , infoImageDescription = ? , infoImageType = ? , infoImageSize = ? , infoImageDisplayOrder = ? "
+            + " where infoImageId = ? ";
     PreparedStatement prepStmt = null;
 
     try {
@@ -893,13 +759,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteInfoImageByInfoPK(Connection con, InfoPK infoPK)
@@ -925,14 +787,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param infoLink
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addInfoLink(Connection con, InfoPK infoPK,
@@ -970,24 +828,20 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param linkIds
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteInfoLinksByPKs(Connection con, InfoPK infoPK,
-      Collection linkIds) throws SQLException {
-    Iterator iterator = linkIds.iterator();
+      Collection<String> linkIds) throws SQLException {
+    Iterator<String> iterator = linkIds.iterator();
     String linkId = "";
     InfoLinkPK linkPK = null;
 
     while (iterator.hasNext()) {
-      linkId = (String) iterator.next();
+      linkId = iterator.next();
       linkPK = new InfoLinkPK(linkId, infoPK);
       deleteInfoLinkByPK(con, linkPK);
     }
@@ -995,13 +849,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param linkPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void deleteInfoLinkByPK(Connection con, InfoLinkPK linkPK)
@@ -1019,13 +869,13 @@ public class InfoDAO {
     }
   }
 
-  public static void deleteInfoLinks(Connection con, InfoPK infoPK, List pubIds)
+  public static void deleteInfoLinks(Connection con, InfoPK infoPK, List<String> pubIds)
       throws SQLException {
-    Iterator iterator = pubIds.iterator();
+    Iterator<String> iterator = pubIds.iterator();
     String pubId = "";
 
     while (iterator.hasNext()) {
-      pubId = (String) iterator.next();
+      pubId = iterator.next();
       deleteInfoLink(con, infoPK, pubId);
     }
   }
@@ -1050,13 +900,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void deleteInfoLinkByInfoPK(Connection con, InfoPK infoPK)
@@ -1076,14 +922,10 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
    * @param targetLink
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteInfoLinkByTargetLink(Connection con, InfoPK infoPK,
@@ -1104,30 +946,25 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static InfoDetail getInfoDetailByInfoPK(Connection con, InfoPK infoPK)
       throws SQLException {
-    Collection textList = null;
-    Collection imageList = null;
-    Collection linkList = null;
+    Collection<InfoTextDetail> textList = null;
+    Collection<InfoImageDetail> imageList = null;
+    Collection<InfoLinkDetail> linkList = null;
     if (isInteger(infoPK.getId())) {
       textList = getAllInfoTextByInfoPK(con, infoPK);
       imageList = getAllInfoImageByInfoPK(con, infoPK);
       linkList = getAllInfoLinkByInfoPK(con, infoPK);
     } else {
-      textList = new ArrayList();
-      imageList = new ArrayList();
-      linkList = new ArrayList();
+      textList = new ArrayList<InfoTextDetail>();
+      imageList = new ArrayList<InfoImageDetail>();
+      linkList = new ArrayList<InfoLinkDetail>();
     }
 
     return new InfoDetail(infoPK, textList, imageList, linkList, null);
@@ -1144,13 +981,9 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteInfoDetailByInfoPK(Connection con, InfoPK infoPK)
@@ -1163,18 +996,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  private static Collection getAllInfoTextByInfoPK(Connection con, InfoPK infoPK)
+  private static Collection<InfoTextDetail> getAllInfoTextByInfoPK(Connection con, InfoPK infoPK)
       throws SQLException {
     ResultSet rs = null;
     InfoTextPK infoTextPK = new InfoTextPK("unknown", infoPK);
@@ -1189,7 +1017,7 @@ public class InfoDAO {
       String id = "";
       String content = "";
       String displayOrder = "";
-      ArrayList list = new ArrayList();
+      ArrayList<InfoTextDetail> list = new ArrayList<InfoTextDetail>();
       while (rs.next()) {
         id = new Integer(rs.getInt(1)).toString();
         content = rs.getString(3);
@@ -1207,18 +1035,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  private static Collection getAllInfoImageByInfoPK(Connection con,
+  private static Collection<InfoImageDetail> getAllInfoImageByInfoPK(Connection con,
       InfoPK infoPK) throws SQLException {
     ResultSet rs = null;
     InfoImagePK infoImagePK = new InfoImagePK("unknown", infoPK);
@@ -1238,7 +1061,7 @@ public class InfoDAO {
       String type = "";
       int size;
       String displayOrder = "";
-      ArrayList list = new ArrayList();
+      ArrayList<InfoImageDetail> list = new ArrayList<InfoImageDetail>();
       while (rs.next()) {
         id = new Integer(rs.getInt(1)).toString();
         physicalName = rs.getString(3);
@@ -1261,18 +1084,13 @@ public class InfoDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param infoPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  private static Collection getAllInfoLinkByInfoPK(Connection con, InfoPK infoPK)
+  private static Collection<InfoLinkDetail> getAllInfoLinkByInfoPK(Connection con, InfoPK infoPK)
       throws SQLException {
 
     ResultSet rs = null;
@@ -1289,7 +1107,7 @@ public class InfoDAO {
       String id = "";
       String targetId = "";
       String displayOrder = "";
-      ArrayList list = new ArrayList();
+      ArrayList<InfoLinkDetail> list = new ArrayList<InfoLinkDetail>();
       while (rs.next()) {
         id = new Integer(rs.getInt(1)).toString();
         targetId = new Integer(rs.getInt(3)).toString();

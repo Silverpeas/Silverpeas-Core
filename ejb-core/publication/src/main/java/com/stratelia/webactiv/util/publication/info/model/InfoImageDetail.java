@@ -28,8 +28,9 @@ import java.util.Map;
 
 import com.stratelia.webactiv.util.FileServerUtils;
 
-public class InfoImageDetail extends InfoAttachmentDetail implements
-    Serializable {
+public class InfoImageDetail extends InfoAttachmentDetail implements Serializable {
+
+  private static final long serialVersionUID = -7862895523231381570L;
 
   public InfoImageDetail(InfoPK infoPK, String order, String id,
       String physicalName, String logicalName, String description, String type,
@@ -37,7 +38,7 @@ public class InfoImageDetail extends InfoAttachmentDetail implements
     super(infoPK, order, id, physicalName, logicalName, description, type, size);
   }
 
-  public Map getMappedUrl() {
+  public Map<String, String> getMappedUrl() {
     return FileServerUtils.getMappedUrl(getPK().getSpace(), getPK()
         .getComponentName(), getLogicalName(), getPhysicalName(), getType(),
         "images");
@@ -52,8 +53,8 @@ public class InfoImageDetail extends InfoAttachmentDetail implements
   public String getUrl(String serverNameAndPort) {
     return serverNameAndPort
         + FileServerUtils.getUrl(getPK().getSpace(),
-            getPK().getComponentName(), getLogicalName(), getPhysicalName(),
-            getType(), "images");
+        getPK().getComponentName(), getLogicalName(), getPhysicalName(),
+        getType(), "images");
   }
 
 }

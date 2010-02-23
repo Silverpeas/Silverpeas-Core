@@ -45,7 +45,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * This is the Publication Father Data Access Object.
- * 
  * @author Nicolas Eysseric
  */
 public class PublicationFatherDAO {
@@ -53,7 +52,6 @@ public class PublicationFatherDAO {
 
   /**
    * This class must not be instanciated
-   * 
    * @since 1.0
    */
   public PublicationFatherDAO() {
@@ -61,13 +59,9 @@ public class PublicationFatherDAO {
 
   /**
    * Add a new father to this publication
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the publication PublicationPK
-   * @param fatherPK
-   *          the father NodePK to add
+   * @param con Connection to database
+   * @param pubPK the publication PublicationPK
+   * @param fatherPK the father NodePK to add
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.publication.model.PublicationPK
    * @exception java.sql.SQLException
@@ -154,9 +148,9 @@ public class PublicationFatherDAO {
     }
   }
 
-  public static List getAlias(Connection con, PublicationPK pubPK)
+  public static List<Alias> getAlias(Connection con, PublicationPK pubPK)
       throws SQLException {
-    List list = null;
+    List<Alias> list = null;
 
     StringBuffer selectQuery = new StringBuffer(128);
     selectQuery.append(
@@ -173,7 +167,7 @@ public class PublicationFatherDAO {
       String instanceId = null;
       String userId = null;
       Date date = null;
-      list = new ArrayList();
+      list = new ArrayList<Alias>();
       Alias alias = null;
       while (rs.next()) {
         id = Integer.toString(rs.getInt(1));
@@ -196,13 +190,9 @@ public class PublicationFatherDAO {
 
   /**
    * Remove a father to this publication
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the publication PublicationPK
-   * @param fatherPK
-   *          the father NodePK to delete
+   * @param con Connection to database
+   * @param pubPK the publication PublicationPK
+   * @param fatherPK the father NodePK to delete
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.publication.model.PublicationPK
    * @exception java.sql.SQLException
@@ -227,14 +217,10 @@ public class PublicationFatherDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param fatherPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void removeFatherToPublications(Connection con,
@@ -242,12 +228,12 @@ public class PublicationFatherDAO {
     SilverTrace.info("publication",
         "PublicationDAO.removeFatherToPublications()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-            + ", fatherPK = " + fatherPK.toString());
+        + ", fatherPK = " + fatherPK.toString());
 
     PublicationPK publicationPK = null;
 
     // get all publications linked to fatherPK
-    ArrayList pubPKs = (ArrayList) getPubPKsInFatherPK(con, fatherPK);
+    List<PublicationPK> pubPKs = (List<PublicationPK>) getPubPKsInFatherPK(con, fatherPK);
 
     // for each publication, remove link into table
     for (int i = 0; i < pubPKs.size(); i++) {
@@ -260,7 +246,7 @@ public class PublicationFatherDAO {
       NodePK fatherPK) throws SQLException {
     SilverTrace.info("publication", "PublicationDAO.removeLink()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-            + ", fatherPK = " + fatherPK.toString());
+        + ", fatherPK = " + fatherPK.toString());
 
     StringBuffer deleteStatement = new StringBuffer(128);
     deleteStatement.append("delete from ").append(publicationFatherTableName)
@@ -279,30 +265,26 @@ public class PublicationFatherDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pubPK
    * @param fatherIds
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void removeFathersToPublications(Connection con,
-      PublicationPK pubPK, Collection fatherIds) throws SQLException {
+      PublicationPK pubPK, Collection<String> fatherIds) throws SQLException {
     SilverTrace.info("publication",
         "PublicationDAO.removeFathersToPublications()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-            + ", fatherIds = " + fatherIds.toString());
+        + ", fatherIds = " + fatherIds.toString());
 
     if (fatherIds != null && fatherIds.size() > 0) {
       String fatherId = "";
       NodePK fatherPK = null;
-      Iterator it = fatherIds.iterator();
+      Iterator<String> it = fatherIds.iterator();
 
       while (it.hasNext()) {
-        fatherId = (String) it.next();
+        fatherId = it.next();
         fatherPK = new NodePK(fatherId, pubPK);
         removeFatherToPublications(con, pubPK, fatherPK);
       }
@@ -311,11 +293,8 @@ public class PublicationFatherDAO {
 
   /**
    * Delete all fathers to this publication
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the publication PublicationPK
+   * @param con Connection to database
+   * @param pubPK the publication PublicationPK
    * @see com.stratelia.webactiv.util.publication.model.PublicationPK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -337,34 +316,30 @@ public class PublicationFatherDAO {
   }
 
   /**
-   * Delete links between publication and father when publications are linked to
-   * a father which is a descendant of a node
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the publication PublicationPK
-   * @param originPK
-   *          the node which is deleted
+   * Delete links between publication and father when publications are linked to a father which is a
+   * descendant of a node
+   * @param con Connection to database
+   * @param pubPK the publication PublicationPK
+   * @param originPK the node which is deleted
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.publication.model.PublicationPK
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static Collection getAllFatherPK(Connection con, PublicationPK pubPK)
+  public static Collection<NodePK> getAllFatherPK(Connection con, PublicationPK pubPK)
       throws SQLException {
     return getAllFatherPK(con, pubPK, null);
   }
 
-  public static Collection getAllFatherPK(Connection con, PublicationPK pubPK,
+  public static Collection<NodePK> getAllFatherPK(Connection con, PublicationPK pubPK,
       String order) throws SQLException {
-    List list = null;
+    List<NodePK> list = null;
 
     StringBuffer selectQuery = new StringBuffer(128);
     selectQuery.append("select nodeId from ")
         .append(publicationFatherTableName).append(" where pubId = ").append(
-            pubPK.getId()).append(
-            " and instanceId = '" + pubPK.getInstanceId() + "'");
+        pubPK.getId()).append(
+        " and instanceId = '" + pubPK.getInstanceId() + "'");
     if (order != null) {
       selectQuery.append(" order by ").append(order);
     }
@@ -375,7 +350,7 @@ public class PublicationFatherDAO {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery.toString());
       String id = "";
-      list = new ArrayList();
+      list = new ArrayList<NodePK>();
       while (rs.next()) {
         id = new Integer(rs.getInt(1)).toString();
         NodePK nodePK = new NodePK(id, pubPK);
@@ -389,31 +364,26 @@ public class PublicationFatherDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherPKs
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getPubPKsInFatherPKs(Connection con,
-      Collection fatherPKs) throws SQLException {
+  public static Collection<PublicationPK> getPubPKsInFatherPKs(Connection con,
+      Collection<WAPrimaryKey> fatherPKs) throws SQLException {
     WAPrimaryKey fatherPK = null;
     PublicationPK pubPK = null;
     String fatherId = null;
-    ArrayList list = new ArrayList();
+    ArrayList<PublicationPK> list = new ArrayList<PublicationPK>();
 
     if (fatherPKs.isEmpty()) {
       return list;
     } else {
-      Iterator iterator = fatherPKs.iterator();
+      Iterator<WAPrimaryKey> iterator = fatherPKs.iterator();
 
       if (iterator.hasNext()) {
-        fatherPK = (WAPrimaryKey) iterator.next();
+        fatherPK = iterator.next();
         pubPK = new PublicationPK("unknown", fatherPK);
         fatherId = fatherPK.getId();
       }
@@ -452,22 +422,15 @@ public class PublicationFatherDAO {
     }
   }
 
-  // Added by ney - 23/08/2001
-
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
-  public static Collection getPubPKsInFatherPK(Connection con, NodePK fatherPK)
+  public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
     StringBuffer selectStatement = new StringBuffer(128);
@@ -481,7 +444,7 @@ public class PublicationFatherDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      ArrayList list = new ArrayList();
+      ArrayList<PublicationPK> list = new ArrayList<PublicationPK>();
       stmt = con.prepareStatement(selectStatement.toString());
 
       stmt.setString(1, fatherPK.getInstanceId());

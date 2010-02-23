@@ -48,21 +48,15 @@ import javax.ejb.EJBHome;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface PublicationBmHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   PublicationBm create() throws RemoteException, CreateException;

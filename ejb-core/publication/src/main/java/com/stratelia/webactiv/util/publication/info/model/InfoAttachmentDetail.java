@@ -25,9 +25,9 @@ package com.stratelia.webactiv.util.publication.info.model;
 
 import java.io.Serializable;
 
-public class InfoAttachmentDetail extends InfoItemDetail implements
-    Serializable {
+public class InfoAttachmentDetail extends InfoItemDetail implements Serializable {
 
+  private static final long serialVersionUID = -6596171390451029798L;
   private String physicalName = null;
   private String logicalName = null;
   private String description = null;

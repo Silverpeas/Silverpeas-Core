@@ -29,6 +29,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class InfoImagePK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -3671112039695795408L;
+
   public InfoImagePK(String id) {
     super(id);
   }
@@ -63,9 +65,7 @@ public class InfoImagePK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

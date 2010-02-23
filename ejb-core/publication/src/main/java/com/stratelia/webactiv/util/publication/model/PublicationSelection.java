@@ -36,20 +36,20 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 
-public class PublicationSelection extends ClipboardSelection implements
-    Serializable {
+public class PublicationSelection extends ClipboardSelection implements Serializable {
 
+  private static final long serialVersionUID = -1169335280661356348L;
   static public DataFlavor PublicationDetailFlavor;
   static public DataFlavor CompletePublicationFlavor;
   static {
     try {
       PublicationDetailFlavor = new DataFlavor(
           Class
-              .forName("com.stratelia.webactiv.util.publication.model.PublicationDetail"),
+          .forName("com.stratelia.webactiv.util.publication.model.PublicationDetail"),
           "Publication");
       CompletePublicationFlavor = new DataFlavor(
           Class
-              .forName("com.stratelia.webactiv.util.publication.model.CompletePublication"),
+          .forName("com.stratelia.webactiv.util.publication.model.CompletePublication"),
           "Publication");
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
@@ -63,7 +63,6 @@ public class PublicationSelection extends ClipboardSelection implements
   /**
    * --------------------------------------------------------------------------
    * ------------------------------ Constructor
-   * 
    */
   public PublicationSelection(PublicationDetail pub) {
     super();
@@ -81,7 +80,6 @@ public class PublicationSelection extends ClipboardSelection implements
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
@@ -104,7 +102,6 @@ public class PublicationSelection extends ClipboardSelection implements
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * 
    */
   public IndexEntry getIndexEntry() {
     IndexEntry indexEntry;
@@ -117,8 +114,7 @@ public class PublicationSelection extends ClipboardSelection implements
 
   /**
    * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en
-   * SilverpeasKeyData
+   * ------------------------------ Tranformation obligatoire en SilverpeasKeyData
    */
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();

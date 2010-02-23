@@ -138,13 +138,9 @@ public class PublicationInstanciator extends SQLRequest {
 
   /**
    * Delete all data of one forum instance from the forum table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

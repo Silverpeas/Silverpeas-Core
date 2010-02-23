@@ -29,13 +29,14 @@ import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 
 /**
- * This object contains the description of a complete publication (publication
- * parameter, model detail, info)
- * 
+ * This object contains the description of a complete publication (publication parameter, model
+ * detail, info)
  * @author Nicolas Eysseric
  * @version 1.0
  */
 public class CompletePublication implements Serializable {
+
+  private static final long serialVersionUID = 7644813195325660580L;
 
   private PublicationDetail pubDetail;
   private ModelDetail modelDetail;
@@ -43,7 +44,6 @@ public class CompletePublication implements Serializable {
 
   /**
    * Create a new CompletePublication
-   * 
    * @param pubDetail
    * @param modelDetail
    * @param infoDetail
@@ -61,7 +61,6 @@ public class CompletePublication implements Serializable {
 
   /**
    * Get the publication parameters
-   * 
    * @return a PublicationDetail - the publication parameters
    * @see com.stratelia.webactiv.util.publication.model.PulicationDetail
    * @since 1.0
@@ -72,7 +71,6 @@ public class CompletePublication implements Serializable {
 
   /**
    * Get the model detail associated to the publication
-   * 
    * @return a ModelDetail
    * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
    * @since 1.0
@@ -83,7 +81,6 @@ public class CompletePublication implements Serializable {
 
   /**
    * Get the info detail associated to the publication
-   * 
    * @return a InfoDetail
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @since 1.0

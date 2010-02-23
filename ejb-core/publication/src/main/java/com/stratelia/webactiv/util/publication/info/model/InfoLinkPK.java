@@ -29,6 +29,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class InfoLinkPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 1408446954072054330L;
+
   public InfoLinkPK(String id) {
     super(id);
   }
@@ -63,9 +65,7 @@ public class InfoLinkPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {
