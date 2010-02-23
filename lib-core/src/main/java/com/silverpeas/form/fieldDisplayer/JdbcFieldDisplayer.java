@@ -200,6 +200,9 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
           "/util/yui/animation/animation-min.js\"></script>\n";
       html +=
           "<script type=\"text/javascript\" src=\"" + m_context +
+          "/util/yui/datasource/datasource-min.js\"></script>\n";
+      html +=
+          "<script type=\"text/javascript\" src=\"" + m_context +
           "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
       html += "<style type=\"text/css\">\n";
       html += "	#listAutocomplete" + fieldName + " {\n";
@@ -255,8 +258,8 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
 
       html += "<script type=\"text/javascript\">\n";
       html +=
-          "	this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
-          ");\n";
+          " this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray" + fieldName +
+              ");\n";
       html +=
           "	this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
           "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";

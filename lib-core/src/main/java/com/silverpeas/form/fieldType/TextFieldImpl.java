@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.JNDINames;
  * A TextFieldImpl stores use a String attribute to store its value.
  */
 public class TextFieldImpl extends TextField {
-  
+
   private static final long serialVersionUID = 1L;
 
   private String value = "";
@@ -139,6 +139,8 @@ public class TextFieldImpl extends TextField {
         + "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
     out.println("<script type=\"text/javascript\" src=\"" + m_context
         + "/util/yui/animation/animation-min.js\"></script>\n");
+    out.println("<script type=\"text/javascript\" src=\"" + m_context +
+        "/util/yui/datasource/datasource-min.js\"></script>\n");
     out.println("<script type=\"text/javascript\" src=\"" + m_context
         + "/util/yui/autocomplete/autocomplete-min.js\"></script>\n");
     out.println("<style type=\"text/css\">\n");
@@ -178,8 +180,8 @@ public class TextFieldImpl extends TextField {
     out.println("</script>\n");
 
     out.println("<script type=\"text/javascript\">\n");
-    out.println("	this.oACDS" + fieldName
-        + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName + ");\n");
+    out.println(" this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray" +
+        fieldName + ");\n");
     out.println("	this.oAutoComp" + fieldName
         + " = new YAHOO.widget.AutoComplete('" + fieldName + "','container"
         + fieldName + "', this.oACDS" + fieldName + ");\n");
