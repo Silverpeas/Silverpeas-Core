@@ -52,9 +52,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   static Hashtable notificationSenders = new Hashtable();
 
   /**
-   * Adds a new task in the user's todos.
-   * 
-   * Returns the external id given by the external todo system.
+   * Adds a new task in the user's todos. Returns the external id given by the external todo system.
    */
   public void assignTask(Task task) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
@@ -108,15 +106,12 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * Get the process instance Id referred by the todo with the given todo id
    */
   /*
-   * public String getProcessInstanceIdFromTodoId(String todoId) throws
-   * WorkflowException { TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-   * TodoDetail todo = todoBBA.getEntry(todoId);
-   * 
-   * if (todo==null) throw new
+   * public String getProcessInstanceIdFromTodoId(String todoId) throws WorkflowException {
+   * TodoBackboneAccess todoBBA = new TodoBackboneAccess(); TodoDetail todo =
+   * todoBBA.getEntry(todoId); if (todo==null) throw new
    * WorkflowException("TaskManagerImpl.getProcessInstanceIdFromTodoId",
-   * "workflowEngine.EX_TODO_NOT_FOUND", "todo id : " + todoId);
-   * 
-   * return getProcessId( todo.getExternalId() ); }
+   * "workflowEngine.EX_TODO_NOT_FOUND", "todo id : " + todoId); return getProcessId(
+   * todo.getExternalId() ); }
    */
 
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
@@ -128,15 +123,12 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * Get the role name of task referred by the todo with the given todo id
    */
   /*
-   * public String getRoleNameFromTodoId(String todoId) throws WorkflowException
-   * { TodoBackboneAccess todoBBA = new TodoBackboneAccess(); TodoDetail todo =
-   * todoBBA.getEntry(todoId);
-   * 
-   * if (todo==null) throw new
+   * public String getRoleNameFromTodoId(String todoId) throws WorkflowException {
+   * TodoBackboneAccess todoBBA = new TodoBackboneAccess(); TodoDetail todo =
+   * todoBBA.getEntry(todoId); if (todo==null) throw new
    * WorkflowException("TaskManagerImpl.getProcessInstanceIdFromTodoId",
-   * "workflowEngine.EX_TODO_NOT_FOUND", "todo id : " + todoId);
-   * 
-   * return getRoleName( todo.getExternalId() ); }
+   * "workflowEngine.EX_TODO_NOT_FOUND", "todo id : " + todoId); return getRoleName(
+   * todo.getExternalId() ); }
    */
 
   public String getRoleNameFromExternalTodoId(String externalTodoId)
@@ -207,7 +199,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     if (st.countTokens() != 4)
       throw new WorkflowException("TaskManagerImpl.getProcessId",
           "workflowEngine.EX_ERR_ILLEGAL_EXTERNALID", "external Id : "
-              + externalId);
+          + externalId);
 
     return st.nextToken();
   }
@@ -223,7 +215,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     if (st.countTokens() != 4)
       throw new WorkflowException("TaskManagerImpl.getProcessId",
           "workflowEngine.EX_ERR_ILLEGAL_EXTERNALID", "external Id : "
-              + externalId);
+          + externalId);
 
     st.nextToken();
     st.nextToken();

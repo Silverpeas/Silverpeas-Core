@@ -87,19 +87,19 @@ public class GetLinkFileServlet extends HttpServlet {
             AttachmentController.searchAttachmentByPK(new AttachmentPK("" + ticket.getFileId()));
         filePath =
             FileRepositoryManager.getAbsolutePath(attachment.getInstanceId() +
-                File.separator
-                +
-                FileRepositoryManager.getRelativePath(FileRepositoryManager
-                    .getAttachmentContext(attachment.getContext())))
-                +
-                attachment.getPhysicalName();
+            File.separator
+            +
+            FileRepositoryManager.getRelativePath(FileRepositoryManager
+            .getAttachmentContext(attachment.getContext())))
+            +
+            attachment.getPhysicalName();
         fileType = attachment.getType();
         fileName = attachment.getLogicalName();
         fileSize = attachment.getSize();
       } else {
         DocumentVersion version =
             new VersioningUtil().getLastPublicVersion(new DocumentPK(ticket.getFileId(), ticket
-                .getComponentId()));
+            .getComponentId()));
         filePath = FileRepositoryManager.getAbsolutePath(ticket.getComponentId()) + File.separator
             + "Versioning" + File.separator
             + version.getPhysicalName();

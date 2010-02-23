@@ -27,10 +27,8 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
- * A TaskDoneEvent object is the description of a done activity.
- * 
- * Those descriptions are sent to the workflow engine by the workflow tools when
- * the user has done a task in a process instance.
+ * A TaskDoneEvent object is the description of a done activity. Those descriptions are sent to the
+ * workflow engine by the workflow tools when the user has done a task in a process instance.
  */
 public interface TaskDoneEvent extends GenericEvent {
   /**

@@ -53,10 +53,8 @@ public class SpecificLabelListHelper implements ContextualDesignations {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.ContextualDesignations#getLabel(java.
-   * lang.String, java.lang.String)
+   * @see com.silverpeas.workflow.api.model.ContextualDesignations#getLabel(java. lang.String,
+   * java.lang.String)
    */
   public String getLabel(String role, String language) {
     ContextualDesignation label = getSpecificLabel(role, language);
@@ -81,9 +79,7 @@ public class SpecificLabelListHelper implements ContextualDesignations {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.ContextualDesignations#getSpecificLabel
+   * @see com.silverpeas.workflow.api.model.ContextualDesignations#getSpecificLabel
    * (java.lang.String, java.lang.String)
    */
   public ContextualDesignation getSpecificLabel(String role, String language) {
@@ -99,9 +95,7 @@ public class SpecificLabelListHelper implements ContextualDesignations {
 
   /*
    * (non-Javadoc)
-   * 
-   * @seecom.silverpeas.workflow.api.model.ContextualDesignations#
-   * addContextualDesignation
+   * @seecom.silverpeas.workflow.api.model.ContextualDesignations# addContextualDesignation
    * (com.silverpeas.workflow.api.model.ContextualDesignation)
    */
   public void addContextualDesignation(
@@ -111,9 +105,7 @@ public class SpecificLabelListHelper implements ContextualDesignations {
 
   /*
    * (non-Javadoc)
-   * 
-   * @seecom.silverpeas.workflow.api.model.ContextualDesignations#
-   * createContextualDesignation()
+   * @seecom.silverpeas.workflow.api.model.ContextualDesignations# createContextualDesignation()
    */
   public ContextualDesignation createContextualDesignation() {
     return new SpecificLabel();
@@ -121,9 +113,7 @@ public class SpecificLabelListHelper implements ContextualDesignations {
 
   /*
    * (non-Javadoc)
-   * 
-   * @seecom.silverpeas.workflow.api.model.ContextualDesignations#
-   * iterateContextualDesignation()
+   * @seecom.silverpeas.workflow.api.model.ContextualDesignations# iterateContextualDesignation()
    */
   public Iterator iterateContextualDesignation() {
     if (labels == null)
@@ -134,7 +124,6 @@ public class SpecificLabelListHelper implements ContextualDesignations {
 
   /*
    * (non-Javadoc)
-   * 
    * @seecom.silverpeas.workflow.api.model.ContextualDesignations#
    * removeContextualDesignation(java.lang.String)
    */
@@ -144,8 +133,7 @@ public class SpecificLabelListHelper implements ContextualDesignations {
       return;
 
     if (!labels.remove(contextualDesignation))
-      throw new WorkflowException(
-          "SpecificLabelListHelper.removeContextualDesignation()", //$NON-NLS-1$
+      throw new WorkflowException("SpecificLabelListHelper.removeContextualDesignation()", //$NON-NLS-1$
           "workflowEngine.EX_DESIGNATION_NOT_FOUND", // $NON-NLS-1$
           contextualDesignation == null ? "<null>" //$NON-NLS-1$
               : contextualDesignation.getContent());

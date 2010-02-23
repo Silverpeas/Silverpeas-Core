@@ -35,7 +35,6 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
 public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
   /**
    * Used for persistence
-   * 
    * @primary-key
    * @field-name id
    * @field-type string
@@ -76,7 +75,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getId() {
@@ -85,7 +83,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * For persistence in database Set this object id
-   * 
    * @param this object id
    */
   public void setId(String id) {
@@ -94,7 +91,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * Get the info name
-   * 
    * @return info name
    */
   public String getName() {
@@ -103,7 +99,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * Get the info name
-   * 
    * @return info name
    */
   public void setName(String name) {
@@ -112,7 +107,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * Get the info value
-   * 
    * @return info value
    */
   public String getValue() {
@@ -121,7 +115,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * Get the info value
-   * 
    * @return info value
    */
   public void setValue(String value) {
@@ -130,7 +123,6 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * Get the user settings to which this info is for
-   * 
    * @return user settings
    */
   public UserSettings getUserSettings() {
@@ -139,18 +131,14 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
 
   /**
    * Set the user settings to which this info is for
-   * 
-   * @param user
-   *          settings
+   * @param user settings
    */
   public void setUserSettings(UserSettings userSettings) {
     this.userSettings = (UserSettingsImpl) userSettings;
   }
 
   /**
-   * This method has to be implemented by the referrable object it has to
-   * compute the unique key
-   * 
+   * This method has to be implemented by the referrable object it has to compute the unique key
    * @return The unique key.
    */
   public String getKey() {

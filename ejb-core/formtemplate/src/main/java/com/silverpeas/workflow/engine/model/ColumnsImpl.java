@@ -33,11 +33,9 @@ import com.silverpeas.workflow.api.model.Columns;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;columns&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;columns&gt; element of a Process Model.
  **/
-public class ColumnsImpl extends AbstractReferrableObject implements
-    Serializable, Columns {
+public class ColumnsImpl extends AbstractReferrableObject implements Serializable, Columns {
   private Vector columnList; // a list of columns ( Column objects )
   private String roleName = "default"; // the name of the role.
 
@@ -51,7 +49,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.model.Columns#getItemRefList()
    */
   public List getColumnList() {
@@ -60,7 +57,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.model.Columns#getRoleName()
    */
   public String getRoleName() {
@@ -69,9 +65,7 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.engine.model.Columns#setRoleName(java.lang.String)
+   * @see com.silverpeas.workflow.engine.model.Columns#setRoleName(java.lang.String)
    */
   public void setRoleName(String roleName) {
     this.roleName = roleName;
@@ -79,7 +73,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#getColumn(java.lang.String)
    */
   public Column getColumn(String strItemName) {
@@ -97,7 +90,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {
@@ -106,9 +98,7 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Columns#addColumn(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Columns#addColumn(com.silverpeas.workflow
    * .api.model.Column)
    */
   public void addColumn(Column column) {
@@ -118,7 +108,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#createColumn()
    */
   public Column createColumn() {
@@ -128,7 +117,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#iterateColumn()
    */
   public Iterator iterateColumn() {
@@ -138,7 +126,6 @@ public class ColumnsImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#removeAllColumns()
    */
   public void removeAllColumns() {

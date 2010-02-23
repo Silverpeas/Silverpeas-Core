@@ -32,15 +32,12 @@ import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.form.DataRecord;
 
 /**
- * A TimeoutEvent object is the description of an instance, that is in the same
- * active state since too long
- * 
- * Those descriptions are sent to the timeout manager
+ * A TimeoutEvent object is the description of an instance, that is in the same active state since
+ * too long Those descriptions are sent to the timeout manager
  */
 public class TimeoutEventImpl implements TimeoutEvent {
   /**
-   * A TimeoutEventImpl object is built from a processInstance, a state and an
-   * action
+   * A TimeoutEventImpl object is built from a processInstance, a state and an action
    */
   public TimeoutEventImpl(ProcessInstance processInstance, State resolvedState,
       Action action) {
@@ -58,9 +55,7 @@ public class TimeoutEventImpl implements TimeoutEvent {
   }
 
   /**
-   * Returns the process instance.
-   * 
-   * Returns null when the task is an instance creation.
+   * Returns the process instance. Returns null when the task is an instance creation.
    */
   public ProcessInstance getProcessInstance() {
     return processInstance;

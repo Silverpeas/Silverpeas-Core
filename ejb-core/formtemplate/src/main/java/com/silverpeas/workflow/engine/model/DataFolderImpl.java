@@ -37,8 +37,8 @@ import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.Parameter;
 
 /**
- * Class implementing the representation of the &lt;dataFolder&gt; and
- * &lt;userInfos&gt; elements of a Process Model.
+ * Class implementing the representation of the &lt;dataFolder&gt; and &lt;userInfos&gt; elements of
+ * a Process Model.
  **/
 public class DataFolderImpl implements DataFolder, Serializable {
   private Vector itemList;
@@ -52,7 +52,6 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /**
    * Get the items
-   * 
    * @return the items as an array
    */
   public Item[] getItems() {
@@ -61,7 +60,6 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.DataFolder#getItem(java.lang.String)
    */
   public Item getItem(String strRoleName) {
@@ -82,9 +80,7 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.DataFolder#addItem(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.DataFolder#addItem(com.silverpeas.workflow
    * .api.model.Item)
    */
   public void addItem(Item item) {
@@ -93,7 +89,6 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.DataFolder#createItem()
    */
   public Item createItem() {
@@ -102,7 +97,6 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.DataFolder#iterateItem()
    */
   public Iterator iterateItem() {
@@ -111,9 +105,7 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.DataFolder#removeItem(java.lang.String)
+   * @see com.silverpeas.workflow.api.model.DataFolder#removeItem(java.lang.String)
    */
   public void removeItem(String strItemName) throws WorkflowException {
     Item item = createItem();
@@ -132,7 +124,6 @@ public class DataFolderImpl implements DataFolder, Serializable {
 
   /**
    * Converts this object in a RecordTemplate object
-   * 
    * @return the resulting RecordTemplate
    */
   public RecordTemplate toRecordTemplate(String role, String lang,

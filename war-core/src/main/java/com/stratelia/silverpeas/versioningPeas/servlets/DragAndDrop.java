@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
+import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -50,7 +51,6 @@ import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 
 /**
@@ -58,8 +58,6 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
  * @author
  */
 public class DragAndDrop extends HttpServlet {
-  HttpSession session;
-  PrintWriter out;
 
   public void init(ServletConfig config) {
     try {
@@ -70,18 +68,17 @@ public class DragAndDrop extends HttpServlet {
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-
-    ResourceLocator settings =
-        new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
+    boolean runOnUnix = !FileUtil.isWindows();
     SilverTrace.info("importExportPeas", "DragAndDrop", "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " +
         runOnUnix);
 
@@ -127,7 +124,7 @@ public class DragAndDrop extends HttpServlet {
 
           String fileName =
               fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName
-                  .length());
+              .length());
           SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
               "file = " + fileName);
 
@@ -151,12 +148,12 @@ public class DragAndDrop extends HttpServlet {
 
           Document document =
               new Document(documentPK, foreignPK, fileName, null, Document.STATUS_CHECKINED,
-                  userId, null, null, componentId, null, null, 0, 0);
+              userId, null, null, componentId, null, null, 0, 0);
 
           DocumentVersion version =
               new DocumentVersion(versionPK, documentPK, majorNumber, minorNumber, userId,
-                  new Date(), null, versionType, DocumentVersion.STATUS_VALIDATION_NOT_REQ,
-                  physicalName, fileName, mimeType, new Long(size).intValue(), componentId);
+              new Date(), null, versionType, DocumentVersion.STATUS_VALIDATION_NOT_REQ,
+              physicalName, fileName, mimeType, new Long(size).intValue(), componentId);
 
           List<DocumentVersion> versions = new ArrayList<DocumentVersion>();
           versions.add(version);

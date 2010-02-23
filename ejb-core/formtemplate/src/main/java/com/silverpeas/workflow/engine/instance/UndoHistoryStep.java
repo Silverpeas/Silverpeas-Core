@@ -25,14 +25,12 @@ package com.silverpeas.workflow.engine.instance;
 
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
- * 
  * @table SB_Workflow_Undo_Step
  * @key-generator MAX
  */
 public class UndoHistoryStep {
   /**
    * the unique id
-   * 
    * @primary-key
    * @field-name id
    * @sql-type integer
@@ -41,7 +39,6 @@ public class UndoHistoryStep {
 
   /**
    * the step id that provokes the atomic operation
-   * 
    * @field-name stepId
    * @sql-type integer
    */
@@ -49,7 +46,6 @@ public class UndoHistoryStep {
 
   /**
    * the instance id on which the atomic operation has been made
-   * 
    * @field-name instanceId
    * @sql-type integer
    */
@@ -57,14 +53,12 @@ public class UndoHistoryStep {
 
   /**
    * the atomic operation stored in this step
-   * 
    * @field-name action
    */
   private String action;
 
   /**
    * parameters of atomic operation concatenated as "param1##param2...paramN"
-   * 
    * @field-name parameters
    */
   private String parameters;
@@ -77,7 +71,6 @@ public class UndoHistoryStep {
 
   /**
    * Get the unique id
-   * 
    * @return the unique id
    */
   public String getId() {
@@ -86,9 +79,7 @@ public class UndoHistoryStep {
 
   /**
    * Set the unique id
-   * 
-   * @param id
-   *          the unique id
+   * @param id the unique id
    */
   public void setId(String id) {
     this.id = id;
@@ -96,7 +87,6 @@ public class UndoHistoryStep {
 
   /**
    * Get the step id that provokes the atomic operation
-   * 
    * @return the step id that provokes the atomic operation
    */
   public String getStepId() {
@@ -105,9 +95,7 @@ public class UndoHistoryStep {
 
   /**
    * Set the step id that provokes the atomic operation
-   * 
-   * @param stepId
-   *          the step id that provokes the atomic operation
+   * @param stepId the step id that provokes the atomic operation
    */
   public void setStepId(String stepId) {
     this.stepId = stepId;
@@ -115,7 +103,6 @@ public class UndoHistoryStep {
 
   /**
    * Get the instance id on which the atomic operation has been made
-   * 
    * @return the instance id
    */
   public String getInstanceId() {
@@ -124,9 +111,7 @@ public class UndoHistoryStep {
 
   /**
    * Set the instance id on which the atomic operation has been made
-   * 
-   * @param instanceId
-   *          the instance id
+   * @param instanceId the instance id
    */
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
@@ -134,7 +119,6 @@ public class UndoHistoryStep {
 
   /**
    * Get the atomic operation stored in this step
-   * 
    * @return the atomic operation stored in this step
    */
   public String getAction() {
@@ -143,9 +127,7 @@ public class UndoHistoryStep {
 
   /**
    * Set the atomic operation stored in this step
-   * 
-   * @param action
-   *          the atomic operation stored in this step
+   * @param action the atomic operation stored in this step
    */
   public void setAction(String action) {
     this.action = action;
@@ -153,7 +135,6 @@ public class UndoHistoryStep {
 
   /**
    * Get parameters of atomic operation
-   * 
    * @return parameters concatenated as "param1##param2...paramN"
    */
   public String getParameters() {
@@ -162,9 +143,7 @@ public class UndoHistoryStep {
 
   /**
    * Set parameters of atomic operation
-   * 
-   * @param parameters
-   *          parameters concatenated as "param1##param2...paramN"
+   * @param parameters parameters concatenated as "param1##param2...paramN"
    */
   public void setParameters(String parameters) {
     this.parameters = parameters;

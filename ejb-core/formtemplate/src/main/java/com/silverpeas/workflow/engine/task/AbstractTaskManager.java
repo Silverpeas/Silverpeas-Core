@@ -35,10 +35,8 @@ import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 
 /**
- * The AbstractTaskManager implements all the silverpeas internal TaskManager
- * methods.
- * 
- * This Class will be extended for each external todo managenent system.
+ * The AbstractTaskManager implements all the silverpeas internal TaskManager methods. This Class
+ * will be extended for each external todo managenent system.
  */
 abstract public class AbstractTaskManager implements TaskManager {
   /**
@@ -96,8 +94,8 @@ abstract public class AbstractTaskManager implements TaskManager {
   }
 
   /**
-   * Returns the creation task of a processModel or null if the user is not
-   * allowed to create a new instance.
+   * Returns the creation task of a processModel or null if the user is not allowed to create a new
+   * instance.
    */
   public Task getCreationTask(User user, String roleName,
       ProcessModel processModel) throws WorkflowException {

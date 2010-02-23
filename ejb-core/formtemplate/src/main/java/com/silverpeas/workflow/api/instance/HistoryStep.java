@@ -41,14 +41,12 @@ public interface HistoryStep {
 
   /**
    * Get the step id
-   * 
    * @return the step id
    */
   public String getId();
 
   /**
    * Get the role under which the user did the action
-   * 
    * @return the role's name
    */
   public String getUserRoleName();

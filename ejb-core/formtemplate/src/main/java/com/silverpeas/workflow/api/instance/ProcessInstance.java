@@ -52,14 +52,12 @@ public interface ProcessInstance {
 
   /**
    * Get the workflow instance id
-   * 
    * @return instance id
    */
   public String getInstanceId();
 
   /**
    * Get the workflow model id
-   * 
    * @return model id
    */
   public String getModelId();
@@ -75,19 +73,15 @@ public interface ProcessInstance {
   public HistoryStep getHistoryStep(String stepId) throws WorkflowException;
 
   /**
-   * Returns the data which was given when the action was performed. Returns the
-   * most recent data when the action has been done several times.
-   * 
-   * @param actionName
-   *          action name
+   * Returns the data which was given when the action was performed. Returns the most recent data
+   * when the action has been done several times.
+   * @param actionName action name
    */
   public DataRecord getActionRecord(String actionName) throws WorkflowException;
 
   /**
    * Get a new data record associated to the given action
-   * 
-   * @param actionName
-   *          action name
+   * @param actionName action name
    */
   public DataRecord getNewActionRecord(String actionName)
       throws WorkflowException;
@@ -99,9 +93,7 @@ public interface ProcessInstance {
 
   /**
    * Get the last user who resolved the given state
-   * 
-   * @param resolvedState
-   *          the resolved state
+   * @param resolvedState the resolved state
    * @return this user as a Participant object
    */
   public Participant getParticipant(String action) throws WorkflowException;
@@ -118,8 +110,7 @@ public interface ProcessInstance {
       throws WorkflowException;
 
   /**
-   * Returns a DataRecord which will be used to represent this process instance
-   * as a row in a list.
+   * Returns a DataRecord which will be used to represent this process instance as a row in a list.
    */
   public DataRecord getRowDataRecord(String role, String lang)
       throws WorkflowException;
@@ -143,14 +134,12 @@ public interface ProcessInstance {
 
   /**
    * Returns all the working users on this instance.
-   * 
    * @return Actor[]
    */
   public Actor[] getWorkingUsers() throws WorkflowException;
 
   /**
    * Returns all the working users on this instance state.
-   * 
    * @param state
    * @return User[]
    */
@@ -158,7 +147,6 @@ public interface ProcessInstance {
 
   /**
    * Returns all the working users on this instance state.
-   * 
    * @param state
    * @return User[]
    */
@@ -167,7 +155,6 @@ public interface ProcessInstance {
 
   /**
    * Returns all the state name assigned to the user with given role
-   * 
    * @param user
    * @param roleName
    * @return String[]
@@ -183,60 +170,46 @@ public interface ProcessInstance {
 
   /**
    * Get the validity state of this instance
-   * 
    * @return true is this instance is valid
    */
   public boolean isValid();
 
   /**
    * Get the lock Admin status of this instance
-   * 
    * @return true is this instance is locked by admin
    */
   public boolean isLockedByAdmin();
 
   /**
    * Get the error status of this instance
-   * 
    * @return true if this instance is in error
    */
   public boolean getErrorStatus();
 
   /**
    * Get the timeout status of this instance
-   * 
    * @return true if this instance is in an active state for a long long time
    */
   public boolean getTimeoutStatus();
 
   /**
    * Locks this instance for the given instance and state
-   * 
-   * @param state
-   *          state that have to be locked
-   * @param user
-   *          the locking user
+   * @param state state that have to be locked
+   * @param user the locking user
    */
   public void lock(State state, User user) throws WorkflowException;
 
   /**
    * Un-locks this instance for the given instance and state
-   * 
-   * @param state
-   *          state that have to be un-locked
-   * @param user
-   *          the unlocking user
+   * @param state state that have to be un-locked
+   * @param user the unlocking user
    */
   public void unLock(State state, User user) throws WorkflowException;
 
   /**
-   * Computes tuples role/user (stored in an Actor object) from a QualifiedUsers
-   * object
-   * 
-   * @param qualifiedUsers
-   *          Users defined by their role or by a relation with a participant
-   * @param state
-   *          state for which these user were/may be actors
+   * Computes tuples role/user (stored in an Actor object) from a QualifiedUsers object
+   * @param qualifiedUsers Users defined by their role or by a relation with a participant
+   * @param state state for which these user were/may be actors
    * @return tuples role/user as an array of Actor objects
    */
   public Actor[] getActors(QualifiedUsers qualifiedUsers, State state)
@@ -244,9 +217,7 @@ public interface ProcessInstance {
 
   /**
    * Test is a active state is in back status
-   * 
-   * @param stateName
-   *          name of active state
+   * @param stateName name of active state
    * @return true if resolution of active state involves a cancel of actions
    */
   public boolean isStateInBackStatus(String stateName);
@@ -257,23 +228,16 @@ public interface ProcessInstance {
   public HistoryStep getMostRecentStep(String actionName);
 
   /**
-   * Recent the most recent step where an action has been performed on the given
-   * state.
+   * Recent the most recent step where an action has been performed on the given state.
    */
   public HistoryStep getMostRecentStep(State state);
 
   /**
-   * Get all the steps where given user (with given role) can go back from the
-   * given state
-   * 
-   * @param user
-   *          user that can do the back actions
-   * @param roleName
-   *          role name of this user
-   * @param roleName
-   *          role name of this user
-   * @param stateName
-   *          name of state where user want to go back from
+   * Get all the steps where given user (with given role) can go back from the given state
+   * @param user user that can do the back actions
+   * @param roleName role name of this user
+   * @param roleName role name of this user
+   * @param stateName name of state where user want to go back from
    * @return an array of HistoryStep objects
    */
   public HistoryStep[] getBackSteps(User user, String roleName, String stateName)
@@ -281,15 +245,10 @@ public interface ProcessInstance {
 
   /**
    * Add a question
-   * 
-   * @param content
-   *          question text
-   * @param stepId
-   *          id of destination step for the question
-   * @param fromState
-   *          the state where the question was asked
-   * @param fromUser
-   *          the user who asked the question
+   * @param content question text
+   * @param stepId id of destination step for the question
+   * @param fromState the state where the question was asked
+   * @param fromUser the user who asked the question
    * @return The state to which the question is
    */
   public State addQuestion(String content, String stepId, State fromState,
@@ -297,11 +256,8 @@ public interface ProcessInstance {
 
   /**
    * Answer a question
-   * 
-   * @param content
-   *          response text
-   * @param questionId
-   *          id of question corresponding to this response
+   * @param content response text
+   * @param questionId id of question corresponding to this response
    * @return The state where the question was asked
    */
   public State answerQuestion(String content, String questionId)
@@ -309,9 +265,7 @@ public interface ProcessInstance {
 
   /**
    * Get all the questions asked in the given state
-   * 
-   * @param stateName
-   *          given state name
+   * @param stateName given state name
    * @return all the questions (not yet answered) asked in the given state
    */
   public Question[] getPendingQuestions(String stateName)
@@ -319,25 +273,20 @@ public interface ProcessInstance {
 
   /**
    * Get all the questions asked from the given state
-   * 
-   * @param stateName
-   *          given state name
+   * @param stateName given state name
    * @return all the questions (not yet answered) asked from the given state
    */
   public Question[] getSentQuestions(String stateName);
 
   /**
    * Get all the questions asked from the given state and that have been aswered
-   * 
-   * @param stateName
-   *          given state name
+   * @param stateName given state name
    * @return all the answered questions asked from the given state
    */
   public Question[] getRelevantQuestions(String stateName);
 
   /**
    * Get all the questions asked in this processInstance
-   * 
    * @return all the questions
    */
   public Question[] getQuestions();

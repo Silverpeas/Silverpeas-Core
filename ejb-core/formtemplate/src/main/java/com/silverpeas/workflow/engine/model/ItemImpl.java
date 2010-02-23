@@ -38,11 +38,10 @@ import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;item&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;item&gt; element of a Process Model.
  **/
-public class ItemImpl extends AbstractReferrableObject implements
-    AbstractDescriptor, Item, Serializable {
+public class ItemImpl extends AbstractReferrableObject implements AbstractDescriptor, Item,
+    Serializable {
   private String name;
   private boolean computed = false;
   private ContextualDesignations labels;
@@ -71,7 +70,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get value of computed attribute
-   * 
    * @return true if item must be computed
    */
   public boolean isComputed() {
@@ -80,7 +78,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get formula to use if item must be computed
-   * 
    * @return formula of type 'action.Validation.actor'
    */
   public String getFormula() {
@@ -89,7 +86,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get the full user field name, to which this item is map
-   * 
    * @return full user field name
    */
   public String getMapTo() {
@@ -98,7 +94,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get the name of this item
-   * 
    * @return item's name
    */
   public String getName() {
@@ -107,7 +102,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get value of readOnly attribute
-   * 
    * @return true if item must be readonly
    */
   public boolean isReadonly() {
@@ -116,7 +110,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get the type of this item
-   * 
    * @return item's type (text for text field)
    */
   public String getType() {
@@ -125,7 +118,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#setComputed(boolean)
    */
   public void setComputed(boolean computed) {
@@ -134,7 +126,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#setFormula(java.lang.String)
    */
   public void setFormula(String formula) {
@@ -143,7 +134,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#setMapTo(java.lang.String)
    */
   public void setMapTo(String mapTo) {
@@ -152,7 +142,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#setName(java.lang.String)
    */
   public void setName(String name) {
@@ -161,7 +150,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#setReadonly(boolean)
    */
   public void setReadonly(boolean readonly) {
@@ -170,7 +158,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#setType(java.lang.String)
    */
   public void setType(String type) {
@@ -179,16 +166,12 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get description in specific language for the given role
-   * 
-   * @param lang
-   *          description's language
-   * @param role
-   *          role for which the description is
-   * @return wanted description as a String object. If description is not found,
-   *         search description with given role and default language, if not
-   *         found again, return the default description in given language, if
-   *         not found again, return the default description in default
-   *         language, if not found again, return empty string.
+   * @param lang description's language
+   * @param role role for which the description is
+   * @return wanted description as a String object. If description is not found, search description
+   * with given role and default language, if not found again, return the default description in
+   * given language, if not found again, return the default description in default language, if not
+   * found again, return empty string.
    */
   public String getDescription(String role, String language) {
     return descriptions.getLabel(role, language);
@@ -196,7 +179,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
@@ -205,9 +187,7 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Item#addDescription(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Item#addDescription(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addDescription(ContextualDesignation description) {
@@ -216,7 +196,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#iterateDescription()
    */
   public Iterator iterateDescription() {
@@ -225,7 +204,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -234,16 +212,12 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get label in specific language for the given role
-   * 
-   * @param lang
-   *          label's language
-   * @param role
-   *          role for which the label is
-   * @return wanted label as a String object. If label is not found, search
-   *         label with given role and default language, if not found again,
-   *         return the default label in given language, if not found again,
-   *         return the default label in default language, if not found again,
-   *         return empty string.
+   * @param lang label's language
+   * @param role role for which the label is
+   * @return wanted label as a String object. If label is not found, search label with given role
+   * and default language, if not found again, return the default label in given language, if not
+   * found again, return the default label in default language, if not found again, return empty
+   * string.
    */
   public String getLabel(String role, String language) {
     return labels.getLabel(role, language);
@@ -251,9 +225,7 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Item#addLabel(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Item#addLabel(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addLabel(ContextualDesignation label) {
@@ -262,7 +234,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#iterateLabel()
    */
   public Iterator iterateLabel() {
@@ -271,7 +242,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#getLabels()
    */
   public ContextualDesignations getLabels() {
@@ -280,7 +250,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#getParameter(java.lang.String)
    */
   public Parameter getParameter(String strName) {
@@ -298,7 +267,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#createParameter()
    */
   public Parameter createParameter() {
@@ -307,9 +275,7 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Item#addParameter(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Item#addParameter(com.silverpeas.workflow
    * .api.model.Parameter)
    */
   public void addParameter(Parameter parameter) {
@@ -318,7 +284,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#iterateParameters()
    */
   public Iterator iterateParameter() {
@@ -327,9 +292,7 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Item#removeParameter(java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Item#removeParameter(java.lang.String)
    */
   public void removeParameter(String strName) throws WorkflowException {
     Parameter parameter = createParameter();
@@ -348,7 +311,6 @@ public class ItemImpl extends AbstractReferrableObject implements
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {

@@ -38,8 +38,6 @@ import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-//import com.stratelia.webactiv.util.ResourceLocator;
-
 public abstract class AbstractForm implements Form {
 
   private List<FieldTemplate> fieldTemplates = new ArrayList<FieldTemplate>();
@@ -142,8 +140,6 @@ public abstract class AbstractForm implements Form {
               fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
 
               if (fieldDisplayer != null) {
-                // out.println("	field = document.forms[" + pc.getFormIndex() + "].elements[\"" +
-                // fieldTemplate.getFieldName() + "\"];");
                 out.println("	field = document.getElementById(\"" + fieldTemplate.getFieldName() +
                     "\");");
                 out.println("	if (field != null) {");
@@ -280,11 +276,6 @@ public abstract class AbstractForm implements Form {
     return isEmpty;
   }
 
-  /*
-   * private boolean isInteger(String s) { try { Integer.parseInt(s); } catch (NumberFormatException
-   * e) { return false; } return true; }
-   */
-
   private String getParameterValue(List<FileItem> items, String parameterName, String encoding)
       throws UnsupportedEncodingException {
     SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_ENTER_METHOD",
@@ -298,16 +289,6 @@ public abstract class AbstractForm implements Form {
     return null;
   }
 
-  /*
-   * private String getParameterValues(List<FileItem> items, String parameterName) {
-   * SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
-   * "parameterName = " + parameterName); String values = ""; List<FileItem> params =
-   * getParameters(items, parameterName); FileItem item = null; for (int p = 0; p < params.size();
-   * p++) { item = params.get(p); values += item.getString(); if (p < params.size() - 1) { values +=
-   * "##"; } } SilverTrace.debug("form", "AbstractForm.getParameterValues",
-   * "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + values); return values; }
-   */
-
   private FileItem getParameter(List<FileItem> items, String parameterName) {
     Iterator<FileItem> iter = items.iterator();
     FileItem item = null;
@@ -319,18 +300,4 @@ public abstract class AbstractForm implements Form {
     }
     return null;
   }
-
-  // for multi-values parameter (like checkbox)
-  /*
-   * private List<FileItem> getParameters(List<FileItem> items, String parameterName) {
-   * List<FileItem> parameters = new ArrayList<FileItem>(); Iterator<FileItem> iter =
-   * items.iterator(); FileItem item = null; while (iter.hasNext()) { item = iter.next(); if
-   * (parameterName.equals(item.getFieldName())) { parameters.add(item); } } return parameters; }
-   */
-
-  /*
-   * private boolean runOnUnix() { ResourceLocator settings = new
-   * ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", ""); return
-   * settings.getBoolean("runOnSolaris", false); }
-   */
 }

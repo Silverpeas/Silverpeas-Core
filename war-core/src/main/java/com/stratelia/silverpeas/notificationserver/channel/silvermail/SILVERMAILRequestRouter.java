@@ -78,7 +78,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext context) {
     ComponentSessionController component =
         (ComponentSessionController) new SILVERMAILSessionController(
-            mainSessionCtrl, context);
+        mainSessionCtrl, context);
     return component;
   }
 

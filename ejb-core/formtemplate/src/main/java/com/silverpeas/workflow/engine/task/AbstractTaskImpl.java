@@ -57,8 +57,7 @@ public abstract class AbstractTaskImpl implements Task {
   }
 
   /**
-   * Returns the name of the role which gived the responsability of this task to
-   * the user.
+   * Returns the name of the role which gived the responsability of this task to the user.
    */
   public String getUserRoleName() {
     return roleName;

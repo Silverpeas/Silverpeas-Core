@@ -31,10 +31,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * The Workflow class is the main entry to the workflow engine public services.
- * 
- * This is a proxy class to the WorkflowHub class which gives all the workflow
- * services.
+ * The Workflow class is the main entry to the workflow engine public services. This is a proxy
+ * class to the WorkflowHub class which gives all the workflow services.
  */
 public final class Workflow {
   /**
@@ -98,8 +96,8 @@ public final class Workflow {
   }
 
   /**
-   * Initialize the Workflow inspector the Workflow inspector will verify
-   * periodically the timeout on
+   * Initialize the Workflow inspector the Workflow inspector will verify periodically the timeout
+   * on
    */
   static public void initialize() {
     try {

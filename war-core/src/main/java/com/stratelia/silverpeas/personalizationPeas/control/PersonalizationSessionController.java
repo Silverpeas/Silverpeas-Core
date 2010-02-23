@@ -729,11 +729,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
         public int compare(Properties o1, Properties o2) {
           return o1.getProperty("fullName").compareTo(o2.getProperty("fullName"));
-        }
+          }
 
         public boolean equals(Object o) {
           return false;
-        }
+          }
 
       });
       sortedComponentList = new ArrayList<Properties>(componentList.length);
@@ -809,15 +809,15 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator<Properties>() {
-        public int compare(Properties o1, Properties o2) {
+          public int compare(Properties o1, Properties o2) {
           return o1.getProperty("name").toUpperCase()
               .compareTo(o2.getProperty("name").toUpperCase());
-        }
+          }
 
         public boolean equals(Object o) {
           return false;
-        }
-      });
+          }
+                });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);

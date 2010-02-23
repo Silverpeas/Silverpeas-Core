@@ -33,16 +33,13 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.form.DataRecord;
 
 /**
- * A ResponseEvent object is the description of a answer made to a precedent
- * question.
- * 
- * Those descriptions are sent to the workflow engine by the workflow tools when
- * the user answer a question in process instance
+ * A ResponseEvent object is the description of a answer made to a precedent question. Those
+ * descriptions are sent to the workflow engine by the workflow tools when the user answer a
+ * question in process instance
  */
 public class ResponseEventImpl implements ResponseEvent {
   /**
-   * A ResponseEventImpl is built from a resolved task, a choosen target state
-   * and a filled form.
+   * A ResponseEventImpl is built from a resolved task, a choosen target state and a filled form.
    */
   public ResponseEventImpl(Task resolvedTask, String questionId, DataRecord data) {
     this.user = resolvedTask.getUser();
@@ -64,9 +61,7 @@ public class ResponseEventImpl implements ResponseEvent {
   }
 
   /**
-   * Returns the process instance.
-   * 
-   * Returns null when the task is an instance creation.
+   * Returns the process instance. Returns null when the task is an instance creation.
    */
   public ProcessInstance getProcessInstance() {
     return processInstance;
@@ -80,9 +75,7 @@ public class ResponseEventImpl implements ResponseEvent {
   }
 
   /**
-   * Returns the process model (peas).
-   * 
-   * Must be not null when the task is an instance creation.
+   * Returns the process model (peas). Must be not null when the task is an instance creation.
    */
   public ProcessModel getProcessModel() {
     return processModel;

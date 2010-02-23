@@ -41,8 +41,7 @@ public class ActionLabelTemplate extends ProcessInstanceFieldTemplate {
   }
 
   /**
-   * Returns a field built from this template and filled from the given process
-   * instance.
+   * Returns a field built from this template and filled from the given process instance.
    */
   public Field getField(ProcessInstance instance) {
     return new TextRoField(label);

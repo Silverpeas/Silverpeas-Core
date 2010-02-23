@@ -47,7 +47,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
 
-
 /**
  * The class AuthenticationServlet is called to authenticate user in Silverpeas
  */
@@ -64,10 +63,9 @@ public class AuthenticationServlet extends HttpServlet {
       throws IOException {
     // Get the session
     HttpSession session = request.getSession(true);
-    if(!StringUtil.isDefined(request.getCharacterEncoding())) {
+    if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding("UTF-8");
     }
-    
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
@@ -94,9 +92,11 @@ public class AuthenticationServlet extends HttpServlet {
 
     // CAS authentication
     String casUser = null;
-    if(session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION) != null) {
-      casUser = ((Assertion) session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION)).getPrincipal().getName();
-    }   
+    if (session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION) != null) {
+      casUser =
+          ((Assertion) session.getAttribute(AbstractCasFilter.CONST_CAS_ASSERTION)).getPrincipal()
+          .getName();
+    }
     boolean casMode = (casUser != null);
 
     String stringKey = convert2Alpha(session.getId());
@@ -154,9 +154,9 @@ public class AuthenticationServlet extends HttpServlet {
       sDecodedPassword = ((sCryptedPassword == null || sCryptedPassword
           .length() == 0) ? sPassword : decode(sPassword));
     }
-    session.setAttribute("Silverpeas_pwdForHyperlink", sDecodedPassword);    
+    session.setAttribute("Silverpeas_pwdForHyperlink", sDecodedPassword);
     String sDomainId = request.getParameter("DomainId");
-    if(casMode) {
+    if (casMode) {
       sDomainId = authenticationSettings.getString("cas.authentication.domainId", "0");
     }
 

@@ -45,11 +45,10 @@ import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;form&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;form&gt; element of a Process Model.
  */
-public class FormImpl extends AbstractReferrableObject implements Form,
-    AbstractDescriptor, Serializable {
+public class FormImpl extends AbstractReferrableObject implements Form, AbstractDescriptor,
+    Serializable {
   private String name;
   private String role;
   private String HTMLFileName;
@@ -88,7 +87,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Get the name of this form
-   * 
    * @return form's name
    */
   public String getName() {
@@ -97,7 +95,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#getRole()
    */
   public String getRole() {
@@ -105,9 +102,8 @@ public class FormImpl extends AbstractReferrableObject implements Form,
   }
 
   /**
-   * Get the name of HTML file to show this form if no HTML file is defined,
-   * XMLForm will be used to create the form
-   * 
+   * Get the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
+   * create the form
    * @return form's name
    */
   public String getHTMLFileName() {
@@ -115,9 +111,8 @@ public class FormImpl extends AbstractReferrableObject implements Form,
   }
 
   /**
-   * Set the name of HTML file to show this form if no HTML file is defined,
-   * XMLForm will be used to display the form
-   * 
+   * Set the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
+   * display the form
    * @return form's name
    */
   public void setHTMLFileName(String HTMLFileName) {
@@ -126,7 +121,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Get the inputs
-   * 
    * @return the inputs as an array
    */
   public Input[] getInputs() {
@@ -138,7 +132,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#getInput(int)
    */
   public Input getInput(int idx) {
@@ -147,10 +140,7 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Form#getInput(com.silverpeas.workflow
-   * .api.model.Input)
+   * @see com.silverpeas.workflow.api.model.Form#getInput(com.silverpeas.workflow .api.model.Input)
    */
   public Input getInput(Input reference) {
     int idx = inputList.indexOf(reference);
@@ -163,10 +153,7 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Form#addInput(com.silverpeas.workflow
-   * .api.model.Input)
+   * @see com.silverpeas.workflow.api.model.Form#addInput(com.silverpeas.workflow .api.model.Input)
    */
   public void addInput(Input input) {
     inputList.add(input);
@@ -174,7 +161,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#iterateInput()
    */
   public Iterator iterateInput() {
@@ -183,7 +169,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#createInput()
    */
   public Input createInput() {
@@ -192,7 +177,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#removeInput(int)
    */
   public void removeInput(int idx) throws WorkflowException {
@@ -205,7 +189,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#getTitles()
    */
   public ContextualDesignations getTitles() {
@@ -214,9 +197,7 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.silverpeas.workflow.api.model.Form#getTitle(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Form#getTitle(java.lang.String, java.lang.String)
    */
   public String getTitle(String role, String language) {
     return titles.getLabel(role, language);
@@ -224,9 +205,7 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Form#addTitle(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Form#addTitle(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addTitle(ContextualDesignation title) {
@@ -235,7 +214,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#iterateTitle()
    */
   public Iterator iterateTitle() {
@@ -244,7 +222,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -253,9 +230,7 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Set the name of this form
-   * 
-   * @param name
-   *          form's name
+   * @param name form's name
    **/
   public void setName(String name) {
     this.name = name;
@@ -263,7 +238,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Form#setRole(java.lang.String)
    */
   public void setRole(String role) {
@@ -272,7 +246,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {
@@ -281,7 +254,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Converts this object in a RecordTemplate object
-   * 
    * @return the resulting RecordTemplate
    */
   public RecordTemplate toRecordTemplate(String role, String lang)
@@ -291,7 +263,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Converts this object in a DataRecord object
-   * 
    * @return the resulting DataRecord object with the default values set
    */
   public DataRecord getDefaultRecord(String role, String lang, DataRecord data)
@@ -336,7 +307,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /**
    * Converts this object in a RecordTemplate object
-   * 
    * @return the resulting RecordTemplate
    */
   public RecordTemplate toRecordTemplate(String role, String lang,
@@ -415,7 +385,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getId()
    */
   public int getId() {
@@ -424,9 +393,7 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
    * .workflow.api.model.AbstractDescriptor)
    */
   public void setParent(AbstractDescriptor parent) {
@@ -435,7 +402,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getParent()
    */
   public AbstractDescriptor getParent() {
@@ -444,7 +410,6 @@ public class FormImpl extends AbstractReferrableObject implements Form,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#hasId()
    */
   public boolean hasId() {

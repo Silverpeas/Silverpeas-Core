@@ -732,7 +732,7 @@ public class SilverTrace {
     // Reset all appenders and debug levels
     // Category.getRoot().getHierarchy().resetConfiguration();
     Logger.getRootLogger().getLoggerRepository().resetConfiguration();
-    //Category.getRoot().getLoggerRepository().resetConfiguration();
+    // Category.getRoot().getLoggerRepository().resetConfiguration();
     try {
       Logger.getRootLogger().setAdditivity(true);
       Logger.getRootLogger().setLevel(Level.ERROR);
@@ -1066,7 +1066,7 @@ public class SilverTrace {
       try {
         DailyRollingFileAppender a1 = new DailyRollingFileAppender(
             getLayout(patternLayout), fileName, rollingMode);
-        if(MODULE_ROOT.equals(module)) {
+        if (MODULE_ROOT.equals(module)) {
           cat = Logger.getRootLogger();
         }
         cat.removeAppender(getAppenderName(module, APPENDER_ROLLING_FILE));
@@ -1564,7 +1564,7 @@ public class SilverTrace {
    * @return
    */
   static protected Category getCategory(String module, String classToAppend) {
-    if("root".equalsIgnoreCase(module)) {
+    if ("root".equalsIgnoreCase(module)) {
       return Logger.getRootLogger();
     }
     String modulePath = availableModules.getProperty(module);

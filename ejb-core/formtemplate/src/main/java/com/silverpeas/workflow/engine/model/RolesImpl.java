@@ -33,8 +33,7 @@ import com.silverpeas.workflow.api.model.Role;
 import com.silverpeas.workflow.api.model.Roles;
 
 /**
- * Class implementing the representation of the &lt;roles&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;roles&gt; element of a Process Model.
  */
 public class RolesImpl implements Serializable, Roles {
   private List roleList;
@@ -48,10 +47,7 @@ public class RolesImpl implements Serializable, Roles {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Roles#addRole(com.silverpeas.workflow
-   * .api.model.Role)
+   * @see com.silverpeas.workflow.api.model.Roles#addRole(com.silverpeas.workflow .api.model.Role)
    */
   public void addRole(Role role) {
     roleList.add(role);
@@ -59,7 +55,6 @@ public class RolesImpl implements Serializable, Roles {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Roles#createRole()
    */
   public Role createRole() {
@@ -68,7 +63,6 @@ public class RolesImpl implements Serializable, Roles {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Roles#getRole(java.lang.String)
    */
   public Role getRole(String name) {
@@ -88,7 +82,6 @@ public class RolesImpl implements Serializable, Roles {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Roles#getRoles()
    */
   public Role[] getRoles() {
@@ -100,7 +93,6 @@ public class RolesImpl implements Serializable, Roles {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Roles#iterateRole()
    */
   public Iterator iterateRole() {
@@ -109,7 +101,6 @@ public class RolesImpl implements Serializable, Roles {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Roles#removeRole(java.lang.String)
    */
   public void removeRole(String strRoleName) throws WorkflowException {

@@ -114,17 +114,15 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   }
 
   /**
-   * Returns a Map (String -> String) of named parameters which can be used by
-   * the displayer (max-size, length ...).
+   * Returns a Map (String -> String) of named parameters which can be used by the displayer
+   * (max-size, length ...).
    */
   public Map getParameters(String language) {
     return new HashMap();
   }
 
   /**
-   * Throws an illegal call exception, since an empty field can't be built from
-   * this template.
-   * 
+   * Throws an illegal call exception, since an empty field can't be built from this template.
    * @see getField
    */
   public Field getEmptyField() throws FormException {
@@ -140,8 +138,7 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   }
 
   /**
-   * Returns a field built from this template and filled from the given process
-   * instance.
+   * Returns a field built from this template and filled from the given process instance.
    */
   abstract public Field getField(ProcessInstance instance) throws FormException;
 

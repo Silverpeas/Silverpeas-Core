@@ -93,7 +93,6 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -109,7 +108,6 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate at the given position
-   * 
    * @throw FormException if the field index is out of bound.
    */
   public FieldTemplate getFieldTemplate(int fieldIndex) throws FormException {
@@ -123,7 +121,6 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
 
   /**
    * Returns the Field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
@@ -138,8 +135,7 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
   }
 
   /**
-   * Throws an illegal call exception, since an empty DataRecord can't be built
-   * from this template.
+   * Throws an illegal call exception, since an empty DataRecord can't be built from this template.
    */
   public DataRecord getEmptyRecord() throws FormException {
     throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");

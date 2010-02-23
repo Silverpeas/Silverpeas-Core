@@ -36,7 +36,7 @@ public class StringUtil {
   private static final String PATTERN_END = "}";
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
   private static final String EMAIL_PATTERN =
-          "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
+      "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
 
   public static boolean isDefined(String parameter) {
     return (parameter != null && parameter.length() > 0 && !"null".equalsIgnoreCase(parameter));
@@ -81,7 +81,7 @@ public class StringUtil {
         if (values.containsKey(patternKey)) {
           value = values.get(patternKey);
           sb.append(label.substring(0, startIndex)).append(
-                  value != null ? value.toString() : "");
+              value != null ? value.toString() : "");
         } else {
           sb.append(label.substring(0, endIndex + 1));
         }
@@ -160,7 +160,7 @@ public class StringUtil {
    */
   public static boolean getBooleanValue(final String expression) {
     return "true".equalsIgnoreCase(expression) || "yes".equalsIgnoreCase(expression)
-            || "y".equalsIgnoreCase(expression) || "oui".equalsIgnoreCase(expression)
-            || "1".equalsIgnoreCase(expression);
+        || "y".equalsIgnoreCase(expression) || "oui".equalsIgnoreCase(expression)
+        || "1".equalsIgnoreCase(expression);
   }
 }

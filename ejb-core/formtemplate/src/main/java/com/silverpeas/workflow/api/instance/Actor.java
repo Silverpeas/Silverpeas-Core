@@ -37,14 +37,12 @@ public interface Actor {
 
   /**
    * get the name of the role under which the user was/may be an actor
-   * 
    * @return the role's name
    */
   public String getUserRoleName();
 
   /**
    * get the name of the state for which the user was/may be an actor
-   * 
    * @return the state's name
    */
   public State getState();

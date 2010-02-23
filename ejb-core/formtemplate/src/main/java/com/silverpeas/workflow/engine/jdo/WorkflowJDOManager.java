@@ -36,8 +36,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * This class offers services about database persistence. It uses Castor library
- * to read/write process instance information in database
+ * This class offers services about database persistence. It uses Castor library to read/write
+ * process instance information in database
  */
 public class WorkflowJDOManager {
   /**
@@ -53,7 +53,6 @@ public class WorkflowJDOManager {
 
   /**
    * Get a connection to database
-   * 
    * @return Database object
    */
   static public Database getDatabase() throws WorkflowException {
@@ -62,7 +61,6 @@ public class WorkflowJDOManager {
 
   /**
    * Get a connection to database
-   * 
    * @return Database object
    */
   static public Database getDatabase(boolean fast) throws WorkflowException {

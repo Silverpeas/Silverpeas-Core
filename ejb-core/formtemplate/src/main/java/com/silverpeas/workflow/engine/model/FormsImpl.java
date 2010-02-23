@@ -34,8 +34,7 @@ import com.silverpeas.workflow.api.model.Forms;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Class implementing the representation of the &lt;forms&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;forms&gt; element of a Process Model.
  **/
 public class FormsImpl implements Serializable, Forms {
   private List formList;
@@ -49,10 +48,7 @@ public class FormsImpl implements Serializable, Forms {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Forms#addForm(com.silverpeas.workflow
-   * .api.model.Form)
+   * @see com.silverpeas.workflow.api.model.Forms#addForm(com.silverpeas.workflow .api.model.Form)
    */
   public void addForm(Form form) {
     formList.add(form);
@@ -60,7 +56,6 @@ public class FormsImpl implements Serializable, Forms {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Forms#createForm()
    */
   public Form createForm() {
@@ -69,7 +64,6 @@ public class FormsImpl implements Serializable, Forms {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Forms#getForm(java.lang.String)
    */
   public Form getForm(String name) {
@@ -86,9 +80,7 @@ public class FormsImpl implements Serializable, Forms {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.silverpeas.workflow.api.model.Forms#getForm(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Forms#getForm(java.lang.String, java.lang.String)
    */
   public Form getForm(String name, String role) {
     Form form = null;
@@ -110,7 +102,6 @@ public class FormsImpl implements Serializable, Forms {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Forms#iterateForm()
    */
   public Iterator iterateForm() {
@@ -119,9 +110,7 @@ public class FormsImpl implements Serializable, Forms {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.silverpeas.workflow.api.model.Forms#removeForm(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Forms#removeForm(java.lang.String, java.lang.String)
    */
   public void removeForm(String strName, String strRole)
       throws WorkflowException {
@@ -132,7 +121,7 @@ public class FormsImpl implements Serializable, Forms {
 
       if (form.getName().equals(strName)
           && (strRole == null && form.getRole() == null || strRole != null
-              && strRole.equals(form.getRole()))) {
+          && strRole.equals(form.getRole()))) {
         formList.remove(i);
         return;
       }

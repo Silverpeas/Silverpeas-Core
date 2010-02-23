@@ -44,8 +44,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * A UserManager implementation built upon the silverpeas user management
- * system.
+ * A UserManager implementation built upon the silverpeas user management system.
  */
 public class UserManagerImpl implements UserManager {
   /**
@@ -80,7 +79,6 @@ public class UserManagerImpl implements UserManager {
 
   /**
    * Returns the user with the given userId
-   * 
    * @return the user with the given userId.
    * @throw WorkflowException if the userId is unknown.
    */
@@ -90,7 +88,6 @@ public class UserManagerImpl implements UserManager {
 
   /**
    * Make a User[] from a userIds' String[].
-   * 
    * @throw WorkflowException if a userId is unknown.
    */
   public User[] getUsers(String[] userIds) throws WorkflowException {
@@ -143,8 +140,8 @@ public class UserManagerImpl implements UserManager {
   }
 
   /**
-   * returns all the known info for an user; Each returned value can be used as
-   * a parameter to the User method getInfo().
+   * returns all the known info for an user; Each returned value can be used as a parameter to the
+   * User method getInfo().
    */
   public String[] getUserInfoNames() {
     return UserImpl.getUserInfoNames();
@@ -174,13 +171,9 @@ public class UserManagerImpl implements UserManager {
 
   /**
    * Get a user from a given user and relation
-   * 
-   * @param user
-   *          reference user
-   * @param relation
-   *          relation between given user and searched user
-   * @param peasId
-   *          the id of workflow peas associated to that information
+   * @param user reference user
+   * @param relation relation between given user and searched user
+   * @param peasId the id of workflow peas associated to that information
    * @return the user that has the given relation with given user
    */
   public User getRelatedUser(User user, String relation, String peasId)
@@ -194,19 +187,16 @@ public class UserManagerImpl implements UserManager {
     if (info == null)
       throw new WorkflowException("UserManagerImpl.getRelatedUser",
           "workflowEngine.EXP_USERINFO_NOT_FOUND", "user id : "
-              + user.getUserId() + ", info name : " + relation);
+          + user.getUserId() + ", info name : " + relation);
 
     return getUser(info.getValue());
   }
 
   /**
-   * Get the user settings in database The full list of information is described
-   * in the process model
-   * 
-   * @param userId
-   *          the user Id
-   * @param peasId
-   *          the id of workflow peas associated to that information
+   * Get the user settings in database The full list of information is described in the process
+   * model
+   * @param userId the user Id
+   * @param peasId the id of workflow peas associated to that information
    * @return UserSettings
    * @see ProcessModel
    */
@@ -224,8 +214,9 @@ public class UserManagerImpl implements UserManager {
         db = WorkflowJDOManager.getDatabase(true);
         db.begin();
 
-        query = db
-            .getOQLQuery("SELECT settings FROM com.silverpeas.workflow.engine.user.UserSettingsImpl settings WHERE userId = $1 AND peasId = $2");
+        query =
+            db
+                .getOQLQuery("SELECT settings FROM com.silverpeas.workflow.engine.user.UserSettingsImpl settings WHERE userId = $1 AND peasId = $2");
 
         // Execute the query
         query.bind(userId);
@@ -259,13 +250,10 @@ public class UserManagerImpl implements UserManager {
   }
 
   /**
-   * Get an empty user settings in database The full list of information is
-   * described in the process model
-   * 
-   * @param userId
-   *          the user Id
-   * @param peasId
-   *          the id of workflow peas associated to that information
+   * Get an empty user settings in database The full list of information is described in the process
+   * model
+   * @param userId the user Id
+   * @param peasId the id of workflow peas associated to that information
    * @return UserSettings
    * @see ProcessModel
    */

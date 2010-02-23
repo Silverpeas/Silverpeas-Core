@@ -23,6 +23,7 @@
  */
 package com.silverpeas.attachment.servlets;
 
+import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,6 +91,7 @@ public class DragAndDrop extends HttpServlet {
    * @throws ServletException
    * @see
    */
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("attachment", "DragAndDrop.doPost",
@@ -97,7 +99,7 @@ public class DragAndDrop extends HttpServlet {
 
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
+    boolean runOnUnix = !FileUtil.isWindows();
     boolean actifyPublisherEnable = settings.getBoolean(
         "ActifyPublisherEnable", false);
 

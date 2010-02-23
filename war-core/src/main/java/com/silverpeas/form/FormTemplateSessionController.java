@@ -37,15 +37,15 @@ public class FormTemplateSessionController extends AbstractComponentSessionContr
   private String objectType;
   private String xmlFormName;
   private String objectLanguage;
-	private String reloadOpener;
-	private String urlToReload;
+  private String reloadOpener;
+  private String urlToReload;
 
   public FormTemplateSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
-    super(mainSessionCtrl, context, "com.silverpeas.form.multilang.formBundle",
-        null, null);
+    super(mainSessionCtrl, context, "com.silverpeas.form.multilang.formBundle", null, null);
   }
 
+  @Override
   public String getComponentId() {
     return componentId;
   }
@@ -85,19 +85,20 @@ public class FormTemplateSessionController extends AbstractComponentSessionContr
   public void setObjectLanguage(String objectLanguage) {
     this.objectLanguage = objectLanguage;
   }
-	public String getReloadOpener() {
-		return reloadOpener;
-	}
 
-	public void setReloadOpener(String reloadOpener) {
-		this.reloadOpener = reloadOpener;
-	}
+  public String getReloadOpener() {
+    return reloadOpener;
+  }
 
-	public String getUrlToReload() {
-		return urlToReload;
-	}
+  public void setReloadOpener(String reloadOpener) {
+    this.reloadOpener = reloadOpener;
+  }
 
-	public void setUrlToReload(String urlToReload) {
-		this.urlToReload = urlToReload;
-	}
+  public String getUrlToReload() {
+    return urlToReload;
+  }
+
+  public void setUrlToReload(String urlToReload) {
+    this.urlToReload = urlToReload;
+  }
 }

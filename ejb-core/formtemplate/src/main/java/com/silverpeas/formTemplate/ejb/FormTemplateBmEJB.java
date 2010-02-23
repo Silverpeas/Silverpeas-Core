@@ -47,7 +47,7 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
   public DataRecord getRecord(String externalId, String id) {
     SilverTrace.info("form", "FormTemplateBmEJB.getRecord",
         "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId + ", id = "
-            + id);
+        + id);
 
     PublicationTemplate pub = getPublicationTemplate(externalId);
 
@@ -64,7 +64,7 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
       throw new FormTemplateBmRuntimeException(
           "FormTemplateBmEJB.getPublicationTemplate",
           SilverpeasException.ERROR, "Getting template '" + externalId
-              + "' failed !", e);
+          + "' failed !", e);
     }
     return pub;
   }
@@ -77,7 +77,7 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
       String language) {
     SilverTrace.info("form", "FormTemplateBmEJB.getXMLFields",
         "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId + ", id = "
-            + id + ", language = " + language);
+        + id + ", language = " + language);
 
     PublicationTemplateImpl template = (PublicationTemplateImpl) getPublicationTemplate(externalId);
 
@@ -123,7 +123,7 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
         throw new FormTemplateBmRuntimeException(
             "FormTemplateBmEJB.getXMLFields", SilverpeasException.ERROR,
             "Getting fields for externalId = " + externalId + " and id = " + id
-                + " failed !", e);
+            + " failed !", e);
       }
     }
     return fields;
@@ -138,7 +138,7 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
     } catch (Exception e) {
       throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getRecord",
           SilverpeasException.ERROR, "Getting record for id '" + id
-              + " failed !", e);
+          + " failed !", e);
     }
     return data;
   }

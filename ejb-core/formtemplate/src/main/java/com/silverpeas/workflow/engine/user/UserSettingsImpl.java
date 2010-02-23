@@ -47,7 +47,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class UserSettingsImpl implements UserSettings {
   /**
    * Used for persistence
-   * 
    * @primary-key
    * @field-name settingsId
    * @field-type string
@@ -67,7 +66,6 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Vector of all user informations
-   * 
    * @field-name userInfos
    * @field-type com.silverpeas.workflow.engine.user.UserInfoImpl
    * @many-key settingsId
@@ -101,7 +99,6 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getSettingsId() {
@@ -110,9 +107,7 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * For persistence in database Set this object id
-   * 
-   * @param settingsId
-   *          this object id
+   * @param settingsId this object id
    */
   public void setSettingsId(String settingsId) {
     this.settingsId = settingsId;
@@ -120,7 +115,6 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Get the user id
-   * 
    * @return user id
    */
   public String getUserId() {
@@ -129,9 +123,7 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Set the user id
-   * 
-   * @param userId
-   *          user id
+   * @param userId user id
    */
   public void setUserId(String userId) {
     this.userId = userId;
@@ -139,7 +131,6 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Get the peas id
-   * 
    * @return peas id
    */
   public String getPeasId() {
@@ -148,9 +139,7 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Set the peas id
-   * 
-   * @param peasId
-   *          peas id
+   * @param peasId peas id
    */
   public void setPeasId(String peasId) {
     this.peasId = peasId;
@@ -188,7 +177,6 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Saves this settings in database
-   * 
    * @return the newly created settings id
    */
   public void save() throws WorkflowException {
@@ -207,9 +195,10 @@ public class UserSettingsImpl implements UserSettings {
         db = WorkflowJDOManager.getDatabase();
         db.begin();
 
-        query = db
-            .getOQLQuery("SELECT settings FROM com.silverpeas.workflow.engine.user.UserSettingsImpl settings"
-                + " WHERE userId = $1 AND peasId = $2");
+        query =
+            db
+                .getOQLQuery("SELECT settings FROM com.silverpeas.workflow.engine.user.UserSettingsImpl settings"
+                    + " WHERE userId = $1 AND peasId = $2");
 
         // Execute the query
         query.bind(userId);
@@ -242,11 +231,8 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Update the settings with a given DataRecord
-   * 
-   * @param data
-   *          the data record
-   * @param template
-   *          the record template
+   * @param data the data record
+   * @param template the record template
    */
   public void update(DataRecord data, RecordTemplate template) {
     String[] fieldNames = template.getFieldNames();
@@ -273,11 +259,8 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Fill the given data record with user information
-   * 
-   * @param data
-   *          the data record
-   * @param template
-   *          the record template
+   * @param data the data record
+   * @param template the record template
    */
   public void load(DataRecord data, RecordTemplate template) {
     String[] fieldNames = template.getFieldNames();
@@ -308,11 +291,8 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Add an user information for this setting
-   * 
-   * @param name
-   *          key of user information
-   * @param value
-   *          value of user information
+   * @param name key of user information
+   * @param value value of user information
    */
   private void addUserInfo(String name, String value) {
     UserInfoImpl userInfo = new UserInfoImpl(name, value);
@@ -350,9 +330,7 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Set the settings user informations
-   * 
-   * @param userInfos
-   *          user informations
+   * @param userInfos user informations
    */
   public void castor_setUserInfos(Vector userInfos) {
     this.userInfos = userInfos;
@@ -360,7 +338,6 @@ public class UserSettingsImpl implements UserSettings {
 
   /**
    * Get the settings user informations
-   * 
    * @return user informations as a Vector
    */
   public Vector castor_getUserInfos() {

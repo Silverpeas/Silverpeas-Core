@@ -29,11 +29,9 @@ import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;userInRole&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;userInRole&gt; element of a Process Model.
  **/
-public class UserInRoleImpl extends AbstractReferrableObject implements
-    UserInRole, Serializable {
+public class UserInRoleImpl extends AbstractReferrableObject implements UserInRole, Serializable {
   private String roleName;
 
   /**
@@ -52,7 +50,6 @@ public class UserInRoleImpl extends AbstractReferrableObject implements
 
   /**
    * Set name of the role
-   * 
    * @param roleName
    */
   public void setRoleName(String roleName) {
@@ -61,7 +58,6 @@ public class UserInRoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {

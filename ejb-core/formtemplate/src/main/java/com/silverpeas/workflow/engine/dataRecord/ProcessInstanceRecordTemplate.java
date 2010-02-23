@@ -39,14 +39,11 @@ import com.silverpeas.workflow.api.model.Presentation;
 import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
- * A ProcessInstanceRecordTemplate describes all the data grouped in a
- * ProcessInstanceDataRecord.
- * 
- * The instance : instance instance.title instance.<columnName> The model :
- * model model.label model.peas-label The folder : <folderItem> The forms :
- * form.<formName> form.<formName>.title form.<formName>.<fieldItem> The actions
- * : action.<actionName> action.<actionName>.label action.<actionName>.date
- * action.<actionName>.actor The users : participant.<participantName>
+ * A ProcessInstanceRecordTemplate describes all the data grouped in a ProcessInstanceDataRecord.
+ * The instance : instance instance.title instance.<columnName> The model : model model.label
+ * model.peas-label The folder : <folderItem> The forms : form.<formName> form.<formName>.title
+ * form.<formName>.<fieldItem> The actions : action.<actionName> action.<actionName>.label
+ * action.<actionName>.date action.<actionName>.actor The users : participant.<participantName>
  */
 public class ProcessInstanceRecordTemplate implements RecordTemplate {
   /**
@@ -106,7 +103,6 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -122,7 +118,6 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate at the given position
-   * 
    * @throw FormException if the field index is out of bound.
    */
   public FieldTemplate getFieldTemplate(int fieldIndex) throws FormException {
@@ -136,7 +131,6 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
 
   /**
    * Returns the Field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
@@ -151,8 +145,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
   }
 
   /**
-   * Throws an illegal call exception, since an empty DataRecord can't be built
-   * from this template.
+   * Throws an illegal call exception, since an empty DataRecord can't be built from this template.
    */
   public DataRecord getEmptyRecord() throws FormException {
     throw new FormException("workflowEngine", "workflowEngine.EXP_ILLEGAL_CALL");

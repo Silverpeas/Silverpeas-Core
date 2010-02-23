@@ -48,6 +48,7 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
@@ -57,7 +58,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
@@ -67,8 +67,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 public class ImportDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  HttpSession session;
-  PrintWriter out;
 
   public void init(ServletConfig config) {
     try {
@@ -88,10 +86,7 @@ public class ImportDragAndDrop extends HttpServlet {
       throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost",
         "root.MSG_GEN_ENTER_METHOD");
-
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
+    boolean runOnUnix = !FileUtil.isWindows();
     SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
         "runOnUnix = " + runOnUnix);
 

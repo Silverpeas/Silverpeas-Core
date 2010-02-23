@@ -44,8 +44,7 @@ public interface ErrorManager {
   public WorkflowError[] getErrorsOfInstance(String instanceId);
 
   /**
-   * Remove all the errors that occured for a given instance Must be called when
-   * instance is removed
+   * Remove all the errors that occured for a given instance Must be called when instance is removed
    */
   public void removeErrorsOfInstance(String instanceId);
 }

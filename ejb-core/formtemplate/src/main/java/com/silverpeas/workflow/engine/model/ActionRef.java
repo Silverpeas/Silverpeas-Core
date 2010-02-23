@@ -30,11 +30,9 @@ import com.silverpeas.workflow.api.model.AllowedAction;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;allow&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;allow&gt; element of a Process Model.
  **/
-public class ActionRef extends AbstractReferrableObject implements
-    Serializable, AllowedAction {
+public class ActionRef extends AbstractReferrableObject implements Serializable, AllowedAction {
   private Action action; // The reference to the allowed action
 
   /**
@@ -46,9 +44,7 @@ public class ActionRef extends AbstractReferrableObject implements
 
   /**
    * Set the referred action
-   * 
-   * @param action
-   *          action to refer
+   * @param action action to refer
    */
   public void setAction(Action action) {
     this.action = action;
@@ -56,7 +52,6 @@ public class ActionRef extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {

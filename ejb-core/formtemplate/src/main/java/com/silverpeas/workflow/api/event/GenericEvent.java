@@ -31,10 +31,9 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.user.User;
 
 /**
- * A GenericEvent object is the description of an action on an activity
- * 
- * Those descriptions are sent to the workflow engine by the workflow tools when
- * the user has done an action in a process instance.
+ * A GenericEvent object is the description of an action on an activity Those descriptions are sent
+ * to the workflow engine by the workflow tools when the user has done an action in a process
+ * instance.
  */
 public interface GenericEvent {
   /**

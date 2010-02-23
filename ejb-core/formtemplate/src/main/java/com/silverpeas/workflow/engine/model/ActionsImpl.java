@@ -33,8 +33,7 @@ import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.Actions;
 
 /**
- * Class implementing the representation of the &lt;actions&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;actions&gt; element of a Process Model.
  **/
 public class ActionsImpl implements Serializable, Actions {
   // private Hashtable actionList;
@@ -49,9 +48,7 @@ public class ActionsImpl implements Serializable, Actions {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Actions#addAction(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Actions#addAction(com.silverpeas.workflow
    * .api.model.Action)
    */
   public void addAction(Action action) {
@@ -60,7 +57,6 @@ public class ActionsImpl implements Serializable, Actions {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Actions#createAction()
    */
   public Action createAction() {
@@ -69,7 +65,6 @@ public class ActionsImpl implements Serializable, Actions {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Actions#getAction(java.lang.String)
    */
   public Action getAction(String name) throws WorkflowException {
@@ -91,7 +86,6 @@ public class ActionsImpl implements Serializable, Actions {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Actions#getActions()
    */
   public Action[] getActions() {
@@ -103,7 +97,6 @@ public class ActionsImpl implements Serializable, Actions {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Actions#iterateAction()
    */
   public Iterator iterateAction() {
@@ -112,9 +105,7 @@ public class ActionsImpl implements Serializable, Actions {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Actions#removeAction(java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Actions#removeAction(java.lang.String)
    */
   public void removeAction(String strActionName) throws WorkflowException {
     Action action = createAction();

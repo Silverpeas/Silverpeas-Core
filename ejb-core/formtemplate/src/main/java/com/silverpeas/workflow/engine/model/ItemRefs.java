@@ -45,11 +45,8 @@ public class ItemRefs extends AbstractReferrableObject implements Serializable {
 
   /**
    * TODO remove Get the itemRefs
-   * 
-   * @return the itemRefs as a Vector / public Vector getItemRefList() { return
-   *         itemRefList; }
-   * 
-   *         /** Get the role for which the list of items must be returned
+   * @return the itemRefs as a Vector / public Vector getItemRefList() { return itemRefList; } /**
+   * Get the role for which the list of items must be returned
    * @return role name
    */
   public String getRoleName() {
@@ -58,9 +55,7 @@ public class ItemRefs extends AbstractReferrableObject implements Serializable {
 
   /**
    * Set the role for which the list of items must be returned
-   * 
-   * @param roleName
-   *          role name
+   * @param roleName role name
    */
   public void setRoleName(String roleName) {
     this.roleName = roleName;
@@ -68,7 +63,6 @@ public class ItemRefs extends AbstractReferrableObject implements Serializable {
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {

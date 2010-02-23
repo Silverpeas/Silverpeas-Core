@@ -30,14 +30,12 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 
 /**
- * A ProcessInstanceDataRecord groups in a single DataRecord all the data items
- * of a ProcessInstance.
- * 
- * The instance : instance instance.title instance.<columnName> The model :
- * model model.label model.peas-label The folder : <folderItem> The forms :
- * form.<formName> form.<formName>.title form.<formName>.<fieldItem> The actions
- * : action.<actionName> action.<actionName>.label action.<actionName>.date
- * action.<actionName>.actor The users : participant.<participantName>
+ * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
+ * ProcessInstance. The instance : instance instance.title instance.<columnName> The model : model
+ * model.label model.peas-label The folder : <folderItem> The forms : form.<formName>
+ * form.<formName>.title form.<formName>.<fieldItem> The actions : action.<actionName>
+ * action.<actionName>.label action.<actionName>.date action.<actionName>.actor The users :
+ * participant.<participantName>
  */
 public class ProcessInstanceDataRecord implements DataRecord {
   /**
@@ -74,7 +72,6 @@ public class ProcessInstanceDataRecord implements DataRecord {
 
   /**
    * Returns the named field.
-   * 
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException {
@@ -83,7 +80,6 @@ public class ProcessInstanceDataRecord implements DataRecord {
 
   /**
    * Returns the field at the index position in the record.
-   * 
    * @throw FormException when the fieldIndex is unknown.
    */
   public Field getField(int fieldIndex) throws FormException {

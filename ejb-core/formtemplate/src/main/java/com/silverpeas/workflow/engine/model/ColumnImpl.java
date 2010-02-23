@@ -31,11 +31,10 @@ import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;column&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;column&gt; element of a Process Model.
  **/
-public class ColumnImpl extends AbstractReferrableObject implements Column,
-    AbstractDescriptor, Serializable {
+public class ColumnImpl extends AbstractReferrableObject implements Column, AbstractDescriptor,
+    Serializable {
 
   // ~ Instance fields ////////////////////////////////////////////////////////
 
@@ -64,7 +63,6 @@ public class ColumnImpl extends AbstractReferrableObject implements Column,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setId(int)
    */
   public void setId(int id) {
@@ -74,7 +72,6 @@ public class ColumnImpl extends AbstractReferrableObject implements Column,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getId()
    */
   public int getId() {
@@ -83,9 +80,7 @@ public class ColumnImpl extends AbstractReferrableObject implements Column,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
    * .workflow.api.model.AbstractDescriptor)
    */
   public void setParent(AbstractDescriptor parent) {
@@ -94,7 +89,6 @@ public class ColumnImpl extends AbstractReferrableObject implements Column,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getParent()
    */
   public AbstractDescriptor getParent() {
@@ -103,7 +97,6 @@ public class ColumnImpl extends AbstractReferrableObject implements Column,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#hasId()
    */
   public boolean hasId() {
@@ -112,7 +105,6 @@ public class ColumnImpl extends AbstractReferrableObject implements Column,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {

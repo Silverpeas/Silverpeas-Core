@@ -360,7 +360,7 @@ public class DesktopServlet extends HttpServlet {
       try {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContents, portletRegistryContext,
-                portletWindowName);
+            portletWindowName);
 
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);

@@ -42,15 +42,12 @@ public class SpecificLabelList extends java.util.Hashtable {
 
   /*
    * Get label in specific language for the given role
-   * 
    * @param role role for which the label is
-   * 
    * @param lang label's language
-   * 
-   * @return wanted label as a String object. If label is not found, search
-   * label with given role and default language, if not found again, return the
-   * default label in given language, if not found again, return the default
-   * label in default language, if not found again, return empty string.
+   * @return wanted label as a String object. If label is not found, search label with given role
+   * and default language, if not found again, return the default label in given language, if not
+   * found again, return the default label in default language, if not found again, return empty
+   * string.
    */
   public String getLabel(String role, String lang) {
     // 1st search

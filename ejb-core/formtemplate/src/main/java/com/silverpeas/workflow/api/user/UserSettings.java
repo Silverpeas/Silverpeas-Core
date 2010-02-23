@@ -35,21 +35,18 @@ public interface UserSettings {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getSettingsId();
 
   /**
    * Get the user id
-   * 
    * @return user id
    */
   public String getUserId();
 
   /**
    * Get the peas id
-   * 
    * @return peas id
    */
   public String getPeasId();
@@ -66,28 +63,21 @@ public interface UserSettings {
 
   /**
    * Fill the given data record with user information
-   * 
-   * @param data
-   *          the data record
-   * @param template
-   *          the record template
+   * @param data the data record
+   * @param template the record template
    */
   public void load(DataRecord data, RecordTemplate template);
 
   /**
    * Saves this settings in database
-   * 
    * @return the newly created settings id
    */
   public void save() throws WorkflowException;
 
   /**
    * Update the settings with a given DataRecord
-   * 
-   * @param data
-   *          the data record
-   * @param template
-   *          the record template
+   * @param data the data record
+   * @param template the record template
    */
   public void update(DataRecord data, RecordTemplate template);
 

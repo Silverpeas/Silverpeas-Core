@@ -30,16 +30,12 @@ import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class WorkflowEngineInitialize implements IInitialize {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public WorkflowEngineInitialize() {
@@ -47,10 +43,7 @@ public class WorkflowEngineInitialize implements IInitialize {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean Initialize() {

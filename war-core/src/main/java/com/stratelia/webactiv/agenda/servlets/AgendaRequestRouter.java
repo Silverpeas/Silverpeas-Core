@@ -79,7 +79,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext context) {
     ComponentSessionController component =
         (ComponentSessionController) new AgendaSessionController(
-            mainSessionCtrl, context);
+        mainSessionCtrl, context);
 
     return component;
   }
@@ -232,7 +232,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         }
 
         // reload main frame in order to reload hidden frame with import applet
-        //destination = "/agenda/jsp/reloadMainFrame.jsp";
+        // destination = "/agenda/jsp/reloadMainFrame.jsp";
         destination = "/agenda/jsp/agenda.jsp";
       } else if (function.equals("ToExportIcal")) {
         destination = "/agenda/jsp/exportIcal.jsp";

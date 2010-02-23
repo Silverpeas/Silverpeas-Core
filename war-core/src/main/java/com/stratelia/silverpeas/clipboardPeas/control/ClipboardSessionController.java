@@ -160,7 +160,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
       } else if (message.equals("IDLE")) {
         com.stratelia.silverpeas.notificationserver.channel.server.SilverMessage serverMessage =
             com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
-                .read(getUserId(), sessionId);
+            .read(getUserId(), sessionId);
 
         if (serverMessage != null) {
           SilverTrace.info("clipboardPeas",

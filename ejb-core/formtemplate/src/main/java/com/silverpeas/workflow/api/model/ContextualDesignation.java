@@ -24,8 +24,7 @@
 package com.silverpeas.workflow.api.model;
 
 /**
- * Interface describing a representation of one of the following elements of a
- * Process Model:
+ * Interface describing a representation of one of the following elements of a Process Model:
  * <ul>
  * <li>&lt;activity&gt;</li>
  * <li>&lt;description&gt;</li>
@@ -37,16 +36,13 @@ public interface ContextualDesignation {
 
   /**
    * Get the content of the designation
-   * 
    * @return a string value
    */
   public String getContent();
 
   /**
    * Set the content of the designation
-   * 
-   * @param strContent
-   *          new value
+   * @param strContent new value
    */
   public void setContent(String strContent);
 

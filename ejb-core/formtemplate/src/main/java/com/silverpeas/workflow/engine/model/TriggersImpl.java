@@ -32,8 +32,7 @@ import com.silverpeas.workflow.api.model.Trigger;
 import com.silverpeas.workflow.api.model.Triggers;
 
 /**
- * Class implementing the representation of the &lt;triggers&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;triggers&gt; element of a Process Model.
  **/
 public class TriggersImpl implements Serializable, Triggers {
   private Vector triggerList; // a list of triggers ( Trigger objects )
@@ -48,7 +47,6 @@ public class TriggersImpl implements Serializable, Triggers {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.model.Columns#getItemRefList()
    */
   public List getTriggerList() {
@@ -57,9 +55,7 @@ public class TriggersImpl implements Serializable, Triggers {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Columns#addColumn(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Columns#addColumn(com.silverpeas.workflow
    * .api.model.Column)
    */
   public void addTrigger(Trigger trigger) {
@@ -68,7 +64,6 @@ public class TriggersImpl implements Serializable, Triggers {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#createColumn()
    */
   public Trigger createTrigger() {
@@ -77,7 +72,6 @@ public class TriggersImpl implements Serializable, Triggers {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#iterateColumn()
    */
   public Iterator iterateTrigger() {
@@ -86,7 +80,6 @@ public class TriggersImpl implements Serializable, Triggers {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Columns#removeAllColumns()
    */
   public void removeAllTriggers() {

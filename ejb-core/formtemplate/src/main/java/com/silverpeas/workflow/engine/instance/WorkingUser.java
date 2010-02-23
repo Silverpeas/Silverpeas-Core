@@ -38,7 +38,6 @@ import com.silverpeas.workflow.engine.WorkflowHub;
 public class WorkingUser extends AbstractReferrableObject {
   /**
    * Used for persistence
-   * 
    * @primary-key
    * @field-name id
    * @field-type string
@@ -76,7 +75,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getId() {
@@ -85,7 +83,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * For persistence in database Set this object id
-   * 
    * @param this object id
    */
   public void setId(String id) {
@@ -94,7 +91,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Get state name for which user is affected
-   * 
    * @return state name
    */
   public String getState() {
@@ -103,9 +99,7 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Set state name for which user is affected
-   * 
-   * @param state
-   *          state name
+   * @param state state name
    */
   public void setState(String state) {
     this.state = state;
@@ -113,7 +107,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Get state role for which user is affected
-   * 
    * @return state role
    */
   public String getRole() {
@@ -122,9 +115,7 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Set state role for which user is affected
-   * 
-   * @param state
-   *          state role
+   * @param state state role
    */
   public void setRole(String role) {
     this.role = role;
@@ -132,7 +123,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Get the user id
-   * 
    * @return user id
    */
   public String getUserId() {
@@ -141,9 +131,7 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Set the user id
-   * 
-   * @param userId
-   *          user id
+   * @param userId user id
    */
   public void setUserId(String userId) {
     this.userId = userId;
@@ -151,7 +139,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Get the instance for which user is affected
-   * 
    * @return instance
    */
   public ProcessInstanceImpl getProcessInstance() {
@@ -160,9 +147,7 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Set the instance for which user is affected
-   * 
-   * @param processInstance
-   *          instance
+   * @param processInstance instance
    */
   public void setProcessInstance(ProcessInstanceImpl processInstance) {
     this.processInstance = processInstance;
@@ -170,7 +155,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Converts WorkingUser to User
-   * 
    * @return an object implementing User interface and containing user details
    */
   public User toUser() throws WorkflowException {
@@ -179,7 +163,6 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Converts WorkingUser to Actor
-   * 
    * @return an object implementing Actor interface
    */
   public Actor toActor() throws WorkflowException {
@@ -191,11 +174,8 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Get User information from an array of workingUsers
-   * 
-   * @param workingUsers
-   *          an array of WorkingUser objects
-   * @return an array of objects implementing User interface and containing user
-   *         details
+   * @param workingUsers an array of WorkingUser objects
+   * @return an array of objects implementing User interface and containing user details
    */
   static public User[] toUser(WorkingUser[] workingUsers)
       throws WorkflowException {
@@ -209,9 +189,7 @@ public class WorkingUser extends AbstractReferrableObject {
   }
 
   /**
-   * This method has to be implemented by the referrable object it has to
-   * compute the unique key
-   * 
+   * This method has to be implemented by the referrable object it has to compute the unique key
    * @return The unique key.
    */
   public String getKey() {

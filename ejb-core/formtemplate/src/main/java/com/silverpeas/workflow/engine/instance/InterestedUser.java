@@ -35,7 +35,6 @@ import com.silverpeas.workflow.engine.*;
 public class InterestedUser extends AbstractReferrableObject {
   /**
    * Used for persistence
-   * 
    * @primary-key
    * @field-name id
    * @field-type string
@@ -73,7 +72,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getId() {
@@ -82,7 +80,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * For persistence in database Set this object id
-   * 
    * @param this object id
    */
   public void setId(String id) {
@@ -91,7 +88,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Get role name under which user can access to this instance
-   * 
    * @return role name
    */
   public String getRole() {
@@ -100,9 +96,7 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Set role name for which user is affected
-   * 
-   * @param role
-   *          role name
+   * @param role role name
    */
   public void setRole(String role) {
     this.role = role;
@@ -110,7 +104,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Get state name for which user can access to this instance
-   * 
    * @return state name
    */
   public String getState() {
@@ -119,9 +112,7 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Set state name for which user can access to this instance
-   * 
-   * @param state
-   *          state name
+   * @param state state name
    */
   public void setState(String state) {
     this.state = state;
@@ -129,7 +120,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Get the user id
-   * 
    * @return user id
    */
   public String getUserId() {
@@ -138,9 +128,7 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Set the user id
-   * 
-   * @param userId
-   *          user id
+   * @param userId user id
    */
   public void setUserId(String userId) {
     this.userId = userId;
@@ -148,7 +136,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Get the instance to which user is interested
-   * 
    * @return instance
    */
   public ProcessInstanceImpl getProcessInstance() {
@@ -157,9 +144,7 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Set the instance to which user is interested
-   * 
-   * @param processInstance
-   *          instance
+   * @param processInstance instance
    */
   public void setProcessInstance(ProcessInstanceImpl processInstance) {
     this.processInstance = processInstance;
@@ -167,7 +152,6 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Converts InterestedUser to User
-   * 
    * @return an object implementing User interface and containing user details
    */
   public User toUser() throws WorkflowException {
@@ -176,11 +160,8 @@ public class InterestedUser extends AbstractReferrableObject {
 
   /**
    * Get User information from an array of workingUsers
-   * 
-   * @param workingUsers
-   *          an array of WorkingUser objects
-   * @return an array of objects implementing User interface and containing user
-   *         details
+   * @param workingUsers an array of WorkingUser objects
+   * @return an array of objects implementing User interface and containing user details
    */
   static public User[] toUser(InterestedUser[] interestedUsers)
       throws WorkflowException {
@@ -194,9 +175,7 @@ public class InterestedUser extends AbstractReferrableObject {
   }
 
   /**
-   * This method has to be implemented by the referrable object it has to
-   * compute the unique key
-   * 
+   * This method has to be implemented by the referrable object it has to compute the unique key
    * @return The unique key.
    */
   public String getKey() {

@@ -395,7 +395,7 @@ public class SPDesktopServlet extends HttpServlet {
       try {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContents, portletRegistryContext,
-                portletWindowName);
+            portletWindowName);
 
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
@@ -705,31 +705,31 @@ public class SPDesktopServlet extends HttpServlet {
         String destination = spaceStruct.getFirstPageExtraParam();
         destination =
             getParsedDestination(destination, s_sUserLogin, m_MainSessionCtrl
-                .getCurrentUserDetail().getLogin());
+            .getCurrentUserDetail().getLogin());
         destination =
             getParsedDestination(destination, s_sUserFullName, URLEncoder.encode(m_MainSessionCtrl
-                .getCurrentUserDetail().getDisplayedName(), "ISO-8859-1"));
+            .getCurrentUserDetail().getDisplayedName(), "ISO-8859-1"));
         destination =
             getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl
-                .getUserId(), "ISO-8859-1"));
+            .getUserId(), "ISO-8859-1"));
         destination =
             getParsedDestination(destination, s_sSessionId, URLEncoder.encode(request.getSession()
-                .getId(), "ISO-8859-1"));
+            .getId(), "ISO-8859-1"));
         destination =
             getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl
-                .getCurrentUserDetail().geteMail());
+            .getCurrentUserDetail().geteMail());
         destination =
             getParsedDestination(destination, s_sUserFirstName, URLEncoder.encode(m_MainSessionCtrl
-                .getCurrentUserDetail().getFirstName(), "ISO-8859-1"));
+            .getCurrentUserDetail().getFirstName(), "ISO-8859-1"));
         destination =
             getParsedDestination(destination, s_sUserLastName, URLEncoder.encode(m_MainSessionCtrl
-                .getCurrentUserDetail().getLastName(), "ISO-8859-1"));
+            .getCurrentUserDetail().getLastName(), "ISO-8859-1"));
 
         // !!!! Add the password : this is an uggly patch that use a session variable set in the
         // "AuthenticationServlet" servlet
         destination =
             this.getParsedDestination(destination, s_sUserPassword, (String) request.getSession()
-                .getAttribute("Silverpeas_pwdForHyperlink"));
+            .getAttribute("Silverpeas_pwdForHyperlink"));
 
         return destination;
       }

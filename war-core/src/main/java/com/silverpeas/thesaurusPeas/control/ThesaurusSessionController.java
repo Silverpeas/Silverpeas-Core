@@ -211,8 +211,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retourne le détail d'un terme à partir d'un idTerm et du rootId de l'axe courant, met le
-   * terme en session (currentTerm)
+   * Retourne le détail d'un terme à partir d'un idTerm et du rootId de l'axe courant, met le terme
+   * en session (currentTerm)
    * @param idTerm
    * @return Value
    * @see
@@ -279,8 +279,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * Crée en base un vocabulaire à partir du nom et de la description du vocabulaire Retourne l'id
-   * du vocabulaire créé ou -1 si le vocabulaire ne peut pas être créé car un vocabulaire de
-   * même nom existe
+   * du vocabulaire créé ou -1 si le vocabulaire ne peut pas être créé car un vocabulaire de même
+   * nom existe
    * @param name
    * @param desc
    * @return long
@@ -312,8 +312,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * Affecte au vocabualire courant le nom et la description en paramètre et enregistre en base
-   * Retourne -1 si le vocabulaire ne peut pas être modifié car un vocabulaire de même nom
-   * existe, 0 sinon
+   * Retourne -1 si le vocabulaire ne peut pas être modifié car un vocabulaire de même nom existe, 0
+   * sinon
    * @param name
    * @param desc
    * @return
@@ -458,8 +458,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Paramètre le userPannel => tous les users et groupes, users et groupes affectés au voca
-   * courant sont sélectionnés
+   * Paramètre le userPannel => tous les users et groupes, users et groupes affectés au voca courant
+   * sont sélectionnés
    * @param
    * @return
    * @throws ThesaurusException
@@ -693,9 +693,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retourne le nombre de conflits : nbre de user ou groupe sélectionnés au travers du
-   * userPanel... ... qui possède déjà une affectation autre que celle au vocabulaire passé en
-   * paramètre
+   * Retourne le nombre de conflits : nbre de user ou groupe sélectionnés au travers du userPanel...
+   * ... qui possède déjà une affectation autre que celle au vocabulaire passé en paramètre
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -758,8 +757,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   /**
    * Enregistre en base les affectations au vocabulaire passé en paramètre de tous les users et
-   * groupes sélectionnés au travers du userPanel et ... ... n'ayant pas déjà une affectation
-   * autre que celle au vocabulaire
+   * groupes sélectionnés au travers du userPanel et ... ... n'ayant pas déjà une affectation autre
+   * que celle au vocabulaire
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -770,10 +769,10 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retourne la liste des nouvelles affectations (à enregistrer) pour la liste des users et
-   * groupes sélectionnés au travers du userPanel i.e. vérifie pour chaque user et groupe s'ils
-   * n'ont pas un jargon différent de idVoca dans la liste des jargons ... ... des users et groupes
-   * sélectionnés (jargonsSelected)
+   * Retourne la liste des nouvelles affectations (à enregistrer) pour la liste des users et groupes
+   * sélectionnés au travers du userPanel i.e. vérifie pour chaque user et groupe s'ils n'ont pas un
+   * jargon différent de idVoca dans la liste des jargons ... ... des users et groupes sélectionnés
+   * (jargonsSelected)
    * @param idVoca
    * @return Collection
    * @see
@@ -794,8 +793,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retourne la liste des affectations (à enregistrer) portant sur le vocabulaire pour la liste
-   * des users et groupes sélectionnés au travers du userPanel
+   * Retourne la liste des affectations (à enregistrer) portant sur le vocabulaire pour la liste des
+   * users et groupes sélectionnés au travers du userPanel
    * @param idVoca
    * @return Collection
    * @see
@@ -813,8 +812,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retourne la liste de toutes les affectations (à enregistrer) pour la liste des users et
-   * groupes sélectionnés au travers du userPanel
+   * Retourne la liste de toutes les affectations (à enregistrer) pour la liste des users et groupes
+   * sélectionnés au travers du userPanel
    * @param idVoca
    * @return Collection
    * @see

@@ -61,11 +61,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   }
 
   /**
-   * A task has been done and sent to the workflow Enginewhich has to process
-   * it.
-   * 
-   * @param event
-   *          the task event that has been done.
+   * A task has been done and sent to the workflow Enginewhich has to process it.
+   * @param event the task event that has been done.
    */
   public void process(TaskDoneEvent event) throws WorkflowException {
     boolean creationEvent = false;
@@ -76,8 +73,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     // Tests if action is creation
     Action action = model.getAction(event.getActionName());
     if (action != null && action.getKind().equals("create")) {
-      UpdatableProcessInstanceManager instanceManager = (UpdatableProcessInstanceManager) WorkflowHub
-          .getProcessInstanceManager();
+      UpdatableProcessInstanceManager instanceManager =
+          (UpdatableProcessInstanceManager) WorkflowHub
+              .getProcessInstanceManager();
       instance = (UpdatableProcessInstance) instanceManager
           .createProcessInstance(model.getModelId());
       event.setProcessInstance(instance);
@@ -134,9 +132,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 
   /**
    * A question has been sent to a previous participant
-   * 
-   * @param event
-   *          the question event containing all necessary information
+   * @param event the question event containing all necessary information
    */
   public void process(QuestionEvent event) throws WorkflowException {
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event
@@ -189,9 +185,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 
   /**
    * A question had been sent to a previous participant. A response is sent !
-   * 
-   * @param event
-   *          the response event containing all necessary information
+   * @param event the response event containing all necessary information
    */
   public void process(ResponseEvent event) throws WorkflowException {
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event
@@ -243,9 +237,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   }
 
   /**
-   * Do re-affectation for given states Remove users as working users and
-   * unassign corresponding tasks Add users as working users and assign
-   * corresponding tasks
+   * Do re-affectation for given states Remove users as working users and unassign corresponding
+   * tasks Add users as working users and assign corresponding tasks
    */
   public void reAssignActors(UpdatableProcessInstance instance,
       Actor[] unAssignedActors, Actor[] assignedActors, User user)
@@ -312,7 +305,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         for (int i = 0; i < unAssignedActors.length; i++) {
           instance.removeWorkingUser(unAssignedActors[i].getUser(),
               unAssignedActors[i].getState(), unAssignedActors[i]
-                  .getUserRoleName());
+              .getUserRoleName());
         }
 
         // Assign tasks to these working users
@@ -325,7 +318,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         for (int i = 0; i < assignedActors.length; i++) {
           instance
               .addWorkingUser(assignedActors[i].getUser(), assignedActors[i]
-                  .getState(), assignedActors[i].getUserRoleName());
+              .getState(), assignedActors[i].getUserRoleName());
         }
 
         step.setActionStatus(2);

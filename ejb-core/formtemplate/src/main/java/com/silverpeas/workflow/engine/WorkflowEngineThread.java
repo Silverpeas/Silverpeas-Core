@@ -67,19 +67,14 @@ import com.silverpeas.workflow.external.ExternalAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * A thread WorkflowEngineThread process in the background a batch of events
- * sent to workflow
- * 
- * All the public methods are static, so only one thread runs and processes the
- * requests.
+ * A thread WorkflowEngineThread process in the background a batch of events sent to workflow All
+ * the public methods are static, so only one thread runs and processes the requests.
  */
 public class WorkflowEngineThread extends Thread {
 
   /**
-   * Builds and starts the thread which will process all the requests.
-   * 
-   * This method is synchonized on the requests queue in order to guarantee that
-   * only one WorkflowEngineThread is running.
+   * Builds and starts the thread which will process all the requests. This method is synchonized on
+   * the requests queue in order to guarantee that only one WorkflowEngineThread is running.
    */
   static public void starts() {
     synchronized (requestList) {
@@ -145,10 +140,8 @@ public class WorkflowEngineThread extends Thread {
   }
 
   /**
-   * Process all the requests.
-   * 
-   * This method should be private but is already declared public in the base
-   * class Thread.
+   * Process all the requests. This method should be private but is already declared public in the
+   * base class Thread.
    */
   public void run() {
     Request request = null;
@@ -168,8 +161,8 @@ public class WorkflowEngineThread extends Thread {
         }
 
         /*
-         * Each request is processed out of the synchronized block so the others
-         * threads (which put the requests) will not be blocked.
+         * Each request is processed out of the synchronized block so the others threads (which put
+         * the requests) will not be blocked.
          */
         if (request != null) {
           try {
@@ -177,7 +170,7 @@ public class WorkflowEngineThread extends Thread {
           } catch (WorkflowException we) {
             SilverTrace.error("workflowEngine", "WorkflowEngineThread",
                 "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request
-                    .toString(), we);
+                .toString(), we);
           }
         }
 
@@ -200,11 +193,9 @@ public class WorkflowEngineThread extends Thread {
   }
 
   /**
-   * The requests are stored in a shared list of Requests.
-   * 
-   * In order to guarantee serial access, all access will be synchronized on
-   * this list. Futhermore this list is used to synchronize the providers and
-   * the consumers of the list :
+   * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
+   * access will be synchronized on this list. Futhermore this list is used to synchronize the
+   * providers and the consumers of the list :
    * 
    * <PRE>
    * // provider
@@ -225,32 +216,28 @@ public class WorkflowEngineThread extends Thread {
   static private final List requestList = new ArrayList();
 
   /**
-   * All the requests are processed by a single background thread.
-   * 
-   * This thread is built and started by the start method.
+   * All the requests are processed by a single background thread. This thread is built and started
+   * by the start method.
    */
   static private WorkflowEngineThread wfEngineThread = null;
 
   /**
-   * The constructor is private : only one WorkflowEngineThread will be created
-   * to process all the request.
+   * The constructor is private : only one WorkflowEngineThread will be created to process all the
+   * request.
    */
   private WorkflowEngineThread() {
   }
 }
 
 /**
- * Each request must define a method called process which will process the
- * request with a given WorkflowEngine.
+ * Each request must define a method called process which will process the request with a given
+ * WorkflowEngine.
  */
 interface Request {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param wfEngine
-   * 
    */
   public void process() throws WorkflowException;
 }
@@ -418,8 +405,8 @@ class TaskDoneRequest implements Request {
 }
 
 /**
- * A QuestionRequest indicates the workflow engine that a user ask a back to a
- * precedent actor/activity
+ * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent
+ * actor/activity
  */
 class QuestionRequest implements Request {
 
@@ -593,8 +580,8 @@ class QuestionRequest implements Request {
 }
 
 /**
- * A ResponseRequest indicates the workflow engine that a user answer a question
- * to an user who had requested a back to a precedent actor/activity
+ * A ResponseRequest indicates the workflow engine that a user answer a question to an user who had
+ * requested a back to a precedent actor/activity
  */
 class ResponseRequest implements Request {
   /**
@@ -766,8 +753,8 @@ class ResponseRequest implements Request {
 }
 
 /**
- * A TimeoutRequest indicates the workflow engine that an instance is in an
- * active state since a too long period
+ * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a too
+ * long period
  */
 class TimeoutRequest implements Request {
   /**
@@ -892,16 +879,14 @@ class TimeoutRequest implements Request {
 }
 
 /**
- * A TimeoutRequest indicates the workflow engine that an instance is in an
- * active state since a too long period
+ * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a too
+ * long period
  */
 class WorkflowTools {
 
   /**
    * Compute the new active states and updates affections
-   * 
-   * @param event
-   *          the task done event
+   * @param event the task done event
    */
   public static boolean processAction(UpdatableProcessInstance instance,
       GenericEvent event, UpdatableHistoryStep step,
@@ -954,8 +939,7 @@ class WorkflowTools {
 
       // remove eventual timeOut flag
       /*
-       * if (event.getResolvedState() != null) {
-       * instance.removeTimeout(event.getResolvedState()); }
+       * if (event.getResolvedState() != null) { instance.removeTimeout(event.getResolvedState()); }
        */
 
       // Retrieves action's consequences
@@ -1034,9 +1018,9 @@ class WorkflowTools {
           } catch (WorkflowException we) {
             SilverTrace.info("workflowEngine",
                 "WorkflowEngineThread.processAction(" + event.getActionName()
-                    + ")", "root.EX_ERR_PROCESS_EVENT",
+                + ")", "root.EX_ERR_PROCESS_EVENT",
                 "Impossible de trouver l'expediteur avec le user id : "
-                    + senderId);
+                + senderId);
           }
         }
 
@@ -1087,8 +1071,8 @@ class WorkflowTools {
             SilverTrace.error("workflowEngine",
                 "WorkflowEngineThread.processTriggers()",
                 "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "
-                    + event.getActionName() + ", trigger = "
-                    + trigger.getName(), e);
+                + event.getActionName() + ", trigger = "
+                + trigger.getName(), e);
           }
         }
       }
@@ -1097,9 +1081,7 @@ class WorkflowTools {
 
   /**
    * Compute the new active states and updates affections
-   * 
-   * @param event
-   *          the task done event
+   * @param event the task done event
    */
   public static void computeStates(UpdatableProcessInstance instance,
       GenericEvent event, Hashtable eligibleStates, Hashtable oldActiveStates)
@@ -1140,9 +1122,7 @@ class WorkflowTools {
 
   /**
    * Compute the new affectations for a given state
-   * 
-   * @param event
-   *          the event
+   * @param event the event
    */
   public static void computeAffectations(UpdatableProcessInstance instance,
       GenericEvent event, State state) throws WorkflowException {
@@ -1181,9 +1161,7 @@ class WorkflowTools {
 
   /**
    * Remove the old affectations for this state and unassign tasks
-   * 
-   * @param event
-   *          the event
+   * @param event the event
    */
   public static void removeAffectations(UpdatableProcessInstance instance,
       GenericEvent event, State state) throws WorkflowException {
@@ -1220,13 +1198,10 @@ class WorkflowTools {
   }
 
   /**
-   * Cancel pending questions sent from the given state (cascading is done to
-   * the questions from questions and so...)
-   * 
-   * @param instance
-   *          Process instance
-   * @param resolvedStateName
-   *          state name
+   * Cancel pending questions sent from the given state (cascading is done to the questions from
+   * questions and so...)
+   * @param instance Process instance
+   * @param resolvedStateName state name
    */
   static public void checkQuestions(UpdatableProcessInstance instance,
       String resolvedStateName) throws WorkflowException {

@@ -35,8 +35,7 @@ import com.silverpeas.workflow.api.model.ContextualDesignations;
 import com.silverpeas.workflow.api.model.Presentation;
 
 /**
- * Class implementing the representation of the &lt;presentation&gt; element of
- * a Process Model.
+ * Class implementing the representation of the &lt;presentation&gt; element of a Process Model.
  **/
 public class PresentationImpl implements Presentation, Serializable {
 
@@ -57,7 +56,6 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Presentation#getTitles()
    */
   public ContextualDesignations getTitles() {
@@ -66,9 +64,7 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Presentation#getTitle(java.lang.String,
+   * @see com.silverpeas.workflow.api.model.Presentation#getTitle(java.lang.String,
    * java.lang.String)
    */
   public String getTitle(String role, String language) {
@@ -77,9 +73,7 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Presentation#addTitle(com.silverpeas.
+   * @see com.silverpeas.workflow.api.model.Presentation#addTitle(com.silverpeas.
    * workflow.api.model.ContextualDesignation)
    */
   public void addTitle(ContextualDesignation title) {
@@ -88,7 +82,6 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Presentation#iterateTitle()
    */
   public Iterator iterateTitle() {
@@ -97,7 +90,6 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Presentation#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -109,12 +101,9 @@ public class PresentationImpl implements Presentation, Serializable {
   // //////////////////
 
   /**
-   * Get the contents of the Columns object with the given role name, or of the
-   * 'Columns' for the default role if nothing for the specified role can be
-   * found.
-   * 
-   * @param the
-   *          name of the role
+   * Get the contents of the Columns object with the given role name, or of the 'Columns' for the
+   * default role if nothing for the specified role can be found.
+   * @param the name of the role
    * @return the contents of 'Columns' as an array of 'Column'
    */
   public Column[] getColumns(String strRoleName) {
@@ -130,10 +119,7 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Presentation#getColumnsByRole(java.lang
-   * .String)
+   * @see com.silverpeas.workflow.api.model.Presentation#getColumnsByRole(java.lang .String)
    */
   public Columns getColumnsByRole(String strRoleName) {
     Columns search;
@@ -160,7 +146,6 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Presentation#createColumns()
    */
   public Columns createColumns() {
@@ -169,9 +154,7 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Presentation#addColumns(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.Presentation#addColumns(com.silverpeas
    * .workflow.api.model.Columns)
    */
   public void addColumns(Columns columns) {
@@ -180,7 +163,6 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Presentation#iterateColumns()
    */
   public Iterator iterateColumns() {
@@ -189,10 +171,7 @@ public class PresentationImpl implements Presentation, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Presentation#deleteColumns(java.lang.
-   * String)
+   * @see com.silverpeas.workflow.api.model.Presentation#deleteColumns(java.lang. String)
    */
   public void deleteColumns(String strRoleName) throws WorkflowException {
     Columns search = createColumns();
@@ -201,6 +180,6 @@ public class PresentationImpl implements Presentation, Serializable {
     if (!columnsList.remove(search))
       throw new WorkflowException("PresentationImpl.deleteColumns",
           "workflowEngine.EX_COLUMNS_NOT_FOUND", "Columns role name="
-              + strRoleName == null ? "<null>" : strRoleName);
+          + strRoleName == null ? "<null>" : strRoleName);
   }
 }

@@ -33,8 +33,7 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.States;
 
 /**
- * Class implementing the representation of the &lt;states&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;states&gt; element of a Process Model.
  **/
 public class StatesImpl implements Serializable, States {
   private List stateList;
@@ -48,9 +47,7 @@ public class StatesImpl implements Serializable, States {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.States#addState(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.States#addState(com.silverpeas.workflow
    * .api.model.State)
    */
   public void addState(State state) {
@@ -59,7 +56,6 @@ public class StatesImpl implements Serializable, States {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.States#createState()
    */
   public State createState() {
@@ -68,7 +64,6 @@ public class StatesImpl implements Serializable, States {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.States#getState(java.lang.String)
    */
   public State getState(String name) {
@@ -88,7 +83,6 @@ public class StatesImpl implements Serializable, States {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.States#getStates()
    */
   public State[] getStates() {
@@ -100,7 +94,6 @@ public class StatesImpl implements Serializable, States {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.States#iterateState()
    */
   public Iterator iterateState() {
@@ -109,7 +102,6 @@ public class StatesImpl implements Serializable, States {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.States#removeState(java.lang.String)
    */
   public void removeState(String strStateName) throws WorkflowException {

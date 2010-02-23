@@ -33,11 +33,10 @@ import com.silverpeas.workflow.api.model.Role;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;role&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;role&gt; element of a Process Model.
  **/
-public class RoleImpl extends AbstractReferrableObject implements
-    AbstractDescriptor, Role, Serializable {
+public class RoleImpl extends AbstractReferrableObject implements AbstractDescriptor, Role,
+    Serializable {
   private String name;
   private ContextualDesignations labels; // collection of labels
   private ContextualDesignations descriptions; // collection of descriptions
@@ -58,9 +57,7 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /**
    * Constructor
-   * 
-   * @param name
-   *          role nama
+   * @param name role nama
    */
   public RoleImpl(String name) {
     this();
@@ -77,7 +74,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /**
    * Get the name of the Role
-   * 
    * @return role's name
    */
   public String getName() {
@@ -86,7 +82,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Role#setName(java.lang.String)
    */
   public void setName(String name) {
@@ -99,7 +94,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Role#getLabels()
    */
   public ContextualDesignations getLabels() {
@@ -108,9 +102,7 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.silverpeas.workflow.api.model.Role#getLabel(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Role#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
     return labels.getLabel(role, language);
@@ -118,9 +110,7 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Role#addLabel(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Role#addLabel(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addLabel(ContextualDesignation label) {
@@ -129,7 +119,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Role#iterateLabel()
    */
   public Iterator iterateLabel() {
@@ -142,7 +131,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Role#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
@@ -151,10 +139,7 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Role#getDescription(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Role#getDescription(java.lang.String, java.lang.String)
    */
   public String getDescription(String role, String language) {
     return descriptions.getLabel(role, language);
@@ -162,9 +147,7 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Role#addDescription(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Role#addDescription(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addDescription(ContextualDesignation description) {
@@ -173,7 +156,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Role#iterateDescription()
    */
   public Iterator iterateDescription() {
@@ -182,7 +164,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Role#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -191,7 +172,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {
@@ -203,7 +183,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setId(int)
    */
   public void setId(int id) {
@@ -213,7 +192,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getId()
    */
   public int getId() {
@@ -222,9 +200,7 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
    * .workflow.api.model.AbstractDescriptor)
    */
   public void setParent(AbstractDescriptor parent) {
@@ -233,7 +209,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getParent()
    */
   public AbstractDescriptor getParent() {
@@ -242,7 +217,6 @@ public class RoleImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#hasId()
    */
   public boolean hasId() {

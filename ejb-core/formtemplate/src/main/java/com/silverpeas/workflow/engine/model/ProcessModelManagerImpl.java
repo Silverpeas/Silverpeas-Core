@@ -56,6 +56,7 @@ import org.xml.sax.InputSource;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordSetManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.DataFolder;
@@ -63,7 +64,6 @@ import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
 import com.stratelia.webactiv.util.DBUtil;
@@ -90,7 +90,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * The map (modelId -> cached process model).
    */
-  private Map models = new HashMap();
+  private final Map models = new HashMap();
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
 
   /**
@@ -107,6 +107,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * @see com.silverpeas.workflow.api.ProcessModelManager#listProcessModels()
    */
+  @Override
   public List listProcessModels() throws WorkflowException {
     try {
       // Recursively search all subdirs for .xml files
@@ -115,71 +116,58 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     } catch (UtilException e) {
       throw new WorkflowException("WorkflowManager.getProcessModels",
           "WorkflowEngine.EX_GETTING_RPOCES_MODELS_FAILED", "Workflow Dir : "
-              + getProcessModelDir(), e);
+          + getProcessModelDir(), e);
     } catch (IOException e) {
       throw new WorkflowException("WorkflowManager.getProcessModels",
           "WorkflowEngine.EX_GETTING_RPOCES_MODELS_FAILED", "Workflow Dir : "
-              + getProcessModelDir(), e);
+          + getProcessModelDir(), e);
     }
   }
 
   /**
-   * Recursive method to retrieve all process models in and below the given
-   * directory
-   * 
-   * @param processModelDir
-   *          the directory to start with
-   * @return a list of strings containing the relative path and file name of the
-   *         model
+   * Recursive method to retrieve all process models in and below the given directory
+   * @param processModelDir the directory to start with
+   * @return a list of strings containing the relative path and file name of the model
    * @throws UtilException
    * @throws IOException
    */
   private List findProcessModels(String strProcessModelDir)
       throws UtilException, IOException {
     Iterator subFoldersIterator = FileFolderManager.getAllSubFolder(
-        strProcessModelDir).iterator(), subFolderModelsIterator, currentDirModelsIterator = FileFolderManager
-        .getAllFile(strProcessModelDir).iterator();
-    List models = new ArrayList();
+        strProcessModelDir).iterator(), subFolderModelsIterator, currentDirModelsIterator =
+        FileFolderManager
+            .getAllFile(strProcessModelDir).iterator();
+    List processModels = new ArrayList();
     File subFolder;
 
     while (subFoldersIterator.hasNext()) {
       subFolder = (File) subFoldersIterator.next();
-
-      // Get models from subfolders,
-      //
-      subFolderModelsIterator = findProcessModels(subFolder.getCanonicalPath())
-          .iterator();
+      // Get models from subfolders
+      subFolderModelsIterator = findProcessModels(subFolder.getCanonicalPath()).iterator();
 
       // prepend their names with the name of this folder
-      //
       while (subFolderModelsIterator.hasNext())
-        models.add(subFolder.getName() + File.separator
-            + subFolderModelsIterator.next());
+        processModels
+            .add(subFolder.getName() + File.separatorChar + subFolderModelsIterator.next());
     }
-
     // Get models from the current folder, do not prepend names
-    //
     while (currentDirModelsIterator.hasNext()) {
       String name = ((File) currentDirModelsIterator.next()).getName();
 
       if (name.endsWith(".xml"))
-        models.add(name);
+        processModels.add(name);
     }
-
     // Return the list of process models
-    //
-    return models;
+    return processModels;
   }
 
   /**
-   * Get a ProcessModel from its modelId. Retrieves the xml descriptor filename
-   * from the model Id and load abstract process model information in
-   * ProcessModel object
-   * 
-   * @param modelId
-   *          model id
+   * Get a ProcessModel from its modelId. Retrieves the xml descriptor filename from the model Id
+   * and load abstract process model information in ProcessModel object
+   * @param modelId model id
    * @return ProcessModel object
    */
+  @Override
   public ProcessModel getProcessModel(String modelId) throws WorkflowException {
     // Search the processModel in the process model cache.
     ProcessModel cachedModel = getCachedProcessModel(modelId);
@@ -187,25 +175,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       return cachedModel;
 
     // The model is not cached, we must build it.
-    // ArrayList parameters = null;
-    // String[] parameterNames = null;
-    // String[] parameterValues = null;
     String fileName = null;
-
-    // Get the component parameters
-    // the modelId is the peasId.
-    // parameters = admin.getComponentParameters(modelId);
-    // parameterNames = (String[]) parameters.get(0);
-    // parameterValues = (String[]) parameters.get(2);
-
-    // Search for parameter "XMLFileName"
-    // for (int i = 0; fileName == null && parameterNames != null && i <
-    // parameterNames.length; i++)
-    /*
-     * { if (parameterNames[i].equals("XMLFileName")) { fileName =
-     * parameterValues[i]; } }
-     */
-
     fileName = admin.getComponentParameterValue(modelId,
         ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
 
@@ -213,7 +183,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     if (fileName == null)
       throw new WorkflowException("ProcessModelManagerImpl.getProcessModel",
           "workflowEngine.EX_NO_XML_FILENAME_FOUND", "model/peas id : "
-              + modelId);
+          + modelId);
 
     // load the process model from its xml descriptor
     ProcessModelImpl model = (ProcessModelImpl) this.loadProcessModel(fileName,
@@ -231,25 +201,21 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.ProcessModelManager#createProcessModelDescriptor
-   * ()
+   * @see com.silverpeas.workflow.api.ProcessModelManager#createProcessModelDescriptor ()
    */
+  @Override
   public ProcessModel createProcessModelDescriptor() throws WorkflowException {
     return new ProcessModelImpl();
   }
 
   /**
-   * Create a ProcessModel from xml descriptor filename. Generate an id for this
-   * model and load abstract process model information in ProcessModel object
-   * 
-   * @param processFileName
-   *          xml descriptor filename.
-   * @param peasId
-   *          Id of processManager instance (peas).
+   * Create a ProcessModel from xml descriptor filename. Generate an id for this model and load
+   * abstract process model information in ProcessModel object
+   * @param processFileName xml descriptor filename.
+   * @param peasId Id of processManager instance (peas).
    * @return ProcessModel object
    */
+  @Override
   public ProcessModel createProcessModel(String processFileName, String peasId)
       throws WorkflowException {
     ProcessModel model = null;
@@ -284,11 +250,11 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     } catch (FormException fe) {
       throw new WorkflowException("ProcessModelManagerImpl.createProcessModel",
           "workflowEngine.EX_ERR_INSTANCIATING_MODEL", "Process FileName : "
-              + processFileName == null ? "<null>" : processFileName, fe);
+          + processFileName == null ? "<null>" : processFileName, fe);
     } catch (WorkflowException we) {
       throw new WorkflowException("ProcessModelManagerImpl.createProcessModel",
           "workflowEngine.EX_ERR_INSTANCIATING_MODEL", "Process FileName : "
-              + processFileName == null ? "<null>" : processFileName, we);
+          + processFileName == null ? "<null>" : processFileName, we);
     }
 
     return model;
@@ -296,10 +262,9 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
   /**
    * Delete a ProcessModel with given model id
-   * 
-   * @param modelId
-   *          model id
+   * @param modelId model id
    */
+  @Override
   public void deleteProcessModel(String instanceId) throws WorkflowException {
     ProcessModel model = getProcessModel(instanceId);
     String formName = null;
@@ -322,24 +287,23 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
           SilverTrace.info("workflowEngine",
               "ProcessModelManagerImpl.deleteProcessModel",
               "root.MSG_GEN_PARAM_VALUE", instanceId + " : Removing form '"
-                  + formName + "' successfully done");
+              + formName + "' successfully done");
         }
       }
     } catch (FormException fe) {
       throw new WorkflowException("ProcessModelManagerImpl.deleteProcessModel",
           "workflowEngine.EX_ERR_UNINSTANCIATING_MODEL", "instanceId : "
-              + instanceId == null ? "<null>" : instanceId + ", formName = "
-              + formName == null ? "<null>" : formName, fe);
+          + instanceId == null ? "<null>" : instanceId + ", formName = "
+          + formName == null ? "<null>" : formName, fe);
     }
   }
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.ProcessModelManager#deleteProcessModelDescriptor
+   * @see com.silverpeas.workflow.api.ProcessModelManager#deleteProcessModelDescriptor
    * (java.lang.String)
    */
+  @Override
   public void deleteProcessModelDescriptor(String strProcessModelFileName)
       throws WorkflowException {
     try {
@@ -353,44 +317,38 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       throw new WorkflowException("WorkflowManager.getProcessModels",
           "WorkflowEngine.EX_GETTING_RPOCES_MODELS_FAILED",
           "Process Model File name : "
-              + (strProcessModelFileName == null ? "<null>"
-                  : strProcessModelFileName), e);
+          + (strProcessModelFileName == null ? "<null>"
+          : strProcessModelFileName), e);
     }
   }
 
   /**
    * load a process model definition from xml file to java objects
-   * 
-   * @param processFileName
-   *          the xml file name that contains process model definition
-   * @param absolutePath
-   *          true if xml file name contains the full path, else concat with the
-   *          directory defined in castorSettings.properties
+   * @param processFileName the xml file name that contains process model definition
+   * @param absolutePath true if xml file name contains the full path, else concat with the
+   * directory defined in castorSettings.properties
    * @return a ProcessModel object
    */
+  @Override
   public ProcessModel loadProcessModel(String processFileName,
       boolean absolutePath) throws WorkflowException {
     Mapping mapping = new Mapping();
     String mappingFileName = settings.getString("CastorXMLMappingFileURL");
     String processModelDir = settings.getString("ProcessModelDir");
-    String debugMode = "false";
+    boolean debugMode = false;
     try {
       // get configuration files url
       mappingFileName = settings.getString("CastorXMLMappingFileURL");
       processModelDir = settings.getString("ProcessModelDir");
-      debugMode = settings.getString("DebugMode", "false");
-
-      ResourceLocator settings = new ResourceLocator(
-          "com.stratelia.webactiv.util.attachment.Attachment", "");
-      boolean runOnUnix = SilverpeasSettings.readBoolean(settings,
-          "runOnSolaris", false);
+      debugMode = settings.getBoolean("DebugMode", false);
+      boolean runOnUnix = !FileUtil.isWindows();
 
       // Format these url
-      if (runOnUnix)
+      if (runOnUnix) {
         mappingFileName = mappingFileName.replace('\\', '/');
-      else
+      } else {
         mappingFileName = "file:///" + mappingFileName.replace('\\', '/');
-
+      }
       if (!absolutePath) {
         processModelDir = processModelDir.replace('\\', '/');
         if (processModelDir.length() > 0
@@ -404,55 +362,49 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       mapping.loadMapping(mappingFileName);
       Unmarshaller unmar = new Unmarshaller(mapping);
       unmar.setValidation(false);
-      if ("true".equals(debugMode))
-        unmar.setDebug(true);
-
+      unmar.setDebug(debugMode);
       // Unmarshall the process model
       ProcessModelImpl process = (ProcessModelImpl) unmar
           .unmarshal(new InputSource(new FileReader(processFileName)));
 
-      if ("true".equals(debugMode)) {
+      if (debugMode) {
         // Marshall for debugging purpose
         processFileName = processModelDir.replace('\\', '/') + "debug.xml";
         Marshaller mar = new Marshaller(new FileWriter(processFileName));
         mar.setMapping(mapping);
         mar.marshal(process);
       }
-
       return process;
     } catch (MappingException me) {
       throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
           "workflowEngine.EX_ERR_CASTOR_LOAD_XML_MAPPING",
           "Mapping file name : "
-              + (mappingFileName == null ? "<null>" : mappingFileName), me);
+          + (mappingFileName == null ? "<null>" : mappingFileName), me);
     } catch (MarshalException me) {
       throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
           "workflowEngine.EX_ERR_CASTOR_UNMARSHALL_PROCESSMODEL",
           "Process File Name : "
-              + (processFileName == null ? "<null>" : processFileName), me);
+          + (processFileName == null ? "<null>" : processFileName), me);
     } catch (ValidationException ve) {
       throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
           "workflowEngine.EX_ERR_CASTOR_INVALID_XML_PROCESSMODEL",
           "Process File Name : "
-              + (processFileName == null ? "<null>" : processFileName), ve);
+          + (processFileName == null ? "<null>" : processFileName), ve);
     } catch (IOException ioe) {
       throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
           "workflowEngine.EX_ERR_CASTOR_LOAD_PROCESSMODEL",
           "Process File Name : "
-              + (processFileName == null ? "<null>" : processFileName), ioe);
+          + (processFileName == null ? "<null>" : processFileName), ioe);
     }
   }
 
   /**
    * Saves a process model definition from java objects to an XML file
-   * 
-   * @param processFileName
-   *          the xml file name that contains process model definition
-   * @param process
-   *          A processModel object to be saved
-   * @throws WorkflowException
-   *           when something goes wrong
+   * @param processFileName the xml file name that contains process model definition
+   * @param process A processModel object to be saved
+   * @throws WorkflowException when something goes wrong
    */
+  @Override
   public void saveProcessModel(ProcessModel process, String processFileName)
       throws WorkflowException {
     Mapping mapping = new Mapping();
@@ -465,11 +417,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     String strProcessModelFileEncoding = settings
         .getString("ProcessModelFileEncoding");
     Marshaller mar;
-    ResourceLocator resourceSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = SilverpeasSettings.readBoolean(resourceSettings,
-        "runOnSolaris", false);
-
+    boolean runOnUnix = !FileUtil.isWindows();
     try {
       // TODO remove the 'default' as a name of role etc, set to null
       //
@@ -478,11 +426,11 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
       // Format these urls
       //
-      if (runOnUnix)
+      if (runOnUnix) {
         mappingFileName = mappingFileName.replace('\\', '/');
-      else
+      } else {
         mappingFileName = "file:///" + mappingFileName.replace('\\', '/');
-
+      }
       processModelDir = processModelDir.replace('\\', '/');
 
       if (processModelDir.length() > 0
@@ -512,34 +460,35 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
           "workflowEngine.EX_ERR_CASTOR_LOAD_XML_MAPPING",
           "Mapping file name : "
-              + (mappingFileName == null ? "<null>" : mappingFileName), me);
+          + (mappingFileName == null ? "<null>" : mappingFileName), me);
     } catch (MarshalException me) {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
           "workflowEngine.EX_ERR_CASTOR_MARSHALL_PROCESSMODEL",
           "Process file name : "
-              + (processFileName == null ? "<null>" : processFileName), me);
+          + (processFileName == null ? "<null>" : processFileName), me);
     } catch (ValidationException ve) {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
           "workflowEngine.EX_ERR_CASTOR_INVALID_XML_PROCESSMODEL",
           "Process file name : "
-              + (processFileName == null ? "<null>" : processFileName), ve);
+          + (processFileName == null ? "<null>" : processFileName), ve);
     } catch (IOException ioe) {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
           "workflowEngine.EX_ERR_CASTOR_SAVE_PROCESSMODEL",
           "Process file name : "
-              + (processFileName == null ? "<null>" : processFileName), ioe);
+          + (processFileName == null ? "<null>" : processFileName), ioe);
     }
   }
 
   /**
    * Get the directory where are stored the models
    */
+  @Override
   public String getProcessModelDir() {
     String dir = settings.getString("ProcessModelDir");
-
     String fileSeparator = "\\";
-    if (dir.indexOf("/") != -1)
+    if (dir.indexOf("/") != -1) {
       fileSeparator = "/";
+    }
 
     if (dir != null && dir.lastIndexOf(fileSeparator) != dir.length()) {
       dir += fileSeparator;
@@ -550,6 +499,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * Get all the "process manager" peas ids
    */
+  @Override
   public String[] getAllPeasIds() throws WorkflowException {
     Connection con = null;
     PreparedStatement prepStmt = null;
@@ -572,7 +522,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     } catch (SQLException se) {
       throw new WorkflowException("ProcessModelManagerImpl.getAllPeasId",
           "workflowEngine.EX_ERR_GET_ALL_PEAS_IDS", "sql query : "
-              + selectQuery == null ? "<null>" : selectQuery, se);
+          + selectQuery == null ? "<null>" : selectQuery, se);
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
@@ -608,6 +558,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * Clear the process model cache.
    */
+  @Override
   public void clearProcessModelCache() {
     synchronized (models) {
       models.clear();
@@ -647,11 +598,11 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       } catch (NamingException ne) {
         throw new WorkflowException("ProcessModelManagerImpl.getConnection",
             "root.EX_DATASOURCE_NOT_FOUND", "Data source "
-                + JNDINames.DIRECT_DATASOURCE + " not found", ne);
+            + JNDINames.DIRECT_DATASOURCE + " not found", ne);
       } catch (SQLException se) {
         throw new WorkflowException("ProcessModelManagerImpl.getConnection",
             "can't get connection for dataSource "
-                + JNDINames.DIRECT_DATASOURCE, se);
+            + JNDINames.DIRECT_DATASOURCE, se);
       }
     } catch (SQLException se) {
       throw new WorkflowException("ProcessModelManagerImpl.getConnection()",

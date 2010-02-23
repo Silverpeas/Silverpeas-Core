@@ -26,10 +26,8 @@ package com.silverpeas.workflow.engine;
 import com.silverpeas.workflow.api.*;
 
 /**
- * The workflowHub manages all the workflow components implementations.
- * 
- * This singleton builds the several workflow components and exports them as
- * services interfaces.
+ * The workflowHub manages all the workflow components implementations. This singleton builds the
+ * several workflow components and exports them as services interfaces.
  */
 public class WorkflowHub {
   /**
@@ -100,10 +98,8 @@ public class WorkflowHub {
   }
 
   /**
-   * As a singleton class, the constructor is private.
-   * 
-   * After creation the init method <em>must </em> be called.
-   * 
+   * As a singleton class, the constructor is private. After creation the init method <em>must </em>
+   * be called.
    * @see createInstance()
    * @see init()
    */
@@ -136,7 +132,8 @@ public class WorkflowHub {
     userManager = new com.silverpeas.workflow.engine.user.UserManagerImpl();
     taskManager = new com.silverpeas.workflow.engine.task.TaskManagerImpl();
     processModelManager = new com.silverpeas.workflow.engine.model.ProcessModelManagerImpl();
-    processInstanceManager = new com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl();
+    processInstanceManager =
+        new com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl();
     workflowEngine = new WorkflowEngineImpl();
   }
 

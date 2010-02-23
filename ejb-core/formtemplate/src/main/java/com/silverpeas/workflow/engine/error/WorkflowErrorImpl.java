@@ -48,8 +48,8 @@ public class WorkflowErrorImpl implements WorkflowError {
   }
 
   /**
-   * A WorkflowErrorImpl is build from a process instance, a generic event, a
-   * history step and a Exception
+   * A WorkflowErrorImpl is build from a process instance, a generic event, a history step and a
+   * Exception
    */
   public WorkflowErrorImpl(ProcessInstance instance, GenericEvent event,
       HistoryStep step, Exception exception) {

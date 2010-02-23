@@ -36,11 +36,10 @@ import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;action&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;action&gt; element of a Process Model.
  **/
-public class ActionImpl extends AbstractReferrableObject implements Action,
-    AbstractDescriptor, Serializable {
+public class ActionImpl extends AbstractReferrableObject implements Action, AbstractDescriptor,
+    Serializable {
   private String name;
   private String kind;
   private ContextualDesignations labels;
@@ -65,9 +64,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Constructor
-   * 
-   * @param name
-   *          action name
+   * @param name action name
    */
   public ActionImpl(String name) {
     this();
@@ -85,7 +82,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Action#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -94,7 +90,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Action#getLabels()
    */
   public ContextualDesignations getLabels() {
@@ -103,9 +98,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.silverpeas.workflow.api.model.Action#getLabel(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Action#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
     return labels.getLabel(role, language);
@@ -113,9 +106,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Action#addLabel(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Action#addLabel(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addLabel(ContextualDesignation label) {
@@ -124,7 +115,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Action#iterateLabel()
    */
   public Iterator iterateLabel() {
@@ -133,7 +123,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Get all the users allowed to execute this action
-   * 
    * @return object containing QualifiedUsers
    */
   public QualifiedUsers getAllowedUsers() {
@@ -142,7 +131,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Get all the consequences of this action
-   * 
    * @return Consequences objects
    */
   public Consequences getConsequences() {
@@ -151,7 +139,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Get the form associated with this action
-   * 
    * @return form object
    */
   public Form getForm() {
@@ -160,7 +147,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Get the name of this action
-   * 
    * @return action's name
    */
   public String getName() {
@@ -169,7 +155,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Get the kind of this action (update, create or delete)
-   * 
    * @return action's kind
    */
   public String getKind() {
@@ -178,7 +163,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Action#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
@@ -187,9 +171,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Action#getDescription(java.lang.String,
+   * @see com.silverpeas.workflow.api.model.Action#getDescription(java.lang.String,
    * java.lang.String)
    */
   public String getDescription(String role, String language) {
@@ -198,9 +180,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Action#addDescription(com.silverpeas.
+   * @see com.silverpeas.workflow.api.model.Action#addDescription(com.silverpeas.
    * workflow.api.model.ContextualDesignation)
    */
   public void addDescription(ContextualDesignation description) {
@@ -209,7 +189,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Action#iterateDescription()
    */
   public Iterator iterateDescription() {
@@ -225,9 +204,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Set the list of users allowed to execute this action
-   * 
-   * @param allowedUsers
-   *          allowed users
+   * @param allowedUsers allowed users
    **/
   public void setAllowedUsers(QualifiedUsers allowedUsers) {
     this.allowedUsers = allowedUsers;
@@ -242,7 +219,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Set the consequences of this action
-   * 
    * @param consequences
    */
   public void setConsequences(Consequences consequences) {
@@ -251,9 +227,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Set the form associated to this action
-   * 
-   * @param form
-   *          associated form
+   * @param form associated form
    **/
   public void setForm(Form form) {
     this.form = form;
@@ -261,9 +235,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Set the name of this action
-   * 
-   * @param name
-   *          action's name
+   * @param name action's name
    */
   public void setName(String name) {
     this.name = name;
@@ -271,9 +243,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Set the kind of this action
-   * 
-   * @param kind
-   *          action's kind
+   * @param kind action's kind
    */
   public void setKind(String kind) {
     this.kind = kind;
@@ -281,7 +251,6 @@ public class ActionImpl extends AbstractReferrableObject implements Action,
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {

@@ -110,8 +110,8 @@ public class AdminServlet extends HttpServlet {
               if (portletWindowName.equals(tempPortletWindowName)) {
                 String message =
                     DesktopMessages.getLocalizedString(
-                        AdminConstants.PORTLET_WINDOW_NAME_ALREADY_EXISTS,
-                        new String[] { portletWindowName });
+                    AdminConstants.PORTLET_WINDOW_NAME_ALREADY_EXISTS,
+                    new String[] { portletWindowName });
                 session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
                 isDuplicate = true;
                 break;

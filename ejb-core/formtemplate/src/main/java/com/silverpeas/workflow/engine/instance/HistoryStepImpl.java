@@ -47,7 +47,6 @@ import com.silverpeas.workflow.engine.WorkflowHub;
 public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
   /**
    * Used for persistence
-   * 
    * @primary-key
    * @field-name id
    * @field-type string
@@ -57,7 +56,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Process instance whose an action has been logged by this history step
-   * 
    * @field-name processInstance
    * @field-type com.silverpeas.workflow.engine.instance.ProcessInstanceImpl
    * @sql-name instanceId
@@ -66,45 +64,37 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Id of user whose action has been logged in this history step.
-   * 
    * @field-name userId
    */
   private String userId = null;
 
   /**
    * Role under which user did the action logged in this history step.
-   * 
    * @field-name userRoleName
    */
   private String userRoleName = null;
 
   /**
    * Name of action that has been logged by this history step
-   * 
    * @field-name action
    */
   private String action = null;
 
   /**
    * Date of action that has been logged by this history step
-   * 
    * @field-name actionDate
    * @sql-type timestamp
    */
   private Date actionDate = null;
 
   /**
-   * Name of the state that has been resolved by action that has been logged by
-   * this history step
-   * 
+   * Name of the state that has been resolved by action that has been logged by this history step
    * @field-name resolvedState
    */
   private String resolvedState = null;
 
   /**
-   * Name of the state that must be resulted from action that has been logged by
-   * this history step
-   * 
+   * Name of the state that must be resulted from action that has been logged by this history step
    * @field-name resultingState
    * @sql-name toState
    */
@@ -112,7 +102,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Resulting status of action
-   * 
    * @field-name actionStatus
    */
   private int actionStatus = 0;
@@ -126,7 +115,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getId() {
@@ -135,7 +123,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * For persistence in database Set this object id
-   * 
    * @param this object id
    */
   public void setId(String id) {
@@ -144,7 +131,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the process instance
-   * 
    * @return process instance
    */
   public ProcessInstance getProcessInstance() {
@@ -153,9 +139,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the process instance
-   * 
-   * @param instance
-   *          process instance
+   * @param instance process instance
    */
   public void setProcessInstance(ProcessInstance processInstance) {
     this.processInstance = (ProcessInstanceImpl) processInstance;
@@ -163,7 +147,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the actor of the action logged in this History step
-   * 
    * @return the actor
    */
   public User getUser() throws WorkflowException {
@@ -172,7 +155,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the actor id of the action logged in this History step
-   * 
    * @return the actor id
    */
   public String getUserId() {
@@ -181,9 +163,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the actor id of the action logged in this History step
-   * 
-   * @param userId
-   *          the actor id
+   * @param userId the actor id
    */
   public void setUserId(String userId) {
     this.userId = userId;
@@ -191,7 +171,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the role under which the user did the action
-   * 
    * @return the role's name
    */
   public String getUserRoleName() {
@@ -200,9 +179,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the role under which the user did the action
-   * 
-   * @param userRoleName
-   *          the role's name
+   * @param userRoleName the role's name
    */
   public void setUserRoleName(String userRoleName) {
     this.userRoleName = userRoleName;
@@ -210,7 +187,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the action name logged in this History step
-   * 
    * @return the action name
    */
   public String getAction() {
@@ -219,9 +195,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the action name logged in this History step
-   * 
-   * @param action
-   *          the action name
+   * @param action the action name
    */
   public void setAction(String action) {
     this.action = action;
@@ -229,7 +203,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the date when the action has been done
-   * 
    * @return the action date
    */
   public Date getActionDate() {
@@ -238,9 +211,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the date when the action has been done
-   * 
-   * @param actionDate
-   *          the action date
+   * @param actionDate the action date
    */
   public void setActionDate(Date actionDate) {
     this.actionDate = actionDate;
@@ -256,7 +227,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the name of state that has been resolved
-   * 
    * @return the resolved state name
    */
   public String getResolvedState() {
@@ -265,9 +235,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the name of state that has been resolved
-   * 
-   * @param state
-   *          the resolved state name
+   * @param state the resolved state name
    */
   public void setResolvedState(String state) {
     this.resolvedState = state;
@@ -275,7 +243,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the name of state that has been resolved
-   * 
    * @return the resolved state name
    */
   public String getResultingState() {
@@ -284,9 +251,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Set the name of state that must result from logged action
-   * 
-   * @param state
-   *          state name
+   * @param state state name
    */
   public void setResultingState(String state) {
     this.resultingState = state;
@@ -294,14 +259,13 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
 
   /**
    * Get the resulting status of action logged in this history step
-   * 
    * @return action status
-   *         <ul>
-   *         <li>-1 : Process failed
-   *         <li>0 : To Be Processed
-   *         <li>1 : Processed
-   *         <li>2 : Affectations Done
-   *         </ul>
+   * <ul>
+   * <li>-1 : Process failed
+   * <li>0 : To Be Processed
+   * <li>1 : Processed
+   * <li>2 : Affectations Done
+   * </ul>
    */
   public int getActionStatus() {
     return actionStatus;
@@ -315,17 +279,14 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
    * <li>1 : Processed
    * <li>2 : Affectations Done
    * </ul>
-   * 
-   * @param actionStatus
-   *          action status
+   * @param actionStatus action status
    */
   public void setActionStatus(int actionStatus) {
     this.actionStatus = actionStatus;
   }
 
   /**
-   * Get the data associated to this step. Returns null if there is no form
-   * associated to the action
+   * Get the data associated to this step. Returns null if there is no form associated to the action
    */
   public DataRecord getActionRecord() throws WorkflowException {
     ProcessModel model = processInstance.getProcessModel();
@@ -345,7 +306,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     } catch (FormException e) {
       throw new WorkflowException("HistoryStepImpl",
           "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
-              + formId + ")", e);
+          + formId + ")", e);
     }
   }
 
@@ -371,7 +332,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl",
           "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
-              + formId + ")", e);
+          + formId + ")", e);
     }
   }
 
@@ -396,7 +357,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl",
           "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
-              + formId + ")", e);
+          + formId + ")", e);
     }
   }
 

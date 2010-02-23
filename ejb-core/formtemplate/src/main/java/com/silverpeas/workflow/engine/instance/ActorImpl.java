@@ -37,13 +37,9 @@ public class ActorImpl implements Actor {
 
   /**
    * Constructor Definitivly set the user, userRoleName and the state
-   * 
-   * @param user
-   *          user aka the actor
-   * @param userRoleName
-   *          name of the role under which the user was/may be an actor
-   * @param state
-   *          state for which the user was/may be an actor
+   * @param user user aka the actor
+   * @param userRoleName name of the role under which the user was/may be an actor
+   * @param state state for which the user was/may be an actor
    */
   public ActorImpl(User user, String userRoleName, State state) {
     this.user = user;
@@ -60,7 +56,6 @@ public class ActorImpl implements Actor {
 
   /**
    * get the name of the role under which the user was/may be an actor
-   * 
    * @return the role's name
    */
   public String getUserRoleName() {
@@ -69,7 +64,6 @@ public class ActorImpl implements Actor {
 
   /**
    * get the name of the state for which the user was/may be an actor
-   * 
    * @return the state as a State object
    */
   public State getState() {

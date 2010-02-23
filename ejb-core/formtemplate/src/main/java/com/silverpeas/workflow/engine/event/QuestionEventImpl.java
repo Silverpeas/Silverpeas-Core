@@ -33,15 +33,13 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.form.DataRecord;
 
 /**
- * A QuestionEvent object is the description of a question to a precedent actor.
- * 
- * Those descriptions are sent to the workflow engine by the workflow tools when
- * the user asked a question in process instance
+ * A QuestionEvent object is the description of a question to a precedent actor. Those descriptions
+ * are sent to the workflow engine by the workflow tools when the user asked a question in process
+ * instance
  */
 public class QuestionEventImpl implements QuestionEvent {
   /**
-   * A QuestionEventImpl is built from a resolved task, a choosen target state
-   * and a filled form.
+   * A QuestionEventImpl is built from a resolved task, a choosen target state and a filled form.
    */
   public QuestionEventImpl(Task resolvedTask, String stepId, DataRecord data) {
     this.user = resolvedTask.getUser();
@@ -63,9 +61,7 @@ public class QuestionEventImpl implements QuestionEvent {
   }
 
   /**
-   * Returns the process instance.
-   * 
-   * Returns null when the task is an instance creation.
+   * Returns the process instance. Returns null when the task is an instance creation.
    */
   public ProcessInstance getProcessInstance() {
     return processInstance;
@@ -79,9 +75,7 @@ public class QuestionEventImpl implements QuestionEvent {
   }
 
   /**
-   * Returns the process model (peas).
-   * 
-   * Must be not null when the task is an instance creation.
+   * Returns the process model (peas). Must be not null when the task is an instance creation.
    */
   public ProcessModel getProcessModel() {
     return processModel;

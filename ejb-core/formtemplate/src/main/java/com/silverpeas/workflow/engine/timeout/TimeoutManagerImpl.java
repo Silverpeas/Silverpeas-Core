@@ -42,15 +42,13 @@ import com.silverpeas.workflow.engine.WorkflowEngineThread;
 /**
  * The workflow engine services relate to error management.
  */
-public class TimeoutManagerImpl implements TimeoutManager,
-    SchedulerEventHandler {
+public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler {
 
   // Local constants
   private static final String TIMEOUT_MANAGER_JOB_NAME = "WorkflowTimeoutManager";
 
   /**
    * Initialize timeout manager
-   * 
    */
   public void initialize() {
     try {
@@ -76,20 +74,19 @@ public class TimeoutManagerImpl implements TimeoutManager,
 
   /**
    * Scheduler Event handler
-   * 
    */
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("workflowEngine",
             "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("workflowEngine",
             "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:
@@ -100,16 +97,12 @@ public class TimeoutManagerImpl implements TimeoutManager,
   }
 
   /**
-   * This method is called periodically by the scheduler, it test for each peas
-   * of type processManager if associated model contains states with timeout
-   * events If so, all the instances of these peas that have the "timeout"
-   * states actives are read to check if timeout interval has been reached. In
-   * that case, the administrator can be notified, the active state and the
+   * This method is called periodically by the scheduler, it test for each peas of type
+   * processManager if associated model contains states with timeout events If so, all the instances
+   * of these peas that have the "timeout" states actives are read to check if timeout interval has
+   * been reached. In that case, the administrator can be notified, the active state and the
    * instance are marked as timeout
-   * 
-   * @param currentDate
-   *          the date when the method is called by the scheduler
-   * 
+   * @param currentDate the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters,
    */
   public void doTimeoutManagement(Date date) {
@@ -120,7 +113,7 @@ public class TimeoutManagerImpl implements TimeoutManager,
       String[] peasIds = Workflow.getProcessModelManager().getAllPeasIds();
       SilverTrace.debug("workflowEngine",
           "TimeoutManagerImpl.doTimeoutManagement", "", "peas Id found : '"
-              + peasIds.length);
+          + peasIds.length);
       for (int i = 0; i < peasIds.length; i++) {
         // load abstract model
         ProcessModel model = null;
@@ -134,7 +127,7 @@ public class TimeoutManagerImpl implements TimeoutManager,
         State[] states = model.getStates();
         SilverTrace.debug("workflowEngine",
             "TimeoutManagerImpl.doTimeoutManagement", "", states.length
-                + " states found in model" + model.getName());
+            + " states found in model" + model.getName());
         for (int j = 0; j < states.length; j++) {
           // Check if the state has a defined timeout action
           Action timeoutAction = states[j].getTimeoutAction();
@@ -146,7 +139,7 @@ public class TimeoutManagerImpl implements TimeoutManager,
               // parse all instances with this state activated
               ProcessInstance[] instances = Workflow
                   .getProcessInstanceManager().getProcessInstancesInState(
-                      peasIds[i], states[j]);
+                  peasIds[i], states[j]);
               SilverTrace.debug("workflowEngine",
                   "TimeoutManagerImpl.doTimeoutManagement", "",
                   "instances found : '" + instances.length);
@@ -166,10 +159,10 @@ public class TimeoutManagerImpl implements TimeoutManager,
                     SilverTrace.warn("workflowEngine",
                         "TimeoutManagerImpl.doTimeoutManagement",
                         "workflowEngine.WARN_TIMEOUT_DETECTED", "model Id : '"
-                            + peasIds[i] + "' instance Id : '"
-                            + instances[k].getInstanceId() + "' state : '"
-                            + states[j].getName() + "interval : "
-                            + (interval / (60 * 60 * 1000)));
+                        + peasIds[i] + "' instance Id : '"
+                        + instances[k].getInstanceId() + "' state : '"
+                        + states[j].getName() + "interval : "
+                        + (interval / (60 * 60 * 1000)));
                   }
                 }
               }
@@ -188,7 +181,7 @@ public class TimeoutManagerImpl implements TimeoutManager,
       long delay = (endDate.getTime() - beginDate.getTime()) / 1000;
       SilverTrace.debug("workflowEngine",
           "TimeoutManagerImpl.doTimeoutManagement", "Duree de traitement : "
-              + delay + " seconds.");
+          + delay + " seconds.");
     }
   }
 }

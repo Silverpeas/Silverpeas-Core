@@ -75,7 +75,7 @@ abstract public class BrowsePanelProvider extends PanelProvider {
       m_Cm.setSelected(m_what, element, true);
     }
   }
-  
+
   public void unsetSelectedElements(Set<String> elements) {
     for (String element : elements) {
       m_Cm.setSelected(m_what, element, false);

@@ -32,11 +32,9 @@ import com.silverpeas.workflow.api.model.Trigger;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;trigger&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;trigger&gt; element of a Process Model.
  **/
-public class TriggerImpl extends AbstractReferrableObject implements Trigger,
-    Serializable {
+public class TriggerImpl extends AbstractReferrableObject implements Trigger, Serializable {
   private String name;
   private String className;
   private Vector parameters;
@@ -60,7 +58,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /**
    * Get the name of the Parameter
-   * 
    * @return parameter's name
    */
   public String getName() {
@@ -69,9 +66,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /**
    * Set the name of the Parameter
-   * 
-   * @param parameter
-   *          's name
+   * @param parameter 's name
    */
   public void setName(String name) {
     this.name = name;
@@ -79,7 +74,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /**
    * Get the value of the Parameter
-   * 
    * @return parameter's value
    */
   public String getClassName() {
@@ -88,9 +82,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /**
    * Set the value of the Parameter
-   * 
-   * @param parameter
-   *          's value
+   * @param parameter 's value
    */
   public void setClassName(String className) {
     this.className = className;
@@ -98,7 +90,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {
@@ -123,7 +114,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#createParameter()
    */
   public Parameter createParameter() {
@@ -132,9 +122,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Item#addParameter(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Item#addParameter(com.silverpeas.workflow
    * .api.model.Parameter)
    */
   public void addParameter(Parameter parameter) {
@@ -143,7 +131,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Item#iterateParameters()
    */
   public Iterator iterateParameter() {

@@ -32,9 +32,8 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.fileupload.FileItem;
 
 /**
- * File item created manually, without being retrieved from an HTTP request.
- * Used to update an imported publication's form.
- * 
+ * File item created manually, without being retrieved from an HTTP request. Used to update an
+ * imported publication's form.
  * @author Antoine HEDIN
  */
 public class InternalFileItem implements FileItem {

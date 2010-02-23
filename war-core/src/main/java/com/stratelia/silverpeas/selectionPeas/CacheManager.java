@@ -195,14 +195,14 @@ abstract public class CacheManager {
     }
     valret = (PanelLine[]) ar.toArray(new PanelLine[0]);
     Arrays.sort(valret, new Comparator<PanelLine>() {
-      public int compare(PanelLine o1, PanelLine o2) {
+        public int compare(PanelLine o1, PanelLine o2) {
         return o1.m_Values[0].toUpperCase().compareTo(
             o2.m_Values[0].toUpperCase());
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
     return valret;

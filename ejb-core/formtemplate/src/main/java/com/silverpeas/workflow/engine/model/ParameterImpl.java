@@ -29,11 +29,9 @@ import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;parameter&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;parameter&gt; element of a Process Model.
  **/
-public class ParameterImpl extends AbstractReferrableObject implements
-    Parameter, Serializable {
+public class ParameterImpl extends AbstractReferrableObject implements Parameter, Serializable {
   private String name;
   private String value;
 
@@ -55,7 +53,6 @@ public class ParameterImpl extends AbstractReferrableObject implements
 
   /**
    * Get the name of the Parameter
-   * 
    * @return parameter's name
    */
   public String getName() {
@@ -64,9 +61,7 @@ public class ParameterImpl extends AbstractReferrableObject implements
 
   /**
    * Set the name of the Parameter
-   * 
-   * @param parameter
-   *          's name
+   * @param parameter 's name
    */
   public void setName(String name) {
     this.name = name;
@@ -74,7 +69,6 @@ public class ParameterImpl extends AbstractReferrableObject implements
 
   /**
    * Get the value of the Parameter
-   * 
    * @return parameter's value
    */
   public String getValue() {
@@ -83,9 +77,7 @@ public class ParameterImpl extends AbstractReferrableObject implements
 
   /**
    * Set the value of the Parameter
-   * 
-   * @param parameter
-   *          's value
+   * @param parameter 's value
    */
   public void setValue(String value) {
     this.value = value;
@@ -93,7 +85,6 @@ public class ParameterImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {

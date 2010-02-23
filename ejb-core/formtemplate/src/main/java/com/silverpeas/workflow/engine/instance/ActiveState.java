@@ -33,7 +33,6 @@ import com.silverpeas.workflow.engine.*;
 public class ActiveState extends AbstractReferrableObject {
   /**
    * Used for persistence
-   * 
    * @primary-key
    * @field-name id
    * @field-type string
@@ -60,7 +59,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Flag that indicates if this active state is there for a long long time
-   * 
    * @field-name timeoutStatus
    */
   private boolean timeoutStatus = false;
@@ -73,9 +71,7 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Constructor
-   * 
-   * @param state
-   *          state name
+   * @param state state name
    */
   public ActiveState(String state) {
     this.state = state;
@@ -83,7 +79,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * For persistence in database Get this object id
-   * 
    * @return this object id
    */
   public String getId() {
@@ -92,7 +87,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * For persistence in database Set this object id
-   * 
    * @param this object id
    */
   public void setId(String id) {
@@ -101,7 +95,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Get state name
-   * 
    * @return state name
    */
   public String getState() {
@@ -110,9 +103,7 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Set state name
-   * 
-   * @param state
-   *          state name
+   * @param state state name
    */
   public void setState(String state) {
     this.state = state;
@@ -120,7 +111,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Get the status regarding a possible undo process
-   * 
    * @return true if state is active to be discussed
    */
   public boolean getBackStatus() {
@@ -136,9 +126,7 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Set the status regarding a possible undo process
-   * 
-   * @param backStatus
-   *          true if state is active to be discussed
+   * @param backStatus true if state is active to be discussed
    */
   public void setBackStatus(boolean backStatus) {
     this.backStatus = backStatus;
@@ -150,7 +138,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Get the instance for which user is affected
-   * 
    * @return instance
    */
   public ProcessInstanceImpl getProcessInstance() {
@@ -159,9 +146,7 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Set the instance for which user is affected
-   * 
-   * @param processInstance
-   *          instance
+   * @param processInstance instance
    */
   public void setProcessInstance(ProcessInstanceImpl processInstance) {
     this.processInstance = processInstance;
@@ -169,7 +154,6 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Get the timeout status of this active state
-   * 
    * @return true if this an active state is there for a long long time
    */
   public boolean getTimeoutStatus() {
@@ -185,9 +169,7 @@ public class ActiveState extends AbstractReferrableObject {
 
   /**
    * Set the timeout status of this active state
-   * 
-   * @param timeoutStatus
-   *          true if this active state is there for a long long time
+   * @param timeoutStatus true if this active state is there for a long long time
    */
   public void setTimeoutStatus(boolean timeoutStatus) {
     this.timeoutStatus = timeoutStatus;
@@ -198,9 +180,7 @@ public class ActiveState extends AbstractReferrableObject {
   }
 
   /**
-   * This method has to be implemented by the referrable object it has to
-   * compute the unique key
-   * 
+   * This method has to be implemented by the referrable object it has to compute the unique key
    * @return The unique key.
    */
   public String getKey() {

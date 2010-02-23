@@ -62,8 +62,8 @@ public interface TaskManager {
       ProcessInstance processInstance) throws WorkflowException;
 
   /**
-   * Returns the creation task of a processModel or null if the user is not
-   * allowed to create a new instance.
+   * Returns the creation task of a processModel or null if the user is not allowed to create a new
+   * instance.
    */
   public Task getCreationTask(User user, String roleName,
       ProcessModel processModel) throws WorkflowException;

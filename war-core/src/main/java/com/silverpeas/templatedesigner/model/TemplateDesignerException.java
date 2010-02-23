@@ -26,7 +26,7 @@ package com.silverpeas.templatedesigner.model;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class TemplateDesignerException extends SilverpeasException {
-  
+
   private static final long serialVersionUID = 8766639903297162905L;
 
   /**

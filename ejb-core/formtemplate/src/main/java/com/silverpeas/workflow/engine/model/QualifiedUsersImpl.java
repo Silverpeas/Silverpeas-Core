@@ -33,9 +33,8 @@ import com.silverpeas.workflow.api.model.RelatedUser;
 import com.silverpeas.workflow.api.model.UserInRole;
 
 /**
- * Class implementing the representation of the &lt;allowedUsers&gt;,
- * &lt;workingUsers&gt;, &lt;notifiedUsers&gt; and &lt;interestedUsers&gt;
- * elements of a Process Model.
+ * Class implementing the representation of the &lt;allowedUsers&gt;, &lt;workingUsers&gt;,
+ * &lt;notifiedUsers&gt; and &lt;interestedUsers&gt; elements of a Process Model.
  **/
 public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
   private Vector userInRoleList;
@@ -54,7 +53,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /**
    * Get the userInRoles
-   * 
    * @return the userInRoles as a Vector
    */
   public UserInRole getUserInRole(String strRoleName) {
@@ -72,7 +70,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /**
    * Get the userInRoles
-   * 
    * @return the userInRoles as an array
    */
   public UserInRole[] getUserInRoles() {
@@ -81,9 +78,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.QualifiedUsers#addUserInRole(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.QualifiedUsers#addUserInRole(com.silverpeas
    * .workflow.api.model.UserInRole)
    */
   public void addUserInRole(UserInRole user) {
@@ -92,7 +87,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#createUserInRole()
    */
   public UserInRole createUserInRole() {
@@ -101,7 +95,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#iterateUserInRole()
    */
   public Iterator iterateUserInRole() {
@@ -110,7 +103,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#removeUserInRoles()
    */
   public void removeUserInRoles() {
@@ -119,7 +111,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /**
    * Get the participants and related users
-   * 
    * @return the participants and related users as an array
    */
   public RelatedUser[] getRelatedUsers() {
@@ -128,9 +119,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.QualifiedUsers#getRelatedUser(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.QualifiedUsers#getRelatedUser(com.silverpeas
    * .workflow.api.model.RelatedUser)
    */
   public RelatedUser getRelatedUser(RelatedUser relatedUser) {
@@ -144,9 +133,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.QualifiedUsers#addRelatedUser(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.QualifiedUsers#addRelatedUser(com.silverpeas
    * .workflow.api.model.RelatedUser)
    */
   public void addRelatedUser(RelatedUser user) {
@@ -155,7 +142,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#createRelatedUser()
    */
   public RelatedUser createRelatedUser() {
@@ -164,7 +150,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#iterateRelatedUser()
    */
   public Iterator iterateRelatedUser() {
@@ -173,10 +158,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.QualifiedUsers#removeRelatedUser(RelatedUser
-   * )
+   * @see com.silverpeas.workflow.api.model.QualifiedUsers#removeRelatedUser(RelatedUser )
    */
   public void removeRelatedUser(RelatedUser reference) throws WorkflowException {
     if (!relatedUserList.remove(reference))
@@ -195,28 +177,22 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.QualifiedUsers#setRole(java.lang.String)
+   * @see com.silverpeas.workflow.api.model.QualifiedUsers#setRole(java.lang.String)
    */
   public void setRole(String role) {
     this.role = role;
   }
 
   /**
-   * Get the message associated to the related users (only used for
-   * notification)
+   * Get the message associated to the related users (only used for notification)
    */
   public String getMessage() {
     return this.message;
   }
 
   /**
-   * Set the message associated to the related users (only used for
-   * notification)
-   * 
-   * @param message
-   *          message as a String
+   * Set the message associated to the related users (only used for notification)
+   * @param message message as a String
    */
   public void setMessage(String message) {
     this.message = message;
@@ -231,9 +207,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /**
    * Set the user id used as sender for message.
-   * 
-   * @param senderId
-   *          the user id
+   * @param senderId the user id
    */
   public void setSenderId(String senderId) {
     this.senderId = senderId;

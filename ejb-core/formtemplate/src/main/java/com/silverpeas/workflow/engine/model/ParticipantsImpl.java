@@ -33,8 +33,7 @@ import com.silverpeas.workflow.api.model.Participant;
 import com.silverpeas.workflow.api.model.Participants;
 
 /**
- * Class implementing the representation of the &lt;participants&gt; element of
- * a Process Model.
+ * Class implementing the representation of the &lt;participants&gt; element of a Process Model.
  **/
 public class ParticipantsImpl implements Serializable, Participants {
   private List participantList;
@@ -48,9 +47,7 @@ public class ParticipantsImpl implements Serializable, Participants {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Participants#addParticipant(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.Participants#addParticipant(com.silverpeas
    * .workflow.api.model.Participant)
    */
   public void addParticipant(Participant participant) {
@@ -59,7 +56,6 @@ public class ParticipantsImpl implements Serializable, Participants {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Participants#createParticipant()
    */
   public Participant createParticipant() {
@@ -68,7 +64,6 @@ public class ParticipantsImpl implements Serializable, Participants {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Participants#getParticipants()
    */
   public Participant[] getParticipants() {
@@ -80,9 +75,7 @@ public class ParticipantsImpl implements Serializable, Participants {
 
   /**
    * Get the participant with given name
-   * 
-   * @param name
-   *          participant name
+   * @param name participant name
    * @return wanted participant
    */
   public Participant getParticipant(String name) {
@@ -101,7 +94,6 @@ public class ParticipantsImpl implements Serializable, Participants {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Participants#iterateParticipant()
    */
   public Iterator iterateParticipant() {
@@ -110,10 +102,7 @@ public class ParticipantsImpl implements Serializable, Participants {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Participants#removeParticipant(java.lang
-   * .String)
+   * @see com.silverpeas.workflow.api.model.Participants#removeParticipant(java.lang .String)
    */
   public void removeParticipant(String strParticipantName)
       throws WorkflowException {

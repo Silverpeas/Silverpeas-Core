@@ -33,7 +33,6 @@ import java.util.Date;
 
 /**
  * A Question object represents a question asked for the instance
- * 
  * @table SB_Workflow_Question
  * @depends com.silverpeas.workflow.engine.instance.ProcessInstanceImpl
  * @key-generator MAX
@@ -46,8 +45,8 @@ public class QuestionImpl implements Question {
   }
 
   /**
-   * a Question object is build from - its content, - the source state name, -
-   * the target state name - and the instance where the question was asked
+   * a Question object is build from - its content, - the source state name, - the target state name
+   * - and the instance where the question was asked
    */
   public QuestionImpl(ProcessInstance processInstance, String questionText,
       String fromState, String targetState, User fromUser, User toUser) {
@@ -258,8 +257,8 @@ public class QuestionImpl implements Question {
   }
 
   /**
-   * Has this question been answered and taken in account, if yes, so it's not
-   * relevant anymore (return false)
+   * Has this question been answered and taken in account, if yes, so it's not relevant anymore
+   * (return false)
    */
   public boolean isRelevant() {
     return relevant;
@@ -274,7 +273,6 @@ public class QuestionImpl implements Question {
 
   /**
    * Set the relevant status of this question
-   * 
    * @see isRelevant()
    */
   public void setRelevant(boolean relevant) {
@@ -287,7 +285,6 @@ public class QuestionImpl implements Question {
 
   /**
    * the question Id
-   * 
    * @field-name id
    * @sql-type integer
    * @primary-key
@@ -296,7 +293,6 @@ public class QuestionImpl implements Question {
 
   /**
    * the process instance where the question was asked
-   * 
    * @field-name processInstance
    * @field-type com.silverpeas.workflow.engine.instance.ProcessInstanceImpl
    * @sql-name instanceId
@@ -305,7 +301,6 @@ public class QuestionImpl implements Question {
 
   /**
    * state where the question was asked
-   * 
    * @field-name fromState
    * @get-method getFromStateName
    * @set-method setFromStateName
@@ -314,7 +309,6 @@ public class QuestionImpl implements Question {
 
   /**
    * destination state for the question
-   * 
    * @field-name targetState
    * @get-method getTargetStateName
    * @set-method setTargetStateName
@@ -323,21 +317,18 @@ public class QuestionImpl implements Question {
 
   /**
    * question content
-   * 
    * @field-name questionText
    */
   private String questionText = null;
 
   /**
    * response content
-   * 
    * @field-name responseText
    */
   private String responseText = null;
 
   /**
    * date when question was asked
-   * 
    * @field-name questionDate
    * @sql-type timestamp
    */
@@ -345,16 +336,13 @@ public class QuestionImpl implements Question {
 
   /**
    * date when question was answered
-   * 
    * @field-name responseDate
    * @sql-type timestamp
    */
   private Date responseDate = null;
 
   /**
-   * Has this response been taken in account, if yes, so it's not relevant
-   * anymore (return false)
-   * 
+   * Has this response been taken in account, if yes, so it's not relevant anymore (return false)
    * @field-name relevant
    * @get-method isRelevant
    * @set-method setRelevant
@@ -363,14 +351,12 @@ public class QuestionImpl implements Question {
 
   /**
    * The id of user who asked this question
-   * 
    * @field-name fromUserId
    */
   private String fromUserId = null;
 
   /**
    * The id of user who received this question
-   * 
    * @field-name toUserId
    */
   private String toUserId = null;

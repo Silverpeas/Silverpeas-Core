@@ -27,8 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Interface describing a representation of the &lt;triggers&gt; element of a
- * Process Model.
+ * Interface describing a representation of the &lt;triggers&gt; element of a Process Model.
  */
 public interface Triggers {
 
@@ -39,22 +38,18 @@ public interface Triggers {
 
   /**
    * Iterate through the Trigger objects
-   * 
    * @return an iterator
    */
   public Iterator iterateTrigger();
 
   /**
    * Add a trigger to the collection
-   * 
-   * @param trigger
-   *          to be added
+   * @param trigger to be added
    */
   public void addTrigger(Trigger trigger);
 
   /**
    * Create a trigger
-   * 
    * @return an object implementing Trigger
    */
   public Trigger createTrigger();

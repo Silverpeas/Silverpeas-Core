@@ -1916,7 +1916,7 @@ public class WorkflowDesignerRequestRouter extends ComponentRequestRouter {
       String strContext = request.getParameter("context"), strName = request
           .getParameter("name"), strValue = request.getParameter("value"), strNameOriginal =
           request
-              .getParameter("name_original");
+          .getParameter("name_original");
       Item item = workflowDesignerSC.findItem(strContext);
       Parameter parameter;
 

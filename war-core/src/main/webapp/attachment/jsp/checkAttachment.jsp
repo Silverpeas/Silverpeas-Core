@@ -101,8 +101,7 @@ private FileItem getUploadedFile(List items, String parameterName)
 
 private boolean runOnUnix()
 {
-	ResourceLocator	settings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-	return SilverpeasSettings.readBoolean(settings, "runOnSolaris", false);
+	return !com.silverpeas.util.FileUtil.isWindows();
 }
 
 private boolean isFileSharingEnable(MainSessionController msc, String componentId)

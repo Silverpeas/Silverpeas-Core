@@ -24,8 +24,7 @@
 package com.silverpeas.workflow.api.model;
 
 /**
- * Interface describing a representation of the &lt;userInRole&gt; element of a
- * Process Model.
+ * Interface describing a representation of the &lt;userInRole&gt; element of a Process Model.
  */
 public interface UserInRole {
   /**
@@ -35,7 +34,6 @@ public interface UserInRole {
 
   /**
    * Set name of the role
-   * 
    * @param roleName
    */
   public void setRoleName(String roleName);

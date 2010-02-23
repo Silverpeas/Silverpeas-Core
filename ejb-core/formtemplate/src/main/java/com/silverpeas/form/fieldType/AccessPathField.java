@@ -44,7 +44,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * An AccessPathField stores the current access path of the form
- * 
  * @see Field
  * @see FieldDisplayer
  */

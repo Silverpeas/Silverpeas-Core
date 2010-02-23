@@ -31,11 +31,9 @@ import com.silverpeas.workflow.api.model.RelatedUser;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;relatedUser&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
  **/
-public class RelatedUserImpl extends AbstractReferrableObject implements
-    RelatedUser, Serializable {
+public class RelatedUserImpl extends AbstractReferrableObject implements RelatedUser, Serializable {
   private Participant participant;
   private Item folderItem;
   private String relation;
@@ -57,9 +55,7 @@ public class RelatedUserImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.RelatedUser#setParticipant(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.RelatedUser#setParticipant(com.silverpeas
    * .workflow.api.model.Participant)
    */
   public void setParticipant(Participant participant) {
@@ -75,9 +71,7 @@ public class RelatedUserImpl extends AbstractReferrableObject implements
 
   /**
    * Set the referred item
-   * 
-   * @param folderItem
-   *          item to refer
+   * @param folderItem item to refer
    */
   public void setFolderItem(Item folderItem) {
     this.folderItem = folderItem;
@@ -92,9 +86,7 @@ public class RelatedUserImpl extends AbstractReferrableObject implements
 
   /**
    * Set the relation between user and participant
-   * 
-   * @param relation
-   *          relation as a String
+   * @param relation relation as a String
    */
   public void setRelation(String relation) {
     this.relation = relation;
@@ -102,7 +94,6 @@ public class RelatedUserImpl extends AbstractReferrableObject implements
 
   /**
    * Get the role to which the related user will be affected
-   * 
    * @return the role name
    */
   public String getRole() {
@@ -111,9 +102,7 @@ public class RelatedUserImpl extends AbstractReferrableObject implements
 
   /**
    * Set the role to which the related user will be affected
-   * 
-   * @param role
-   *          role as a String
+   * @param role role as a String
    */
   public void setRole(String role) {
     this.role = role;

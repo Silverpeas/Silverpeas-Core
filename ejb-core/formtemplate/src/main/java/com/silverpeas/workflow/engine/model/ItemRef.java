@@ -34,11 +34,10 @@ import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;input&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;input&gt; element of a Process Model.
  **/
-public class ItemRef extends AbstractReferrableObject implements Input,
-    AbstractDescriptor, Serializable {
+public class ItemRef extends AbstractReferrableObject implements Input, AbstractDescriptor,
+    Serializable {
 
   private Item item;
   private boolean readonly = false; // only used in forms construction
@@ -77,7 +76,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Get value of readOnly attribute
-   * 
    * @return true if item must be readonly
    */
   public boolean isReadonly() {
@@ -86,7 +84,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Get value of mandatory attribute
-   * 
    * @return true if item must be filled
    */
   public boolean isMandatory() {
@@ -95,7 +92,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Get name of displayer used to show the item
-   * 
    * @return displayer name
    */
   public String getDisplayerName() {
@@ -104,7 +100,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Get default value
-   * 
    * @return default value
    */
   public String getValue() {
@@ -113,9 +108,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Set the referred item
-   * 
-   * @param item
-   *          Item to refer
+   * @param item Item to refer
    */
   public void setItem(Item item) {
     this.item = item;
@@ -130,9 +123,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Set value of mandatory attribute
-   * 
-   * @param mandatory
-   *          true if item must be filled
+   * @param mandatory true if item must be filled
    */
   public void setMandatory(boolean mandatory) {
     this.mandatory = mandatory;
@@ -140,9 +131,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Set name of displayer used to show the item
-   * 
-   * @param displayerName
-   *          displayer name
+   * @param displayerName displayer name
    */
   public void setDisplayerName(String displayerName) {
     this.displayerName = displayerName;
@@ -150,9 +139,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /**
    * Set default value
-   * 
-   * @param value
-   *          default value
+   * @param value default value
    */
   public void setValue(String value) {
     this.value = value;
@@ -160,7 +147,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Input#getLabels()
    */
   public ContextualDesignations getLabels() {
@@ -169,9 +155,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.silverpeas.workflow.api.model.Input#getLabel(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.Input#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
     return labels.getLabel(role, language);
@@ -179,9 +163,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Input#addLabel(com.silverpeas.workflow
+   * @see com.silverpeas.workflow.api.model.Input#addLabel(com.silverpeas.workflow
    * .api.model.ContextualDesignation)
    */
   public void addLabel(ContextualDesignation label) {
@@ -190,7 +172,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Input#iterateLabel()
    */
   public Iterator iterateLabel() {
@@ -199,7 +180,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Input#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -208,7 +188,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {
@@ -230,7 +209,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setId(int)
    */
   public void setId(int id) {
@@ -240,7 +218,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getId()
    */
   public int getId() {
@@ -249,9 +226,7 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
    * .workflow.api.model.AbstractDescriptor)
    */
   public void setParent(AbstractDescriptor parent) {
@@ -260,7 +235,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getParent()
    */
   public AbstractDescriptor getParent() {
@@ -269,7 +243,6 @@ public class ItemRef extends AbstractReferrableObject implements Input,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#hasId()
    */
   public boolean hasId() {

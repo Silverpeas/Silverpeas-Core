@@ -63,8 +63,7 @@ public class CreationTaskImpl extends AbstractTaskImpl {
   }
 
   /**
-   * Returns the action names list from which the user must choose to resolve
-   * the activity.
+   * Returns the action names list from which the user must choose to resolve the activity.
    */
   public String[] getActionNames() {
     return actionNames;

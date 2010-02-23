@@ -26,50 +26,40 @@ package com.silverpeas.workflow.api.model;
 import java.util.Iterator;
 
 /**
- * Interface describing a representation of the &lt;state&gt; element of a
- * Process Model.
+ * Interface describing a representation of the &lt;state&gt; element of a Process Model.
  */
 public interface State {
   /**
    * Get the name of this state
-   * 
    * @return state's name
    */
   public String getName();
 
   /**
    * Set the name of this state
-   * 
-   * @param state
-   *          's name
+   * @param state 's name
    */
   public void setName(String name);
 
   /**
    * Get label in specific language for the given role
-   * 
-   * @param lang
-   *          label's language
-   * @param role
-   *          role for which the label is
-   * @return wanted label as a String object. If label is not found, search
-   *         label with given role and default language, if not found again,
-   *         return the default label in given language, if not found again,
-   *         return the default label in default language, if not found again,
-   *         return empty string.
+   * @param lang label's language
+   * @param role role for which the label is
+   * @return wanted label as a String object. If label is not found, search label with given role
+   * and default language, if not found again, return the default label in given language, if not
+   * found again, return the default label in default language, if not found again, return empty
+   * string.
    */
   public String getLabel(String role, String language);
 
   /**
    * Get all the labels
-   * 
    * @return an object containing the collection of the labels
    */
   public ContextualDesignations getLabels();
 
   /**
    * Iterate through the Labels
-   * 
    * @return an iterator
    */
   public Iterator iterateLabel();
@@ -80,36 +70,29 @@ public interface State {
   public void addLabel(ContextualDesignation label);
 
   /**
-   * Create an object implementing ContextualDesignation Method needed primarily
-   * by Castor
+   * Create an object implementing ContextualDesignation Method needed primarily by Castor
    */
   public ContextualDesignation createDesignation();
 
   /**
    * Get activity in specific language for the given role
-   * 
-   * @param lang
-   *          activity's language
-   * @param role
-   *          role for which the activity is
-   * @return wanted activity as a String object. If activity is not found,
-   *         search activity with given role and default language, if not found
-   *         again, return the default activity in given language, if not found
-   *         again, return the default activity in default language, if not
-   *         found again, return empty string.
+   * @param lang activity's language
+   * @param role role for which the activity is
+   * @return wanted activity as a String object. If activity is not found, search activity with
+   * given role and default language, if not found again, return the default activity in given
+   * language, if not found again, return the default activity in default language, if not found
+   * again, return empty string.
    */
   public String getActivity(String role, String language);
 
   /**
    * Get all the activities
-   * 
    * @return an object containing the collection of the activities
    */
   public ContextualDesignations getActivities();
 
   /**
    * Iterate through the activities
-   * 
    * @return an iterator
    */
   public Iterator iterateActivity();
@@ -121,29 +104,23 @@ public interface State {
 
   /**
    * Get description in specific language for the given role
-   * 
-   * @param lang
-   *          description's language
-   * @param role
-   *          role for which the description is
-   * @return wanted description as a String object. If description is not found,
-   *         search description with given role and default language, if not
-   *         found again, return the default description in given language, if
-   *         not found again, return the default description in default
-   *         language, if not found again, return empty string.
+   * @param lang description's language
+   * @param role role for which the description is
+   * @return wanted description as a String object. If description is not found, search description
+   * with given role and default language, if not found again, return the default description in
+   * given language, if not found again, return the default description in default language, if not
+   * found again, return empty string.
    */
   public String getDescription(String role, String language);
 
   /**
    * Get all the descriptions
-   * 
    * @return an object containing the collection of the descriptions
    */
   public ContextualDesignations getDescriptions();
 
   /**
    * Iterate through the descriptions
-   * 
    * @return an iterator
    */
   public Iterator iterateDescription();
@@ -160,7 +137,6 @@ public interface State {
 
   /**
    * Get actions available in this state
-   * 
    * @return allowedActions allowed actions
    */
   public Action[] getAllowedActions();
@@ -169,7 +145,6 @@ public interface State {
 
   /**
    * Get all the allowed actions
-   * 
    * @return an object containing the collection of the allowed actions
    */
   public AllowedActions getAllowedActionsEx();
@@ -188,17 +163,15 @@ public interface State {
 
   /**
    * Get all the users interested by this state
-   * 
-   * @return QualifiedUsers object containing interested users, or an empty
-   *         QualifiedUsers object but never <code>null</code>
+   * @return QualifiedUsers object containing interested users, or an empty QualifiedUsers object but
+   * never <code>null</code>
    */
   public QualifiedUsers getInterestedUsers();
 
   /**
    * Get all the users interested by this state
-   * 
-   * @return QualifiedUsers object containing interested users, or
-   *         <code>null</code> if none are defined
+   * @return QualifiedUsers object containing interested users, or <code>null</code> if none are
+   * defined
    */
   public QualifiedUsers getInterestedUsersEx();
 
@@ -209,17 +182,14 @@ public interface State {
 
   /**
    * Get all the users who can act in this state
-   * 
-   * @return QualifiedUsers object containing theses users, or an empty
-   *         QualifiedUsers object but never <code>null</code>
+   * @return QualifiedUsers object containing theses users, or an empty QualifiedUsers object but
+   * never <code>null</code>
    */
   public QualifiedUsers getWorkingUsers();
 
   /**
    * Get all the users who can act in this state
-   * 
-   * @return QualifiedUsers object containing theses users, or <code>null</code>
-   *         if none are defined
+   * @return QualifiedUsers object containing theses users, or <code>null</code> if none are defined
    */
   public QualifiedUsers getWorkingUsersEx();
 
@@ -230,56 +200,44 @@ public interface State {
 
   /**
    * Get the timeout interval of this state
-   * 
    * @return timeoutInterval interval in hours (as a int)
    */
   public int getTimeoutInterval();
 
   /**
    * Set the timeout interval of this state
-   * 
-   * @param iHours
-   *          interval in hours (as a int)
+   * @param iHours interval in hours (as a int)
    */
   public void setTimeoutInterval(int iHours);
 
   /**
-   * Get the timeout action of this state Action that will played if timeout is
-   * trigerred
-   * 
+   * Get the timeout action of this state Action that will played if timeout is trigerred
    * @return timeout action
    */
   public Action getTimeoutAction();
 
   /**
-   * Set the timeout action of this state Action that will played if timeout is
-   * trigerred
-   * 
-   * @param timeoutAction
-   *          timeout action
+   * Set the timeout action of this state Action that will played if timeout is trigerred
+   * @param timeoutAction timeout action
    */
   public void setTimeoutAction(Action timeoutAction);
 
   /**
-   * Get flag for admin notification if true, the timeout manager will send a
-   * notification to all supervisors
-   * 
+   * Get flag for admin notification if true, the timeout manager will send a notification to all
+   * supervisors
    * @return admin notification flag
    */
   public boolean getTimeoutNotifyAdmin();
 
   /**
-   * Set flag for admin notification if true, the timeout manager will send a
-   * notification to all supervisors
-   * 
-   * @param admin
-   *          notification flag
+   * Set flag for admin notification if true, the timeout manager will send a notification to all
+   * supervisors
+   * @param admin notification flag
    */
   public void setTimeoutNotifyAdmin(boolean timeoutAction);
 
   /**
    * Get the pre-conditions to enter this state
-   * 
    * @return state's Preconditions object containing re-conditions
    */
   // public Preconditions getPreconditions()

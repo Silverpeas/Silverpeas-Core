@@ -33,7 +33,6 @@ import com.silverpeas.workflow.api.user.User;
 
 /**
  * ProcessInstanceDataRecord
- * 
  */
 public class ProcessInstanceRowRecord implements DataRecord {
   /**
@@ -112,7 +111,6 @@ public class ProcessInstanceRowRecord implements DataRecord {
 
   /**
    * Returns the named field.
-   * 
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException {
@@ -121,7 +119,6 @@ public class ProcessInstanceRowRecord implements DataRecord {
 
   /**
    * Returns the field at the index position in the record.
-   * 
    * @throw FormException when the fieldIndex is unknown.
    */
   public Field getField(int fieldIndex) throws FormException {

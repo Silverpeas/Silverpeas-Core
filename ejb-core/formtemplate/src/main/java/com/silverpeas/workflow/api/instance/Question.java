@@ -94,8 +94,8 @@ public interface Question {
   public boolean hasResponse();
 
   /**
-   * Has this question been answered and taken in account, if yes, so it's not
-   * relevant anymore (return false)
+   * Has this question been answered and taken in account, if yes, so it's not relevant anymore
+   * (return false)
    */
   public boolean isRelevant();
 

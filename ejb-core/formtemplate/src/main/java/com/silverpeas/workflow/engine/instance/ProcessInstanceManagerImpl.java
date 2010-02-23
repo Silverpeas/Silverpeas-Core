@@ -60,10 +60,10 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 /**
  * A ProcessInstanceManager implementation
  */
-public class ProcessInstanceManagerImpl implements
-    UpdatableProcessInstanceManager {
+public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager {
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
-  private static String COLUMNS = " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
+  private static String COLUMNS =
+      " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
 
   /**
    * @return the DB connection
@@ -80,84 +80,54 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * Get the list of process instances for a given peas Id, user and role.
-   * 
-   * @param peasId
-   *          id of processManager instance
-   * @param user
-   *          user for who the process instance list is
-   * @param role
-   *          role name of the user for who the process instance list is (useful
-   *          when user has different roles)
+   * @param peasId id of processManager instance
+   * @param user user for who the process instance list is
+   * @param role role name of the user for who the process instance list is (useful when user has
+   * different roles)
    * @return an array of ProcessInstance objects
    */
   /*
-   * public ProcessInstance[] getProcessInstances(String peasId, User user,
-   * String role) throws WorkflowException { Database db = null; Connection con
-   * = null; PreparedStatement prepStmt = null; ResultSet rs = null; String
-   * selectQuery = ""; OQLQuery query = null; QueryResults results; Vector
-   * instances = new Vector();
-   * 
-   * try { // Constructs the query db = WorkflowJDOManager.getDatabase(true); //
-   * db = JDOManager.getDatabase(false); db.begin();
-   * 
-   * // Need first to make a SQL query to find all concerned instances ids //
-   * Due to the operator EXISTS that is not yet supported by Castor OQL->SQL
-   * translator con = this.getConnection();
-   * 
-   * if (role.equals("supervisor")) { selectQuery =
-   * "select DISTINCT instanceId from SB_Workflow_ProcessInstance instance where modelId = ?"
-   * ; prepStmt = con.prepareStatement(selectQuery); prepStmt.setString(1,
-   * peasId); } else { selectQuery =
+   * public ProcessInstance[] getProcessInstances(String peasId, User user, String role) throws
+   * WorkflowException { Database db = null; Connection con = null; PreparedStatement prepStmt =
+   * null; ResultSet rs = null; String selectQuery = ""; OQLQuery query = null; QueryResults
+   * results; Vector instances = new Vector(); try { // Constructs the query db =
+   * WorkflowJDOManager.getDatabase(true); // db = JDOManager.getDatabase(false); db.begin(); //
+   * Need first to make a SQL query to find all concerned instances ids // Due to the operator
+   * EXISTS that is not yet supported by Castor OQL->SQL translator con = this.getConnection(); if
+   * (role.equals("supervisor")) { selectQuery =
+   * "select DISTINCT instanceId from SB_Workflow_ProcessInstance instance where modelId = ?" ;
+   * prepStmt = con.prepareStatement(selectQuery); prepStmt.setString(1, peasId); } else {
+   * selectQuery =
    * "select DISTINCT instanceId from SB_Workflow_ProcessInstance instance where modelId = ? and exists "
    * ; selectQuery +=
    * "( select instanceId from SB_Workflow_InterestedUser intUser where userId = ? and role = ? and instance.instanceId = intUser.instanceId "
    * ; selectQuery += "UNION "; selectQuery +=
    * "select instanceId from SB_Workflow_WorkingUser wkUser where userId = ? and role = ?  and instance.instanceId = wkUser.instanceId)"
-   * ; prepStmt = con.prepareStatement(selectQuery); prepStmt.setString(1,
-   * peasId); prepStmt.setString(2, user.getUserId()); prepStmt.setString(3,
-   * role); prepStmt.setString(4, user.getUserId()); prepStmt.setString(5,
-   * role); } rs = prepStmt.executeQuery();
-   * 
-   * StringBuffer queryBuf = new StringBuffer(); queryBuf.append(
+   * ; prepStmt = con.prepareStatement(selectQuery); prepStmt.setString(1, peasId);
+   * prepStmt.setString(2, user.getUserId()); prepStmt.setString(3, role); prepStmt.setString(4,
+   * user.getUserId()); prepStmt.setString(5, role); } rs = prepStmt.executeQuery(); StringBuffer
+   * queryBuf = new StringBuffer(); queryBuf.append(
    * "SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance"
-   * ); queryBuf.append(" WHERE instanceId IN LIST(");
-   * 
-   * while (rs.next()) { String instanceId = rs.getString(1);
-   * queryBuf.append("\""); queryBuf.append(instanceId); queryBuf.append("\"");
-   * queryBuf.append(" ,"); } queryBuf.append(" \"-1\")");
-   * 
-   * query = db.getOQLQuery(queryBuf.toString());
-   * 
-   * // Execute the query try { //results =
+   * ); queryBuf.append(" WHERE instanceId IN LIST("); while (rs.next()) { String instanceId =
+   * rs.getString(1); queryBuf.append("\""); queryBuf.append(instanceId); queryBuf.append("\"");
+   * queryBuf.append(" ,"); } queryBuf.append(" \"-1\")"); query =
+   * db.getOQLQuery(queryBuf.toString()); // Execute the query try { //results =
    * query.execute(org.exolab.castor.jdo.Database.ReadOnly); results =
-   * query.execute(Database.ReadOnly);
-   * 
-   * // get the instance if any while (results.hasMore()) { ProcessInstance
-   * instance = (ProcessInstance) results.next(); if
-   * (!instances.contains(instance)) instances.add(instance); } } catch
-   * (Exception ex) { SilverTrace.warn( "workflowEngine",
-   * "ProcessInstanceManagerImpl",
-   * "workflowEngine.EX_PROBLEM_GETTING_INSTANCES", ex); }
-   * 
-   * db.commit();
-   * 
-   * SilverTrace.info( "workflowEngine", "ProcessInstanceManagerImpl",
-   * "root.MSG_GEN_PARAM_VALUE", " query : " + queryBuf.toString());
-   * SilverTrace.info( "workflowEngine", "ProcessInstanceManagerImpl",
-   * "root.MSG_GEN_PARAM_VALUE", " nb instances : " + instances.size()); return
-   * (ProcessInstance[]) instances.toArray(new ProcessInstance[0]); } catch
-   * (SQLException se) { throw new WorkflowException(
-   * "ProcessInstanceManagerImpl.getProcessInstances",
-   * "EX_ERR_CASTOR_GET_INSTANCES", "sql query : " + selectQuery, se); } catch
-   * (PersistenceException pe) { throw new WorkflowException(
-   * "ProcessInstanceManagerImpl.getProcessInstances",
-   * "EX_ERR_CASTOR_GET_INSTANCES", pe); } finally {
-   * WorkflowJDOManager.closeDatabase(db);
-   * 
-   * try { DBUtil.close(rs, prepStmt); if (con != null) con.close(); } catch
-   * (SQLException se) { SilverTrace.error( "workflowEngine",
-   * "ProcessInstanceManagerImpl.getProcessInstances",
-   * "root.EX_RESOURCE_CLOSE_FAILED", se); } } }
+   * query.execute(Database.ReadOnly); // get the instance if any while (results.hasMore()) {
+   * ProcessInstance instance = (ProcessInstance) results.next(); if (!instances.contains(instance))
+   * instances.add(instance); } } catch (Exception ex) { SilverTrace.warn( "workflowEngine",
+   * "ProcessInstanceManagerImpl", "workflowEngine.EX_PROBLEM_GETTING_INSTANCES", ex); }
+   * db.commit(); SilverTrace.info( "workflowEngine", "ProcessInstanceManagerImpl",
+   * "root.MSG_GEN_PARAM_VALUE", " query : " + queryBuf.toString()); SilverTrace.info(
+   * "workflowEngine", "ProcessInstanceManagerImpl", "root.MSG_GEN_PARAM_VALUE", " nb instances : "
+   * + instances.size()); return (ProcessInstance[]) instances.toArray(new ProcessInstance[0]); }
+   * catch (SQLException se) { throw new WorkflowException(
+   * "ProcessInstanceManagerImpl.getProcessInstances", "EX_ERR_CASTOR_GET_INSTANCES", "sql query : "
+   * + selectQuery, se); } catch (PersistenceException pe) { throw new WorkflowException(
+   * "ProcessInstanceManagerImpl.getProcessInstances", "EX_ERR_CASTOR_GET_INSTANCES", pe); } finally
+   * { WorkflowJDOManager.closeDatabase(db); try { DBUtil.close(rs, prepStmt); if (con != null)
+   * con.close(); } catch (SQLException se) { SilverTrace.error( "workflowEngine",
+   * "ProcessInstanceManagerImpl.getProcessInstances", "root.EX_RESOURCE_CLOSE_FAILED", se); } } }
    */
 
   public ProcessInstance[] getProcessInstances(String peasId, User user,
@@ -183,9 +153,11 @@ public class ProcessInstanceManagerImpl implements
             + " from SB_Workflow_ProcessInstance I ";
         selectQuery += "where I.modelId = ? ";
         selectQuery += "and exists (";
-        selectQuery += "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and intUser.userId = ? and intUser.role = ? ";
+        selectQuery +=
+            "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and intUser.userId = ? and intUser.role = ? ";
         selectQuery += "union ";
-        selectQuery += "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and wkUser.userId = ? and wkUser.role = ? ";
+        selectQuery +=
+            "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and wkUser.userId = ? and wkUser.role = ? ";
         selectQuery += ")";
         selectQuery += "order by I.instanceId desc";
 
@@ -286,13 +258,9 @@ public class ProcessInstanceManagerImpl implements
   }
 
   /**
-   * Get the list of process instances for a given peas Id, that have the given
-   * state activated and
-   * 
-   * @param peasId
-   *          id of processManager instance
-   * @param state
-   *          activated state
+   * Get the list of process instances for a given peas Id, that have the given state activated and
+   * @param peasId id of processManager instance
+   * @param state activated state
    * @return an array of ProcessInstance objects
    */
   public ProcessInstance[] getProcessInstancesInState(String peasId, State state)
@@ -317,7 +285,8 @@ public class ProcessInstanceManagerImpl implements
       con = this.getConnection();
 
       selectQuery = "SELECT DISTINCT instance.instanceId ";
-      selectQuery += "FROM SB_Workflow_ActiveState activeState, SB_Workflow_ProcessInstance instance ";
+      selectQuery +=
+          "FROM SB_Workflow_ActiveState activeState, SB_Workflow_ProcessInstance instance ";
       selectQuery += "WHERE activeState.state = ? ";
       selectQuery += "AND activeState.timeoutStatus = 0 ";
       selectQuery += "AND instance.instanceId = activeState.instanceId ";
@@ -388,9 +357,7 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * Get the process instances for a given instance id
-   * 
-   * @param instanceId
-   *          id of searched instance
+   * @param instanceId id of searched instance
    * @return the searched process instance
    */
   public ProcessInstance getProcessInstance(String instanceId)
@@ -418,9 +385,7 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * Creates a new process instance
-   * 
-   * @param modelId
-   *          model id
+   * @param modelId model id
    * @return the new ProcessInstance object
    */
   public ProcessInstance createProcessInstance(String modelId)
@@ -434,9 +399,7 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * Removes a new process instance
-   * 
-   * @param instanceId
-   *          instance id
+   * @param instanceId instance id
    */
   public void removeProcessInstance(String instanceId) throws WorkflowException {
     ProcessInstanceImpl instance;
@@ -465,9 +428,7 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * Delete forms data associated with this instance
-   * 
-   * @param instanceId
-   *          instance id
+   * @param instanceId instance id
    */
   private void removeProcessInstanceData(String instanceId)
       throws WorkflowException {
@@ -518,11 +479,8 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * Locks this instance for the given instance and state
-   * 
-   * @param state
-   *          state that have to be locked
-   * @param user
-   *          the locking user
+   * @param state state that have to be locked
+   * @param user the locking user
    */
   public void lock(ProcessInstance instance, State state, User user)
       throws WorkflowException {
@@ -561,11 +519,8 @@ public class ProcessInstanceManagerImpl implements
 
   /**
    * unlocks this instance for the given instance and state
-   * 
-   * @param state
-   *          state that have to be locked
-   * @param user
-   *          the locking user
+   * @param state state that have to be locked
+   * @param user the locking user
    */
   public void unlock(ProcessInstance instance, State state, User user)
       throws WorkflowException {

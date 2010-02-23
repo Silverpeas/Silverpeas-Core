@@ -61,11 +61,10 @@ import com.silverpeas.workflow.api.model.States;
 import com.silverpeas.workflow.api.model.UserInRole;
 
 /**
- * Class implementing the representation of the main &lt;processModel&gt;
- * element of a Process Model.
+ * Class implementing the representation of the main &lt;processModel&gt; element of a Process
+ * Model.
  */
-public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
-    Serializable {
+public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Serializable {
   private String modelId;
   private String name;
   private ContextualDesignations labels;
@@ -97,7 +96,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the id of this process model
-   * 
    * @return process model id
    */
   public String getModelId() {
@@ -106,9 +104,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the id of this process model
-   * 
-   * @param name
-   *          process model id
+   * @param name process model id
    */
   public void setModelId(String modelId) {
     this.modelId = modelId;
@@ -116,7 +112,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the name of this process model
-   * 
    * @return process model's name
    */
   public String getName() {
@@ -125,9 +120,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the name of this process model
-   * 
-   * @param name
-   *          process model's name
+   * @param name process model's name
    */
   public void setName(String name) {
     this.name = name;
@@ -135,7 +128,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the presentation configuration
-   * 
    * @return presentation configuration
    */
   public Presentation getPresentation() {
@@ -144,9 +136,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the presentation configuration for Castor
-   * 
-   * @return presentation configuration if not empty, otherwise
-   *         <code>null</code>
+   * @return presentation configuration if not empty, otherwise <code>null</code>
    */
   public Presentation getPresentationForCastor() {
     if (presentation.iterateColumns().hasNext()
@@ -158,9 +148,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the presentation's configuration
-   * 
-   * @param presentation
-   *          presentation's configuration
+   * @param presentation presentation's configuration
    */
   public void setPresentation(Presentation presentation) {
     this.presentation = presentation;
@@ -168,7 +156,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createPresentation()
    */
   public Presentation createPresentation() {
@@ -177,7 +164,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the participants definition
-   * 
    * @return participants definition
    */
   public Participant[] getParticipants() {
@@ -189,7 +175,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getAllParticipants()
    */
   public Participants getParticipantsEx() {
@@ -198,9 +183,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the participants definition
-   * 
-   * @param participants
-   *          participants definition
+   * @param participants participants definition
    */
   public void setParticipants(Participants participants) {
     this.participants = participants;
@@ -208,7 +191,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createParticipants()
    */
   public Participants createParticipants() {
@@ -217,7 +199,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the roles definition
-   * 
    * @return roles definition
    */
   public Role[] getRoles() {
@@ -229,9 +210,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the role definition with given name
-   * 
-   * @param name
-   *          role name
+   * @param name role name
    * @return wanted role definition
    */
   public Role getRole(String name) {
@@ -243,7 +222,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getAllRoles()
    */
   public Roles getRolesEx() {
@@ -252,9 +230,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the roles definition
-   * 
-   * @param roles
-   *          roles definition
+   * @param roles roles definition
    */
   public void setRoles(Roles roles) {
     this.roles = roles;
@@ -262,7 +238,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createRoles()
    */
   public Roles createRoles() {
@@ -271,7 +246,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the states defined for this process model
-   * 
    * @return states defined for this process model
    */
   public State[] getStates() {
@@ -283,7 +257,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getAllStates()
    */
   public States getStatesEx() {
@@ -292,9 +265,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the state with the given name
-   * 
-   * @param name
-   *          state name
+   * @param name state name
    * @return wanted state
    */
   public State getState(String name) {
@@ -306,9 +277,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the states defined for this process model
-   * 
-   * @param states
-   *          states defined for this process model
+   * @param states states defined for this process model
    */
   public void setStates(States states) {
     this.states = states;
@@ -316,7 +285,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createStates()
    */
   public States createStates() {
@@ -325,7 +293,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the actions defined for this process model
-   * 
    * @return actions defined for this process model
    */
   public Action[] getActions() {
@@ -337,7 +304,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getAllActions()
    */
   public Actions getActionsEx() {
@@ -346,9 +312,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the action with the given name
-   * 
-   * @param name
-   *          action name
+   * @param name action name
    * @return the wanted action
    */
   public Action getAction(String name) throws WorkflowException {
@@ -360,9 +324,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the actions defined for this process model
-   * 
-   * @param actions
-   *          actions defined for this process model
+   * @param actions actions defined for this process model
    */
   public void setActions(Actions actions) {
     this.actions = actions;
@@ -370,7 +332,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createActions()
    */
   public Actions createActions() {
@@ -379,9 +340,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the data folder defined for this process model
-   * 
-   * @return data folder defined for this process model. it contains all the
-   *         items declarations
+   * @return data folder defined for this process model. it contains all the items declarations
    */
   public DataFolder getDataFolder() {
     return dataFolder;
@@ -389,10 +348,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the data folder defined for this process model
-   * 
-   * @param dataFolder
-   *          data folder defined for this process model. it contains all the
-   *          items declarations
+   * @param dataFolder data folder defined for this process model. it contains all the items
+   * declarations
    */
   public void setDataFolder(DataFolder dataFolder) {
     this.dataFolder = dataFolder;
@@ -400,7 +357,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createDataFolder()
    */
   public DataFolder createDataFolder() {
@@ -408,9 +364,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Get the user infos defined for this process model It contains all the items
-   * necessary about user to allow him to use the instance
-   * 
+   * Get the user infos defined for this process model It contains all the items necessary about
+   * user to allow him to use the instance
    * @return user infos defined for this process model.
    */
   public DataFolder getUserInfos() {
@@ -418,11 +373,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Set the user infos defined for this process model It contains all the items
-   * necessary about user to allow him to use the instance
-   * 
-   * @param userInfos
-   *          user infos defined for this process model.
+   * Set the user infos defined for this process model It contains all the items necessary about
+   * user to allow him to use the instance
+   * @param userInfos user infos defined for this process model.
    */
   public void setUserInfos(DataFolder userInfos) {
     this.userInfos = userInfos;
@@ -430,7 +383,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getAllForms()
    */
   public Forms getForms() {
@@ -439,9 +391,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get the form with the given name
-   * 
-   * @param name
-   *          form name
+   * @param name form name
    * @return the wanted form
    */
   public Form getForm(String name) {
@@ -450,10 +400,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.ProcessModel#getForm(java.lang.String,
-   * java.lang.String)
+   * @see com.silverpeas.workflow.api.model.ProcessModel#getForm(java.lang.String, java.lang.String)
    */
   public Form getForm(String name, String role) {
     if (forms == null)
@@ -464,9 +411,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Set the forms defined for this process model
-   * 
-   * @param forms
-   *          forms defined for this process model.
+   * @param forms forms defined for this process model.
    */
   public void setForms(Forms forms) {
     this.forms = forms;
@@ -474,7 +419,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createForms()
    */
   public Forms createForms() {
@@ -487,7 +431,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createDesignation()
    */
   public ContextualDesignation createDesignation() {
@@ -496,7 +439,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getLabels()
    */
   public ContextualDesignations getLabels() {
@@ -505,16 +447,12 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get label in specific language for the given role
-   * 
-   * @param lang
-   *          label's language
-   * @param role
-   *          role for which the label is
-   * @return wanted label as a String object. If label is not found, search
-   *         label with given role and default language, if not found again,
-   *         return the default label in given language, if not found again,
-   *         return the default label in default language, if not found again,
-   *         return empty string.
+   * @param lang label's language
+   * @param role role for which the label is
+   * @return wanted label as a String object. If label is not found, search label with given role
+   * and default language, if not found again, return the default label in given language, if not
+   * found again, return the default label in default language, if not found again, return empty
+   * string.
    */
   public String getLabel(String role, String language) {
     return labels.getLabel(role, language);
@@ -522,9 +460,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.ProcessModel#addLabel(com.silverpeas.
+   * @see com.silverpeas.workflow.api.model.ProcessModel#addLabel(com.silverpeas.
    * workflow.api.model.ContextualDesignation)
    */
   public void addLabel(ContextualDesignation label) {
@@ -533,7 +469,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#iterateLabel()
    */
   public Iterator iterateLabel() {
@@ -546,7 +481,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
@@ -555,16 +489,12 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /**
    * Get description in specific language for the given role
-   * 
-   * @param lang
-   *          description's language
-   * @param role
-   *          role for which the description is
-   * @return wanted description as a String object. If description is not found,
-   *         search description with given role and default language, if not
-   *         found again, return the default description in given language, if
-   *         not found again, return the default description in default
-   *         language, if not found again, return empty string.
+   * @param lang description's language
+   * @param role role for which the description is
+   * @return wanted description as a String object. If description is not found, search description
+   * with given role and default language, if not found again, return the default description in
+   * given language, if not found again, return the default description in default language, if not
+   * found again, return empty string.
    */
   public String getDescription(String role, String language) {
     return descriptions.getLabel(role, language);
@@ -572,9 +502,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.ProcessModel#addDescription(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.ProcessModel#addDescription(com.silverpeas
    * .workflow.api.model.ContextualDesignation)
    */
   public void addDescription(ContextualDesignation description) {
@@ -583,7 +511,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#iterateDescription()
    */
   public Iterator iterateDescription() {
@@ -592,7 +519,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createQualifiedUsers()
    */
   public QualifiedUsers createQualifiedUsers() {
@@ -601,7 +527,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.ProcessModel#createRelatedUser()
    */
   public RelatedUser createRelatedUser() {
@@ -609,30 +534,27 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns the name of the record set where are saved all the folder of the
-   * instance built from this model.
+   * Returns the name of the record set where are saved all the folder of the instance built from
+   * this model.
    */
   public String getFolderRecordSetName() {
     return modelId + ":" + "folder";
   }
 
   /**
-   * Returns the name of the record set where are saved all the data of the
-   * named form.
+   * Returns the name of the record set where are saved all the data of the named form.
    */
   public String getFormRecordSetName(String formName) {
     return modelId + ":" + "form:" + formName;
   }
 
   /**
-   * Returns the record set where are saved all the folder of the instance built
-   * from this model.
+   * Returns the record set where are saved all the folder of the instance built from this model.
    */
   public RecordSet getFolderRecordSet() throws WorkflowException {
     /*
-     * try { return GenericRecordSetManager.getRecordSet(
-     * getFolderRecordSetName()); } catch (FormException e) { throw new
-     * WorkflowException( "ProcessModel", "EXP_UNKNOWN_RECORD_SET",
+     * try { return GenericRecordSetManager.getRecordSet( getFolderRecordSetName()); } catch
+     * (FormException e) { throw new WorkflowException( "ProcessModel", "EXP_UNKNOWN_RECORD_SET",
      * getFolderRecordSetName(), e); }
      */
 
@@ -705,10 +627,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns the form (if any) associated to the named action.
-   * 
-   * Returns null if the action has no form. Throws a WorkflowException if the
-   * action is unknown.
+   * Returns the form (if any) associated to the named action. Returns null if the action has no
+   * form. Throws a WorkflowException if the action is unknown.
    */
   public Form getActionForm(String actionName) throws WorkflowException {
     Action action = getAction(actionName);
@@ -716,8 +636,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns the action of kind create Throws a WorkflowException if there is no
-   * action of type create
+   * Returns the action of kind create Throws a WorkflowException if there is no action of type
+   * create
    */
   public Action getCreateAction() throws WorkflowException {
     Action[] actions = getActions();
@@ -732,11 +652,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns the com.silverpeas.form.Form which be used to publish the form
-   * associated to the named action.
-   * 
-   * Returns null if the action has no form. Throws a WorkflowException if the
-   * action is unknown.
+   * Returns the com.silverpeas.form.Form which be used to publish the form associated to the named
+   * action. Returns null if the action has no form. Throws a WorkflowException if the action is
+   * unknown.
    */
   public com.silverpeas.form.Form getPublicationForm(String actionName,
       String roleName, String lang) throws WorkflowException {
@@ -757,10 +675,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns the com.silverpeas.form.Form which be used to publish the form
-   * associated to the named action or form.
-   * 
-   * Returns null if the action has no form.
+   * Returns the com.silverpeas.form.Form which be used to publish the form associated to the named
+   * action or form. Returns null if the action has no form.
    */
   public com.silverpeas.form.Form getPresentationForm(String name,
       String roleName, String lang) throws WorkflowException {
@@ -794,10 +710,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns an empty com.silverpeas.form.DataRecord which must be filled in
-   * order to process the named action.
-   * 
-   * Returns null if no form is required to process this action. Throws a
+   * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to process the
+   * named action. Returns null if no form is required to process this action. Throws a
    * WorkflowException if the action is unknown.
    */
   public DataRecord getNewActionRecord(String actionName, String roleName,
@@ -815,10 +729,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns an empty com.silverpeas.form.DataRecord which must be filled in
-   * order to fill the user information
-   * 
-   * Throws a WorkflowException if problem encountered.
+   * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to fill the user
+   * information Throws a WorkflowException if problem encountered.
    */
   public DataRecord getNewUserInfosRecord(String roleName, String lang)
       throws WorkflowException {
@@ -866,8 +778,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   }
 
   /**
-   * Returns the recordTemplate which describes the data record of the process
-   * instance built from this model.
+   * Returns the recordTemplate which describes the data record of the process instance built from
+   * this model.
    */
   public RecordTemplate getAllDataTemplate(String role, String lang) {
     RecordTemplate template = (RecordTemplate) instanceDataTemplates.get(role
@@ -884,8 +796,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
   private HashMap instanceDataTemplates = new HashMap();
 
   /**
-   * Returns the recordTemplate which describes the data record used to show
-   * process instance as a row in list.
+   * Returns the recordTemplate which describes the data record used to show process instance as a
+   * row in list.
    */
   public RecordTemplate getRowTemplate(String role, String lang) {
     RecordTemplate template = (RecordTemplate) rowTemplates.get(role + "\n"
@@ -906,7 +818,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setId(int)
    */
   public void setId(int id) {
@@ -916,7 +827,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getId()
    */
   public int getId() {
@@ -925,9 +835,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
    * .workflow.api.model.AbstractDescriptor)
    */
   public void setParent(AbstractDescriptor parent) {
@@ -936,7 +844,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getParent()
    */
   public AbstractDescriptor getParent() {
@@ -945,7 +852,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor,
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#hasId()
    */
   public boolean hasId() {

@@ -33,17 +33,13 @@ import com.silverpeas.form.*;
 public interface UpdatableProcessInstance extends ProcessInstance {
   /**
    * Set the workflow instance id
-   * 
-   * @param instanceId
-   *          instance id
+   * @param instanceId instance id
    */
   public void setInstanceId(String instanceId);
 
   /**
    * Set the workflow model id
-   * 
-   * @param instanceId
-   *          model id
+   * @param instanceId model id
    */
   public void setModelId(String modelId);
 
@@ -58,13 +54,9 @@ public interface UpdatableProcessInstance extends ProcessInstance {
   public void updateHistoryStep(HistoryStep step) throws WorkflowException;
 
   /**
-   * Cancel all the atomic operations since the step where first action had
-   * occured
-   * 
-   * @param state
-   *          the name of state where ac action has been discussed
-   * @param actionDate
-   *          date of state re-resolving
+   * Cancel all the atomic operations since the step where first action had occured
+   * @param state the name of state where ac action has been discussed
+   * @param actionDate date of state re-resolving
    */
   public void reDoState(String state, Date actionDate) throws WorkflowException;
 
@@ -76,11 +68,8 @@ public interface UpdatableProcessInstance extends ProcessInstance {
 
   /**
    * Save a new version of given form (including values)
-   * 
-   * @param step
-   *          the new step
-   * @param formData
-   *          Form's values as a DataRecord object
+   * @param step the new step
+   * @param formData Form's values as a DataRecord object
    */
   public void saveActionRecord(HistoryStep step, DataRecord formData)
       throws WorkflowException;
@@ -119,26 +108,18 @@ public interface UpdatableProcessInstance extends ProcessInstance {
 
   /**
    * Add an user in the interested user list
-   * 
-   * @param user
-   *          user to add
-   * @param state
-   *          state for which the user is interested
-   * @param role
-   *          role name under which the user is interested
+   * @param user user to add
+   * @param state state for which the user is interested
+   * @param role role name under which the user is interested
    */
   public void addInterestedUser(User user, State state, String role)
       throws WorkflowException;
 
   /**
    * Remove an user from the interested user list
-   * 
-   * @param user
-   *          user to remove
-   * @param state
-   *          state for which the user is interested
-   * @param role
-   *          role name under which the user is interested
+   * @param user user to remove
+   * @param state state for which the user is interested
+   * @param role role name under which the user is interested
    */
   public void removeInterestedUser(User user, State state, String role)
       throws WorkflowException;
@@ -155,9 +136,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
 
   /**
    * Set the error status of this instance
-   * 
-   * @param errorStatus
-   *          true if this instance is in error
+   * @param errorStatus true if this instance is in error
    */
   public void setErrorStatus(boolean errorStatus);
 
@@ -167,9 +146,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
 
   /**
    * Cancel a question without response
-   * 
-   * @param question
-   *          the question to cancel
+   * @param question the question to cancel
    */
   public void cancelQuestion(Question question) throws WorkflowException;
 }

@@ -27,10 +27,9 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
- * A ResponseEvent object is the description of a response sent
- * 
- * Those descriptions are sent to the workflow engine by the workflow tools when
- * the user answer a question without re-playing the workflow
+ * A ResponseEvent object is the description of a response sent Those descriptions are sent to the
+ * workflow engine by the workflow tools when the user answer a question without re-playing the
+ * workflow
  */
 public interface ResponseEvent extends GenericEvent {
   /**

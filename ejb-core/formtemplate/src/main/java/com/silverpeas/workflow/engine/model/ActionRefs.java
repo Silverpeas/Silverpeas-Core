@@ -33,8 +33,7 @@ import com.silverpeas.workflow.api.model.AllowedAction;
 import com.silverpeas.workflow.api.model.AllowedActions;
 
 /**
- * Class implementing the representation of the &lt;allowedActions&gt; element
- * of a Process Model.
+ * Class implementing the representation of the &lt;allowedActions&gt; element of a Process Model.
  **/
 public class ActionRefs implements Serializable, AllowedActions {
   private Vector actionRefList;
@@ -48,7 +47,6 @@ public class ActionRefs implements Serializable, AllowedActions {
 
   /*
    * (non-Javadoc)
-   * 
    * @seecom.silverpeas.workflow.api.model.AllowedActions#addAllowedAction(com.
    * silverpeas.workflow.api.model.AllowedAction)
    */
@@ -58,7 +56,6 @@ public class ActionRefs implements Serializable, AllowedActions {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AllowedActions#createAllowedAction()
    */
   public AllowedAction createAllowedAction() {
@@ -67,9 +64,7 @@ public class ActionRefs implements Serializable, AllowedActions {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AllowedActions#iterateAllowedAction()
+   * @see com.silverpeas.workflow.api.model.AllowedActions#iterateAllowedAction()
    */
   public Iterator iterateAllowedAction() {
     return actionRefList.iterator();
@@ -77,7 +72,6 @@ public class ActionRefs implements Serializable, AllowedActions {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AllowedActions#getAllowedActions()
    */
   public Action[] getAllowedActions() {
@@ -97,10 +91,7 @@ public class ActionRefs implements Serializable, AllowedActions {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AllowedActions#getAllowedAction(java.
-   * lang.String)
+   * @see com.silverpeas.workflow.api.model.AllowedActions#getAllowedAction(java. lang.String)
    */
   public AllowedAction getAllowedAction(String strActionName) {
     AllowedAction allowedAction = new ActionRef();
@@ -120,10 +111,7 @@ public class ActionRefs implements Serializable, AllowedActions {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AllowedActions#removeAllowedAction(java
-   * .lang.String)
+   * @see com.silverpeas.workflow.api.model.AllowedActions#removeAllowedAction(java .lang.String)
    */
   public void removeAllowedAction(String strAllowedActionName)
       throws WorkflowException {

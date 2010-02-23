@@ -37,11 +37,10 @@ import com.silverpeas.workflow.api.model.Triggers;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the &lt;consequence&gt; element of a
- * Process Model.
+ * Class implementing the representation of the &lt;consequence&gt; element of a Process Model.
  */
-public class ConsequenceImpl extends AbstractReferrableObject implements
-    Consequence, AbstractDescriptor, Serializable {
+public class ConsequenceImpl extends AbstractReferrableObject implements Consequence,
+    AbstractDescriptor, Serializable {
   private String item;
   private String operator;
   private String value;
@@ -71,10 +70,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Consequence#getTargetState(java.lang.
-   * String)
+   * @see com.silverpeas.workflow.api.model.Consequence#getTargetState(java.lang. String)
    */
   public State getTargetState(String strStateName) {
     for (int i = 0; i < targetStateList.size(); i++)
@@ -87,7 +83,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Get the target states
-   * 
    * @return the target states as a Vector
    */
   public State[] getTargetStates() {
@@ -105,9 +100,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Consequence#addTargetState(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.Consequence#addTargetState(com.silverpeas
    * .workflow.api.model.StateSetter)
    */
   public void addTargetState(StateSetter stateSetter) {
@@ -116,7 +109,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#createStateSetter()
    */
   public StateSetter createStateSetter() {
@@ -125,7 +117,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#iterateTargetState()
    */
   public Iterator iterateTargetState() {
@@ -134,10 +125,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Consequence#getUnsetState(java.lang.String
-   * )
+   * @see com.silverpeas.workflow.api.model.Consequence#getUnsetState(java.lang.String )
    */
   public State getUnsetState(String strStateName) {
     for (int i = 0; i < unsetStateList.size(); i++)
@@ -150,7 +138,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Get the states to unset
-   * 
    * @return the states to unset as a Vector
    */
   public State[] getUnsetStates() {
@@ -168,9 +155,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.Consequence#addUnsetState(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.Consequence#addUnsetState(com.silverpeas
    * .workflow.api.model.StateSetter)
    */
   public void addUnsetState(StateSetter stateSetter) {
@@ -179,7 +164,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#iterateUnsetState()
    */
   public Iterator iterateUnsetState() {
@@ -188,7 +172,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Get the flag that specifies if instance has to be removed
-   * 
    * @return true if instance has to be removed
    */
   public boolean getKill() {
@@ -197,9 +180,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Set the flag that specifies if instance has to be removed
-   * 
-   * @param kill
-   *          true if instance has to be removed
+   * @param kill true if instance has to be removed
    */
   public void setKill(boolean kill) {
     this.kill = kill;
@@ -207,7 +188,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Get all the users that have to be notified
-   * 
    * @return QualifiedUsers object containing notified users
    */
   public QualifiedUsers getNotifiedUsers() {
@@ -219,7 +199,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#getNotifiedUsersEx()
    */
   public QualifiedUsers getNotifiedUsersEx() {
@@ -228,9 +207,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Set all the users that have to be notified
-   * 
-   * @param QualifiedUsers
-   *          object containing notified users
+   * @param QualifiedUsers object containing notified users
    */
   public void setNotifiedUsers(QualifiedUsers notifiedUsers) {
     this.notifiedUsers = notifiedUsers;
@@ -245,7 +222,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#getItem()
    */
   public String getItem() {
@@ -254,7 +230,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#getOperator()
    */
   public String getOperator() {
@@ -263,7 +238,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.Consequence#getValue()
    */
   public String getValue() {
@@ -272,9 +246,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /**
    * Check if the consequence is verified or not
-   * 
-   * @param itemValue
-   *          - the value of the folder item (specified in xml attribute 'item'
+   * @param itemValue - the value of the folder item (specified in xml attribute 'item'
    * @return true if the consequence is verified
    */
   public boolean isVerified(String itemValue) {
@@ -407,7 +379,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setId(int)
    */
   public void setId(int id) {
@@ -417,7 +388,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getId()
    */
   public int getId() {
@@ -426,9 +396,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
+   * @see com.silverpeas.workflow.api.model.AbstractDescriptor#setParent(com.silverpeas
    * .workflow.api.model.AbstractDescriptor)
    */
   public void setParent(AbstractDescriptor parent) {
@@ -437,7 +405,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#getParent()
    */
   public AbstractDescriptor getParent() {
@@ -446,7 +413,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.api.model.AbstractDescriptor#hasId()
    */
   public boolean hasId() {
@@ -455,7 +421,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.silverpeas.workflow.engine.AbstractReferrableObject#getKey()
    */
   public String getKey() {

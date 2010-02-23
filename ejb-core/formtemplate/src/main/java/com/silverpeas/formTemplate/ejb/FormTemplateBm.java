@@ -33,7 +33,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 
 /**
  * Interface declaration
- * 
  * @author neysseri
  */
 public interface FormTemplateBm extends EJBObject {

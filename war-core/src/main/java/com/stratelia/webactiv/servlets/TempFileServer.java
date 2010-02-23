@@ -79,14 +79,14 @@ public class TempFileServer extends HttpServlet {
     if (mainSessionCtrl == null) {
       SilverTrace.warn("peasUtil", "TempFileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.
-              getId() +
-              GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") +
-              GeneralPropertiesManager.getGeneralResourceLocator().
-                  getString("sessionTimeout"));
+          getId() +
+          GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") +
+          GeneralPropertiesManager.getGeneralResourceLocator().
+          getString("sessionTimeout"));
       res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
           "ApplicationURL") +
           GeneralPropertiesManager.
-              getGeneralResourceLocator().getString("sessionTimeout"));
+          getGeneralResourceLocator().getString("sessionTimeout"));
     }
     String filePath = FileRepositoryManager.getTemporaryPath() + fileName;
     res.setContentType(FileUtil.getMimeType(fileName));

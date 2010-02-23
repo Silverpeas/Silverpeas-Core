@@ -47,7 +47,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
-  
+
   private static final long serialVersionUID = 1117593114737219878L;
 
   /**

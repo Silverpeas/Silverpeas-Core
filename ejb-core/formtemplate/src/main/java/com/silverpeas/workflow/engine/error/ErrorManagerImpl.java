@@ -93,9 +93,10 @@ public class ErrorManagerImpl implements ErrorManager {
       db = WorkflowJDOManager.getDatabase(true);
       db.begin();
 
-      query = db
-          .getOQLQuery("SELECT error FROM com.silverpeas.workflow.engine.error.WorkflowErrorImpl error"
-              + " WHERE instanceId = $1");
+      query =
+          db
+              .getOQLQuery("SELECT error FROM com.silverpeas.workflow.engine.error.WorkflowErrorImpl error"
+                  + " WHERE instanceId = $1");
 
       // Execute the query
       query.bind(instanceId);
@@ -124,8 +125,7 @@ public class ErrorManagerImpl implements ErrorManager {
   }
 
   /**
-   * Remove all the errors that occured for a given instance Must be called when
-   * instance is removed
+   * Remove all the errors that occured for a given instance Must be called when instance is removed
    */
   public void removeErrorsOfInstance(String instanceId) {
     Database db = null;
@@ -137,9 +137,10 @@ public class ErrorManagerImpl implements ErrorManager {
       db = WorkflowJDOManager.getDatabase(true);
       db.begin();
 
-      query = db
-          .getOQLQuery("SELECT error FROM com.silverpeas.workflow.engine.error.WorkflowErrorImpl error"
-              + " WHERE instanceId = $1");
+      query =
+          db
+              .getOQLQuery("SELECT error FROM com.silverpeas.workflow.engine.error.WorkflowErrorImpl error"
+                  + " WHERE instanceId = $1");
 
       // Execute the query
       query.bind(instanceId);

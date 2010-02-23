@@ -29,8 +29,7 @@ import com.silverpeas.workflow.api.model.ContextualDesignation;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
- * Class implementing the representation of the following elements of a Process
- * Model:
+ * Class implementing the representation of the following elements of a Process Model:
  * <ul>
  * <li>&lt;activity&gt;</li>
  * <li>&lt;description&gt;</li>
@@ -38,8 +37,8 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * <li>&lt;title&gt;</li>
  * </ul>
  **/
-public class SpecificLabel extends AbstractReferrableObject implements
-    Serializable, ContextualDesignation {
+public class SpecificLabel extends AbstractReferrableObject implements Serializable,
+    ContextualDesignation {
 
   private String content = "";
   private String language = "default";
@@ -83,9 +82,7 @@ public class SpecificLabel extends AbstractReferrableObject implements
 
   /**
    * Set the content of specific label
-   * 
-   * @param content
-   *          content of specific label
+   * @param content content of specific label
    */
   public void setContent(String content) {
     this.content = content;
@@ -93,9 +90,7 @@ public class SpecificLabel extends AbstractReferrableObject implements
 
   /**
    * Set the language of specific label
-   * 
-   * @param language
-   *          language of specific label
+   * @param language language of specific label
    */
   public void setLanguage(String language) {
     this.language = language;
@@ -103,9 +98,7 @@ public class SpecificLabel extends AbstractReferrableObject implements
 
   /**
    * Set the role for which this specific label is
-   * 
-   * @param role
-   *          role
+   * @param role role
    */
   public void setRole(String role) {
     this.role = role;
@@ -113,7 +106,6 @@ public class SpecificLabel extends AbstractReferrableObject implements
 
   /**
    * Get the unique key, used by equals method
-   * 
    * @return unique key
    */
   public String getKey() {

@@ -72,8 +72,8 @@ public final class UserImpl implements User {
   }
 
   /**
-   * returns all the known info for an user; Each returned value can be used as
-   * a parameter to the User method getInfo().
+   * returns all the known info for an user; Each returned value can be used as a parameter to the
+   * User method getInfo().
    */
   static public String[] getUserInfoNames() {
     return infoNames;
@@ -104,7 +104,6 @@ public final class UserImpl implements User {
 
   /**
    * compare this user with another
-   * 
    * @return true if two users are the same
    */
   public boolean equals(Object user) {

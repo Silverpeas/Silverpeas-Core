@@ -30,7 +30,6 @@ public interface Participant extends Actor {
 
   /**
    * Get the action the participant has done
-   * 
    * @return the action's name
    */
   public String getAction();

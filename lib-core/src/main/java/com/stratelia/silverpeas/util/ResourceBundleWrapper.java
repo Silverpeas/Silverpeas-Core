@@ -34,7 +34,8 @@ import com.silverpeas.util.ConfigurationClassLoader;
 public class ResourceBundleWrapper extends ResourceBundle {
   private ResourceBundle bundle;
   private ResourceBundle parentBundle;
-  private static ClassLoader loader = new ConfigurationClassLoader(ResourceBundleWrapper.class.getClassLoader());
+  private static ClassLoader loader =
+      new ConfigurationClassLoader(ResourceBundleWrapper.class.getClassLoader());
 
   public ResourceBundleWrapper(String file, Locale locale, boolean hasParent) {
     this.bundle = java.util.ResourceBundle.getBundle(file, locale, loader);
