@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin.instance.control;
 
+import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,7 +42,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -288,6 +288,7 @@ public class WAComponent {
     return this.parameters.getSortedParameters();
   }
 
+  @Override
   public String toString() {
     String s = name + "|" + description + "|" + suite + "|"
         + ((visible) ? " Visible " : " NOT Visible ") + "|" + instanceClassName
@@ -301,37 +302,30 @@ public class WAComponent {
     s = s + "|";
     i = 0;
 
-    while (iterProfile.hasNext())
+    while (iterProfile.hasNext()) {
       s += "," + iterProfile.next().getName();
-
+    }
     s = s + "|";
     return s;
   }
 
   public void writeToXml() throws InstanciationException {
 
-    String strDescriptorFileName = Instanciateur.getXMLPackage()
-        + File.separatorChar + name.trim() + ".xml";
+    String strDescriptorFileName = Instanciateur.getXMLPackage() + File.separatorChar + name.trim() + ".xml";
     Mapping mapping = new Mapping();
     String strMappingFileName = settings.getString("CastorXMLMappingFileURL");
-    // String strSchemaFileName =
-    // settings.getString("ComponentDescriptorSchemaFileURL");
-    String strDescriptorFileEncoding = settings
-        .getString("ComponentDescriptorFileEncoding");
+    String strDescriptorFileEncoding = settings.getString("ComponentDescriptorFileEncoding");
     Marshaller mar;
-    ResourceLocator resourceSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = SilverpeasSettings.readBoolean(resourceSettings,
-        "runOnSolaris", false);
+    boolean runOnUnix = !FileUtil.isWindows();
 
     try {
       // Format these urls
       //
-      if (runOnUnix)
+      if (runOnUnix) {
         strMappingFileName = strMappingFileName.replace('\\', '/');
-      else
+      } else {
         strMappingFileName = "file:///" + strMappingFileName.replace('\\', '/');
-
+      }
       strDescriptorFileName = strDescriptorFileName.replace('\\', '/');
 
       mapping.loadMapping(strMappingFileName);
@@ -339,7 +333,6 @@ public class WAComponent {
       mar = new Marshaller(new OutputStreamWriter(new FileOutputStream(
           strDescriptorFileName), strDescriptorFileEncoding));
       mar.setMapping(mapping);
-      // mar.setNoNamespaceSchemaLocation( strSchemaFileName );
       mar.setSuppressNamespaces(true);
       mar.setSuppressXSIType(true);
       mar.setValidation(false);
@@ -378,9 +371,8 @@ public class WAComponent {
   protected String booleanToString(boolean b) {
     if (b) {
       return "yes";
-    } else {
-      return "no";
     }
+    return "no";
   }
 
   protected boolean stringToBoolean(String s) {
@@ -389,8 +381,7 @@ public class WAComponent {
         || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
         .equalsIgnoreCase("false")))) {
       return false;
-    } else {
-      return true;
-    }
+    } 
+    return true;
   }
 }
