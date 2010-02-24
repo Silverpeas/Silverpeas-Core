@@ -43,7 +43,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
  * @see FieldDisplayer
  */
 public class LdapField extends TextField {
-  
+
   private static final long serialVersionUID = 1L;
 
   /**
@@ -193,7 +193,7 @@ public class LdapField extends TextField {
       LDAPEntry entry;
       int nbReaded = 0;
       LDAPAttribute ldapAttribute;
-      String value;
+      String value = null;
       try {
         while (searchResult.hasMore()
             && ldapConnection.getSearchConstraints().getMaxResults() > nbReaded) {
@@ -201,14 +201,17 @@ public class LdapField extends TextField {
 
           if (tabSearchAttribute != null) {
             ldapAttribute = entry.getAttribute(tabSearchAttribute[0]);
-            value = ldapAttribute.getStringValue();
+            if (ldapAttribute != null) {
+              value = ldapAttribute.getStringValue();
+            }
           } else {
             value = entry.getDN();
           }
 
           nbReaded++;
-          listRes.add(value);
-
+          if (StringUtil.isDefined(value)) {
+            listRes.add(value);
+          }
         }
       } catch (LDAPException e) {
         throw new FormException("LdapField.searchLdap",
