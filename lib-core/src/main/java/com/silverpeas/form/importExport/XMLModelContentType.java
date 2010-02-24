@@ -34,7 +34,7 @@ import com.silverpeas.form.importExport.XMLField;
 public class XMLModelContentType {
 
   private String name = null;
-  private ArrayList fields;
+  private ArrayList<XMLField> fields;
 
   public XMLModelContentType() {
   }
@@ -60,20 +60,20 @@ public class XMLModelContentType {
   /**
    * @return Returns the listImageParts.
    */
-  public ArrayList getFields() {
+  public ArrayList<XMLField> getFields() {
     return fields;
   }
 
   /**
    * @param listImageParts The listImageParts to set.
    */
-  public void setFields(ArrayList fields) {
+  public void setFields(ArrayList<XMLField> fields) {
     this.fields = fields;
   }
 
   public void addField(XMLField field) {
     if (fields == null)
-      fields = new ArrayList();
+      fields = new ArrayList<XMLField>();
 
     fields.add(field);
   }

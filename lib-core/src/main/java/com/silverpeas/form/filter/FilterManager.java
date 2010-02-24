@@ -81,13 +81,13 @@ public class FilterManager {
                 .get(filteredName);
             criteriumField.setDisplayerName("listbox");
 
-            Map parameters = field.getParameters(lang);
-            Set keys = parameters.keySet();
-            Iterator it = keys.iterator();
+            Map<String, String> parameters = field.getParameters(lang);
+            Set<String> keys = parameters.keySet();
+            Iterator<String> it = keys.iterator();
             String key = null;
             while (it.hasNext()) {
-              key = (String) it.next();
-              criteriumField.addParameter(key, (String) parameters.get(key));
+              key = it.next();
+              criteriumField.addParameter(key, parameters.get(key));
             }
           }
 
@@ -127,14 +127,14 @@ public class FilterManager {
   /**
    * Filters the given list of DataRecord using the specified criteria.
    */
-  public List filter(DataRecord criteria, List filtered) throws FormException {
-    ArrayList result = new ArrayList();
+  public List<DataRecord> filter(DataRecord criteria, List<DataRecord> filtered) throws FormException {
+    ArrayList<DataRecord> result = new ArrayList<DataRecord>();
     RecordFilter filter = buildRecordFilter(criteria);
-    Iterator records = filtered.iterator();
+    Iterator<DataRecord> records = filtered.iterator();
     DataRecord record;
 
     while (records.hasNext()) {
-      record = (DataRecord) records.next();
+      record = records.next();
       if (filter.match(record))
         result.add(record);
     }
@@ -225,5 +225,5 @@ public class FilterManager {
    */
   private String lang = null;
 
-  private Hashtable fieldsParameter = new Hashtable();
+  private Hashtable<String, FieldTemplate> fieldsParameter = new Hashtable<String, FieldTemplate>();
 }

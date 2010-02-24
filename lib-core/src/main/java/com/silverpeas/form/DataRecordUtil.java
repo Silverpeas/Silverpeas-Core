@@ -62,11 +62,11 @@ public class DataRecordUtil {
    */
   static public String applySubstitution(String text, DataRecord data,
       String lang) {
-    return applySubstitution(text, data, lang, new Vector());
+    return applySubstitution(text, data, lang, new Vector<String>());
   }
 
   static private String applySubstitution(String text, DataRecord data,
-      String lang, Vector resolvedVars) {
+      String lang, Vector<String> resolvedVars) {
     if (text == null)
       return "";
 

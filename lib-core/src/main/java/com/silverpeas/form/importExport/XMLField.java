@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class XMLField implements Serializable {
 
+  private static final long serialVersionUID = -825307243077524947L;
   private String name = null;
   private String value = null;
 

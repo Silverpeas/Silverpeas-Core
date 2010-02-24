@@ -177,7 +177,7 @@ public class HtmlForm extends AbstractForm {
       Field field = record.getField(fieldName);
       if (field != null) {
         boolean find = false;
-        Iterator itFields = null;
+        Iterator<FieldTemplate> itFields = null;
         if (getFieldTemplates() != null) {
           itFields = getFieldTemplates().iterator();
         }
@@ -187,7 +187,7 @@ public class HtmlForm extends AbstractForm {
           String fieldDisplayerName;
 
           while (!find && itFields.hasNext()) {
-            fieldTemplate = (FieldTemplate) itFields.next();
+            fieldTemplate = itFields.next();
             fieldName = fieldName.substring(fieldName.indexOf(".") + 1,
                 fieldName.length());
             if (fieldTemplate != null
@@ -217,7 +217,7 @@ public class HtmlForm extends AbstractForm {
   private void printFieldLabel(PrintWriter out, String fieldName,
       PagesContext pc) throws IOException {
     boolean find = false;
-    Iterator itFields = null;
+    Iterator<FieldTemplate> itFields = null;
     if (getFieldTemplates() != null) {
       itFields = getFieldTemplates().iterator();
     }
@@ -225,7 +225,7 @@ public class HtmlForm extends AbstractForm {
       FieldTemplate fieldTemplate;
 
       while (!find && itFields.hasNext()) {
-        fieldTemplate = (FieldTemplate) itFields.next();
+        fieldTemplate = itFields.next();
         if (fieldTemplate != null
             && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
           out.print(fieldTemplate.getLabel(pc.getLanguage()));

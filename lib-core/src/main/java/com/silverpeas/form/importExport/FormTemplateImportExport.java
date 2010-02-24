@@ -68,14 +68,14 @@ public class FormTemplateImportExport {
       data.setId(pk.getId());
     }
 
-    List xmlFields = xmlModel.getFields();
+    List<XMLField> xmlFields = xmlModel.getFields();
     XMLField xmlField = null;
     Field field = null;
     String xmlFieldName = null;
     String xmlFieldValue = null;
     String fieldValue = null;
     for (int f = 0; f < xmlFields.size(); f++) {
-      xmlField = (XMLField) xmlFields.get(f);
+      xmlField = xmlFields.get(f);
       xmlFieldName = xmlField.getName();
       xmlFieldValue = xmlField.getValue();
       field = data.getField(xmlFieldName);

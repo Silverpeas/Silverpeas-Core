@@ -28,6 +28,8 @@ import com.silverpeas.form.FormException;
 
 public class JdbcRefField implements Field {
 
+  private static final long serialVersionUID = -2738403979429471532L;
+
   static public final String TYPE = "jdbcRef";
 
   private String value = "";

@@ -29,6 +29,9 @@ import com.stratelia.webactiv.util.exception.*;
  * Thrown when a fatal error occured in a form component.
  */
 public class FormFatalException extends FormException {
+  
+  private static final long serialVersionUID = 1351471356522040519L;
+
   /**
    * Set the caller and the error message
    */

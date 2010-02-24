@@ -49,15 +49,9 @@ public class SimpleRecordFilter implements RecordFilter {
    * Returns true if the fields of the specified record match all the field filter of this Filter.
    */
   public boolean match(DataRecord testedRecord) throws FormException {
-    Iterator filters = this.filters.iterator();
-    FieldAssignedFilter filter;
-    String fieldName;
-    FieldFilter fieldFilter;
-
-    while (filters.hasNext()) {
-      filter = (FieldAssignedFilter) filters.next();
-      fieldName = filter.fieldName;
-      fieldFilter = filter.fieldFilter;
+    for(FieldAssignedFilter filter : filters) {
+      String fieldName = filter.fieldName;
+      FieldFilter fieldFilter = filter.fieldFilter;
 
       if (!fieldFilter.match(testedRecord.getField(fieldName))) {
         return false;
@@ -70,7 +64,7 @@ public class SimpleRecordFilter implements RecordFilter {
   /**
    * The list of (fieldName, filter) which must all match.
    */
-  private final ArrayList filters = new ArrayList();
+  private final List<FieldAssignedFilter> filters = new ArrayList<FieldAssignedFilter>();
 }
 
 final class FieldAssignedFilter {

@@ -55,7 +55,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see FieldDisplayer
  */
 public class XmlSearchForm extends AbstractForm {
-  private List fieldTemplates = new ArrayList();
+  private List<FieldTemplate> fieldTemplates = new ArrayList<FieldTemplate>();
   private String title = "";
 
   public XmlSearchForm(RecordTemplate template) throws FormException {
@@ -123,7 +123,7 @@ public class XmlSearchForm extends AbstractForm {
       out.println("</table>");
     }
 
-    Iterator itFields = null;
+    Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null)
       itFields = this.fieldTemplates.iterator();
 
@@ -158,7 +158,7 @@ public class XmlSearchForm extends AbstractForm {
       FieldDisplayer fieldDisplayer = null;
 
       while (itFields.hasNext()) {
-        fieldTemplate = (FieldTemplate) itFields.next();
+        fieldTemplate = itFields.next();
         if (fieldTemplate != null) {
           fieldName = fieldTemplate.getFieldName();
           fieldType = fieldTemplate.getTypeName();
@@ -283,7 +283,7 @@ public class XmlSearchForm extends AbstractForm {
         out.println("</table>");
       }
 
-      Iterator itFields = null;
+      Iterator<FieldTemplate> itFields = null;
       if (fieldTemplates != null)
         itFields = this.fieldTemplates.iterator();
 
@@ -318,7 +318,7 @@ public class XmlSearchForm extends AbstractForm {
         FieldDisplayer fieldDisplayer = null;
 
         while (itFields.hasNext()) {
-          fieldTemplate = (FieldTemplate) itFields.next();
+          fieldTemplate = itFields.next();
           if (fieldTemplate != null) {
             fieldName = fieldTemplate.getFieldName();
             fieldType = fieldTemplate.getTypeName();
@@ -406,7 +406,7 @@ public class XmlSearchForm extends AbstractForm {
     }
   }
 
-  private String getParameterValue(List items, String parameterName) {
+  private String getParameterValue(List<FileItem> items, String parameterName) {
     SilverTrace.debug("form", "XmlSearchForm.getParameterValue",
         "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     FileItem item = getParameter(items, parameterName);
@@ -418,14 +418,14 @@ public class XmlSearchForm extends AbstractForm {
     return null;
   }
 
-  private String getParameterValues(List items, String parameterName) {
+  private String getParameterValues(List<FileItem> items, String parameterName) {
     SilverTrace.debug("form", "XmlSearchForm.getParameterValues",
         "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     String values = "";
-    List params = getParameters(items, parameterName);
+    List<FileItem> params = getParameters(items, parameterName);
     FileItem item = null;
     for (int p = 0; p < params.size(); p++) {
-      item = (FileItem) params.get(p);
+      item = params.get(p);
       values += item.getString();
       if (p < params.size() - 1) {
         values += "##";
@@ -436,11 +436,9 @@ public class XmlSearchForm extends AbstractForm {
     return values;
   }
 
-  private FileItem getParameter(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    FileItem item = null;
-    while (iter.hasNext()) {
-      item = (FileItem) iter.next();
+  private FileItem getParameter(List<FileItem> items, String parameterName) {
+    for (FileItem item : items)
+    {
       if (parameterName.equals(item.getFieldName())) {
         return item;
       }
@@ -449,12 +447,9 @@ public class XmlSearchForm extends AbstractForm {
   }
 
   // for multi-values parameter (like checkbox)
-  private List getParameters(List items, String parameterName) {
-    List parameters = new ArrayList();
-    Iterator iter = items.iterator();
-    FileItem item = null;
-    while (iter.hasNext()) {
-      item = (FileItem) iter.next();
+  private List<FileItem> getParameters(List<FileItem> items, String parameterName) {
+    List<FileItem> parameters = new ArrayList<FileItem>();
+    for (FileItem item : items) {
       if (parameterName.equals(item.getFieldName())) {
         parameters.add(item);
       }
@@ -476,17 +471,17 @@ public class XmlSearchForm extends AbstractForm {
     this.title = title;
   }
 
-  public boolean isEmpty(List items, DataRecord record,
+  public boolean isEmpty(List<FileItem> items, DataRecord record,
       PagesContext pagesContext) {
     boolean isEmpty = true;
-    Iterator itFields = null;
+    Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null)
       itFields = this.fieldTemplates.iterator();
     if (itFields != null && itFields.hasNext()) {
       FieldDisplayer fieldDisplayer = null;
       FieldTemplate fieldTemplate = null;
       while (itFields.hasNext() || !isEmpty) {
-        fieldTemplate = (FieldTemplate) itFields.next();
+        fieldTemplate = itFields.next();
         if (fieldTemplate != null) {
           String fieldType = fieldTemplate.getTypeName();
           String fieldDisplayerName = fieldTemplate.getDisplayerName();

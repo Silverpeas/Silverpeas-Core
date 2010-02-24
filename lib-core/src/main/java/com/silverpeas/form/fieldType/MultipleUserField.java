@@ -40,6 +40,8 @@ import com.silverpeas.form.FormException;
  * @see FieldDisplayer
  */
 public class MultipleUserField implements Field {
+  
+  private static final long serialVersionUID = 1412147782354556460L;
   /**
    * The text field type name.
    */
@@ -212,11 +214,11 @@ public class MultipleUserField implements Field {
       setUserIds(null);
     } else {
       StringTokenizer tokenizer = new StringTokenizer(value, ",");
-      Collection userIds = new ArrayList();
+      Collection<String> userIds = new ArrayList<String>();
       while (tokenizer.hasMoreTokens()) {
         userIds.add(tokenizer.nextToken());
       }
-      setUserIds((String[]) userIds.toArray(new String[0]));
+      setUserIds(userIds.toArray(new String[0]));
     }
   }
 

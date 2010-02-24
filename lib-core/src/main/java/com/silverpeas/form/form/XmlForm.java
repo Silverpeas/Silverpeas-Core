@@ -94,8 +94,8 @@ public class XmlForm extends AbstractForm {
       out.println("</table>");
     }
 
-    Iterator itFields = null;
-    List listField = getFieldTemplates();
+    Iterator<FieldTemplate> itFields = null;
+    List<FieldTemplate> listField = getFieldTemplates();
     if (listField != null) {
       itFields = listField.iterator();
     }
@@ -131,7 +131,7 @@ public class XmlForm extends AbstractForm {
       FieldDisplayer fieldDisplayer = null;
 
       while (itFields.hasNext()) {
-        fieldTemplate = (FieldTemplate) itFields.next();
+        fieldTemplate = itFields.next();
         if (fieldTemplate != null) {
           fieldName = fieldTemplate.getFieldName();
           fieldType = fieldTemplate.getTypeName();
@@ -314,8 +314,8 @@ public class XmlForm extends AbstractForm {
         out.println("</table>");
       }
 
-      Iterator itFields = null;
-      List listField = getFieldTemplates();
+      Iterator<FieldTemplate> itFields = null;
+      List<FieldTemplate> listField = getFieldTemplates();
       if (listField != null) {
         itFields = listField.iterator();
       }
@@ -358,7 +358,7 @@ public class XmlForm extends AbstractForm {
         FieldDisplayer fieldDisplayer = null;
 
         while (itFields.hasNext()) {
-          fieldTemplate = (FieldTemplate) itFields.next();
+          fieldTemplate = itFields.next();
           if (fieldTemplate != null) {
             fieldName = fieldTemplate.getFieldName();
             fieldType = fieldTemplate.getTypeName();
@@ -402,7 +402,7 @@ public class XmlForm extends AbstractForm {
         boolean isHidden;
         itFields = listField.iterator();
         while (itFields.hasNext()) {
-          fieldTemplate = (FieldTemplate) itFields.next();
+          fieldTemplate = itFields.next();
           if (fieldTemplate != null) {
             fieldName = fieldTemplate.getFieldName();
             fieldLabel = fieldTemplate.getLabel(language);

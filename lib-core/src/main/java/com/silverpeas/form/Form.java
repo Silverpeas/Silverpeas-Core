@@ -68,7 +68,7 @@ public interface Form {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(List items,
+  public List<String> update(List<FileItem> items,
       DataRecord record, PagesContext pagesContext)
       throws FormException;
 
