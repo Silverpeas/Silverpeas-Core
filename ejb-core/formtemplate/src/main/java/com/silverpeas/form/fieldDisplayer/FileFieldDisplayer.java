@@ -174,7 +174,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
       html +=
           "<INPUT type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\">";
       html +=
-          "<INPUT type=\"hidden\" name=\"" + fieldName + FileField.PARAM_NAME_SUFFIX +
+          "<INPUT type=\"hidden\" id=\"" + fieldName + FileField.PARAM_NAME_SUFFIX + " name=\"" + fieldName + FileField.PARAM_NAME_SUFFIX +
               "\" value=\"" + attachmentId + "\">";
 
       if (attachment != null) {
