@@ -24,6 +24,7 @@
 package com.silverpeas.jobStartPagePeas.servlets;
 
 import java.io.File;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +62,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.rmi.RemoteException;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
@@ -807,7 +807,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       }
     } else if (function.equals("DeleteSpace")) {
       // Delete the space
-      jobStartPageSC.deleteCurrentSpace();
+      String spaceId = request.getParameter("Id");
+      jobStartPageSC.deleteSpace(spaceId);
       refreshNavBar(jobStartPageSC, request);
       if ((jobStartPageSC.getManagedSpaceId() != null)
           && (jobStartPageSC.getManagedSpaceId().length() > 0)) {

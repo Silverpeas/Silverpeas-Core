@@ -154,7 +154,7 @@ function openPopup(action, larg, haut)
 		function deleteSpace() {
 		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+Encode.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
 		    	displayStaticMessage();
-		    	setTimeout("location.href = \"DeleteSpace\";", 500);
+		    	setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>\";", 500);
 			}
 		}
 		
