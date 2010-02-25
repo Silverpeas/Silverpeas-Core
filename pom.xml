@@ -87,7 +87,7 @@
   </modules>
 
   <properties>
-    <installer_version>1.0-RC1</installer_version>
+    <installer_version>${project.version}</installer_version>
   </properties>
 
 </project>
