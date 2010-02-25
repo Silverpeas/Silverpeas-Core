@@ -8,9 +8,9 @@
   </parent>
 
   <scm>
-    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/tags/core-1.0-RC2</connection>
-    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/tags/core-1.0-RC2</developerConnection>
-    <url>https://repository.silverpeas.org/redmine/repositories/show/silverpeas-core/tags/core-1.0-RC2</url>
+    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/trunk</connection>
+    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/trunk</developerConnection>
+    <url>https://repository.silverpeas.org/redmine/repositories/show/silverpeas-core</url>
   </scm>
 
   <repositories>
@@ -26,7 +26,7 @@
   
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>1.0-RC2</version>
+  <version>1.0-RC2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
 
