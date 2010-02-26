@@ -26,20 +26,18 @@ package com.silverpeas.jobStartPagePeas.servlets;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.SpaceLookHelper;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -50,9 +48,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
@@ -64,6 +64,8 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 3751632991093466433L;
 
   @Override
   public ComponentSessionController createComponentSessionController(
@@ -104,7 +106,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
       destination = "/jobStartPagePeas/jsp/UpdateJobStartPage.jsp";
     } else if (function.equals("Choice")) {
-      destination = getDestination((String) request.getParameter("choix"),
+      destination = getDestination(request.getParameter("choix"),
           jobStartPageSC, request);
     } else if (function.equals("DefaultStartPage")) {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
@@ -207,14 +209,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           jobStartPageSC.restoreComponentFromBin(itemId);
         }
       } else {
-        String[] itemIds = request.getParameterValues("ItemIds");
-        for (int i = 0; itemIds != null && i < itemIds.length; i++) {
-          itemId = itemIds[i];
-          if (itemId.startsWith("WA")) {
-            jobStartPageSC.restoreSpaceFromBin(itemId);
-          } else {
-            jobStartPageSC.restoreComponentFromBin(itemId);
-          }
+        String[] spaceIds = request.getParameterValues("SpaceIds");
+        for (int i = 0; spaceIds != null && i < spaceIds.length; i++) {
+          jobStartPageSC.restoreSpaceFromBin(spaceIds[i]);
+        }
+        String[] componentIds = request.getParameterValues("ComponentIds");
+        for (int i = 0; componentIds != null && i < componentIds.length; i++) {
+          jobStartPageSC.restoreComponentFromBin(componentIds[i]);
         }
       }
       request.setAttribute("haveToRefreshNavBar", Boolean.TRUE);
@@ -228,14 +229,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           jobStartPageSC.deleteComponentInBin(itemId);
         }
       } else {
-        String[] itemIds = request.getParameterValues("ItemIds");
-        for (int i = 0; itemIds != null && i < itemIds.length; i++) {
-          itemId = itemIds[i];
-          if (itemId.startsWith("WA")) {
-            jobStartPageSC.deleteSpaceInBin(itemId);
-          } else {
-            jobStartPageSC.deleteComponentInBin(itemId);
-          }
+        String[] spaceIds = request.getParameterValues("SpaceIds");
+        for (int i = 0; spaceIds != null && i < spaceIds.length; i++) {
+          jobStartPageSC.deleteSpaceInBin(spaceIds[i]);
+        }
+        String[] componentIds = request.getParameterValues("ComponentIds");
+        for (int i = 0; componentIds != null && i < componentIds.length; i++) {
+          jobStartPageSC.deleteComponentInBin(componentIds[i]);
         }
       }
 
@@ -257,7 +257,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     String licenseCoupercoller = resourcePeasCore.getString("coupercoller");
 
     if (function.equals("GoToComponent")) {
-      String compoId = (String) request.getParameter("ComponentId");
+      String compoId = request.getParameter("ComponentId");
       jobStartPageSC.setManagedInstanceId(compoId);
       ComponentInst compoint1 = jobStartPageSC.getComponentInst(compoId);
       String espaceId = compoint1.getDomainFatherId(); // WAid
@@ -283,14 +283,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
       destination = "/jobStartPagePeas/jsp/componentsList.jsp";
     } else if (function.equals("CreateInstance")) {
-      String componentNum = (String) request.getParameter("ComponentNum");
+      String componentNum = request.getParameter("ComponentNum");
 
       WAComponent componentInstSelected = jobStartPageSC
           .getComponentByNum(Integer.parseInt(componentNum));
 
       setSpacesNameInRequest(jobStartPageSC, request);
 
-      List visibleParameters = getVisibleParameters(componentInstSelected
+      List<SPParameter> visibleParameters = getVisibleParameters(componentInstSelected
           .getSortedParameters());
 
       SPParameter hiddenParam = new SPParameter("HiddenComponent", resource
@@ -360,7 +360,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       SPParameters parameters = (SPParameters) xmlParameters.clone();
       parameters.mergeWith(dbParameters.getParameters());
 
-      List visibleParameters = getVisibleParameters(parameters
+      List<SPParameter> visibleParameters = getVisibleParameters(parameters
           .getSortedParameters());
 
       String isHidden = "";
@@ -431,9 +431,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       refreshNavBar(jobStartPageSC, request);
       destination = "/jobStartPagePeas/jsp/startPageInfo.jsp";
     } else if (function.equals("RoleInstance")) {
-      String profileId = (String) request.getParameter("IdProfile");
-      String profileName = (String) request.getParameter("NameProfile");
-      String profileLabel = (String) request.getParameter("LabelProfile");
+      String profileId = request.getParameter("IdProfile");
+      String profileName = request.getParameter("NameProfile");
+      String profileLabel = request.getParameter("LabelProfile");
 
       ProfileInst profile = jobStartPageSC.getProfile(profileId, profileName,
           profileLabel);
@@ -837,8 +837,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       }
 
       // liste des groupes et user qui sont manager de l'espace courant
-      List groupes = jobStartPageSC.getAllCurrentGroupSpace(role);
-      List users = jobStartPageSC.getAllCurrentUserSpace(role);
+      List<Group> groupes = jobStartPageSC.getAllCurrentGroupSpace(role);
+      List<UserDetail> users = jobStartPageSC.getAllCurrentUserSpace(role);
       request.setAttribute("listGroupSpace", groupes);
       request.setAttribute("listUserSpace", users);
 
@@ -894,14 +894,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       destination = getDestination("SpaceManager", jobStartPageSC, request);
     } else if (function.equals("SpaceManagerDescription")) {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-      ArrayList m_ListSpaceProfileInst = spaceint1.getAllSpaceProfilesInst();
+      List<SpaceProfileInst> m_ListSpaceProfileInst = spaceint1.getAllSpaceProfilesInst();
       int i = 0;
       SpaceProfileInst m_SpaceProfileInst = null;
       String name = "";
       String desc = "";
       if (i < m_ListSpaceProfileInst.size()) {// seulement le premier profil
         // (manager)
-        m_SpaceProfileInst = (SpaceProfileInst) m_ListSpaceProfileInst.get(i);
+        m_SpaceProfileInst = m_ListSpaceProfileInst.get(i);
         name = m_SpaceProfileInst.getLabel();
         if (name.equals("")) {
           name = jobStartPageSC.getMultilang().getString("Manager");
@@ -923,12 +923,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
       // Update the space
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-      ArrayList m_ListSpaceProfileInst = spaceint1.getAllSpaceProfilesInst();
+      List<SpaceProfileInst> m_ListSpaceProfileInst = spaceint1.getAllSpaceProfilesInst();
       int i = 0;
       SpaceProfileInst m_SpaceProfileInst = null;
       if (i < m_ListSpaceProfileInst.size()) {// seulement le premier profil
         // (manager)
-        m_SpaceProfileInst = (SpaceProfileInst) m_ListSpaceProfileInst.get(i);
+        m_SpaceProfileInst = m_ListSpaceProfileInst.get(i);
         m_SpaceProfileInst.setLabel(name);
         m_SpaceProfileInst.setDescription(desc);
 
@@ -940,11 +940,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("SpaceLook")) {
       String path = getSpaceLookRepository(jobStartPageSC);
 
-      List files = null;
+      List<File> files = null;
       try {
-        files = (List) FileFolderManager.getAllFile(path);
+        files = (List<File>) FileFolderManager.getAllFile(path);
       } catch (UtilException e) {
-        files = new ArrayList();
+        files = new ArrayList<File>();
       }
 
       SpaceLookHelper slh = new SpaceLookHelper("Space"
@@ -973,8 +973,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       destination = "/jobStartPagePeas/jsp/spaceLook.jsp";
     } else if (function.equals("UpdateSpaceLook")) {
       try {
-        List items = getRequestItems(request);
-        FileItem file = getUploadedFile(items, "wallPaper");
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        FileItem file = FileUploadUtil.getFile(items, "wallPaper");
         if (file != null && StringUtil.isDefined(file.getName())) {
           String extension = FileRepositoryManager.getFileExtension(file.getName());
           if (extension != null && extension.equalsIgnoreCase("jpeg")) {
@@ -1003,7 +1003,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
               + extension.toLowerCase()));
         }
 
-        String selectedLook = getParameterValue(items, "SelectedLook");
+        String selectedLook = FileUploadUtil.getParameter(items, "SelectedLook");
         if (!StringUtil.isDefined(selectedLook)) {
           selectedLook = null;
         }
@@ -1019,7 +1019,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         } else if ("AFTER".equalsIgnoreCase(configSpacePosition)) {
           isDisplaySpaceFirst = false;
         } else {
-          String spacePosition = getParameterValue(items, "SpacePosition");
+          String spacePosition = FileUploadUtil.getParameter(items, "SpacePosition");
           isDisplaySpaceFirst = !(StringUtil.isDefined(spacePosition)
               && "2".equalsIgnoreCase(spacePosition));
         }
@@ -1132,7 +1132,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         SPParameters parameters = (SPParameters) xmlParameters.clone();
         parameters.mergeWith(dbParameters.getParameters());
 
-        List visibleParameters = getVisibleParameters(parameters
+        List<SPParameter> visibleParameters = getVisibleParameters(parameters
             .getSortedParameters());
 
         String isHidden = "";
@@ -1252,11 +1252,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     }
   }
 
-  private List getVisibleParameters(List parameters) {
-    ArrayList visibleParameters = new ArrayList();
+  private List<SPParameter> getVisibleParameters(List<SPParameter> parameters) {
+    List<SPParameter> visibleParameters = new ArrayList<SPParameter>();
     SPParameter parameter = null;
     for (int p = 0; p < parameters.size(); p++) {
-      parameter = (SPParameter) parameters.get(p);
+      parameter = parameters.get(p);
       if (parameter.getUpdatable().toLowerCase().equals("never")
           || parameter.getUpdatable().toLowerCase().equals("hidden")) {
         // Le parametre n'est pas visible
@@ -1267,11 +1267,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     return visibleParameters;
   }
 
-  private List getHiddenParameters(List parameters) {
-    ArrayList hiddenParameters = new ArrayList();
+  private List<SPParameter> getHiddenParameters(List<SPParameter> parameters) {
+    List<SPParameter> hiddenParameters = new ArrayList<SPParameter>();
     SPParameter parameter = null;
     for (int p = 0; p < parameters.size(); p++) {
-      parameter = (SPParameter) parameters.get(p);
+      parameter = parameters.get(p);
       if (parameter.getUpdatable().toLowerCase().equals("hidden")) {
         hiddenParameters.add(parameter);
       }
@@ -1279,7 +1279,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     return hiddenParameters;
   }
 
-  // NEWD DLE
   private boolean getLicense(String code) {
     boolean validSequence = true;
     String serial = "100406181111";
@@ -1300,8 +1299,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     }
     return validSequence;
   }
-
-  // NEWF DLE
 
   private boolean isDefined(String param) {
     return param != null && param.length() > 0
@@ -1365,7 +1362,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       componentInstSelected = jobStartPageSC.getComponentByName(componentInst
           .getName());
     } else {
-      String componentNum = (String) request.getParameter("ComponentNum");
+      String componentNum = request.getParameter("ComponentNum");
       componentInstSelected = jobStartPageSC.getComponentByNum(Integer
           .parseInt(componentNum));
       String jobPeas = componentInstSelected.getName();
@@ -1376,15 +1373,15 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     final String PARAM_TYPE_CHECKBOX = "checkbox";
     SPParameters xmlParameters = (SPParameters) componentInstSelected
         .getSPParameters().clone();
-    List parameters = xmlParameters.getParameters();
+    List<SPParameter> parameters = xmlParameters.getParameters();
     SPParameter parameter = null;
     String value = null;
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasRequestRouter.EffectiveCreateInstance",
         "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
     for (int nI = 0; nI < parameters.size(); nI++) {
-      parameter = (SPParameter) parameters.get(nI);
-      value = (String) request.getParameter(parameter.getName());
+      parameter = parameters.get(nI);
+      value = request.getParameter(parameter.getName());
       isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
       if (isCheckbox) {
         if (value == null) {
@@ -1396,32 +1393,4 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     componentInst.setParameters(parameters);
   }
 
-  private List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
-  }
-
-  private String getParameterValue(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
-  }
-
-  private FileItem getUploadedFile(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item;
-      }
-    }
-    return null;
-  }
 }

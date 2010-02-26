@@ -45,6 +45,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
 <script language="JavaScript">
 <!--
 function removeItem(id) {	
@@ -67,11 +68,16 @@ function restore() {
 	}
 }
 
+function jqCheckAll2(id, name)
+{
+   $("INPUT[@name=" + name + "][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
+}
+
 -->
 </script>
 </HEAD>
 
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
+<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <%
 out.println(window.printBefore());
@@ -83,7 +89,7 @@ out.println(frame.printBefore());
 	ArrayPane arrayPane = gef.getArrayPane("binContentSpaces", "ViewBin", request, session);
 	arrayPane.addArrayColumn(resource.getString("GML.space"));
 	arrayPane.addArrayColumn(resource.getString("JSPP.BinRemoveDate"));
-	ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operation"));
+	ArrayColumn columnOp = arrayPane.addArrayColumn("<span style=\"float:left\">"+resource.getString("GML.operation")+"</span> <input type=\"checkbox\" id=\"checkAllSpaces\" onclick=\"jqCheckAll2(this.id, 'SpaceIds')\" style=\"float:left;margin:0px;margin-left:5px;padding:0px;vertical-align:middle;background-color:none;\"/>");
 	columnOp.setSortable(false);
 
 	//Array of deleted spaces
@@ -109,7 +115,7 @@ out.println(frame.printBefore());
 			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "RestoreFromBin?ItemId="+space.getFullId());
 			Icon deleteIcon = iconPane.addIcon();
 			deleteIcon.setProperties(resource.getIcon("JSPP.delete"), resource.getString("JSPP.BinDelete"), "javaScript:onClick=removeItem('"+space.getFullId()+"')");
-			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"ItemIds\" value=\""+space.getFullId()+"\">");
+			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"SpaceIds\" value=\""+space.getFullId()+"\">");
 		}
 		out.println(arrayPane.print());
 	}
@@ -118,7 +124,7 @@ out.println(frame.printBefore());
 	arrayPane = gef.getArrayPane("binContentComponents", "ViewBin", request, session);
 	arrayPane.addArrayColumn(resource.getString("GML.component"));
 	arrayPane.addArrayColumn(resource.getString("JSPP.BinRemoveDate"));
-	columnOp = arrayPane.addArrayColumn(resource.getString("GML.operation"));
+	columnOp = arrayPane.addArrayColumn("<span style=\"float:left\">"+resource.getString("GML.operation")+"</span> <input type=\"checkbox\" id=\"checkAllComponents\" onclick=\"jqCheckAll2(this.id, 'ComponentIds')\" style=\"float:left;margin:0px;margin-left:5px;padding:0px;vertical-align:middle;background-color:none;\"/>");
 	columnOp.setSortable(false);
 
 	if (removedComponents != null && removedComponents.size() != 0) 
@@ -141,7 +147,7 @@ out.println(frame.printBefore());
 			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "RestoreFromBin?ItemId="+component.getId());
 			Icon deleteIcon = iconPane.addIcon();
 			deleteIcon.setProperties(resource.getIcon("JSPP.delete"), resource.getString("JSPP.BinDelete"), "javaScript:onClick=removeItem('"+component.getId()+"')");
-			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"ItemIds\" value=\""+component.getId()+"\">");
+			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"ComponentIds\" value=\""+component.getId()+"\">");
 		}
 		out.println(arrayPane.print());
 	}
