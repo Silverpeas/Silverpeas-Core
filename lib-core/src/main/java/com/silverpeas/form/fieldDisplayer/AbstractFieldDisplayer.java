@@ -50,7 +50,7 @@ public abstract class AbstractFieldDisplayer implements FieldDisplayer {
       PagesContext pageContext) throws FormException {
     String value =
         FileUploadUtil
-            .getParameter(items, template.getFieldName(), null, pageContext.getEncoding());
+        .getParameter(items, template.getFieldName(), null, pageContext.getEncoding());
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         !StringUtil.isDefined(value)) {
       return new ArrayList<String>();
@@ -61,8 +61,15 @@ public abstract class AbstractFieldDisplayer implements FieldDisplayer {
   @Override
   public void index(FullIndexEntry indexEntry, String key, String fieldName, Field field,
       String language) {
-    String value = field.getStringValue().trim().replaceAll("##", " ");
-    indexEntry.addField(key, value, language);
+    if (field != null) {
+      String value = field.getStringValue();
+      if (value != null)
+      {
+        value = value.trim().replaceAll("##", " ");
+        indexEntry.addField(key, value, language); // add data in dedicated field
+        indexEntry.addTextContent(value, language); // add data in global field
+      }
+    }
   }
 
 }
