@@ -26,6 +26,7 @@ package com.silverpeas.jobStartPagePeas;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -53,7 +54,7 @@ public class NavBarManager extends Object {
   AdminController m_administrationCtrl = null;
   AbstractComponentSessionController m_SessionCtrl = null;
   String m_sContext;
-  HashSet m_ManageableSpaces = new HashSet();
+  HashSet<String> m_ManageableSpaces = new HashSet<String>();
 
   DisplaySorted[] m_Spaces = null;
   String m_CurrentSpaceId = null;
@@ -371,7 +372,7 @@ public class NavBarManager extends Object {
     if (goRecurs) {
       DisplaySorted[] parents = valret;
       DisplaySorted[] childs = null;
-      ArrayList alValret = new ArrayList();
+      List<DisplaySorted> alValret = new ArrayList<DisplaySorted>();
       int i;
       SpaceInst spaceInst;
 
@@ -383,7 +384,7 @@ public class NavBarManager extends Object {
           alValret.add(childs[i]);
         }
       }
-      valret = (DisplaySorted[]) alValret.toArray(new DisplaySorted[0]);
+      valret = alValret.toArray(new DisplaySorted[0]);
     }
     return valret;
   }
@@ -500,7 +501,7 @@ public class NavBarManager extends Object {
   protected DisplaySorted[] createComponentObjects(SpaceInst spaceInst,
       boolean subSpaces) {
     // Get the space's components
-    ArrayList components = spaceInst.getAllComponentsInst();
+    List<ComponentInst> components = spaceInst.getAllComponentsInst();
     ComponentInst ci;
     String label;
     String link;
@@ -512,7 +513,7 @@ public class NavBarManager extends Object {
     valret = new DisplaySorted[components.size()];
     for (int i = 0; i < components.size(); i++) {
       valret[i] = new DisplaySorted();
-      ci = (ComponentInst) components.get(i);
+      ci = components.get(i);
       valret[i].name = ci.getLabel(m_SessionCtrl.getLanguage());
       if (valret[i].name == null) {
         valret[i].name = ci.getName();

@@ -23,7 +23,7 @@
  */
 package com.silverpeas.jobStartPagePeas;
 
-public class DisplaySorted extends Object implements Comparable {
+public class DisplaySorted extends Object implements Comparable<DisplaySorted> {
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_COMPONENT = 1;
   public static final int TYPE_SPACE = 2;
@@ -38,8 +38,8 @@ public class DisplaySorted extends Object implements Comparable {
   public boolean isAdmin = true;
   public boolean isVisible = true;
 
-  public int compareTo(Object o) {
-    return orderNum - ((DisplaySorted) o).orderNum;
+  public int compareTo(DisplaySorted o) {
+    return orderNum - o.orderNum;
   }
 
   public void copy(DisplaySorted src) {

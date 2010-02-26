@@ -31,6 +31,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
 
 public class SpaceLookItem implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   private String name = null;
   private String size = null;
   private String url = null;

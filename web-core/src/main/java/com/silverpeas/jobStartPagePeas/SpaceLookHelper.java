@@ -31,18 +31,20 @@ import java.util.List;
 
 public class SpaceLookHelper implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   private String spaceId = null;
-  private Hashtable items = new Hashtable();
+  private Hashtable<String, SpaceLookItem> items = new Hashtable<String, SpaceLookItem>();
 
   public SpaceLookHelper(String spaceId) {
     this.spaceId = spaceId;
   }
 
-  public void setFiles(List files) {
+  public void setFiles(List<File> files) {
     if (files != null) {
-      Iterator i = files.iterator();
+      Iterator<File> i = files.iterator();
       while (i.hasNext()) {
-        File file = (File) i.next();
+        File file = i.next();
 
         SpaceLookItem item = new SpaceLookItem(file, spaceId);
 
