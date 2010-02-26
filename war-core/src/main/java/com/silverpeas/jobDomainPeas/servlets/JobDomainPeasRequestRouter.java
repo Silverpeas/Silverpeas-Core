@@ -676,7 +676,9 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
       // 2) Prepare the pages
       // --------------------
-      request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
+      if (jobDomainSC.getTargetDomain() != null) {
+        request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
+      }
       if (destination.equals("domainContent.jsp")) {
         long domainRight = jobDomainSC.getDomainActions();
 
