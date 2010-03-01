@@ -32,9 +32,11 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -55,10 +57,13 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private I18NBean i18nBean = null;
   private String language = null;
   private String url = null;
-  private List languages = null;
+  private List<String> languages = null;
   
+  private String spaceId = null;
   private String componentId = null;
   private MainSessionController mainSessionController = null;
+  
+  private List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
 
   /**
    * Constructor declaration
@@ -98,7 +103,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public String getDomainName() {
-    return this.domainName;
+    return domainName;
   }
 
   /**
@@ -108,7 +113,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    */
   public void setComponentName(String componentName) {
     this.componentName = componentName;
-    this.componentLink = null;
+    componentLink = null;
   }
 
   /**
@@ -119,7 +124,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    */
   public void setComponentName(String componentName, String link) {
     this.componentName = componentName;
-    this.componentLink = link;
+    componentLink = link;
   }
 
   /**
@@ -128,7 +133,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public String getComponentName() {
-    return this.componentName;
+    return componentName;
   }
 
   /**
@@ -137,7 +142,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public String getComponentLink() {
-    return this.componentLink;
+    return componentLink;
   }
 
   /**
@@ -159,7 +164,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public String getExtraInformation() {
-    return this.information;
+    return information;
   }
 
   /**
@@ -168,10 +173,8 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public void setPath(String path) {
-    if (path != null) {
-      if (path.length() > 0) {
+    if (StringUtil.isDefined(path)) {
         this.path = path;
-      }
     }
   }
 
@@ -181,7 +184,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @see
    */
   public String getPath() {
-    return this.path;
+    return path;
   }
 
   /**
@@ -194,23 +197,40 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public I18NBean getI18NBean() {
-    return this.i18nBean;
+    return i18nBean;
   }
 
   public String getLanguage() {
-    return this.language;
+    return language;
   }
 
   public String getUrl() {
     return url;
   }
 
-  public List getLanguages() {
+  public List<String> getLanguages() {
     return languages;
   }
 
+  public void addElement(BrowseBarElement element) {
+    elements.add(element);
+  }
+
+  public void addElements(List<BrowseBarElement> elements) {
+    this.elements.addAll(elements);    
+  }
+
+  public void setElements(List<BrowseBarElement> elements) {
+    this.elements.clear();
+    this.elements.addAll(elements);
+  }
+  
+  public List<BrowseBarElement> getElements() {
+    return elements;
+  }
+
   public void setI18N(I18NBean bean, String language) {
-    this.i18nBean = bean;
+    i18nBean = bean;
     this.language = language;
   }
 
@@ -219,7 +239,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     this.language = language;
   }
 
-  public void setI18N(List languages, String language) {
+  public void setI18N(List<String> languages, String language) {
     this.languages = languages;
     this.language = language;
   }
@@ -244,6 +264,14 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    */
   public abstract String print();
 
+  public String getSpaceId() {
+    return spaceId;
+  }
+
+  public void setSpaceId(String spaceId) {
+    this.spaceId = spaceId;
+  }
+
   public String getComponentId() {
     return componentId;
   }
@@ -259,4 +287,6 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   public void setMainSessionController(MainSessionController mainSessionController) {
     this.mainSessionController = mainSessionController;
   }
+  
+  public abstract String getBreadCrumb(); 
 }

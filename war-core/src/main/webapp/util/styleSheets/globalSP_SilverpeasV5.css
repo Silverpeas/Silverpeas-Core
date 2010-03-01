@@ -2110,3 +2110,29 @@ td.browsebar a:hover {
 	float: left;
 	padding: 10px;
 }
+
+#browseBar {
+	float:left;
+	width: 100%;
+}
+
+#browseBar #breadCrumb {
+	float:left;
+}
+
+#browseBar #breadCrumb {
+	float:left;
+	font-weight: bold;
+}
+
+#browseBar #i18n {
+	float:right;
+}
+
+#browseBar #breadCrumb a:visited,
+#browseBar #breadCrumb a:active,
+#browseBar #breadCrumb a:link,
+#browseBar #breadCrumb a:hover
+{
+  font-size :  11px;
+}

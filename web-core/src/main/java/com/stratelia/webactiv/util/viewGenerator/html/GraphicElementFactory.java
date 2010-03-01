@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneWA;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.board.BoardSP;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
-import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarWA;
+import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarComplete;
 import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane;
 import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneWA;
 import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
@@ -704,7 +704,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getBrowseBar()",
           "viewgenerator.EX_CANT_GET_BROWSE_BAR", "", e);
-      return new BrowseBarWA();
+      return new BrowseBarComplete();
     }
   }
 
@@ -760,4 +760,5 @@ public class GraphicElementFactory extends Object {
   public MainSessionController getMainSessionController() {
     return mainSessionController;
   }
+  
 }

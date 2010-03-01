@@ -30,17 +30,20 @@
 <%@ include file="header.jsp"%>
 
 <%
+  String currentSpaceId = request.getParameter("SpaceId");
 	Boolean disableMove = (Boolean) request.getAttribute("DisableMove");
 	if (disableMove == null)
 		disableMove = Boolean.FALSE;
 
 	Window window = gef.getWindow();
 
+	BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setSpaceId(currentSpaceId);
+  browseBar.setComponentId(null);
+  browseBar.setDomainName(message.getString("portlets.homepage"));
+  
 	if (!disableMove.booleanValue())
 	{
-		BrowseBar browseBar = window.getBrowseBar();
-		browseBar.setDomainName(message.getString("portlets.homepage"));
-		
 		OperationPane operationPane = window.getOperationPane();
 	    operationPane.addOperation("", message.getString("portlets.createPortlet"), "javascript:openAdmin()");
 	}
