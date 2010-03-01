@@ -32,7 +32,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.silverpeas.util.i18n.I18NBean;

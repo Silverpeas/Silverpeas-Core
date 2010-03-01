@@ -21,34 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayPaneWA.java
- * 
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLDocumentFilter;
-import org.apache.xerces.xni.parser.XMLInputSource;
-import org.apache.xerces.xni.parser.XMLParserConfiguration;
-import org.cyberneko.html.HTMLConfiguration;
-import org.cyberneko.html.HTMLTagBalancer;
-import org.cyberneko.html.filters.ElementRemover;
-import org.cyberneko.html.filters.Writer;
 
-import com.silverpeas.HtmlCleaner;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
