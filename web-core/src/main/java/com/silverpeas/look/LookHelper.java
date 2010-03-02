@@ -28,6 +28,7 @@ import java.util.List;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public interface LookHelper {
 
@@ -96,9 +97,9 @@ public interface LookHelper {
    * @param componentIds - a String like that kmelia12, toolbox35,
    * @return a List of ComponentInst available to current user
    */
-  public abstract List getTopItems();
+  public abstract List<TopItem> getTopItems();
 
-  public abstract List getTopSpaceIds();
+  public abstract List<String> getTopSpaceIds();
 
   public abstract String getMainFrame();
 
@@ -112,7 +113,7 @@ public interface LookHelper {
 
   public abstract String getDefaultSpaceId();
 
-  public abstract List getLatestPublications(String spaceId, int nbPublis);
+  public abstract List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis);
 
-  public abstract List getValidPublications(NodePK nodePK);
+  public abstract List<PublicationDetail> getValidPublications(NodePK nodePK);
 }

@@ -86,8 +86,12 @@ public class TopItem {
       return "/admin/jsp/MainSilverpeasV5.jsp?SpaceId=" + getSubSpaceId();
     else if (isComponent())
       return URLManager.getURL(null, getComponentId()) + "Main";
-    else
+    else {
+      if (StringUtil.isDefined(url)) {
+        return url;
+      }
       return "#";
+    }
   }
 
   public String getId() {
