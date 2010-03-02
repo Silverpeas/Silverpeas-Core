@@ -38,6 +38,7 @@
   String action = request.getParameter("Action"); //Add || Update || View (vient de choisir une categorie) 
   													// || DiffusionListOK (vient de choisir des participants dans le UserPanel)
   													// ReallyAdd || ReallyUpdate
+  													// CategoryOK (viens de choisir des catégories)
   													
 	if (!StringUtil.isDefined(action))
 		action = "Update";
@@ -103,7 +104,11 @@ function editDiffusionList()
 
 function editCategory()
 {
-	diffusion = window.SP_openWindow('category.jsp','category',500, 320,'alwaysRaised,scrollbars=yes,resizable');
+  document.journalForm.Action.value = "EditCategory";
+  if (document.journalForm.CompleteDay.checked) {
+    document.journalForm.WithoutHour.value = "true";
+  }
+  document.journalForm.submit();
 }
 
 function isCorrectForm() {
@@ -384,7 +389,7 @@ function setBeginDateAndHour(date, hour, minutes)
   /* journal != null */
   else {
   
-  	if ( (action.equals("View") || action.equals("EditDiffusionList")) )
+  	if ( (action.equals("View") || action.equals("EditDiffusionList")) || action.equals("EditCategory") )
   	{
 	    //sauvegarde des valeurs saisies
 	    String name = request.getParameter("Name");
@@ -445,6 +450,16 @@ function setBeginDateAndHour(date, hour, minutes)
 			</Script>
 			<%  
 		}
+	    
+	    if (action.equals("EditCategory")) {
+	      action = "View";
+	      autoFocus = false;
+	      %>
+	      <Script language="JavaScript">
+	           window.SP_openWindow('category.jsp','category',500, 320,'alwaysRaised,scrollbars=yes,resizable')
+	      </Script>
+	      <%  
+	    }
 	    
 	}		    
 	   
@@ -629,7 +644,8 @@ else
   }
   
   /* Add || Update || View || DiffusionListOK */
-  else if ((action.equals("Update")) || (action.equals("Add")) || (action.equals("View")) || (action.equals("DiffusionListOK"))) {
+  else if (action.equals("Update") || action.equals("Add") || action.equals("View") 
+      || action.equals("DiffusionListOK") || action.equals("CategoryOK")) {
     %>
 
       <table width="100%" cellpadding="3" border="0">

@@ -79,7 +79,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext context) {
     ComponentSessionController component =
         (ComponentSessionController) new AgendaSessionController(
-        mainSessionCtrl, context);
+            mainSessionCtrl, context);
 
     return component;
   }
@@ -368,15 +368,10 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           i++;
         }
         String journalId = request.getParameter("JournalId");
-        /*
-         * if (StringUtil.isDefined(journalId) && !"-1".equals(journalId))
-         * scc.setJournalCategories(journalId, categoryIds); else {
-         * scc.setCurrentCategories(categories); journalId = "-1"; }
-         */
         scc.setCurrentCategories(categories);
 
         request.setAttribute("FromCategories", "1");
-        destination = "/agenda/jsp/journal.jsp";
+        destination = "/agenda/jsp/journal.jsp?Action=CategoryOK";
       } else {
         destination = "/agenda/jsp/" + function;
       }
@@ -441,19 +436,19 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc
               .getComponentId())
               + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "RepositoryTypeTemp") + File.separator + tempFolderName;
+                  "RepositoryTypeTemp") + File.separator + tempFolderName;
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(agendaSc.getComponentId(),
                 GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                "RepositoryTypeTemp")
-                + File.separator + tempFolderName);
+                    "RepositoryTypeTemp")
+                    + File.separator + tempFolderName);
           }
 
           // Creation of the file in the temp folder
           fileUploaded = new File(FileRepositoryManager
               .getAbsolutePath(agendaSc.getComponentId())
               + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "RepositoryTypeTemp")
+                  "RepositoryTypeTemp")
               + File.separator
               + tempFolderName
               + File.separator + logicalName);
@@ -464,7 +459,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
             SilverTrace.debug("agenda",
                 "AgendaRequestRouter.processFormUpload()",
                 "root.MSG_GEN_PARAM_VALUE", "fileUploaded = " + fileUploaded
-                + " fileSize=" + fileSize + " fileType=" + fileType);
+                    + " fileSize=" + fileSize + " fileType=" + fileType);
           }
         }
       }
