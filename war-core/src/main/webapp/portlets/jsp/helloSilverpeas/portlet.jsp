@@ -26,8 +26,9 @@
 <%@ include file="../portletImport.jsp"%>
 
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<fmt:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
 <fmt:message key="portlets.portlet.helloSilverpeas.welcome"/>

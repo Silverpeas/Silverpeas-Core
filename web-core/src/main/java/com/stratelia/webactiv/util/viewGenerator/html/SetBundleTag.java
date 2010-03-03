@@ -23,6 +23,9 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.servlet.jsp.JspException;
@@ -36,6 +39,7 @@ import org.apache.taglibs.standard.tag.common.core.Util;
 public class SetBundleTag extends TagSupport {
   private int scope = PageContext.PAGE_SCOPE;
   private String var;
+  private String basename;
 
   private ResourceBundle bundle;
 
@@ -51,7 +55,19 @@ public class SetBundleTag extends TagSupport {
     this.bundle = bundle;
   }
 
+  public void setBasename(String basename) {
+    this.basename = basename;
+  }
+
+  @Override
   public int doEndTag() throws JspException {
+    Locale locale  = (Locale) Config.find(pageContext, Config.FMT_LOCALE);
+    if(locale == null) {
+      locale = Locale.getDefault();
+    }
+    if (StringUtil.isDefined(basename)) {
+      bundle = FileUtil.loadBundle(basename, locale);
+    }
     LocalizationContext locCtxt = new LocalizationContext(bundle);
     if (var != null) {
       pageContext.setAttribute(var, locCtxt, scope);

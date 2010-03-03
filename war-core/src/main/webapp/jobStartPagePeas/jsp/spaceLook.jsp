@@ -29,6 +29,7 @@
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
 
 <!-- Resource bundle configuration -->
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
 <fmt:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
 <!-- Retrieve current space bean -->
 <c:set var="curSpace" value="${requestScope.Space}" />
