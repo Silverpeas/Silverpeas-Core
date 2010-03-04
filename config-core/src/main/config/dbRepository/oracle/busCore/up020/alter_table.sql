@@ -1,1 +1,3 @@
-ALTER TABLE ST_Space ADD COLUMN displaySpaceFirst INT;
+ALTER TABLE ST_Space
+ADD displaySpaceFirst int
+;

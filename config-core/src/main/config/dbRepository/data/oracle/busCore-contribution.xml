@@ -182,7 +182,7 @@
        </create_table>
 	</upgrade>
 
-  <upgrade version="0220">
+  <upgrade version="020">
        <create_table>
             <file name="oracle\busCore\up020\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
        </create_table>
