@@ -127,7 +127,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && PagesContext.
-            useMandatory()) {
+        useMandatory()) {
       html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
     }
 

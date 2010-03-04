@@ -101,7 +101,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
           "Value.substring(0,7)==\"remove_\") {");
       out.println("			errorMsg+=\"  - '" +
           EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " + Util.
-              getString("GML.MustBeFilled", language) + "\\n \";");
+          getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("			errorNb++;");
       out.println("		}");
       out.println("	}");
@@ -123,8 +123,8 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       PagesContext pagesContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.
-            getFieldName() + ", value = " + field.getValue() + ", fieldType = " +
-            field.getTypeName());
+        getFieldName() + ", value = " + field.getValue() + ", fieldType = " +
+        field.getTypeName());
 
     String mandatoryImg = Util.getIcon("mandatoryField");
 
@@ -164,7 +164,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
           "<INPUT type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\">";
       html +=
           "<INPUT type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
-              "\" value=\"" + attachmentId + "\">";
+          "\" value=\"" + attachmentId + "\">";
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
@@ -173,17 +173,17 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         html += "&nbsp;<span id=\"div" + fieldName + "\">";
         html +=
             "<IMG alt=\"\" align=\"absmiddle\" src=\"" + attachment.getAttachmentIcon() +
-                "\" width=20>&nbsp;";
+            "\" width=20>&nbsp;";
         html +=
             "<A href=\"" + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-                attachment.getLogicalName() + "</A>";
+            attachment.getLogicalName() + "</A>";
 
         html +=
             "&nbsp;<a href=\"#\" onclick=\"javascript:"
-                + "document.getElementById('div" + fieldName + "').style.display='none';"
-                + "document." + pagesContext.getFormName() + "." + fieldName +
-                Field.FILE_PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId + "';"
-                + "\">";
+            + "document.getElementById('div" + fieldName + "').style.display='none';"
+            + "document." + pagesContext.getFormName() + "." + fieldName +
+            Field.FILE_PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId + "';"
+            + "\">";
         html += "<img src=\""
             + deleteImg
             + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
@@ -294,7 +294,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
 
         logicalName =
             logicalName
-                .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+            .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
         type = FileRepositoryManager.getFileExtension(logicalName);
         mimeType = item.getContentType();
 
@@ -312,8 +312,8 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         if (size > 0) {
           AttachmentDetail ad =
               createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-                  size,
-                  ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
+              size,
+              ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
           ad = AttachmentController.createAttachment(ad, true);
           attachmentId = ad.getPK().getId();
         } else {
@@ -344,7 +344,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
     // create AttachmentDetail Object
     AttachmentDetail ad =
         new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, context,
-            new Date(), foreignKey);
+        new Date(), foreignKey);
     ad.setAuthor(userId);
 
     return ad;

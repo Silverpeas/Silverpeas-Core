@@ -75,7 +75,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     if (action != null && action.getKind().equals("create")) {
       UpdatableProcessInstanceManager instanceManager =
           (UpdatableProcessInstanceManager) WorkflowHub
-              .getProcessInstanceManager();
+          .getProcessInstanceManager();
       instance = (UpdatableProcessInstance) instanceManager
           .createProcessInstance(model.getModelId());
       event.setProcessInstance(instance);

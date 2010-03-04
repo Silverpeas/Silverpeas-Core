@@ -163,8 +163,8 @@ public interface State {
 
   /**
    * Get all the users interested by this state
-   * @return QualifiedUsers object containing interested users, or an empty QualifiedUsers object but
-   * never <code>null</code>
+   * @return QualifiedUsers object containing interested users, or an empty QualifiedUsers object
+   * but never <code>null</code>
    */
   public QualifiedUsers getInterestedUsers();
 
