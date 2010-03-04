@@ -25,6 +25,7 @@
 --%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
@@ -48,6 +49,7 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
 }
 %>
 
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -60,6 +62,8 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/navigation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/personalSpace.js"></script>
+<script type="text/javascript" src="<%=m_sContext %>/attachment/jsp/jquery-1.3.2.min.js"></script>
 <script language="JavaScript1.2">
 <!--
 
@@ -176,6 +180,15 @@ out.println(gef.getLookStyleSheet());
     function getFooterPage()
     {
         return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&ResultPage=searchDocuments.jsp&";
+    }
+
+    function getPersonalSpaceLabels()
+    {
+        var labels = new Array(2);
+        labels[0] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.select"))%>";
+        labels[1] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.remove.confirm"))%>";
+        labels[2] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.add"))%>";
+        return labels;
     }
 -->
 </script>

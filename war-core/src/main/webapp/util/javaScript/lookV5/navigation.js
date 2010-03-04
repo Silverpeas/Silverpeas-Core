@@ -87,7 +87,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	{
   		closeSpace(spaceId, currentSpaceLevel, true);
   		
-  		//Envoi de la requête pour afficher le contenu de l'espace
+  		//Envoi de la requï¿½te pour afficher le contenu de l'espace
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','GetPDC='+displayPDC(),'SpaceId='+spaceId);
   	}
   	else
@@ -128,7 +128,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   		{
   		}
   		
-  		//Envoi de la requête pour afficher le contenu de l'espace
+  		//Envoi de la requï¿½te pour afficher le contenu de l'espace
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','GetPDC='+displayPDC(),'SpaceId='+spaceId);
   	}
   	
@@ -234,11 +234,9 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	document.getElementById("img"+componentId).width = "20";
   	document.getElementById("img"+componentId).height = "8";
   	
-  	//Ajout DLE:
   	var componentActiv = document.getElementById(componentId);
-		componentActiv.setAttribute("class", "browseComponentActiv");
-	  componentActiv.setAttribute("className", "browseComponentActiv");
-		//FiN DLE
+	componentActiv.setAttribute("class", "browseComponentActiv");
+	componentActiv.setAttribute("className", "browseComponentActiv");
 		
   	if (componentId != currentComponentId)
 	  	closeCurrentComponent();
@@ -253,7 +251,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	else
   		eval(componentURL);
   	  	  	
-  	//Envoi de la requête pour afficher le plan de classement du composant
+  	//Envoi de la requï¿½te pour afficher le plan de classement du composant
 	ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','GetPDC='+displayPDC(),'ComponentId='+currentComponentId);
 	
 	refreshPDCFrame();
@@ -264,16 +262,21 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   {
   	if (currentComponentId != "")
   	{
-	   	document.getElementById("img"+currentComponentId).src = "icons/1px.gif";
-	   	document.getElementById("img"+currentComponentId).width = "1";
-	   	document.getElementById("img"+currentComponentId).height = "1";
-
-  	//Ajout DLE:
-  	var componentActiv = document.getElementById(currentComponentId);
-		componentActiv.setAttribute("class", "browseComponent");
-	  componentActiv.setAttribute("className", "browseComponent");
-		//FiN DLE
-	   		    	
+  		try
+  		{
+		   	document.getElementById("img"+currentComponentId).src = "icons/1px.gif";
+		   	document.getElementById("img"+currentComponentId).width = "1";
+		   	document.getElementById("img"+currentComponentId).height = "1";
+		   	
+		   	var componentActiv = document.getElementById(currentComponentId);
+			componentActiv.setAttribute("class", "browseComponent");
+			componentActiv.setAttribute("className", "browseComponent");
+  		}
+  		catch (e)
+  		{
+  			//do nothing
+  		}
+			    	
 	   	currentComponentId = "";
   	}
   }
@@ -293,7 +296,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	img.setAttribute("align", "absmiddle");
   	document.getElementById("jsAxis"+axisId).setAttribute("href", "javaScript:pdcAxisCollapse('"+axisId+"')");
   	
-  	//Envoi de la requête pour afficher le contenu de l'axe
+  	//Envoi de la requï¿½te pour afficher le contenu de l'axe
   	if (isPDCContextual())
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','SpaceId='+currentSpaceId,'ComponentId='+currentComponentId,'AxisId='+axisId,'ValuePath='+currentValuePath);
   	else
@@ -346,7 +349,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	img.setAttribute("align", "absmiddle");
   	document.getElementById("jsValue"+valuePath).setAttribute("href", "javaScript:pdcValueCollapse('"+valuePath+"')");
   	
-  	//Envoi de la requête pour afficher le contenu de la valeur de l'axe
+  	//Envoi de la requï¿½te pour afficher le contenu de la valeur de l'axe
   	if (isPDCContextual())
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','SpaceId='+currentSpaceId,'ComponentId='+currentComponentId,'AxisId='+currentAxisId,'ValuePath='+valuePath);
   	else
@@ -807,35 +810,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   		   var itemOpen		= item.getAttribute("open");
   		   var itemURL		= item.getAttribute("url");
   		   
-  		   //create new entry
-  		   var newEntry = document.createElement("div");
-  		   newEntry.setAttribute("id", itemId);
-		   newEntry.setAttribute("class", "browseComponent");
-		   newEntry.setAttribute("className", "browseComponent");			  
-	   
-  		   var newEntryURL 		= document.createElement("a");
-  		   newEntryURL.setAttribute("onfocus", "this.blur()");
-  		   var newEntryIcon 	= document.createElement("img");
-  		   var newEntryIconSel  = document.createElement("img");
-  		   
-  		   newEntryIconSel.setAttribute("id", "img"+itemId);
-		   newEntryIconSel.setAttribute("src", "icons/1px.gif");
-		   /*newEntryURL.setAttribute("class", "browseComponent");
-		   newEntryURL.setAttribute("className", "browseComponent");*/
-		   newEntryURL.setAttribute("href", "javaScript:openComponent('"+itemId+"',"+itemLevel+",'"+itemURL+"')");
-	   
-		   /*if (displayComponentsIcons())
-			   newEntryIcon.setAttribute("src", getContext()+"/util/icons/component/"+itemKind+"Small.gif");
-		   else*/
-			   newEntryIcon.setAttribute("src", "icons/1px.gif");
-			   
-  		   var newEntryLabel = document.createTextNode(item.getAttribute("name"));
-  		   newEntryURL.appendChild(newEntryLabel);
-  		      		   
- 		   newEntry.appendChild(newEntryIcon);
-  		   newEntry.appendChild(newEntryURL);
-  		   
-  		   newEntry.appendChild(newEntryIconSel);
+  		   var newEntry = getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen, itemURL, item.getAttribute("name"));
 
   		   //add new entry to list
   		   spaceContentDiv.appendChild(newEntry);
@@ -1054,3 +1029,59 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	   img.setAttribute("height", "15");
      }
   };
+    
+  function getPersonalSpaceElement(itemId, itemLevel, itemKind, itemType, itemOpen, itemURL, itemName)
+  {
+	  //create new entry
+	  var newEntry = document.createElement("div");
+	  newEntry.setAttribute("id", itemId);
+	  newEntry.setAttribute("class", "browseComponent");
+	  newEntry.setAttribute("className", "browseComponent");
+  
+	  var newEntryURL 		= document.createElement("a");
+	  newEntryURL.setAttribute("onfocus", "this.blur()");
+	  var newEntryIcon 	= document.createElement("img");
+	  var newEntryIconSel  = document.createElement("img");
+		   
+	  newEntryIconSel.setAttribute("id", "img"+itemId);
+	  newEntryIconSel.setAttribute("src", "icons/1px.gif");
+	  newEntryURL.setAttribute("href", "javaScript:openComponent('"+itemId+"',"+itemLevel+",'"+itemURL+"')");
+  
+	  newEntryIcon.setAttribute("src", "icons/1px.gif");
+		   
+	  var newEntryLabel = document.createTextNode(itemName);
+	  newEntryURL.appendChild(newEntryLabel);
+		      		   
+	  newEntry.appendChild(newEntryIcon);
+	  newEntry.appendChild(newEntryURL);
+		   
+	  newEntry.appendChild(newEntryIconSel);
+		   
+	  if (itemKind == "personalComponent")
+	  {
+		  newEntry.onmouseover = function(){ 
+			  document.getElementById('imgDel'+this.id).style.visibility='visible';
+		  };
+			   
+		  newEntry.onmouseout = function(){ 
+			  document.getElementById('imgDel'+this.id).style.visibility='hidden';
+		  };
+		   
+		  var deleteURL = document.createElement("a");
+		  deleteURL.setAttribute("onfocus", "this.blur()");
+		  deleteURL.setAttribute("href", "javaScript:removeComponent('"+itemId+"')");
+   
+		  var deleteIcon = document.createElement("img");
+		  deleteIcon.setAttribute("id", "imgDel"+itemId);
+		  deleteIcon.setAttribute("src", getContext()+"/util/icons/delete.gif");
+		  deleteIcon.style.visibility = "hidden";
+		  deleteIcon.setAttribute("width", "12");
+		  deleteIcon.setAttribute("height", "12");
+		  deleteIcon.setAttribute("align", "absmiddle");
+   
+		  deleteURL.appendChild(deleteIcon);
+		  newEntry.appendChild(deleteURL);
+	  }
+		   
+	  return newEntry;
+  }

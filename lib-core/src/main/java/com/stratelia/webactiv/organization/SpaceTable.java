@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
+import java.util.List;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -43,7 +44,7 @@ public class SpaceTable extends Table {
   }
 
   static final private String SPACE_COLUMNS =
-      "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst";
+      "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
 
   /**
    * Fetch the current space row from a resultSet.
@@ -90,6 +91,11 @@ public class SpaceTable extends Table {
       s.displaySpaceFirst = 1;
     }
 
+    s.isPersonalSpace = rs.getInt(19);
+    if (rs.wasNull()) {
+      s.isPersonalSpace = 0;
+    }
+
     return s;
   }
 
@@ -102,6 +108,20 @@ public class SpaceTable extends Table {
 
   static final private String SELECT_SPACE_BY_ID = "select " + SPACE_COLUMNS
       + " from ST_Space where id = ?";
+
+  public SpaceRow getPersonalSpace(String userId) throws AdminPersistenceException {
+    int[] ids = new int[2];
+    ids[0] = 1;
+    ids[1] = Integer.valueOf(userId);
+    List<SpaceRow> rows = (List<SpaceRow>) getRows(SELECT_PERSONALSPACE, ids);
+    if (rows != null && rows.size() > 0) {
+      return rows.get(0);
+    }
+    return null;
+  }
+
+  static final private String SELECT_PERSONALSPACE = "select " + SPACE_COLUMNS
+      + " from ST_Space where isPersonal = ? and createdBy = ? ";
 
   /**
    * Tests if a space with given space id exists
@@ -145,6 +165,7 @@ public class SpaceTable extends Table {
   static final private String SELECT_ALL_ROOT_SPACE_IDS = "select id from ST_Space"
       + " where domainFatherId is null"
       + " AND spaceStatus is null"
+      + " AND isPersonal is null"
       + " order by orderNum";
 
   /**
@@ -157,7 +178,7 @@ public class SpaceTable extends Table {
 
   static final private String SELECT_ALL_ROOT_SPACES = "select "
       + SPACE_COLUMNS + " from ST_Space" + " where domainFatherId is null"
-      + " AND spaceStatus is null" + " order by orderNum";
+      + " AND spaceStatus is null AND isPersonal is null" + " order by orderNum";
 
   /**
    * Returns all spaces which has been removed but not definitely deleted
@@ -197,11 +218,13 @@ public class SpaceTable extends Table {
       + " from ST_Space,ST_UserSet_User_Rel"
       + " where ST_Space.id=userSetId and userSetType='S' and userId=?"
       + " and ST_Space.domainFatherId is null"
+      + " and ST_Space.isPersonal is null"
       + " and ST_Space.spaceStatus is null" + " union" + " SELECT "
       + aliasColumns("S", SPACE_COLUMNS)
       + " FROM   ST_UserSet_UserSet_Rel, ST_ComponentInstance C, ST_Space S"
       + " WHERE subSetType = 'I' AND subSetId = C.id AND S.id = superSetId"
       + " AND S.domainFatherId is null" + " AND S.spaceStatus is null"
+      + " AND S.isPersonal is null"
       + " AND C.isPublic = 1" + " order by orderNum";
 
   /**
@@ -223,6 +246,7 @@ public class SpaceTable extends Table {
       + aliasColumns("ST_Space", SPACE_COLUMNS)
       + " from ST_UserSet_User_Rel, ST_Space"
       + " where userSetType='S' and ST_Space.id = userSetId"
+      + " and ST_Space.isPersonal is null"
       + " and ST_Space.spaceStatus is null" + " and userId = ?" + " union"
       + " SELECT " + aliasColumns("S", SPACE_COLUMNS)
       + " FROM   ST_UserSet_UserSet_Rel, ST_ComponentInstance C, ST_Space S"
@@ -311,7 +335,7 @@ public class SpaceTable extends Table {
 
   static final private String INSERT_SPACE = "insert into" + " ST_Space("
       + SPACE_COLUMNS + ")"
-      + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
@@ -361,6 +385,8 @@ public class SpaceTable extends Table {
     insert.setString(17, s.look);
 
     insert.setInt(18, s.displaySpaceFirst);
+
+    insert.setInt(19, s.isPersonalSpace);
   }
 
   public void updateSpaceOrder(int spaceId, int orderNum)
@@ -399,7 +425,7 @@ public class SpaceTable extends Table {
       + " updateTime = ?," + " updatedBy = ?,"
             // + " removeTime = ?,"
       + " spaceStatus = ?," + " lang = ?," + " isInheritanceBlocked = ?,"
-      + " look = ?," + " displaySpaceFirst = ? " + " where id = ?";
+      + " look = ?," + " displaySpaceFirst = ? " + " isPersonal = ? " + " where id = ?";
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
@@ -430,7 +456,9 @@ public class SpaceTable extends Table {
 
     update.setInt(14, s.displaySpaceFirst);
 
-    update.setInt(15, s.id);
+    update.setInt(15, s.isPersonalSpace);
+
+    update.setInt(16, s.id);
     // First page parameters
   }
 

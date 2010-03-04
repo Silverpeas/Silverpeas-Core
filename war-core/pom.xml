@@ -127,6 +127,11 @@
       <groupId>org.jasig.cas</groupId>
       <artifactId>cas-client-core</artifactId>
     </dependency>
+	<dependency>
+      <groupId>com.metaparadigm</groupId>
+      <artifactId>json-rpc</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <build>

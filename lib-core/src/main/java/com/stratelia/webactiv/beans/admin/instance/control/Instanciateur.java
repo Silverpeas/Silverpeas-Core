@@ -38,8 +38,10 @@ package com.stratelia.webactiv.beans.admin.instance.control;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -171,7 +173,7 @@ public class Instanciateur extends Object {
   }
 
   public static WAComponent getWAComponent(String componentName) {
-    return (WAComponent) WAComponents.get(componentName);
+    return WAComponents.get(componentName);
   }
 
   public static Hashtable<String, WAComponent> getWAComponents() {
@@ -188,6 +190,18 @@ public class Instanciateur extends Object {
     }
 
     return hComponents;
+  }
+
+  public static List<WAComponent> getVisibleComponentsForPersonalSpace() {
+    List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
+    Enumeration<WAComponent> e = WAComponents.elements();
+    while (e.hasMoreElements()) {
+      WAComponent component = e.nextElement();
+      if (component.isVisibleInPersonalSpace()) {
+        visibleComponents.add(component);
+      }
+    }
+    return visibleComponents;
   }
 
   /**

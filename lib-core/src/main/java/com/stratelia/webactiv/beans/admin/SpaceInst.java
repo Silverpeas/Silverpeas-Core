@@ -31,6 +31,7 @@ import java.util.List;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -99,6 +100,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   private int level = 0;
 
   private boolean displaySpaceFirst = true;
+  private boolean isPersonalSpace = false;
 
   /**
    * Constructor
@@ -117,6 +119,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     m_asSubSpaceIds = new String[0];
     level = 0;
     displaySpaceFirst = true;
+    setPersonalSpace(false);
   }
 
   public int compareTo(SpaceInst o) {
@@ -172,14 +175,22 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N)
-      return getName();
-
-    SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-    if (s == null)
-      s = (SpaceI18N) getNextTranslation();
-
-    return s.getName();
+    
+    if (isPersonalSpace)
+    {
+      return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace", "Mon espace");
+    }
+    else
+    {
+      if (!I18NHelper.isI18N)
+        return getName();
+  
+      SpaceI18N s = (SpaceI18N) getTranslations().get(language);
+      if (s == null)
+        s = (SpaceI18N) getNextTranslation();
+  
+      return s.getName();
+    }
   }
 
   /**
@@ -570,5 +581,13 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public void setDisplaySpaceFirst(boolean isDisplaySpaceFirst) {
     this.displaySpaceFirst = isDisplaySpaceFirst;
+  }
+
+  public void setPersonalSpace(boolean isPersonalSpace) {
+    this.isPersonalSpace = isPersonalSpace;
+  }
+
+  public boolean isPersonalSpace() {
+    return isPersonalSpace;
   }
 }

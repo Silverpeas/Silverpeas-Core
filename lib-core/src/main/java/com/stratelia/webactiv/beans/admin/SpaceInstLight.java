@@ -34,6 +34,7 @@ import java.util.List;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.organization.SpaceRow;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * @author neysseri
@@ -65,6 +66,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   private List<SpaceInstLight> path = null;
 
   private boolean displaySpaceFirst = true;
+  private boolean isPersonalSpace = false;
 
   public SpaceInstLight() {
     id = "";
@@ -74,6 +76,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     orderNum = 0;
     level = 0;
     displaySpaceFirst = true;
+    isPersonalSpace = false;
   }
 
   public SpaceInstLight(SpaceRow spaceRow) {
@@ -97,6 +100,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
 
       look = spaceRow.look;
       displaySpaceFirst = (spaceRow.displaySpaceFirst == 1);
+      isPersonalSpace = spaceRow.isPersonalSpace == 1;
     }
   }
 
@@ -116,6 +120,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
 
       setTranslations(spaceInst.getTranslations());
       displaySpaceFirst = spaceInst.isDisplaySpaceFirst();
+      isPersonalSpace = spaceInst.isPersonalSpace();
     }
   }
 
@@ -149,14 +154,21 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N)
-      return getName();
-
-    SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-    if (s == null)
-      s = (SpaceI18N) getNextTranslation();
-
-    return s.getName();
+    if (isPersonalSpace)
+    {
+      return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace", "Mon espace");
+    }
+    else
+    {
+      if (!I18NHelper.isI18N)
+        return getName();
+  
+      SpaceI18N s = (SpaceI18N) getTranslations().get(language);
+      if (s == null)
+        s = (SpaceI18N) getNextTranslation();
+  
+      return s.getName();
+    }
   }
 
   /**
@@ -302,6 +314,14 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
 
   public void setDisplaySpaceFirst(boolean displaySpaceFirst) {
     this.displaySpaceFirst = displaySpaceFirst;
+  }
+
+  public boolean isPersonalSpace() {
+    return isPersonalSpace;
+  }
+
+  public void setPersonalSpace(boolean isPersonalSpace) {
+    this.isPersonalSpace = isPersonalSpace;
   }
 
 }

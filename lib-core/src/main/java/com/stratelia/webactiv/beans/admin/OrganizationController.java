@@ -328,7 +328,11 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public List<SpaceInst> getSpacePathToComponent(String componentId) {
     ComponentInstLight componentInstLight = getComponentInstLight(componentId);
-    return getSpacePath(componentInstLight.getDomainFatherId());
+    if (componentInstLight != null)
+    {
+      return getSpacePath(componentInstLight.getDomainFatherId());
+    }
+    return new ArrayList<SpaceInst>();
   }
 
   private List<SpaceInst> getSpacePath(List<SpaceInst> path, String spaceId) {

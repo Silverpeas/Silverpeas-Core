@@ -35,6 +35,7 @@ public class SPParameter implements Serializable, Comparable<SPParameter> {
   private String name = null;
   private String label = null;
   private String value = null;
+  private String valueForPersonalSpace = null;
   private boolean mandatory = false;
   private String updatable = null;
   private String type = null;
@@ -176,10 +177,19 @@ public class SPParameter implements Serializable, Comparable<SPParameter> {
     this.displayOrder = displayOrder;
   }
 
+  public String getValueForPersonalSpace() {
+    return valueForPersonalSpace;
+  }
+
+  public void setValueForPersonalSpace(String valueForPersonalSpace) {
+    this.valueForPersonalSpace = valueForPersonalSpace;
+  }
+
   public Object clone() {
     SPParameter clonedParameter = new SPParameter(name, label, value,
         mandatory, updatable, type, helps, size, defaultValue, options);
     clonedParameter.setDisplayOrder(getDisplayOrder());
+    clonedParameter.setValueForPersonalSpace(getValueForPersonalSpace());
     return clonedParameter;
   }
 

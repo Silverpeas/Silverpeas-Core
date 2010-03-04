@@ -236,6 +236,30 @@ public class AjaxServletLookV5 extends HttpServlet {
                     + EncodeHelper.escapeXml(message.getString("Clipboard"))
                     + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
           }
+          
+          if (SilverpeasSettings.readBoolean(settings, "PersonalSpaceAddingsEnabled", true)) {
+            
+            PersonalSpaceController psc = new PersonalSpaceController();
+            SpaceInst personalSpace = psc.getPersonalSpace(userId);
+            for (ComponentInst component : personalSpace.getAllComponentsInst())
+            {
+              String label = helper.getString("lookSilverpeasV5.personalSpace." + component.getName());
+              if (!StringUtil.isDefined(label)) {
+                label = component.getName();
+              }
+              String url = URLManager.getURL(component.getName(), null, component.getId())+ "Main";
+              writer.write("<item id=\""+component.getName()+component.getId()+"\" name=\""
+                  + EncodeHelper.escapeXml(label)
+                  + "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" open=\"false\" url=\""+url+"\"/>");
+            }
+            
+            if (personalSpace == null || (personalSpace.getAllComponentsInst().size() < psc.getVisibleComponents(orgaController).size()))
+            {
+              writer.write("<item id=\"addComponent\" name=\""
+                      + EncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add"))
+                      + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
+            }
+          }
         }
 
         writer.write("</spacePerso>");

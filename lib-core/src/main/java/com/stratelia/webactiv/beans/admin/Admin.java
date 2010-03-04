@@ -542,6 +542,11 @@ public class Admin extends Object {
           + sSpaceId + "'", e);
     }
   }
+  
+  public SpaceInst getPersonalSpace(String userId) throws AdminException
+  {
+    return m_SpaceInstManager.getPersonalSpace(m_DDManager, userId);
+  }
 
   /**
    * Get all the subspaces Ids available in Silverpeas given a domainFatherId (client id format)

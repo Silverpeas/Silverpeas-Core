@@ -60,6 +60,7 @@ public class WAComponent {
   protected String description;
   protected String suite;
   protected boolean visible;
+  protected boolean visibleInPersonalSpace;
   protected boolean portlet;
   protected String instanceClassName;
   protected String[] tableList = new String[0];
@@ -79,26 +80,30 @@ public class WAComponent {
       Node ndescription = WADOMUtil.findNode(document, "description");
       Node nsuite = WADOMUtil.findNode(document, "suite");
       Node nvisible = WADOMUtil.findNode(document, "visible");
+      Node nvisibleInPersonalSpace = WADOMUtil.findNode(document, "visibleInPersonalSpace");
       Node nportlet = WADOMUtil.findNode(document, "portlet");
       Node ninstanceClassName = WADOMUtil.findNode(document,
           "instanceClassName");
       Node ntableList = WADOMUtil.findNode(document, "tableList");
       Node nprofilList = WADOMUtil.findNode(document, "Profiles");
 
-      this.name = nname.getFirstChild().getNodeValue();
-      this.label = nlabel.getFirstChild().getNodeValue();
-      this.description = ndescription.getFirstChild().getNodeValue();
-      this.suite = nsuite.getFirstChild().getNodeValue();
-      this.visible = stringToBoolean(nvisible.getFirstChild().getNodeValue());
-      this.portlet = stringToBoolean(nportlet.getFirstChild().getNodeValue());
-      this.instanceClassName = ninstanceClassName.getFirstChild()
-          .getNodeValue();
+      name = nname.getFirstChild().getNodeValue();
+      label = nlabel.getFirstChild().getNodeValue();
+      description = ndescription.getFirstChild().getNodeValue();
+      suite = nsuite.getFirstChild().getNodeValue();
+      visible = stringToBoolean(nvisible.getFirstChild().getNodeValue());
+      if (nvisibleInPersonalSpace != null) {
+        visibleInPersonalSpace =
+            stringToBoolean(nvisibleInPersonalSpace.getFirstChild().getNodeValue());
+      }
+      portlet = stringToBoolean(nportlet.getFirstChild().getNodeValue());
+      instanceClassName = ninstanceClassName.getFirstChild().getNodeValue();
       if (nrequestRouter == null)
-        this.requestRouter = "R" + this.name;
+        requestRouter = "R" + name;
       else
-        this.requestRouter = nrequestRouter.getFirstChild().getNodeValue();
+        requestRouter = nrequestRouter.getFirstChild().getNodeValue();
 
-      if ((ntableList != null) && (ntableList.hasChildNodes())) {
+      if (ntableList != null && ntableList.hasChildNodes()) {
         NodeList list = ntableList.getChildNodes();
         int size = list.getLength();
         String[] myList = new String[size];
@@ -110,7 +115,7 @@ public class WAComponent {
           this.tableList = myList;
         }
       }
-      if ((nprofilList != null) && (nprofilList.hasChildNodes())) {
+      if (nprofilList != null && nprofilList.hasChildNodes()) {
         NodeList list = nprofilList.getChildNodes();
         String strLabel = ""; // profile label as seen by user
         String strProfile; // profile name as stored in database
@@ -311,7 +316,8 @@ public class WAComponent {
 
   public void writeToXml() throws InstanciationException {
 
-    String strDescriptorFileName = Instanciateur.getXMLPackage() + File.separatorChar + name.trim() + ".xml";
+    String strDescriptorFileName =
+        Instanciateur.getXMLPackage() + File.separatorChar + name.trim() + ".xml";
     Mapping mapping = new Mapping();
     String strMappingFileName = settings.getString("CastorXMLMappingFileURL");
     String strDescriptorFileEncoding = settings.getString("ComponentDescriptorFileEncoding");
@@ -381,7 +387,15 @@ public class WAComponent {
         || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
         .equalsIgnoreCase("false")))) {
       return false;
-    } 
+    }
     return true;
+  }
+
+  public boolean isVisibleInPersonalSpace() {
+    return visibleInPersonalSpace;
+  }
+
+  public void setVisibleInPersonalSpace(boolean visibleInPersonalSpace) {
+    this.visibleInPersonalSpace = visibleInPersonalSpace;
   }
 }

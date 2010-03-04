@@ -36,7 +36,7 @@ import org.w3c.dom.NodeList;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SPParameters implements Serializable {
-  
+
   private static final long serialVersionUID = 1171596828032086864L;
   private Hashtable<String, SPParameter> parameters = new Hashtable<String, SPParameter>();
 
@@ -109,6 +109,7 @@ public class SPParameters implements Serializable {
       String sParameterName = "";
       String sParameterLabel = "";
       String sParameterValue = "";
+      String sParameterValueForPersonalSpace = "";
       String sParameterMandatory = "";
       String sParameterUpdatable = "";
       String sParameterType = "";
@@ -123,6 +124,7 @@ public class SPParameters implements Serializable {
       Node nParameterName = null;
       Node nParameterLabel = null;
       Node nParameterValue = null;
+      Node nParameterValueForPersonalSpace = null;
       Node nParameterMandatory = null;
       Node nParameterUpdatable = null;
       Node nParameterType = null;
@@ -138,6 +140,7 @@ public class SPParameters implements Serializable {
           sParameterName = "";
           sParameterLabel = "";
           sParameterValue = "";
+          sParameterValueForPersonalSpace = "";
           sParameterMandatory = "";
           sParameterUpdatable = "";
           sParameterType = "";
@@ -152,6 +155,8 @@ public class SPParameters implements Serializable {
               "ParameterLabel");
           nParameterValue = WADOMUtil.findNode(listParameters.item(nI),
               "ParameterValue");
+          nParameterValueForPersonalSpace = WADOMUtil.findNode(listParameters.item(nI),
+              "ParameterValueForPersonalSpace");
           nParameterMandatory = WADOMUtil.findNode(listParameters.item(nI),
               "ParameterMandatory");
           nParameterUpdatable = WADOMUtil.findNode(listParameters.item(nI),
@@ -177,6 +182,11 @@ public class SPParameters implements Serializable {
           if (nParameterValue != null
               && nParameterValue.getFirstChild() != null)
             sParameterValue = nParameterValue.getFirstChild().getNodeValue();
+
+          if (nParameterValueForPersonalSpace != null
+              && nParameterValueForPersonalSpace.getFirstChild() != null)
+            sParameterValueForPersonalSpace =
+                nParameterValueForPersonalSpace.getFirstChild().getNodeValue();
 
           if (nParameterMandatory != null
               && nParameterMandatory.getFirstChild() != null)
@@ -265,6 +275,7 @@ public class SPParameters implements Serializable {
               sParameterValue, sParameterMandatory, sParameterUpdatable,
               sParameterType, sParameterHelp, sParameterSize, sParameterValue,
               sParameterOrder, sParameterOptions);
+          parameter.setValueForPersonalSpace(sParameterValueForPersonalSpace);
           addParameter(parameter);
         }
     }

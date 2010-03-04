@@ -316,6 +316,11 @@
     <servlet-class>com.silverpeas.lookV5.AjaxServletLookV5</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>PersonalSpaceJSONServlet</servlet-name>
+    <display-name>PersonalSpaceJSONServlet</display-name>
+    <servlet-class>com.silverpeas.lookV5.PersonalSpaceJSONServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>SelectionPeasRequestRouter</servlet-name>
     <display-name>SelectionPeasRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.selectionPeas.servlets.SelectionPeasRequestRouter</servlet-class>
@@ -671,6 +676,10 @@
   <servlet-mapping>
     <servlet-name>AjaxServletSilverpeasV5</servlet-name>
     <url-pattern>/RAjaxSilverpeasV5/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>PersonalSpaceJSONServlet</servlet-name>
+    <url-pattern>/PersonalSpace/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>SelectionPeasRequestRouter</servlet-name>
