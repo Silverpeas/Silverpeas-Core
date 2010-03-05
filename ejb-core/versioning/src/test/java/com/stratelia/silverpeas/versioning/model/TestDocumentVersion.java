@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.versioning.model;
 import java.util.Date;
 
 import com.silverpeas.util.MimeTypes;
+import java.io.File;
 
 import junit.framework.TestCase;
 
@@ -33,8 +34,9 @@ public class TestDocumentVersion extends TestCase {
 
   private static final String instanceId = "kmelia60";
 
-  private static final String UPLOAD_DIR = "c:\\tmp\\uploads\\" + instanceId
-      + "\\Versioning\\";
+  private static final String UPLOAD_DIR = System.getProperty("basedir") + File.separatorChar + "target"
+          + File.separatorChar + "uploads" + File.separatorChar + instanceId + File.separatorChar
+          + "Versioning"  + File.separatorChar;
 
   public void testIsOfficeDocument() {
     DocumentVersion doc = new DocumentVersion();
@@ -111,11 +113,13 @@ public class TestDocumentVersion extends TestCase {
     doc.setMimeType(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT);
     doc.setMinorNumber(1);
     doc.setPhysicalName("1210692002788.odp");
-    assertEquals(UPLOAD_DIR + "1210692002788.odp", doc.getDocumentPath());
+    String documentPath = doc.getDocumentPath().replace('\\',  File.separatorChar);
+    documentPath = documentPath.replace('/',  File.separatorChar);
+    assertEquals(UPLOAD_DIR + "1210692002788.odp", documentPath);
     doc.setMimeType(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT);
-    assertEquals(UPLOAD_DIR + "1210692002788.odp", doc.getDocumentPath());
+    assertEquals(UPLOAD_DIR + "1210692002788.odp", documentPath);
     doc.setMinorNumber(2);
-    assertEquals(UPLOAD_DIR + "1210692002788.odp", doc.getDocumentPath());
+    assertEquals(UPLOAD_DIR + "1210692002788.odp", documentPath);
   }
 
 }

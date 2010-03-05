@@ -47,8 +47,11 @@ public class TestJcrDocumentService extends AbstractJcrTestCase {
   private JcrDocumentService service;
 
   private static final String instanceId = "kmelia60";
-  private static final String UPLOAD_DIR = "c:\\tmp\\uploads\\" + instanceId
-      + "\\Versioning\\";
+  private static final String UPLOAD_DIR = System.getProperty("basedir") + File.separatorChar + "target"
+          + File.separatorChar + "uploads" + File.separatorChar + instanceId + File.separatorChar
+          + "Versioning"  + File.separatorChar;
+
+
 
   @Override
   protected void clearRepository() throws Exception {

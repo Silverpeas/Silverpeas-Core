@@ -13,6 +13,18 @@
   <name>EJB Versioning</name>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>
+  </build>
+<!--
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -23,7 +35,7 @@
       </plugin>
     </plugins>
   </build>
-  
+  -->
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -39,9 +51,8 @@
     </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>test-core</artifactId>
       <version>${project.version}</version>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>

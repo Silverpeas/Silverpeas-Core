@@ -45,10 +45,10 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 public class TestJcrDocumentDao extends AbstractJcrTestCase {
 
   private JcrDocumentDao jcrDocumentDao;
-
   private static final String instanceId = "kmelia60";
-  private static final String UPLOAD_DIR = "c:\\tmp\\uploads\\" + instanceId
-      + "\\Versioning\\";
+  private static final String UPLOAD_DIR = System.getProperty("basedir") + File.separatorChar + "target"
+          + File.separatorChar + "uploads" + File.separatorChar + instanceId + File.separatorChar
+          + "Versioning"  + File.separatorChar;
 
   @Override
   protected void onTearDown() throws Exception {
@@ -65,7 +65,6 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       session.getRootNode().getNode(instanceId).remove();
       session.save();
     } catch (PathNotFoundException pex) {
-
     } finally {
       if (session != null) {
         BasicDaoFactory.logout(session);
@@ -78,7 +77,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
   }
 
   protected void prepareUploadedFile(String fileName, String physicalName)
-      throws IOException {
+          throws IOException {
     InputStream in = null;
     FileOutputStream out = null;
     try {
@@ -129,35 +128,28 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       jcrDocumentDao.createDocumentNode(session, doc);
       Node pathNode = session.getRootNode().getNode(instanceId);
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(instanceId + "/Versioning");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(instanceId + "/Versioning/10");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType().getName());
       pathNode = session.getRootNode().getNode(
-          instanceId + "/Versioning/10/1.1");
+              instanceId + "/Versioning/10/1.1");
       assertNotNull(pathNode);
-      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FOLDER, pathNode.getPrimaryNodeType().getName());
       Node fileNode = session.getRootNode().getNode(
-          instanceId + "/Versioning/10/1.1/FrenchScrum.odp");
+              instanceId + "/Versioning/10/1.1/FrenchScrum.odp");
       assertNotNull(fileNode);
-      assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType().getName());
       Node content = fileNode.getNode(JcrConstants.JCR_CONTENT);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().getName());
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().getName());
       assertNotNull(content.getProperty(JcrConstants.JCR_MIMETYPE));
       assertEquals(MimeTypes.EXCEL_MIME_TYPE1, content.getProperty(
-          JcrConstants.JCR_MIMETYPE).getString());
+              JcrConstants.JCR_MIMETYPE).getString());
     } finally {
       if (session != null) {
         session.logout();
@@ -183,18 +175,16 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       jcrDocumentDao.createDocumentNode(session, doc);
       // update of the content
       Node content = session.getRootNode().getNode(
-          instanceId + "/Versioning/11/1.0/test_delete.txt/jcr:content");
+              instanceId + "/Versioning/11/1.0/test_delete.txt/jcr:content");
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
-          JcrConstants.JCR_MIMETYPE).getString());
-      assertEquals("Ceci est un test.", readFileFromNode(session.getRootNode()
-          .getNode(instanceId + "/Versioning/11/1.0/test_delete.txt")));
+              JcrConstants.JCR_MIMETYPE).getString());
+      assertEquals("Ceci est un test.", readFileFromNode(session.getRootNode().getNode(instanceId + "/Versioning/11/1.0/test_delete.txt")));
       jcrDocumentDao.deleteDocumentNode(session, doc);
       try {
         content = session.getRootNode().getNode(
-            instanceId + "/Versioning/11/1.0/test_delete.txt");
+                instanceId + "/Versioning/11/1.0/test_delete.txt");
         fail();
       } catch (PathNotFoundException pnfex) {
       }
@@ -223,21 +213,18 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       jcrDocumentDao.createDocumentNode(session, doc);
       // update of the content
       Node content = session.getRootNode().getNode(
-          instanceId + "/Versioning/12/1.0/test_update.txt/jcr:content");
+              instanceId + "/Versioning/12/1.0/test_update.txt/jcr:content");
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
-          JcrConstants.JCR_MIMETYPE).getString());
-      assertEquals("Ceci est un test.", readFileFromNode(session.getRootNode()
-          .getNode(instanceId + "/Versioning/12/1.0/test_update.txt")));
+              JcrConstants.JCR_MIMETYPE).getString());
+      assertEquals("Ceci est un test.", readFileFromNode(session.getRootNode().getNode(instanceId + "/Versioning/12/1.0/test_update.txt")));
       createTempFile(UPLOAD_DIR + "test.txt", "Le test fonctionne.");
       jcrDocumentDao.updateNodeDocument(session, doc);
       session.save();
       String result = readFile(UPLOAD_DIR + "test.txt");
       assertEquals("Le test fonctionne.", result);
-      assertEquals("Le test fonctionne.", readFileFromNode(session
-          .getRootNode().getNode(
+      assertEquals("Le test fonctionne.", readFileFromNode(session.getRootNode().getNode(
               instanceId + "/Versioning/12/1.0/test_update.txt")));
     } finally {
       if (session != null) {
@@ -264,14 +251,12 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       jcrDocumentDao.createDocumentNode(session, doc);
       // update of the content
       Node content = session.getRootNode().getNode(
-          instanceId + "/Versioning/13/1.0/FrenchScrum2.odp/jcr:content");
+              instanceId + "/Versioning/13/1.0/FrenchScrum2.odp/jcr:content");
       assertNotNull(content);
-      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType()
-          .getName());
+      assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
-          JcrConstants.JCR_MIMETYPE).getString());
-      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne."
-          .getBytes());
+              JcrConstants.JCR_MIMETYPE).getString());
+      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".getBytes());
       content.setProperty(JcrConstants.JCR_DATA, in);
       session.save();
       jcrDocumentDao.updateDocument(session, doc);
@@ -280,7 +265,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       jcrDocumentDao.createDocumentNode(session, doc);
       in = new ByteArrayInputStream(new byte[0]);
       content = session.getRootNode().getNode(
-          instanceId + "/Versioning/13/1.0/FrenchScrum2.odp/jcr:content");
+              instanceId + "/Versioning/13/1.0/FrenchScrum2.odp/jcr:content");
       content.setProperty(JcrConstants.JCR_DATA, in);
       session.save();
       jcrDocumentDao.updateDocument(session, doc);
@@ -292,5 +277,4 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
       }
     }
   }
-
 }
