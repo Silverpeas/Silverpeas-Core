@@ -198,6 +198,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
   public void testUpdateNodeDocument() throws Exception {
     Session session = null;
     try {
+      registerSilverpeasNodeTypes();
       createTempFile(UPLOAD_DIR + "test.txt", "Ceci est un test.");
       session = BasicDaoFactory.getSystemSession();
       DocumentVersion doc = new DocumentVersion();
@@ -236,6 +237,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
   public void testUpdateDocument() throws Exception {
     Session session = null;
     try {
+      registerSilverpeasNodeTypes();
       createTempFile(UPLOAD_DIR + "test.txt", "Ceci est un test.");
       session = BasicDaoFactory.getSystemSession();
       DocumentVersion doc = new DocumentVersion();
