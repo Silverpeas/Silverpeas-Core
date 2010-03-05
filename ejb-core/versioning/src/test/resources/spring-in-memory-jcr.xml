@@ -28,7 +28,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean">
     <property name="configuration" value="classpath:repository-in-memory.xml" />
-    <property name="homeDir" value="file:///c:/tmp/jackrabbit.temp" />
+    <property name="homeDir" value="file:///${basedir}/target/tmp/jackrabbit.temp" />
     <property name="configurationProperties">
       <list>
         <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
