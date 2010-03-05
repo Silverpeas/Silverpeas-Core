@@ -110,6 +110,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
 
   protected void createTempFile(String path, String content) throws IOException {
     File attachmentFile = new File(path);
+    attachmentFile.getParentFile().mkdirs();
     attachmentFile.deleteOnExit();
     FileOutputStream out = null;
     Writer writer = null;
