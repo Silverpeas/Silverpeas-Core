@@ -24,7 +24,6 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
-import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -44,12 +43,12 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 import org.apache.log4j.net.SMTPAppender;
 
-import com.stratelia.silverpeas.silverpeasinitialize.SilverpeasInitializer;
-import org.apache.log4j.Logger;
+import com.silverpeas.util.FileUtil;
 
 /**
  * SilverTrace is the trace tool used in silverpeas to trace debug, running infos and errors. This
@@ -288,10 +287,7 @@ public class SilverTrace {
   static {
     resetAll();
     initFinished = true;
-    SilverTrace.info("silvertrace", "SilverTrace.static",
-        "silvertrace.MSG_END_OF_INIT");
-    // Just to be sure that the Initializer is called at least once
-    SilverpeasInitializer si = new SilverpeasInitializer();
+    SilverTrace.info("silvertrace", "SilverTrace.static", "silvertrace.MSG_END_OF_INIT");
   }
 
   /**

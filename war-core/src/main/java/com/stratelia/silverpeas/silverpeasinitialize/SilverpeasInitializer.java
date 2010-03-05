@@ -128,7 +128,6 @@ public class SilverpeasInitializer {
    */
   private void processInitializeSettingsFile(File initializeSettingsFile) {
     Thread t = new Thread(new ProcessInitialize(initializeSettingsFile));
-
     t.start();
   }
 

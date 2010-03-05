@@ -79,6 +79,9 @@
   </filter-mapping>
 
   <listener>
+    <listener-class>com.stratelia.silverpeas.silverpeasinitialize.SilverpeasContextInitializer</listener-class>
+  </listener>
+  <listener>
     <listener-class>com.sun.portal.container.service.ServiceManagerContextListenerImpl</listener-class>
   </listener>
   <listener>

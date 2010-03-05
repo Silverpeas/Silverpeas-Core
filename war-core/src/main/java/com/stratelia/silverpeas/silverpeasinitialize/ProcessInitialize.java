@@ -26,8 +26,15 @@
 
 package com.stratelia.silverpeas.silverpeasinitialize;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -36,6 +43,8 @@ import java.io.*;
  */
 
 public class ProcessInitialize implements Runnable {
+  
+  protected static Logger logger = LoggerFactory.getLogger(ProcessInitialize.class);
   protected File m_InitializeSettingsFile;
 
   /**
@@ -63,41 +72,31 @@ public class ProcessInitialize implements Runnable {
     try {
       Properties p = getPropertiesOfFile(m_InitializeSettingsFile
           .getAbsolutePath());
-
-      if ((p.getProperty("Initialize") != null)
-          && (p.getProperty("Initialize").equalsIgnoreCase("true") == true)) {
-
+      String initialize = p.getProperty("Initialize");
+      if (initialize != null && Boolean.parseBoolean(initialize)) {
         String InitializeClass = p.getProperty("InitializeClass");
         Class c = Class.forName(InitializeClass);
         IInitialize init = (IInitialize) c.newInstance();
-
         if (!(init instanceof IInitialize)) {
-          throw new Exception("Class " + InitializeClass
-              + " isn't a IInitialize.");
+          throw new Exception("Class " + InitializeClass + " isn't a IInitialize.");
         }
-
-        if (init.Initialize() == false) {
-          LogMsg(this, LOG_ERROR, "processInitializeSettingsFile",
-              InitializeClass + ".Initialize() failed.");
+        if (!init.Initialize()) {
+          LogMsg(this, "processInitializeSettingsFile", InitializeClass + ".Initialize() failed.", null);
         }
-
       }
-
-      if ((p.getProperty("CallBack") != null)
-          && (p.getProperty("CallBack").equalsIgnoreCase("true") == true)) {
-
+      
+      String callBack = p.getProperty("CallBack");
+      if (callBack != null  && Boolean.parseBoolean(callBack)) {
         String CallBackClass = p.getProperty("CallBackClass");
         Class c = Class.forName(CallBackClass);
         CallBack cb = (CallBack) c.newInstance();
-
-        if (!(cb instanceof CallBack)) {
+        if (!(CallBack.class.isInstance(cb))) {
           throw new Exception("Class " + CallBackClass + " isn't a CallBack.");
         }
-
         cb.subscribe();
       }
     } catch (Exception e) {
-      LogMsg(this, LOG_ERROR, "processInitializeSettingsFile", e.getMessage());
+      LogMsg(this, "processInitializeSettingsFile", e.getMessage(), e);
     }
   }
 
@@ -116,13 +115,12 @@ public class ProcessInitialize implements Runnable {
       result = new Properties();
       result.load(is);
     } catch (Exception e) {
-      LogMsg(this, LOG_ERROR, "getPropertiesOfFile( " + fileName + " )", e
-          .getMessage());
+      LogMsg(this, "getPropertiesOfFile( " + fileName + " )", e.getMessage(), e);
     }
     return result;
   }
 
-  private static int LOG_ERROR = 0;
+
 
   /**
    * Method declaration
@@ -132,9 +130,9 @@ public class ProcessInitialize implements Runnable {
    * @param msg
    * @see
    */
-  private static void LogMsg(Object obj, int debugLevel, String fct, String msg) {
+  private static void LogMsg(Object obj, String fct, String msg, Exception e) {
     String from = obj.getClass().getName() + "." + fct + "()";
-
+    logger.error(from + " : " + msg, e);
     System.out.println(from + " : " + msg);
   }
 
