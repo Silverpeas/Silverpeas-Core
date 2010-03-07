@@ -52,5 +52,13 @@
 				<jndi-name>java:/Silverpeas</jndi-name>
 		    </resource-ref>
         </session>
+        <session>
+      		<ejb-name>ejb/ThesaurusBm</ejb-name>
+      		<jndi-name>ejb/ThesaurusBm</jndi-name>
+		    <resource-ref>
+				<res-ref-name>jdbc/Silverpeas</res-ref-name>
+				<jndi-name>java:/Silverpeas</jndi-name>
+			</resource-ref>
+    	</session>
     </enterprise-beans>
 </jboss>
