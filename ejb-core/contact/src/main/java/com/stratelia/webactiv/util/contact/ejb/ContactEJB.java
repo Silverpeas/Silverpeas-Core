@@ -30,6 +30,7 @@ import java.util.Date;
 
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
+import javax.ejb.FinderException;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -42,6 +43,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class ContactEJB implements EntityBean {
+  
+  private static final long serialVersionUID = -5005219904431811704L;
   private EntityContext context;
   private ContactPK pk;
   private String firstName;
@@ -81,7 +84,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Get the attributes of THIS contact
-   * 
    * @return a ContactDetail
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception java.sql.SQLException
@@ -94,9 +96,7 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Update the attributes of the contact
-   * 
-   * @param pubDetail
-   *          the ContactDetail which contains updated data
+   * @param pubDetail the ContactDetail which contains updated data
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @since 1.0
    */
@@ -127,9 +127,7 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Add a new father to this contact
-   * 
-   * @param fatherPK
-   *          the father NodePK
+   * @param fatherPK the father NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -149,9 +147,7 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Remove a father to this contact
-   * 
-   * @param fatherPK
-   *          the father NodePK to remove
+   * @param fatherPK the father NodePK to remove
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -171,7 +167,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Remove all fathers to this contact - this contact will be linked to no Node
-   * 
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -190,7 +185,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Get all fathers of this contact
-   * 
    * @return A collection of NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see java.util.Collection
@@ -200,8 +194,7 @@ public class ContactEJB implements EntityBean {
   public Collection getAllFatherPK() {
     Connection con = getConnection();
     try {
-      Collection result = ContactDAO.getAllFatherPK(con, pk);
-      return result;
+      return ContactDAO.getAllFatherPK(con, pk);
     } catch (Exception re) {
       throw new ContactRuntimeException("ContactEJB.getAllFatherPK()",
           SilverpeasRuntimeException.ERROR,
@@ -213,9 +206,7 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Create or update info to this contact
-   * 
-   * @param modelId
-   *          The modelId corresponding to the choosen model
+   * @param modelId The modelId corresponding to the choosen model
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -234,7 +225,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Get all info on contact
-   * 
    * @return A completeContact
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    * @exception java.sql.SQLException
@@ -258,9 +248,7 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Create a new Contact object
-   * 
-   * @param pubDetail
-   *          the ContactDetail which contains data
+   * @param pubDetail the ContactDetail which contains data
    * @return the ContactPK of the new Contact
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.CreateException
@@ -299,16 +287,14 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Create an instance of a Contact object
-   * 
-   * @param pk
-   *          the PK of the Contact to instanciate
+   * @param pk the PK of the Contact to instanciate
    * @return the ContactPK of the instanciated Contact if it exists in database
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public ContactPK ejbFindByPrimaryKey(ContactPK pk) {
+  public ContactPK ejbFindByPrimaryKey(ContactPK pk) throws FinderException {
     Connection con = getConnection();
     try {
       ContactPK primary = ContactDAO.selectByPrimaryKey(con, pk);
@@ -328,7 +314,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Load contact attributes from database
-   * 
    * @since 1.0
    */
   public void ejbLoad() {
@@ -362,7 +347,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Store contact attributes into database
-   * 
    * @since 1.0
    */
   public void ejbStore() {
@@ -387,7 +371,6 @@ public class ContactEJB implements EntityBean {
 
   /**
    * Delete this Contact and all info associated
-   * 
    * @since 1.0
    */
   public void ejbRemove() {
