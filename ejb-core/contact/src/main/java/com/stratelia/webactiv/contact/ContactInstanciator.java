@@ -61,10 +61,6 @@ public class ContactInstanciator extends SQLRequest {
       String userId) throws InstanciationException {
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
-    deleteDataOfInstance(con, componentId, "InfoAttachment");
-    deleteDataOfInstance(con, componentId, "InfoImage");
-    deleteDataOfInstance(con, componentId, "InfoText");
-    deleteDataOfInstance(con, componentId, "InfoLink");
     deleteDataOfInstance(con, componentId, "contactfather");
     deleteDataOfInstance(con, componentId, "Contact");
     deleteDataOfInstance(con, componentId, "Info");
@@ -80,13 +76,9 @@ public class ContactInstanciator extends SQLRequest {
 
   /**
    * Delete all data of one instance from the table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component .
-   * @param suffixName
-   *          (String) the suffixe of a table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component .
+   * @param suffixName (String) the suffixe of a table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {
@@ -111,7 +103,7 @@ public class ContactInstanciator extends SQLRequest {
             "ContactInstanciator.deleteDataOfInstance",
             InstanciationException.ERROR,
             "root.EX_GEN_CONNECTION_CLOSE_FAILED", "componentId = "
-                + componentId + " delete query =" + deleteQuery,
+            + componentId + " delete query =" + deleteQuery,
             err_closeStatement);
       }
     }
