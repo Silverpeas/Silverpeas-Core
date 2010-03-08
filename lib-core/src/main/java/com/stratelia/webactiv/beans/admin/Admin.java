@@ -199,7 +199,6 @@ public class Admin extends Object {
   // -------------------------------------------------------------------------
   /**
    * Get Enterprise space id
-   * 
    * @return The general space id
    */
   public String getGeneralSpaceId() {
@@ -237,7 +236,6 @@ public class Admin extends Object {
 
   /**
    * add a space instance in database
-   * 
    * @param userId Id of user who add the space
    * @param spaceInst SpaceInst object containing information about the space to be created
    * @return the created space id
@@ -317,7 +315,6 @@ public class Admin extends Object {
 
   /**
    * Delete the given space The delete is apply recursively to the sub-spaces
-   * 
    * @param sUserId Id of user who deletes the space
    * @param sClientSpaceId Id of the space to be deleted
    * @return the deleted space id
@@ -330,11 +327,10 @@ public class Admin extends Object {
   /**
    * Delete the given space if it's not the general space The delete is apply recursively to the
    * sub-spaces
-   * 
    * @param sUserId Id of user who deletes the space
    * @param sClientSpaceId Id of the space to be deleted
    * @param startNewTransaction Flag : must be true at first call to initialize transaction, then
-   *          false for recurrents calls
+   * false for recurrents calls
    * @return the deleted space id
    */
   public String deleteSpaceInstById(String sUserId, String sClientSpaceId,
@@ -474,7 +470,6 @@ public class Admin extends Object {
 
   /**
    * Get the space instance with the given space id
-   * 
    * @param sClientSpaceId client space id
    * @return Space information as SpaceInst object
    */
@@ -511,7 +506,6 @@ public class Admin extends Object {
 
   /**
    * Get the space instance with the given space id
-   * 
    * @param sSpaceId client space id
    * @param bDriverSpaceId true is space id is in 'driver' format, false for 'client' format
    * @return Space information as SpaceInst object
@@ -542,15 +536,13 @@ public class Admin extends Object {
           + sSpaceId + "'", e);
     }
   }
-  
-  public SpaceInst getPersonalSpace(String userId) throws AdminException
-  {
+
+  public SpaceInst getPersonalSpace(String userId) throws AdminException {
     return m_SpaceInstManager.getPersonalSpace(m_DDManager, userId);
   }
 
   /**
    * Get all the subspaces Ids available in Silverpeas given a domainFatherId (client id format)
-   * 
    * @param sDomainFatherId Id of the father space
    * @return an array of String containing the ids of spaces that are child of given space
    */
@@ -579,7 +571,6 @@ public class Admin extends Object {
 
   /**
    * Updates the space (with the given name) with the given space Updates only the node
-   * 
    * @param spaceInstNew SpaceInst object containing new information for space to be updated
    * @return the updated space id
    */
@@ -646,7 +637,6 @@ public class Admin extends Object {
    * Update the inheritance mode between a subSpace and its space. If inheritanceBlocked is true
    * then all inherited space profiles are removed. If inheritanceBlocked is false then all subSpace
    * profiles are removed and space profiles are inherited.
-   * 
    * @param spaceId
    * @param inheritanceBlocked
    * @throws AdminException
@@ -734,7 +724,6 @@ public class Admin extends Object {
 
   /**
    * Retrieve spaces from root to component
-   * 
    * @param componentId the target component
    * @return a List of SpaceInstLight
    * @throws AdminException
@@ -751,7 +740,6 @@ public class Admin extends Object {
 
   /**
    * Retrieve spaces from root to space identified by spaceId
-   * 
    * @param spaceId the target space
    * @return a List of SpaceInstLight
    * @throws AdminException
@@ -796,7 +784,6 @@ public class Admin extends Object {
 
   /**
    * Returns all spaces which has been removed but not definitely deleted
-   * 
    * @return a List of SpaceInstLight
    */
   public List<SpaceInstLight> getRemovedSpaces() throws AdminException {
@@ -812,7 +799,6 @@ public class Admin extends Object {
 
   /**
    * Returns all components which has been removed but not definitely deleted
-   * 
    * @return a List of ComponentInstLight
    */
   public List<ComponentInstLight> getRemovedComponents() throws AdminException {
@@ -1389,7 +1375,6 @@ public class Admin extends Object {
    * Update the inheritance mode between a component and its space. If inheritanceBlocked is true
    * then all inherited space profiles are removed. If inheritanceBlocked is false then all
    * component profiles are removed and space profiles are inherited.
-   * 
    * @param componentId
    * @param inheritanceBlocked
    * @throws AdminException
@@ -1429,7 +1414,6 @@ public class Admin extends Object {
 
   /**
    * Set space profiles to a subspace. There is no persistance. The subspace object is enriched.
-   * 
    * @param subSpace the object to set profiles
    * @param space the object to get profiles
    * @throws AdminException
@@ -1448,7 +1432,6 @@ public class Admin extends Object {
 
   /**
    * Set space profile to a subspace. There is no persistance. The subspace object is enriched.
-   * 
    * @param subSpace the object to set profiles
    * @param space the object to get profiles
    * @param profileName the name of the profile
@@ -1489,7 +1472,6 @@ public class Admin extends Object {
 
   /**
    * Set space profile to a component. There is persistance.
-   * 
    * @param component the object to set profiles
    * @param space the object to get profiles
    * @throws AdminException
@@ -2319,7 +2301,6 @@ public class Admin extends Object {
 
   /**
    * Tests if group exists in Silverpeas
-   * 
    * @return true if a group with the given name
    */
   public boolean isGroupExist(String sName) throws AdminException {
@@ -2570,7 +2551,7 @@ public class Admin extends Object {
           e);
     }
   }
-  
+
   public void addUserInGroup(String sUserId, String sGroupId) throws AdminException {
     try {
       // Start transaction
@@ -2608,7 +2589,6 @@ public class Admin extends Object {
   // JCC 25/03/2002 BEGIN
   /**
    * Gets the set of Ids denoting the direct subgroups of a given group
-   * 
    * @param groupId The ID of the parent group
    * @return the Ids as an array of <code>String</code>.
    */
@@ -2623,7 +2603,6 @@ public class Admin extends Object {
 
   /**
    * Gets the set of Ids denoting the direct subgroups of a given group
-   * 
    * @param groupId The ID of the parent group
    * @return the Ids as an array of <code>String</code>.
    */
@@ -2870,6 +2849,18 @@ public class Admin extends Object {
   }
 
   /**
+   * @param authenticationKey The authentication key.
+   * @return The user id corresponding to the authentication key.
+   * @throws Exception
+   */
+  public String getUserIdByAuthenticationKey(String authenticationKey) throws Exception {
+    Hashtable<String, String> userParameters = m_DDManager.authenticate(authenticationKey);
+    String login = userParameters.get("login");
+    String domainId = userParameters.get("domainId");
+    return m_UserManager.getUserIdByLoginAndDomain(m_DDManager, login, domainId);
+  }
+
+  /**
    * Get the user corresponding to the given user Id (only infos in cache table)
    */
   public UserFull getUserFull(String sUserId) throws AdminException {
@@ -2900,10 +2891,9 @@ public class Admin extends Object {
 
   /**
    * Add the given user in Silverpeas and specific domain
-   * 
    * @param userDetail user to add
    * @param addOnlyInSilverpeas true if user must not be added in distant datasource (used by
-   *          synchronization tools)
+   * synchronization tools)
    * @return id of created user
    */
   public String addUser(UserDetail userDetail, boolean addOnlyInSilverpeas)
@@ -3546,7 +3536,6 @@ public class Admin extends Object {
 
   /**
    * Get subspaces of a given space available to a user.
-   * 
    * @param userId
    * @param spaceId
    * @return a list of SpaceInstLight
@@ -3570,7 +3559,6 @@ public class Admin extends Object {
 
   /**
    * Get components of a given space (and subspaces) available to a user.
-   * 
    * @param userId
    * @param spaceId
    * @return a list of ComponentInstLight
@@ -3646,7 +3634,6 @@ public class Admin extends Object {
   /**
    * Get all spaces available to a user. N levels compliant. Infos of each space are in
    * SpaceInstLight object.
-   * 
    * @param userId
    * @return an ordered list of SpaceInstLight. Built according a depth-first algorithm.
    * @author neysseri
@@ -3668,7 +3655,8 @@ public class Admin extends Object {
     return treeview;
   }
 
-  private List<SpaceInstLight> getUserSpaceSubTreeview(List<SpaceInstLight> treeview, String userId,
+  private List<SpaceInstLight> getUserSpaceSubTreeview(List<SpaceInstLight> treeview,
+      String userId,
       String spaceFatherId, int level) throws AdminException {
     SilverTrace.info("admin", "Admin.getUserSpaceSubTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId
@@ -3719,7 +3707,6 @@ public class Admin extends Object {
 
   /**
    * Get the space instance light (only spaceid, fatherId and name) with the given space id
-   * 
    * @param sClientSpaceId client space id (as WAxx)
    * @return Space information as SpaceInstLight object
    */
@@ -3737,7 +3724,6 @@ public class Admin extends Object {
 
   /**
    * Return the higher space according to a subspace (N level compliant)
-   * 
    * @param spaceId the subspace id
    * @return a SpaceInstLight object
    * @throws AdminException
@@ -3959,7 +3945,6 @@ public class Admin extends Object {
 
   /**
    * Get the componentIds allowed for the given user Id in the given space and the componentNameRoot
-   * 
    * @author dlesimple
    * @param sClientSpaceId
    * @param sUserId
@@ -4356,7 +4341,6 @@ public class Admin extends Object {
 
   /**
    * Get administrator Email
-   * 
    * @return String
    */
   public String getAdministratorEmail() {
@@ -4512,7 +4496,6 @@ public class Admin extends Object {
   /**
    * Return all the components Id recursively in (Space+subspaces, or only subspaces or in
    * Silverpeas) available in silverpeas given a userId and a componentNameRoot
-   * 
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -4544,7 +4527,6 @@ public class Admin extends Object {
   /**
    * Return all the components Id recursively in (Space+subspaces, or only subspaces) available in
    * webactiv given a userId and a componentNameRoot
-   * 
    * @author dlesimple
    * @param sSpaceId
    * @param sUserId
@@ -5835,7 +5817,8 @@ public class Admin extends Object {
   // No need to refresh cache : the cache is reseted at the end of the
   // synchronization
   private String checkOutGroups(String domainId, Group[] existingGroups,
-      Group[] testedGroups, Hashtable<String, Group> allIncluededGroups, Hashtable<String, String> userIds,
+      Group[] testedGroups, Hashtable<String, Group> allIncluededGroups,
+      Hashtable<String, String> userIds,
       String superGroupId, int iNbGroupsAdded, int iNbGroupsMaj,
       int iNbGroupsDeleted) throws Exception {
     boolean bFound = false;
@@ -6280,7 +6263,6 @@ public class Admin extends Object {
   // -------------------------------------------------------------------------
   /**
    * Use when a node or subnode is created
-   * 
    * @param object
    */
   public void registerProfiledObject(ProfiledObject object) {
@@ -6288,7 +6270,6 @@ public class Admin extends Object {
 
   /**
    * Use when a node is deleted
-   * 
    * @param object
    */
   public void unregisterProfiledObject(ProfiledObject object) {
