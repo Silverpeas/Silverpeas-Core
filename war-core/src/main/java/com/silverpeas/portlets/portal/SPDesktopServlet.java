@@ -678,7 +678,7 @@ public class SPDesktopServlet extends HttpServlet {
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
           m_MainSessionCtrl.getUserAccessLevel().equals("U"))
         return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") +
-            "admin/jsp/spaceInMaintenance.jsp";
+            "/admin/jsp/spaceInMaintenance.jsp";
 
       // Page d'accueil de l'espace = Composant
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST &&

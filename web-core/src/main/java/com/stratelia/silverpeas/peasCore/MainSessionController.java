@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.util.clipboard.ClipboardSelection;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -35,11 +34,14 @@ import java.util.List;
 import javax.ejb.RemoveException;
 
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.AdminUserConnections;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -84,9 +86,9 @@ public class MainSessionController extends AdminReference implements Clipboard {
   String m_CurrentComponentId = null;
   /** Maintenance Mode **/
   static boolean appInMaintenance = false;
-  static ArrayList<String> spacesInMaintenance = new ArrayList<String>();
+  static List<String> spacesInMaintenance = new ArrayList<String>();
   // Last results from search engine
-  private List lastResults = null;
+  private List<GlobalSilverContent> lastResults = null;
   private boolean allowPasswordChange;
 
   public boolean isAppInMaintenance() {
@@ -101,18 +103,17 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   public boolean isSpaceInMaintenance(String spaceId) {
-    SilverTrace.info("peasCore",
-        "MainSessionController.isSpaceInMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "mode="
-        + new Boolean(spacesInMaintenance.contains(spaceId)).toString());
-    return spacesInMaintenance.contains(spaceId);
+    spaceId = checkSpaceId(spaceId);
+    boolean inMaintenance = spacesInMaintenance.contains(spaceId);
+    SilverTrace.info("peasCore", "MainSessionController.isSpaceInMaintenance()",
+        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + ", maintenance = " + inMaintenance);
+    return inMaintenance;
   }
 
   public void setSpaceModeMaintenance(String spaceId, boolean mode) {
-    SilverTrace.info("peasCore",
-        "MainSessionController.setSpaceModeMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + " mode="
-        + new Boolean(mode).toString());
+    spaceId = checkSpaceId(spaceId);
+    SilverTrace.info("peasCore", "MainSessionController.setSpaceModeMaintenance()",
+        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + " mode=" + mode);
     if (mode) {
       if (!spacesInMaintenance.contains(spaceId)) {
         spacesInMaintenance.add(spaceId);
@@ -122,6 +123,18 @@ public class MainSessionController extends AdminReference implements Clipboard {
         spacesInMaintenance.remove(spacesInMaintenance.indexOf(spaceId));
       }
     }
+  }
+
+  /**
+   * @param spaceId a space id with or without "WA" prefix
+   * @return given spaceId without "WA" prefix
+   */
+  private String checkSpaceId(String spaceId) {
+    if (spaceId != null && spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      // spaceId starts with "WA", return it without prefix
+      return spaceId.substring(Admin.SPACE_KEY_PREFIX.length(), spaceId.length());
+    }
+    return spaceId;
   }
 
   /** Creates new MainSessionController */
@@ -665,14 +678,14 @@ public class MainSessionController extends AdminReference implements Clipboard {
   /**
    * @return a List of GlobalSilverResult corresponding to the last search
    */
-  public List getLastResults() {
+  public List<GlobalSilverContent> getLastResults() {
     return lastResults;
   }
 
   /**
    * @param list
    */
-  public void setLastResults(List list) {
+  public void setLastResults(List<GlobalSilverContent> list) {
     lastResults = list;
   }
 
@@ -711,7 +724,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   @Override
-  public Collection getSelectedObjects() throws RemoteException {
+  public Collection<?> getSelectedObjects() throws RemoteException {
     ClipboardBm clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getSelectedObjects();
@@ -719,7 +732,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   @Override
-  public Collection getObjects() throws RemoteException {
+  public Collection<?> getObjects() throws RemoteException {
     ClipboardBm clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getObjects();
