@@ -51,7 +51,8 @@ String logo = general.getString("logo", m_context+"/images/logo.jpg");
 String styleSheet = general.getString("defaultStyleSheet", m_context+"/style.css");
 
 // Is "forgotten password" feature active ?
-boolean forgottenPwdActive = general.getBoolean("forgottenPwdActive", false);
+String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");    
+boolean forgottenPwdActive = !pwdResetBehavior.equalsIgnoreCase("false");
 boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
 
 // Get a LoginPasswordAuthentication object

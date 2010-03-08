@@ -64,8 +64,8 @@ public class LoginPasswordAuthentication {
   static protected String m_KeyStoreKeyColumnName;
   static protected String m_KeyStoreLoginColumnName;
   static protected String m_KeyStoreDomainIdColumnName;
-  static protected Hashtable m_Domains;
-  static protected ArrayList m_DomainsIds;
+  static protected Hashtable<String, String> m_Domains;
+  static protected ArrayList<String> m_DomainsIds;
 
   static protected String m_UserTableName;
   static protected String m_UserIdColumnName;
@@ -161,11 +161,11 @@ public class LoginPasswordAuthentication {
    * Get list of domains
    * @return hashtable object (keys=domain ids, values=domain name)
    */
-  public Hashtable getAllDomains() {
+  public Hashtable<String, String> getAllDomains() {
     return m_Domains;
   }
 
-  public ArrayList getDomainsIds() {
+  public ArrayList<String> getDomainsIds() {
     return m_DomainsIds;
   }
 
@@ -181,8 +181,8 @@ public class LoginPasswordAuthentication {
         "LoginPasswordAuthentication.initDomains()",
         "root.MSG_GEN_PARAM_VALUE", "query=" + query);
     try {
-      m_Domains = new Hashtable();
-      m_DomainsIds = new ArrayList();
+      m_Domains = new Hashtable<String, String>();
+      m_DomainsIds = new ArrayList<String>();
 
       // Open connection
       con = openConnection();
@@ -519,6 +519,31 @@ public class LoginPasswordAuthentication {
     } finally {
       closeConnection(connection);
     }
+  }
+
+  public boolean isPasswordChangeAllowed(String domainId) {
+    boolean isPasswordChangeAllowed = false;
+    Connection m_Connection = null;
+    try {
+      // Open connection
+      m_Connection = openConnection();
+
+      // Get authentification server name
+      String authenticationServerName = getAuthenticationServerName(m_Connection, domainId);
+
+      // Build a AuthenticationServer instance
+      AuthenticationServer authenticationServer =
+          new AuthenticationServer(authenticationServerName);
+
+      isPasswordChangeAllowed = authenticationServer.isPasswordChangeAllowed();
+    } catch (AuthenticationException ex) {
+      SilverTrace.error("authentication", "LoginPasswordAuthentication.isPasswordChangeAllowed()",
+          "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
+          ex.getMessage());
+    } finally {
+      closeConnection(m_Connection);
+    }
+    return isPasswordChangeAllowed;
   }
 
 }

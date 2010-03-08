@@ -122,6 +122,16 @@ function loginQuestion() {
     }
 }
 
+function resetPassword() {
+	var form = document.getElementById("EDform");
+    if (form.elements["Login"].value.length == 0) {
+        alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
+    } else {
+    	form.action = "<%=m_context%>/CredentialsServlet/ForgotPassword";
+    	form.submit();
+    }
+}
+
 function checkSubmit(ev)
 {
 	var touche = ev.keyCode;
@@ -181,11 +191,17 @@ function checkSubmit(ev)
 								</select>
                           </label></p> 									
                      <% } %>
-                     <p><a href="#" class="submit" onclick="checkForm();"><img src="images/bt-login.png" /></a></p>
+                     <p><a href="#" class="submit" onclick="checkForm();"><img src="<%=request.getContextPath()%>/images/bt-login.png" /></a></p>
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <p>
 						 <% if (forgottenPwdActive) { %>
-							<span class="forgottenPwd"><a href="javascript:loginQuestion()"><%=authenticationBundle.getString("authentication.logon.passwordForgotten") %></a></span>
+							<span class="forgottenPwd">
+							<% if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) { %>
+								<a href="javascript:loginQuestion()"><%=authenticationBundle.getString("authentication.logon.passwordForgotten") %></a>
+							<% } else { %>
+							 	<a href="javascript:resetPassword()"><%=authenticationBundle.getString("authentication.logon.passwordReinit") %></a>
+							<%} %>
+							</span>
 						 <% } %>
 						 <% if (rememberPwdActive) { %>
 								<span class="rememberPwd">

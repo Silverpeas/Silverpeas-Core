@@ -23,13 +23,15 @@
  */
 package com.stratelia.webactiv.servlets;
 
-import com.silverpeas.util.FileUtil;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.mail.MessagingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,13 +39,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.PasswordGenerator;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
+import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
+import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -54,7 +62,11 @@ public class CredentialsServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
   private Map<String, FunctionHandler> handlers = new HashMap<String, FunctionHandler>();
+  private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
   private Admin admin = new Admin();
+  private ForgottenPasswordMailManager forgottenPasswordMailManager =
+      new ForgottenPasswordMailManager(admin);
+  private PasswordGenerator passwordGenerator = new PasswordGenerator();
   private ResourceBundle resources = null;
   private ResourceLocator m_Multilang = null;
 
@@ -75,14 +87,15 @@ public class CredentialsServlet extends HttpServlet {
   }
 
   private void initRessources() {
-    resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager", new Locale("",
+    resources =
+        FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager", new Locale("",
         ""));
     String language = resources.getString("language");
     if ((language == null) || (language.length() <= 0)) {
       language = "fr";
     }
     m_Multilang = new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
-            language);
+        language);
   }
 
   /**
@@ -100,6 +113,12 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("LoginQuestion", loginQuestionHandler);
     handlers.put("ValidateAnswer", validationAnswerHandler);
     handlers.put("ChangePassword", changePasswordHandler);
+
+    // Password reset management
+    handlers.put("ForgotPassword", forgotPasswordHandler);
+    handlers.put("ResetPassword", resetPasswordHandler);
+    handlers.put("ResetLoginPassword", resetLoginPasswordHandler);
+    handlers.put("SendMessage", sendMessageHandler);
   }
 
   /**
@@ -302,6 +321,200 @@ public class CredentialsServlet extends HttpServlet {
       }
     }
   };
+
+  private FunctionHandler forgotPasswordHandler = new FunctionHandler() {
+    String doAction(HttpServletRequest request) {
+      String login = request.getParameter("Login");
+      String domainId = request.getParameter("DomainId");
+      String userId = null;
+      try {
+        userId = admin.getUserIdByLoginAndDomain(login, domainId);
+      } catch (AdminException e) {
+        // Login incorrect.
+        request.setAttribute("login", login);
+
+        Hashtable<String, String> domains = lpAuth.getAllDomains();
+        String dId = null;
+        String domain = "";
+        for (Enumeration<String> en = domains.keys(); en.hasMoreElements();) {
+          dId = en.nextElement();
+          if (dId.equals(domainId)) {
+            domain = domains.get(dId);
+          }
+        }
+        request.setAttribute("domain", domain);
+        return general.getString("forgottenPasswordInvalidLogin");
+      }
+
+      try {
+        if (lpAuth.isPasswordChangeAllowed(domainId)) {
+          String authenticationKey = null;
+          try {
+            authenticationKey = lpAuth.getAuthenticationKey(login, domainId);
+          } catch (AuthenticationException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.forgotPasswordHandler.doAction()",
+                "forgottenPassword.EX_GET_USER_AUTHENTICATION_KEY",
+                "login=" + login + " ; domainId=" + domainId, e);
+          }
+
+          // Envoi d'un mail contenant un lien permettant de lancer la réinitialisation
+          // automatique du mot de passe.
+          try {
+            ForgottenPasswordMailParameters parameters = getMailParameters(userId);
+            parameters.setLink(
+                getContextPath(request) + "/ResetPassword?key=" + authenticationKey);
+            forgottenPasswordMailManager.sendResetPasswordRequestMail(parameters);
+            return general.getString("forgottenPasswordChangeAllowed");
+          } catch (AdminException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.forgotPasswordHandler.doAction()",
+                "forgottenPassword.EX_GET_USER_DETAIL", "userId=" + userId, e);
+          } catch (MessagingException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.forgotPasswordHandler.doAction()",
+                "forgottenPassword.EX_SEND_MAIL", "userId=" + userId, e);
+          }
+        } else {
+          // Affichage d'un message d'information invitant à joindre l'administrateur système
+          return general.getString("forgottenPasswordChangeNotAllowed");
+        }
+      } catch (ForgottenPasswordException fpe) {
+        return forgottenPasswordError(request, fpe);
+      }
+    }
+  };
+
+  private FunctionHandler resetPasswordHandler = new FunctionHandler() {
+    String doAction(HttpServletRequest request) {
+      try {
+        String authenticationKey = request.getParameter("key");
+        String userId = null;
+        try {
+          userId = admin.getUserIdByAuthenticationKey(authenticationKey);
+        } catch (Exception e) {
+          return general.getString("forgottenPasswordResetError");
+        }
+        if (userId != null) {
+          String password = passwordGenerator.random();
+          ForgottenPasswordMailParameters parameters = null;
+          try {
+            parameters = getMailParameters(userId);
+          } catch (AdminException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.resetPasswordHandler.doAction()",
+                "forgottenPassword.EX_GET_USER_DETAIL", "userId=" + userId, e);
+          }
+
+          UserFull user;
+          try {
+            user = admin.getUserFull(userId);
+          } catch (AdminException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.resetPasswordHandler.doAction()",
+                "forgottenPassword.EX_GET_FULL_USER_DETAIL", "userId=" + userId, e);
+          }
+          user.setPassword(password);
+
+          try {
+            admin.updateUserFull(user);
+          } catch (AdminException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.resetPasswordHandler.doAction()",
+                "forgottenPassword.EX_UPDATE_USER_DETAIL", "userId=" + userId, e);
+          }
+
+          parameters.setPassword(password);
+          parameters.setLink(getContextPath(request) + "/ResetLoginPassword"
+              + "?login=" + user.getLogin()
+              + "&domainId=" + user.getDomainId());
+          try {
+            forgottenPasswordMailManager.sendNewPasswordMail(parameters);
+          } catch (MessagingException e) {
+            throw new ForgottenPasswordException(
+                "CredentialsServlet.resetPasswordHandler.doAction()",
+                "forgottenPassword.EX_SEND_MAIL", "userId=" + userId, e);
+          }
+
+          return general.getString("forgottenPasswordReset");
+        } else {
+          return general.getString("forgottenPasswordResetError");
+        }
+      } catch (ForgottenPasswordException fpe) {
+        return forgottenPasswordError(request, fpe);
+      }
+    }
+  };
+
+  private FunctionHandler resetLoginPasswordHandler = new FunctionHandler() {
+    String doAction(HttpServletRequest request) {
+      StringBuffer url = new StringBuffer(general.getString("forgottenPasswordLoginUrl"));
+      String login = request.getParameter("login");
+      if (StringUtil.isDefined(login)) {
+        request.getSession().setAttribute("specialLogin", login);
+      }
+      String domainId = request.getParameter("domainId");
+      if (StringUtil.isDefined(domainId)) {
+        request.getSession().setAttribute("specialDomainId", domainId);
+      }
+      return url.toString();
+    }
+  };
+
+  private FunctionHandler sendMessageHandler = new FunctionHandler() {
+    String doAction(HttpServletRequest request) {
+      try {
+        ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
+        parameters.setUserName(
+            request.getParameter("firstname") + " " + request.getParameter("lastname"));
+        parameters.setEmail(request.getParameter("email"));
+        parameters.setMessage(request.getParameter("message"));
+        try {
+          forgottenPasswordMailManager.sendAdminMail(parameters);
+          return general.getString("forgottenPasswordSendMessage");
+        } catch (MessagingException e) {
+          throw new ForgottenPasswordException(
+              "CredentialsServlet.sendMessageHandler.doAction()",
+              "forgottenPassword.EX_SEND_MAIL", e);
+        }
+      } catch (ForgottenPasswordException fpe) {
+        return forgottenPasswordError(request, fpe);
+      }
+    }
+  };
+
+  private String forgottenPasswordError(HttpServletRequest request, ForgottenPasswordException fpe) {
+    String error = SilverTrace.getTraceMessage(fpe.getMessage()) + " - " + fpe.getExtraInfos();
+    ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
+    parameters.setError(error);
+    try {
+      forgottenPasswordMailManager.sendErrorMail(parameters);
+    } catch (MessagingException e) {
+      SilverTrace.error("peasCore",
+          "CredentialsServlet.forgottenPasswordError()",
+          "forgottenPassword.EX_SEND_MAIL", e);
+    }
+    request.setAttribute("error", error);
+    return general.getString("forgottenPasswordError");
+  }
+
+  private ForgottenPasswordMailParameters getMailParameters(String userId) throws AdminException {
+    ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
+    UserDetail userDetail = admin.getUserDetail(userId);
+    parameters.setUserName(userDetail.getDisplayedName());
+    parameters.setLogin(userDetail.getLogin());
+    parameters.setDomainId(userDetail.getDomainId());
+    parameters.setToAddress(userDetail.geteMail());
+    return parameters;
+  }
+
+  private String getContextPath(HttpServletRequest request) {
+    String requestUrl = request.getRequestURL().toString();
+    String servletPath = request.getServletPath();
+    String contextPath = requestUrl.substring(
+        0, requestUrl.indexOf(servletPath) + servletPath.length());
+    return contextPath;
+  }
 
   /*
    * (non-Javadoc)
