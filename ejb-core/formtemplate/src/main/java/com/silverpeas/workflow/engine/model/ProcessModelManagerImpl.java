@@ -24,8 +24,8 @@
 package com.silverpeas.workflow.engine.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -91,7 +91,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * The map (modelId -> cached process model).
    */
-  private final Map models = new HashMap();
+  private final Map<String, ProcessModel> models = new HashMap<String, ProcessModel>();
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
 
   /**
@@ -109,7 +109,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * @see com.silverpeas.workflow.api.ProcessModelManager#listProcessModels()
    */
   @Override
-  public List listProcessModels() throws WorkflowException {
+  public List<String> listProcessModels() throws WorkflowException {
     try {
       // Recursively search all subdirs for .xml files
       //
@@ -132,16 +132,16 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * @throws UtilException
    * @throws IOException
    */
-  private List findProcessModels(String strProcessModelDir)
+  private List<String> findProcessModels(String strProcessModelDir)
       throws UtilException, IOException {
-    Iterator subFoldersIterator = FileFolderManager.getAllSubFolder(
-        strProcessModelDir).iterator(), subFolderModelsIterator, currentDirModelsIterator =
-        FileFolderManager.getAllFile(strProcessModelDir).iterator();
-    List processModels = new ArrayList();
+    Iterator<File> subFoldersIterator = FileFolderManager.getAllSubFolder(strProcessModelDir).iterator();
+    Iterator<String> subFolderModelsIterator;
+    Iterator<File> currentDirModelsIterator = FileFolderManager.getAllFile(strProcessModelDir).iterator();
+    List<String> processModels = new ArrayList<String>();
     File subFolder;
 
     while (subFoldersIterator.hasNext()) {
-      subFolder = (File) subFoldersIterator.next();
+      subFolder = subFoldersIterator.next();
       // Get models from subfolders
       subFolderModelsIterator = findProcessModels(subFolder.getCanonicalPath()).iterator();
 
@@ -153,7 +153,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     }
     // Get models from the current folder, do not prepend names
     while (currentDirModelsIterator.hasNext()) {
-      String name = ((File) currentDirModelsIterator.next()).getName();
+      String name = currentDirModelsIterator.next().getName();
 
       if (name.endsWith(".xml")) {
         processModels.add(name);
@@ -241,11 +241,11 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       // Creates forms in database
       forms = model.getForms();
       if (forms != null) {
-        Iterator iterForm = forms.iterateForm();
+        Iterator<Form> iterForm = forms.iterateForm();
         Form form;
 
         while (iterForm.hasNext()) {
-          form = (Form) iterForm.next();
+          form = iterForm.next();
           template = form.toRecordTemplate(null, null);
           GenericRecordSetManager.createRecordSet(model.getFormRecordSetName(form.getName()),
               template);
@@ -282,10 +282,10 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       // delete forms associated to actions
       forms = model.getForms();
       if (forms != null) {
-        Iterator iterForm = forms.iterateForm();
+        Iterator<Form> iterForm = forms.iterateForm();
 
         while (iterForm.hasNext()) {
-          formName = ((Form) iterForm.next()).getName();
+          formName = iterForm.next().getName();
           GenericRecordSetManager.removeRecordSet(model.getFormRecordSetName(formName));
           SilverTrace.info("workflowEngine",
               "ProcessModelManagerImpl.deleteProcessModel",
@@ -359,7 +359,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       unmar.setDebug(debugMode);
       // Unmarshall the process model
       ProcessModelImpl process =
-          (ProcessModelImpl) unmar.unmarshal(new InputSource(new FileReader(processPath)));
+          (ProcessModelImpl) unmar.unmarshal(new InputSource(new FileInputStream(processPath)));
 
       if (debugMode) {
         // Marshall for debugging purpose
