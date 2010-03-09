@@ -187,7 +187,7 @@ setTimeout("init()",100);
 	</script>
 <% } %>
 
-<frameset rows="<%=framesetRows%>" border="0" framespacing="0" frameborder="NO">
+<frameset rows="<%=framesetRows%>" border="0" framespacing="0" frameborder="NO" id="mainFramesetId">
   	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
   	<frame src="TopBarSilverpeasV5.jsp" name="topFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
   	<frame src="frameBottomSilverpeasV5.jsp<%=frameBottomParams%>" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">

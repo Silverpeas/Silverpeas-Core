@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -81,6 +81,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private PublicationHelper kmeliaTransversal = null;
   private PublicationBm publicationBm = null;
 
+  // Attribute used to manage user favorite space look
+  private String displayUserFavoriteSpace = null;
+  private boolean enableUFSContainsState = false;
+  
+  private static final String DEFAULT_USERMENU_DISPLAY_MODE = "DISABLE";
+  
   /*
    * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSpaceId()
@@ -206,6 +212,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     displayContextualPDC = resources.getBoolean("displayContextualPDC", true);
     displaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
     displayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
+    displayUserFavoriteSpace = resources.getString("displayUserFavoriteSpace", DEFAULT_USERMENU_DISPLAY_MODE);
+    enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
   }
 
   protected MainSessionController getMainSessionController() {
@@ -656,4 +664,27 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     return sDestination;
   }
+  
+
+  /**
+   * @return user favorite space menu display mode
+   */
+  public String getDisplayUserFavoriteSpace() {
+    return displayUserFavoriteSpace;
+  }
+
+  /**
+   * @return user favorite space menu display mode
+   */
+  public void setDisplayUserFavoriteSpace(String displayUserFavoriteSpace) {
+    this.displayUserFavoriteSpace = displayUserFavoriteSpace;
+  }
+
+  /**
+   * @return true if displaying three states, false if displaying two states
+   */
+  public boolean isEnableUFSContainsState() {
+    return enableUFSContainsState;
+  }
+  
 }

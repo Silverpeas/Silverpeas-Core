@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -686,7 +686,8 @@ public class UserTable extends Table {
       idsArray[i] = ids.get(i).intValue();
     }
 
-    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(new UserRow[0]);
+    return getRows(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
+        new UserRow[0]);
   }
 
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
@@ -825,6 +826,14 @@ public class UserTable extends Table {
     for (int i = 0; i < spaceRoles.length; i++) {
       organization.spaceUserRole.removeUserFromSpaceUserRole(id,
           spaceRoles[i].id);
+    }
+
+    SynchroReport.info("UserTable.removeUser()", "Delete " + user.login
+        + " from user favorite space table", null);
+    UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
+    if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(id, -1))) {
+      throw new AdminPersistenceException("UserTable.removeUser()",
+          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER");
     }
 
     SynchroReport.debug("UserTable.removeUser()", "Suppression de "

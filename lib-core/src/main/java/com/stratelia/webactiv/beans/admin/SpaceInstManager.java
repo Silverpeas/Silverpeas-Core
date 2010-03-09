@@ -162,52 +162,53 @@ public class SpaceInstManager {
       // Load the space detail
       SpaceRow space = ddManager.organization.space.getPersonalSpace(userId);
 
-      SpaceInst spaceInst = new SpaceInst();
+      if (space != null) {
+        SpaceInst spaceInst = new SpaceInst();
 
-      // Set the attributes of the space Inst
-      spaceInst.setId(idAsString(space.id));
-      spaceInst.setDomainFatherId(idAsString(space.domainFatherId));
-      spaceInst.setLevel(getSpaceLevel(ddManager, space.id));
-      spaceInst.setName(space.name);
-      spaceInst.setDescription(space.description);
-      spaceInst.setCreatorUserId(idAsString(space.createdBy));
-      spaceInst.setFirstPageType(space.firstPageType);
-      spaceInst.setFirstPageExtraParam(space.firstPageExtraParam);
-      spaceInst.setOrderNum(space.orderNum);
+        // Set the attributes of the space Inst
+        spaceInst.setId(idAsString(space.id));
+        spaceInst.setDomainFatherId(idAsString(space.domainFatherId));
+        spaceInst.setLevel(getSpaceLevel(ddManager, space.id));
+        spaceInst.setName(space.name);
+        spaceInst.setDescription(space.description);
+        spaceInst.setCreatorUserId(idAsString(space.createdBy));
+        spaceInst.setFirstPageType(space.firstPageType);
+        spaceInst.setFirstPageExtraParam(space.firstPageExtraParam);
+        spaceInst.setOrderNum(space.orderNum);
 
-      if (space.createTime != null)
-        spaceInst.setCreateDate(new Date(Long.parseLong(space.createTime)));
-      if (space.updateTime != null)
-        spaceInst.setUpdateDate(new Date(Long.parseLong(space.updateTime)));
-      if (space.removeTime != null)
-        spaceInst.setRemoveDate(new Date(Long.parseLong(space.removeTime)));
+        if (space.createTime != null)
+          spaceInst.setCreateDate(new Date(Long.parseLong(space.createTime)));
+        if (space.updateTime != null)
+          spaceInst.setUpdateDate(new Date(Long.parseLong(space.updateTime)));
+        if (space.removeTime != null)
+          spaceInst.setRemoveDate(new Date(Long.parseLong(space.removeTime)));
 
-      spaceInst.setUpdaterUserId(idAsString(space.updatedBy));
-      spaceInst.setRemoverUserId(idAsString(space.removedBy));
+        spaceInst.setUpdaterUserId(idAsString(space.updatedBy));
+        spaceInst.setRemoverUserId(idAsString(space.removedBy));
 
-      spaceInst.setStatus(space.status);
+        spaceInst.setStatus(space.status);
 
-      spaceInst.setInheritanceBlocked(space.inheritanceBlocked == 1);
-      spaceInst.setLook(space.look);
+        spaceInst.setInheritanceBlocked(space.inheritanceBlocked == 1);
+        spaceInst.setLook(space.look);
 
-      spaceInst.setDisplaySpaceFirst(space.displaySpaceFirst == 1);
-      spaceInst.setPersonalSpace(space.isPersonalSpace == 1);
+        spaceInst.setDisplaySpaceFirst(space.displaySpaceFirst == 1);
+        spaceInst.setPersonalSpace(space.isPersonalSpace == 1);
 
-      // Get the components
-      String[] asCompoIds = ddManager.organization.instance
-          .getAllComponentInstanceIdsInSpace(idAsInt(spaceInst.getId()));
+        // Get the components
+        String[] asCompoIds = ddManager.organization.instance
+            .getAllComponentInstanceIdsInSpace(idAsInt(spaceInst.getId()));
 
-      // Insert the componentsInst in the spaceInst
-      for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
-        ComponentInst componentInst = m_ComponentInstManager.getComponentInst(
-            ddManager, asCompoIds[nI], spaceInst.getId());
-        spaceInst.addComponentInst(componentInst);
+        // Insert the componentsInst in the spaceInst
+        for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
+          ComponentInst componentInst = m_ComponentInstManager.getComponentInst(
+              ddManager, asCompoIds[nI], spaceInst.getId());
+          spaceInst.addComponentInst(componentInst);
+        }
+
+        spaceInst.setLanguage(space.lang);
+        return spaceInst;
       }
-
-      spaceInst.setLanguage(space.lang);
-      
-      return spaceInst;
-
+      return null;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getPersonalSpace",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_PERSONAL_SPACE", "userId = " + userId, e);

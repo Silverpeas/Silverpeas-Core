@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -36,6 +36,10 @@ var currentWallpaper	= "0";
 
 var notContextualPDCDisplayed = false;
 var notContextualPDCLoaded = false;
+//User favorite space variable true/false => enable/disable
+var displayUserFavoriteSpace = false;
+// When user favorite space is enabled, this following parameter enable/disable the "contains sub favorite space" state.
+var enableAllUFSStates = false;
 
 function openMySpace()
 {
@@ -428,24 +432,308 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	}
   }
   
+  /**
+   * This method return current DOM user menu display mode
+   * @return string representation of the user menu display mode
+   */
+  function getUserMenuDisplayMode() {
+	  if (document.getElementById("userMenuDisplayModeId")) {
+		  // Check value to enable/disable user favorite space
+		  var userMenuDispMode = document.getElementById("userMenuDisplayModeId").value;
+		  if (userMenuDispMode == "BOOKMARKS" || userMenuDispMode == "ALL") {
+			  displayUserFavoriteSpace = true;
+			  // Check contains user favorite space mode
+			  enableAllUFSStates = ($("#enableAllUFSpaceStatesId").val() == "true")? true : false;
+		  }
+		  return userMenuDispMode;
+	  }
+	  displayUserFavoriteSpace = false;
+	  return "";
+  }
+  
+  /**
+   * This Ajax method loads the user space menu
+   * 
+   * @param tabId : the tabbed pan identifier
+   */
+  function openTab(tabId) {
+	//alert("opentTab(" + tabId + ") call");
+	// Check tab change
+	if (tabId != $("#userMenuDisplayModeId").val()) {
+		// Check tab change 
+		if (tabId == 'ALL'){
+			$("#tabsBookMarkSelectedDivId").hide(); 
+			$("#tabsAllSelectedDivId").show();
+		} else {
+			$("#tabsAllSelectedDivId").hide();
+			$("#tabsBookMarkSelectedDivId").show();
+		}
+		$("#userMenuDisplayModeId").val(tabId);
+		$("#spaceMenuDivId").mask($("#loadingMessageId").val());
+		
+		$.ajax({
+			  url: getContext()+'/RAjaxSilverpeasV5/dummy',
+			  data: { ResponseId: 'spaceUpdater',
+					  Init:1,
+					  UserMenuDisplayMode: tabId},
+			  success: function(data){
+				 if($("#spaceMenuDivId").isMasked()) {
+					 $("#spaceMenuDivId").unmask();
+				 }
+			     //alert("Success Data Loaded: data=" + data);
+				 spaceUpdater = new SpaceUpdater();
+				 var xmlResponse = data.getElementsByTagName("response")[0];
+			     spaceUpdater.ajaxUpdate(xmlResponse);
+			     spaceUpdater.displayTree(xmlResponse.childNodes[0]);
+			  },
+			  error : function() {
+		 	     alert("XMLHttpRequest error ");
+		  	  },
+			  dataType: 'xml'
+			});
+		
+		
+//		$.get(getContext()+'/RAjaxSilverpeasV5/dummy', 
+//			{ ResponseId:'spaceUpdater',
+//			  Init:1,
+//			  UserMenuDisplayMode: tabId
+//			},
+//		   function(data){
+//			 if($("#spaceMenuDivId").isMasked()) {
+//				 $("#spaceMenuDivId").unmask();
+//			 }
+//		     alert("Data Loaded: " + data);
+//			 spaceUpdater = new SpaceUpdater();
+//			 var xmlResponse = data.childNodes[0].childNodes[0];
+//		     spaceUpdater.ajaxUpdate(xmlResponse);
+//		     spaceUpdater.displayTree(xmlResponse.childNodes[0]);
+//		     /*$(data).find('spaces').each(function(){
+//		    	 spaceUpdater.displayTree($(this));
+//				});*/
+//		   }
+//		);
+	}
+  }
+
+  /**
+   * This Ajax method check the current user space status
+   * and change current user favorite space status.
+   * 
+   * @param spaceId : the space identifier we have to change
+   */
+  function changeFavoriteSpace(spaceId) {
+	  var curImg = $("#favoriteimg" + spaceId);
+	  var curState = curImg.attr("title");
+	  if (curState == "favorite") {
+		  removeFavoriteSpace(spaceId);
+	  } else if (curState == "favorite_empty" || curState == "favorite_contains") {
+		  addFavoriteSpace(spaceId);
+	  }
+  }
+  
+  /**
+   * This Ajax method add favorite space
+   * 
+   * @param spaceId : the added space identifier
+   */
+  function addFavoriteSpace(spaceId) {
+	//alert("addFavoriteSpace(" + spaceId + ") call");
+
+	$.ajax({
+		  url: getContext()+'/RAjaxAction/userMenu',
+		  data: { Action: 'addSpace',
+			  	  SpaceId: spaceId},
+		  success: function(data){
+		  			  //updateUserFavoriteSpaceStatus
+		  			  $.each(data.spaceids, function(i,item) {
+		  				  enableUserFavoriteSpaceStatus(item.spaceid);
+		  			  });
+		  			  // Check if contains states is enabled to update parent space status
+		  			  if (enableAllUFSStates) {
+			  			  $.each(data.parentids, function(i,item) {
+			  				  enableUserFavoriteParentStatus(item.spaceid);
+			  			  });
+		  			  }
+			  	 },
+		  error : function() {
+			 	     alert("XMLHttpRequest error ");
+			  	 },
+		  dataType: 'json'
+		});
+  }
+
+  var messageBox = null;
+
+  
+  /**
+   * This Ajax method remove favorite space
+   * 
+   * @param spaceId : the added space identifier
+   */
+  function removeFavoriteSpace(spaceId) {
+	//alert("removeFavoriteSpace(" + spaceId + ") call");
+
+	$.ajax({
+		  url: getContext()+'/RAjaxAction/userMenu',
+		  data: { Action: 'removeSpace',
+			  	  SpaceId: spaceId},
+		  success: function(data){
+			  		  // Check AJAX servlet response
+			  		  if (data.success) {
+			  			  // Retrieve current space identifier or many others identifiers
+			  			  disableUserFavoriteSpaceStatus(spaceId, data);
+			  		  } else {
+			  			  // handle servlet response failure (display message box with current error message
+			  			  
+			  		  }
+			 	     
+			  	 },
+		  error : function() {
+			 	     alert("XMLHttpRequest error ");
+			  	 },
+		  dataType: 'json'
+		});
+  }
+
+  function updateUserFavoriteSpaceStatus(spaceId) {
+	  var curDiv = $("#favoriteimg" + spaceId);
+	  var curState = curDiv.attr("title");
+	  if (curState == "favorite") {
+		  curDiv.addClass("favorite_empty");
+		  curDiv.removeClass("favorite");
+	  } else if (curState == "favorite_empty" || curState == "favorite_contains") {
+		  curDiv.addClass("favorite");
+		  curDiv.removeClass("favorite_empty");
+	  }
+  }
+
+  /**
+   * Disable user favorite space status
+   */
+  function disableUserFavoriteSpaceStatus(spaceId, data) {
+	  var curDiv = $("#favoriteimg" + spaceId);
+	  if (enableAllUFSStates) {
+		  if (data.spacestate == "contains") {
+			  curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
+			  curDiv.attr("title", "favorite_contains");
+		  } else {
+			  curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_empty_12px.gif");
+			  curDiv.attr("title", "favorite_empty");
+		  }
+		  $.each(data.parentids, function(i,item) {
+			  disableParentSpaceStatus(item.spaceid, item.spacestate);
+		  });
+	  } else {
+		  curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_empty_12px.gif");
+		  curDiv.attr("title", "favorite_empty");
+	  }
+  }
+  
+  function disableParentSpaceStatus(spaceId, spaceStatus) {
+	  var curDiv = $("#favoriteimg" + spaceId);
+	  if (spaceStatus == "contains") {
+		  curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
+		  curDiv.attr("title", "favorite_contains");
+	  } else if(spaceStatus == "favorite") {
+		  curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_12px.gif");
+		  curDiv.attr("title", "favorite");
+	  } else {
+		  curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_empty_12px.gif");
+		  curDiv.attr("title", "favorite_empty");
+	  }
+  }
+  
+  function enableUserFavoriteSpaceStatus(spaceId) {
+	  var curDiv = $("#favoriteimg" + spaceId);
+	  
+	  if (curDiv) {
+		  curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_12px.gif");
+		  curDiv.attr("title", "favorite");
+	  }
+  }
+  
+  function enableUserFavoriteParentStatus(spaceId) {
+	  var curDiv = $("#favoriteimg" + spaceId);
+	  if (curDiv) {
+		  //alert("curDiv.attr(title) = " + curDiv.attr("title"));
+		  if (curDiv.attr("title") == "favorite_empty") {
+			  curDiv.attr("title", "favorite_contains");
+			  curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
+		  }
+	  }
+  }
+  
   var spaceUpdater;
 
-  Event.observe(window, 'load', function(){ 
-  
+  //Event.observe(window, 'load', function(){
+  $(document).ready(function() {
+
+	// Handler for .ready() called.
   	currentLook			= getLook();
   	currentWallpaper 	= getWallpaper();
   	
   	hideTransverseSpace();
   	
   	spaceUpdater = new SpaceUpdater();
-  	ajaxEngine.registerRequest( 'getSpaceInfo', getContext()+'/RAjaxSilverpeasV5/dummy' );
-  	ajaxEngine.registerAjaxObject( 'spaceUpdater', spaceUpdater );
-  	 	  	
-  	ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=1','GetPDC='+displayPDC(),'SpaceId='+getSpaceIdToInit(),'ComponentId='+getComponentIdToInit());
+  	ajaxEngine.registerRequest('getSpaceInfo', getContext()+'/RAjaxSilverpeasV5/dummy' );
+  	ajaxEngine.registerAjaxObject('spaceUpdater', spaceUpdater );
+  	
+//	$.get(getContext()+'/RAjaxSilverpeasV5/dummy', 
+//		{ ResponseId:'spaceUpdater',
+//		  Init:1,
+//		  GetPDC: displayPDC(),
+//		  SpaceId: getSpaceIdToInit(),
+//		  ComponentId:getComponentIdToInit(),
+//		  UserMenuDisplayMode: getUserMenuDisplayMode()
+//		},
+//	   function(data){
+//		 if($("#spaceMenuDivId").isMasked()) {
+//			 $("#spaceMenuDivId").unmask();
+//		 }
+//	     //alert("Data Loaded: " + data);
+//		 spaceUpdater = new SpaceUpdater();
+//		 var xmlResponse = data.childNodes[0].childNodes[0];
+//	     spaceUpdater.ajaxUpdate(xmlResponse);
+//	     //spaceUpdater.displayTree(xmlResponse.childNodes[0]);
+//	     /*$(data).find('spaces').each(function(){
+//	    	 spaceUpdater.displayTree($(this));
+//			});*/
+//	   }
+//	);
+  	
+  	//Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
+  	ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=1','GetPDC='+displayPDC(),'SpaceId='+getSpaceIdToInit(),'ComponentId='+getComponentIdToInit(),'UserMenuDisplayMode='+getUserMenuDisplayMode());
   	
   	displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
-  })
+  });
 
+  function displayFavoriteSpaceIcon(space, spaceId, newSpace){
+    if (displayUserFavoriteSpace && $("#userMenuDisplayModeId").val() == "ALL") {
+    	var favSpace	= space.getAttribute("favspace");
+    	var favDiv = document.createElement("div");
+    	favDiv.setAttribute("id", "favdiv");
+    	var spaceActionLink = document.createElement("a");
+    	spaceActionLink.setAttribute("onfocus", "this.blur()");
+    	spaceActionLink.setAttribute("href", "javaScript:changeFavoriteSpace('"+spaceId+"');");
+    	var imgFavorite = document.createElement("img");
+    	imgFavorite.setAttribute("id", "favoriteimg"+spaceId);
+    	// Be careful to not change title value (because of external JQuery reference)
+    	if (favSpace == "true") {
+    		imgFavorite.setAttribute("src", "/silverpeas/util/icons/iconlook_favorites_12px.gif");
+    		imgFavorite.setAttribute("title", "favorite");
+    	} else if (favSpace == "contains" && enableAllUFSStates) {
+    		imgFavorite.setAttribute("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
+    		imgFavorite.setAttribute("title", "favorite_contains");
+    	} else { // false
+    		imgFavorite.setAttribute("src", "/silverpeas/util/icons/iconlook_favorites_empty_12px.gif");
+    		imgFavorite.setAttribute("title", "favorite_empty");
+    	}
+    	spaceActionLink.appendChild(imgFavorite);
+    	favDiv.appendChild(spaceActionLink);
+    	newSpace.appendChild(favDiv);
+    }
+  }
+  
   var SpaceUpdater = Class.create();
 
   SpaceUpdater.prototype = {
@@ -454,14 +742,16 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
         this.lastPersonSelected = null;
      },
      ajaxUpdate: function(ajaxResponse) {
-  	  // alert("in callBack");
+       //alert("ajaxUpdate call, ajaxResponse=" + ajaxResponse);
   	   var nbElements = ajaxResponse.childNodes.length;
+  	   //console.log("nbElements="+nbElements + ",ajaxResponse.childNodes[0].tagName=" + ajaxResponse.childNodes[0].tagName);
   	   if (ajaxResponse.childNodes[0].tagName == "spacePerso")
   	   {
   		   this.displayMySpace(ajaxResponse.childNodes[0]);
   	   }
   	   else
   	   {
+  	  	   //console.log("currentSpaceId=" + currentSpaceId);
 	  	   if (currentSpaceId == "-1")
 	  	   {
 	  		   if (ajaxResponse.childNodes[0].tagName == "item")
@@ -536,52 +826,60 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	   }
      },
      displayTree: function(tree) {
-  	   document.getElementById("spaces").innerHTML = "";
-  	   var nbSpaces = tree.childNodes.length;
-  	   //alert("nb spaces = "+nbSpaces);
-  	   for (i=0; i<nbSpaces; i++)
-  	   {
-  		   var space = tree.childNodes[i];
-  		   
-  		   //create new entry
-  		   var spaceId 		= space.getAttribute("id");
-  		   var open			= space.getAttribute("open");
-  		   var look			= space.getAttribute("look");
-  		   var wallpaper	= space.getAttribute("wallpaper");
-  		   
-  		   var newSpaceURL = document.createElement("a");
-  		   newSpaceURL.setAttribute("href", "javaScript:openSpace('"+spaceId+"', 0, '"+look+"', '"+wallpaper+"')");
-  		   newSpaceURL.setAttribute("onfocus", "this.blur()");
+       //alert("displayTree call ... reset spaces innerHTML");
+	   document.getElementById("spaces").innerHTML = "";
+	   var nbSpaces = tree.childNodes.length;
+	   //alert("nb spaces = "+nbSpaces);
+	   for (i=0; i<nbSpaces; i++)
+	   {
+		   var space = tree.childNodes[i];
+		   
+		   //create new entry
+		   var spaceId 		= space.getAttribute("id");
+		   var open			= space.getAttribute("open");
+		   var look			= space.getAttribute("look");
+		   var wallpaper	= space.getAttribute("wallpaper");
+		   
+		   var newSpaceURL = document.createElement("a");
+		   newSpaceURL.setAttribute("href", "javaScript:openSpace('"+spaceId+"', 0, '"+look+"', '"+wallpaper+"')");
+		   newSpaceURL.setAttribute("onfocus", "this.blur()");
 		   newSpaceURL.setAttribute("class", "spaceURL");
-  		   newSpaceURL.setAttribute("className", "spaceURL");
-	   
-	   	   var newSpaceLabel = document.createTextNode(space.getAttribute("name"));
-  		   newSpaceURL.appendChild(newSpaceLabel);
-  		   
-  		   var imgSpace = document.createElement("img");
-  		   imgSpace.setAttribute("id", "img"+spaceId);
-  		   imgSpace.setAttribute("src", "icons/1px.gif");
-  		   imgSpace.setAttribute("align", "absmiddle");
-  		   imgSpace.setAttribute("border", "0");
-  		   imgSpace.setAttribute("width", "0");
-  		   imgSpace.setAttribute("height", "0");
-  		   
-  		   var newSpace = document.createElement("div");
-  		   newSpace.setAttribute("id", spaceId);
-	   	   newSpace.setAttribute("class", "spaceLevel1");
-  		   newSpace.setAttribute("className", "spaceLevel1");
-  		   newSpace.appendChild(imgSpace);
-  		   newSpace.appendChild(newSpaceURL);
+		   newSpaceURL.setAttribute("className", "spaceURL");
+   
+		   var newSpaceLabel = document.createTextNode(space.getAttribute("name"));
+		   newSpaceURL.appendChild(newSpaceLabel);
+		   
+		   var imgSpace = document.createElement("img");
+		   imgSpace.setAttribute("id", "img"+spaceId);
+		   imgSpace.setAttribute("src", "icons/1px.gif");
+		   imgSpace.setAttribute("align", "absmiddle");
+		   imgSpace.setAttribute("border", "0");
+		   imgSpace.setAttribute("width", "0");
+		   imgSpace.setAttribute("height", "0");
+		   
+		   
+		   var newSpace = document.createElement("div");
+		   newSpace.setAttribute("id", spaceId);
+		   newSpace.setAttribute("class", "spaceLevel1");
+		   newSpace.setAttribute("className", "spaceLevel1");
+		   newSpace.appendChild(imgSpace);
+		   newSpace.appendChild(newSpaceURL);
 
-  		   //add new entry to list
-  		   document.getElementById("spaces").appendChild(newSpace);
-  		   
-  		   if (open == "true")
-  		   {
-  		   	  currentRootSpaceId = spaceId;
-  		      this.displaySpace(space, "true");
-  		   }
-  	   }
+		   displayFavoriteSpaceIcon(space, spaceId, newSpace);
+
+		   //add new entry to list
+		   document.getElementById("spaces").appendChild(newSpace);
+		   
+		   if (open == "true")
+		   {
+		   	  currentRootSpaceId = spaceId;
+		      this.displaySpace(space, "true");
+		   }
+	   }
+	   // Add alert message if user is in display favorite space mode without favorite space selected.
+	   if (displayUserFavoriteSpace && $("#userMenuDisplayModeId").val() == "BOOKMARKS" && nbSpaces == 0) {
+		   $('#spaces').html("<span class='noFavoriteSpace'>" +$('#noFavoriteSpaceMsgId').val() +  "</span> ");
+	   }
      },
      displaySpaceTransverse: function(space) {
 		   document.getElementById("spaceTransverse").innerHTML = "";
@@ -599,7 +897,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 		   newSpaceURL.setAttribute("class", "spaceURL");
 		   newSpaceURL.setAttribute("className", "spaceURL");
 	   
-	   	   	   var newSpaceLabel = document.createTextNode(space.getAttribute("name"));
+	   	   var newSpaceLabel = document.createTextNode(space.getAttribute("name"));
 		   newSpaceURL.appendChild(newSpaceLabel);
 		   
 		   var imgSpace = document.createElement("img");
@@ -616,6 +914,10 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 		   newSpace.setAttribute("className", "spaceLevel1");
 		   newSpace.appendChild(imgSpace);
 		   newSpace.appendChild(newSpaceURL);
+		   
+		   //Add favorite space icon on space transverse
+		   displayFavoriteSpaceIcon(space, spaceId, newSpace);
+
 	
 		   //add new entry to list
 		   document.getElementById("spaceTransverse").appendChild(newSpace);
@@ -723,10 +1025,10 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
       		   newEntryIconSel.setAttribute("id", "img"+itemId);
   			   if (itemOpen == "true")
   			   {
-						newEntry.setAttribute("class", "browseComponentActiv");
-  			   newEntry.setAttribute("className", "browseComponentActiv");			  
-  				   newEntryIconSel.setAttribute("src", "icons/silverpeasV5/activComponent.gif");
-  				   }
+					newEntry.setAttribute("class", "browseComponentActiv");
+					newEntry.setAttribute("className", "browseComponentActiv");			  
+  				   	newEntryIconSel.setAttribute("src", "icons/silverpeasV5/activComponent.gif");
+  			   }
   			   else
   				   newEntryIconSel.setAttribute("src", "icons/1px.gif");
   			   newEntryURL.setAttribute("href", "javaScript:openComponent('"+itemId+"',"+itemLevel+",'"+itemURL+"')");
@@ -757,8 +1059,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   		   newEntry.appendChild(newEntryIcon);		   
   		   newEntry.appendChild(newEntryURL);
   		   
-  		   if (itemType == "component")
+  		   if (itemType == "component") {
   			   newEntry.appendChild(newEntryIconSel);
+  		   } else {
+  			   // Space type
+  			   displayFavoriteSpaceIcon(item, itemId, newEntry);
+  		   }
 
   		   //add new entry to list
   		   spaceContentDiv.appendChild(newEntry);
@@ -773,7 +1079,6 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	   			   currentComponentId	= itemId;
 	   		   }
   		   }
-  		   
   		   item = item.nextSibling;
   	   }
      },

@@ -3677,6 +3677,12 @@ public class Admin extends Object {
     return treeview;
   }
 
+  public String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) throws AdminException {
+    String[] subSpaceIds =
+        m_SpaceInstManager.getAllowedSubSpaceIds(m_DDManager, userId, spaceFatherId);
+    return subSpaceIds;
+  }
+
   private SpaceInstLight getSpaceInstLight(String spaceId)
       throws AdminException {
     SilverTrace.info("admin", "Admin.getSpaceInstLight",

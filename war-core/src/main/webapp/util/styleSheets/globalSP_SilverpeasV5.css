@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -20,7 +20,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/ /*************************************
+*/ 
+/*************************************
 Redefinition des style de balises HTML
 *************************************/
 BODY {
@@ -972,17 +973,62 @@ td.browsebar a:hover {
 	color: #666666;
 }
 
+#tabDivId {
+  margin:0;
+  padding:0;
+}
+
 #spaces {
+  background-color: #C5ED95;
 	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
+		url("/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg");
 	background-repeat: repeat-x;
-	background-position: top;
-	background-color: #C5ED95;
+	/*background-position: top;*/
+	position:relative;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #C9C9C9;
 	border-bottom-width: none;
+	z-index:0;
+	width:100%;
 }
+
+.tabSpace {
+	padding:3px;
+  /* IE hack */
+  _width:100%;
+}
+
+#favdiv{
+  position:relative;
+  float:right;
+  padding-right:1px;
+	/position:absolute;
+	/right:0px;
+  _position:absolute;
+  _right:0px;
+}
+.favorite {
+  width: 12px;
+  height: 12px;
+  z-index:100;
+  visibility:visible;
+}
+
+.favorite_empty {
+  width: 12px; 
+  height: 12px; 
+  z-index:100;
+  visibility:visible;
+}
+
+.favorite_contains {
+  width: 12px;
+  height: 12px;
+  z-index:100;
+  visibility:visible;
+}
+
 
 #spaceTransverse {
 	/*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
@@ -1111,6 +1157,7 @@ td.browsebar a:hover {
 	border-bottom-color: #FFFFFF;
 	font-weight: bold;
 	padding: 3px;
+	position:relative;
 }
 
 .spaceLevel1On {
@@ -1119,6 +1166,7 @@ td.browsebar a:hover {
 	border-bottom-color: #FFFFFF;
 	font-weight: bold;
 	padding: 3px;
+	position:relative;
 }
 
 .spaceLevelPerso {

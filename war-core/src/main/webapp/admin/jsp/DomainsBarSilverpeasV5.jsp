@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -34,21 +34,31 @@
 
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
 
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/fn.tld" prefix="fn" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+
+<!-- Retrieve user menu display mode -->
+<c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
+<!-- Set resource bundle -->
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
+
 <%
-String 					m_sContext 			=  GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String          m_sContext      =  GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-LookSilverpeasV5Helper 	helper 				= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+GraphicElementFactory   gef         = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+LookSilverpeasV5Helper  helper        = (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
 
-String spaceId 		= request.getParameter("privateDomain");
-String componentId 	= request.getParameter("component_id");
+String spaceId    = request.getParameter("privateDomain");
+String componentId  = request.getParameter("component_id");
 
 if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
 {
-	spaceId = helper.getSpaceId(componentId);
+  spaceId = helper.getSpaceId(componentId);
 }
 %>
-
 
 <html>
 <head>
@@ -56,115 +66,128 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<!-- Add JQuery mask plugin css -->
+<link href="<%=m_sContext%>/util/styleSheets/jquery.loadmask.css" rel="stylesheet" type="text/css" />
+
+<!-- Add RICO javascript library -->
+ 
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
+
+ 
+<!-- Add jQuery javascript library -->
+<script type="text/javascript" src="<%=m_sContext %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
+
+<!-- Custom domains bar javascript -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/navigation.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/personalSpace.js"></script>
-<script type="text/javascript" src="<%=m_sContext %>/attachment/jsp/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/login.js"></script>
+
+
 <script language="JavaScript1.2">
 <!--
 
-	function reloadTopBar(reload)
-	{
-		if (reload)
-			top.topFrame.location.href="<%=m_sContext%>/admin/jsp/TopBarSilverpeasV5.jsp";
-	}
+  function reloadTopBar(reload)
+  {
+    if (reload)
+      top.topFrame.location.href="<%=m_sContext%>/admin/jsp/TopBarSilverpeasV5.jsp";
+  }
     
     function checkSubmitToSearch(ev)
-	{
-		var touche = ev.keyCode;
-		if (touche == 13)
-			searchEngine();
-	}
+  {
+    var touche = ev.keyCode;
+    if (touche == 13)
+      searchEngine();
+  }
     
     function notifyAdministrators(context,compoId,users,groups)
-	{
-	    SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=&theTargetsUsers=Administrators&theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
-	}
+  {
+      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=&theTargetsUsers=Administrators&theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+  }
     
     function openClipboard()
-	{
-    	document.clipboardForm.submit();
-	}
+  {
+      document.clipboardForm.submit();
+  }
     
-	function searchEngine() {
+  function searchEngine() {
         if (document.searchForm.query.value != "")
         {
-	    	document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch";
-	        document.searchForm.submit();
+        document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch";
+          document.searchForm.submit();
         }
-	}
+  }
 
-	function advancedSearchEngine(){
-		document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert";
-		document.searchForm.submit();
-	}
-	
-	var navVisible = true;
-	function resizeFrame()
-	{
-		parent.resizeFrame('10,*');
-		if (navVisible)
-		{
-			document.body.scroll = "no"; 
-			document.images['expandReduce'].src="icons/silverpeasV5/extend.gif";
-		}
-		else
-		{
-			document.body.scroll = "auto";
-			document.images['expandReduce'].src="icons/silverpeasV5/reduct.gif";
-		}
-		document.images['expandReduce'].blur();
-		navVisible = !navVisible;
-	}
-	    
-	// Callback methods to navigation.js
+  function advancedSearchEngine(){
+    document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert";
+    document.searchForm.submit();
+  }
+  
+  var navVisible = true;
+  function resizeFrame()
+  {
+    parent.resizeFrame('10,*');
+    if (navVisible)
+    {
+      document.body.scroll = "no"; 
+      document.images['expandReduce'].src="icons/silverpeasV5/extend.gif";
+    }
+    else
+    {
+      document.body.scroll = "auto";
+      document.images['expandReduce'].src="icons/silverpeasV5/reduct.gif";
+    }
+    document.images['expandReduce'].blur();
+    navVisible = !navVisible;
+  }
+      
+  // Callback methods to navigation.js
     function getContext()
     {
-    	return "<%=m_sContext%>";
+      return "<%=m_sContext%>";
     }
     
     function getHomepage()
     {
-    	return "<%=gef.getFavoriteLookSettings().getString("defaultHomepage", "/dt")%>";
+      return "<%=gef.getFavoriteLookSettings().getString("defaultHomepage", "/dt")%>";
     }
 
     function getPersoHomepage()
     {
-    	return "<%=gef.getFavoriteLookSettings().getString("persoHomepage", "/dt")%>";
+      return "<%=gef.getFavoriteLookSettings().getString("persoHomepage", "/dt")%>";
     }
     
     function getSpaceIdToInit()
     {
-    	return "<%=spaceId%>";
+      return "<%=spaceId%>";
     }
     
     function getComponentIdToInit()
     {
-    	return "<%=componentId%>";
+      return "<%=componentId%>";
     }
        
     function displayComponentsIcons()
     {
-    	return <%=helper.getSettings("displayComponentIcons")%>;
+      return <%=helper.getSettings("displayComponentIcons")%>;
     }
     
     function getPDCLabel()
     {
-    	return "<%=helper.getString("lookSilverpeasV5.pdc")%>";
+      return '<fmt:message key="lookSilverpeasV5.pdc" />';
     }
     
     function getLook()
     {
-    	return "<%=gef.getCurrentLookName()%>";
+      return "<%=gef.getCurrentLookName()%>";
     }
     
     function getWallpaper()
     {
-    	return "<%=helper.getWallPaper(spaceId)%>";
+      return "<%=helper.getWallPaper(spaceId)%>";
     }
 
     function displayPDC()
@@ -182,6 +205,14 @@ out.println(gef.getLookStyleSheet());
         return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&ResultPage=searchDocuments.jsp&";
     }
 
+    /**
+     * Reload bottom frame
+     */
+    function reloadSpacesBarFrame(tabId) {
+       top.bottomFrame.location.href="<%=m_sContext%>/admin/jsp/frameBottomSilverpeasV5.jsp?UserMenuDisplayMode=" + tabId;
+       //top.SpacesBar.location.href="<%=m_sContext%>/admin/jsp/DomainsBarSilverpeasV5.jsp";
+    }
+
     function getPersonalSpaceLabels()
     {
         var labels = new Array(2);
@@ -190,25 +221,26 @@ out.println(gef.getLookStyleSheet());
         labels[2] = "<%=EncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.add"))%>";
         return labels;
     }
+
 -->
 </script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" class="fondDomainsBar">
-<div id="redExp"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reduct.gif" border="0" align="absmiddle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
+<div id="redExp"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reduct.gif" border="0" name="expandReduce" alt="<fmt:message key="lookSilverpeasV5.reductExtend" />" title="<fmt:message key="lookSilverpeasV5.reductExtend" />"/></a></div>
 <div id="domainsBar">
-	<div id="recherche">
-		<div id="submitRecherche">
-			<form name="searchForm" action="<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch" method="POST" target="MyMain">
-			<input name="query" size="30"/><input type="hidden" name="mode" value="clear"/>
-			<a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" /></a>
-			</form>
-		</div>
-        <div id="bodyRecherche">
-            <a href="javascript:advancedSearchEngine()"><%=helper.getString("lookSilverpeasV5.AdvancedSearch")%></a> | <a href="<%=m_sContext%>/RpdcSearch/jsp/LastResults" target="MyMain"><%=helper.getString("lookSilverpeasV5.LastSearchResults")%></a> | <a href="#" onClick="javascript:SP_openWindow('<%=m_sContext%>/RpdcSearch/jsp/help.jsp', 'Aide', '700', '220','scrollbars=yes, resizable, alwaysRaised');"><%=helper.getString("lookSilverpeasV5.Help")%></a>
-		</div>
+  <div id="recherche">
+    <div id="submitRecherche">
+      <form name="searchForm" action="<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch" method="POST" target="MyMain">
+      <input name="query" size="30"/><input type="hidden" name="mode" value="clear"/>
+      <a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" /></a>
+      </form>
     </div>
-	<div id="spaceTransverse"></div>
-	<div id="basSpaceTransverse">
+        <div id="bodyRecherche">
+            <a href="javascript:advancedSearchEngine()"><fmt:message key="lookSilverpeasV5.AdvancedSearch" /></a> | <a href="<%=m_sContext%>/RpdcSearch/jsp/LastResults" target="MyMain"><fmt:message key="lookSilverpeasV5.LastSearchResults" /></a> | <a href="#" onClick="javascript:SP_openWindow('<%=m_sContext%>/RpdcSearch/jsp/help.jsp', 'Aide', '700', '220','scrollbars=yes, resizable, alwaysRaised');"><fmt:message key="lookSilverpeasV5.Help" /></a>
+    </div>
+    </div>
+  <div id="spaceTransverse"></div>
+  <div id="basSpaceTransverse">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
                 <td class="basSpacesGauche"><img src="icons/silverpeasV5/px.gif" width="8" height="8"></td>
@@ -217,11 +249,56 @@ out.println(gef.getLookStyleSheet());
             </tr>
         </table>
     </div>
+    <div id="spaceMenuDivId">
+      <c:if test="${!fn:contains(curHelper.displayUserFavoriteSpace, 'DISABLE')}">
+        <fmt:message key="lookSilverpeasV5.favoriteSpace.tabBookmarks" var="tabBookmarksLabel" />
+        <fmt:message key="lookSilverpeasV5.favoriteSpace.tabAll" var="tabAllLabel" />
+        <div id="tabDivId" class="tabSpace">
+          <form name="spaceDisplayModeForm" action="#" method="GET" >
+            <input type="hidden" name="userMenuDisplayMode" id="userMenuDisplayModeId" value="<c:out value="${curHelper.displayUserFavoriteSpace}"></c:out>" />
+            <input type="hidden" name="enableAllUFSpaceStates" id="enableAllUFSpaceStatesId" value="<c:out value="${curHelper.enableUFSContainsState}"></c:out>" />
+            <input type="hidden" name="loadingMessage" id="loadingMessageId" value="<fmt:message key="lookSilverpeasV5.loadingSpaces" />" />
+            <input type="hidden" name="noFavoriteSpaceMsg" id="noFavoriteSpaceMsgId" value="<fmt:message key="lookSilverpeasV5.noFavoriteSpace" />" />
+          </form>
 
-    <div id="spaces"><center><br/><br/><%=helper.getString("lookSilverpeasV5.loadingSpaces")%><br/><br/><img src="icons/silverpeasV5/inProgress.gif"/></center></div>
-    <% if (!helper.isAnonymousAccess()) { %>
-    	<div id="spacePerso" class="spaceLevelPerso"><a class="spaceURL" href="javaScript:openMySpace();"><%=helper.getString("lookSilverpeasV5.PersonalSpace")%></a></div>
-    <% } %>
+          <c:if test="${fn:contains(curHelper.displayUserFavoriteSpace, 'BOOKMARKS')}">
+            <!--  <p>contains BOOKMARKS</p> -->
+            <div id="tabsBookMarkSelectedDivId">
+             <view:tabs>
+               <view:tab label="${tabBookmarksLabel}" action="javascript:openTab('BOOKMARKS');" selected="true"></view:tab>
+               <view:tab label="${tabAllLabel}" action="javascript:openTab('ALL');" selected="false"></view:tab>
+             </view:tabs>
+            </div>
+            <div id="tabsAllSelectedDivId" style="display:none">
+              <view:tabs>
+               <view:tab label="${tabBookmarksLabel}" action="javascript:openTab('BOOKMARKS');" selected="false"></view:tab>
+               <view:tab label="${tabAllLabel}" action="javascript:openTab('ALL');" selected="true"></view:tab>
+              </view:tabs>
+            </div>
+          </c:if>
+          <c:if test="${fn:contains(curHelper.displayUserFavoriteSpace, 'ALL')}">
+            <!-- <p>contains ALL</p>  -->
+            <div id="tabsBookMarkSelectedDivId" style="display:none">
+             <view:tabs>
+               <view:tab label="${tabBookmarksLabel}" action="javascript:openTab('BOOKMARKS');" selected="true"></view:tab>
+               <view:tab label="${tabAllLabel}" action="javascript:openTab('ALL');" selected="false"></view:tab>
+             </view:tabs>
+            </div>
+            <div id="tabsAllSelectedDivId">
+              <view:tabs>
+               <view:tab label="${tabBookmarksLabel}" action="javascript:openTab('BOOKMARKS');" selected="false"></view:tab>
+               <view:tab label="${tabAllLabel}" action="javascript:openTab('ALL');" selected="true"></view:tab>
+              </view:tabs>
+            </div>
+          </c:if>
+        </div>
+      </c:if>
+      <div id="spaces">
+      <center><br/><br/><fmt:message key="lookSilverpeasV5.loadingSpaces" /><br/><br/><img src="icons/silverpeasV5/inProgress.gif"/></center></div>
+      <% if (!helper.isAnonymousAccess()) { %>
+        <div id="spacePerso" class="spaceLevelPerso"><a class="spaceURL" href="javaScript:openMySpace();"><fmt:message key="lookSilverpeasV5.PersonalSpace" /></a></div>
+      <% } %>
+    </div>
     <div id="basSpaces">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
@@ -233,7 +310,7 @@ out.println(gef.getLookStyleSheet());
     </div>
             
     <div id="loginBox">
-    	<form name="authForm" action="<%=m_sContext%>/AuthenticationServlet" method="POST" target="_top">
+      <form name="authForm" action="<%=m_sContext%>/AuthenticationServlet" method="POST" target="_top">
         <table width="100%">
         <tr>
             <td align="right" valign="top"> 
@@ -252,7 +329,7 @@ out.println(gef.getLookStyleSheet());
                         <% if (domains.size() == 1) { %>
                             <tr><td colspan="2"><input type="hidden" name="DomainId" value="0"></td></tr>
                         <% } else { %>
-                            <tr><td><%=helper.getString("lookSilverpeasV5.domain")%> : </td><td><%@ include file="../../selectDomain.jsp.inc" %></td></tr>
+                            <tr><td><fmt:message key="lookSilverpeasV5.domain" /> : </td><td><%@ include file="../../selectDomain.jsp.inc" %></td></tr>
                         <% } %>
                         <tr>
                             <td colspan="2" align="right"><%=button.print()%></td>

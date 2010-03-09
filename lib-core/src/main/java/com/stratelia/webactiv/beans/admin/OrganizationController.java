@@ -45,7 +45,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
  * @author
  */
 public class OrganizationController extends AdminReference implements java.io.Serializable {
-  
+
   private static final long serialVersionUID = 1869750368600972095L;
 
   /**
@@ -910,6 +910,17 @@ public class OrganizationController extends AdminReference implements java.io.Se
       SilverTrace.error("admin", "OrganizationController.getSpaceTreeview",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACES", "user Id = " + userId, e);
       return new ArrayList<SpaceInstLight>();
+    }
+  }
+
+  public String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) {
+    try {
+      return m_Admin.getAllowedSubSpaceIds(userId, spaceFatherId);
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "OrganizationController.getSpaceTreeview",
+          "admin.MSG_ERR_GET_USER_AVAILABLE_SUBSPACE_IDS", "user Id = " + userId + ", spaceId = " +
+          spaceFatherId, e);
+      return new String[0];
     }
   }
 

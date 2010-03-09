@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -317,6 +317,11 @@
     <servlet-name>AjaxServletSilverpeasV5</servlet-name>
     <display-name>AjaxServletSilverpeasV5</display-name>
     <servlet-class>com.silverpeas.lookV5.AjaxServletLookV5</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AjaxActionServlet</servlet-name>
+    <display-name>AjaxActionServlet</display-name>
+    <servlet-class>com.silverpeas.lookV5.AjaxActionServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
@@ -679,6 +684,10 @@
   <servlet-mapping>
     <servlet-name>AjaxServletSilverpeasV5</servlet-name>
     <url-pattern>/RAjaxSilverpeasV5/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AjaxActionServlet</servlet-name>
+    <url-pattern>/RAjaxAction/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
