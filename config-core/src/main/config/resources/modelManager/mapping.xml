@@ -309,6 +309,32 @@
                create-method="createQualifiedUsers">
             <bind-xml name="notify" node="element" />
         </field>
+        <field name="triggers" type="com.silverpeas.workflow.api.model.Triggers" 
+            create-method="createTriggers">
+            <bind-xml name="triggers" node="element" />
+        </field>
+    </class>
+    
+    <class name="com.silverpeas.workflow.engine.model.TriggersImpl">
+        <field name="triggerList" type="com.silverpeas.workflow.api.model.Trigger"
+            collection="vector" get-method="iterateTrigger" set-method="addTrigger"
+            create-method="createTrigger">
+            <bind-xml name="trigger" node="element" />
+        </field>
+    </class>
+    
+    <class name="com.silverpeas.workflow.engine.model.TriggerImpl" identity="name">
+    	<field name="name" type="string">
+            <bind-xml name="name" node="attribute"/>
+        </field>
+        <field name="className" type="string">
+            <bind-xml name="className" node="attribute"/>
+        </field>
+		<field name="parameters" type="com.silverpeas.workflow.api.model.Parameter"
+            collection="vector" get-method="iterateParameter" set-method="addParameter"
+            create-method="createParameter">
+            <bind-xml name="param" node="element" />
+        </field>
     </class>
 
     <class name="com.silverpeas.workflow.engine.model.DataFolderImpl">
