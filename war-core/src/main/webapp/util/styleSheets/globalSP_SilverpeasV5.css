@@ -2188,3 +2188,27 @@ td.browsebar a:hover {
 #browseBar .information {
   font-size :  11px;
 }
+
+/* class used to mark as read the link of results page  */
+.markedkAsRead { 
+	font-size: 11px; 
+	font-weight: bold; 
+	color: #006600;
+	text-decoration: none;
+}
+.markedkAsReadDisableVisited a:visited {
+	display:none;
+}
+
+/* class for spelling word */
+.spellWord { 
+	font-size: 11px; 
+	font-weight: bold; 
+	color: #006600;
+}
+
+.spellText{
+	font-size: 11px;
+	font-weight: bold;
+	color: #000000
+}

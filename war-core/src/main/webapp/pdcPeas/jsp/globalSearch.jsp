@@ -272,6 +272,12 @@ Board board = gef.getBoard();
 
 ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
+
+
+ResourceLocator resourceSearchEngine = new ResourceLocator(
+        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+        int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
+
 %>
 
 <html>
@@ -281,12 +287,17 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
    out.println(gef.getLookStyleSheet());
 %>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-
+<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="javascript/formUtil.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
+
 
 <script language="JavaScript1.2">
 var icWindow = window;
@@ -567,8 +578,22 @@ function deleteUser()
 
 	document.getElementById("deleteURL").style.visibility = "hidden";
 }
-
-</SCRIPT>
+//used for keywords autocompletion
+<%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
+	 $(document).ready(function(){
+	        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
+	                    minChars: <%=autocompletionMinChars%>,
+	                    max: 50,
+	                    autoFill: false,
+	                    mustMatch: false,
+	                    matchContains: false,
+	                    scrollHeight: 220
+	
+	            });
+	      });
+ <%}%>
+ 
+</script>
 
 </HEAD>
 <BODY onLoad="onLoadStart();">
@@ -670,7 +695,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
           <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.SearchFind")%></td>
           <td align="left" valign="middle">
           	<table border="0" cellspacing="0" cellpadding="0"><tr valign="middle">
-          		<td valign="middle"><input type="text" onkeypress="checkEnter(event)" name="query" size="60" value="<%=keywords%>"></td>
+                        <td valign="middle"><input type="text" onkeypress="checkEnter(event)" name="query" size="60" value="<%=keywords%>" id="query"></td>
           		<td valign="middle">&nbsp;</td>
           		<td align="left" valign="middle" width="100%">
           			<% 

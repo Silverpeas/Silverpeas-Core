@@ -43,17 +43,19 @@ import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
@@ -76,6 +78,10 @@ public class WAIndexSearcher {
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
   private QueryParser.Operator defaultOperand = QueryParser.OR_OPERATOR;
+  /**
+   * indicates the number maximum of results returned by the search
+   */
+  private int maxNumberResult = 0;
 
   /**
    * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
@@ -96,6 +102,8 @@ public class WAIndexSearcher {
         defaultOperand = QueryParser.OR_OPERATOR;
       else
         defaultOperand = QueryParser.AND_OPERATOR;
+
+      maxNumberResult = SilverpeasSettings.readInt(resource, "maxResults", 100);
     } catch (MissingResourceException e) {
     } catch (NumberFormatException e) {
     }
@@ -128,21 +136,30 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws com.stratelia.webactiv.searchEngine.model.ParseException {
-
+    long startTime = System.nanoTime();
     List<MatchingIndexEntry> results = null;
 
     Searcher searcher = getSearcher(query.getSpaceComponentPairSet());
 
     try {
       if (query.getXmlQuery() != null) {
-        results = makeList(getXMLHits(query, searcher), query);
+        results = makeList(getXMLHits(query, searcher), query, searcher);
       } else {
         if (query.getMultiFieldQuery() != null) {
-          results = makeList(getMultiFieldHits(query, searcher), query);
+          results = makeList(getMultiFieldHits(query, searcher), query, searcher);
         } else {
           if (!StringUtil.isDefined(query.getQuery())) {
-            Hits hits = null;
+            TopDocs topDocs = null;
             RangeQuery rangeQuery = null;
+            // realizes the search on space without keywords indicated by the user
+            if (query.isSearchBySpace() && !query.isPeriodDefined()) {
+              String beginDate = "1900/01/01";
+              String endDate = "2200/01/01";
+              Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
+              Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
+
+              rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
+            }
             if (query.isPeriodDefined()) {
               String beginDate = query.getRequestedCreatedAfter();
               if (!StringUtil.isDefined(beginDate)) {
@@ -163,26 +180,26 @@ public class WAIndexSearcher {
               Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
               TermQuery authorQuery = new TermQuery(authorTerm);
               if (rangeQuery == null) {
-                hits = searcher.search(authorQuery);
+                topDocs = searcher.search(authorQuery, maxNumberResult);
               } else {
                 BooleanQuery booleanQuery = new BooleanQuery();
                 booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
                 booleanQuery.add(authorQuery, BooleanClause.Occur.MUST);
 
-                hits = searcher.search(booleanQuery);
+                topDocs = searcher.search(booleanQuery, maxNumberResult);
               }
             } else {
-              hits = searcher.search(rangeQuery);
+              topDocs = searcher.search(rangeQuery, maxNumberResult);
             }
 
-            results = makeList(hits, query);
+            results = makeList(topDocs, query, searcher);
           } else {
             List<MatchingIndexEntry> contentMatchingResults =
-                makeList(getHits(query, IndexManager.CONTENT, searcher), query);
+                makeList(getHits(query, IndexManager.CONTENT, searcher), query, searcher);
 
             if (contentMatchingResults.size() > 0) {
               List<MatchingIndexEntry> headerMatchingResults =
-                  makeList(getHits(query, IndexManager.HEADER, searcher), query);
+                  makeList(getHits(query, IndexManager.HEADER, searcher), query, searcher);
 
               if (headerMatchingResults.size() > 0) {
                 results = merge(headerMatchingResults, primaryFactor,
@@ -209,20 +226,26 @@ public class WAIndexSearcher {
             "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
       }
     }
+    long endTime = System.nanoTime();
 
+    SilverTrace.debug("searchEngine", WAIndexSearcher.class.toString(), " search duration in ms " +
+        (endTime - startTime) / 1000000);
     return (MatchingIndexEntry[]) results
         .toArray(new MatchingIndexEntry[results.size()]);
   }
 
   /**
-   * Returns the lucene hits of the query
-   * 
+   * Returns the lucene TopDocs of the query
+   * @param query the search criteria
    * @param searchField the search field within the index.
+   * @param searcher Searcher object
+   * @return the TopDoc which contain the score and the index of a document
+   * @throws com.stratelia.webactiv.searchEngine.model.ParseException
    */
-  private Hits getHits(QueryDescription query, String searchField,
+  private TopDocs getHits(QueryDescription query, String searchField,
       Searcher searcher)
       throws com.stratelia.webactiv.searchEngine.model.ParseException {
-    Hits hits = null;
+    TopDocs topDocs = null;
 
     try {
       Analyzer analyzer = indexManager.getAnalyzer(Locale.getDefault()
@@ -270,28 +293,27 @@ public class WAIndexSearcher {
           .info("searchEngine", "WAIndexSearcher.getHits",
           "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
           + parsedQuery.toString());
-
-      hits = searcher.search(parsedQuery);
+      topDocs = searcher.search(parsedQuery, maxNumberResult);
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new com.stratelia.webactiv.searchEngine.model.ParseException(
           "WAIndexSearcher", e);
     } catch (IOException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      hits = null;
+      topDocs = null;
     } catch (ArrayIndexOutOfBoundsException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      hits = null;
+      topDocs = null;
     }
 
-    return hits;
+    return topDocs;
   }
 
-  private Hits getXMLHits(QueryDescription query, Searcher searcher)
+  private TopDocs getXMLHits(QueryDescription query, Searcher searcher)
       throws com.stratelia.webactiv.searchEngine.model.ParseException,
       IOException {
-    Hits hits = null;
+    TopDocs topDocs = null;
 
     try {
       Hashtable<String, String> xmlQuery = query.getXmlQuery();
@@ -326,23 +348,23 @@ public class WAIndexSearcher {
           "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
           + parsedQuery.toString());
 
-      hits = searcher.search(parsedQuery);
+      topDocs = searcher.search(parsedQuery, maxNumberResult);
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new com.stratelia.webactiv.searchEngine.model.ParseException(
           "WAIndexSearcher", e);
     } catch (IOException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.getXMLHits",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      hits = null;
+      topDocs = null;
     }
 
-    return hits;
+    return topDocs;
   }
 
-  private Hits getMultiFieldHits(QueryDescription query, Searcher searcher)
+  private TopDocs getMultiFieldHits(QueryDescription query, Searcher searcher)
       throws com.stratelia.webactiv.searchEngine.model.ParseException,
       IOException {
-    Hits hits = null;
+    TopDocs topDocs = null;
 
     try {
       List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
@@ -380,24 +402,24 @@ public class WAIndexSearcher {
           "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
           + parsedQuery.toString());
 
-      hits = searcher.search(parsedQuery);
+      topDocs = searcher.search(parsedQuery, maxNumberResult);
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new com.stratelia.webactiv.searchEngine.model.ParseException(
           "WAIndexSearcher", e);
     } catch (IOException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.getMultiFieldHits",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      hits = null;
+      topDocs = null;
     }
 
-    return hits;
+    return topDocs;
   }
 
   /**
    * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results list.
    */
-  private List<MatchingIndexEntry> makeList(Hits hits, QueryDescription query) throws IOException {
+  private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query, Searcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
     String today = DateUtil.today2SQLDate();
     String user = query.getSearchingUser();
@@ -410,10 +432,13 @@ public class WAIndexSearcher {
     SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
         "root.MSG_GEN_PARAM_VALUE", "afterDate = " + afterDate);
 
-    if (hits != null) {
-      for (int i = 0; i < hits.length(); i++) {
+    if (topDocs != null) {
+      ScoreDoc scoreDoc = null;
+
+      for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         MatchingIndexEntry indexEntry;
-        Document doc = hits.doc(i);
+        scoreDoc = topDocs.scoreDocs[i];
+        Document doc = searcher.doc(scoreDoc.doc);
 
         String startDate = doc.get(IndexManager.STARTDATE);
         String endDate = doc.get(IndexManager.ENDDATE);
@@ -501,7 +526,7 @@ public class WAIndexSearcher {
                 .get(IndexManager.THUMBNAIL_DIRECTORY));
             indexEntry.setStartDate(startDate);
             indexEntry.setEndDate(endDate);
-            indexEntry.setScore(hits.score(i));
+            indexEntry.setScore(scoreDoc.score); // TODO check the score.
             results.add(indexEntry);
           }
         }
@@ -600,7 +625,7 @@ public class WAIndexSearcher {
    * Build the set of all the path to the directories index corresponding the given (space,
    * component) pairs.
    */
-  private Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
+  public Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
     Set<String> pathSet = new HashSet<String>();
 
     Iterator<SpaceComponentPair> i = spaceComponentPairSet.iterator();

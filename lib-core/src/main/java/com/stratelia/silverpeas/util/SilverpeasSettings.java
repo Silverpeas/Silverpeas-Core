@@ -26,6 +26,8 @@ package com.stratelia.silverpeas.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -56,6 +58,24 @@ public class SilverpeasSettings {
 
     if ((s != null) && (s.length() > 0)) {
       return Integer.parseInt(s);
+    } else {
+      return defaultValue;
+    }
+  }
+
+  /**
+   * Read an float from a Settings-file
+   * @param rs resourceLocator object
+   * @param propName property name to get from properties file
+   * @param defaultValue default value if no value has been found
+   * @return a float value
+   */
+  public static float readFloat(ResourceLocator rs, String propName,
+      float defaultValue) {
+    String propValue = rs.getString(propName, null);
+
+    if (StringUtils.isNotEmpty(propValue)) {
+      return Float.parseFloat(propValue);
     } else {
       return defaultValue;
     }

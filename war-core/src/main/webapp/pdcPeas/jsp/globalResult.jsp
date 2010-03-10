@@ -25,6 +25,7 @@
 --%>
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%!
@@ -96,6 +97,9 @@ Integer nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer sortValue		= (Integer) request.getAttribute("SortValue");
 String sortOrder		= (String) request.getAttribute("SortOrder");
 List	webTabs			= (List) request.getAttribute("WebTabs");
+// spelling words
+String [] spellingWords = (String []) request.getAttribute("spellingWords");
+
 
 boolean isXmlSearchVisible = false;
 if (xmlSearch != null)
@@ -140,21 +144,30 @@ String attachmentSrc	= "<img border=0 align=absmiddle src=\""+resource.getIcon("
 
 Board board = gef.getBoard();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
+
+// keyword autocompletion
+int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletion.minChars", "3"));
+boolean autoCompletion 	= resource.getSetting("MarkResultAsRead", true);
+boolean markResult 		= resource.getSetting("AutoCompletion", false);
 %>
 
 
-<%@page import="com.silverpeas.util.StringUtil"%><html>
+<html>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
    out.println(gef.getLookStyleSheet());
 %>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-
+<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
 
 <script language="javascript">
 	function submitContent(cUrl, componentId) {
@@ -321,6 +334,34 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 		document.AdvancedSearch.action = "AdvancedSearch";
 		document.AdvancedSearch.submit();
 	}
+       //used for keywords autocompletion
+    <%  if(autoCompletion){ %>
+		 $(document).ready(function(){
+		        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
+		                    minChars: <%=autocompletionMinChars%>,
+		                    max: 50,
+		                    autoFill: false,
+		                    mustMatch: false,
+		                    matchContains: false,
+		                    scrollHeight: 220
+		
+		            });
+		      });
+    <%}%>
+
+    //used for mark as read functionality
+  	<%  if(markResult){ %>  
+		function markAsRead(id) {
+			if(id!=""){
+				$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
+			}
+		}
+	<%}%>
+
+function dymsend(query ) {
+	document.AdvancedSearch.query.value = query;
+	document.AdvancedSearch.submit();
+}
 </script>
 </HEAD>
 <BODY>
@@ -360,13 +401,14 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
     out.println(frame.printBefore());
     
     out.println(board.printBefore());
+
 %>
 		<table border="0" cellspacing="0" cellpadding="5" width="100%">
         <tr align="center">
           <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.SearchFind")%></td>
           <td align="left" valign="middle">
           	<table border="0" cellspacing="0" cellpadding="0"><tr valign="middle">
-          		<td valign="middle"><input type="text" name="query" size="60" value="<%=keywords%>"><input type="hidden" name="mode"></td>
+          		<td valign="middle"><input id="query" type="text" name="query" size="60" value="<%=keywords%>"><input type="hidden" name="mode"></td>
           		<td valign="middle">&nbsp;</td>
           		<td valign="middle" align="left" width="100%"><% out.println(searchButton.print());%></td>
           	</tr></table>
@@ -442,7 +484,7 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 	out.println(board.printAfter());
     out.println("<br>");
 	out.println(board.printBefore());
-	
+
 	if (results != null)
 	{
 		Pagination	pagination			= gef.getPagination(nbTotalResults, nbResToDisplay.intValue(), indexOfFirstResult);
@@ -452,7 +494,21 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
 		displayItemsListHeader(keywords, pagination, resource, out);
 		out.println("<tr><td>");
-
+	if(spellingWords!= null && spellingWords[0]!= null && !spellingWords[0].equals("")){ 
+%>
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+			<tr >
+				<td> 
+					<span class="spellText" > 		  
+						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%> 				
+						
+					</span>	
+					<a href="javascript:dymsend('<%=spellingWords[0]%>');"><b><span class="spellWord"> <%=spellingWords[0]%></span></b></a>
+					<p>&nbsp;</p>
+				</td>
+			</tr>
+		</table>
+<%  }
 		out.println("<table border=\"0\">");
 		GlobalSilverResult	gsr			= null;
 						
@@ -512,10 +568,18 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 			out.println("<td valign=\"top\">");
 			if (activeSelection.booleanValue())
 				out.println("<span class=\"textePetitBold\">"+sName+"</span>");
-			else
-				out.println("<a href=\""+sURL+"\"><span class=\"textePetitBold\">"+sName+"</span></a>");
+			else {
+			  	String cssClass="textePetitBold";
+			  	String cssClassDisableVisited="";
+			  	if(gsr.getIndexEntry().isHasRead()){
+			  	  cssClass="markedkAsRead";
+			  	  cssClassDisableVisited ="markedkAsReadDisableVisited";
+			  	}
+			  	
+			  	
+				out.println("<a href=\""+sURL+"\" class=\""+cssClassDisableVisited +"\"><span class=\""+ cssClass+ "\">"+sName+"</span></a>");
 			
-			if (StringUtil.isDefined(sDownloadURL))
+			} if (StringUtil.isDefined(sDownloadURL))
 			{
 				//affiche le lien pour le téléchargement
 				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");

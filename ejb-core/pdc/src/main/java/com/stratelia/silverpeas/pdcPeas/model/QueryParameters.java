@@ -226,6 +226,8 @@ public class QueryParameters implements java.io.Serializable {
   }
 	public boolean isDefined()
 	{
-		return StringUtil.isDefined(keywords) || StringUtil.isDefined(afterdate) || StringUtil.isDefined(beforedate) || StringUtil.isDefined(creatorId);
+    return StringUtil.isDefined(keywords) || StringUtil.isDefined(afterdate) ||
+        StringUtil.isDefined(beforedate) || StringUtil.isDefined(creatorId) ||
+        StringUtil.isDefined(spaceId);
 	}
 }

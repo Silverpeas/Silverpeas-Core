@@ -126,9 +126,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List globalResult = new ArrayList(); // used by global search
   private List indexEntries = new ArrayList();
   private List pdcResult = new ArrayList(); // used by pdc search via the
-  // DomainsBar
-  private ResourceLocator pdcSettings = new ResourceLocator(
-      "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 1;
   private int nbItemsPerPage = -1;
@@ -163,13 +160,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private int searchScope = SEARCH_FULLTEXT;
   private ComponentSecurity componentSecurity = null;
 
+  // spelling word
+  private String[] spellingwords = null;
+
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
-    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
+    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle,
+        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
     isExportEnabled = isExportLicenseOK();
-    isRefreshEnabled = "true".equals(pdcSettings.getString("EnableRefresh"));
+    isRefreshEnabled = "true".equals(getSettings().getString("EnableRefresh"));
 
     try {
       isThesaurusEnableByUser = getActiveThesaurusByUser();
@@ -212,8 +213,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public int getNbItemsPerPage() {
     if (nbItemsPerPage == -1) {
-      nbItemsPerPage = new Integer(pdcSettings
-          .getString("NbItemsParPage", "20")).intValue();
+      nbItemsPerPage = new Integer(getSettings().getString("NbItemsParPage", "20")).intValue();
     }
     return nbItemsPerPage;
   }
@@ -256,15 +256,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // CBO : Add
   public String getDisplayParamChoices() {
     if (displayParamChoices == null) {
-      displayParamChoices = pdcSettings.getString("DisplayParamChoices", "All");
+      displayParamChoices = getSettings().getString("DisplayParamChoices", "All");
     }
     return displayParamChoices;
   }
 
   public List getListChoiceNbResToDisplay() {
     List choiceNbResToDisplay = new ArrayList();
-    StringTokenizer st = new StringTokenizer(pdcSettings
-        .getString("ChoiceNbResToDisplay"), ",");
+    StringTokenizer st = new StringTokenizer(getSettings().getString("ChoiceNbResToDisplay"), ",");
     while (st.hasMoreTokens()) {
       String choice = st.nextToken();
       choiceNbResToDisplay.add(choice);
@@ -328,55 +327,74 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
         "root.MSG_GEN_ENTER_METHOD");
     MatchingIndexEntry[] plainSearchResults = null;
-    if (getQueryParameters() != null
-        && (getQueryParameters().isDefined() || getQueryParameters()
-        .getXmlQuery() != null)) {
-      QueryDescription query = getQueryParameters().getQueryDescription(
-          getUserId(), "*");
+    QueryDescription query = null;
+    try {
+      // spelling words initialization
+      getSearchEngineBm().setSpellingWords(null);
+      spellingwords = null;
+      if (getQueryParameters() != null
+          && (getQueryParameters().isDefined() || getQueryParameters()
+          .getXmlQuery() != null)) {
+        query = getQueryParameters().getQueryDescription(
+            getUserId(), "*");
 
-      if (componentList == null) {
-        buildComponentListWhereToSearch(null, null);
-      }
+        if (componentList == null) {
+          buildComponentListWhereToSearch(null, null);
+        }
 
-      for (int i = 0; i < componentList.size(); i++) {
-        query.addComponent((String) componentList.get(i));
-      }
+        for (int i = 0; i < componentList.size(); i++) {
+          query.addComponent((String) componentList.get(i));
+        }
 
-      if (getQueryParameters().getSpaceId() == null) {
-        // c'est une recherche globale, on cherche si le pdc et les composants
-        // personnels.
-        query.addSpaceComponentPair(null, "user@" + getUserId()
-            + "_mailService");
-        query.addSpaceComponentPair(null, "user@" + getUserId() + "_todo");
-        query.addSpaceComponentPair(null, "user@" + getUserId() + "_agenda");
-        query.addSpaceComponentPair(null, "pdc");
-        // pour retrouver les espaces et les composants
-        query.addSpaceComponentPair(null, "Spaces");
-        query.addSpaceComponentPair(null, "Components");
-      }
+        if (getQueryParameters().getSpaceId() == null) {
+          // c'est une recherche globale, on cherche si le pdc et les composants
+          // personnels.
+          query.addSpaceComponentPair(null, "user@" + getUserId()
+              + "_mailService");
+          query.addSpaceComponentPair(null, "user@" + getUserId() + "_todo");
+          query.addSpaceComponentPair(null, "user@" + getUserId() + "_agenda");
+          query.addSpaceComponentPair(null, "pdc");
+          // pour retrouver les espaces et les composants
+          query.addSpaceComponentPair(null, "Spaces");
+          query.addSpaceComponentPair(null, "Components");
+        } else {
+          // used for search by space without keywords
+          query.setSearchBySpace(true);
+        }
 
-      SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
-          "root.MSG_GEN_PARAM_VALUE", "# component = "
-          + query.getSpaceComponentPairSet().size());
-      try {
+        SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
+            "root.MSG_GEN_PARAM_VALUE", "# component = "
+            + query.getSpaceComponentPairSet().size());
+
         String originalQuery = query.getQuery();
         query.setQuery(getSynonymsQueryString(originalQuery));
+
         getSearchEngineBm().search(query);
         plainSearchResults = getSearchEngineBm().getRange(0,
             getSearchEngineBm().getResultLength());
-      } catch (NoSuchObjectException nsoe) {
-        // an error occurs on searchEngine statefull EJB
-        // interface is not null but the EJB is !
-        // so we set interface to null and we launch again de search.
-        searchEngine = null;
-        plainSearchResults = search();
-      } catch (Exception e) {
-        SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
-            "pdcPeas.EX_CAN_SEARCH_QUERY", "query : " + query.getQuery(), e);
+        // spelling words
+        if (getSettings().getBoolean("enableWordSpelling", false)) {
+          spellingwords = getSearchEngineBm().getSpellingWords();
+        }
+
       }
+    } catch (NoSuchObjectException nsoe) {
+      // an error occurs on searchEngine statefull EJB
+      // interface is not null but the EJB is !
+      // so we set interface to null and we launch again de search.
+      searchEngine = null;
+      plainSearchResults = search();
+    } catch (Exception e) {
+      String keyword = "";
+      if (query != null) {
+        keyword = query.getQuery();
+      }
+      SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
+          "pdcPeas.EX_CAN_SEARCH_QUERY", "query : " + keyword, e);
     }
     SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
         "root.MSG_GEN_EXIT_METHOD");
+
     return plainSearchResults;
   }
 
@@ -698,6 +716,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String m_sContext = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
 
+    // activate the mark as read functionality on results list
+    String markAsReadJS = "";
+    boolean isEnableMarkAsRead = getSettings().getBoolean("enableMarkAsRead", false);
+
     GlobalSilverResult result = null;
     MatchingIndexEntry indexEntry = null;
     for (int r = 0; r < results.size(); r++) {
@@ -707,7 +729,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       resultType = indexEntry.getObjectType();
       componentId = indexEntry.getComponent();
       downloadLink = null;
-
+      // create the url part to activate the mark as read functionality
+      if (isEnableMarkAsRead) {
+        markAsReadJS = "markAsRead('" + indexEntry.getPK().toString() + "'); ";
+      }
       if (resultType.equals("Versioning")) {
         // Added to be compliant with old indexing method
         resultType = "Publication";
@@ -729,7 +754,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           int iEnd = underLink.indexOf("&", iStart);
           underLink = underLink.substring(0, iStart) + "Publication"
               + underLink.substring(iEnd, underLink.length());
-          titleLink = "javascript:window.open('"
+          titleLink = "javascript:" + markAsReadJS + " window.open('"
               + EncodeHelper.javaStringToJsString(downloadLink)
               + "');jumpToComponent('" + componentId
               + "');document.location.href='"
@@ -759,7 +784,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         int iEnd = underLink.indexOf("&", iStart);
         underLink = underLink.substring(0, iStart) + "Publication"
             + underLink.substring(iEnd, underLink.length());
-        titleLink = "javascript:window.open('"
+        titleLink = "javascript:" + markAsReadJS + " window.open('"
             + EncodeHelper.javaStringToJsString(downloadLink)
             + "');jumpToComponent('" + componentId
             + "');document.location.href='"
@@ -772,7 +797,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // window opener is reloaded on the main page of the component
         underLink = m_sContext + URLManager.getURL("useless", componentId)
             + "Main";
-        titleLink = "javascript:window.open('"
+        titleLink = "javascript:" + markAsReadJS + " window.open('"
             + EncodeHelper.javaStringToJsString(downloadLink)
             + "');jumpToComponent('" + componentId
             + "');document.location.href='"
@@ -788,11 +813,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String uniqueId = treeId + "_" + valueId;
         SilverTrace.warn("pdcPeas", "PdcSearchRequestRouter.buildResultList()",
             "root.MSG_GEN_PARAM_VALUE", "uniqueId= " + uniqueId);
-        titleLink = "javascript:openGlossary('" + uniqueId + "');";
+        titleLink = "javascript:" + markAsReadJS + " openGlossary('" + uniqueId + "');";
       } else if (resultType.equals("Space")) {
         // retour sur l'espace
         String spaceId = indexEntry.getObjectId();
-        titleLink = "javascript:goToSpace('" + spaceId
+        titleLink = "javascript:" + markAsReadJS + " goToSpace('" + spaceId
             + "');document.location.href='"
             + URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId) + "';";
       } else if (resultType.equals("Component")) {
@@ -802,13 +827,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // "Main";
         underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
             componentId);
-        titleLink = "javascript:jumpToComponent('" + componentId
+        titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
             + "');document.location.href='" + underLink + "';";
       } else if (componentId.startsWith("user@")) {
         titleLink = getUrl(m_sContext, componentId, null, indexEntry
             .getPageAndParams());
       } else {
-        titleLink = "javascript:jumpToComponent('" + componentId
+        titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
             + "');document.location.href='" + getUrl(m_sContext, indexEntry)
             + "';";
       }
@@ -1508,7 +1533,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public boolean showAllAxisInGlossary() {
     if (showAllAxisInGlossary == null) {
-      showAllAxisInGlossary = pdcSettings.getString("glossaryShowAllAxis");
+      showAllAxisInGlossary = getSettings().getString("glossaryShowAllAxis");
     }
     return showAllAxisInGlossary.equals("true");
   }
@@ -2163,12 +2188,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public boolean isXmlSearchVisible() {
-    return "true".equals(pdcSettings.getString("XmlSearchVisible"));
+    return "true".equals(getSettings().getString("XmlSearchVisible"));
   }
 
   public boolean isPertinenceVisible() {
-    return SilverpeasSettings.readBoolean(pdcSettings, "PertinenceVisible",
-        true);
+    return getSettings().getBoolean("PertinenceVisible", true);
   }
 
   public PublicationTemplateImpl getXmlTemplate() {
@@ -2229,4 +2253,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public void resetResultPage() {
     resultPage = null;
   }
+
+  /**
+   * gets suggestions or spelling words if a search doesn't return satisfying results. A minimal
+   * score trigger the suggestions search (0.5 by default)
+   * @return array that contains suggestions.
+   */
+  public String[] getSpellingwords() {
+    return spellingwords;
+  }
+
 }

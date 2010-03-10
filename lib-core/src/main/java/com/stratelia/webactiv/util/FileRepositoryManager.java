@@ -416,4 +416,12 @@ public class FileRepositoryManager extends Object {
     return context;
   }
 
+  /**
+   * get the base directory of index upload path
+   * @return
+   */
+  public static String getIndexUpLoadPath() {
+    return s_sIndexUpLoadPath + File.separator;
+  }
+
 }

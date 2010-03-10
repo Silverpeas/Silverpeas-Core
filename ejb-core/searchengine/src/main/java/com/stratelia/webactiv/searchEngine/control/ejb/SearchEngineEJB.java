@@ -24,20 +24,32 @@
 package com.stratelia.webactiv.searchEngine.control.ejb;
 
 import java.rmi.RemoteException;
+import java.util.Set;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.webactiv.searchEngine.model.DidYouMeanSearcher;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ParseException;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
 import com.stratelia.webactiv.searchEngine.model.WAIndexSearcher;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * A SearchEngineEJB search the web'activ index and give access to the retrieved index entries.
  */
 public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkeleton {
+  /**
+   * array which contains the spelling words.
+   */
+  private String[] spellingWords = null;
+
+  ResourceLocator pdcSettings = new ResourceLocator(
+      "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
   /**
    * Create a SearchEngineBm. The results set is initialized empty.
    */
@@ -51,6 +63,13 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
   public void search(QueryDescription query) throws RemoteException,
       ParseException {
     results = new WAIndexSearcher().search(query);
+    // spelling word functionality is triggered by a threshold defined in pdcPeasSettings.properties
+    // (wordSpellingMinScore).
+    if (SilverpeasSettings.readBoolean(pdcSettings, "enableWordSpelling", false) &&
+        isSpellingNeeded()) {
+      DidYouMeanSearcher searcher = new DidYouMeanSearcher();
+      spellingWords = searcher.suggest(query);
+    }
   }
 
   /**
@@ -127,4 +146,45 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
    * The results of the last search.
    */
   private MatchingIndexEntry[] results = null;
+
+  /**
+   * check if the results score is low enough to suggest spelling words
+   * @return true if the max results score is under the defined threshold
+   */
+  private boolean isSpellingNeeded() {
+    float minScore = SilverpeasSettings.readFloat(pdcSettings, "wordSpellingMinScore", 0.5f);
+    for (MatchingIndexEntry match : results) {
+      if (minScore < match.getScore()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * gets a list of suggestion from a partial String
+   * @param keywordFragment string to execute the search
+   * @return a set of result sorted by alphabetic order
+   */
+  public Set<String> suggestKeywords(String keywordFragment) throws RemoteException {
+
+    SearchCompletion completion = new SearchCompletion();
+    return completion.getSuggestions(keywordFragment);
+  }
+
+  /**
+   * gets suggestions or spelling words if a search doesn't return satisfying result. A minimal
+   * score trigger the suggestions search (0.5 by default)
+   * @return array that contains suggestions.
+   */
+  public String[] getSpellingWords() throws RemoteException {
+    return spellingWords;
+  }
+
+  /**
+   * @param spellingWords the spellingWords to set
+   */
+  public void setSpellingWords(String[] spellingWords) {
+    this.spellingWords = spellingWords;
+  }
 }

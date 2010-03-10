@@ -78,11 +78,13 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
 
@@ -799,6 +801,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         request.setAttribute("XmlSearchVisible", new Boolean(pdcSC.isXmlSearchVisible()));
 
         destination = "/pdcPeas/jsp/webTab.jsp";
+      } else if ("markAsRead".equals(function)) {
+          PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, request);
+          destination = "/pdcPeas/jsp/blank.html";
       } else {
         destination = "/pdcPeas/jsp/" + function;
       }
@@ -1125,15 +1130,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
     request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
 
-    // CBO : REMOVE
-    // request.setAttribute("NbResultsPerPage", new Integer(pdcSC.getNbResultsPerPage()));
-
     request.setAttribute("IndexOfFirstResult", new Integer(pdcSC.getIndexOfFirstResultToDisplay()));
     request.setAttribute("ExportEnabled", new Boolean(pdcSC.isExportEnabled()));
     request.setAttribute("RefreshEnabled", new Boolean(pdcSC.isRefreshEnabled()));
 
-    // CBO : UPDATE
-    // request.setAttribute("Results", pdcSC.getResultsToDisplay());
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC
         .getSortOrder()));
 
@@ -1141,13 +1141,15 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     request.setAttribute("XmlSearchVisible", new Boolean(pdcSC.isXmlSearchVisible()));
     request.setAttribute("PertinenceVisible", new Boolean(pdcSC.isPertinenceVisible()));
 
-    // CBO : ADD
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
     request.setAttribute("ChoiceNbResToDisplay", pdcSC.getListChoiceNbResToDisplay());
     request.setAttribute("NbResToDisplay", new Integer(pdcSC.getNbResToDisplay()));
     request.setAttribute("SortValue", new Integer(pdcSC.getSortValue()));
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
     request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
+
+    // spelling words
+    request.setAttribute("spellingWords", pdcSC.getSpellingwords());
   }
 
   /**

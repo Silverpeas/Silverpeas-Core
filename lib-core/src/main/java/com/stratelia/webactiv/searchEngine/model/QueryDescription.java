@@ -47,6 +47,8 @@ public class QueryDescription implements Serializable {
   
   private static final long serialVersionUID = 1L;
   
+  private boolean searchBySpace = false;
+
   /**
    * The no parameters constructor builds an empty query. The setQuery and addSpaceComponentPair()
    * methods should be called to initialize the query. Other criterium (language, creation date ...)
@@ -332,5 +334,19 @@ public class QueryDescription implements Serializable {
   private Hashtable<String, String> xmlQuery = null;
   private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
+
+  /**
+   * @return the searchBySpace
+   */
+  public boolean isSearchBySpace() {
+    return searchBySpace;
+  }
+
+  /**
+   * @param searchBySpace the searchBySpace to set
+   */
+  public void setSearchBySpace(boolean isSearchBySpace) {
+    this.searchBySpace = isSearchBySpace;
+  }
 
 }

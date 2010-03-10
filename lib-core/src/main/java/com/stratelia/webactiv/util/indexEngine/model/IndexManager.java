@@ -43,6 +43,7 @@ import org.apache.lucene.index.Term;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
@@ -156,6 +157,11 @@ public class IndexManager {
                 "Can't Close index " + writerPath, e);
           }
         }
+        // update the spelling index
+        if(enableDymIndexing){
+          DidYouMeanIndexer.createSpellIndexForAllLanguage("content", writerPath);
+        }
+
         writerPaths.remove();
       }
     }
@@ -288,6 +294,20 @@ public class IndexManager {
       } catch (MissingResourceException e) {
       } catch (NumberFormatException e) {
       }
+
+      try {
+        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double
+            .toString(IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+        RAMBufferSizeMB = Double.parseDouble(stringValue);
+      } catch (MissingResourceException e) {
+      } catch (NumberFormatException e) {
+      }
+
+      try {
+        enableDymIndexing = SilverpeasSettings.readBoolean(resource, "enableDymIndexing", false);
+      } catch (MissingResourceException e) {
+      } catch (NumberFormatException e) {
+      }
     }
 
   }
@@ -362,6 +382,7 @@ public class IndexManager {
     // fields creation
     doc.add(new Field(KEY, indexEntry.getPK().toString(), Field.Store.YES,
         Field.Index.UN_TOKENIZED));
+
     Iterator languages = indexEntry.getLanguages();
     if (indexEntry.getObjectType() != null
         && indexEntry.getObjectType().startsWith("Attachment")) {
@@ -593,5 +614,7 @@ public class IndexManager {
   private int mergeFactor = 10;
   private int maxMergeDocs = Integer.MAX_VALUE;
   private double RAMBufferSizeMB = IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB;
+  // enable the "Did you mean " indexing
+  private boolean enableDymIndexing = false;
 
 }

@@ -30,6 +30,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
@@ -40,6 +42,7 @@ import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 
 public class PdcSearchRequestRouterHelper {
 
@@ -433,5 +436,26 @@ public class PdcSearchRequestRouterHelper {
     // Set search domains
     request.setAttribute("searchDomains", pdcSC.getSearchDomains());
     request.setAttribute("currentSearchDomainId", currentDomain);
+  }
+
+  /**
+   * Checks the list of result and marks a result as read
+   * @param pdcSC PdcSearchSessionController object
+   * @param request HttpRequest object
+   */
+  public static void markResultAsRead(PdcSearchSessionController pdcSC,
+      HttpServletRequest request) {
+    String resultId = request.getParameter("id");
+    if (StringUtils.isNotEmpty(resultId)) {
+      List currentEntries = pdcSC.getIndexEntries();
+      if (currentEntries != null && !currentEntries.isEmpty()) {
+        for (Object entry : currentEntries) {
+          if (resultId.endsWith(((MatchingIndexEntry) entry).getPK().toString()))
+            ((MatchingIndexEntry) entry).setHasRead(true);
+        }
+      }
+
+    }
+
   }
 }

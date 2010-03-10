@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.searchEngine.control.ejb;
 
 import java.rmi.RemoteException;
+import java.util.Set;
 
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ParseException;
@@ -58,4 +59,25 @@ public interface SearchEngineBmBusinessSkeleton {
    * in the range.
    */
   MatchingIndexEntry[] getRange(int min, int max) throws RemoteException;
+
+  /**
+   * gets a list of suggestion from a partial String
+   * @param keywordFragment string to execute the search
+   * @return a set of result sorted by alphabetic order
+   */
+  Set<String> suggestKeywords(String keywordFragment) throws RemoteException;
+
+  /**
+   * gets suggestions or spelling words if a search doesn't return satisfying result. A minimal
+   * score trigger the suggestions search (0.5 by default)
+   * @return array that contains suggestions.
+   */
+  public String[] getSpellingWords() throws RemoteException;
+
+  /**
+   * Sets suggestions or spelling words
+   * @param spellingWords the spellingWords to set
+   */
+  public void setSpellingWords(String[] spellingWords) throws RemoteException;
+
 }

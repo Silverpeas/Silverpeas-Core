@@ -153,7 +153,32 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.dbunit</groupId>
+      <artifactId>dbunit</artifactId>
+    </dependency>
+     <dependency>
+      <groupId>com.sun.jndi</groupId>
+      <artifactId>fscontext</artifactId>
+      <scope>compile</scope>
+    </dependency>
+     <dependency>
+      <groupId>com.sun.jndi</groupId>
+      <artifactId>providerutil</artifactId>
+    </dependency>
   </dependencies>
+  
+  <build>
+  <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+	 <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>
+  </build>
 
   <reporting>
     <plugins>

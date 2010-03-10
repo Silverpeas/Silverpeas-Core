@@ -519,6 +519,11 @@
     </init-param>
   </servlet>
   -->
+   <servlet>
+        <servlet-name>AutocompleteServlet</servlet-name>
+        <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
+    </servlet>
+    
 
 
   <servlet-mapping>
@@ -832,6 +837,10 @@
     <url-pattern>/ajaxupload/*</url-pattern>
   </servlet-mapping>
   -->
+   <servlet-mapping>
+        <servlet-name>AutocompleteServlet</servlet-name>
+        <url-pattern>/AutocompleteServlet</url-pattern>
+    </servlet-mapping>
 
   <jsp-config>
     <taglib>
