@@ -56,9 +56,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
         "jndi.properties"));
     String jndiPath = props.getProperty("java.naming.provider.url").substring(7);
     File file = new File(jndiPath);
-    file.mkdir();
+    file.mkdirs();
     super.setUp();
-
   }
 
   /**

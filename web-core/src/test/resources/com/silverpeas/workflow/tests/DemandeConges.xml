@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -25,13 +25,13 @@
 
 -->
 
-<!-- PROCÉDURE : DEMANDE DE CONGES -->
+<!-- PROCÃ‰DURE : DEMANDE DE CONGES -->
 
 <processModel name="DemandeConges"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				  xsi:noNamespaceSchemaLocation="processModel.xsd">
 
-	<label>Demande de congés</label>
+	<label>Demande de congÃ©s</label>
 
 	<!-- DESCRIPTION DES ROLES -->
 	<roles>
@@ -42,7 +42,7 @@
 			<label>Responsable</label>
 		</role>
 		<role name="Secretaire">
-			<label>Secrétaire</label>
+			<label>SecrÃ©taire</label>
 		</role>
 		<role name="supervisor">
 			<label>Superviseur</label>
@@ -56,7 +56,7 @@
 			<type>text</type>
 		</item>
 		<item name="secretaire">
-			<label>Secrétaire</label>
+			<label>SecrÃ©taire</label>
 			<type>user</type>
 		</item>
 		<item name="old_responsable">
@@ -68,15 +68,15 @@
 	<!-- DEFINITION DU DOSSIER -->
 	<dataFolder>
 		<item name="nature">
-			<label>Nature des congés</label>
+			<label>Nature des congÃ©s</label>
 			<type>text</type>
 		</item>
 		<item name="duree">
-			<label>durée (nombre de jours ouvrés)</label>
+			<label>durÃ©e (nombre de jours ouvrÃ©s)</label>
 			<type>text</type>
 		</item>
 		<item name="dateDebut">
-			<label>Départ</label>
+			<label>DÃ©part</label>
 			<type>date</type>
 		</item>
 		<item name="dateFin">
@@ -100,7 +100,7 @@
 	<!-- PRESENTATION DES PROCEDURES EN COURS-->
 	<presentation>
 		<title role="Employe">
-		    Congés du ${instance.dateDebut} au ${instance.dateFin}
+		    CongÃ©s du ${instance.dateDebut} au ${instance.dateFin}
 		</title>
 		<title role="Responsable">Demande de ${action.Creation.actor}</title>
 		<title role="supervisor">Demande de ${action.Creation.actor}</title>
@@ -126,7 +126,7 @@
 		</participant>
 	</participants>
 
-	<!-- DESCRIPTION DES ÉTATS -->
+	<!-- DESCRIPTION DES Ã‰TATS -->
 	<states>
 		<state name="AttenteValidation">
 			<label>En attente de validation</label>
@@ -143,7 +143,7 @@
 		</state>
 
 		<state name="Acceptee" timeoutAction="Supprimer" timeoutInterval="1">
-			<label>Acceptée</label>
+			<label>AcceptÃ©e</label>
 			<workingUsers role="Secretaire">
 				<relatedUser participant="Demandeur" relation="secretaire"/>
 			</workingUsers>
@@ -156,7 +156,7 @@
 		</state>
 
 		<state name="Traitee">
-			<label>Acceptée et validée</label>
+			<label>AcceptÃ©e et validÃ©e</label>
 			<workingUsers role="Employe">
 				<relatedUser participant="Demandeur"/>
 			</workingUsers>
@@ -166,7 +166,7 @@
 		</state>
 
 		<state name="Refusee">
-			<label>Refusée</label>
+			<label>RefusÃ©e</label>
 			<workingUsers role="Employe">
 				<relatedUser participant="Demandeur"/>
 			</workingUsers>
@@ -180,8 +180,8 @@
 	<!-- DESCRIPTION DES ACTIONS -->
 	<actions>
 		<action name="Creation" form="creation" kind="create">
-			<label>Création</label>
-			<description>Création d'une nouvelle demande.</description>
+			<label>CrÃ©ation</label>
+			<description>CrÃ©ation d'une nouvelle demande.</description>
 			<allowedUsers>
 				<userInRole name="Employe"/>
 			</allowedUsers>
@@ -200,7 +200,7 @@
 			<consequences>
 				<consequence>
 					<set state="Acceptee"/>
-					<notify message="Votre demande de congés a été accepté. Cependant, elle doit encore être validée !">
+					<notify message="Votre demande de congÃ©s a Ã©tÃ© acceptÃ©. Cependant, elle doit encore Ãªtre validÃ©e !">
 						<relatedUser participant="Demandeur"/>
 					</notify>
 				</consequence>
@@ -248,7 +248,7 @@
 	<!-- DEFINITION DES FORMULAIRES -->
 	<forms>
 		<form name="presentationForm">
-			<title>Demande de congés</title>
+			<title>Demande de congÃ©s</title>
 		   <input value="${action.Creation.actor}">
 			   <label>Demandeur</label>
 			</input>
@@ -261,7 +261,7 @@
 			</input>
 		   <input value="${instance.state}"/>
 		   <input value="${action.Accepter.date}">
-			   <label>Congés validés le</label>
+			   <label>CongÃ©s validÃ©s le</label>
 			</input>
 		   <input value="${action.Accepter.actor}">
 			   <label>Responsable</label>
@@ -271,9 +271,9 @@
 		<form name="printForm" HTMLFileName="/weblib/processManager/DemandeConges/DemandeConges.html">
 		</form>
 
-		<!-- Formulaire de création -->
+		<!-- Formulaire de crÃ©ation -->
 		<form name="creation">
-			<title>Demande de congés</title>
+			<title>Demande de congÃ©s</title>
 			<input item="nature" mandatory="true"/>
 			<input item="duree" />
 			<input item="dateDebut" mandatory="true"/>
@@ -287,7 +287,7 @@
 		<form name="acceptation">
 			<title>Validation de la demande</title>
 		   <input displayerName="textarea"
-			       value="des congés du ${folder.dateDebut} au ${folder.dateFin} demandés par ${action.Creation.actor} (service : ${action.Creation.actor.departement})">
+			       value="des congÃ©s du ${folder.dateDebut} au ${folder.dateFin} demandÃ©s par ${action.Creation.actor} (service : ${action.Creation.actor.departement})">
 			   <label>Acceptation</label>
 			</input>
 			<input item="commentaires" displayerName="textarea"/>
@@ -297,7 +297,7 @@
 		<form name="refus">
 			<title>Refus de la demande</title>
 		   <input displayerName="textarea"
-			       value="des congés du ${folder.dateDebut} au ${folder.dateFin} demandés par ${action.Creation.actor}">
+			       value="des congÃ©s du ${folder.dateDebut} au ${folder.dateFin} demandÃ©s par ${action.Creation.actor}">
 			   <label>Refus</label>
 			</input>
 			<input item="commentaires" displayerName="textarea"/>
@@ -307,8 +307,8 @@
 		<form name="validation">
 			<title>Validation de la demande</title>
 		   <input displayerName="textarea"
-			       value="du ${folder.dateDebut} au ${folder.dateFin} demandés par ${action.Creation.actor}">
-			   <label>Congés</label>
+			       value="du ${folder.dateDebut} au ${folder.dateFin} demandÃ©s par ${action.Creation.actor}">
+			   <label>CongÃ©s</label>
 			</input>
 			<input item="nature" mandatory="true"/>
 			<input item="duree" />

@@ -21,10 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import java.util.Hashtable;
@@ -40,6 +37,11 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import com.silverpeas.util.PathTestUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import javax.naming.NamingException;
 
 /**
  * @author ehugonnet
@@ -52,14 +54,14 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
   protected void setUp() throws Exception {
     Hashtable env = new Hashtable();
     env.put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
+            "com.sun.jndi.fscontext.RefFSContextFactory");
     InitialContext ic = new InitialContext(env);
     Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
+    props.load(PathTestUtil.class.getClassLoader().
+            getResourceAsStream("jdbc.properties"));
     // Construct BasicDataSource reference
     Reference ref = new Reference("javax.sql.DataSource",
-        "org.apache.commons.dbcp.BasicDataSourceFactory", null);
+            "org.apache.commons.dbcp.BasicDataSourceFactory", null);
     ref.add(new StringRefAddr("driverClassName", props.getProperty("driverClassName")));
     ref.add(new StringRefAddr("url", props.getProperty("url")));
     ref.add(new StringRefAddr("username", props.getProperty("username")));
@@ -68,8 +70,8 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     ref.add(new StringRefAddr("maxWait", "5000"));
     ref.add(new StringRefAddr("removeAbandoned", "true"));
     ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-    ic.rebind(props.getProperty("jndi.name"), ref);
     jndiName = props.getProperty("jndi.name");
+    rebind(ic, jndiName, ref);
     super.setUp();
   }
 
@@ -97,6 +99,45 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
         this.getClass().getResourceAsStream(getDatasetFileName())));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
+  }
+
+  /**
+   * Creates the directory for JNDI files ystem provider
+   * @throws IOException
+   */
+  protected void prepareJndi() throws IOException {
+    Properties jndiProperties = new Properties();
+    jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
+    String jndiDirectoryPath = jndiProperties.getProperty(Context.PROVIDER_URL).substring(7);
+    File jndiDirectory = new File(jndiDirectoryPath);
+    if (!jndiDirectory.exists()) {
+      jndiDirectory.mkdirs();
+      jndiDirectory.mkdir();
+    }
+  }
+
+  /**
+   * Workaround to be able to use Sun's JNDI file system provider on Unix
+   * @param ic : the JNDI initial context
+   * @param jndiName : the binding name
+   * @param ref : the reference to be bound
+   * @throws NamingException
+   */
+  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+    Context currentContext = ic;
+    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
+    while (tokenizer.hasMoreTokens()) {
+      String name = tokenizer.nextToken();
+      if (tokenizer.hasMoreTokens()) {
+        try {
+          currentContext = (Context) currentContext.lookup(name);
+        } catch (javax.naming.NameNotFoundException nnfex) {
+          currentContext = currentContext.createSubcontext(name);
+        }
+      } else {
+        currentContext.rebind(name, ref);
+      }
+    }
   }
 
   protected abstract String getDatasetFileName();
