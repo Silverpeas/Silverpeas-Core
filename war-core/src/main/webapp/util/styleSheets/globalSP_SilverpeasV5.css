@@ -2166,10 +2166,10 @@ td.browsebar a:hover {
 
 #browseBar #breadCrumb {
 	float:left;
+	font-weight: bold;
 }
 
-#browseBar #breadCrumb {
-	float:left;
+#browseBar #breadCrumb .connector {
 	font-weight: bold;
 }
 
@@ -2182,5 +2182,9 @@ td.browsebar a:hover {
 #browseBar #breadCrumb a:link,
 #browseBar #breadCrumb a:hover
 {
+  font-size :  11px;
+}
+
+#browseBar .information {
   font-size :  11px;
 }

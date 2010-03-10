@@ -43,6 +43,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
  */
 public class BrowseBarComplete extends AbstractBrowseBar {
 
+  private static String CONNECTOR = "<span class=\"connector\"> > </span>";
   /**
    * Constructor declaration
    * @see
@@ -80,8 +81,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     String information = getExtraInformation();
     String path = getPath();
 
-    String connector = " > ";
-
     // print javascript to go to spaces in displayed path
     result.append(printScript());
 
@@ -110,7 +109,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append(">");
         result.append(spaceInst.getName(language));
         result.append("</a>");
-        result.append(connector);
+        result.append(CONNECTOR);
       }
 
       if (StringUtil.isDefined(getComponentId())) {
@@ -133,7 +132,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       }
       if (getComponentName() != null) {
         if (getDomainName() != null) {
-          result.append(connector);
+          result.append(CONNECTOR);
         }
         if (getComponentLink() != null) {
           result.append("<a href=\"").append(getComponentLink()).append("\">").append(
@@ -148,7 +147,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     List<BrowseBarElement> elements = getElements();
     if (!elements.isEmpty()) {
       for (BrowseBarElement element : elements) {
-        result.append(connector);
+        result.append(CONNECTOR);
         result.append("<a href=\"").append(element.getLink()).append("\"");
         result.append(" class=\"element\"");
         if (StringUtil.isDefined(element.getId())) {
@@ -159,12 +158,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append("</a>");
       }
     } else if (StringUtil.isDefined(path)) {
-      result.append(connector).append(path);
+      result.append(CONNECTOR).append(path);
     }
 
     // Display extra information
     if (StringUtil.isDefined(information)) {
-      result.append(connector);
+      result.append(CONNECTOR);
       result.append("<span class=\"information\">");
       result.append(information);
       result.append("</span>");
@@ -182,6 +181,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     script.append("function goSpace(spaceId) {");
     script.append(" top.location = \"").append(context).append(
         "/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId=\"+spaceId;");
+    script.append("}");
+    script.append("function removeBreadCrumbElements() {");
+    script.append("$('#").append(getComponentId()).append("').nextAll().remove();");
+    script.append("}");
+    script.append("function addBreadCrumbElement(link, label) {");
+    script.append("$('#breadCrumb').append('").append(CONNECTOR).append("<a href=\"'+link+'\">'+label+'</a>');");
     script.append("}");
     script.append("</script>");
     return script.toString();
