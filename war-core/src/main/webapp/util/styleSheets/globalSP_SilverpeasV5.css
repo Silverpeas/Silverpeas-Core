@@ -990,7 +990,8 @@ td.browsebar a:hover {
 	border-color: #C9C9C9;
 	border-bottom-width: none;
 	z-index:0;
-	width:100%;
+	.width:100%;
+	_width:100%;
 }
 
 .tabSpace {
@@ -1029,6 +1030,9 @@ td.browsebar a:hover {
   visibility:visible;
 }
 
+#domainsBar .sousOnglets {
+	display: none;
+}
 
 #spaceTransverse {
 	/*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
