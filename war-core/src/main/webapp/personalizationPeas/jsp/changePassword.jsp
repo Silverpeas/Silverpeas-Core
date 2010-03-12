@@ -165,7 +165,7 @@ out.println(gef.getLookStyleSheet());
 	    </tr>
     <% } 
 
-    if ("true".equals(general.getString("userLoginQuestionEnabled"))) {
+    if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userObject.getLoginQuestion();
         String userLoginAnswer = userObject.getLoginAnswer();
 %>
