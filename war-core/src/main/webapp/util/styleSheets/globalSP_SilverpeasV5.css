@@ -1115,6 +1115,14 @@ td.browsebar a:hover {
 	margin-left: 10px;
 }
 
+#spacePerso #addComponent {
+	margin-top: 10px;
+}
+
+#spacePerso #addComponent #availables {
+	font-weight: normal;
+}
+
 #loginBox {
 	padding-top: 10px;
 	width: 100%;
