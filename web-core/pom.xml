@@ -157,16 +157,16 @@
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>com.sun.jndi</groupId>
       <artifactId>fscontext</artifactId>
       <scope>compile</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>com.sun.jndi</groupId>
       <artifactId>providerutil</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
@@ -175,13 +175,27 @@
   </dependencies>
   
   <build>
-  <testResources>
+    <testResources>
       <testResource>
         <directory>src/test/resources</directory>
+        <excludes>
+          <exclude>**/index/**/*</exclude>
+        </excludes>
         <filtering>true</filtering>
       </testResource>
+      <testResource>
+        <directory>src/test/resources/</directory>
+        <includes>
+          <include>**/index/**/*</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.properties</exclude>
+           <exclude>**/*.xml</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </testResource>
     </testResources>
-	 <filters>
+    <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
   </build>

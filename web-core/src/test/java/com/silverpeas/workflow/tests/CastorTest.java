@@ -23,10 +23,7 @@
  */
 package com.silverpeas.workflow.tests;
 
-import com.silverpeas.workflow.api.model.ContextualDesignation;
-import com.silverpeas.workflow.api.model.ContextualDesignations;
 import com.silverpeas.workflow.api.model.Role;
-import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.exolab.castor.mapping.Mapping;
@@ -35,7 +32,6 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
 
 import com.silverpeas.workflow.engine.model.ProcessModelImpl;
-import com.silverpeas.workflow.engine.model.RoleImpl;
 
 public class CastorTest extends TestCase {
 

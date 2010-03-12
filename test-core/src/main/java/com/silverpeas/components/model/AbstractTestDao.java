@@ -27,11 +27,14 @@
  */
 package com.silverpeas.components.model;
 
-import java.sql.SQLException;
-import java.util.Hashtable;
+import com.silverpeas.util.PathTestUtil;
+import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import org.dbunit.JndiBasedDBTestCase;
@@ -39,23 +42,23 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author ehugonnet
  */
 public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
-  private String jndiName = "";
+  protected String jndiName = "";
 
   @Override
   protected void setUp() throws Exception {
-    Hashtable env = new Hashtable();
-    env.put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
+    prepareJndi();
+    Properties env = new Properties();
+    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
     InitialContext ic = new InitialContext(env);
     Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
+    props.load(this.getClass().getClassLoader().getResourceAsStream("jdbc.properties"));
     // Construct BasicDataSource reference
     Reference ref = new Reference("javax.sql.DataSource",
         "org.apache.commons.dbcp.BasicDataSourceFactory", null);
@@ -67,8 +70,9 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     ref.add(new StringRefAddr("maxWait", "5000"));
     ref.add(new StringRefAddr("removeAbandoned", "true"));
     ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-    ic.rebind(props.getProperty("jndi.name"), ref);
     jndiName = props.getProperty("jndi.name");
+    rebind(ic, jndiName, ref);
+    ic.rebind(jndiName, ref);
     super.setUp();
   }
 
@@ -82,11 +86,17 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     return jndiName;
   }
 
-  @Override
+   @Override
   protected Properties getJNDIProperties() {
     Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
+    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
+    try {
+      if(PathTestUtil.class.getClassLoader().getResource("jndi.properties") != null) {
+        env.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
+      }
+    } catch (IOException ex) {
+      LoggerFactory.getLogger(AbstractTestDao.class).error("", ex);
+    }
     return env;
   }
 
@@ -96,6 +106,45 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
         this.getClass().getResourceAsStream(getDatasetFileName())));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
+  }
+
+   /**
+   * Workaround to be able to use Sun's JNDI file system provider on Unix
+   * @param ic : the JNDI initial context
+   * @param jndiName : the binding name
+   * @param ref : the reference to be bound
+   * @throws NamingException
+   */
+  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+    Context currentContext = ic;
+    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
+    while (tokenizer.hasMoreTokens()) {
+      String name = tokenizer.nextToken();
+      if (tokenizer.hasMoreTokens()) {
+        try {
+          currentContext = (Context) currentContext.lookup(name);
+        } catch (javax.naming.NameNotFoundException nnfex) {
+          currentContext = currentContext.createSubcontext(name);
+        }
+      } else {
+        currentContext.rebind(name, ref);
+      }
+    }
+  }
+
+  /**
+   * Creates the directory for JNDI files ystem provider
+   * @throws IOException
+   */
+  protected void prepareJndi() throws IOException {
+    Properties jndiProperties = new Properties();
+    jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
+    String jndiDirectoryPath = jndiProperties.getProperty(Context.PROVIDER_URL).substring(7);
+    File jndiDirectory = new File(jndiDirectoryPath);
+    if (!jndiDirectory.exists()) {
+      jndiDirectory.mkdirs();
+      jndiDirectory.mkdir();
+    }
   }
 
   protected abstract String getDatasetFileName();
