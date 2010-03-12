@@ -35,12 +35,6 @@
 
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
 
-  <st_accesslevel id="U" name="User" />
-  <st_accesslevel id="A" name="Administrator" />
-  <st_accesslevel id="G" name="Guest" />
-  <st_accesslevel id="R" name="Removed" />
-  <st_accesslevel id="D" name="DomainManager" />
-  
   <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
 
   <st_space id="3" name="Espace de Tests" description="''" createdby="0" firstpagetype="1"

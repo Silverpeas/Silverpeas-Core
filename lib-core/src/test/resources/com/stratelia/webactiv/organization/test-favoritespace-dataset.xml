@@ -25,8 +25,7 @@
 
 -->
 <dataset>
-  <st_accesslevel id="T" name="test" />
-  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="T" />
+  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
   <st_space id="1" name="Espace de Tests" description="" createdby="0" firstpagetype="1" firstpageextraparam="indicateurs16"
     ordernum="1" createtime="1194276699849" updatetime="1205750893265" spacestatus="[NULL]" domainfatherid="[NULL]"
     updatedby="0" lang="fr" isinheritanceblocked="0" look="" />

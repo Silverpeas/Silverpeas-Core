@@ -1,11 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <st_accesslevel id="A" name="Administrator"/>
-  <st_accesslevel id="D" name="DomainManager"/>
-  <st_accesslevel id="G" name="Guest"/>
-  <st_accesslevel id="K" name="KMManager"/>
-  <st_accesslevel id="R" name="Removed"/>
-  <st_accesslevel id="U" name="User"/>
   <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="" login="SilverAdmin" loginmail="" accesslevel="A" loginquestion="Quelle est votre ville de naissance ?" loginanswer="fff"/>
   <st_user id="1" domainid="0" specificid="1" firstname="Lecteur" lastname="Lecteur" email="" login="lecteur" loginmail="" accesslevel="U" loginquestion="Quelle est le nom de jeune fille de votre mère ?" loginanswer="mere"/>
   <st_space id="1" name="Java" description="language de programmation Java" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="0" createtime="1265208590802" updatetime="1265208676165" updatedby="0" lang="fr" isinheritanceblocked="0"/>
@@ -213,14 +207,6 @@
   <st_notifchannel id="6" name="SERVER" description="" couldbeadded="N" fromavailable=" " subjectavailable="N"/>
   <st_notifaddress/>
   <st_notifdefaultaddress/>
-  <st_usersettype id="G" name="Group"/>
-  <st_usersettype id="H" name="Group Manager"/>
-  <st_usersettype id="I" name="ComponentInstance"/>
-  <st_usersettype id="M" name="SpaceProfile"/>
-  <st_usersettype id="O" name="Object"/>
-  <st_usersettype id="R" name="UserRole"/>
-  <st_usersettype id="S" name="Space"/>
-  <st_usersettype id="X" name="SpaceUserRole"/>
   <st_userset usersettype="I" usersetid="1"/>
   <st_userset usersettype="I" usersetid="2"/>
   <st_userset usersettype="I" usersetid="3"/>
