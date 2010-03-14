@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +44,7 @@ import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -84,9 +86,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   // Attribute used to manage user favorite space look
   private String displayUserFavoriteSpace = null;
   private boolean enableUFSContainsState = false;
-  
+
   private static final String DEFAULT_USERMENU_DISPLAY_MODE = "DISABLE";
-  
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getSpaceId()
@@ -212,7 +214,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     displayContextualPDC = resources.getBoolean("displayContextualPDC", true);
     displaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
     displayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
-    displayUserFavoriteSpace = resources.getString("displayUserFavoriteSpace", DEFAULT_USERMENU_DISPLAY_MODE);
+    displayUserFavoriteSpace =
+        resources.getString("displayUserFavoriteSpace", DEFAULT_USERMENU_DISPLAY_MODE);
     enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
   }
 
@@ -497,23 +500,43 @@ public class LookSilverpeasV5Helper implements LookHelper {
       return null;
     }
 
+    if (!StringUtil.isDefined(getSubSpaceId())) {
+      return getSpaceWallPaper(getSpaceId());
+    } else {
+      // get wallpaper of current subspace or first super space
+      List<SpaceInst> spaces = getOrganizationController().getSpacePath(getSubSpaceId());
+      Collections.reverse(spaces);
+
+      String wallpaper = null;
+      for (int i = 0; wallpaper == null && i < spaces.size(); i++) {
+        SpaceInst space = spaces.get(i);
+        wallpaper = getSpaceWallPaper(space.getId());
+      }
+      return wallpaper;
+    }
+  }
+
+  private String getSpaceWallPaper(String id) {
+    if (id.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      id = id.substring(2);
+    }
     String path =
-        FileRepositoryManager.getAbsolutePath("Space" + getSpaceId().substring(2),
-        new String[] { "look" });
+        FileRepositoryManager.getAbsolutePath("Space" + id, new String[] { "look" });
 
     File file = new File(path + "wallPaper.jpg");
     if (file.isFile()) {
-      return FileServerUtils.getOnlineURL("Space" + getSpaceId().substring(2), file.getName(), file
+      return FileServerUtils.getOnlineURL("Space" + id, file.getName(), file
           .getName(), "image/jpeg", "look");
     } else {
       file = new File(path + "wallPaper.gif");
       if (file.isFile()) {
-        return FileServerUtils.getOnlineURL("Space" + getSpaceId().substring(2), file.getName(),
+        return FileServerUtils.getOnlineURL("Space" + id, file.getName(),
             file.getName(), "image/gif", "look");
       }
     }
 
     return null;
+
   }
 
   public String getComponentURL(String key, String function) {
@@ -664,7 +687,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     return sDestination;
   }
-  
 
   /**
    * @return user favorite space menu display mode
@@ -686,5 +708,5 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public boolean isEnableUFSContainsState() {
     return enableUFSContainsState;
   }
-  
+
 }
