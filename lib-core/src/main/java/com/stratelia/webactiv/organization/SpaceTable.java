@@ -386,7 +386,11 @@ public class SpaceTable extends Table {
 
     insert.setInt(18, s.displaySpaceFirst);
 
-    insert.setInt(19, s.isPersonalSpace);
+    if (s.isPersonalSpace == 1) {
+      insert.setInt(19, s.isPersonalSpace);
+    } else {
+      insert.setNull(19, Types.SMALLINT);
+    }
   }
 
   public void updateSpaceOrder(int spaceId, int orderNum)
@@ -425,7 +429,7 @@ public class SpaceTable extends Table {
       + " updateTime = ?," + " updatedBy = ?,"
             // + " removeTime = ?,"
       + " spaceStatus = ?," + " lang = ?," + " isInheritanceBlocked = ?,"
-      + " look = ?," + " displaySpaceFirst = ? " + " isPersonal = ? " + " where id = ?";
+      + " look = ?," + " displaySpaceFirst = ?," + " isPersonal = ? " + " where id = ?";
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
@@ -456,7 +460,11 @@ public class SpaceTable extends Table {
 
     update.setInt(14, s.displaySpaceFirst);
 
-    update.setInt(15, s.isPersonalSpace);
+    if (s.isPersonalSpace == 1) {
+      update.setInt(15, s.isPersonalSpace);
+    } else {
+      update.setNull(15, Types.SMALLINT);
+    }
 
     update.setInt(16, s.id);
     // First page parameters
