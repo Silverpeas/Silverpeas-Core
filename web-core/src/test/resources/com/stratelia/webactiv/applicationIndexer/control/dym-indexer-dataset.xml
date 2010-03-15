@@ -121,11 +121,6 @@
   <st_instance_data id="97" componentid="18" name="XMLFormName" label="Formulaire XML" value=""/>
   <st_instance_data id="98" componentid="18" name="searchFields2" label="Champs recherche 2" value=""/>
   <st_instance_data id="99" componentid="18" name="searchFields1" label="Champs recherche 1" value=""/>
-  <st_notifpreference/>
-  <st_portletcolumn/>
-  <st_portletrow/>
-  <st_portletstate/>
-  <st_group/>
   <st_userrole id="1" instanceid="1" name="" rolename="admin" description="" isinherited="1"/>
   <st_userrole id="2" instanceid="1" name="" rolename="user" description="" isinherited="1"/>
   <st_userrole id="3" instanceid="2" name="" rolename="admin" description="" isinherited="1"/>
@@ -197,16 +192,6 @@
   <st_spaceuserrole_user_rel spaceuserroleid="5" userid="0"/>
   <st_spaceuserrole_user_rel spaceuserroleid="6" userid="1"/>
   <sb_pdc_axis id="1" rootid="1" name="java" axistype="P" axisorder="0" creationdate="2010/02/03" creatorid="0" description="" lang="fr"/>
-  <sb_pdc_user_rights/>
-  <st_group_user_rel/>
-  <st_notifchannel id="1" name="SMTP" description="" couldbeadded="Y" fromavailable="E" subjectavailable="Y"/>
-  <st_notifchannel id="2" name="SMS" description="" couldbeadded="Y" fromavailable=" " subjectavailable="N"/>
-  <st_notifchannel id="3" name="POPUP" description="" couldbeadded="N" fromavailable="I" subjectavailable="N"/>
-  <st_notifchannel id="4" name="SILVERMAIL" description="" couldbeadded="N" fromavailable="I" subjectavailable="Y"/>
-  <st_notifchannel id="5" name="REMOVE" description="" couldbeadded="N" fromavailable=" " subjectavailable="N"/>
-  <st_notifchannel id="6" name="SERVER" description="" couldbeadded="N" fromavailable=" " subjectavailable="N"/>
-  <st_notifaddress/>
-  <st_notifdefaultaddress/>
   <st_userset usersettype="I" usersetid="1"/>
   <st_userset usersettype="I" usersetid="2"/>
   <st_userset usersettype="I" usersetid="3"/>
@@ -327,7 +312,6 @@
   <st_userset_user_rel usersettype="X" usersetid="3" userid="0" linkscount="1"/>
   <st_userset_user_rel usersettype="X" usersetid="5" userid="0" linkscount="1"/>
   <st_userset_user_rel usersettype="X" usersetid="6" userid="1" linkscount="1"/>
-  <sb_pdc_group_rights/>
   <st_userset_userset_rel supersettype="I" supersetid="1" subsettype="R" subsetid="1" linkscount="1"/>
   <st_userset_userset_rel supersettype="I" supersetid="1" subsettype="R" subsetid="2" linkscount="1"/>
   <st_userset_userset_rel supersettype="I" supersetid="2" subsettype="R" subsetid="3" linkscount="1"/>
