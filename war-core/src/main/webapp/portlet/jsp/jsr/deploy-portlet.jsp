@@ -36,7 +36,7 @@
 <%@ include file="header.jsp"%>
 
 <!--Load the resource bundle for the page -->
-<fmt:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
 
 <script language="JavaScript">
 function addRolesTextbox(checkObj)

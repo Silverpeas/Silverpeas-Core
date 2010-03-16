@@ -29,6 +29,8 @@
 %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="java.security.Key"%>
@@ -102,7 +104,7 @@
 <c:set var="login"><%=java.net.URLEncoder.encode(login)%></c:set>
 <c:set var="encPassword"><%=java.net.URLEncoder.encode(encPassword)%></c:set>
 <fmt:setLocale value="${userLanguage}" />
-<fmt:setBundle basename="com.stratelia.webactiv.util.attachment.Attachment" var="attachmentConfig" />
+<view:setBundle basename="com.stratelia.webactiv.util.attachment.Attachment" var="attachmentConfig" />
 <fmt:message key="ms.office.installation.path" bundle="${attachmentConfig}" var="msoffice_path" scope="request"/>
 
 

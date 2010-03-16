@@ -27,10 +27,11 @@
 
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <!-- Resource bundle configuration -->
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
-<fmt:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
+<view:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
 <!-- Retrieve current space bean -->
 <c:set var="curSpace" value="${requestScope.Space}" />
 <c:set var="spacePositionOption" value="${requestScope.displaySpaceOption}" />

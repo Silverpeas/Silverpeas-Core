@@ -32,10 +32,11 @@
 
 <%@ taglib uri="/WEB-INF/portlet.tld" prefix="portlet" %>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
-<fmt:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
 <%
     RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");

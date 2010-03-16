@@ -48,7 +48,7 @@
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
-<fmt:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
 
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");

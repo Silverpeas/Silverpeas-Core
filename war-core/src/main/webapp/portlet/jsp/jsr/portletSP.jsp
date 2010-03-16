@@ -25,9 +25,10 @@
 --%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
-<fmt:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
 
 <c:set var="disableMove" value="${requestScope['DisableMove']}"/>
 

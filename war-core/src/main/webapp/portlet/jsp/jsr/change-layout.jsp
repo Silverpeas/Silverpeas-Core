@@ -27,9 +27,10 @@
 
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
-<fmt:setBundle basename="DesktopMessages" />
+<view:setBundle basename="DesktopMessages" />
 
 <form id="portal-content-change-layout" method="POST" action="<%=DriverUtil.getPortletsURL(request)%>" >
   <label FOR="change-layout-select"><fmt:message key="changeLayout"/></label>

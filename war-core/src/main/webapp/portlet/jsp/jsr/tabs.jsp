@@ -29,9 +29,10 @@
 
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
-<fmt:setBundle basename="DesktopMessages" />
+<view:setBundle basename="DesktopMessages" />
 <%
    java.util.ArrayList tabs = new java.util.ArrayList();
    

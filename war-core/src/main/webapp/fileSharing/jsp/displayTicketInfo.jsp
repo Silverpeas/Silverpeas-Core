@@ -28,8 +28,9 @@
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
-<fmt:setBundle basename="com.silverpeas.external.filesharing.multilang.fileSharingBundle"/>
-<fmt:setBundle basename="com.silverpeas.external.filesharing.settings.fileSharingIcons" var="icons" />
+
+<view:setBundle basename="com.silverpeas.external.filesharing.multilang.fileSharingBundle"/>
+<view:setBundle basename="com.silverpeas.external.filesharing.settings.fileSharingIcons" var="icons" />
 <html>
 <head>
 <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
