@@ -404,12 +404,19 @@
     </attribute>
     <attribute>
       <name>bundle</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.util.ResourceBundle</type>
       <description>
         The ResourceBundle.
       </description>
+    </attribute>
+    <attribute>
+      <name>basename</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+      <description>Basename of the bundle.</description>
     </attribute>
   </tag>
   <tag>
