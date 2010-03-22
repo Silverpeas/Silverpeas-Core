@@ -440,7 +440,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   public void setTemplateName(String templateName) {
     this.templateName = templateName;
   }
-  
+
   @Override
   public GenericFieldTemplate clone() {
     GenericFieldTemplate clone = null;
@@ -464,7 +464,5 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     }
     return clone;
   }
-
-
 
 }

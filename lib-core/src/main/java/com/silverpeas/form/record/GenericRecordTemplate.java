@@ -40,7 +40,7 @@ import com.silverpeas.form.RecordTemplate;
  * (index,GenericFieldTemplate))
  */
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private Map<String, IndexedFieldTemplate> fields = new HashMap<String, IndexedFieldTemplate>();
   private List<FieldTemplate> fieldList = new ArrayList<FieldTemplate>();
@@ -159,7 +159,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 }
 
 final class IndexedFieldTemplate implements Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   public final int index;
   public final FieldTemplate fieldTemplate;

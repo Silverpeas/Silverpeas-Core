@@ -175,20 +175,18 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   }
 
   public String getName(String language) {
-    
-    if (isPersonalSpace)
-    {
-      return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace", "Mon espace");
-    }
-    else
-    {
+
+    if (isPersonalSpace) {
+      return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace",
+          "Mon espace");
+    } else {
       if (!I18NHelper.isI18N)
         return getName();
-  
+
       SpaceI18N s = (SpaceI18N) getTranslations().get(language);
       if (s == null)
         s = (SpaceI18N) getNextTranslation();
-  
+
       return s.getName();
     }
   }

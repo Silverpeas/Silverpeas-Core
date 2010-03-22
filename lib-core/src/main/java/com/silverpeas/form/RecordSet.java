@@ -101,8 +101,10 @@ public interface RecordSet {
   /**
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.
    */
-  public void clone(String originalExternalId, String originalComponentId, String cloneExternalId, String cloneComponentId) throws FormException;
-  
-  public void merge(String fromExternalId, String fromComponentId, String toExternalId, String toComponentId) throws FormException;
+  public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
+      String cloneComponentId) throws FormException;
+
+  public void merge(String fromExternalId, String fromComponentId, String toExternalId,
+      String toComponentId) throws FormException;
 
 }

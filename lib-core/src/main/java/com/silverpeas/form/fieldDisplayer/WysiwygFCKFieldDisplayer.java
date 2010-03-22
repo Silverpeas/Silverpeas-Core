@@ -52,7 +52,6 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
  * TextFiel to a end user and can retrieve via HTTP any updated value.
- * 
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -194,7 +193,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
-   * 
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */

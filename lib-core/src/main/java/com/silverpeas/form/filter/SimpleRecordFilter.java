@@ -49,7 +49,7 @@ public class SimpleRecordFilter implements RecordFilter {
    * Returns true if the fields of the specified record match all the field filter of this Filter.
    */
   public boolean match(DataRecord testedRecord) throws FormException {
-    for(FieldAssignedFilter filter : filters) {
+    for (FieldAssignedFilter filter : filters) {
       String fieldName = filter.fieldName;
       FieldFilter fieldFilter = filter.fieldFilter;
 

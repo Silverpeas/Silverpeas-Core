@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AdminGroupInst implements Serializable {
-  
+
   private static final long serialVersionUID = -4321791324660707809L;
   private Group m_Group; // Admin group detail of this node
   private ArrayList<AdminGroupInst> m_alChildrenAdminGroupInst; // Children Admin group inst of

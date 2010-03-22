@@ -40,8 +40,8 @@ public class AdminImportExport {
   AdminController ac = null;
 
   /**
-   * Méthode récupérant la liste des componentInsts des composants impliqués dans une
-   * exportation donnée et destinées au marshalling.
+   * Méthode récupérant la liste des componentInsts des composants impliqués dans une exportation
+   * donnée et destinées au marshalling.
    * @param listComponentId = liste des id des composants impliqués dans l'esxport en cours
    * @return l'objet ComponentsType complété, null si la liste passée en paramètre est vide
    */

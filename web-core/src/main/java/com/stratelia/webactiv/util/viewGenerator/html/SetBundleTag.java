@@ -61,8 +61,8 @@ public class SetBundleTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
-    Locale locale  = (Locale) Config.find(pageContext, Config.FMT_LOCALE);
-    if(locale == null) {
+    Locale locale = (Locale) Config.find(pageContext, Config.FMT_LOCALE);
+    if (locale == null) {
       locale = Locale.getDefault();
     }
     if (StringUtil.isDefined(basename)) {

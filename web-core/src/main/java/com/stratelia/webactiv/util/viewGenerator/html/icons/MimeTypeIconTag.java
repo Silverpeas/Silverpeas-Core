@@ -40,7 +40,7 @@ public class MimeTypeIconTag extends TagSupport {
     try {
       ClassLoader loader = new ConfigurationClassLoader(TagSupport.class.getClassLoader());
       InputStream in = loader.getResourceAsStream(
-              "com/silverpeas/view/generator/mime_types_styles.properties");
+          "com/silverpeas/view/generator/mime_types_styles.properties");
       STYLES.load(in);
     } catch (Exception e) {
       // TODO Auto-generated catch block

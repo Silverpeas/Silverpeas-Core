@@ -155,7 +155,8 @@ public class SpaceInstManager {
     }
   }
 
-  public SpaceInst getPersonalSpace(DomainDriverManager ddManager, String userId) throws AdminException {
+  public SpaceInst getPersonalSpace(DomainDriverManager ddManager, String userId)
+      throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 

@@ -182,7 +182,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         !"ChangeSearchTypeToExpert".equals(function)) {
       GraphicElementFactory gef =
           (GraphicElementFactory) session
-              .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       gef.setComponentId(component.getComponentId());
       gef.setMainSessionController(mainSessionCtrl);
     }

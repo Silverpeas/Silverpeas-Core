@@ -53,7 +53,7 @@ public final class StringUtils {
   private static final byte[] BASE64_CHARS = new byte[256];
   private final static char[] ALPHABETS =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-          .toCharArray();
+      .toCharArray();
 
   public static final String US_ASCII = "US-ASCII";
   public static final String ISO_8859_1 = "ISO-8859-1";

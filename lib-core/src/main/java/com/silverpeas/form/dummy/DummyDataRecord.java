@@ -30,7 +30,7 @@ import com.silverpeas.form.fieldType.*;
  * A dummy DataRecord .
  */
 public class DummyDataRecord implements DataRecord {
-  
+
   private static final long serialVersionUID = -3169937693303520239L;
   private Field field;
 

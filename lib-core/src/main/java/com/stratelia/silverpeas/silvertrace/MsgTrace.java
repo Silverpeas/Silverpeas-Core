@@ -189,7 +189,7 @@ public class MsgTrace {
     boolean valret = defaultValue;
     value = resource.getString(propertyName);
     if (value != null) {
-        valret = StringUtil.getBooleanValue(value);
+      valret = StringUtil.getBooleanValue(value);
     }
     return valret;
   }

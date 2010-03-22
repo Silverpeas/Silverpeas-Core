@@ -349,7 +349,8 @@ public class TypeManager {
   /**
    * The Map (typeName -> List(displayerName)) (the first is the default).
    */
-  static private Map<String, List<String>> typeName2displayerNames = new HashMap<String, List<String>>();
+  static private Map<String, List<String>> typeName2displayerNames =
+      new HashMap<String, List<String>>();
 
   /**
    * The Map (displayerId -> displayerClass).

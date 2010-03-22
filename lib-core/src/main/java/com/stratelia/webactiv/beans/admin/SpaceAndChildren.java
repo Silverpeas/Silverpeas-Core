@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.util.Vector;
 
 public class SpaceAndChildren implements Serializable {
-  
+
   private static final long serialVersionUID = -733004604996095725L;
   private SpaceInstLight space = null;
   private Vector<SpaceInstLight> subspaces = new Vector<SpaceInstLight>();

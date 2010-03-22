@@ -524,16 +524,16 @@ public class ResourceLocator implements Serializable {
   private static InputStream getPrivileged(final ClassLoader l, final String s) {
     InputStream stream =
         (InputStream) java.security.AccessController
-            .doPrivileged(new java.security.PrivilegedAction<Object>() {
+        .doPrivileged(new java.security.PrivilegedAction<Object>() {
 
-              public Object run() {
-                if (l != null) {
-                  return l.getResourceAsStream(s);
-                } else {
-                  return ClassLoader.getSystemResourceAsStream(s);
-                }
-              }
-                        });
+      public Object run() {
+        if (l != null) {
+          return l.getResourceAsStream(s);
+        } else {
+          return ClassLoader.getSystemResourceAsStream(s);
+        }
+        }
+            });
     return (stream);
   }
 }

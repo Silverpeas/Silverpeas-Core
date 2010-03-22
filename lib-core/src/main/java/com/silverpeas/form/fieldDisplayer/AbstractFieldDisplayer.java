@@ -63,8 +63,7 @@ public abstract class AbstractFieldDisplayer implements FieldDisplayer {
       String language) {
     if (field != null) {
       String value = field.getStringValue();
-      if (value != null)
-      {
+      if (value != null) {
         value = value.trim().replaceAll("##", " ");
         indexEntry.addField(key, value, language); // add data in dedicated field
         indexEntry.addTextContent(value, language); // add data in global field

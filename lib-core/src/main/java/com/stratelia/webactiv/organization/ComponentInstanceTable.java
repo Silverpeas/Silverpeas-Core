@@ -296,7 +296,8 @@ public class ComponentInstanceTable extends Table {
    */
   @SuppressWarnings("unchecked")
   public String[] getAvailCompoIds(int userId) throws AdminPersistenceException {
-    List<ComponentInstanceRow> instances = (List<ComponentInstanceRow>) getRows(SELECT_AVAIL_COMPO_IDS, userId);
+    List<ComponentInstanceRow> instances =
+        (List<ComponentInstanceRow>) getRows(SELECT_AVAIL_COMPO_IDS, userId);
     String[] ids = new String[instances.size()];
     for (int i = 0; i < instances.size(); i++) {
       ComponentInstanceRow row = instances.get(i);

@@ -39,8 +39,9 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 
-public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable, Comparable<ComponentInst> {
-  
+public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
+    Comparable<ComponentInst> {
+
   private static final long serialVersionUID = 1L;
 
   public final static String STATUS_REMOVED = "R";
@@ -107,7 +108,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
       ci.m_alProfileInst = new ArrayList<ProfileInst>();
       it = m_alProfileInst.iterator();
       while (it.hasNext()) {
-        ci.m_alProfileInst.add((ProfileInst)it.next().clone());
+        ci.m_alProfileInst.add((ProfileInst) it.next().clone());
       }
     }
     ci.parameters = (SPParameters) this.parameters.clone();

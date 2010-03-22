@@ -171,10 +171,11 @@ public class ImportIcalManager {
           // In iCal, an allday is coded with DTSTART=...YYYYMMDD and
           // DTEND=...YYYYMM(DD+1)
           // So we have to convert this date to agenda format date
-          /*GregorianCalendar gregCalendar = new java.util.GregorianCalendar();
-          gregCalendar.setTime(endDay);
-          gregCalendar.add(GregorianCalendar.DATE, -1);
-          endDay = new Date(gregCalendar.getTime()); */
+          /*
+           * GregorianCalendar gregCalendar = new java.util.GregorianCalendar();
+           * gregCalendar.setTime(endDay); gregCalendar.add(GregorianCalendar.DATE, -1); endDay =
+           * new Date(gregCalendar.getTime());
+           */
           allDay = true;
         }
 

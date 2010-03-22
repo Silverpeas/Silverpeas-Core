@@ -27,7 +27,7 @@ package com.silverpeas.form.fieldType;
  * A TextFieldImpl stores use a String attribute to store its value.
  */
 public class DateFieldImpl extends DateField {
-  
+
   private static final long serialVersionUID = 7900206250697595169L;
   private String value = "";
 

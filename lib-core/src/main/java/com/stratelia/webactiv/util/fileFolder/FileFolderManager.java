@@ -257,7 +257,7 @@ public class FileFolderManager {
   public static void createFolder(File directory) throws UtilException {
     try {
       FileUtils.forceMkdir(directory);
-    }catch(IOException ioex) {
+    } catch (IOException ioex) {
       SilverTrace.error("util", "FileFolderManager.createFolder",
           "util.EX_REPOSITORY_CREATION", directory.getPath(), ioex);
       throw new UtilException("FileFolderManager.createFolder",

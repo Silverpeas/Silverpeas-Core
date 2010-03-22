@@ -351,7 +351,6 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
-   * 
    * @param con
    * @param foreignKey
    * @return
@@ -444,7 +443,6 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
-   * 
    * @param con
    * @param foreignKey
    * @param nameAttribut
@@ -493,7 +491,6 @@ public class AttachmentDAO {
 
   /**
    * Method declaration
-   * 
    * @param con
    * @param foreignKey
    * @param context

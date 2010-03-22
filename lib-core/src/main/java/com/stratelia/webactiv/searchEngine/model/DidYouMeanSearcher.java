@@ -172,7 +172,7 @@ public class DidYouMeanSearcher {
 
     String[] suggestions =
         { currentSentence.toString().replaceAll("\\+", "").replaceAll("-", "")
-            .replaceAll("  ", " ").trim() };
+        .replaceAll("  ", " ").trim() };
 
     return suggestions;
 

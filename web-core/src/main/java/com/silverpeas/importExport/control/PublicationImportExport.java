@@ -49,9 +49,9 @@ public class PublicationImportExport {
   }
 
   /**
-   * Méthodes permettant de récupérer un objet publication dont les méta-données sont
-   * générées à partir des informations du fichier destiné à être attaché à celle ci.
-   * Utilisation de l'api POI dans le cas des fichiers MSoffice.
+   * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à
+   * partir des informations du fichier destiné à être attaché à celle ci. Utilisation de l'api POI
+   * dans le cas des fichiers MSoffice.
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
    * informations qui iront renseigner les méta-données de la publication à creer
@@ -80,18 +80,18 @@ public class PublicationImportExport {
         poiSubject = si.getSubject();
         poiKeywords = si.getKeywords();
         nomPub = ((poiTitle == null) || (poiTitle.trim().length() == 0) ? fileName : poiTitle);// si
-                                                                                               // le
-                                                                                               // champs
-                                                                                               // corespondant
-                                                                                               // est
-                                                                                               // vide,
-                                                                                               // on
-                                                                                               // affecte
-                                                                                               // le
-                                                                                               // nom
-                                                                                               // physique
-                                                                                               // du
-                                                                                               // fichier
+        // le
+        // champs
+        // corespondant
+        // est
+        // vide,
+        // on
+        // affecte
+        // le
+        // nom
+        // physique
+        // du
+        // fichier
         description = ((poiSubject == null) || (poiSubject.trim().length() == 0) ? "" : poiSubject);
         motsClefs =
             ((poiKeywords == null) || (poiKeywords.trim().length() == 0) ? "" : poiKeywords);
@@ -112,10 +112,10 @@ public class PublicationImportExport {
     }
     pubDetail =
         new PublicationDetail("unknown"/* id */, nomPub/* nom */, description/* description */,
-            new Date()/* date de création */, new Date()/* date de début de validité */,
-            null/* date de fin de validité */, userDetail.getId()/* id user */,
-            "5"/* importance */, null/* version de la publication */, motsClefs/* keywords */,
-            content);
+        new Date()/* date de création */, new Date()/* date de début de validité */,
+        null/* date de fin de validité */, userDetail.getId()/* id user */,
+        "5"/* importance */, null/* version de la publication */, motsClefs/* keywords */,
+        content);
     return pubDetail;
   }
 
@@ -148,7 +148,7 @@ public class PublicationImportExport {
     try {
       PublicationBmHome publicationBmHome =
           (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBmHome.class);
+          PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",

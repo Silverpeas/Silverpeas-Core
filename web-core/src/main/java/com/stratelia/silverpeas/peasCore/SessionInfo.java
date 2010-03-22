@@ -160,8 +160,8 @@ public class SessionInfo extends Object {
 
     return dHour + "h" + dMinute + "m" + dSecond + "s";
   }
-	public HttpSession getHttpSession()
-	{
-	  return this.m_Session;
-	}
+
+  public HttpSession getHttpSession() {
+    return this.m_Session;
+  }
 }

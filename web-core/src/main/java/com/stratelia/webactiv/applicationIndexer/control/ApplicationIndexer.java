@@ -208,7 +208,7 @@ public class ApplicationIndexer extends Object {
       className = firstLetterToUpperCase("webPages");
     }
     try {
-      cii = (ComponentIndexerInterface) Class .forName(
+      cii = (ComponentIndexerInterface) Class.forName(
           "com.stratelia.webactiv." + packageName + "." + className
           + "Indexer").newInstance();
     } catch (ClassNotFoundException ce) {

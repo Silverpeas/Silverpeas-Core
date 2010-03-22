@@ -522,7 +522,7 @@ public class ArrayPaneWA implements ArrayPane {
   @Override
   public void setPaginationJavaScriptCallback(String callback) {
     // TODO Auto-generated method stub
-    
+
   }
 
 }

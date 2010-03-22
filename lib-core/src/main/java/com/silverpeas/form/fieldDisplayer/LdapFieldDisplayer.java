@@ -298,7 +298,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
       html += "<script type=\"text/javascript\">\n";
       html +=
           " this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray" + fieldName +
-              ");\n";
+          ");\n";
       html +=
           "	this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
           "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";

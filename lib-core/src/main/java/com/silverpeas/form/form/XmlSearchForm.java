@@ -437,8 +437,7 @@ public class XmlSearchForm extends AbstractForm {
   }
 
   private FileItem getParameter(List<FileItem> items, String parameterName) {
-    for (FileItem item : items)
-    {
+    for (FileItem item : items) {
       if (parameterName.equals(item.getFieldName())) {
         return item;
       }

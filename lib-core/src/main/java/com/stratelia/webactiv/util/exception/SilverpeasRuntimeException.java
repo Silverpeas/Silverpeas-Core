@@ -34,8 +34,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * utilisation doit se faire après reflexion. La principale application des
  * SilverpeasRuntimeException est l'utilisation au sein des EJB. En effet une RuntimeException qui
  * traverse le conteneur annule la transaction en cours, et sera encapsulée dans une
- * RemoteException. Le message que l'on donne à l'exception est très important, il doit etre
- * affiché à l'utilisateur. C'est pourquoi le label est multilangue. Chaque classe heritant de
+ * RemoteException. Le message que l'on donne à l'exception est très important, il doit etre affiché
+ * à l'utilisateur. C'est pourquoi le label est multilangue. Chaque classe heritant de
  * SilverpeasRuntimeException doit surdefinir la fonction getModule qui retourne le nom du module
  * (le meme nom que celui defini dans Silvertrace)
  */
@@ -68,8 +68,8 @@ abstract public class SilverpeasRuntimeException extends RuntimeException implem
    * Fabriquation d'une exception runtime silverpeas avec une exception à imbriquer. L'exception ne
    * contient pas de message d'erreur. On utilisera ce constructeur lorsque l'on veut encapsuler une
    * exception (afin de casser une transaction), mais que l'on n'a pas d'info à ajouter.
-   * @param nested L'exception qui a provoqué le problème. nested peut etre une
-   * SilverpeasException ou une exception technique (SQLException, RemoteException...)
+   * @param nested L'exception qui a provoqué le problème. nested peut etre une SilverpeasException
+   * ou une exception technique (SQLException, RemoteException...)
    * @deprecated
    */
   public SilverpeasRuntimeException(Exception nested) {
@@ -81,8 +81,8 @@ abstract public class SilverpeasRuntimeException extends RuntimeException implem
    * imbriquer.
    * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
    * traduit dans des fichiers de properties.
-   * @param nested L'exception qui a provoqué le problème. nested peut etre une
-   * SilverpeasException ou une exception technique (SQLException, RemoteException...)
+   * @param nested L'exception qui a provoqué le problème. nested peut etre une SilverpeasException
+   * ou une exception technique (SQLException, RemoteException...)
    * @deprecated
    */
   public SilverpeasRuntimeException(String message, Exception nested) {

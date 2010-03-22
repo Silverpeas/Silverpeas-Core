@@ -97,7 +97,7 @@ public class SearchCompletion {
       int numberOfPdcSuggest = getSize(autocompletionMaxResults, pdcList);
       int numberOfThesaurusSuggest = getSize(autocompletionMaxResults, thesauruslist);
       int numberOfKeywordsSuggest = getSize(autocompletionMaxResults, keywordsList);
-      
+
       set.addAll(pdcList.subList(0, numberOfPdcSuggest));
       set.addAll(thesauruslist.subList(0, numberOfThesaurusSuggest));
       set.addAll(keywordsList.subList(0, numberOfKeywordsSuggest));
@@ -157,7 +157,7 @@ public class SearchCompletion {
       rs = ps.executeQuery();
 
       while (rs.next()) {
-          //TODO is the result can be null ?
+        // TODO is the result can be null ?
         list.add(rs.getString(1).toLowerCase());
       }
     } finally {

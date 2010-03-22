@@ -70,7 +70,7 @@ public class WAAttributeValuePair extends Object {
   public int getSearchMode() {
     return (m_SearchMode);
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;

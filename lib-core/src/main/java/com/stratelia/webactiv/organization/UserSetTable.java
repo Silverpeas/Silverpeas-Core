@@ -123,7 +123,8 @@ public class UserSetTable extends Table {
     String[] types = new String[] { superSetType };
     int[] ids = new int[] { superSetId };
 
-    List<UserSetRow> directSubUsers = (List<UserSetRow>) getRows(SELECT_DIRECT_SUB_USER, types, ids);
+    List<UserSetRow> directSubUsers =
+        (List<UserSetRow>) getRows(SELECT_DIRECT_SUB_USER, types, ids);
 
     return directSubUsers.toArray(new UserSetRow[0]);
   }

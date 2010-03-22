@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.DBUtil;
  * @see FieldDisplayer
  */
 public class JdbcField extends TextField {
-  
+
   private static final long serialVersionUID = 1L;
 
   /**

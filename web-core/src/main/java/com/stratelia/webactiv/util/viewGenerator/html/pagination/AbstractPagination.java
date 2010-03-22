@@ -120,9 +120,9 @@ public abstract class AbstractPagination implements Pagination {
   public int getIndexForNextPage() {
     return getIndexForDirectPage(getCurrentPage() + 1);
   }
-  
+
   public int getIndexForLastPage() {
-    return (getNbPage() * getNbItemsPerPage())-getNbItemsPerPage();
+    return (getNbPage() * getNbItemsPerPage()) - getNbItemsPerPage();
   }
 
   public void setActionSuffix(String actionSuffix) {
@@ -156,38 +156,34 @@ public abstract class AbstractPagination implements Pagination {
   public String getAltNextPage() {
     return this.altNextPage;
   }
-  
-  public int getNumberOfPagesAround()
-  {
-    if (nbPagesAround == -1)
-    {
-      nbPagesAround = Integer.parseInt(GraphicElementFactory.getSettings().getString("Pagination.NumberOfPagesAround", "10")); 
+
+  public int getNumberOfPagesAround() {
+    if (nbPagesAround == -1) {
+      nbPagesAround =
+          Integer.parseInt(GraphicElementFactory.getSettings().getString(
+              "Pagination.NumberOfPagesAround", "10"));
     }
-    return nbPagesAround; 
+    return nbPagesAround;
   }
-  
-  public boolean displayTotalNumberOfPages()
-  {
-    return GraphicElementFactory.getSettings().getBoolean("Pagination.DisplayTotalNumberOfPages", false);
+
+  public boolean displayTotalNumberOfPages() {
+    return GraphicElementFactory.getSettings().getBoolean("Pagination.DisplayTotalNumberOfPages",
+        false);
   }
-  
-  public void setMultilang(ResourceLocator multilang)
-  {
+
+  public void setMultilang(ResourceLocator multilang) {
     this.multilang = multilang;
   }
-  
-  public ResourceLocator getMultilang()
-  {
+
+  public ResourceLocator getMultilang() {
     return multilang;
   }
-  
-  public String getString(String key)
-  {
+
+  public String getString(String key) {
     return getMultilang().getString(key);
   }
-  
-  public String getString(String key, String defaultValue)
-  {
+
+  public String getString(String key, String defaultValue) {
     return getMultilang().getString(key, defaultValue);
   }
 

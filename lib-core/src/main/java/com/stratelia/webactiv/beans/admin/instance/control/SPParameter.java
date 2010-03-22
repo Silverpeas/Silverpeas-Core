@@ -30,7 +30,7 @@ import java.util.Hashtable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SPParameter implements Serializable, Comparable<SPParameter> {
-  
+
   private static final long serialVersionUID = -3362630250347229416L;
   private String name = null;
   private String label = null;

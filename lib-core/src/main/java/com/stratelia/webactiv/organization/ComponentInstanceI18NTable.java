@@ -58,7 +58,8 @@ public class ComponentInstanceI18NTable extends Table {
    * Returns the Component whith the given id.
    */
   @SuppressWarnings("unchecked")
-  public List<ComponentInstanceI18NRow> getTranslations(int componentId) throws AdminPersistenceException {
+  public List<ComponentInstanceI18NRow> getTranslations(int componentId)
+      throws AdminPersistenceException {
     return (List<ComponentInstanceI18NRow>) getRows(SELECT_TRANSLATIONS, componentId);
   }
 

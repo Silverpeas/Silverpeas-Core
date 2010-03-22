@@ -49,7 +49,7 @@ public class PortletWindowPreferenceRegistryWriter extends PortletRegistryWriter
       throws PortletRegistryException {
     PortletRegistryReader portletWindowPreferenceRegistryReader =
         new PortletWindowPreferenceRegistryReader(
-            registryLocation, context);
+        registryLocation, context);
     PortletRegistryObject portletWindowPreferenceRegistry = portletWindowPreferenceRegistryReader
         .readDocument();
     write(portletWindowPreferenceElementList, portletWindowPreferenceRegistry);

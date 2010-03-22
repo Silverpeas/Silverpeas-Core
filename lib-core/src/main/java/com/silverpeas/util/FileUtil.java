@@ -102,7 +102,7 @@ public class FileUtil implements MimeTypes {
    * @param token : type String: the token separating the repertories
    */
   public static String[] getAttachmentContext(String context) {
-    if (! StringUtil.isDefined(context)) {
+    if (!StringUtil.isDefined(context)) {
       return new String[] { BASE_CONTEXT };
     }
     StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
@@ -169,12 +169,12 @@ public class FileUtil implements MimeTypes {
    */
   public static ResourceBundle loadBundle(String name, Locale locale) {
     Locale loc = locale;
-    if(loc == null){
+    if (loc == null) {
       loc = Locale.ROOT;
     }
-    return ResourceBundle.getBundle(name, loc, new ConfigurationClassLoader(FileUtil.class.getClassLoader()));
+    return ResourceBundle.getBundle(name, loc, new ConfigurationClassLoader(FileUtil.class
+        .getClassLoader()));
   }
-
 
   /**
    * Indicates if the OS is from the Microsoft Windows familly

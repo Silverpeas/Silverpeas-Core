@@ -51,7 +51,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
 
   private static Logger logger =
       Logger.getLogger(PortletAdminDataImpl.class.getPackage().getName(),
-          "com.silverpeas.portlets.PCDLogMessages");
+      "com.silverpeas.portlets.PCDLogMessages");
   static final long serialVersionUID = 3L;
   private PortletRegistryContext portletRegistryContext;
 

@@ -44,6 +44,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public class BrowseBarComplete extends AbstractBrowseBar {
 
   private static String CONNECTOR = "<span class=\"connector\"> > </span>";
+
   /**
    * Constructor declaration
    * @see
@@ -118,7 +119,8 @@ public class BrowseBarComplete extends AbstractBrowseBar {
             getMainSessionController().getOrganizationController().getComponentInstLight(
             getComponentId());
         if (componentInstLight != null) {
-          result.append("<a href=").append(URLManager.getApplicationURL()).append(URLManager.getURL(getSpaceId(), getComponentId())).append("Main");
+          result.append("<a href=").append(URLManager.getApplicationURL()).append(
+              URLManager.getURL(getSpaceId(), getComponentId())).append("Main");
           result.append(" class=\"component\"");
           result.append(" id=\"").append(componentInstLight.getId()).append("\"");
           result.append(">");
@@ -186,7 +188,8 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     script.append("$('#").append(getComponentId()).append("').nextAll().remove();");
     script.append("}");
     script.append("function addBreadCrumbElement(link, label) {");
-    script.append("$('#breadCrumb').append('").append(CONNECTOR).append("<a href=\"'+link+'\">'+label+'</a>');");
+    script.append("$('#breadCrumb').append('").append(CONNECTOR).append(
+        "<a href=\"'+link+'\">'+label+'</a>');");
     script.append("}");
     script.append("</script>");
     return script.toString();

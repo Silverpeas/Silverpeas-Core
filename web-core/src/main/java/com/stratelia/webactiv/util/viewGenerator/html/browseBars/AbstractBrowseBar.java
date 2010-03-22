@@ -58,11 +58,11 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String language = null;
   private String url = null;
   private List<String> languages = null;
-  
+
   private String spaceId = null;
   private String componentId = null;
   private MainSessionController mainSessionController = null;
-  
+
   private List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
 
   /**
@@ -174,7 +174,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    */
   public void setPath(String path) {
     if (StringUtil.isDefined(path)) {
-        this.path = path;
+      this.path = path;
     }
   }
 
@@ -217,14 +217,14 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public void addElements(List<BrowseBarElement> elements) {
-    this.elements.addAll(elements);    
+    this.elements.addAll(elements);
   }
 
   public void setElements(List<BrowseBarElement> elements) {
     this.elements.clear();
     this.elements.addAll(elements);
   }
-  
+
   public List<BrowseBarElement> getElements() {
     return elements;
   }
@@ -287,6 +287,6 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   public void setMainSessionController(MainSessionController mainSessionController) {
     this.mainSessionController = mainSessionController;
   }
-  
-  public abstract String getBreadCrumb(); 
+
+  public abstract String getBreadCrumb();
 }

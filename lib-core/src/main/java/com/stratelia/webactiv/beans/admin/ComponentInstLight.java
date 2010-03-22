@@ -34,7 +34,7 @@ import com.stratelia.webactiv.organization.ComponentInstanceRow;
  * The class ComponentInstLight is the representation in memory of a component instance
  */
 public class ComponentInstLight extends AbstractI18NBean implements Serializable {
-  
+
   private static final long serialVersionUID = 4859368422448142768L;
 
   /* Unique identifier of the instance */

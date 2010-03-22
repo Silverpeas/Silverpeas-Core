@@ -119,12 +119,12 @@ abstract public class PanelProvider {
     }
   }
 
-  public void setSelectedElements(Set<String> elements) {   
+  public void setSelectedElements(Set<String> elements) {
     for (String element : elements) {
       setSelectedElement(element, true);
     }
   }
-  
+
   public void unsetSelectedElements(Set<String> elements) {
     for (String element : elements) {
       setSelectedElement(element, false);
@@ -204,7 +204,7 @@ abstract public class PanelProvider {
 
   public PanelLine[] getPage() {
     PanelLine[] valret = new PanelLine[m_Ids.length];
-    
+
     for (int i = 0; i < valret.length; i++) {
       valret[i] = getCachedElement(m_Ids[i]);
     }

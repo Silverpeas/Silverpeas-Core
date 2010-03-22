@@ -39,7 +39,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class DomainDriverManager extends AbstractDomainDriver {
   public OrganizationSchema organization = null;
-  private Hashtable<String, AbstractDomainDriver> domainDriverInstances = new Hashtable<String, AbstractDomainDriver>(0);
+  private Hashtable<String, AbstractDomainDriver> domainDriverInstances =
+      new Hashtable<String, AbstractDomainDriver>(0);
   private DomainSynchroThread theThread = null;
 
   public DomainDriverManager() {

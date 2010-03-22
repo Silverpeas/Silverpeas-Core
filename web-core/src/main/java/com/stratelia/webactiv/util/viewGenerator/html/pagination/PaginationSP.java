@@ -148,7 +148,7 @@ public class PaginationSP extends AbstractPagination {
         result.append("<a href=\"javascript:display").append(jumperName).append(
             "()\" onfocus=\"this.blur()\" title=\"").append(getString("GEF.pagination.jumptoPage"))
             .append("\">").append(
-                getString("GEF.pagination.jumper")).append(" </a>");
+            getString("GEF.pagination.jumper")).append(" </a>");
         result
             .append("<input type=\"text\" class=\"jumper\" id=\"").append(jumperName).append(
             "\" size=\"3\" onkeydown=\"check").append(jumperName).append("Submit(event)\"/>");

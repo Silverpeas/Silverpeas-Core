@@ -158,7 +158,7 @@ public class IndexManager {
           }
         }
         // update the spelling index
-        if(enableDymIndexing){
+        if (enableDymIndexing) {
           DidYouMeanIndexer.createSpellIndexForAllLanguage("content", writerPath);
         }
 

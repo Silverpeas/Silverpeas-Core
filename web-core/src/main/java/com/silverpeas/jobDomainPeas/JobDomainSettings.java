@@ -63,31 +63,31 @@ public class JobDomainSettings extends SilverpeasSettings {
     m_UserAddingAllowedForGroupManagers =
         readBoolean(rs, "UserAddingAllowedForGroupManagers", false);
     m_UseCommunityManagement =
-      readBoolean(rs, "UseCommunityManagement", false);
+        readBoolean(rs, "UseCommunityManagement", false);
   }
 
   static public void sortGroups(Group[] toSort) {
     Arrays.sort(toSort, new Comparator<Group>() {
-      public int compare(Group o1, Group o2) {
+        public int compare(Group o1, Group o2) {
         return o1.compareTo(o2);
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
   }
 
   static public void sortUsers(UserDetail[] toSort) {
     Arrays.sort(toSort, new Comparator<UserDetail>() {
-      public int compare(UserDetail o1, UserDetail o2) {
+        public int compare(UserDetail o1, UserDetail o2) {
         return o1.compareTo(o2);
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
+        }
 
     });
   }

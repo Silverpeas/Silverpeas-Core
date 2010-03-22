@@ -245,8 +245,8 @@ public class CalendarHtmlView {
   }
 
   /**
-   * Fonction ajoutée pour génerer le calendar soit pour un PDA (sans onmouseover) soit pour un
-   * web classique.
+   * Fonction ajoutée pour génerer le calendar soit pour un PDA (sans onmouseover) soit pour un web
+   * classique.
    * @param date
    * @param agendaSessionController
    * @param forPDA

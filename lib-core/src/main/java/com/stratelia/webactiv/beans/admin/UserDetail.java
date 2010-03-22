@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class UserDetail extends Object implements Serializable, Comparable<UserDetail> {
-  
+
   private static final long serialVersionUID = -109886153681824159L;
   private String m_sId = null;
   private String m_sSpecificId = null;

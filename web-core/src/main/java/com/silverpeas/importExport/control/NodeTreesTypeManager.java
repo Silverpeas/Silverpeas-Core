@@ -46,8 +46,8 @@ public class NodeTreesTypeManager {
 
   /**
    * Crée tous les thèmes (ou noeuds) unitairement définis tels que précisés dans le fichier
-   * d'import XML. La méthode est récursive pour chaque sous-noeud spécifié. Si un noeud existe
-   * déjà avec le même ID, l'algorithme interrompt la création de la branche correspondante (les
+   * d'import XML. La méthode est récursive pour chaque sous-noeud spécifié. Si un noeud existe déjà
+   * avec le même ID, l'algorithme interrompt la création de la branche correspondante (les
    * éventuels sous-noeuds ne seront pas créés) et il passe aux noeuds suivants.
    * <p>
    * Construit parallèlement un objet ComponentReport contenant les informations de création des
@@ -112,8 +112,8 @@ public class NodeTreesTypeManager {
    * publications.
    * @param nbTopic nombre courant de noeuds déjà créés.
    * @param componentId Identifiant du composant dans lequel on crée les noeuds.
-   * @return le nombre de noeuds augmentés par le nombre de créations effectuées avec succès
-   * lors de l'appel à cette méthode.
+   * @return le nombre de noeuds augmentés par le nombre de créations effectuées avec succès lors de
+   * l'appel à cette méthode.
    */
   private int processImportNodeInternal(NodeDetail node, NodeDetail parentNode,
       GEDImportExport gedIE, int nbTopic, String componentId) {

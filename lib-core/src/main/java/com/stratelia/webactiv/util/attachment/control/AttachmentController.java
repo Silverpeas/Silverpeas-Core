@@ -441,8 +441,8 @@ public class AttachmentController {
 
   /**
    * to search all file attached by primary key of customer object and mime type of file attached
-   * @param pk : com.stratelia.webactiv.util.WAPrimaryKey:the primary key of customer object but this
-   * key must be transformed to AttachmentPK
+   * @param pk : com.stratelia.webactiv.util.WAPrimaryKey:the primary key of customer object but
+   * this key must be transformed to AttachmentPK
    * @param String : the mime type of file attached
    * @return java.util.Vector, a vector of AttachmentDetail
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.

@@ -195,7 +195,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
 
     PortletRegistryWriter portletWindowPreferenceRegistryWriter =
         new PortletWindowPreferenceRegistryWriter(
-            registryLocation, null);
+        registryLocation, null);
     portletWindowPreferenceRegistryWriter
         .appendDocument(portletWindowPreferenceElementList);
     logger.log(Level.FINE, "PSPL_CSPPAM0010",
@@ -607,7 +607,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
         preferences);
     PortletRegistryWriter portletWindowPreferenceRegistryWriter =
         new PortletWindowPreferenceRegistryWriter(
-            registryLocation, null);
+        registryLocation, null);
     portletWindowPreferenceRegistryWriter
         .appendDocument(portletWindowPreferenceElementList);
     logger.log(Level.FINE, "PSPL_CSPPAM0010",

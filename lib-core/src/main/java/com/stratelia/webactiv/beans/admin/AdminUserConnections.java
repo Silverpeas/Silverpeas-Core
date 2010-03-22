@@ -30,7 +30,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 public class AdminUserConnections implements java.io.Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private String m_sUserId = ""; // User Id (silverpeas)
   private String m_sSessionId = ""; // Session id

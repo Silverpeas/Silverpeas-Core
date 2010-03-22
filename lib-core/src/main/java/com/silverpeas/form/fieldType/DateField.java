@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.DateUtil;
  * @see FieldDisplayer
  */
 public abstract class DateField implements Field {
-  
+
   private static final long serialVersionUID = -885405651541562611L;
   /**
    * The text field type name.

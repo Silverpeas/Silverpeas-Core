@@ -35,7 +35,7 @@ import com.silverpeas.form.FormException;
  * @see FieldDisplayer
  */
 public class PdcUserField implements Field {
-  
+
   private static final long serialVersionUID = -1365851085995310180L;
 
   /**

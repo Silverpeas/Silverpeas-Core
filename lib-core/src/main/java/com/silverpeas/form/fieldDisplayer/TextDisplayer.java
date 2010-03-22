@@ -130,7 +130,8 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("values") || parameters.containsKey("keys")) {
-      Hashtable<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(language);
+      Hashtable<String, String> keyValuePairs =
+          ((GenericFieldTemplate) template).getKeyValuePairs(language);
       String newValue = "";
       if (value.indexOf("##") != -1) {
         // Try to display a checkbox list

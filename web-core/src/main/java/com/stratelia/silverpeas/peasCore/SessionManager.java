@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.util.FileUtil;
 import java.text.SimpleDateFormat;
 
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -108,7 +107,7 @@ public class SessionManager implements SchedulerEventHandler {
    * Init attributes
    */
   private void initSessionManager() {
-   ResourceBundle resources = null;
+    ResourceBundle resources = null;
 
     try {
       // init Hashtables

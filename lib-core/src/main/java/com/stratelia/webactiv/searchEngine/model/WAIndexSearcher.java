@@ -72,7 +72,6 @@ public class WAIndexSearcher {
   /**
    * The primary and secondary factor are used to give a better score to entries whose title or
    * abstract match the query.
-   * 
    * @see #merge
    */
   private int primaryFactor = 3;
@@ -419,7 +418,8 @@ public class WAIndexSearcher {
    * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results list.
    */
-  private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query, Searcher searcher) throws IOException {
+  private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
+      Searcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
     String today = DateUtil.today2SQLDate();
     String user = query.getSearchingUser();

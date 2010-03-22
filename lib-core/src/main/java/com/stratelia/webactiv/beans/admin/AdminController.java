@@ -45,7 +45,7 @@ import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
  */
 
 public class AdminController extends AdminReference implements java.io.Serializable {
-  
+
   private static final long serialVersionUID = -1605341557688427460L;
   String m_UserId = null;
 
@@ -1593,11 +1593,11 @@ public class AdminController extends AdminReference implements java.io.Serializa
           "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
     }
   }
-  
+
   /** Removes the given user from the given group */
   public void removeUserFromGroup(String sUserId, String sGroupId) {
     SilverTrace.info("admin", "AdminController.removeUserFromGroup",
-        "root.MSG_GEN_ENTER_METHOD", "userId = "+sUserId+", groupId = "+sGroupId);
+        "root.MSG_GEN_ENTER_METHOD", "userId = " + sUserId + ", groupId = " + sGroupId);
     try {
       m_Admin.removeUserFromGroup(sUserId, sGroupId);
     } catch (Exception e) {
@@ -1605,11 +1605,11 @@ public class AdminController extends AdminReference implements java.io.Serializa
           "admin.EX_ERR_REMOVE_USER_FROM_GROUP", e);
     }
   }
-  
+
   /** Removes the given user from the given group */
   public void addUserInGroup(String sUserId, String sGroupId) {
     SilverTrace.info("admin", "AdminController.addUserInGroup",
-        "root.MSG_GEN_ENTER_METHOD", "userId = "+sUserId+", groupId = "+sGroupId);
+        "root.MSG_GEN_ENTER_METHOD", "userId = " + sUserId + ", groupId = " + sGroupId);
     try {
       m_Admin.addUserInGroup(sUserId, sGroupId);
     } catch (Exception e) {

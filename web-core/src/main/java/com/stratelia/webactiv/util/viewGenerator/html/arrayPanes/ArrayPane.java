@@ -209,6 +209,6 @@ public interface ArrayPane extends SimpleGraphicElement {
    * @deprecated
    */
   public void setCellsConfiguration(int spacing, int padding, int borderWidth);
-  
+
   public void setPaginationJavaScriptCallback(String callback);
 }

@@ -160,8 +160,8 @@ public class ZipManager {
   }
 
   /**
-   * Méthode permettant la création et l'organisation d'un fichier zip en lui passant directement
-   * un flux d'entrée
+   * Méthode permettant la création et l'organisation d'un fichier zip en lui passant directement un
+   * flux d'entrée
    * @param inputStream - flux de données à enregistrer dans le zip
    * @param filePathNameToCreate - chemin et nom du fichier porté par les données du flux dans le
    * zip

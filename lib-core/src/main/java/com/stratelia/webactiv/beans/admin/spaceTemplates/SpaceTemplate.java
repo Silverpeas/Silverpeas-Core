@@ -43,7 +43,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.WADOMUtil;
 
 /**
  * Class declaration
- * 
  * @author
  */
 public class SpaceTemplate {
@@ -59,7 +58,6 @@ public class SpaceTemplate {
 
   /**
    * Constructor declaration
-   * 
    * @param filename
    * @param allComponentsModels
    * @see
@@ -250,7 +248,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @return
    * @see
    */
@@ -260,7 +257,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param s
    * @see
    */
@@ -270,7 +266,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @return
    * @see
    */
@@ -280,7 +275,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param s
    * @see
    */
@@ -290,7 +284,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @return
    * @see
    */
@@ -300,7 +293,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param s
    * @see
    */
@@ -310,7 +302,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @return
    * @see
    */
@@ -320,7 +311,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param b
    * @see
    */
@@ -330,7 +320,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @return
    * @see
    */
@@ -340,7 +329,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param ar
    * @see
    */
@@ -350,7 +338,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @return
    * @see
    */
@@ -361,7 +348,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param templateName
    * @return
    * @see
@@ -387,7 +373,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param b
    * @return
    * @see
@@ -402,7 +387,6 @@ public class SpaceTemplate {
 
   /**
    * Method declaration
-   * 
    * @param s
    * @return
    * @see

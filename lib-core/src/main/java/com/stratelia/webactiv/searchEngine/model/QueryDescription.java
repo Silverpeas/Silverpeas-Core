@@ -44,9 +44,9 @@ import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
  * A QueryDescription packs a query with the different spaces and components to be searched.
  */
 public class QueryDescription implements Serializable {
-  
+
   private static final long serialVersionUID = 1L;
-  
+
   private boolean searchBySpace = false;
 
   /**

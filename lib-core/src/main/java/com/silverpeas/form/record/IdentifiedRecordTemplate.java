@@ -34,7 +34,7 @@ import com.silverpeas.form.FormException;
  * An Identified RecordTemplate adds a database id and an external id to a RecordTemplate.
  */
 public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private int id = -1;
   private String externalId = null;

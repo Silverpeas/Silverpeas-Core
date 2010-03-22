@@ -83,7 +83,7 @@ public class FormLabel extends FormLine {
   public String print() {
     String retour =
         "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-            + noNull(label);
+        + noNull(label);
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;"
@@ -133,7 +133,7 @@ public class FormLabel extends FormLine {
   public String printDemo() {
     String retour =
         "\n<td class=\"couleurFondCadre\" align=\"right\" width=\"50%\"><span class=\"txtnote\">"
-            + label;
+        + label;
 
     retour = retour + "&nbsp;</span></td>";
     retour = retour + "<td class=\"couleurFondCadre\" width=\"50%\">&nbsp;"

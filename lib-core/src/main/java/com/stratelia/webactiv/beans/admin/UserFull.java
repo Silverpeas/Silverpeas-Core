@@ -28,7 +28,7 @@ import java.util.HashMap;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class UserFull extends UserDetail {
-  
+
   private static final long serialVersionUID = 1L;
   protected HashMap<String, String> m_hInfos = null;
   protected AbstractDomainDriver m_pDomainDriver = null;

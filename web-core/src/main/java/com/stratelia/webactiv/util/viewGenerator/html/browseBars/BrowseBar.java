@@ -87,9 +87,11 @@ public interface BrowseBar extends SimpleGraphicElement {
   public void setI18N(String url, String language);
 
   public void setI18N(List<String> languages, String language);
-  
+
   public void setSpaceId(String spaceId);
+
   public void setComponentId(String componentId);
+
   public void setMainSessionController(MainSessionController mainSessionController);
 
   /**
@@ -97,21 +99,21 @@ public interface BrowseBar extends SimpleGraphicElement {
    * @return The html based line code
    */
   public String print();
-  
+
   public void addElement(BrowseBarElement element);
-  
+
   /**
    * add given elements to existing elements
    * @param elements to add to breadscrumb
    */
   public void addElements(List<BrowseBarElement> elements);
-  
+
   /**
-   * remove existing elements and add given elements 
+   * remove existing elements and add given elements
    * @param elements to add to breadscrumb
    */
   public void setElements(List<BrowseBarElement> elements);
-  
+
   public String getBreadCrumb();
-  
+
 }

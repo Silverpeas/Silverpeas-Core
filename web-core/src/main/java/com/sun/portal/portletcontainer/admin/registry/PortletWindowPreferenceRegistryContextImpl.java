@@ -62,7 +62,7 @@ public class PortletWindowPreferenceRegistryContextImpl implements
     String registryLocation = PortletRegistryHelper.getRegistryLocation();
     PortletRegistryReader portletWindowPreferenceRegistryReader =
         new PortletWindowPreferenceRegistryReader(
-            registryLocation, context);
+        registryLocation, context);
     portletWindowPreferenceRegistry = portletWindowPreferenceRegistryReader
         .readDocument();
 

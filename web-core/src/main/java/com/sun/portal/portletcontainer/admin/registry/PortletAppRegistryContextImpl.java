@@ -54,7 +54,7 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
     Map map =
         portletRegistryElement
-            .getCollectionProperty(PortletRegistryTags.SUPPORTED_CONTENT_TYPES_KEY);
+        .getCollectionProperty(PortletRegistryTags.SUPPORTED_CONTENT_TYPES_KEY);
     List markupTypes = null;
     if (map != null)
       markupTypes = mapValuesToList(map);

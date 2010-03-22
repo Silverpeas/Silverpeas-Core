@@ -154,7 +154,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       if (fileUploadStats.getBytesRead() != fileUploadStats.getTotalSize()) {
         response.getWriter().println(
             "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete +
-                "%;\"></div></div>");
+            "%;\"></div></div>");
       } else {
         response
             .getWriter()
@@ -167,7 +167,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       response.getWriter().println("<b>Upload complete.</b>");
       response.getWriter().println(
           "<script type='text/javascript'>window.parent.stop('', " + getUploadedFilePaths(session) +
-              "); stop('', " + getUploadedFilePaths(session) + ");</script>");
+          "); stop('', " + getUploadedFilePaths(session) + ");</script>");
     }
   }
 
@@ -211,7 +211,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       pathBuilder.append(path.replace("\\", "\\\\").replace("'", "\\'"));
       pathBuilder.append("',");
     }
-    if(! paths.isEmpty()) {
+    if (!paths.isEmpty()) {
       pathBuilder.deleteCharAt(pathBuilder.length() - 1);
     }
     pathBuilder.append(']');

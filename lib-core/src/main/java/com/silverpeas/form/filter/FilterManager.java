@@ -127,7 +127,8 @@ public class FilterManager {
   /**
    * Filters the given list of DataRecord using the specified criteria.
    */
-  public List<DataRecord> filter(DataRecord criteria, List<DataRecord> filtered) throws FormException {
+  public List<DataRecord> filter(DataRecord criteria, List<DataRecord> filtered)
+      throws FormException {
     ArrayList<DataRecord> result = new ArrayList<DataRecord>();
     RecordFilter filter = buildRecordFilter(criteria);
     Iterator<DataRecord> records = filtered.iterator();

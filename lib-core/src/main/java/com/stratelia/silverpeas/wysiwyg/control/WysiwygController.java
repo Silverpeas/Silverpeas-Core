@@ -62,35 +62,34 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 /*
  * CVS Informations $Id: WysiwygController.java,v 1.22 2009/03/26 14:16:24 neysseri Exp $ $Log:
  * WysiwygController.java,v $ Revision 1.22 2009/03/26 14:16:24 neysseri Le copier/coller de contenu
- * Wysiwyg n'était pas correct. Problème de réécriture d'URL des images. Revision 1.21
- * 2009/02/20 07:51:23 neysseri Ajout d'un paramètre IndexIt permettant de spécifier si
- * l'indexation autonome doit être effectué lors de la création/modification Par défaut = true
- * Sinon passez False et utiliser le mécanisme de Callback Revision 1.20 2008/05/21 14:01:25
- * neysseri no message Revision 1.19.2.2 2008/05/06 09:40:35 ehugonnet Renommage du calcul du
- * context Revision 1.19.2.1 2008/04/29 09:04:16 ehugonnet Extraction de getContext
- * d'AttachmentController dans FileRepositoryManager Revision 1.19 2008/03/26 13:16:30 neysseri no
- * message Revision 1.18 2008/02/26 15:21:13 dlesimple Suppression de spaceId ds getWysiwyg Revision
- * 1.17 2007/12/03 13:25:43 neysseri no message Revision 1.16.2.5 2007/11/21 11:44:07 neysseri no
- * message Revision 1.16.2.4 2007/11/20 15:39:45 neysseri no message Revision 1.16.2.3 2007/11/07
- * 10:31:37 neysseri no message Revision 1.16.2.2 2007/11/05 16:03:46 neysseri no message Revision
- * 1.16.2.1 2007/10/31 17:14:34 neysseri no message Revision 1.16 2007/06/25 11:53:11 cbonin
- * correction bug liens si UNIX Revision 1.15 2007/04/20 14:22:56 neysseri no message Revision
- * 1.14.2.1 2007/03/29 14:13:27 neysseri no message Revision 1.14 2006/09/18 07:10:02 neysseri
- * Suppression des méthodes d'indexation. Ce sont les modules utilisants le wysiwyg qui doivent
- * indexer le contenu et pas le wysiwyg lui-même ! Revision 1.13 2005/10/20 10:53:30 neysseri no
- * message Revision 1.12 2005/10/13 19:15:05 neysseri no message Revision 1.11 2005/07/07 18:04:01
- * neysseri Nettoyage sources Revision 1.10 2005/07/04 09:50:45 dlesimple Tiny MCE v1.45 Revision
- * 1.9 2005/04/22 12:15:51 neysseri Added : - deleteFileAndAttachment() Updated : -
- * updateFileAndAttachment() --> synchronized Revision 1.8 2005/04/21 11:01:31 neysseri Ajout du
- * créateur du Wysiwyg (transmis à attachment) Revision 1.7 2005/04/07 18:15:11 neysseri no
- * message Revision 1.6.2.1 2005/03/11 19:19:55 sdevolder *** empty log message *** Revision 1.6
- * 2004/07/26 08:29:28 neysseri no message Revision 1.5 2004/07/23 16:33:11 neysseri Bug
- * copier/coller Revision 1.4 2004/02/06 18:49:52 neysseri Now, the both indexation methods are
- * deprecated ! Revision 1.3 2003/09/19 13:12:43 neysseri no message Revision 1.2 2002/10/09
- * 07:41:03 neysseri no message Revision 1.1.1.1.6.1 2002/09/27 08:07:49 abudnikau Remove debug
- * Revision 1.1.1.1 2002/08/06 14:47:55 nchaix no message Revision 1.11 2002/04/17 08:06:30 nchaix
- * no message Revision 1.10 2002/01/31 12:13:35 neysseri no message Revision 1.9 2002/01/18 16:55:10
- * neysseri Stabilisation Lot 2 : Exception et Silvertraces
+ * Wysiwyg n'était pas correct. Problème de réécriture d'URL des images. Revision 1.21 2009/02/20
+ * 07:51:23 neysseri Ajout d'un paramètre IndexIt permettant de spécifier si l'indexation autonome
+ * doit être effectué lors de la création/modification Par défaut = true Sinon passez False et
+ * utiliser le mécanisme de Callback Revision 1.20 2008/05/21 14:01:25 neysseri no message Revision
+ * 1.19.2.2 2008/05/06 09:40:35 ehugonnet Renommage du calcul du context Revision 1.19.2.1
+ * 2008/04/29 09:04:16 ehugonnet Extraction de getContext d'AttachmentController dans
+ * FileRepositoryManager Revision 1.19 2008/03/26 13:16:30 neysseri no message Revision 1.18
+ * 2008/02/26 15:21:13 dlesimple Suppression de spaceId ds getWysiwyg Revision 1.17 2007/12/03
+ * 13:25:43 neysseri no message Revision 1.16.2.5 2007/11/21 11:44:07 neysseri no message Revision
+ * 1.16.2.4 2007/11/20 15:39:45 neysseri no message Revision 1.16.2.3 2007/11/07 10:31:37 neysseri
+ * no message Revision 1.16.2.2 2007/11/05 16:03:46 neysseri no message Revision 1.16.2.1 2007/10/31
+ * 17:14:34 neysseri no message Revision 1.16 2007/06/25 11:53:11 cbonin correction bug liens si
+ * UNIX Revision 1.15 2007/04/20 14:22:56 neysseri no message Revision 1.14.2.1 2007/03/29 14:13:27
+ * neysseri no message Revision 1.14 2006/09/18 07:10:02 neysseri Suppression des méthodes
+ * d'indexation. Ce sont les modules utilisants le wysiwyg qui doivent indexer le contenu et pas le
+ * wysiwyg lui-même ! Revision 1.13 2005/10/20 10:53:30 neysseri no message Revision 1.12 2005/10/13
+ * 19:15:05 neysseri no message Revision 1.11 2005/07/07 18:04:01 neysseri Nettoyage sources
+ * Revision 1.10 2005/07/04 09:50:45 dlesimple Tiny MCE v1.45 Revision 1.9 2005/04/22 12:15:51
+ * neysseri Added : - deleteFileAndAttachment() Updated : - updateFileAndAttachment() -->
+ * synchronized Revision 1.8 2005/04/21 11:01:31 neysseri Ajout du créateur du Wysiwyg (transmis à
+ * attachment) Revision 1.7 2005/04/07 18:15:11 neysseri no message Revision 1.6.2.1 2005/03/11
+ * 19:19:55 sdevolder *** empty log message *** Revision 1.6 2004/07/26 08:29:28 neysseri no message
+ * Revision 1.5 2004/07/23 16:33:11 neysseri Bug copier/coller Revision 1.4 2004/02/06 18:49:52
+ * neysseri Now, the both indexation methods are deprecated ! Revision 1.3 2003/09/19 13:12:43
+ * neysseri no message Revision 1.2 2002/10/09 07:41:03 neysseri no message Revision 1.1.1.1.6.1
+ * 2002/09/27 08:07:49 abudnikau Remove debug Revision 1.1.1.1 2002/08/06 14:47:55 nchaix no message
+ * Revision 1.11 2002/04/17 08:06:30 nchaix no message Revision 1.10 2002/01/31 12:13:35 neysseri no
+ * message Revision 1.9 2002/01/18 16:55:10 neysseri Stabilisation Lot 2 : Exception et Silvertraces
  */
 
 public class WysiwygController {

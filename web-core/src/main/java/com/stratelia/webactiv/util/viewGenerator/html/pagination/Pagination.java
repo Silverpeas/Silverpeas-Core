@@ -61,8 +61,8 @@ public interface Pagination extends SimpleGraphicElement {
    * @see
    */
   public String printCounter();
-  
+
   public void setBaseURL(String baseUrl);
-  
+
   public void setMultilang(ResourceLocator multilang);
 }

@@ -40,7 +40,7 @@ import com.silverpeas.form.FormException;
  * @see FieldDisplayer
  */
 public class MultipleUserField implements Field {
-  
+
   private static final long serialVersionUID = 1412147782354556460L;
   /**
    * The text field type name.

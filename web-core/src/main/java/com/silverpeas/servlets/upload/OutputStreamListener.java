@@ -46,7 +46,7 @@ public interface OutputStreamListener {
    */
   public void error(String s);
 
-   /**
+  /**
    * When the OutputStream is opened.
    */
   public void end();

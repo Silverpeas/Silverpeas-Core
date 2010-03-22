@@ -969,7 +969,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           String groupIdLinkToRemove = iterator.next();
           m_AdminCtrl.removeUserFromGroup(idUser, groupIdLinkToRemove);
         }
-        
+
         refresh();
       }
     }
@@ -2811,14 +2811,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return null;
   }
 
-  
   /**
-   * @return true if community management is activated and target user belongs to one group manageable by current user  
+   * @return true if community management is activated and target user belongs to one group
+   * manageable by current user
    */
   public boolean isUserInAtLeastOneGroupManageableByCurrentUser() {
     if (!JobDomainSettings.m_UseCommunityManagement)
       return false;
-    
+
     List<String> groupIds = getUserManageableGroupIds();
     for (Iterator<String> iterator = groupIds.iterator(); iterator.hasNext();) {
       String groupId = iterator.next();

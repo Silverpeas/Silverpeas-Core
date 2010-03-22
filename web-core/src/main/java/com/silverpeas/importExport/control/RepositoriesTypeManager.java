@@ -62,8 +62,8 @@ public class RepositoriesTypeManager {
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
-   * @param repositoriesType - objet mappé par castor contenant toutes les informations de
-   * création des publications du path défini
+   * @param repositoriesType - objet mappé par castor contenant toutes les informations de création
+   * des publications du path défini
    * @return un objet ComponentReport contenant les informations de création des publications
    * unitaires et nécéssaire au rapport détaillé
    * @throws ImportExportException
@@ -253,8 +253,8 @@ public class RepositoriesTypeManager {
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
    * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
    * @param componentId - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId - id du thème dans lequel seront crées les éléments, l'id passé est
-   * toujours le même dans le cas présent
+   * @param topicId - id du thème dans lequel seront crées les éléments, l'id passé est toujours le
+   * même dans le cas présent
    * @throws ImportExportException
    */
   public void processImportRecursiveNoReplicate(MassiveReport massiveReport,
@@ -285,8 +285,8 @@ public class RepositoriesTypeManager {
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
    * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
    * @param componentId - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId - id du thème dans lequel seront crées les éléments du niveau de
-   * récursivité auquel on se trouve.
+   * @param topicId - id du thème dans lequel seront crées les éléments du niveau de récursivité
+   * auquel on se trouve.
    * @throws ImportExportException
    */
   public void processImportRecursiveReplicate(MassiveReport massiveReport,

@@ -617,11 +617,11 @@ public class PublicationsTypeManager {
   }
 
   /**
-   * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies
-   * au niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
+   * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies au
+   * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
-   * @param publicationsType - objet mappé par castor contenant toutes les informations de
-   * création des publications de type unitaire
+   * @param publicationsType - objet mappé par castor contenant toutes les informations de création
+   * des publications de type unitaire
    * @param targetComponentId - id du composant dans lequel creer les publications unitaires
    * @return un objet ComponentReport contenant les informations de création des publications
    * unitaires et nécéssaire au rapport détaillé
@@ -690,11 +690,11 @@ public class PublicationsTypeManager {
               File file = new File(attachment.getPhysicalName());
               pubDetailToCreate =
                   PublicationImportExport.convertFileInfoToPublicationDetail(userDetail, file,
-                      isPOIUsed);
+                  isPOIUsed);
             } else {/* TODO: jeter exception ou trouver une autre solution de nommage */
               pubDetailToCreate =
                   new PublicationDetail("unknown"/* id */, "pub temp"/* nom */, "description",
-                      new Date(), new Date(), null, userDetail.getId(), "5", null, null, null);
+                  new Date(), new Date(), null, userDetail.getId(), "5", null, null, null);
             }
           } else {
             // C'est une publication à mettre à jour par id
@@ -732,21 +732,21 @@ public class PublicationsTypeManager {
                       // Get NodeDetail by his name
                       NodeDetail nodeDetail =
                           coordinateIE.getNodeDetailByName(coordinatePointType.getValue(),
-                              new Integer(coordinatePointType.getAxisId()).intValue(), componentId);
+                          new Integer(coordinatePointType.getAxisId()).intValue(), componentId);
                       SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
                           "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
                       if (nodeDetail == null && createCoordinateAllowed) {
                         NodeDetail position =
                             new NodeDetail("toDefine", coordinatePointType.getValue(), "", null,
-                                userDetail.getId(), null, "0", new Integer(coordinatePointType
-                                    .getAxisId()).toString(), null);
+                            userDetail.getId(), null, "0", new Integer(coordinatePointType
+                            .getAxisId()).toString(), null);
                         nodeDetail =
                             coordinateIE.addPosition(position, new Integer(coordinatePointType
-                                .getAxisId()).toString(), componentId);
+                            .getAxisId()).toString(), componentId);
                         SilverTrace
                             .debug("importExport", "PublicationsTypeManager.processImport",
-                                "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
-                                    nodeDetail);
+                            "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
+                            nodeDetail);
                       }
                       if (nodeDetail != null) {
                         if (coordinatePointsPath.equals(""))
@@ -754,7 +754,7 @@ public class PublicationsTypeManager {
                         else
                           coordinatePointsPath =
                               coordinatePointsPath + "," + nodeDetail.getPath() +
-                                  nodeDetail.getId();
+                              nodeDetail.getId();
                       }
                     }
                   }
@@ -806,7 +806,7 @@ public class PublicationsTypeManager {
                 // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
                 copiedAttachments =
                     attachmentIE.copyFiles(componentId, attachments, versioningIE
-                        .getVersioningPath(componentId));
+                    .getVersioningPath(componentId));
                 if (copiedAttachments.size() != attachments.size()) {
                   unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                 }
@@ -816,7 +816,7 @@ public class PublicationsTypeManager {
                 // Ajout des attachments
                 copiedAttachments =
                     attachmentIE.importAttachments(pubDetail.getId(), componentId, attachments,
-                        userDetail.getId(), pubDetail.isIndexable());
+                    userDetail.getId(), pubDetail.isIndexable());
                 if (copiedAttachments.size() != attachments.size()) {
                   unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                 }
@@ -845,14 +845,14 @@ public class PublicationsTypeManager {
               // Copy files on disk, set info on each version
               List copiedFiles =
                   versioningIE.copyFiles(componentId, documents, versioningIE
-                      .getVersioningPath(componentId));
+                  .getVersioningPath(componentId));
               ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
               ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
               // Create documents and versions in DB
               versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
                   documents, Integer.parseInt(userDetail.getId()), ImportExportHelper
-                      .isIndexable(pubDetail));
+                  .isIndexable(pubDetail));
 
               // On additionne la taille des fichiers importés au niveau du rapport
               Iterator itCopiedFiles = copiedFiles.iterator();

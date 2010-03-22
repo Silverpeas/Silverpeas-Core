@@ -451,11 +451,12 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result
           .append(
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n")
-          /*.append("<tr align=\"center\">\n").append(
-          "<td class=\"viewGeneratorLines\"><img src=\"").append(
-          getIconsPath()).append(
-          "/1px.gif\" width=\"1\" height=\"1\"></td>\n").append("</tr>\n")*/
-          .append("<tr class=\"intfdcolor\"> \n").append("<td align=\"center\">");
+                /*
+       * .append("<tr align=\"center\">\n").append(
+       * "<td class=\"viewGeneratorLines\"><img src=\"").append( getIconsPath()).append(
+       * "/1px.gif\" width=\"1\" height=\"1\"></td>\n").append("</tr>\n")
+       */
+      .append("<tr class=\"intfdcolor\"> \n").append("<td align=\"center\">");
       result.append(pagination.printIndex(paginationJavaScriptCallback));
       result.append("</td>").append("</tr>\n").append("</table>");
     }

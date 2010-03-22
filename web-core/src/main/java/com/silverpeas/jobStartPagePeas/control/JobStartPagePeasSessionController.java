@@ -1089,12 +1089,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         String valcomp1 = o1.getSuite() + o1.getLabel();
         String valcomp2 = o2.getSuite() + o2.getLabel();
         return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-      }
+        }
 
       public boolean equals(Object o) {
         return false;
-      }
-    });
+        }
+            });
     return componentsModels;
   }
 

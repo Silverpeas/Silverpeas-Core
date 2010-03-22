@@ -108,9 +108,10 @@ public class InstanceDataTable extends Table {
   @SuppressWarnings("unchecked")
   public SPParameters getAllParametersInComponent(int componentId)
       throws AdminPersistenceException {
-    List<InstanceDataRow> rows = (List<InstanceDataRow>) getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
+    List<InstanceDataRow> rows =
+        (List<InstanceDataRow>) getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
     SPParameters params = new SPParameters();
-    for(InstanceDataRow row : rows) {
+    for (InstanceDataRow row : rows) {
       SPParameter param = new SPParameter(row.name, row.value, row.label);
       params.addParameter(param);
     }

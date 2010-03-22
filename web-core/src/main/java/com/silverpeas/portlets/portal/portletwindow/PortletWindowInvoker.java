@@ -152,7 +152,7 @@ public class PortletWindowInvoker extends WindowInvoker {
       logger.log(Level.INFO, "PSPCD_CSPPD0019", getPortletWindowName());
       title =
           PortletWindowInvokerUtils.getPortletTitle(getPortletWindowName(),
-              getPortletWindowContext());
+          getPortletWindowContext());
     }
     return title;
   }

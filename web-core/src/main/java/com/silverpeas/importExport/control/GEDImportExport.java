@@ -170,13 +170,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode de création ou mise à jour d'une publication utilisée par le manager d'importation
-   * de repository du * moteur d'importExport. Cas particulier: si une publication de même nom
-   * existe déjà dans le composant, alors une nouvelle publication ne sera créée que si le
-   * premier node à lier ne contient pas la publication de même nom.
+   * Méthode de création ou mise à jour d'une publication utilisée par le manager d'importation de
+   * repository du * moteur d'importExport. Cas particulier: si une publication de même nom existe
+   * déjà dans le composant, alors une nouvelle publication ne sera créée que si le premier node à
+   * lier ne contient pas la publication de même nom.
    * @param pubDetailToCreate - publication à créer ou à mettre à jour.
-   * @return l'objet PublicationDetail contenant les informations de la publication créée ou mise
-   * à jour.
+   * @return l'objet PublicationDetail contenant les informations de la publication créée ou mise à
+   * jour.
    * @throws ImportExportException
    */
   private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
@@ -508,8 +508,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode préparant les dataModels pour la création en base d un contenu DBModel, cette
-   * méthode se charge également de la copie des fichiers du contenu sur le serveur
+   * Méthode préparant les dataModels pour la création en base d un contenu DBModel, cette méthode
+   * se charge également de la copie des fichiers du contenu sur le serveur
    * @param dbModelType - objet de mapping castor contenant les informations de contenu de type
    * DBModel
    * @return
@@ -623,8 +623,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode chargée de copier les fichiers images référencés par le contenu wysiwyg sur le
-   * serveur et de mettre à jour le contenu wysiwyg avec ces nouveaux liens
+   * Méthode chargée de copier les fichiers images référencés par le contenu wysiwyg sur le serveur
+   * et de mettre à jour le contenu wysiwyg avec ces nouveaux liens
    * @param wysiwygText - contenu wysiwyg passé en paramètre
    * @param path - chemin cible des images wysiwyg
    * @return - le contenu wysiwyg mis à jour
@@ -884,23 +884,23 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui
-   * aussi (par exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne
-   * lève aucune exception.
+   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui aussi (par
+   * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
+   * exception.
    * @param nodeDetail le détail du noeud à ajouter.
    * @param topicId l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
    * @param unitReport le rapport d'import unitaire.
-   * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de
-   * même identifiant non modifié).
+   * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de même
+   * identifiant non modifié).
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    */
   protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       UnitReport unitReport) throws ImportExportException;
 
   /**
-   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui
-   * aussi (par exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne
-   * lève aucune exception.
+   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui aussi (par
+   * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
+   * exception.
    * @param nodeDetail l'objet node correspondant au thème à créer.
    * @param topicId l'ID du thème dans lequel créer le nouveau thème.
    * @return un objet clé primaire du nouveau thème créé.
@@ -910,9 +910,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
       MassiveReport massiveReport) throws ImportExportException;
 
   /**
-   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers.
-   * Le nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de
-   * noeuds et de publications à partir d'une hiérarchie de dossiers et de fichiers.
+   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers. Le
+   * nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de noeuds et
+   * de publications à partir d'une hiérarchie de dossiers et de fichiers.
    * @param unitReport le rapport d'import unitaire.
    * @param nodeDetail le détail du noeud à créer.
    * @param parentTopicId l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
@@ -939,8 +939,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Méthode de création d'une publication dans le cas d'une importation unitaire avec
-   * méta-données définies dans le fichier xml d'importation.
+   * Méthode de création d'une publication dans le cas d'une importation unitaire avec méta-données
+   * définies dans le fichier xml d'importation.
    * @param unitReport
    * @param userDetail
    * @param fileForPubliMetaData
@@ -987,9 +987,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers.
-   * Le nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de
-   * noeuds et de publications à partir d'une hiérarchie de dossiers et de fichiers.
+   * Ajoute un sous-noeud à un noeud existant à partir d'un répertoire du système de fichiers. Le
+   * nom de ce répertoire représente le noeud à créer. Utile pour les imports massifs de noeuds et
+   * de publications à partir d'une hiérarchie de dossiers et de fichiers.
    * @param directory le répertoire dont le nom représente le nouveau noeud.
    * @param topicId l'identifiant du noeud parent.
    * @param massiveReport le rapprt d'import.

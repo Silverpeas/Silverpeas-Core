@@ -40,14 +40,14 @@ public class BrowseBarTag extends NeedWindowTag {
   public int doEndTag() throws JspException {
     return EVAL_PAGE;
   }
-  
+
   public void addElement(BrowseBarElement element) {
     browseBar.addElement(element);
   }
 
   public int doStartTag() throws JspException {
     Window window = getWindow();
-    browseBar = window.getBrowseBar();    
+    browseBar = window.getBrowseBar();
     if (extraInformations != null) {
       browseBar.setExtraInformation(extraInformations);
     }

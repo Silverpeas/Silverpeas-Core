@@ -102,5 +102,5 @@ public interface FieldTemplate {
   public boolean isSearchable();
 
   public String getTemplateName();
-  
+
 }

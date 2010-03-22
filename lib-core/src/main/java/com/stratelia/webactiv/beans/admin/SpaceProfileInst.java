@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpaceProfileInst extends Object implements Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private String m_sId;
   private String m_sName;

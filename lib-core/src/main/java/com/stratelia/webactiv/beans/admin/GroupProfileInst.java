@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupProfileInst extends Object implements Serializable {
-  
+
   private static final long serialVersionUID = -9158575581807428715L;
   private String m_sId;
   private String m_sName;

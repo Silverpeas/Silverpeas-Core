@@ -86,7 +86,6 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of spaces loaded in cache
-   * 
    * @return int representing the number of spaces stored in cache
    */
   public int getNbSpacesInCache() {
@@ -95,7 +94,6 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of components loaded in cache
-   * 
    * @return int representing the number of components stored in cache
    */
   public int getNbComponentsInCache() {
@@ -104,7 +102,6 @@ public class AdminCache extends Object {
 
   /**
    * Get the number of profiles loaded in cache
-   * 
    * @return int representing the number of profiles stored in cache
    */
   public int getNbProfilesInCache() {

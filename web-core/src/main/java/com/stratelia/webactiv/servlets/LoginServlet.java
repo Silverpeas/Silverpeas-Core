@@ -85,7 +85,7 @@ public class LoginServlet extends HttpServlet {
     // Get the parameters from the login page
     String sKey = (String) request.getParameter("Key");
     if (sKey == null) {
-    	sKey = (String) session.getAttribute("svplogin_Key");
+      sKey = (String) session.getAttribute("svplogin_Key");
     }
     String sPassword = (String) session
         .getAttribute("Silverpeas_pwdForHyperlink");

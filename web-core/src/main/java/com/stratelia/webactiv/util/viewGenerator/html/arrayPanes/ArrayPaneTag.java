@@ -55,7 +55,7 @@ public class ArrayPaneTag extends TagSupport {
   public int doStartTag() throws JspException {
     final GraphicElementFactory gef =
         (GraphicElementFactory) pageContext.getSession().getAttribute(
-            "SessionGraphicElementFactory");
+        "SessionGraphicElementFactory");
     ArrayPane arrayPane =
         gef.getArrayPane(var, routingAddress, pageContext.getRequest(), pageContext.getSession());
     if (title != null) {

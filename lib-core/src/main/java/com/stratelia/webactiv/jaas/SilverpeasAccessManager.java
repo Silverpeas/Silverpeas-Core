@@ -109,7 +109,8 @@ public class SilverpeasAccessManager implements AccessManager {
       if (path.getDepth() > 2 && validateNode(path)) {
         return isPathAutorized(path);
       } else if (validateFileNode(id)) {
-        Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
+        Set<SilverpeasUserPrincipal> principals =
+            subject.getPrincipals(SilverpeasUserPrincipal.class);
         Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
         while (iter.hasNext()) {
           SilverpeasUserPrincipal principal = iter.next();
@@ -125,7 +126,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
-   * 
    * @param principal
    * @param id
    * @return
@@ -157,7 +157,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
-   * 
    * @param principal
    * @param id
    * @return
@@ -201,7 +200,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
-   * 
    * @param id
    * @return
    * @throws LoginException
@@ -246,7 +244,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
-   * 
    * @param id
    * @return
    * @throws LoginException
@@ -314,7 +311,8 @@ public class SilverpeasAccessManager implements AccessManager {
       if (path.getDepth() > 2 && validateNode(path)) {
         return isPathAutorized(path);
       } else if (validateFileNode(path)) {
-        Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(SilverpeasUserPrincipal.class);
+        Set<SilverpeasUserPrincipal> principals =
+            subject.getPrincipals(SilverpeasUserPrincipal.class);
         Iterator<SilverpeasUserPrincipal> iter = principals.iterator();
         while (iter.hasNext()) {
           SilverpeasUserPrincipal principal = iter.next();

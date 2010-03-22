@@ -131,7 +131,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
       userPrefMap = portletRegistryContext.getPreferences(this.portletWindowName, this.userID);
       defaultMap =
           portletRegistryContext.getPreferences(this.portletWindowName,
-              PortletRegistryContext.USER_NAME_DEFAULT);
+          PortletRegistryContext.USER_NAME_DEFAULT);
     } catch (Exception ioe) {
       logger.log(Level.SEVERE, "PSPL_PCCTXCSPPCI0013", ioe);
     }

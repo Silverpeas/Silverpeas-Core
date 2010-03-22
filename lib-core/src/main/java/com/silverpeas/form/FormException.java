@@ -29,7 +29,7 @@ import com.stratelia.webactiv.util.exception.*;
  * Thrown by the form components.
  */
 public class FormException extends SilverpeasException {
-  
+
   private static final long serialVersionUID = 1937108365995722235L;
 
   /**

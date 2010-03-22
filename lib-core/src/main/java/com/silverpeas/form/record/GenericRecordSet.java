@@ -42,7 +42,6 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 /**
  * The GenericRecordSet manage DataRecord built on a RecordTemplate and saved by the
  * GenericRecordSetManager.
- * 
  * @see DataRecord
  */
 public class GenericRecordSet implements RecordSet, Serializable {
@@ -75,7 +74,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String recordId) throws FormException {
@@ -84,7 +82,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Returns the DataRecord with the given id.
-   * 
    * @throw FormException when the id is unknown.
    */
   public DataRecord getRecord(String recordId, String language)
@@ -97,7 +94,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Inserts the given DataRecord and set its id.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a not null id.
    * @throw FormException when the insert fail.
@@ -109,7 +105,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Updates the given DataRecord.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has a null or unknown id.
    * @throw FormException when the update fail.
@@ -122,7 +117,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
-   * 
    * @see insert
    * @see update
    * @throw FormException when the record doesn't have the required template.
@@ -194,7 +188,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   /**
    * Deletes the given DataRecord and set to null its id.
-   * 
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the delete fail.

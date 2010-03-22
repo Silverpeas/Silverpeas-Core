@@ -130,8 +130,8 @@ public class GraphicElementFactory extends Object {
       }
       multilang =
           new ResourceLocator(
-              "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
-              language);
+          "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
+          language);
     }
     return multilang;
   }
@@ -286,12 +286,12 @@ public class GraphicElementFactory extends Object {
     if (externalStylesheet == null) {
       code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
           contextPath).append(standardStyle).append("\">\n");
-      
+
       code.append("<!--[if IE]>");
       code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
           contextPath).append(standardStyleForIE).append("\">\n");
       code.append("<![endif]-->");
-      
+
       if (lookStyle.length() > 0) {
         code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"")
             .append(lookStyle).append("\">");
@@ -760,5 +760,5 @@ public class GraphicElementFactory extends Object {
   public MainSessionController getMainSessionController() {
     return mainSessionController;
   }
-  
+
 }

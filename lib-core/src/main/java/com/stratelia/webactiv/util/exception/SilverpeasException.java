@@ -38,10 +38,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * d'exception spécifiques aux differents modules doivent dériver (directement ou non) de
  * SilverpeasException. La page d'erreur globale à l'application ne saura traiter correctement que
  * les SilverpeasException. Les autres exception (ou error ou runtime) provoqueront l'affichage
- * d'une page d'erreur imprévue. Le message que l'on donne à l'exception est très important, il
- * doit etre affiché à l'utilisateur. C'est pourquoi le label est multilangue. Chaque classe
- * heritant de SilverpeasException doit surdefinir la fonction getModule qui retourne le nom du
- * module (le meme nom que celui defini dans Silvertrace)
+ * d'une page d'erreur imprévue. Le message que l'on donne à l'exception est très important, il doit
+ * etre affiché à l'utilisateur. C'est pourquoi le label est multilangue. Chaque classe heritant de
+ * SilverpeasException doit surdefinir la fonction getModule qui retourne le nom du module (le meme
+ * nom que celui defini dans Silvertrace)
  */
 abstract public class SilverpeasException extends Exception implements WithNested, FromModule {
   public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
@@ -72,8 +72,8 @@ abstract public class SilverpeasException extends Exception implements WithNeste
    * imbriquer. Le niveau d'importance est ERROR.
    * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
    * traduit dans des fichiers de properties.
-   * @param nested L'exception qui a provoqué le problème. nested peut etre une
-   * SilverpeasException ou une exception technique (SQLException, RemoteException...)
+   * @param nested L'exception qui a provoqué le problème. nested peut etre une SilverpeasException
+   * ou une exception technique (SQLException, RemoteException...)
    * @deprecated
    */
   public SilverpeasException(String message, Exception nested) {
@@ -85,8 +85,8 @@ abstract public class SilverpeasException extends Exception implements WithNeste
    * et un niveau d'importance.
    * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
    * traduit dans des fichiers de properties.
-   * @param nested L'exception qui a provoqué le problème. nested peut etre une
-   * SilverpeasException ou une exception technique (SQLException, RemoteException...)
+   * @param nested L'exception qui a provoqué le problème. nested peut etre une SilverpeasException
+   * ou une exception technique (SQLException, RemoteException...)
    * @param errorLevel Le niveau de critissicité de l'erreur (FATAL, ERROR, ou WARNING)
    * @deprecated
    */
@@ -247,8 +247,8 @@ abstract public class SilverpeasException extends Exception implements WithNeste
   // Specific methods
   // ----------------
   /**
-   * méthode utilitaire dont le role est de représenter les exceptions encapsulées sous forme
-   * d'une collection. L'exception courante se trouvera en première position de la collection. Les
+   * méthode utilitaire dont le role est de représenter les exceptions encapsulées sous forme d'une
+   * collection. L'exception courante se trouvera en première position de la collection. Les
    * eventuelles imbrications succéssive suivront dans la liste.
    * @param e L'exception de plus haut niveau
    * @return une collection de Throwable, qui contiendra au moins l'exception passee en parametre.
