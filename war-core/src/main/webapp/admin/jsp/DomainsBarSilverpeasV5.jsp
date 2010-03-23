@@ -28,6 +28,7 @@
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
@@ -58,6 +59,9 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
 {
   spaceId = helper.getSpaceId(componentId);
 }
+
+ResourceLocator resourceSearchEngine = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
 %>
 
 <html>
@@ -68,18 +72,20 @@ out.println(gef.getLookStyleSheet());
 %>
 <!-- Add JQuery mask plugin css -->
 <link href="<%=m_sContext%>/util/styleSheets/jquery.loadmask.css" rel="stylesheet" type="text/css" />
+<link href="<%=m_sContext%>/util/styleSheets/jquery.autocomplete.css" rel="stylesheet" type="text/css" media="screen"/>
 
 <!-- Add RICO javascript library -->
- 
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
-
  
 <!-- Add jQuery javascript library -->
 <script type="text/javascript" src="<%=m_sContext %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.ajaxQueue.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 
 <!-- Custom domains bar javascript -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/navigation.js"></script>
@@ -222,6 +228,20 @@ out.println(gef.getLookStyleSheet());
         return labels;
     }
 
+  	//used by keyword autocompletion
+    <%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
+    	$(document).ready(function(){
+            $("#query").autocomplete("<%=m_sContext%>/AutocompleteServlet", {
+                        minChars: <%=autocompletionMinChars%>,
+                        max: 50,
+                        autoFill: false,
+                        mustMatch: false,
+                        matchContains: false,
+                        scrollHeight: 220
+                });
+          });
+    <%}%>
+
 -->
 </script>
 </head>
@@ -231,7 +251,7 @@ out.println(gef.getLookStyleSheet());
   <div id="recherche">
     <div id="submitRecherche">
       <form name="searchForm" action="<%=m_sContext%>/RpdcSearch/jsp/AdvancedSearch" method="POST" target="MyMain">
-      <input name="query" size="30"/><input type="hidden" name="mode" value="clear"/>
+      <input name="query" size="30" id="query"/><input type="hidden" name="mode" value="clear"/>
       <a href="javascript:searchEngine()"><img src="icons/silverpeasV5/px.gif" width="20" height="20" border="0" /></a>
       </form>
     </div>
