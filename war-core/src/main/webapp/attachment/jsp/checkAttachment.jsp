@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="java.io.UnsupportedEncodingException"%>
 <%@ page isELIgnored="false"%>
 <%
   response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -75,13 +76,13 @@
 <%@ page import="org.apache.commons.fileupload.*"%>
 
 <%!
-private String getParameterValue(List items, String parameterName)
+private String getParameterValue(List items, String parameterName, String encoding) throws UnsupportedEncodingException
 {
 	Iterator iter = items.iterator();
 	while (iter.hasNext()) {
 		FileItem item = (FileItem) iter.next();
 		if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-			return item.getString();
+			return item.getString(encoding);
 		}
 	}
 	return null;

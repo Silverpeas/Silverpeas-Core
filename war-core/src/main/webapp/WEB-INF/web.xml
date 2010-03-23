@@ -24,7 +24,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<web-app version="2.4">
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name >Silverpeas</display-name>
   <description>Collaborative portal organizer</description>
 
@@ -53,7 +54,6 @@
     <param-name>vendorPortletXML.sun.name</param-name>
     <param-value>sun-portlet.xml</param-value>
   </context-param>
-
 
   <filter>
     <!-- PortletAppEngine Filter -->
@@ -281,30 +281,29 @@
     <servlet-class>org.apache.jackrabbit.servlet.remote.RemoteBindingServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>Webdav</servlet-name>
     <description>The webdav servlet that connects HTTP request to the repository.</description>
+    <servlet-name>Webdav</servlet-name>    
     <servlet-class>com.silverpeas.jcrutil.servlets.SimpleWebdavServlet</servlet-class>
     <init-param>
-      <param-name>resource-path-prefix</param-name>
-      <param-value>/repository</param-value>
       <description>Defines the prefix for spooling resources out of the repository.</description>
+      <param-name>resource-path-prefix</param-name>
+      <param-value>/repository</param-value>      
     </init-param>
     <init-param>
-      <param-name>resource-config</param-name>
-      <param-value>/WEB-INF/classes/webdav-config.xml</param-value>
       <description>Defines various dav-resource configuration parameters.</description>
+      <param-name>resource-config</param-name>
+      <param-value>/WEB-INF/classes/webdav-config.xml</param-value>      
     </init-param>
     <load-on-startup>4</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>JcrInitializer</servlet-name>
     <display-name>JcrInitializer</display-name>
-    <description>Initialize JackRabbit</description>
     <servlet-class>com.silverpeas.jcrutil.servlets.RepositoryAccessServlet</servlet-class>
     <init-param>
+      <description>Spring JCR configuration file</description>
       <param-name>configuration</param-name>
       <param-value>/WEB-INF/config/spring-jcr.xml /WEB-INF/config/spring-jdbc-datasource.xml /WEB-INF/config/spring-pdcPeas.xml</param-value>
-      <description>Spring JCR configuration file</description>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -519,10 +518,10 @@
     </init-param>
   </servlet>
   -->
-   <servlet>
-        <servlet-name>AutocompleteServlet</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
-    </servlet>
+  <servlet>
+    <servlet-name>AutocompleteServlet</servlet-name>
+    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
+  </servlet>
     
 
 
@@ -837,10 +836,10 @@
     <url-pattern>/ajaxupload/*</url-pattern>
   </servlet-mapping>
   -->
-   <servlet-mapping>
-        <servlet-name>AutocompleteServlet</servlet-name>
-        <url-pattern>/AutocompleteServlet</url-pattern>
-    </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AutocompleteServlet</servlet-name>
+    <url-pattern>/AutocompleteServlet</url-pattern>
+  </servlet-mapping>
 
   <jsp-config>
     <taglib>
