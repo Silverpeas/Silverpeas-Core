@@ -84,6 +84,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
     // print javascript to go to spaces in displayed path
     result.append(printScript());
+    if (!StringUtil.isDefined(getSpaceJavascriptCallback())) {
+      setSpaceJavascriptCallback("goSpace");
+    }
 
     result.append("<div id=\"breadCrumb\">");
 
@@ -99,18 +102,28 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       } else {
         spaces = getMainSessionController().getOrganizationController().getSpacePath(getSpaceId());
       }
+      boolean firstSpace = true;
       for (SpaceInst spaceInst : spaces) {
         String spaceId = spaceInst.getId();
         if (!spaceId.startsWith("WA")) {
           spaceId = "WA" + spaceId;
         }
-        result.append("<a href=\"javascript:goSpace('").append(spaceId).append("')\"");
+        String href = "javascript:" + getSpaceJavascriptCallback() + "('" + spaceId + "')";
+        if (!isClickable()) {
+          href = "#";
+        }
+
+        if (!firstSpace) {
+          result.append(CONNECTOR);
+        }
+        result.append("<a href=\"").append(href).append("\"");
         result.append(" class=\"space\"");
         result.append(" id=\"space").append(spaceId).append("\"");
         result.append(">");
         result.append(spaceInst.getName(language));
         result.append("</a>");
-        result.append(CONNECTOR);
+        
+        firstSpace = false;
       }
 
       if (StringUtil.isDefined(getComponentId())) {
@@ -119,8 +132,18 @@ public class BrowseBarComplete extends AbstractBrowseBar {
             getMainSessionController().getOrganizationController().getComponentInstLight(
             getComponentId());
         if (componentInstLight != null) {
-          result.append("<a href=").append(URLManager.getApplicationURL()).append(
-              URLManager.getURL(getSpaceId(), getComponentId())).append("Main");
+          result.append(CONNECTOR);
+          result.append("<a href=\"");
+          if (!isClickable()) {
+            result.append("#");
+          } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
+            result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
+                .append(getComponentId()).append("')");
+          } else {
+            result.append(URLManager.getApplicationURL() +
+                URLManager.getURL(getSpaceId(), getComponentId()) + "Main");
+          }
+          result.append("\"");
           result.append(" class=\"component\"");
           result.append(" id=\"").append(componentInstLight.getId()).append("\"");
           result.append(">");

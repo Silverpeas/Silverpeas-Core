@@ -65,6 +65,10 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   private List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
 
+  private String spaceJavascriptCallback = null;
+  private String componentJavascriptCallback = null;
+  private boolean clickable = true;
+
   /**
    * Constructor declaration
    * @see
@@ -289,4 +293,30 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public abstract String getBreadCrumb();
+
+  public void setSpaceJavascriptCallback(String callback) {
+    spaceJavascriptCallback = callback;
+  }
+
+  public void setComponentJavascriptCallback(String callback) {
+    componentJavascriptCallback = callback;
+  }
+
+  public String getSpaceJavascriptCallback() {
+    return spaceJavascriptCallback;
+  }
+
+  public String getComponentJavascriptCallback() {
+    return componentJavascriptCallback;
+  }
+  
+  public void setClickable(boolean clickable)
+  {
+    this.clickable = clickable;
+  }
+  
+  public boolean isClickable() {
+    return clickable;
+  }
+
 }
