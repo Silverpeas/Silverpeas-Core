@@ -310,7 +310,9 @@ public class AjaxServletLookV5 extends HttpServlet {
                   label = component.getName();
                 }
                 String url =
-                    URLManager.getURL(component.getName(), null, component.getId()) + "Main";
+                    URLManager.getURL(component.getName(), null, component.getName() +
+                        component.getId()) +
+                        "Main";
                 writer
                     .write("<item id=\"" +
                         component.getName() +
