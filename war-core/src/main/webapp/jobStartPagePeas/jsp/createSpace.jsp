@@ -27,17 +27,12 @@
 
 <%
 String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
-String 		m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-String 		m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 Hashtable 	m_SpaceTemplates 	= (Hashtable) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
+String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 		
-	browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-	if (m_SubSpace == null || m_SubSpace.length() <= 0) //je suis sur un espace
-		browseBar.setComponentName(m_SpaceName);
-	else
-		browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-	
+	browseBar.setSpaceId(spaceId);
+	browseBar.setClickable(false);
 	if (m_SousEspace == null) 
 		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
 	else

@@ -40,19 +40,14 @@
 SpaceInst		space				= (SpaceInst) request.getAttribute("Space");
 SpaceLookHelper slh 				= (SpaceLookHelper) request.getAttribute("SpaceLookHelper");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
-String 			m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
+String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
 Vector 			availableLooks		= gef.getAvailableLooks();
 String			spaceLook			= space.getLook();
 SpaceLookItem 	item 				= (SpaceLookItem) slh.getItem("wallPaper");
 	
-browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-if (m_SubSpace == null || m_SubSpace.length() <= 0) //je suis sur un espace
-	browseBar.setComponentName(m_SpaceName);
-else
-	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
+browseBar.setSpaceId(spaceId);
 browseBar.setExtraInformation(resource.getString("JSPP.SpaceAppearance"));
 %>
 

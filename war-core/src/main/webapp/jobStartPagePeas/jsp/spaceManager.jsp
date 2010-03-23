@@ -25,8 +25,6 @@
 --%>
 <%@ include file="check.jsp" %>
 <%
-	String 				m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-	String 				m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 	SpaceProfileInst 	m_Profile 			= (SpaceProfileInst) request.getAttribute("Profile");
 	List 				m_listGroup 		= (List) request.getAttribute("listGroupSpace");
 	List 				m_listUser 			= (List) request.getAttribute("listUserSpace");
@@ -38,6 +36,7 @@
 	SpaceProfileInst	inheritedProfile 	= (SpaceProfileInst) request.getAttribute("InheritedProfile");
 	List 				inheritedGroups		= (List) request.getAttribute("listInheritedGroups"); //List of GroupDetail
 	List 				inheritedUsers 		= (List) request.getAttribute("listInheritedUsers"); //List of UserDetail
+	String 				spaceId				= (String) request.getAttribute("CurrentSpaceId");
 	
 	String nameProfile = null;
 	if (m_Profile == null)
@@ -48,12 +47,7 @@
 			nameProfile = resource.getString("JSPP."+role);
 	}
 	
-	browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
- 	if (m_SubSpace == null) //je suis sur un espace
- 		browseBar.setComponentName(m_SpaceName);
- 	else {
- 		browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
- 	}
+	browseBar.setSpaceId(spaceId);
 	browseBar.setExtraInformation(nameProfile);
 		
 	//Onglets

@@ -26,16 +26,11 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ include file="check.jsp" %>
 <%
-	String m_SpaceName 	= (String) request.getAttribute("currentSpaceName");
-	String m_SubSpace 	= (String) request.getAttribute("nameSubSpace");
+String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
-	browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-	if (m_SubSpace == null) //je suis sur un espace
- 		browseBar.setComponentName(m_SpaceName);
- 	else {
- 		browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
- 	}
-	browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
+browseBar.setSpaceId(spaceId);
+browseBar.setClickable(false);
+browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 
 	Integer m_firstPageType = (Integer)request.getAttribute("FirstPageType");
 	String m_firstPageParam	= (String) request.getAttribute("FirstPageParam");

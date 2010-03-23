@@ -30,7 +30,6 @@
 	String	 		m_SpaceId 			= (String) request.getAttribute("currentSpaceId");
 	Integer 		m_firstPageType 	= (Integer)request.getAttribute("FirstPageType");
 	
-	String 			m_Space 			= (String) request.getAttribute("currentSpaceName");
 	String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 	boolean			objectsSelectedInClipboard = new Boolean((String) request.getAttribute("ObjectsSelectedInClipboard")).booleanValue();
 	DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
@@ -53,13 +52,7 @@
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
 
- 	browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
- 	if (m_SubSpace == null) //je suis sur un espace
- 		browseBar.setComponentName(m_Space);
- 	else {
- 		browseBar.setComponentName(m_Space + " > " + m_SpaceName);
- 		m_SpaceName = m_SubSpace;
- 	}
+ 	browseBar.setSpaceId(m_SpaceId);
 	browseBar.setExtraInformation(resource.getString("GML.description"));
 	browseBar.setI18N(space, resource.getLanguage());
 	

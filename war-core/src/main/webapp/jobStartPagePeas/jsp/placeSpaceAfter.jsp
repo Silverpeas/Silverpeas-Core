@@ -25,11 +25,11 @@
 --%>
 <%@ include file="check.jsp" %>
 <%
-    String m_SpaceName = (String) request.getAttribute("currentSpaceName");
     SpaceInst[] brothers = (SpaceInst[]) request.getAttribute("brothers");
-			
-    browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-    browseBar.setComponentName(m_SpaceName);	
+    String spaceId = (String) request.getAttribute("CurrentSpaceId");
+
+    browseBar.setSpaceId(spaceId);
+    browseBar.setClickable(false);
     browseBar.setPath(resource.getString("JSPP.SpaceOrder"));
 %>
 <HTML>

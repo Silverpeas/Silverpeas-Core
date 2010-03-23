@@ -35,6 +35,14 @@ function MM_reloadPage(init) {  //reloads the window if Nav4 resized
   else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
 }
 MM_reloadPage(true);
+function jumpToSpace(spaceId)
+{
+	window.startPageNavigation.location.href="GoToSubSpace?SubSpace="+spaceId;	
+}
+function jumpToComponent(componentId)
+{
+	window.startPageContent.location.href="GoToComponent?ComponentId="+componentId;	
+}
 //-->
 </script>
 

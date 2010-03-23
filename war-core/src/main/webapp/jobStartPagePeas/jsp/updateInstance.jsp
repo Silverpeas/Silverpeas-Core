@@ -140,8 +140,6 @@ ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentIns
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");
 List 			hiddenParameters 	= (List) request.getAttribute("HiddenParameters");
-String 			m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 String			translation 		= (String) request.getParameter("Translation");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
@@ -149,13 +147,8 @@ String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+
 
 SPParameter parameter = null;
 
-browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-if (m_SubSpace == null) //je suis sur un espace
-	browseBar.setComponentName(m_SpaceName);
-else {
-	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-}
-browseBar.setExtraInformation(compoInst.getLabel() +" > "+resource.getString("GML.modify"));
+browseBar.setComponentId(compoInst.getId());
+browseBar.setExtraInformation(resource.getString("GML.modify"));
 %>
 
 <HTML>

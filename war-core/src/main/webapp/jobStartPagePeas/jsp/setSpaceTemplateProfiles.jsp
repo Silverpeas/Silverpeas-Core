@@ -26,19 +26,13 @@
 <%@ include file="check.jsp" %>
 
 <%
-    String m_SpaceName = (String) request.getAttribute("currentSpaceName");
     String m_SubSpace = (String) request.getAttribute("nameSubSpace");
     SpaceTemplateProfile[] m_SpaceTemplateProfiles = (SpaceTemplateProfile[]) request.getAttribute("SpaceTemplateProfiles");
     String[][] m_SpaceTemplateProfilesGroups = (String[][]) request.getAttribute("SpaceTemplateProfilesGroups");
     String[][] m_SpaceTemplateProfilesUsers = (String[][]) request.getAttribute("SpaceTemplateProfilesUsers");
-			
-    browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-    if ((m_SubSpace == null) || (m_SubSpace.length() <= 0)) { //je suis sur un espace
-        browseBar.setComponentName(m_SpaceName);	
-    }
-    else {
-        browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-    }
+    String spaceId = (String) request.getAttribute("CurrentSpaceId");
+
+    browseBar.setSpaceId(spaceId);
 
     if ((m_SubSpace == null) || (m_SubSpace.length() <= 0)) //je suis sur un espace
         browseBar.setPath(resource.getString("JSPP.creationSpace"));

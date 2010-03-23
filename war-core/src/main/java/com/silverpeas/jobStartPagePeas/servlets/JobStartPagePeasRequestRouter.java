@@ -395,11 +395,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       request.setAttribute("IsInheritanceEnable", Boolean
           .valueOf(JobStartPagePeasSettings.isInheritanceEnable));
 
-      String espaceId = compoint1.getDomainFatherId(); // WAid
-      SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(espaceId);
-
-      setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-
       destination = "/jobStartPagePeas/jsp/updateInstance.jsp";
     } else if (function.equals("EffectiveUpdateInstance")) {
       ComponentInst componentInst = jobStartPageSC
@@ -1162,11 +1157,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("ComponentInst", compoint1);
         request.setAttribute("JobPeas", sCompoName);
 
-        String espaceId = compoint1.getDomainFatherId(); // WAid
-        SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(espaceId);
-
-        setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
-
         request.setAttribute("Profiles", jobStartPageSC
             .getAllProfiles(compoint1));
         request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
@@ -1174,12 +1164,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       } else if (destination.equals("/jobStartPagePeas/jsp/roleInstance.jsp")) {
         ComponentInst compoint1 = jobStartPageSC
             .getComponentInst(jobStartPageSC.getManagedInstanceId());
-        request.setAttribute("compoName", compoint1.getLabel());
-
-        String espaceId = compoint1.getDomainFatherId(); // WAid
-        SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(espaceId);
-
-        setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
+        request.setAttribute("ComponentInst", compoint1);
 
         request.setAttribute("Profiles", jobStartPageSC
             .getAllProfiles(compoint1));
@@ -1234,20 +1219,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
     if (spaceint1 != null) {
+      request.setAttribute("CurrentSpaceId", spaceint1.getId());
       if (!spaceint1.isRoot()) {// je suis sur un ss-espace
-        String idFather = spaceint1.getDomainFatherId();
-        SpaceInst spaceFather = jobStartPageSC.getSpaceInstById(idFather);
-        request.setAttribute("currentSpaceName", spaceFather
-            .getName(jobStartPageSC.getLanguage()));
         request.setAttribute("nameSubSpace", spaceint1.getName(jobStartPageSC
             .getLanguage()));
       } else {
-        request.setAttribute("currentSpaceName", spaceint1
-            .getName(jobStartPageSC.getLanguage()));
         request.setAttribute("nameSubSpace", null);
       }
     } else {
-      request.setAttribute("currentSpaceName", "");
       request.setAttribute("nameSubSpace", null);
     }
   }

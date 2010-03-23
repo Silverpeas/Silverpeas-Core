@@ -26,17 +26,12 @@
 <%@ include file="check.jsp" %>
 <%
 
-String m_SpaceName = (String) request.getAttribute("currentSpaceName");
 WAComponent[] m_ListComponents = (WAComponent[]) request.getAttribute("ListComponents");
-String m_SubSpace = (String) request.getAttribute("nameSubSpace");
+String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
- 	browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
- 	if (m_SubSpace == null) //je suis sur un espace
- 		browseBar.setComponentName(m_SpaceName);
- 	else {
- 		browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
- 	}
-	browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
+browseBar.setSpaceId(spaceId);
+browseBar.setClickable(false);
+browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
 %>
 <HTML>
 <HEAD>

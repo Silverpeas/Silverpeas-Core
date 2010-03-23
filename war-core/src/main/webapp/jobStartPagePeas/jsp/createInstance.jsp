@@ -136,12 +136,11 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 
 <%
 WAComponent 	component 			= (WAComponent) request.getAttribute("WAComponent");
-String 			m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
 List 			parameters 			= (List) request.getAttribute("Parameters");
 List 			hiddenParameters 	= (List) request.getAttribute("HiddenParameters");
 String 			m_ComponentNum 		= (String) request.getAttribute("ComponentNum");
-String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
+String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
 String m_JobPeas = component.getLabel();
 String m_ComponentType = component.getName();
@@ -150,12 +149,8 @@ String m_ComponentIcon = iconsPath+"/util/icons/component/"+m_ComponentType+"Sma
 
 SPParameter parameter = null;
 
-browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-if (m_SubSpace == null) //je suis sur un espace
-	browseBar.setComponentName(m_SpaceName);
-else {
-	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-}
+browseBar.setSpaceId(spaceId);
+browseBar.setClickable(false);
 browseBar.setPath(resource.getString("JSPP.creationInstance"));
 %>
 

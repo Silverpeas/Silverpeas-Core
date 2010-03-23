@@ -32,7 +32,8 @@
     SpaceInst[] spaces = (SpaceInst[]) request.getAttribute("spaces");
 	boolean validLicense = ((Boolean) request.getAttribute("validLicense")).booleanValue();
 	
-    browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
+	browseBar.setClickable(false);
+	browseBar.setSpaceId(currentSpace.getId());
     browseBar.setComponentName(m_ComponentName);
     browseBar.setPath(resource.getString("JSPP.ComponentOrder"));
 

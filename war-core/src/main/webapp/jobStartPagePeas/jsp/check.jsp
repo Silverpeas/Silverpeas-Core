@@ -82,6 +82,8 @@ Boolean haveToRefreshNavBar = (Boolean)request.getAttribute("haveToRefreshNavBar
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
+browseBar.setSpaceJavascriptCallback("parent.jumpToSpace");
+browseBar.setComponentJavascriptCallback("parent.jumpToComponent");
 OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 Board board = gef.getBoard();

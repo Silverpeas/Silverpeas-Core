@@ -109,8 +109,6 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");
-String 			m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-String 			m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 ArrayList 		m_Profiles 			= (ArrayList) request.getAttribute("Profiles");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
@@ -118,13 +116,8 @@ String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 
-browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-if (m_SubSpace == null) //je suis sur un espace
-	browseBar.setComponentName(m_SpaceName);
-else {
-	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-}
-browseBar.setExtraInformation(compoInst.getLabel(resource.getLanguage()) +" > "+resource.getString("GML.description"));	
+browseBar.setComponentId(compoInst.getId());
+browseBar.setExtraInformation(resource.getString("GML.description"));	
 browseBar.setI18N(compoInst, resource.getLanguage());
 
 // Space edition

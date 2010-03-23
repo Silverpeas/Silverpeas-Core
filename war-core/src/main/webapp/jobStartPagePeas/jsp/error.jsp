@@ -27,15 +27,9 @@
 
 <%
 String when = (String) request.getAttribute("When");
-String m_SpaceName = (String) request.getAttribute("currentSpaceName");
-String m_SubSpace = (String) request.getAttribute("nameSubSpace");
+String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
-browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-if (m_SubSpace == null) //je suis sur un espace
-	browseBar.setComponentName(m_SpaceName);
-else {
-	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-}
+browseBar.setSpaceId(spaceId);
 
 String messageTitle = resource.getString("JSPP.ErrorComponentCreation");
 String message = resource.getString("JSPP.ErrorComponentMessage");

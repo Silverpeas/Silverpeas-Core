@@ -29,10 +29,7 @@
 
 <%@ include file="check.jsp" %>
 <%
-
-	String 		m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-	String 		m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
-	String 		m_ComponentName 	= (String) request.getAttribute("compoName");
+	ComponentInst componentInst 	= (ComponentInst) request.getAttribute("ComponentInst");
 	
 	ArrayList 	m_Profiles 			= (ArrayList) request.getAttribute("Profiles");
 	
@@ -46,12 +43,7 @@
 	Boolean 	m_ProfileEditable 	= (Boolean) request.getAttribute("ProfileEditable");
 	boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 	
- 	browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
- 	if (m_SubSpace == null) //je suis sur un espace
- 		browseBar.setComponentName(m_SpaceName);
- 	else {
- 		browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
- 	}
+	browseBar.setComponentId(componentInst.getId());
  	
  	String idProfile = m_Profile.getId();
  	String profile = m_Profile.getLabel();
@@ -59,7 +51,7 @@
 	if (labelProfile == null || labelProfile.equals("")) 
 		labelProfile = profile;
 			
-	browseBar.setExtraInformation(m_ComponentName +" > "+labelProfile);    
+	browseBar.setExtraInformation(labelProfile);    
 	
 	//Onglets
     TabbedPane tabbedPane = gef.getTabbedPane();

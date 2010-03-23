@@ -26,19 +26,12 @@
 <%@ include file="check.jsp" %>
 
 <%
-String 		m_SpaceName 		= (String) request.getAttribute("currentSpaceName");
-String 		m_SubSpace 			= (String) request.getAttribute("nameSubSpace");
 SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
 String		translation 		= (String) request.getParameter("Translation");
 boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
-browseBar.setDomainName(resource.getString("JSPP.manageHomePage"));
-if (m_SubSpace == null) //je suis sur un espace
-	browseBar.setComponentName(m_SpaceName);
-else {
-	browseBar.setComponentName(m_SpaceName + " > " + m_SubSpace);
-	m_SpaceName = m_SubSpace;
-}
+browseBar.setSpaceId(space.getId());
+browseBar.setClickable(false);
 browseBar.setPath(resource.getString("JSPP.updateSpace"));
 %>
 
