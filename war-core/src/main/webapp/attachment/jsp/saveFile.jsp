@@ -180,8 +180,7 @@
       %>
       <% } else {%>
       <script language='javascript'>
-       //window.opener.location.reload();
-        alert(window.opener.location);
+        window.opener.location.reload();
         window.close();
       </script>
       <% }%>
