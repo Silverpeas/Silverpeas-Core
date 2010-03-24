@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class TicketDAO {
+
   public List<TicketDetail> getTicketsByUser(Connection con, String userId) throws SQLException {
     // récupérer toutes les tickets d'un utilisateur
     ArrayList<TicketDetail> tickets = null;
@@ -64,15 +65,16 @@ public class TicketDAO {
   }
 
   public List<TicketDetail> getTicketsByComponentIds(Connection con, List<String> componentIds)
-      throws SQLException {
+          throws SQLException {
     // récupérer toutes les tickets d'un utilisateur
     ArrayList<TicketDetail> tickets = null;
 
     String query = "select * from SB_fileSharing_ticket";
     String whereClause = " where componentId IN (";
     for (int c = 0; c < componentIds.size(); c++) {
-      if (c != 0)
+      if (c != 0) {
         whereClause += ",";
+      }
       whereClause += componentIds.get(c);
     }
     whereClause += ")";
@@ -117,18 +119,18 @@ public class TicketDAO {
   }
 
   public void deleteTicketsByFile(Connection con, String fileId, boolean versioning)
-      throws SQLException {
-    // récupérer toutes les tickets associés à un fichier
-    String query = "select keyFile from SB_fileSharing_ticket where fileId = ?";
-    String and = " and versioning = 0";
-    if (versioning)
-      and = " and versioning = 1";
-    query += and;
+          throws SQLException {
+    String query = "select keyFile from SB_fileSharing_ticket where fileId = ? and versioning = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, fileId);
+      prepStmt.setInt(1, Integer.parseInt(fileId));
+      if (versioning) {
+        prepStmt.setInt(2, 1);
+      } else {
+        prepStmt.setInt(2, 0);
+      }
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         String key = rs.getString("keyFile");
@@ -162,9 +164,7 @@ public class TicketDAO {
     return downloads;
   }
 
-  public static String createTicket(Connection con, TicketDetail ticket) throws SQLException
-
-  {
+  public static String createTicket(Connection con, TicketDetail ticket) throws SQLException {
     // Création d'une commande
     String key = createUniKey();
     PreparedStatement prepStmt = null;
@@ -172,16 +172,16 @@ public class TicketDAO {
       Date today = new Date();
       // création de la requête
       String query =
-          "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"
-              +
-              " values (?,?,?,?,?,?,?,?)";
+              "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"
+              + " values (?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
       prepStmt.setInt(3, 0);
-      if (ticket.isVersioning())
+      if (ticket.isVersioning()) {
         prepStmt.setInt(3, 1);
+      }
       prepStmt.setString(4, ticket.getCreatorId());
       prepStmt.setString(5, "" + today.getTime());
       Date endDate = ticket.getEndDate();
@@ -209,18 +209,18 @@ public class TicketDAO {
     try {
       Date today = new Date();
       String query =
-          "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , "
-              +
-              "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
+              "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , "
+              + "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
       prepStmt.setString(3, ticket.getUpdateId());
-      if (StringUtil.isDefined(ticket.getUpdateId()))
+      if (StringUtil.isDefined(ticket.getUpdateId())) {
         prepStmt.setString(4, "" + today.getTime());
-      else
+      } else {
         prepStmt.setString(4, null);
+      }
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(ticket.getEndDate());
       calendar.set(Calendar.HOUR_OF_DAY, 23);
@@ -239,13 +239,13 @@ public class TicketDAO {
   }
 
   public void addDownload(Connection con, DownloadDetail download) throws SQLException,
-      UtilException {
+          UtilException {
     // Ajout d'un téléchargement
     PreparedStatement prepStmt = null;
     try {
       // création de la requête
-      String query = "insert into SB_fileSharing_history (id, keyfile, downloadDate, downloadIp)" +
-          " values (?,?,?,?)";
+      String query = "insert into SB_fileSharing_history (id, keyfile, downloadDate, downloadIp)"
+              + " values (?,?,?,?)";
       // initialisation des paramètres
       int id = DBUtil.getNextId("SB_fileSharing_history", "id");
       prepStmt = con.prepareStatement(query);
@@ -301,8 +301,9 @@ public class TicketDAO {
     ticket.setFileId(rs.getInt("fileId"));
     ticket.setComponentId(rs.getString("componentId"));
     boolean versioning = false;
-    if (rs.getInt("versioning") == 1)
+    if (rs.getInt("versioning") == 1) {
       versioning = true;
+    }
     ticket.setVersioning(versioning);
     ticket.setCreatorId(rs.getString("creatorId"));
     String creationDate = null;
@@ -362,5 +363,4 @@ public class TicketDAO {
 
     return download;
   }
-
 }
