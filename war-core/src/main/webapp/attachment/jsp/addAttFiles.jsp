@@ -150,7 +150,7 @@
           <td align="center" colspan="4" class="txtlibform">
             <div id="InProgress" style="visibility:hidden">
               <%=messages.getString("downloadInProgress")%><br />
-              <img src="<%=m_Context%>/util/icons/attachment_to_upload.gif" height="20" width="83" />
+              <img alt="upload" src="<%=m_Context%>/util/icons/attachment_to_upload.gif" height="20" width="83" />
             </div>
           </td>
         </tr>
