@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkVersion.jsp"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar" %>
@@ -88,7 +89,7 @@ function checkIn()
 <body class="yui-skin-sam">
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.resourceBundle}" />
-      <form name="addForm" action="<c:url value="/RVersioningPeas/jsp/saveOnline" />" method="POST" enctype="multipart/form-data">
+      <form name="addForm" action="<c:url value="/RVersioningPeas/jsp/saveOnline" />" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
       <input type="hidden" name="radio" value="0"/>
       <input type="hidden" name="action" value="checkin"/>
       <input type="hidden" name="publicationId" value="<c:out value="${param.Id}" />" />
@@ -96,7 +97,7 @@ function checkIn()
       <input type="hidden" name="spaceId" value="<c:out value="${param.SpaceId}" />" />
       <input type="hidden" name="documentId" value="<c:out value="${param.documentId}" />" />
 	  <input type="hidden" name="Callback" value="<c:out value="${param.Callback}" />" />
-      <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+      <table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>
           <td class="txtlibform"><%=versionTypeLabel%> :</td>
           <td align="left" valign="baseline">

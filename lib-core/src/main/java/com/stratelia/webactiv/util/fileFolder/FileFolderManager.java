@@ -88,8 +88,6 @@ public class FileFolderManager {
    * chemin du repertoire
    */
   public static Collection getAllFile(String chemin) throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
-
     ArrayList resultat = new ArrayList();
     int i = 0;
 

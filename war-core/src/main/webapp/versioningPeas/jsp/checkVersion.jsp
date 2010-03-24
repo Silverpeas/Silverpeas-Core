@@ -32,7 +32,7 @@
          java.util.Collection,
          java.util.StringTokenizer,
          java.rmi.RemoteException,
-				 java.net.URLEncoder,
+         java.net.URLEncoder,
          java.beans.*,
          java.io.File,
          java.io.PrintWriter,
@@ -70,7 +70,7 @@
          com.stratelia.webactiv.util.viewGenerator.html.buttons.Button,
          com.stratelia.webactiv.util.viewGenerator.html.board.Board,
          com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane,
-				 com.stratelia.webactiv.util.viewGenerator.html.window.Window,
+         com.stratelia.webactiv.util.viewGenerator.html.window.Window,
          com.stratelia.silverpeas.versioning.model.Document,
          com.stratelia.silverpeas.versioning.model.DocumentPK,
          com.stratelia.silverpeas.versioning.model.DocumentVersion,
@@ -86,173 +86,146 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
 
 <%!
-	VersioningSessionController setComponentSessionController(HttpSession session, MainSessionController mainSessionCtrl) {
-		//ask to MainSessionController to create the ComponentContext
-		ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, null);
-		//instanciate a new CSC
-		VersioningSessionController component = new VersioningSessionController(mainSessionCtrl, componentContext);
-		session.setAttribute("Silverpeas_versioningPeas", component);
-		return component;
-	}
+  VersioningSessionController setComponentSessionController(HttpSession session, MainSessionController mainSessionCtrl) {
+    //ask to MainSessionController to create the ComponentContext
+    ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, null);
+    //instanciate a new CSC
+    VersioningSessionController component = new VersioningSessionController(mainSessionCtrl, componentContext);
+    session.setAttribute("Silverpeas_versioningPeas", component);
+    return component;
+  }
 
-    boolean isWriter( List users, int user_id )
-    {
-        boolean is_writer = false;
-        for ( int i=0; i<users.size(); i++ )
-        {
-            Worker user = (Worker) users.get(i);
-            if ( user.getUserId() == user_id )
-            {
-                if ( user.isWriter() )
-                {
-                    is_writer = true;
-                }
-
-                break;
-            }
+  boolean isWriter(List users, int user_id) {
+    boolean is_writer = false;
+    for (int i = 0; i < users.size(); i++) {
+      Worker user = (Worker) users.get(i);
+      if (user.getUserId() == user_id) {
+        if (user.isWriter()) {
+          is_writer = true;
         }
 
-        return is_writer;
+        break;
+      }
     }
 
-    boolean isValidator( List users, int user_id )
-    {
-        boolean is_validator = false;
-        for ( int i=0; i<users.size(); i++ )
-        {
-            Worker user = (Worker) users.get(i);
-            if ( user.getUserId() == user_id )
-            {
-                if ( user.isApproval() )
-                {
-                    is_validator = true;
-                }
+    return is_writer;
+  }
 
-                break;
-            }
+  boolean isValidator(List users, int user_id) {
+    boolean is_validator = false;
+    for (int i = 0; i < users.size(); i++) {
+      Worker user = (Worker) users.get(i);
+      if (user.getUserId() == user_id) {
+        if (user.isApproval()) {
+          is_validator = true;
         }
 
-        return is_validator;
+        break;
+      }
     }
 
-    boolean isExist( List users, int user_id )
-    {
-        boolean is_exist = false;
-        for ( int i=0; i<users.size(); i++ )
-        {
-            Worker user = (Worker) users.get(i);
-            if ( user.getUserId() == user_id )
-            {
-                is_exist = true;
+    return is_validator;
+  }
 
-                break;
-            }
+  boolean isExist(List users, int user_id) {
+    boolean is_exist = false;
+    for (int i = 0; i < users.size(); i++) {
+      Worker user = (Worker) users.get(i);
+      if (user.getUserId() == user_id) {
+        is_exist = true;
+
+        break;
+      }
+    }
+
+    return is_exist;
+  }
+
+  List removeReiteration(List users) {
+    Hashtable user_ids = new Hashtable(users.size());
+    int i = 0;
+    while (i < users.size()) {
+      Worker user = (Worker) users.get(i);
+      if (user_ids.containsKey(String.valueOf(user.getUserId()))) {
+        users.remove(i);
+      } else {
+        user_ids.put(String.valueOf(user.getUserId()), "");
+        i++;
+      }
+    }
+
+    return users;
+  }
+
+  public boolean isUserReader(Document document, int user_id, VersioningSessionController versioning_sc) throws RemoteException {
+    try {
+      List readers = document.getReadList();
+      List writers = versioning_sc.getAllNoReader(document);
+      com.stratelia.silverpeas.versioning.model.Reader user;
+
+      for (int i = 0; i < readers.size(); i++) {
+        user = (com.stratelia.silverpeas.versioning.model.Reader) readers.get(i);
+        if (user.getUserId() == user_id) {
+          return true;
         }
+      }
 
-        return is_exist;
-    }
-
-    List removeReiteration( List users )
-    {
-        Hashtable user_ids = new Hashtable( users.size() );
-        int i = 0;
-        while ( i < users.size() )
-        {
-            Worker user = (Worker) users.get(i);
-            if ( user_ids.containsKey( String.valueOf(user.getUserId())) )
-            {
-                users.remove(i);
-            }
-            else
-            {
-                user_ids.put( String.valueOf(user.getUserId()), "" );
-                i++;
-            }
+      for (int i = 0; i < writers.size(); i++) {
+        user = (com.stratelia.silverpeas.versioning.model.Reader) writers.get(i);
+        if (user.getUserId() == user_id) {
+          return true;
         }
-
-        return users;
+      }
+    } catch (Exception e) {
+      SilverTrace.error("versioning", "checkVersionjsp", "root.EX_REMOTE_EXCEPTION", e);
     }
 
-    public boolean isUserReader( Document document, int user_id, VersioningSessionController versioning_sc) throws RemoteException
-    {
-        try
-        {
-            List readers = document.getReadList();
-            List writers = versioning_sc.getAllNoReader(document);
-            com.stratelia.silverpeas.versioning.model.Reader user;
+    return false;
+  }
 
-            for ( int i=0; i<readers.size(); i++ )
-            {
-                user = (com.stratelia.silverpeas.versioning.model.Reader) readers.get(i);
-                if ( user.getUserId() == user_id )
-                {
-                    return true;
-                }
-            }
-
-            for ( int i=0; i<writers.size(); i++ )
-            {
-                user = (com.stratelia.silverpeas.versioning.model.Reader) writers.get(i);
-                if ( user.getUserId() == user_id )
-                {
-                    return true;
-                }
-            }
-        } catch (Exception e)
-        {
-            SilverTrace.error( "versioning", "checkVersionjsp", "root.EX_REMOTE_EXCEPTION", e );
-        }
-
-        return false;
+  public boolean isUserWriter(Document document, int user_id) {
+    List writers = document.getWorkList();
+    for (int i = 0; i < writers.size(); i++) {
+      Worker user = (Worker) writers.get(i);
+      if (user.getUserId() == user_id) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public boolean isUserWriter( Document document, int user_id )
-    {
-        List writers = document.getWorkList();
-        for ( int i=0; i<writers.size(); i++ )
-        {
-            Worker user = (Worker) writers.get(i);
-            if ( user.getUserId() == user_id )
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isFileSharingEnable(MainSessionController msc, String componentId)
-    {
-    	String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");
-    	return "yes".equalsIgnoreCase(param);
-    }
+  private boolean isFileSharingEnable(MainSessionController msc, String componentId) {
+    String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");
+    return "yes".equalsIgnoreCase(param);
+  }
 %>
 
 <%
-		GraphicElementFactory 		gef 			= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-		VersioningSessionController versioningSC	= (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
-		ResourcesWrapper 			resources 		= (ResourcesWrapper) request.getAttribute("resources");
-		String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-		ResourceLocator attachmentSettings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-		MainSessionController   m_MainSessionCtrl   = (MainSessionController) session.getAttribute("SilverSessionController");
-		boolean webdavEditingEnable = m_MainSessionCtrl.isWebDAVEditingEnabled() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
-		boolean dragAndDropEnable 	= m_MainSessionCtrl.isDragNDropEnabled() && attachmentSettings.getBoolean("DragAndDropEnable", false);
-		String sURI = request.getRequestURI();
-		String sRequestURL = request.getRequestURL().toString();
-		String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-		String httpServerBase = GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase", m_sAbsolute);
-		Window 			window 			= gef.getWindow();
-		Frame 			frame 			= gef.getFrame();
-		BrowseBar 		browseBar 		= window.getBrowseBar();
-		OperationPane 	operationPane 	= window.getOperationPane();
-		
-    	String userPanelIcon = m_context + "/util/icons/readingControl.gif";
-		String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
-		String groupSrc = m_context + "/util/icons/groupe.gif";
-		String userSrc = m_context + "/util/icons/user.gif";
-		String scheduledGroupSrc = m_context + "/jobDomainPeas/jsp/icons/scheduledGroup.gif";
-		String saveListIcon = m_context + "/util/icons/saveAccessList.gif";
-		String userPanelDeleteIcon = m_context + "/util/icons/userPanelPeas_to_del.gif";
-		
-		ResourceLocator attMessages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
-		ResourcesWrapper attResources = new ResourcesWrapper(attMessages, null, null, m_MainSessionCtrl.getFavoriteLanguage());
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+      VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
+      ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+      String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      ResourceLocator attachmentSettings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+      MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+      boolean webdavEditingEnable = m_MainSessionCtrl.isWebDAVEditingEnabled() && attachmentSettings.getBoolean("OnlineEditingEnable", false);
+      boolean dragAndDropEnable = m_MainSessionCtrl.isDragNDropEnabled() && attachmentSettings.getBoolean("DragAndDropEnable", false);
+      String sURI = request.getRequestURI();
+      String sRequestURL = request.getRequestURL().toString();
+      String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+      String httpServerBase = GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase", m_sAbsolute);
+      Window window = gef.getWindow();
+      Frame frame = gef.getFrame();
+      BrowseBar browseBar = window.getBrowseBar();
+      OperationPane operationPane = window.getOperationPane();
+
+      String userPanelIcon = m_context + "/util/icons/readingControl.gif";
+      String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
+      String groupSrc = m_context + "/util/icons/groupe.gif";
+      String userSrc = m_context + "/util/icons/user.gif";
+      String scheduledGroupSrc = m_context + "/jobDomainPeas/jsp/icons/scheduledGroup.gif";
+      String saveListIcon = m_context + "/util/icons/saveAccessList.gif";
+      String userPanelDeleteIcon = m_context + "/util/icons/userPanelPeas_to_del.gif";
+
+      ResourceLocator attMessages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
+      ResourcesWrapper attResources = new ResourcesWrapper(attMessages, null, null, m_MainSessionCtrl.getFavoriteLanguage());
 %>
