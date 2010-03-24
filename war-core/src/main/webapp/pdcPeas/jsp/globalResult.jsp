@@ -147,8 +147,8 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 
 // keyword autocompletion
 int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletion.minChars", "3"));
-boolean autoCompletion 	= resource.getSetting("MarkResultAsRead", true);
-boolean markResult 		= resource.getSetting("AutoCompletion", false);
+boolean markResult 		= resource.getSetting("MarkResultAsRead", true);
+boolean autoCompletion 	= resource.getSetting("AutoCompletion", false);
 %>
 
 
