@@ -36,6 +36,7 @@
   <%@ page import="com.stratelia.silverpeas.wysiwyg.*" %>
   <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode" %>
   <%@ page import="com.silverpeas.util.StringUtil"%>
+  <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement"%>
 <%
   //initialisation des variables
   String objectId    	= request.getParameter("ObjectId");
@@ -60,6 +61,11 @@
 					  content 	= WysiwygController.load(componentId, objectId, language);
 				  }
 			  }
+		  }
+		  //dynamic value functionnality : check if active and try to replace the keys by their values
+		  if(DynamicValueReplacement.isActivate()){
+		    DynamicValueReplacement replacement = new DynamicValueReplacement();
+		    content = replacement.replaceKeyByValue(content);
 		  }
 		  out.println(content);
 	  }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="ConnectionInformation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="connectionType" type="xs:string" minOccurs="1" />
+				<xs:element name="JndiName" type="xs:string" minOccurs="0" />
+				<xs:element name="driver" type="xs:int" minOccurs="0" />
+				<xs:element name="url" type="xs:string" minOccurs="0" />
+				<xs:element name="user" type="xs:string" minOccurs="0" />
+				<xs:element name="password" type="xs:string" minOccurs="0" />
+				<xs:element name="numTestsPerEvictionRun" type="xs:boolean" minOccurs="0" />
+				<xs:element name="maxActive" type="xs:int" minOccurs="0" />
+				<xs:element name="maxIdle" type="xs:int" minOccurs="0" />
+				<xs:element name="maxWait" type="xs:long" minOccurs="0" />
+				<xs:element name="timeBetweenEvictionRunsMillis" type="xs:long" minOccurs="0" />
+				<xs:element name="minEvictableIdleTimeMillis" type="xs:long" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

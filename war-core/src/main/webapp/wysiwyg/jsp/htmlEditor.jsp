@@ -45,6 +45,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement" %>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Iterator"%>
@@ -369,6 +370,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		if (index != 0 && str != null)
 				oEditor.InsertHtml('<a href="'+str+'">'+str.substring(str.lastIndexOf("/")+1)+"</a>");
 	}
+
+	function chooseDynamicValues(){
+		oEditor.Focus();
+		index = document.recupHtml.dynamicValues.selectedIndex;
+		var str = document.recupHtml.dynamicValues.options[index].value;
+		if (index != 0 && str != null){		   
+				oEditor.InsertHtml('#{'+str+'}');
+		}
+	}
 </script>
 
 <%
@@ -412,6 +422,12 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 							%>
 						</select>
 						<%
+					}
+				%>
+				<%-- code adding for dynamic value functionnality --%>
+				<%
+					if(DynamicValueReplacement.isActivate()){
+					  out.println(DynamicValueReplacement.buildHTMLSelect(language));
 					}
 				%>
 				<%

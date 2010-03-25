@@ -41,6 +41,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -153,9 +154,20 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         contentLanguage);
 
     if (template.isDisabled() || template.isReadOnly()) {
+      // dynamic value functionality
+      if (DynamicValueReplacement.isActivate()) {
+        DynamicValueReplacement replacement = new DynamicValueReplacement();
+        code = replacement.replaceKeyByValue(code);
+      }
       out.println(code);
     } else {
       out.println("<TABLE>");
+      // dynamic value functionality
+      if (DynamicValueReplacement.isActivate()) {
+        out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
+        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage()));
+        out.println("</td></tr>");
+      }
 
       out.println("<TR>");
 
