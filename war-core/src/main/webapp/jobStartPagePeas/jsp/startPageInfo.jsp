@@ -58,10 +58,10 @@
 	
     if (m_SpaceExtraInfos.isAdmin)
     {
+      	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onClick=updateSpace(750, 350)");
+      	operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('UpdateJobStartPage', 740, 600)");
         if (isUserAdmin || (m_SubSpace != null))
         {
-            operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onClick=updateSpace(750, 350)");
-            operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('UpdateJobStartPage', 740, 600)");
             operationPane.addOperation(resource.getIcon("JSPP.SpaceOrder"),resource.getString("JSPP.SpaceOrder"),"javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)");
         }
         
@@ -150,16 +150,14 @@ function openPopup(action, larg, haut)
 		    	setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>\";", 500);
 			}
 		}
-		
+	<% } %>
 		function updateSpace(larg, haut) 
 		{
 			windowName = "actionWindow";
 			windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
 			actionWindow = SP_openWindow("UpdateSpace?Translation="+currentLanguage, windowName, larg, haut, windowParams, false);
 		}
-<% }
-  }
-%>
+<% } %>
 
 function clipboardPaste() {
     top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
