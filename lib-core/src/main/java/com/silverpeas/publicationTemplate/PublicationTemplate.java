@@ -39,6 +39,8 @@ import com.silverpeas.form.RecordTemplate;
  */
 public interface PublicationTemplate {
 
+  public static final String DEFAULT_THUMBNAIL = "/weblib/xmlForms/model1.gif";
+
   /**
    * Returns the RecordTemplate of the publication data item.
    */
