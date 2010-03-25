@@ -704,7 +704,11 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getBrowseBar()",
           "viewgenerator.EX_CANT_GET_BROWSE_BAR", "", e);
-      return new BrowseBarComplete();
+      
+      BrowseBar browseBar = new BrowseBarComplete();
+      browseBar.setComponentId(componentId);
+      browseBar.setMainSessionController(mainSessionController);
+      return browseBar;
     }
   }
 
