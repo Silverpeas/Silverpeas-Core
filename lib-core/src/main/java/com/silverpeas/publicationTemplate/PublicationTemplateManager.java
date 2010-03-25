@@ -324,8 +324,16 @@ public class PublicationTemplateManager {
     PublicationTemplate template = null;
     while (iterator.hasNext()) {
       template = iterator.next();
-      if (template.getSearchForm() != null)
-        searchableTemplates.add(template);
+      try {
+        if (template.getSearchForm() != null) {
+          searchableTemplates.add(template);
+        }
+      } catch (PublicationTemplateException e) {
+        // Catch exception here in case of one of searchable form is malformed
+        // Valid forms must be displayed in search screen
+        SilverTrace.warn("form", "PublicationTemplateManager.getSearchablePublicationTemplates",
+            "form.ERROR_ONE_ILL_FORM", template.getName() + " is malformed");
+      }
     }
 
     return searchableTemplates;
