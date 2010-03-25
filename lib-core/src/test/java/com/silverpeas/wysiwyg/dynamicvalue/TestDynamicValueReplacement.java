@@ -42,7 +42,7 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    */
   @Test
   public final void testBuildHTMLSelect() {
-    String select = DynamicValueReplacement.buildHTMLSelect("fr");
+    String select = DynamicValueReplacement.buildHTMLSelect("fr", "default");
     assertTrue(select.contains("java_version") && select.contains("version"));
   }
 

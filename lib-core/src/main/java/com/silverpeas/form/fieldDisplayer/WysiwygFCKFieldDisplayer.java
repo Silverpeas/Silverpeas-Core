@@ -45,6 +45,7 @@ import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -107,7 +108,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
     out.println("oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
 
     out.println("var thecode = oEditor.GetHTML();");
-
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out
           .println("	if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
@@ -165,7 +165,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
-        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage()));
+        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName));
         out.println("</td></tr>");
       }
 
@@ -189,6 +189,22 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println("oFCKeditor.ToolbarSet = 'XMLForm';");
       out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = false;");
       out.println("oFCKeditor.ReplaceTextarea();");
+
+      // dynamic value functionality
+      if (DynamicValueReplacement.isActivate()) {
+
+        out.println("function chooseDynamicValues" +
+            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) + "(){");
+        out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
+        out.println("oEditor.Focus();");
+        out.println("index = document.getElementById(\"dynamicValues_" + fieldName +
+            "\").selectedIndex;");
+        out.println("var str = document.getElementById(\"dynamicValues_" + fieldName +
+            "\").options[index].value;");
+        out.println("if (index != 0 && str != null){");
+        out.println("oEditor.InsertHtml('#{'+str+'}');");
+        out.println("} }");
+      }
       out.println("</script>");
 
       if (template.isMandatory() && pageContext.useMandatory()) {

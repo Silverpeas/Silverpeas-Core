@@ -371,7 +371,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				oEditor.InsertHtml('<a href="'+str+'">'+str.substring(str.lastIndexOf("/")+1)+"</a>");
 	}
 
-	function chooseDynamicValues(){
+	function chooseDynamicValuesdefault(){
 		oEditor.Focus();
 		index = document.recupHtml.dynamicValues.selectedIndex;
 		var str = document.recupHtml.dynamicValues.options[index].value;
@@ -427,7 +427,7 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 				<%-- code adding for dynamic value functionnality --%>
 				<%
 					if(DynamicValueReplacement.isActivate()){
-					  out.println(DynamicValueReplacement.buildHTMLSelect(language));
+					  out.println(DynamicValueReplacement.buildHTMLSelect(language,"default"));
 					}
 				%>
 				<%

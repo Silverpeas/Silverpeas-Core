@@ -35,6 +35,7 @@ import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -58,9 +59,12 @@ public class DynamicValueReplacement {
 
   /**
    * gets the list of valid DynamicValue object and build the HTML code to display the HTML select
+   * @param language used to display information in correct language
+   * @param fieldName name of the html field to allow using the generating code html with page
+   * contained many HTML editor
    * @return String which contains HTML code
    */
-  public static String buildHTMLSelect(String language) {
+  public static String buildHTMLSelect(String language, String fieldName) {
     // local variable initialization
     String HTMLCodeFramgment = "";
     List<DynamicValue> list = null;
@@ -94,7 +98,10 @@ public class DynamicValueReplacement {
         // build the HTML select
         builder
             .append(
-                " <select id=\"dynamicValues\" name=\"dynamicValues\" onchange=\"chooseDynamicValues();this.selectedIndex=0;\">")
+            " <select id=\"dynamicValues_").append(fieldName).append(
+            "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues" +
+                FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
+                "();this.selectedIndex=0;\">")
             .append("<option value=\"\">" + firstOption + "</option>");
         for (Iterator<DynamicValue> iterator = list.iterator(); iterator.hasNext();) {
           dynamicValue = iterator.next();
