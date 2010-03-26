@@ -335,6 +335,7 @@ void displayActions(AttachmentDetail attachment, boolean useXMLForm, boolean use
 				out.print(" / ");
 			if (showDownloadEstimation)
 				out.print(attachmentDetail.getAttachmentDownloadEstimation(contentLanguage));
+			out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreationDate()));
 			out.println("</span>");
 		    if (StringUtil.isDefined(attachmentDetail.getTitle(contentLanguage)) && showTitle)
 			    out.println("<br/>"+attachmentDetail.getLogicalName(contentLanguage));

@@ -175,7 +175,10 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 				if (document.getStatus()==Document.STATUS_CHECKOUTED)
 				{
 				  	//réservé
-					out.println("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
+				  	if (useFileSharing) 
+					{
+						out.println("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
+					}
 					out.println("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
 					out.println("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
 					
@@ -363,24 +366,24 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								out.print("</span>");
 							
 								out.println("<span class=\"lineSize\">");
-										if (showFileSize && showDownloadEstimation)
-										{
+								if (showFileSize && showDownloadEstimation)
+								{
 									out.println(FileRepositoryManager.formatFileSize(document_version.getSize()));
 									out.println(" / " + versioning_util.getDownloadEstimation(document_version.getSize()));
-	
-										}
-										else
-										{
+								}
+								else
+								{
 									if (showFileSize)
 										out.println(FileRepositoryManager.formatFileSize(document_version.getSize()));
 									if (showDownloadEstimation)
 										out.println(versioning_util.getDownloadEstimation(document_version.getSize()));
-										}
+								}
+								out.println(" - " + resources.getOutputDate(document_version.getCreationDate()));
 								out.println("</span>");
 								if (StringUtil.isDefined(document.getDescription()) && showInfo)
 									out.println("<br/><i>"+Encode.javaStringToHtmlParagraphe(document.getDescription())+"</i>");
 									
-									if (document_version.isSpinfireDocument() && spinfireViewerEnable)
+								if (document_version.isSpinfireDocument() && spinfireViewerEnable)
 							    {
 									    %>
 								    	<div id="switchView" name="switchView" style="display: none">
@@ -404,16 +407,26 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 										</div>
 										<%
 							    }							   
-									if (StringUtil.isDefined(document_version.getXmlForm()))
-									{
-										String xmlURL = m_context+"/RformTemplate/jsp/View?width=400&ObjectId="+document_version.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(document_version.getXmlForm());
-										%>
-										<br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString("versioning.xmlForm.View")%></a>
-										<%
-									}
-								if ((!profile.equals("user") && (document_version.getMajorNumber() > 1 || document_version.getMinorNumber() >= 1)) || (profile.equals("user") && document_version.getMajorNumber() > 1)) { %>
-				            	 <br/>>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a><br>
-					       <% } %>
+								if (StringUtil.isDefined(document_version.getXmlForm()))
+								{
+									String xmlURL = m_context+"/RformTemplate/jsp/View?width=400&ObjectId="+document_version.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(document_version.getXmlForm());
+									%>
+									<br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString("versioning.xmlForm.View")%></a>
+									<%
+								}
+								boolean displayAllVersionsLink = false;  
+								if ("user".equals(profile) && document_version.getMajorNumber() > 1)
+								{
+									displayAllVersionsLink = true;
+								}
+								else if (!profile.equals("user") && (document_version.getMajorNumber() > 1 || (document_version.getMajorNumber() == 0 && document_version.getMinorNumber() > 1) || (document_version.getMajorNumber() == 1 && document_version.getMinorNumber() >= 1)))
+								{
+								  	displayAllVersionsLink = true;
+								}
+								%>
+								<% if (displayAllVersionsLink) { %>
+									<br/>>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a><br/>
+								<% } %>
 							</li>
 			<%
 				        }
