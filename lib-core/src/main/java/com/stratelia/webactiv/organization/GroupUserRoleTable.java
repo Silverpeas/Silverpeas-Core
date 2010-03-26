@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -253,6 +254,10 @@ public class GroupUserRoleTable extends Table {
 
     insert.setInt(1, usr.id);
     insert.setInt(2, usr.groupId);
+    if (!StringUtil.isDefined(usr.roleName)) {
+      // column "rolename" is not null
+      usr.roleName = "useless";
+    }
     insert.setString(3, usr.roleName);
   }
 
