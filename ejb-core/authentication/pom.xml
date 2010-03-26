@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>1.0-RC3-SNAPSHOT</version>
+    <version>1.0-RC3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>authentication</artifactId>
-  <version>1.0-RC3-SNAPSHOT</version>
+  <version>1.0-RC3</version>
   <packaging>ejb</packaging>
   <name>EJB Authentication</name>
 </project>
