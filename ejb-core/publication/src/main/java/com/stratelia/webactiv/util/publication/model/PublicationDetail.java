@@ -64,7 +64,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     Serializable {
 
   private static final long serialVersionUID = 9199848912262605680L;
-  
+
   private PublicationPK pk;
   private String infoId;
   private String name;

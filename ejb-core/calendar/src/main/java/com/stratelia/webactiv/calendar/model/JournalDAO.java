@@ -42,9 +42,11 @@ import java.util.List;
 
 public class JournalDAO {
 
-  public static final String COLUMNNAMES = "id, name, delegatorId, description, priority, classification, startDay, startHour, endDay, endHour, externalId";
-  private static final String JOURNALCOLUMNNAMES = "CalendarJournal.id, CalendarJournal.name, CalendarJournal.delegatorId, CalendarJournal.description, CalendarJournal.priority, "
-      + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
+  public static final String COLUMNNAMES =
+      "id, name, delegatorId, description, priority, classification, startDay, startHour, endDay, endHour, externalId";
+  private static final String JOURNALCOLUMNNAMES =
+      "CalendarJournal.id, CalendarJournal.name, CalendarJournal.delegatorId, CalendarJournal.description, CalendarJournal.priority, "
+          + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
 
   private static final String INSERT_JOURNAL = "INSERT INTO CalendarJournal ("
       + COLUMNNAMES + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -192,7 +194,7 @@ public class JournalDAO {
 
     selectStatement.append(" and ((startDay ").append(comparator).append(" '")
         .append(day).append("') or (startDay <= '").append(day).append(
-            "' and endDay >= '").append(day).append("')) ");
+        "' and endDay >= '").append(day).append("')) ");
 
     if (participation.equals(ParticipationStatus.ACCEPTED)) {
       selectStatement.append("union ").append("select distinct ").append(
@@ -449,7 +451,7 @@ public class JournalDAO {
         throw new CalendarException(
             "JournalDAO.Connection con, String journalId",
             SilverpeasException.ERROR, "calendar.EX_RS_EMPTY", "journalId="
-                + journalId);
+            + journalId);
       }
       return journal;
     } finally {

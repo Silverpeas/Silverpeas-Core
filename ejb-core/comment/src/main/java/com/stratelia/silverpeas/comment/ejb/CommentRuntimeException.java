@@ -78,8 +78,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class CommentRuntimeException extends SilverpeasRuntimeException {
@@ -102,13 +100,10 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public CommentRuntimeException(String callingClass, int errorLevel,
@@ -118,13 +113,10 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public CommentRuntimeException(String callingClass, int errorLevel,
@@ -134,14 +126,11 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public CommentRuntimeException(String callingClass, int errorLevel,

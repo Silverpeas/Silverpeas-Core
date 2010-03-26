@@ -30,7 +30,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 public class Alias extends NodePK {
 
   private static final long serialVersionUID = 6640210341762444143L;
-  
+
   private String userId = null;
   private Date date = null;
 

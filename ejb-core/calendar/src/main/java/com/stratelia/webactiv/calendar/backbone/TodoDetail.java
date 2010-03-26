@@ -74,8 +74,7 @@ public class TodoDetail implements Serializable {
   }
 
   /**
-   * @param attendees
-   *          a list of Attendee objects
+   * @param attendees a list of Attendee objects
    */
 
   public void setAttendees(Vector attendees) {

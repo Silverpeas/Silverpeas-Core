@@ -43,7 +43,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * @author neysseri
- * 
  */
 public class HolidaysDAO {
 
@@ -166,7 +165,7 @@ public class HolidaysDAO {
 
     SilverTrace.info("calendar", "HolidaysDAO.getHolidayDates()",
         "root.MSG_GEN_PARAM_VALUE", "userId = " + userId + ", beginDate="
-            + beginDate.toString() + ", endDate=" + endDate.toString());
+        + beginDate.toString() + ", endDate=" + endDate.toString());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;

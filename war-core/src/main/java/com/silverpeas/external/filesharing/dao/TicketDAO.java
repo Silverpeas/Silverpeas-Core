@@ -65,7 +65,7 @@ public class TicketDAO {
   }
 
   public List<TicketDetail> getTicketsByComponentIds(Connection con, List<String> componentIds)
-          throws SQLException {
+      throws SQLException {
     // récupérer toutes les tickets d'un utilisateur
     ArrayList<TicketDetail> tickets = null;
 
@@ -119,7 +119,7 @@ public class TicketDAO {
   }
 
   public void deleteTicketsByFile(Connection con, String fileId, boolean versioning)
-          throws SQLException {
+      throws SQLException {
     String query = "select keyFile from SB_fileSharing_ticket where fileId = ? and versioning = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -172,7 +172,7 @@ public class TicketDAO {
       Date today = new Date();
       // création de la requête
       String query =
-              "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"
+          "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"
               + " values (?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
@@ -209,7 +209,7 @@ public class TicketDAO {
     try {
       Date today = new Date();
       String query =
-              "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , "
+          "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , "
               + "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
@@ -239,13 +239,13 @@ public class TicketDAO {
   }
 
   public void addDownload(Connection con, DownloadDetail download) throws SQLException,
-          UtilException {
+      UtilException {
     // Ajout d'un téléchargement
     PreparedStatement prepStmt = null;
     try {
       // création de la requête
       String query = "insert into SB_fileSharing_history (id, keyfile, downloadDate, downloadIp)"
-              + " values (?,?,?,?)";
+          + " values (?,?,?,?)";
       // initialisation des paramètres
       int id = DBUtil.getNextId("SB_fileSharing_history", "id");
       prepStmt = con.prepareStatement(query);

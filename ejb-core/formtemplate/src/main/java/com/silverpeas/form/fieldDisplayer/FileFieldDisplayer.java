@@ -175,8 +175,8 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
           "<INPUT type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\">";
       html +=
           "<INPUT type=\"hidden\" id=\"" + fieldName + FileField.PARAM_NAME_SUFFIX + " name=\"" +
-              fieldName + FileField.PARAM_NAME_SUFFIX +
-              "\" value=\"" + attachmentId + "\">";
+          fieldName + FileField.PARAM_NAME_SUFFIX +
+          "\" value=\"" + attachmentId + "\">";
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");

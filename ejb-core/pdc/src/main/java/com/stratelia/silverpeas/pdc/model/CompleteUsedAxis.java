@@ -25,8 +25,7 @@ package com.stratelia.silverpeas.pdc.model;
 
 import com.stratelia.webactiv.persistence.*;
 
-public class CompleteUsedAxis extends SilverpeasBean implements
-    java.io.Serializable {
+public class CompleteUsedAxis extends SilverpeasBean implements java.io.Serializable {
 
   private Axis axis = null;
   private UsedAxis usedAxis = null;

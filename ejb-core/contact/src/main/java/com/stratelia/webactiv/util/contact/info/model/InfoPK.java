@@ -63,9 +63,7 @@ public class InfoPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

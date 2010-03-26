@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 public class StatisticResultDetail implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  
+
   private WAPrimaryKey pk;
   private String result;
   private Object detail = null;

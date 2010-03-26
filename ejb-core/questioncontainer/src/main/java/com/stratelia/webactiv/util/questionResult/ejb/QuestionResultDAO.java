@@ -76,338 +76,303 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeExc
 
 /**
  * This class is made to access database only (table SB_Question_Answer)
- *
  * @author neysseri
  */
-public class QuestionResultDAO
-{
+public class QuestionResultDAO {
 
-	public static final String QUESTIONRESULTCOLUMNNAMES =
-		"qrId, questionId, userId, answerId, qrOpenAnswer, qrNbPoints, qrPollDate, qrElapsedTime, qrParticipationId";
-	private static SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
+  public static final String QUESTIONRESULTCOLUMNNAMES =
+      "qrId, questionId, userId, answerId, qrOpenAnswer, qrNbPoints, qrPollDate, qrElapsedTime, qrParticipationId";
+  private static SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
 
-	private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
-		throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.getQuestionResultFromResultSet()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"questionPK =" + questionPK);
-		String id = new Integer(rs.getInt(1)).toString();
-		String questionId = new Integer(rs.getInt(2)).toString();
-		String userId = rs.getString(3);
-		String answerId = new Integer(rs.getInt(4)).toString();
-		String openAnswer = rs.getString(5);
-		int nbPoints = rs.getInt(6);
-		String pollDate = rs.getString(7);
-		int elapsedTime = rs.getInt(8);
-		int participationId = rs.getInt(9);
-		QuestionResult result =
-			new QuestionResult(
-				new QuestionResultPK(id, questionPK),
-				new ForeignPK(questionId, questionPK),
-				new AnswerPK(answerId, questionPK),
-				userId,
-				openAnswer,
-				nbPoints,
-				pollDate,
-				elapsedTime,
-				participationId);
+  private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.getQuestionResultFromResultSet()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK);
+    String id = new Integer(rs.getInt(1)).toString();
+    String questionId = new Integer(rs.getInt(2)).toString();
+    String userId = rs.getString(3);
+    String answerId = new Integer(rs.getInt(4)).toString();
+    String openAnswer = rs.getString(5);
+    int nbPoints = rs.getInt(6);
+    String pollDate = rs.getString(7);
+    int elapsedTime = rs.getInt(8);
+    int participationId = rs.getInt(9);
+    QuestionResult result =
+        new QuestionResult(
+        new QuestionResultPK(id, questionPK),
+        new ForeignPK(questionId, questionPK),
+        new AnswerPK(answerId, questionPK),
+        userId,
+        openAnswer,
+        nbPoints,
+        pollDate,
+        elapsedTime,
+        participationId);
 
-		return result;
-	}
+    return result;
+  }
 
-	public static Collection getUserQuestionResultsToQuestion(Connection con, String userId, ForeignPK questionPK)
-		throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.getUserQuestionResultsToQuestion()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"userId = " + userId + ", questionPK =" + questionPK);
-		ResultSet rs = null;
-		QuestionResult questionResult = null;
-		String tableName = new QuestionResultPK("", questionPK).getTableName();
+  public static Collection getUserQuestionResultsToQuestion(Connection con, String userId,
+      ForeignPK questionPK)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.getUserQuestionResultsToQuestion()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "userId = " + userId + ", questionPK =" + questionPK);
+    ResultSet rs = null;
+    QuestionResult questionResult = null;
+    String tableName = new QuestionResultPK("", questionPK).getTableName();
 
-		String selectStatement =
-			"select "
-				+ QUESTIONRESULTCOLUMNNAMES
-				+ " from "
-				+ tableName
-				+ " where questionId = ? "
-				+ " and userId = ? order By answerId";
+    String selectStatement =
+        "select "
+        + QUESTIONRESULTCOLUMNNAMES
+        + " from "
+        + tableName
+        + " where questionId = ? "
+        + " and userId = ? order By answerId";
 
+    PreparedStatement prepStmt = null;
 
-		PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setString(2, userId);
+      rs = prepStmt.executeQuery();
+      ArrayList result = new ArrayList();
+      while (rs.next()) {
+        questionResult = getQuestionResultFromResultSet(rs, questionPK);
+        result.add(questionResult);
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 
-		try
-		{
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
-			prepStmt.setString(2, userId);
-			rs = prepStmt.executeQuery();
-			ArrayList result = new ArrayList();
-			while (rs.next())
-			{
-				questionResult = getQuestionResultFromResultSet(rs, questionPK);
-				result.add(questionResult);
-			}
-			return result;
-		}
-		finally
-		{
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+  public static Collection<String> getUsersByAnswer(Connection con, String answerId)
+      throws SQLException {
+    SilverTrace.info("questionResult", "QuestionResultDAO.getUserQuestionResultsToQuestion()",
+        "root.MSG_GEN_ENTER_METHOD", "answerId = " + answerId);
+    ResultSet rs = null;
+    String tableName = "SB_Question_QuestionResult";
 
-	public static Collection<String> getUsersByAnswer(Connection con, String answerId) throws SQLException
-	{
-		SilverTrace.info("questionResult", "QuestionResultDAO.getUserQuestionResultsToQuestion()", "root.MSG_GEN_ENTER_METHOD", "answerId = " + answerId);
-		ResultSet rs = null;
-		String tableName = "SB_Question_QuestionResult";
+    String selectStatement = "select userId from " + tableName + " where answerId = ? ";
+    PreparedStatement prepStmt = null;
 
-		String selectStatement = "select userId from " + tableName + " where answerId = ? ";
-		PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, new Integer(answerId).intValue());
+      rs = prepStmt.executeQuery();
+      ArrayList<String> result = new ArrayList<String>();
+      String userId;
+      while (rs.next()) {
+        userId = rs.getString(1);
+        result.add(userId);
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 
-		try
-		{
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setInt(1, new Integer(answerId).intValue());
-			rs = prepStmt.executeQuery();
-			ArrayList<String> result = new ArrayList<String>();
-			String userId;
-			while (rs.next())
-			{
-				userId = rs.getString(1);
-				result.add(userId);
-			}
-			return result;
-		}
-		finally
-		{
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+  public static Collection getUserQuestionResultsToQuestionByParticipation(
+      Connection con,
+      String userId,
+      ForeignPK questionPK,
+      int participationId)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.getUserQuestionResultsToQuestionByParticipation()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "userId = " + userId + ", questionPK =" + questionPK + ", participationId = " +
+        participationId);
+    ResultSet rs = null;
+    QuestionResult questionResult = null;
+    String tableName = new QuestionResultPK("", questionPK).getTableName();
 
-	public static Collection getUserQuestionResultsToQuestionByParticipation(
-		Connection con,
-		String userId,
-		ForeignPK questionPK,
-		int participationId)
-		throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.getUserQuestionResultsToQuestionByParticipation()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"userId = " + userId + ", questionPK =" + questionPK + ", participationId = " + participationId);
-		ResultSet rs = null;
-		QuestionResult questionResult = null;
-		String tableName = new QuestionResultPK("", questionPK).getTableName();
+    String selectStatement =
+        "select "
+        + QUESTIONRESULTCOLUMNNAMES
+        + " from "
+        + tableName
+        + " where questionId = ? "
+        + " and userId = ? "
+        + " and qrParticipationId = ? ";
 
-		String selectStatement =
-			"select "
-				+ QUESTIONRESULTCOLUMNNAMES
-				+ " from "
-				+ tableName
-				+ " where questionId = ? "
-				+ " and userId = ? "
-				+ " and qrParticipationId = ? ";
+    PreparedStatement prepStmt = null;
 
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setString(2, userId);
+      prepStmt.setInt(3, participationId);
+      rs = prepStmt.executeQuery();
+      ArrayList result = new ArrayList();
+      while (rs.next()) {
+        questionResult = getQuestionResultFromResultSet(rs, questionPK);
+        result.add(questionResult);
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 
-		PreparedStatement prepStmt = null;
+  public static Collection getQuestionResultToQuestion(Connection con, ForeignPK questionPK)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.getQuestionResultToQuestion()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK);
+    ResultSet rs = null;
+    QuestionResult questionResult = null;
+    String tableName = new QuestionResultPK("", questionPK).getTableName();
 
-		try
-		{
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
-			prepStmt.setString(2, userId);
-			prepStmt.setInt(3, participationId);
-			rs = prepStmt.executeQuery();
-			ArrayList result = new ArrayList();
-			while (rs.next())
-			{
-				questionResult = getQuestionResultFromResultSet(rs, questionPK);
-				result.add(questionResult);
-			}
-			return result;
-		}
-		finally
-		{
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+    String selectStatement =
+        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? ";
 
-	public static Collection getQuestionResultToQuestion(Connection con, ForeignPK questionPK) throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.getQuestionResultToQuestion()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"questionPK =" + questionPK);
-		ResultSet rs = null;
-		QuestionResult questionResult = null;
-		String tableName = new QuestionResultPK("", questionPK).getTableName();
+    PreparedStatement prepStmt = null;
 
-		String selectStatement =
-			"select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? ";
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      rs = prepStmt.executeQuery();
+      ArrayList result = new ArrayList();
+      while (rs.next()) {
+        questionResult = getQuestionResultFromResultSet(rs, questionPK);
+        result.add(questionResult);
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 
-		PreparedStatement prepStmt = null;
+  public static Collection getQuestionResultToQuestionByParticipation(
+      Connection con,
+      ForeignPK questionPK,
+      int participationId)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.getQuestionResultToQuestionByParticipation()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK + ", participationId = " + participationId);
+    ResultSet rs = null;
+    QuestionResult questionResult = null;
+    String tableName = new QuestionResultPK("", questionPK).getTableName();
 
-		try
-		{
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
-			rs = prepStmt.executeQuery();
-			ArrayList result = new ArrayList();
-			while (rs.next())
-			{
-				questionResult = getQuestionResultFromResultSet(rs, questionPK);
-				result.add(questionResult);
-			}
-			return result;
-		}
-		finally
-		{
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+    String selectStatement =
+        "select "
+        + QUESTIONRESULTCOLUMNNAMES
+        + " from "
+        + tableName
+        + " where questionId = ? "
+        + " and qrParticipationId = ? ";
 
-	public static Collection getQuestionResultToQuestionByParticipation(
-		Connection con,
-		ForeignPK questionPK,
-		int participationId)
-		throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.getQuestionResultToQuestionByParticipation()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"questionPK =" + questionPK + ", participationId = " + participationId);
-		ResultSet rs = null;
-		QuestionResult questionResult = null;
-		String tableName = new QuestionResultPK("", questionPK).getTableName();
+    PreparedStatement prepStmt = null;
 
-		String selectStatement =
-			"select "
-				+ QUESTIONRESULTCOLUMNNAMES
-				+ " from "
-				+ tableName
-				+ " where questionId = ? "
-				+ " and qrParticipationId = ? ";
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(2, participationId);
+      rs = prepStmt.executeQuery();
+      ArrayList result = new ArrayList();
+      while (rs.next()) {
+        questionResult = getQuestionResultFromResultSet(rs, questionPK);
+        result.add(questionResult);
+      }
+      return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
 
-		PreparedStatement prepStmt = null;
+  public static void setQuestionResultToUser(Connection con, QuestionResult result)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.setQuestionResultToUser()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "questionResult =" + result);
 
-		try
-		{
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
-			prepStmt.setInt(2, participationId);
-			rs = prepStmt.executeQuery();
-			ArrayList result = new ArrayList();
-			while (rs.next())
-			{
-				questionResult = getQuestionResultFromResultSet(rs, questionPK);
-				result.add(questionResult);
-			}
-			return result;
-		}
-		finally
-		{
-			DBUtil.close(rs, prepStmt);
-		}
-	}
+    int newId = 0;
+    String tableName = new QuestionResultPK("", result.getQuestionPK()).getTableName();
+    String questionId = result.getQuestionPK().getId();
+    String answerId = result.getAnswerPK().getId();
+    String userId = result.getUserId();
+    String openAnswer = result.getOpenedAnswer();
+    int nbPoints = result.getNbPoints();
+    String voteDate = result.getVoteDate();
 
-	public static void setQuestionResultToUser(Connection con, QuestionResult result) throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.setQuestionResultToUser()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"questionResult =" + result);
+    if (voteDate == null) {
+      voteDate = formatter.format(new java.util.Date());
+    }
+    int elapsedTime = result.getElapsedTime();
+    int participationId = result.getParticipationId();
 
-		int newId = 0;
-		String tableName = new QuestionResultPK("", result.getQuestionPK()).getTableName();
-		String questionId = result.getQuestionPK().getId();
-		String answerId = result.getAnswerPK().getId();
-		String userId = result.getUserId();
-		String openAnswer = result.getOpenedAnswer();
-		int nbPoints = result.getNbPoints();
-		String voteDate = result.getVoteDate();
+    try {
+      /* Recherche de la nouvelle PK de la table */
+      newId = DBUtil.getNextId(tableName, new String("qrId"));
+    } catch (UtilException ue) {
+      throw new QuestionResultRuntimeException(
+          "QuestionResultDAO.setQuestionResultToUser()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_GET_NEXTID_FAILED",
+          ue);
+    }
 
-		if (voteDate == null)
-		{
-			voteDate = formatter.format(new java.util.Date());
-		}
-		int elapsedTime = result.getElapsedTime();
-		int participationId = result.getParticipationId();
+    String selectStatement = "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		try
-		{
-			/* Recherche de la nouvelle PK de la table */
-			newId = DBUtil.getNextId(tableName, new String("qrId"));
-		}
-		catch (UtilException ue)
-		{
-			throw new QuestionResultRuntimeException(
-				"QuestionResultDAO.setQuestionResultToUser()",
-				SilverpeasRuntimeException.ERROR,
-				"root.EX_GET_NEXTID_FAILED",
-				ue);
-		}
+    PreparedStatement prepStmt = null;
 
-		String selectStatement = "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, newId);
+      prepStmt.setInt(2, new Integer(questionId).intValue());
+      prepStmt.setString(3, userId);
+      prepStmt.setInt(4, new Integer(answerId).intValue());
+      prepStmt.setString(5, openAnswer);
+      prepStmt.setInt(6, nbPoints);
+      prepStmt.setString(7, voteDate);
+      prepStmt.setInt(8, elapsedTime);
+      prepStmt.setInt(9, participationId);
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
-		PreparedStatement prepStmt = null;
+  public static void setQuestionResultsToUser(Connection con, Collection results) {
+  }
 
-		try
-		{
-			prepStmt = con.prepareStatement(selectStatement);
-			prepStmt.setInt(1, newId);
-			prepStmt.setInt(2, new Integer(questionId).intValue());
-			prepStmt.setString(3, userId);
-			prepStmt.setInt(4, new Integer(answerId).intValue());
-			prepStmt.setString(5, openAnswer);
-			prepStmt.setInt(6, nbPoints);
-			prepStmt.setString(7, voteDate);
-			prepStmt.setInt(8, elapsedTime);
-			prepStmt.setInt(9, participationId);
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			DBUtil.close(prepStmt);
-		}
-	}
+  public static void deleteQuestionResultToQuestion(Connection con, ForeignPK questionPK)
+      throws SQLException {
+    SilverTrace.info(
+        "questionResult",
+        "QuestionResultDAO.deleteQuestionResultToQuestion()",
+        "root.MSG_GEN_ENTER_METHOD",
+        "questionPK =" + questionPK);
+    QuestionResultPK questionResultPK = new QuestionResultPK("unknown", questionPK);
 
-	public static void setQuestionResultsToUser(Connection con, Collection results)
-	{
-	}
+    String deleteStatement =
+        "delete from " + questionResultPK.getTableName() + " where questionId = ? ";
 
-	public static void deleteQuestionResultToQuestion(Connection con, ForeignPK questionPK) throws SQLException
-	{
-		SilverTrace.info(
-			"questionResult",
-			"QuestionResultDAO.deleteQuestionResultToQuestion()",
-			"root.MSG_GEN_ENTER_METHOD",
-			"questionPK =" + questionPK);
-		QuestionResultPK questionResultPK = new QuestionResultPK("unknown", questionPK);
+    PreparedStatement prepStmt = null;
 
-		String deleteStatement = "delete from " + questionResultPK.getTableName() + " where questionId = ? ";
-
-		PreparedStatement prepStmt = null;
-
-		try
-		{
-			prepStmt = con.prepareStatement(deleteStatement);
-			prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
-			prepStmt.executeUpdate();
-		}
-		finally
-		{
-			DBUtil.close(prepStmt);
-		}
-	}
+    try {
+      prepStmt = con.prepareStatement(deleteStatement);
+      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
 
 }

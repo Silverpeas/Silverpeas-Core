@@ -224,10 +224,10 @@ public class QueryParameters implements java.io.Serializable {
     return param != null && !"".equals(param.trim())
         && !"null".equals(param.trim());
   }
-	public boolean isDefined()
-	{
+
+  public boolean isDefined() {
     return StringUtil.isDefined(keywords) || StringUtil.isDefined(afterdate) ||
         StringUtil.isDefined(beforedate) || StringUtil.isDefined(creatorId) ||
         StringUtil.isDefined(spaceId);
-	}
+  }
 }

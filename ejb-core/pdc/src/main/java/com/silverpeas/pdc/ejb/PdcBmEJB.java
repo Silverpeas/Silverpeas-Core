@@ -77,7 +77,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       // get the silverContentids classified in the context
       silverContentIds.addAll(getPdcBm()
           .findSilverContentIdByPosition(containerPosition, componentIds,
-              recursiveSearch, visibilitySensitive));
+          recursiveSearch, visibilitySensitive));
     } catch (ContainerManagerException c) {
       throw new PdcBmRuntimeException("PdcBmEJB.findGlobalSilverContents",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
@@ -228,7 +228,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
             .getSilverContentIdByInstanceId(instanceId);
         SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
             "root.MSG_GEN_PARAM_VALUE", "allSilverContentIds = "
-                + allSilverContentIds + " in instance " + instanceId);
+            + allSilverContentIds + " in instance " + instanceId);
       } catch (ContentManagerException c) {
         throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentsByIds",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
@@ -267,7 +267,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     }
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
         "root.MSG_GEN_PARAM_VALUE", "silverContent size= "
-            + alSilverContents.size());
+        + alSilverContents.size());
 
     // replace old SilverContentId list by the new one, to assure the same order
     silverContentIds.clear();
@@ -275,13 +275,12 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
 
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
         "root.MSG_GEN_PARAM_VALUE", "silverContentIds = "
-            + silverContentIds.toString());
+        + silverContentIds.toString());
 
     return alSilverContents;
   }
 
   /*
-   * 
    * @return a List of GlobalSilverContent
    */
   private List transformSilverContentsToGlobalSilverContents(

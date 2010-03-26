@@ -38,7 +38,7 @@ import com.silverpeas.util.ForeignPK;
 public class HistoryObjectDetail implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  
+
   private Date date;
   private String userId;
   private ForeignPK foreignPK;

@@ -51,8 +51,6 @@ import javax.ejb.EJBObject;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface ScoreBm extends ScoreBmSkeleton, EJBObject {

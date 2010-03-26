@@ -37,25 +37,18 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author neysseri
  */
 public class CoordinatesDAO {
 
-  public static final String COORDINATESCOLUMNNAMES = "coordinatesId, nodeId, coordinatesLeaf,coordinatesDisplayOrder,instanceId";
+  public static final String COORDINATESCOLUMNNAMES =
+      "coordinatesId, nodeId, coordinatesLeaf,coordinatesDisplayOrder,instanceId";
 
   /**
    * Method declaration
-   * 
-   * 
-   * @param rs
-   *          the Resultset which contains data from database
-   * 
+   * @param rs the Resultset which contains data from database
    * @return a CoordinatePoint build with data from resultset
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static CoordinatePoint getCoordinatePointFromResultSet(ResultSet rs)
@@ -75,20 +68,11 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
-   * @param con
-   *          the Connection to database
-   * @param fatherIds
-   *          an ArrayList of nodeId
-   * @param pk
-   *          a CoordinatePK
-   * 
-   * @return an ArrayList which contains CoordinatePoint corresponding to
-   *         fatherIds
-   * 
+   * @param con the Connection to database
+   * @param fatherIds an ArrayList of nodeId
+   * @param pk a CoordinatePK
+   * @return an ArrayList which contains CoordinatePoint corresponding to fatherIds
    * @throws SQLException
-   * 
    * @see
    */
   private static ArrayList selectCoordinatePointsByNodeIds(Connection con,
@@ -137,15 +121,11 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param currentCoordinateId
    * @param fatherIds
    * @param toCheck
    * @param begin
-   * 
    * @return
-   * 
    * @see
    */
   private static int getNbMatchingCoordinates(int currentCoordinateId,
@@ -176,16 +156,11 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param fatherIds
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection selectByFatherIds(Connection con,
@@ -196,7 +171,7 @@ public class CoordinatesDAO {
 
     SilverTrace.info("coordinates", "CoordinatesDAO.selectByFatherIds()",
         "root.MSG_GEN_PARAM_VALUE", "fatherIds = " + fatherIds.toString()
-            + " | points = " + points.toString());
+        + " | points = " + points.toString());
 
     ArrayList toCheck = new ArrayList(points); // toCheck always contains points
     ArrayList coordinatePKs = new ArrayList(); // 
@@ -302,15 +277,11 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
    * @param point
    * @param coordinateId
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static void addCoordinatePoint(Connection con, CoordinatePK pk,
@@ -338,23 +309,18 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
    * @param coordinatePoints
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static int addCoordinate(Connection con, CoordinatePK pk,
       ArrayList coordinatePoints) throws SQLException {
     SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
-            + " and coordinatePoints = " + coordinatePoints.toString());
+        + " and coordinatePoints = " + coordinatePoints.toString());
 
     int coordinateId = getMaxCoordinateId(con, pk) + 1;
     Iterator it = coordinatePoints.iterator();
@@ -364,32 +330,28 @@ public class CoordinatesDAO {
       point = (CoordinatePoint) it.next();
       SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
           "root.MSG_GEN_PARAM_VALUE", "Try to insert point = "
-              + point.toString());
+          + point.toString());
       addCoordinatePoint(con, pk, point, coordinateId);
       SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
           "root.MSG_GEN_PARAM_VALUE", "insertion of point = "
-              + point.toString() + " succeeded !");
+          + point.toString() + " succeeded !");
     }
     return coordinateId;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
    * @param coordinateIds
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void removeCoordinates(Connection con, CoordinatePK pk,
       ArrayList coordinateIds) throws SQLException {
     SilverTrace.info("coordinates", "CoordinatesDAO.removeCoordinates()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
-            + " and coordinateIds = " + coordinateIds.toString());
+        + " and coordinateIds = " + coordinateIds.toString());
 
     String coordinateId = "";
     String whereClause = "";
@@ -424,14 +386,10 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
    * @param coordinatePoints
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void removeCoordinatesByPoints(Connection con, CoordinatePK pk,
@@ -439,7 +397,7 @@ public class CoordinatesDAO {
     SilverTrace.info("coordinates",
         "CoordinatesDAO.removeCoordinatesByPoints()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
-            + " and coordinatePoints = " + coordinatePoints.toString());
+        + " and coordinatePoints = " + coordinatePoints.toString());
 
     String pointId = "";
     String whereClause = "";
@@ -474,15 +432,10 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static int getMaxCoordinateId(Connection con, CoordinatePK pk)
@@ -511,15 +464,10 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static int getMaxDisplayOrder(Connection con, CoordinatePK pk)
@@ -548,15 +496,10 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Coordinate selectCoordinateByCoordinatePK(Connection con,
@@ -591,16 +534,11 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param coordinateIds
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static ArrayList selectCoordinatesByCoordinateIds(Connection con,
@@ -621,15 +559,10 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Collection getCoordinateIds(Connection con, CoordinatePK pk)
@@ -661,14 +594,10 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
    * @param point
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addPointToAllCoordinates(Connection con, CoordinatePK pk,
@@ -676,7 +605,7 @@ public class CoordinatesDAO {
     SilverTrace.info("coordinates",
         "CoordinatesDAO.addPointToAllCoordinates()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString() + " and point = "
-            + point.toString());
+        + point.toString());
 
     Collection coordinateIds = getCoordinateIds(con, pk);
     int maxDisplayOrder = getMaxDisplayOrder(con, pk);
@@ -693,16 +622,11 @@ public class CoordinatesDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param pk
    * @param nodeId
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getCoordinateIdsByNodeId(Connection con,

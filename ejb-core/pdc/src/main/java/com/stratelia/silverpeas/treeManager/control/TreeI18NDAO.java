@@ -37,8 +37,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class TreeI18NDAO {
@@ -49,8 +47,6 @@ public class TreeI18NDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TreeI18NDAO() {
@@ -86,7 +82,7 @@ public class TreeI18NDAO {
 
         SilverTrace.info("Pdc", "TreeI18NDAO.getTranslations",
             "root.MSG_GEN_PARAM_VALUE", "translation " + translation.getId()
-                + " for treeId = " + treeId + " and id =" + nodeId);
+            + " for treeId = " + treeId + " and id =" + nodeId);
         allTranslations.add(translation);
       }
     } finally {

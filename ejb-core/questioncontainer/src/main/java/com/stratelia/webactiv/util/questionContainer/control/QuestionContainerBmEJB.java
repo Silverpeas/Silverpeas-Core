@@ -126,8 +126,7 @@ import com.stratelia.webactiv.util.score.model.ScorePK;
  * Class declaration
  * @author neysseri
  */
-public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
-    SessionBean {
+public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, SessionBean {
 
   private QuestionBm currentQuestionBm = null;
   private QuestionResultBm currentQuestionResultBm = null;
@@ -1167,10 +1166,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
     Connection con = null;
     ScorePK scorePK =
         new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
-            questionContainerPK.getComponentName());
+        questionContainerPK.getComponentName());
     QuestionPK questionPK =
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
-            questionContainerPK.getComponentName());
+        questionContainerPK.getComponentName());
     QuestionBm questionBm = getQuestionBm();
     ScoreBm scoreBm = getScoreBm();
     QuestionResultBm questionResultBm = getQuestionResultBm();
@@ -1538,7 +1537,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
             String id = question.getPK().getId();
             QuestionContainerPK qcPK =
                 new QuestionContainerPK(id, question.getPK().getSpaceId(), question.getPK()
-                    .getInstanceId());
+                .getInstanceId());
             Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
             Iterator<QuestionResult> itO = openAnswers.iterator();
             while (itO.hasNext()) {
@@ -1553,7 +1552,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
               Answer answer = itA.next();
               int nbUsers =
                   getQuestionResultBm()
-                      .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
+                  .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
               String percent = Math.round((answer.getNbVoters() * 100f) / nbUsers) + "%";
               addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore, answer
                   .getNbPoints());
@@ -1571,7 +1570,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton,
             String id = question.getPK().getId();
             QuestionContainerPK qcPK =
                 new QuestionContainerPK(id, question.getPK().getSpaceId(), question.getPK()
-                    .getInstanceId());
+                .getInstanceId());
             Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
             Iterator<QuestionResult> itO = openAnswers.iterator();
             while (itO.hasNext()) {

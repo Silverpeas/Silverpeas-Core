@@ -38,8 +38,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class CommentDAO {
@@ -48,8 +46,6 @@ public class CommentDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public CommentDAO() {
@@ -57,13 +53,9 @@ public class CommentDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param Document
-   * 
    * @throws SQLException
-   * 
    * @see
    */
 
@@ -118,10 +110,13 @@ public class CommentDAO {
 
   public static void updateComment(Connection con, Comment cmt)
       throws SQLException {
-    String update_query = "update "
-        + COMMENT_TABLENAME
-        + " set commentOwnerId=?, commentModificationDate=?, commentComment=?, foreignId=?, instanceId=? where commentId="
-        + cmt.getCommentPK().getId();
+    String update_query =
+        "update "
+            +
+            COMMENT_TABLENAME
+            +
+            " set commentOwnerId=?, commentModificationDate=?, commentComment=?, foreignId=?, instanceId=? where commentId="
+            + cmt.getCommentPK().getId();
     PreparedStatement prep_stmt = null;
     prep_stmt = con.prepareStatement(update_query);
 
@@ -163,8 +158,10 @@ public class CommentDAO {
 
   public static Comment getComment(Connection con, CommentPK pk)
       throws SQLException {
-    String select_query = "select commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
-        + COMMENT_TABLENAME + " where commentId=" + pk.getId();
+    String select_query =
+        "select commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
+            +
+            COMMENT_TABLENAME + " where commentId=" + pk.getId();
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
     prep_stmt = con.prepareStatement(select_query);
@@ -246,13 +243,15 @@ public class CommentDAO {
 
   public static Vector getAllComments(Connection con, WAPrimaryKey foreign_pk)
       throws SQLException {
-    String select_query = "select commentId, commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
-        + COMMENT_TABLENAME
-        + " where foreignId="
-        + foreign_pk.getId()
-        + " and instanceId = '"
-        + foreign_pk.getComponentName()
-        + "' order by commentCreationDate DESC, commentId DESC";
+    String select_query =
+        "select commentId, commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
+            +
+            COMMENT_TABLENAME
+            + " where foreignId="
+            + foreign_pk.getId()
+            + " and instanceId = '"
+            + foreign_pk.getComponentName()
+            + "' order by commentCreationDate DESC, commentId DESC";
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
     prep_stmt = con.prepareStatement(select_query);

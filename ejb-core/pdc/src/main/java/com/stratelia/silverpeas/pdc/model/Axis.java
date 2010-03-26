@@ -26,8 +26,7 @@ package com.stratelia.silverpeas.pdc.model;
 import java.util.List;
 
 /**
- * This class contains a full information about a tree. The user can access to
- * an axe.
+ * This class contains a full information about a tree. The user can access to an axe.
  */
 public class Axis implements java.io.Serializable {
 
@@ -56,7 +55,6 @@ public class Axis implements java.io.Serializable {
 
   /**
    * Returns attributs of an axe.
-   * 
    * @return the AxisHeader object
    */
   public AxisHeader getAxisHeader() {
@@ -65,7 +63,6 @@ public class Axis implements java.io.Serializable {
 
   /**
    * Returns the sorted List containing values of a tree.
-   * 
    * @return the List
    */
   public List getValues() {

@@ -30,7 +30,6 @@ import java.io.Serializable;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -38,7 +37,6 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set only the id
-   * 
    * @since 1.0
    * @roseuid 3AB7343503E1
    */
@@ -47,9 +45,7 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
-   * 
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    * @roseuid 3AB734360003
    */
@@ -58,9 +54,7 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
-   * 
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    * @roseuid 3AB734360018
    */
@@ -70,7 +64,6 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object root table name
-   * 
    * @return the root table name of the object
    * @since 1.0
    * @roseuid 3AB73436002B
@@ -81,7 +74,6 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object table name
-   * 
    * @return the table name of the object
    * @since 1.0
    * @roseuid 3AB73436002B
@@ -92,10 +84,8 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Check if an another object is equal to this object
-   * 
    * @return true if other is equals to this object
-   * @param other
-   *          the object to compare to this PollPK
+   * @param other the object to compare to this PollPK
    * @since 1.0
    * @roseuid 3AB73436002C
    */
@@ -109,7 +99,6 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    * @roseuid 3AB734360036
    */

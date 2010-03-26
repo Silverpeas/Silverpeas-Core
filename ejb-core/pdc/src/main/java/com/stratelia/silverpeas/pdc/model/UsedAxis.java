@@ -29,9 +29,8 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.persistence.*;
 
 /**
- * This class contains headers of axis. And uses the persistence class for the
- * DAO. The user can access to the axis main information.
- * 
+ * This class contains headers of axis. And uses the persistence class for the DAO. The user can
+ * access to the axis main information.
  * @author Nicolas EYSSERIC
  */
 public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
@@ -228,7 +227,6 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
 
   /**
    * Converts the contents of the key into a readable String.
-   * 
    * @return The string representation of this object
    */
   public String toString() {

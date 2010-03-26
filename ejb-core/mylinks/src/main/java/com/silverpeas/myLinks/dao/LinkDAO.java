@@ -40,7 +40,8 @@ public class LinkDAO {
     // récupérer toutes les liens d'un utilisateur
     ArrayList listLink = null;
 
-    String query = "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '')";
+    String query =
+        "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '')";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -140,8 +141,9 @@ public class LinkDAO {
     try {
       newId = DBUtil.getNextId("SB_MyLinks_Link", "linkId");
       // création de la requete
-      String query = "insert into SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, instanceId, objectId) "
-          + "values (?,?,?,?,?,?,?,?,?)";
+      String query =
+          "insert into SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, instanceId, objectId) "
+              + "values (?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, newLink);
@@ -158,8 +160,9 @@ public class LinkDAO {
     LinkDetail updatedLink = link;
     PreparedStatement prepStmt = null;
     try {
-      String query = "update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , "
-          + "userId = ? , instanceId = ? , objectId = ? where linkId = ? ";
+      String query =
+          "update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , "
+              + "userId = ? , instanceId = ? , objectId = ? where linkId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       int linkId = updatedLink.getLinkId();

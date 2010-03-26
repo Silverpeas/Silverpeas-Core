@@ -34,8 +34,6 @@ public class TreeNodeI18N extends Translation implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TreeNodeI18N() {

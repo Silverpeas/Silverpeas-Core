@@ -25,8 +25,7 @@ package com.stratelia.webactiv.util.questionContainer.model;
 
 import com.stratelia.webactiv.util.exception.*;
 
-public class QuestionContainerRuntimeException extends
-    SilverpeasRuntimeException {
+public class QuestionContainerRuntimeException extends SilverpeasRuntimeException {
 
   public QuestionContainerRuntimeException(String callingClass, int errorLevel,
       String message) {

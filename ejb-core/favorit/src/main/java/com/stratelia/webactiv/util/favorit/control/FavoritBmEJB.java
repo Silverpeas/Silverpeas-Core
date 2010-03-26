@@ -38,8 +38,6 @@ import com.stratelia.webactiv.util.favorit.model.FavoritRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -50,8 +48,6 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public FavoritBmEJB() {
@@ -61,10 +57,7 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -80,10 +73,7 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -99,17 +89,14 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param node
-   * 
    * @see
    */
   public void addFavoritNode(String userId, NodePK node) {
     SilverTrace.info("favorit", "FavoritBmEJB.addFavoritNode",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", node = "
-            + node.toString());
+        + node.toString());
     Connection con = null;
 
     try {
@@ -124,17 +111,14 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param node
-   * 
    * @see
    */
   public void removeFavoritNode(String userId, NodePK node) {
     SilverTrace.info("favorit", "FavoritBmEJB.removeFavoritNode",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", node = "
-            + node.toString());
+        + node.toString());
     Connection con = null;
 
     try {
@@ -149,10 +133,7 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @see
    */
   public void removeFavoritByUser(String userId) {
@@ -173,17 +154,14 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param node
    * @param path
-   * 
    * @see
    */
   public void removeFavoritByNodePath(NodePK node, String path) {
     SilverTrace.info("favorit", "FavoritBmEJB.removeFavoritByNodePath",
         "root.MSG_GEN_ENTER_METHOD", "node = " + node.toString() + ", path = "
-            + path);
+        + path);
     Connection con = null;
 
     try {
@@ -199,12 +177,8 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getFavoritNodePKs(String userId) {
@@ -227,36 +201,29 @@ public class FavoritBmEJB implements SessionBean {
   // NEWD DLE
   /**
    * Method declaration deprecated
-   * 
    * @param userId
    * @param space
    * @param componentName
-   * 
    * @return
-   * 
    * @see
    */
   /*
-   * public Collection getFavoritNodePKsBySpaceAndComponent(String userId,
-   * String space, String componentName) { SilverTrace.info("favorit",
-   * "FavoritBmEJB.getFavoritNodePKsBySpaceAndComponent",
-   * "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", space = " + space +
-   * ", componentName = " + componentName); Connection con = null; Collection
-   * result = null;
-   * 
-   * try { con = getConnection(); result =
-   * NodeActorLinkDAO.getNodePKsByActorSpaceAndComponent(con, rootTableName,
-   * userId, space, componentName); } catch (Exception e) { throw new
-   * FavoritRuntimeException
-   * ("favorit.CANNOT_GET_FAVORIT_BY_USER_SPACE_COMPONENT", e); } finally {
-   * freeConnection(con); } return result; }
+   * public Collection getFavoritNodePKsBySpaceAndComponent(String userId, String space, String
+   * componentName) { SilverTrace.info("favorit",
+   * "FavoritBmEJB.getFavoritNodePKsBySpaceAndComponent", "root.MSG_GEN_ENTER_METHOD", "userId = " +
+   * userId + ", space = " + space + ", componentName = " + componentName); Connection con = null;
+   * Collection result = null; try { con = getConnection(); result =
+   * NodeActorLinkDAO.getNodePKsByActorSpaceAndComponent(con, rootTableName, userId, space,
+   * componentName); } catch (Exception e) { throw new FavoritRuntimeException
+   * ("favorit.CANNOT_GET_FAVORIT_BY_USER_SPACE_COMPONENT", e); } finally { freeConnection(con); }
+   * return result; }
    */
 
   public Collection getFavoritNodePKsByComponent(String userId,
       String componentName) {
     SilverTrace.info("favorit", "FavoritBmEJB.getFavoritNodePKsByComponent",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId
-            + ", componentName = " + componentName);
+        + ", componentName = " + componentName);
     Connection con = null;
     Collection result = null;
 
@@ -277,10 +244,7 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws CreateException
-   * 
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -288,8 +252,6 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -297,8 +259,6 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -306,8 +266,6 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -315,10 +273,7 @@ public class FavoritBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {

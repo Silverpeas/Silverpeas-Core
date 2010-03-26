@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * @author inra
- * 
  */
 public class PdcRightsDAO {
 
@@ -197,7 +196,6 @@ public class PdcRightsDAO {
 
   /**
    * Lors de la supression d'un user, on supprime les droits associes
-   * 
    * @param userId
    * @throws SQLException
    */

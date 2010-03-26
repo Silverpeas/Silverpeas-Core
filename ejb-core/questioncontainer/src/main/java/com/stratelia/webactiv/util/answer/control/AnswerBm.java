@@ -27,7 +27,6 @@ import javax.ejb.*;
 
 /**
  * Interface declaration
- * 
  * @author neysseri
  * @see com.stratelia.webactiv.util.answer.control.AnswerBmBusinessSkeleton
  */

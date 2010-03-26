@@ -353,7 +353,7 @@ public class HistoryObjectDAO {
 
     String insertStatement =
         "update " + tableName +
-            " set componentId = ? where objectId = ? and actionType = ? and objectType = ?";
+        " set componentId = ? where objectId = ? and actionType = ? and objectType = ?";
     PreparedStatement prepStmt = null;
 
     try {

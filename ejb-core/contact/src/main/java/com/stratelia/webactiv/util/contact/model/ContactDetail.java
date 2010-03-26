@@ -28,7 +28,6 @@ import java.util.Date;
 
 /**
  * This object contains the description of a contact
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */

@@ -62,7 +62,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.getDetail()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = "
-              + pubPK.getId().toString(), re);
+          + pubPK.getId().toString(), re);
     }
     return result;
   }
@@ -107,13 +107,13 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.setDetail()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_SET_CONTACT_DETAIL_FAILED", "contactDetail = "
-              + detail.toString(), re);
+          + detail.toString(), re);
     }
   }
 
   /**
-   * addFather() add a new father (designed by "fatherPK") to a contact
-   * ("pubPK") The contact will be visible from its new father node.
+   * addFather() add a new father (designed by "fatherPK") to a contact ("pubPK") The contact will
+   * be visible from its new father node.
    */
   public void addFather(ContactPK pubPK, NodePK fatherPK) {
     Contact pub = findContact(pubPK);
@@ -123,14 +123,14 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.addFather()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_ADD_TO_FATHER_FAILED", "fatherPK = "
-              + fatherPK.toString(), re);
+          + fatherPK.toString(), re);
     }
 
   }
 
   /**
-   * removeFather() remove a father (designed by "fatherPK") from a contact
-   * ("pubPK") The contact won't be visible from its old father node.
+   * removeFather() remove a father (designed by "fatherPK") from a contact ("pubPK") The contact
+   * won't be visible from its old father node.
    */
   public void removeFather(ContactPK pubPK, NodePK fatherPK)
       throws RemoteException {
@@ -141,13 +141,12 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.removeFather()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_REMOVE_FROM_FATHER_FAILED", "fatherPK = "
-              + fatherPK.toString(), re);
+          + fatherPK.toString(), re);
     }
   }
 
   /**
-   * removeAllFather() remove all father from a contact ("pubPK") The contact
-   * won't be visible.
+   * removeAllFather() remove all father from a contact ("pubPK") The contact won't be visible.
    */
   public void removeAllFather(ContactPK pubPK) throws RemoteException {
     Contact pub = findContact(pubPK);
@@ -159,13 +158,13 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.removeAllFather()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_REMOVE_FROM_ALLFATHERS_FAILED", "contactPK = "
-              + pubPK.toString(), re);
+          + pubPK.toString(), re);
     }
   }
 
   /**
-   * removeAllIssue() remove all links between contacts and node N N is a
-   * descendant of the node designed by originPK
+   * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
+   * designed by originPK
    */
   public void removeAllIssue(NodePK originPK, ContactPK pubPK)
       throws RemoteException {
@@ -176,7 +175,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.removeAllIssue()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_REMOVE_ALLISSUES_FAILED", "fatherPK = "
-              + originPK.toString(), re);
+          + originPK.toString(), re);
     } finally {
       freeConnection(con);
     }
@@ -231,8 +230,6 @@ public class ContactBmEJB implements SessionBean {
 
   /**
    * getAllFatherPK
-   * 
-   * 
    */
   public Collection getAllFatherPK(ContactPK pubPK) throws RemoteException {
     Collection result = null;
@@ -248,8 +245,8 @@ public class ContactBmEJB implements SessionBean {
   }
 
   /**
-   * getDetailsByFatherPK() return a ContactDetail collection of all contact
-   * visible from the node identified by "fatherPK" parameter
+   * getDetailsByFatherPK() return a ContactDetail collection of all contact visible from the node
+   * identified by "fatherPK" parameter
    */
   public Collection getDetailsByFatherPK(NodePK fatherPK)
       throws RemoteException {
@@ -443,8 +440,8 @@ public class ContactBmEJB implements SessionBean {
   }
 
   /**
-   * Called on : - createContact() - updateContact() - createInfoModel() -
-   * updateInfoDetail() - deleteAttachments()
+   * Called on : - createContact() - updateContact() - createInfoModel() - updateInfoDetail() -
+   * deleteAttachments()
    */
   private void createIndex(ContactPK pubPK) {
     try {

@@ -293,7 +293,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     return getSubTree(pk, null, level, null);
   }
 
-  public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting) throws RemoteException {
+  public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting)
+      throws RemoteException {
     SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
         "pk = " + pk + ", level = " + level + ", sorting=" + sorting);
     return getSubTree(pk, null, level, sorting);
@@ -989,22 +990,21 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
         spreadRightsDependency(con, child, rightsDependsOn);
       }
-		}
-	}
-	
-	public void sortNodes(List<NodePK> nodePKs) throws RemoteException
-	{
-	  Connection con = getConnection();
-	  try {
+    }
+  }
+
+  public void sortNodes(List<NodePK> nodePKs) throws RemoteException {
+    Connection con = getConnection();
+    try {
       NodeDAO.sortNodes(con, nodePKs);
     } catch (SQLException e) {
-      throw new NodeRuntimeException("NodeBmEJB.sortNodes()", SilverpeasRuntimeException.ERROR, "node.SORTING_NODES_FAILED", e);
-    }
-    finally
-    {
+      throw new NodeRuntimeException("NodeBmEJB.sortNodes()", SilverpeasRuntimeException.ERROR,
+          "node.SORTING_NODES_FAILED", e);
+    } finally {
       freeConnection(con);
     }
-	}
+  }
+
   /**
    * Called on : - createNode() - setDetail()
    */

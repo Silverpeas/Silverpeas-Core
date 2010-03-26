@@ -29,7 +29,6 @@ import java.util.Date;
 
 /**
  * @author neysseri
- * 
  */
 public class HolidayDetail implements Serializable {
 

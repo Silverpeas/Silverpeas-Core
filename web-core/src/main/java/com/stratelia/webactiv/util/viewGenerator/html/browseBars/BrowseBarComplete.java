@@ -122,7 +122,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append(">");
         result.append(spaceInst.getName(language));
         result.append("</a>");
-        
+
         firstSpace = false;
       }
 

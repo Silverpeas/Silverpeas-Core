@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * @author neysseri
- * 
  */
 public class PdcCallBack extends CallBack {
 
@@ -41,20 +40,20 @@ public class PdcCallBack extends CallBack {
   }
 
   /*
-   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
-   * int, java.lang.String, java.lang.Object)
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
+   * java.lang.String, java.lang.Object)
    */
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("Pdc", "PdcCallBack.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-            + iParam);
+        + iParam);
 
     if (iParam == -1) {
       SilverTrace.info("Pdc", "PdcCallBack.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "userId or groupId is null. Callback stopped ! action = " + action
-              + ", sParam = " + sParam + ", extraParam = "
-              + extraParam.toString());
+          + ", sParam = " + sParam + ", extraParam = "
+          + extraParam.toString());
       return;
     }
 

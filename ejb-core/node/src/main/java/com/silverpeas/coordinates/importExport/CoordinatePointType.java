@@ -25,7 +25,6 @@ package com.silverpeas.coordinates.importExport;
 
 /**
  * @author dlesimple
- * 
  */
 public class CoordinatePointType {
 

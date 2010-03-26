@@ -76,13 +76,14 @@ import com.stratelia.silverpeas.silvertrace.*;
 /**
  * This class is made to access database only (table SB_QuestionContainer_QC et
  * SB_QuestionContainer_Comment)
- * 
  * @author neysseri
  */
 public class QuestionContainerDAO {
 
-  public static final String QUESTIONCONTAINERCOLUMNNAMES = "qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, anonymous, instanceId";
-  public static final String COMMENTCOLUMNNAMES = "commentId, commentFatherId, userId, commentComment, commentIsAnonymous, commentDate";
+  public static final String QUESTIONCONTAINERCOLUMNNAMES =
+      "qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, anonymous, instanceId";
+  public static final String COMMENTCOLUMNNAMES =
+      "commentId, commentFatherId, userId, commentComment, commentIsAnonymous, commentDate";
 
   // the date format used in database to represent a date
   private static java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
@@ -95,15 +96,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static QuestionContainerHeader getQuestionContainerHeaderFromResultSet(
@@ -151,15 +147,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getQuestionContainers(Connection con,
@@ -167,7 +158,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -245,15 +236,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getOpenedQuestionContainers(Connection con,
@@ -261,7 +247,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getOpenedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
 
@@ -293,15 +279,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getNotClosedQuestionContainers(Connection con,
@@ -309,7 +290,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getNotClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -339,15 +320,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getClosedQuestionContainers(Connection con,
@@ -355,7 +331,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -386,15 +362,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param qcPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getInWaitQuestionContainers(Connection con,
@@ -430,15 +401,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static QuestionContainerHeader getQuestionContainerHeader(
@@ -447,7 +413,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
 
@@ -473,13 +439,9 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void closeQuestionContainer(Connection con,
@@ -487,7 +449,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.closeQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcIsClosed = 1 , instanceId = ?" + " where qcId = ? ";
@@ -506,13 +468,9 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void openQuestionContainer(Connection con,
@@ -520,7 +478,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.openQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcIsClosed = 0 , instanceId = ?" + " where qcId = ? ";
@@ -539,15 +497,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerHeader
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static QuestionContainerPK createQuestionContainerHeader(
@@ -556,7 +509,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.createQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
-            + questionContainerHeader);
+        + questionContainerHeader);
     int newId = 0;
 
     String insertStatement = "insert into "
@@ -622,13 +575,9 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerHeader
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void updateQuestionContainerHeader(Connection con,
@@ -636,7 +585,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.updateQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
-            + questionContainerHeader);
+        + questionContainerHeader);
 
     String insertStatement = "update "
         + questionContainerHeader.getPK().getTableName() + " set qcTitle = ?,"
@@ -686,13 +635,9 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteQuestionContainerHeader(Connection con,
@@ -700,7 +645,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.deleteQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     String deleteStatement = "delete from "
         + questionContainerPK.getTableName() + " where qcId = ? ";
@@ -718,20 +663,16 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param questionContainerPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addAVoter(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer", "QuestionContainerDAO.addAVoter()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcNbVoters = qcNbVoters + 1 " + " where qcId = ? ";
@@ -749,15 +690,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
    * @param qcPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static Comment getCommentFromResultSet(ResultSet rs,
@@ -777,13 +713,9 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param comment
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addComment(Connection con, Comment comment)
@@ -829,15 +761,10 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param qcPK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getComments(Connection con, QuestionContainerPK qcPK)
@@ -872,13 +799,9 @@ public class QuestionContainerDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param qcPK
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteComments(Connection con, QuestionContainerPK qcPK)

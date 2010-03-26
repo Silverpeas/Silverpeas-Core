@@ -76,48 +76,31 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface PdcUtilizationBm {
 
   /**
    * Returns data of an used axis defined by usedAxisId
-   * 
-   * @param usedAxisId
-   *          - id of the usedAxis
-   * 
+   * @param usedAxisId - id of the usedAxis
    * @return an UsedAxis
-   * 
    * @throws PdcException
-   * 
    */
   public UsedAxis getUsedAxis(String usedAxisId) throws PdcException;
 
   /**
    * Returns all the axis used by a given Job'Peas instance
-   * 
-   * @param instanceId
-   *          - the id of the Job'Peas
-   * 
+   * @param instanceId - the id of the Job'Peas
    * @return a List of UsedAxis
-   * 
    * @throws PdcException
-   * 
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
   /**
    * Returns the distinct axis used by a given Job'Peas instance
-   * 
-   * @param instanceId
-   *          - the id of the Job'Peas
-   * 
+   * @param instanceId - the id of the Job'Peas
    * @return a List of AxisHeader
-   * 
    * @throws PdcException
-   * 
    */
   public List getAxisHeaderUsedByInstanceId(String instanceId)
       throws PdcException;
@@ -130,67 +113,43 @@ public interface PdcUtilizationBm {
 
   /**
    * Add an UsedAxis
-   * 
-   * @param usedAxis
-   *          - the UsedAxis to add
-   * 
-   * @return - 0 si, pour une même instance de Job'Peas, il n'existe pas déjà
-   *         un axe avec comme valeur de base un ascendant ou un descendant - 1
-   *         sinon
-   * 
+   * @param usedAxis - the UsedAxis to add
+   * @return - 0 si, pour une même instance de Job'Peas, il n'existe pas déjà un axe avec comme
+   * valeur de base un ascendant ou un descendant - 1 sinon
    * @throws PdcException
-   * 
    */
   public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException;
 
   /**
    * Update an UsedAxis
-   * 
-   * @param usedAxis
-   *          - the UsedAxis to update
-   * 
-   * @return - 0 si, pour une même instance de Job'Peas, il n'existe pas déjà
-   *         un axe avec comme valeur de base un ascendant ou un descendant - 1
-   *         sinon
-   * 
+   * @param usedAxis - the UsedAxis to update
+   * @return - 0 si, pour une même instance de Job'Peas, il n'existe pas déjà un axe avec comme
+   * valeur de base un ascendant ou un descendant - 1 sinon
    * @throws PdcException
-   * 
    */
   public int updateUsedAxis(UsedAxis usedAxis, String treeId)
       throws PdcException;
 
   /**
    * Delete an used axis
-   * 
-   * @param usedAxisId
-   *          - the id of the used axis to delete
-   * 
+   * @param usedAxisId - the id of the used axis to delete
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxis(String usedAxisId) throws PdcException;
 
   /**
    * Delete a collection of used axis
-   * 
-   * @param usedAxisIds
-   *          - the ids of the used axis to delete
-   * 
+   * @param usedAxisIds - the ids of the used axis to delete
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException;
 
   /**
    * Delete used axis based on a particular axis
-   * 
-   * @param axisId
-   *          - the axis id
-   * 
+   * @param axisId - the axis id
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxisByAxisId(Connection con, String axisId)

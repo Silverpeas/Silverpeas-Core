@@ -64,8 +64,6 @@ import com.stratelia.webactiv.util.score.model.ScoreRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
@@ -78,8 +76,6 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public ScoreBmEJB() {
@@ -91,8 +87,6 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbCreate() {
@@ -104,8 +98,6 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -117,8 +109,6 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -130,8 +120,6 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -143,10 +131,7 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {
@@ -154,10 +139,7 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -174,10 +156,7 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -194,14 +173,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
-   * 
    * @return
-   * 
    * @see
    */
   public int getUserNbParticipationsByFatherId(ScorePK scorePK,
@@ -226,15 +201,11 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
    * @param participationId
-   * 
    * @return
-   * 
    * @see
    */
   private int getUserPositionByFatherIdAndParticipationId(ScorePK scorePK,
@@ -259,10 +230,7 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetails
-   * 
    * @see
    */
   private void setPositions(Collection scoreDetails) {
@@ -273,16 +241,13 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
       scoreDetail.setPosition(getUserPositionByFatherIdAndParticipationId(
           scoreDetail.getScorePK(), scoreDetail.getFatherId(), scoreDetail
-              .getUserId(), scoreDetail.getParticipationId()));
+          .getUserId(), scoreDetail.getParticipationId()));
     }
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetails
-   * 
    * @see
    */
   private void setParticipations(Collection scoreDetails) {
@@ -293,44 +258,35 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
       scoreDetail.setNbParticipations(getUserNbParticipationsByFatherId(
           scoreDetail.getScorePK(), scoreDetail.getFatherId(), scoreDetail
-              .getUserId()));
+          .getUserId()));
     }
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetail
-   * 
    * @see
    */
   private void setPosition(ScoreDetail scoreDetail) {
     scoreDetail.setPosition(getUserPositionByFatherIdAndParticipationId(
         scoreDetail.getScorePK(), scoreDetail.getFatherId(), scoreDetail
-            .getUserId(), scoreDetail.getParticipationId()));
+        .getUserId(), scoreDetail.getParticipationId()));
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetail
-   * 
    * @see
    */
   private void setNbParticipation(ScoreDetail scoreDetail) {
     scoreDetail.setNbParticipations(getUserNbParticipationsByFatherId(
         scoreDetail.getScorePK(), scoreDetail.getFatherId(), scoreDetail
-            .getUserId()));
+        .getUserId()));
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetail
-   * 
    * @see
    */
   public void addScore(ScoreDetail scoreDetail) {
@@ -349,10 +305,7 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetail
-   * 
    * @see
    */
   public void updateScore(ScoreDetail scoreDetail) {
@@ -371,10 +324,7 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
-   * 
    * @see
    */
   public void deleteScore(ScorePK scorePK) {
@@ -395,11 +345,8 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @see
    */
   public void deleteScoreByFatherPK(ScorePK scorePK, String fatherId) {
@@ -420,12 +367,8 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getAllScores(ScorePK scorePK) {
@@ -448,13 +391,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param userId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getUserScores(ScorePK scorePK, String userId) {
@@ -478,14 +417,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getUserScoresByFatherId(ScorePK scorePK, String fatherId,
@@ -511,14 +446,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param nbBestScores
    * @param fatherId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
@@ -544,14 +475,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param nbWorstScores
    * @param fatherId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getWorstScoresByFatherId(ScorePK scorePK,
@@ -577,13 +504,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @see
    */
   public int getNbVotersByFatherId(ScorePK scorePK, String fatherId) {
@@ -604,13 +527,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @see
    */
   public float getAverageScoreByFatherId(ScorePK scorePK, String fatherId) {
@@ -632,15 +551,11 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
    * @param participationId
-   * 
    * @return
-   * 
    * @see
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(ScorePK scorePK,
@@ -666,13 +581,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getScoresByFatherId(ScorePK scorePK, String fatherId) {

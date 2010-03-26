@@ -85,7 +85,7 @@ public class StatisticsConfig {
     try {
       initGood = true;
       ResourceBundle resource = FileUtil.loadBundle(
-              "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
+          "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
 
       TokenSeparator = resource.getString(STATSSEPARATOR);
 

@@ -41,7 +41,7 @@ public class MyLinksInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("myLinks", "MyLinksInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     SilverTrace.info("myLinks", "MyLinksInstanciator.create()",
         "root.MSG_GEN_EXIT_METHOD");
@@ -51,7 +51,7 @@ public class MyLinksInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("myLinks", "MyLinksInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     try {
       PreparedStatement prepStmt = null;

@@ -32,8 +32,6 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -41,13 +39,9 @@ public interface FavoritBmHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   FavoritBm create() throws RemoteException, CreateException;

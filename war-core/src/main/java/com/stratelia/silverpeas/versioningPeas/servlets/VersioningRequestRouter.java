@@ -70,7 +70,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   private static final long serialVersionUID = 1L;
 
   public ComponentSessionController createComponentSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new VersioningSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -79,16 +79,16 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   }
 
   public String getDestination(String function,
-          ComponentSessionController componentSC, HttpServletRequest request) {
+      ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
     VersioningSessionController versioningSC = (VersioningSessionController) componentSC;
     SilverTrace.info("versioningPeas",
-            "VersioningRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "User=" + versioningSC.getUserId() + " Function=" + function);
+        "VersioningRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+        "User=" + versioningSC.getUserId() + " Function=" + function);
     String rootDestination = "/versioningPeas/jsp/";
     ResourceLocator messages = new ResourceLocator(
-            "com.stratelia.silverpeas.versioningPeas.multilang.versioning",
-            versioningSC.getLanguage());
+        "com.stratelia.silverpeas.versioningPeas.multilang.versioning",
+        versioningSC.getLanguage());
     try {
       String flag = versioningSC.getProfile();
 
@@ -112,9 +112,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         if (profile != null) {
           workers = document.getWorkList();
           if (new Integer(document.getCurrentWorkListOrder()).toString().equals(
-                  VersioningSessionController.WRITERS_LIST_ORDERED)
-                  && !versioningSC.isAlreadyMerged()
-                  && !profile.getAllGroups().isEmpty()) {
+              VersioningSessionController.WRITERS_LIST_ORDERED)
+              && !versioningSC.isAlreadyMerged()
+              && !profile.getAllGroups().isEmpty()) {
             // Need to merge users from groups with other users
             workers = versioningSC.mergeUsersFromGroupsWithWorkers(profile.getAllGroups(), workers);
           }
@@ -161,7 +161,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             if (addIndex >= 0 && addIndex < users_count) {
               Worker user = (Worker) new_users.get(addIndex);
               Worker new_user =
-                      new Worker(user.getUserId(), Integer.parseInt(versioningSC.getEditingDocument().getPk().getId()),
+                  new Worker(user.getUserId(), Integer.parseInt(versioningSC.getEditingDocument()
+                      .getPk().getId()),
                       0, user.isApproval(), true, versioningSC.getComponentId(),
                       user.getType(), user.isSaved(), user.isUsed(), user.getListType());
               new_users.add(addIndex + 1, new_user);
@@ -195,7 +196,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             ArrayList<Worker> workersGroups = new ArrayList<Worker>();
 
             workersGroups = versioningSC.convertGroupsToWorkers(workers,
-                    profile.getAllGroups());
+                profile.getAllGroups());
             workers.addAll(workersGroups);
 
             workersUsers = versioningSC.convertUsersToWorkers(workers, profile.getAllUsers());
@@ -232,7 +233,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String listType = (String) request.getParameter("ListType");
         if (StringUtil.isDefined(listType)) {
           versioningSC.getEditingDocument().setCurrentWorkListOrder(
-                  new Integer(listType).intValue());
+              new Integer(listType).intValue());
         }
         versioningSC.initUserPanelInstanceForGroupsUsers(role);
         destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
@@ -248,7 +249,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           ArrayList<Worker> workersGroups = new ArrayList<Worker>();
 
           workersGroups = versioningSC.convertGroupsToWorkers(oldWorkers,
-                  profile.getAllGroups());
+              profile.getAllGroups());
           workers.addAll(workersGroups);
 
           workersUsers = versioningSC.convertUsersToWorkers(oldWorkers, profile.getAllUsers());
@@ -278,7 +279,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         }
         versioningSC.saveAccessList(role);
         request.setAttribute("Message", messages.getString(
-                "versioning.ListSaved", ""));
+            "versioning.ListSaved", ""));
         destination = getDestination(fromFunction, versioningSC, request);
       } else if (function.startsWith("DeleteReaderProfile")) {
         ProfileInst profile = versioningSC.getDocumentProfile(VersioningSessionController.READER);
@@ -304,7 +305,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String description = request.getParameter("description");
         String comments = request.getParameter("comments");
         Document document = versioningSC.getDocument(new DocumentPK(
-                new Integer(docId).intValue(), versioningSC.getComponentId()));
+            new Integer(docId).intValue(), versioningSC.getComponentId()));
         document.setDescription(description);
         document.setName(name);
         document.setAdditionalInfo(comments);
@@ -336,7 +337,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String setType = request.getParameter("SetType"); // 'U'for users or 'G'
         // for groups
         versioningSC.setWorkerValidator(versioningSC.getEditingDocument().getWorkList(),
-                new Integer(setTypeId).intValue(), setType);
+            new Integer(setTypeId).intValue(), setType);
         destination = getDestination("ViewWritersList", versioningSC, request);
       } else if (function.equals("ListPublicVersionsOfDocument")) {
         String documentId = request.getParameter("DocId");
@@ -344,7 +345,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String componentId = request.getParameter("ComponentId");
         versioningSC.setComponentId(componentId);
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-                versioningSC.getSpaceId(), componentId);
+            versioningSC.getSpaceId(), componentId);
 
         Document document = versioningSC.getDocument(documentPK);
         List<DocumentVersion> publicVersions = versioningSC.getPublicDocumentVersions(documentPK);
@@ -364,7 +365,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
         String documentId = FileUploadUtil.getParameter(items, "documentId", "-1", encoding);
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-                versioningSC.getSpaceId(), versioningSC.getComponentId());
+            versioningSC.getSpaceId(), versioningSC.getComponentId());
         Document document = versioningSC.getDocument(documentPK);
         String userId = componentSC.getUserId();
         String radio = FileUploadUtil.getParameter(items, "radio", "", encoding);
@@ -378,8 +379,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
 
         DocumentVersionPK newVersionPK =
-                saveOnline(document, versioningSC, comments, radio, Integer.parseInt(userId), force,
-                addXmlForm);
+            saveOnline(document, versioningSC, comments, radio, Integer.parseInt(userId), force,
+            addXmlForm);
         if (newVersionPK != null) {
           request.setAttribute("DocumentId", documentId);
           DocumentVersion version = versioningSC.getLastVersion(documentPK);
@@ -398,12 +399,12 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("Checkout")) {
         String documentId = request.getParameter("DocId");
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-                versioningSC.getSpaceId(), versioningSC.getComponentId());
+            versioningSC.getSpaceId(), versioningSC.getComponentId());
         Document document = versioningSC.getDocument(documentPK);
         document.setStatus(1);
         document.setLastCheckOutDate(new Date());
         versioningSC.checkDocumentOut(documentPK, new Integer(versioningSC.getUserId()).intValue(),
-                new Date());
+            new Date());
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
         request.setAttribute("Document", document);
@@ -418,11 +419,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String documentId = request.getParameter("DocId");
         String url = request.getParameter("Url");
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-                versioningSC.getSpaceId(), versioningSC.getComponentId());
+            versioningSC.getSpaceId(), versioningSC.getComponentId());
         versioningSC.deleteDocument(documentPK);
         SilverTrace.info("versioningPeas",
-                "VersioningRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "url=" + url);
+            "VersioningRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "url=" + url);
         request.setAttribute("urlToReload", url);
         destination = rootDestination + "closeWindow.jsp";
       } else if (function.equals("AddNewDocument")) {
@@ -464,17 +465,18 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           }
 
           logicalName =
-                  logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+              logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName
+                  .length());
           type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
-                  logicalName.length());
+              logicalName.length());
           physicalName = new Long(new Date().getTime()).toString() + "." + type;
           mimeType = FileUtil.getMimeType(logicalName);
           if (!StringUtil.isDefined(mimeType)) {
             mimeType = "unknown";
           }
           dir = new File(versioningSC.createPath(versioningSC.getComponentId(),
-                  null)
-                  + physicalName);
+              null)
+              + physicalName);
           size = new Long(fileItem.getSize()).intValue();
           fileItem.write(dir);
         }
@@ -486,7 +488,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
         DocumentVersion documentVersion = null;
         DocumentVersion lastVersion = versioningSC.getLastVersion(docPK);
-        if (com.stratelia.silverpeas.versioning.ejb.RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+        if (com.stratelia.silverpeas.versioning.ejb.RepositoryHelper.getJcrDocumentService()
+            .isNodeLocked(lastVersion)) {
           destination = rootDestination + "documentLocked.jsp";
         } else {
 
@@ -498,9 +501,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             majorNumber = documentVersion.getMajorNumber();
             minorNumber = documentVersion.getMinorNumber();
             DocumentVersion newVersion =
-                    new DocumentVersion(null, docPK, majorNumber, minorNumber, userId, new Date(),
-                    comments, Integer.parseInt(radio), documentVersion.getStatus(),
-                    physicalName, logicalName, mimeType, size, componentId);
+                new DocumentVersion(null, docPK, majorNumber, minorNumber, userId, new Date(),
+                comments, Integer.parseInt(radio), documentVersion.getStatus(),
+                physicalName, logicalName, mimeType, size, componentId);
 
             boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
             if (addXmlForm) {
@@ -509,7 +512,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
             newVersion = versioningSC.addNewDocumentVersion(newVersion);
             ResourceLocator settings = new ResourceLocator(
-                    "com.stratelia.webactiv.util.attachment.Attachment", "");
+                "com.stratelia.webactiv.util.attachment.Attachment", "");
             boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
             // Specific case: 3d file to convert by Actify Publisher
             if (actifyPublisherEnable) {
@@ -518,7 +521,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
               // 3d native file ?
               boolean fileForActify = false;
               SilverTrace.info("versioningPeas", "saveFile.jsp", "root.MSG_GEN_PARAM_VALUE",
-                      "nb tokenizer =" + tokenizer.countTokens());
+                  "nb tokenizer =" + tokenizer.countTokens());
               while (tokenizer.hasMoreTokens() && !fileForActify) {
                 String extension = tokenizer.nextToken();
                 if (type.equalsIgnoreCase(extension)) {
@@ -528,7 +531,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
               if (fileForActify) {
                 String dirDestName = "v_" + componentId + "_" + documentId;
                 String actifyWorkingPath =
-                        settings.getString("ActifyPathSource") + File.separator + dirDestName;
+                    settings.getString("ActifyPathSource") + File.separator + dirDestName;
 
                 String destPath = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath;
                 if (!new File(destPath).exists()) {
@@ -536,10 +539,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
                 }
 
                 String destFile =
-                        FileRepositoryManager.getTemporaryPath() + actifyWorkingPath + File.separator
-                        + logicalName;
+                    FileRepositoryManager.getTemporaryPath() + actifyWorkingPath + File.separator
+                    + logicalName;
                 FileRepositoryManager.copyFile(versioningSC.createPath(componentId, null)
-                        + File.separator + physicalName, destFile);
+                    + File.separator + physicalName, destFile);
               }
             }
             if (addXmlForm) {
@@ -554,34 +557,34 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       }
     } catch (Exception e) {
       SilverTrace.error("versioning", "VersioningRequestRouter.getDestination",
-              "root.EX_CANT_GET_REQUEST_DESTINATION", e);
+          "root.EX_CANT_GET_REQUEST_DESTINATION", e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
     SilverTrace.info("versioningPeas",
-            "VersioningRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "Destination=" + destination);
+        "VersioningRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+        "Destination=" + destination);
     return destination;
   }
 
   protected DocumentVersionPK saveOnline(Document document,
-          VersioningSessionController versioningSC, String comments, String radio,
-          int userId, boolean force, boolean addXmlForm) throws RemoteException {
+      VersioningSessionController versioningSC, String comments, String radio,
+      int userId, boolean force, boolean addXmlForm) throws RemoteException {
     DocumentVersion lastVersion = versioningSC.getLastVersion(document.getPk());
     if (!force
-            && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+        && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
       return null;
     }
     String physicalName = new Long(new Date().getTime()).toString()
-            + "."
-            + lastVersion.getLogicalName().substring(
-            lastVersion.getLogicalName().indexOf(".") + 1,
-            lastVersion.getLogicalName().length());
+        + "."
+        + lastVersion.getLogicalName().substring(
+        lastVersion.getLogicalName().indexOf(".") + 1,
+        lastVersion.getLogicalName().length());
     DocumentVersion newVersion = new DocumentVersion(null, document.getPk(),
-            lastVersion.getMajorNumber(), lastVersion.getMinorNumber(), userId,
-            new Date(), comments, Integer.parseInt(radio), lastVersion.getStatus(),
-            physicalName, lastVersion.getLogicalName(), lastVersion.getMimeType(),
-            lastVersion.getSize(), lastVersion.getInstanceId());
+        lastVersion.getMajorNumber(), lastVersion.getMinorNumber(), userId,
+        new Date(), comments, Integer.parseInt(radio), lastVersion.getStatus(),
+        physicalName, lastVersion.getLogicalName(), lastVersion.getMimeType(),
+        lastVersion.getSize(), lastVersion.getInstanceId());
     RepositoryHelper.getJcrDocumentService().getUpdatedDocument(newVersion);
     if (addXmlForm) {
       newVersion.setXmlForm(versioningSC.getXmlForm());
@@ -600,10 +603,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
    * @throws RemoteException
    */
   protected DocumentVersionPK saveOnline(Document document,
-          VersioningSessionController versioningSC, String comments, String radio,
-          int userId, boolean addXmlForm) throws RemoteException {
+      VersioningSessionController versioningSC, String comments, String radio,
+      int userId, boolean addXmlForm) throws RemoteException {
     return saveOnline(document, versioningSC, comments, radio, userId, false,
-            addXmlForm);
+        addXmlForm);
   }
 
   /**
@@ -614,11 +617,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
    * @throws IOException
    */
   private void saveNewDocument(HttpServletRequest request,
-          VersioningSessionController versioningSC) throws FileUploadException,
-          Exception, RemoteException {
+      VersioningSessionController versioningSC) throws FileUploadException,
+      Exception, RemoteException {
     SilverTrace.debug("versioningPeas",
-            "VersioningRequestRooter.saveNewDocument()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "VersioningRequestRooter.saveNewDocument()",
+        "root.MSG_GEN_ENTER_METHOD");
     int majorNumber = 0;
     int minorNumber = 1;
     String type = "dummy";
@@ -635,7 +638,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     List<FileItem> items = FileUploadUtil.parseRequest(request);
     String comments = FileUploadUtil.getParameter(items, "comments", "", encoding);
-    int versionType = new Integer(FileUploadUtil.getParameter(items, "versionType", "0", encoding)).intValue();
+    int versionType =
+        new Integer(FileUploadUtil.getParameter(items, "versionType", "0", encoding)).intValue();
 
     FileItem fileItem = FileUploadUtil.getFile(items, "file_upload");
     boolean runOnUnix = !FileUtil.isWindows();
@@ -647,9 +651,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       }
 
       logicalName =
-              logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+          logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
       type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
-              logicalName.length());
+          logicalName.length());
       physicalName = new Long(new Date().getTime()).toString() + "." + type;
       mimeType = FileUtil.getMimeType(logicalName);
       if (!StringUtil.isDefined(mimeType)) {
@@ -669,10 +673,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       minorNumber = 0;
     }
     DocumentVersion documentVersion =
-            new DocumentVersion(null, docPK,
-            majorNumber, minorNumber, new Integer(versioningSC.getUserId()).intValue(), new Date(),
-            comments, versionType, 0, physicalName,
-            logicalName, mimeType, size, versioningSC.getComponentId());
+        new DocumentVersion(null, docPK,
+        majorNumber, minorNumber, new Integer(versioningSC.getUserId()).intValue(), new Date(),
+        comments, versionType, 0, physicalName,
+        logicalName, mimeType, size, versioningSC.getComponentId());
 
     boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
     if (addXmlForm) {
@@ -688,9 +692,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     PublicationPK pubPK = new PublicationPK(publicationId, versioningSC.getComponentId());
     Document document = new Document(docPK, pubPK, name, description, 0,
-            new Integer(versioningSC.getUserId()).intValue(), new Date(), comments,
-            versioningSC.getComponentId(), null, null, 0, new Integer(
-            VersioningSessionController.WRITERS_LIST_SIMPLE).intValue());
+        new Integer(versioningSC.getUserId()).intValue(), new Date(), comments,
+        versioningSC.getComponentId(), null, null, 0, new Integer(
+        VersioningSessionController.WRITERS_LIST_SIMPLE).intValue());
 
     String docId = versioningSC.createDocument(document, documentVersion).getId();
 
@@ -706,32 +710,32 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     // Specific case: 3d file to convert by Actify Publisher
     ResourceLocator attachmentSettings = new ResourceLocator(
-            "com.stratelia.webactiv.util.attachment.Attachment", "");
+        "com.stratelia.webactiv.util.attachment.Attachment", "");
     boolean actifyPublisherEnable = attachmentSettings.getBoolean(
-            "ActifyPublisherEnable", false);
+        "ActifyPublisherEnable", false);
     if (actifyPublisherEnable) {
       versioningSC.saveFileForActify(docId, documentVersion, attachmentSettings);
     }
 
     SilverTrace.debug("versioningPeas", "VersioningRequestRooter.saveNewDocument()",
-            "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
   private void saveXMLData(VersioningSessionController versioningSC,
-          DocumentVersionPK newVersionPK, List<FileItem> items) throws Exception {
+      DocumentVersionPK newVersionPK, List<FileItem> items) throws Exception {
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName) && newVersionPK != null) {
       String xmlFormShortName = xmlFormName.substring(
-              xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       String objectId = newVersionPK.getId();
       String objectType = "Versioning";
 
       String externalId = versioningSC.getComponentId() + ":" + objectType
-              + ":" + xmlFormShortName;
+          + ":" + xmlFormShortName;
 
       // register xmlForm to object
       PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
-              xmlFormName);
+          xmlFormName);
 
       PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
 
@@ -745,7 +749,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       }
 
       PagesContext context =
-              new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.getComponentId(), versioningSC.getUserId());
+          new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC
+              .getComponentId(), versioningSC.getUserId());
       context.setObjectId(objectId);
 
       form.update(items, data, context);
@@ -754,21 +759,21 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   }
 
   private boolean isXMLFormEmpty(VersioningSessionController versioningSC,
-          List<FileItem> items) throws Exception {
+      List<FileItem> items) throws Exception {
     boolean isEmpty = true;
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName = xmlFormName.substring(
-              xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       String objectId = "unknown";
       String objectType = "Versioning";
 
       String externalId = versioningSC.getComponentId() + ":" + objectType
-              + ":" + xmlFormShortName;
+          + ":" + xmlFormShortName;
 
       // register xmlForm to object
       PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
-              xmlFormName);
+          xmlFormName);
 
       PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
 
@@ -782,7 +787,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       }
 
       PagesContext context =
-              new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.getComponentId(), versioningSC.getUserId());
+          new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC
+              .getComponentId(), versioningSC.getUserId());
       context.setObjectId(objectId);
 
       isEmpty = form.isEmpty(items, data, context);
@@ -791,24 +797,24 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   }
 
   private void setXMLFormIntoRequest(String documentId,
-          VersioningSessionController versioningSC, HttpServletRequest request)
-          throws Exception {
+      VersioningSessionController versioningSC, HttpServletRequest request)
+      throws Exception {
     String componentId = versioningSC.getComponentId();
     String objectId = request.getParameter("ObjectId");
     String objectType = "Versioning";
     String xmlFormName = versioningSC.getXmlForm();
 
     String xmlFormShortName = xmlFormName.substring(
-            xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+        xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
     // register xmlForm to object
     PublicationTemplateManager.addDynamicPublicationTemplate(componentId + ":"
-            + objectType + ":" + xmlFormShortName, xmlFormName);
+        + objectType + ":" + xmlFormShortName, xmlFormName);
 
     PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(componentId
-            + ":" + objectType + ":"
-            + xmlFormShortName, xmlFormName);
+        (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(componentId
+        + ":" + objectType + ":"
+        + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
     RecordSet recordSet = pubTemplate.getRecordSet();
 
@@ -816,7 +822,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       // Get last version to display its additional informations instead of
       // blank fields
       DocumentVersion lastVersion = versioningSC.getLastVersion(new DocumentPK(
-              Integer.parseInt(documentId), versioningSC.getComponentId()));
+          Integer.parseInt(documentId), versioningSC.getComponentId()));
       if (lastVersion != null) {
         objectId = lastVersion.getPk().getId();
       }
@@ -829,7 +835,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     }
 
     PagesContext pageContext = new PagesContext("toDefine", "toDefine",
-            versioningSC.getLanguage(), false, componentId, versioningSC.getUserId());
+        versioningSC.getLanguage(), false, componentId, versioningSC.getUserId());
     pageContext.setObjectId(objectId);
 
     request.setAttribute("XMLForm", formUpdate);
@@ -839,13 +845,13 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   }
 
   private String viewVersions(HttpServletRequest request, VersioningSessionController versioningSC)
-          throws RemoteException {
+      throws RemoteException {
     String documentId = request.getParameter("DocId");
     String isAlias = request.getParameter("Alias");
     String componentId = request.getParameter("ComponentId");
     versioningSC.setComponentId(componentId);
     DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-            versioningSC.getSpaceId(), componentId);
+        versioningSC.getSpaceId(), componentId);
 
     Document document = versioningSC.getDocument(documentPK);
 

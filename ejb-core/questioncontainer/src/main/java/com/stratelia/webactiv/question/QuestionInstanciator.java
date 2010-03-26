@@ -55,7 +55,7 @@ public class QuestionInstanciator extends SQLRequest {
       String userId) throws InstanciationException {
     SilverTrace.info("question", "QuestionInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId
-            + ", componentId = " + componentId);
+        + ", componentId = " + componentId);
     try {
       // Create the images directory on the server disk
       createImagesDirectory(spaceId, componentId);
@@ -66,14 +66,14 @@ public class QuestionInstanciator extends SQLRequest {
     }
     SilverTrace.info("question", "QuestionInstanciator.create()",
         "root.MSG_GEN_EXIT_METHOD", "spaceId = " + spaceId + ", componentId = "
-            + componentId);
+        + componentId);
   }
 
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("question", "QuestionInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId
-            + ", componentId = " + componentId);
+        + ", componentId = " + componentId);
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -94,7 +94,7 @@ public class QuestionInstanciator extends SQLRequest {
 
     SilverTrace.info("question", "QuestionInstanciator.delete()",
         "root.MSG_GEN_EXIT_METHOD", "spaceId = " + spaceId + ", componentId = "
-            + componentId);
+        + componentId);
   }
 
   private void createImagesDirectory(String spaceId, String componentId)
@@ -113,13 +113,9 @@ public class QuestionInstanciator extends SQLRequest {
 
   /**
    * Delete all data of one forum instance from the forum table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

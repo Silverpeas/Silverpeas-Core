@@ -30,8 +30,7 @@ import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 /**
  * @author Nicolas EYSSERIC
  */
-public class ClassifyPosition extends
-    com.stratelia.silverpeas.classifyEngine.Position implements
+public class ClassifyPosition extends com.stratelia.silverpeas.classifyEngine.Position implements
     ContainerPositionInterface, java.io.Serializable {
 
   public ClassifyPosition() {
@@ -69,7 +68,6 @@ public class ClassifyPosition extends
 
   /**
    * Méthodes nécéssaire pour le mapping castor du module importExport.
-   * 
    * @return
    */
   public List getListClassifyValue() {
@@ -78,7 +76,6 @@ public class ClassifyPosition extends
 
   /**
    * Méthodes nécéssaire pour le mapping castor du module importExport.
-   * 
    * @param values
    */
   public void setListClassifyValue(List values) {

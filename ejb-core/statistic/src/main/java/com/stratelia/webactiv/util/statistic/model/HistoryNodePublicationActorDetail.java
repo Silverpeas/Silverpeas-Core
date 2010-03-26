@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public class HistoryNodePublicationActorDetail implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  
+
   private Date date;
   private String userId;
   private NodePK node;

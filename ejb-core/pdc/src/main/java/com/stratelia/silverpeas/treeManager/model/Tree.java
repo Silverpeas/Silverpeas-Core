@@ -48,8 +48,6 @@ import java.util.ArrayList;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class Tree implements java.io.Serializable {
@@ -58,10 +56,7 @@ public class Tree implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param treeNodes
-   * 
    * @see
    */
   public Tree(List treeNodes) {
@@ -70,10 +65,7 @@ public class Tree implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public List getTree() {
@@ -82,10 +74,7 @@ public class Tree implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param treeNodes
-   * 
    * @see
    */
   public void setTree(List treeNodes) {
@@ -94,10 +83,7 @@ public class Tree implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getDepth() {
@@ -125,10 +111,7 @@ public class Tree implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public TreeNode getRoot() {
@@ -140,10 +123,7 @@ public class Tree implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {

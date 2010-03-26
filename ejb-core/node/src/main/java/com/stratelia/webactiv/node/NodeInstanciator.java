@@ -57,7 +57,7 @@ public class NodeInstanciator extends SQLRequest {
       String userId) throws InstanciationException {
     SilverTrace.info("node", "NodeInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId
-            + ", componentId = " + componentId);
+        + ", componentId = " + componentId);
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -66,7 +66,7 @@ public class NodeInstanciator extends SQLRequest {
     deleteFavorites(con, spaceId, componentId);
     SilverTrace.info("node", "NodeInstanciator.delete()",
         "root.MSG_GEN_EXIT_METHOD", "spaceId = " + spaceId + ", componentId = "
-            + componentId);
+        + componentId);
   }
 
   private void deleteFavorites(Connection con, String spaceId,
@@ -92,13 +92,9 @@ public class NodeInstanciator extends SQLRequest {
 
   /**
    * Delete all data of one forum instance from the forum table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

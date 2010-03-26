@@ -32,7 +32,6 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- * 
  * @author neysseri
  */
 public interface AnswerBmHome extends EJBHome {

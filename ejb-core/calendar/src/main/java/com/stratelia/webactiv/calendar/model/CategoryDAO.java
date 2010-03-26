@@ -35,7 +35,8 @@ import com.stratelia.webactiv.util.DBUtil;
 
 public class CategoryDAO {
 
-  public static final String CATEGORYCOLUMNNAMES = "CalendarCategory.categoryId, CalendarCategory.name";
+  public static final String CATEGORYCOLUMNNAMES =
+      "CalendarCategory.categoryId, CalendarCategory.name";
 
   // public static final String CATEGORYJOURNALASSOCOLUMNNAMES =
   // "journalId, categoryId";
@@ -50,10 +51,12 @@ public class CategoryDAO {
 
   public static Collection getJournalCategories(Connection con, String journalId)
       throws SQLException {
-    String selectStatement = "select "
-        + CategoryDAO.CATEGORYCOLUMNNAMES
-        + " from CalendarCategory, CalendarJournalCategory "
-        + " where journalId = ? and CalendarCategory.categoryId = CalendarJournalCategory.categoryId";
+    String selectStatement =
+        "select "
+            + CategoryDAO.CATEGORYCOLUMNNAMES
+            + " from CalendarCategory, CalendarJournalCategory "
+            +
+            " where journalId = ? and CalendarCategory.categoryId = CalendarJournalCategory.categoryId";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     ArrayList list = null;

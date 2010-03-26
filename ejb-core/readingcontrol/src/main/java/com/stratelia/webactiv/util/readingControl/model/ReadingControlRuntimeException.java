@@ -28,8 +28,8 @@ import com.stratelia.webactiv.util.exception.*;
 public class ReadingControlRuntimeException extends SilverpeasRuntimeException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public ReadingControlRuntimeException(String callingClass, int errorLevel,
       String message) {

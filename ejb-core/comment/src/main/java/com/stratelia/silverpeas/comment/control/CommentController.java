@@ -58,7 +58,6 @@ public class CommentController {
 
   /**
    * to initilize the home object of Comment EJB
-   * 
    * @return void
    */
   private static CommentBm getCommentBm() {

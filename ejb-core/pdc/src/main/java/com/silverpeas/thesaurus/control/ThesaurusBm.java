@@ -43,10 +43,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * ThesaurusBm
- * 
- * Classe servant à gérer le métier du thesuaurus
- * 
+ * ThesaurusBm Classe servant à gérer le métier du thesuaurus
  */
 public class ThesaurusBm {
 
@@ -87,14 +84,9 @@ public class ThesaurusBm {
 
   /**
    * Retourne la liste des vocabulaires (Collection de Vocabulary)
-   * 
-   * 
    * @param
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getListVocabulary() throws ThesaurusException {
@@ -113,14 +105,9 @@ public class ThesaurusBm {
 
   /**
    * Retourne le détail du vocabulaire à partir d'un idVoca
-   * 
-   * 
    * @param idVoca
-   * 
    * @return Vocabulary
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Vocabulary getVocabulary(long idVoca) throws ThesaurusException {
@@ -139,14 +126,9 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau vocabulaire et retourne l'id de celui-ci
-   * 
-   * 
    * @param voca
-   * 
    * @return long
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public long createVocabulary(Vocabulary voca) throws ThesaurusException {
@@ -165,14 +147,9 @@ public class ThesaurusBm {
 
   /**
    * Retourne vrai si le vocabulaire passé en paramètre existe déjà
-   * 
-   * 
    * @param name
-   * 
    * @return boolean
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public boolean existVocabulary(String name) throws ThesaurusException {
@@ -196,14 +173,9 @@ public class ThesaurusBm {
 
   /**
    * Retourne une chaine qui a encodé les ' par des ''
-   * 
-   * 
    * @param name
-   * 
    * @return String
-   * 
    * @throws
-   * 
    * @see
    */
   private String encode(String name) {
@@ -223,14 +195,9 @@ public class ThesaurusBm {
 
   /**
    * Met à jour le vocabulaire passé en paramètre
-   * 
-   * 
    * @param voca
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public void updateVocabulary(Vocabulary voca) throws ThesaurusException {
@@ -246,14 +213,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime le vocabulaire passé en paramètre
-   * 
-   * 
    * @param idVoca
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see deleteVocaSynonyms, deleteVocaJargons
    */
   public void deleteVocabulary(long idVoca) throws ThesaurusException {
@@ -302,14 +264,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les synonymes associés au vocabulaire passé en paramètre
-   * 
-   * 
    * @param idVoca
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void deleteVocaSynonyms(Connection con, long idVoca)
@@ -327,14 +284,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les jargons associés au vocabulaire passé en paramètre
-   * 
-   * 
    * @param idVoca
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void deleteVocaJargons(Connection con, long idVoca)
@@ -352,14 +304,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les jargons passés en paramètre
-   * 
-   * 
    * @param jargons
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see deleteJargon
    */
   public void deleteJargons(Collection jargons) throws ThesaurusException {
@@ -381,14 +328,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime le jargon passé en paramètre
-   * 
-   * 
    * @param idJargon
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void deleteJargon(String idJargon) throws ThesaurusException {
@@ -405,14 +347,9 @@ public class ThesaurusBm {
 
   /**
    * Crée de nouveaux synonymes à un terme
-   * 
-   * 
    * @param synonyms
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see createSynonym
    */
   private void createSynonyms(Connection con, Collection synonyms)
@@ -432,14 +369,9 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau synonyme à un terme
-   * 
-   * 
    * @param synonym
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void createSynonym(Connection con, Synonym synonym)
@@ -456,16 +388,11 @@ public class ThesaurusBm {
 
   /**
    * Retourne la liste des synonymes d'un vocabulaire, pour un terme
-   * 
-   * 
    * @param idVoca
    * @param idTree
    * @param idTerm
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getSynonyms(long idVoca, long idTree, long idTerm)
@@ -486,14 +413,9 @@ public class ThesaurusBm {
 
   /**
    * Met à jour une liste de synonymes
-   * 
-   * 
    * @param synonyms
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see deleteSynonyms, createSynonyms
    */
   public void updateSynonyms(Collection synonyms) throws ThesaurusException {
@@ -544,16 +466,11 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes d'un terme dans un vocabulaire
-   * 
-   * 
    * @param idVoca
    * @param idTree
    * @param idTerm
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public void deleteSynonyms(String idVoca, String idTree, String idTerm)
@@ -598,14 +515,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes passés en paramètre
-   * 
-   * 
    * @param idSynonyms
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see deleteSynonym
    */
   public void deleteSynonyms(Collection idSynonyms) throws ThesaurusException {
@@ -627,14 +539,9 @@ public class ThesaurusBm {
 
   /**
    * Supprime le synonyme passés en paramètre
-   * 
-   * 
    * @param idSynonym
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void deleteSynonym(long idSynonym) throws ThesaurusException {
@@ -651,16 +558,10 @@ public class ThesaurusBm {
   }
 
   /**
-   * Supprime les synonymes de tous les termes associés à l'axe passé en
-   * paramètre
-   * 
-   * 
+   * Supprime les synonymes de tous les termes associés à l'axe passé en paramètre
    * @param idTree
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
@@ -678,16 +579,10 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes de tous les termes passés en paramètre
-   * 
-   * 
    * @param idTree
-   * @param idTerms
-   *          : List de String
-   * 
+   * @param idTerms : List de String
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see deleteSynonymsTerm
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List idTerms)
@@ -707,15 +602,10 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes du terme passé en paramètre
-   * 
-   * 
    * @param idTree
    * @param idTerm
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void deleteSynonymsTerm(Connection con, long idTree, long idTerm)
@@ -732,16 +622,11 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des utilisateurs utilisant le vocabulaire passé en
-   * paramètre retourne une Collection de Jargon
-   * 
-   * 
+   * Retourne la liste des utilisateurs utilisant le vocabulaire passé en paramètre retourne une
+   * Collection de Jargon
    * @param idVoca
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getJargons(long idVoca) throws ThesaurusException {
@@ -758,18 +643,12 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des jargons untilisés pas la liste des utilisateurs
-   * passés en paramètre Retoune une Collection de Jargon
-   * 
-   * 
+   * Retourne la liste des jargons untilisés pas la liste des utilisateurs passés en paramètre
+   * Retoune une Collection de Jargon
    * @param idUsers
-   * @param type
-   *          (0=UserDetail ou 1=Group)
-   * 
+   * @param type (0=UserDetail ou 1=Group)
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getJargons(Collection idUsers, int type)
@@ -799,18 +678,12 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des jargons untilisés pas la liste des utilisateurs
-   * passés en paramètre Retoune une Collection de Jargon
-   * 
-   * 
+   * Retourne la liste des jargons untilisés pas la liste des utilisateurs passés en paramètre
+   * Retoune une Collection de Jargon
    * @param idUsers
-   * @param type
-   *          (0=UserDetail ou 1=Group)
-   * 
+   * @param type (0=UserDetail ou 1=Group)
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getJargons(Connection con, Collection idUsers, int type)
@@ -841,14 +714,9 @@ public class ThesaurusBm {
 
   /**
    * Crée une liste de jargons
-   * 
-   * 
    * @param jargons
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see getJargons, createJargon, updateJargon
    */
   public void createJargons(Collection jargons) throws ThesaurusException {
@@ -888,14 +756,9 @@ public class ThesaurusBm {
 
   /**
    * Crée une liste de jargons
-   * 
-   * 
    * @param jargons
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see getJargons, createJargon, updateJargon
    */
   public void createJargons(Connection con, Collection jargons)
@@ -935,16 +798,10 @@ public class ThesaurusBm {
   }
 
   /**
-   * Crée la liste des jargons d'un vocabulaire (suppression tous les jargons
-   * du voca puis création)
-   * 
-   * 
+   * Crée la liste des jargons d'un vocabulaire (suppression tous les jargons du voca puis création)
    * @param jargons
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see deleteVocaJargons, createJargon
    */
   public void createVocaJargons(Collection jargons, long idVoca)
@@ -985,14 +842,9 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau jargon
-   * 
-   * 
    * @param jargon
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void createJargon(Jargon jargon) throws ThesaurusException {
@@ -1007,14 +859,9 @@ public class ThesaurusBm {
 
   /**
    * Met à jour le jargon du user
-   * 
-   * 
    * @param jargon
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void updateJargon(Jargon jargon) throws ThesaurusException {
@@ -1035,14 +882,9 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau jargon
-   * 
-   * 
    * @param jargon
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   private void createJargon(Connection con, Jargon jargon)
@@ -1058,14 +900,9 @@ public class ThesaurusBm {
 
   /**
    * Retourne le jargon de l'utilisateur (type 0) passé en paramètre
-   * 
-   * 
    * @param idUser
-   * 
    * @return Jargon
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
@@ -1088,16 +925,12 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire
-   * retourne une Collection de Synonym
-   * 
+   * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire retourne une
+   * Collection de Synonym
    * @param idVoca
    * @param name
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getSynonyms(long idVoca, String name)
@@ -1118,16 +951,12 @@ public class ThesaurusBm {
   }
 
   /**
-   * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire
-   * retourne une Collection de Synonym
-   * 
+   * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire retourne une
+   * Collection de Synonym
    * @param idVoca
    * @param name
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see
    */
   public Collection getSynonymsByTree(long idVoca, long idTree)

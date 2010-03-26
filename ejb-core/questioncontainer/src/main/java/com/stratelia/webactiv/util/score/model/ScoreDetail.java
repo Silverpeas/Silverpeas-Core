@@ -43,8 +43,6 @@ package com.stratelia.webactiv.util.score.model;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ScoreDetail implements java.io.Serializable {
@@ -79,8 +77,6 @@ public class ScoreDetail implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
@@ -89,7 +85,6 @@ public class ScoreDetail implements java.io.Serializable {
    * @param score
    * @param elapsedTime
    * @param suggestion
-   * 
    * @see
    */
   public ScoreDetail(ScorePK scorePK, String fatherId, String userId,

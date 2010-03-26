@@ -92,10 +92,10 @@ public class DynamicValueDAO {
     try {
       String query =
           "SELECT " + keyColumnName + "," + valueColumnName + "," + startDateColumnName + "," +
-              endDateColumnName + " FROM " + tableName + " WHERE (" + endDateColumnName + " >= ? " +
+          endDateColumnName + " FROM " + tableName + " WHERE (" + endDateColumnName + " >= ? " +
           " OR " + endDateColumnName + " IS NULL )  AND (" + startDateColumnName +
           " <= ?  OR " + startDateColumnName + " IS NULL )  AND " +
-              keyColumnName + " = ?";
+          keyColumnName + " = ?";
       pst = conn.prepareStatement(query);
 
       // today date
@@ -136,7 +136,7 @@ public class DynamicValueDAO {
       // building query
       String query =
           "SELECT " + keyColumnName + "," + valueColumnName + "," + startDateColumnName + "," +
-              endDateColumnName + " FROM " + tableName + " WHERE (" + endDateColumnName + " >= ? " +
+          endDateColumnName + " FROM " + tableName + " WHERE (" + endDateColumnName + " >= ? " +
           " OR " + endDateColumnName + " IS NULL ) AND (" + startDateColumnName +
           " <= ?  OR " + startDateColumnName + " IS NULL ) ORDER BY " + keyColumnName;
 
@@ -184,11 +184,11 @@ public class DynamicValueDAO {
       // building query
       String query =
           "SELECT " + keyColumnName + "," + valueColumnName + "," + startDateColumnName + "," +
-              endDateColumnName + " FROM " + tableName + " WHERE (" + endDateColumnName + " >= ? " +
+          endDateColumnName + " FROM " + tableName + " WHERE (" + endDateColumnName + " >= ? " +
           " OR " + endDateColumnName + " IS NULL ) AND (" + startDateColumnName +
           " <= ?  OR " + startDateColumnName + " IS NULL ) AND " +
-              keyColumnName + " like ? ORDER BY " +
-              keyColumnName;
+          keyColumnName + " like ? ORDER BY " +
+          keyColumnName;
 
       pst = conn.prepareStatement(query);
 
@@ -223,7 +223,7 @@ public class DynamicValueDAO {
     try {
       ResourceBundle bundle =
           ResourceBundle
-              .getBundle("com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings");
+          .getBundle("com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings");
       DynamicValueDAO.tableName = bundle.getString("tableName").trim();
       DynamicValueDAO.keyColumnName = bundle.getString("keyColumnName").trim();
       DynamicValueDAO.valueColumnName = bundle.getString("valueColumnName").trim();

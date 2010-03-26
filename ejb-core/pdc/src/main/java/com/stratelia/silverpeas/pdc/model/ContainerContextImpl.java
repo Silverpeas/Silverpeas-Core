@@ -29,12 +29,9 @@ import com.stratelia.silverpeas.silvertrace.*;
 import com.stratelia.silverpeas.containerManager.*;
 
 /**
- * This is the data structure that the content JSP is going to use (built by the
- * container router)
- * 
+ * This is the data structure that the content JSP is going to use (built by the container router)
  */
-public class ContainerContextImpl implements ContainerContext,
-    java.io.Serializable {
+public class ContainerContextImpl implements ContainerContext, java.io.Serializable {
   private int nContainerInstanceId = -1; // The instance of the container on
   // which the content is going to use
   private String sReturnURL = null; // URL to get back on the container
@@ -100,7 +97,7 @@ public class ContainerContextImpl implements ContainerContext,
       return uClassifyURLIcone.getActionURL()
           + "?"
           + containerPeas.getContainerInterface().getCallParameters(
-              sComponentId, sSilverContentId);
+          sComponentId, sSilverContentId);
     } catch (Exception e) {
       SilverTrace.error("containerManager",
           "ContainerContext.getClassifyURLWithParameters",
@@ -126,8 +123,7 @@ public class ContainerContextImpl implements ContainerContext,
   }
 
   /*
-   * Get All the SilverContentIds corresponding to the given position in the
-   * given Components
+   * Get All the SilverContentIds corresponding to the given position in the given Components
    */
   public List getSilverContentIdByPosition(
       ContainerPositionInterface containerPosition, List alComponentIds) {

@@ -30,8 +30,8 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.*;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
-public class QuestionContainerHeader extends AbstractI18NBean implements
-    java.io.Serializable, SilverContentInterface {
+public class QuestionContainerHeader extends AbstractI18NBean implements java.io.Serializable,
+    SilverContentInterface {
 
   private QuestionContainerPK pk = null;
   private String title = null;

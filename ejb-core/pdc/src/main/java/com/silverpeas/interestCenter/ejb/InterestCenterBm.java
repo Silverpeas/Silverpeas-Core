@@ -43,8 +43,7 @@ public interface InterestCenterBm extends javax.ejb.EJBObject {
   public ArrayList getICByUserID(int userID) throws RemoteException;
 
   /**
-   * @param icPK
-   *          <code>InterestCenter</code> id
+   * @param icPK <code>InterestCenter</code> id
    * @return InterestCenter by its id
    */
   public InterestCenter getICByID(int icPK) throws RemoteException;
@@ -60,15 +59,13 @@ public interface InterestCenterBm extends javax.ejb.EJBObject {
   public void updateIC(InterestCenter ic) throws RemoteException;
 
   /**
-   * @param pks
-   *          ArrayList of <code>java.lang.Integer</code> - id's of
-   *          <code>InterestCenter</code>s to be deleted
+   * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
+   * to be deleted
    */
   public void removeICByPK(ArrayList pks) throws RemoteException;
 
   /**
-   * @param pk
-   *          an id of <code>InterestCenter</code> to be deleted
+   * @param pk an id of <code>InterestCenter</code> to be deleted
    */
   public void removeICByPK(int pk) throws RemoteException;
 

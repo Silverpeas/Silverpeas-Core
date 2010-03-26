@@ -59,9 +59,9 @@ public class NotationPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * Comparison between two notation primary key. Since various attributes of
-   * the both elements can be null, using toString() method to compare the
-   * elements avoids to check null cases for each attribute.
+   * Comparison between two notation primary key. Since various attributes of the both elements can
+   * be null, using toString() method to compare the elements avoids to check null cases for each
+   * attribute.
    */
   public boolean equals(Object other) {
     return ((other instanceof NotationPK) && (toString()

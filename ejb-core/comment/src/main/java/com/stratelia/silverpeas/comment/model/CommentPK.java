@@ -28,7 +28,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * This object contains the info about PrimaryKey of document
- * 
  * @author Georgy Shakirin
  * @version 1.0
  */
@@ -37,10 +36,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
-   * 
    * @see
    */
   public CommentPK(String id) {
@@ -49,12 +45,9 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param spaceId
    * @param componentId
-   * 
    * @see
    */
   public CommentPK(String id, String spaceId, String componentId) {
@@ -63,11 +56,8 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param pk
-   * 
    * @see
    */
   public CommentPK(String id, WAPrimaryKey pk) {
@@ -84,10 +74,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTableName() {
@@ -96,12 +83,8 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public boolean equals(Object other) {
@@ -115,10 +98,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {
@@ -127,9 +107,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * 
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

@@ -55,11 +55,12 @@ public class ConnectionPoolWithJNDI implements ConnectionPool {
       SilverTrace
           .error("wysiwig", ConnectionPoolWithJNDI.class.toString(),
           "wysiwig.DRIVER_MISSING");
-      throw new TechnicalException(ConnectionPoolWithJNDI.class.toString() +
-          " : An error occurred  during the connection initialization. The Pool information must be set");
+      throw new TechnicalException(
+          ConnectionPoolWithJNDI.class.toString() +
+              " : An error occurred  during the connection initialization. The Pool information must be set");
     }
     Connection conn = null;
-    //use the common mechanism to get a connection
+    // use the common mechanism to get a connection
     try {
       conn = DBUtil.makeConnection(poolInfo.getJndiName());
     } catch (UtilException e) {

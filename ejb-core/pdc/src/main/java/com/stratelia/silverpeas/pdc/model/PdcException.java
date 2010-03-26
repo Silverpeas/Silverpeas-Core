@@ -27,21 +27,15 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class PdcException extends SilverpeasException implements
-    java.io.Serializable {
+public class PdcException extends SilverpeasException implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public PdcException(String callingClass, int errorLevel, String message) {
@@ -50,13 +44,10 @@ public class PdcException extends SilverpeasException implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public PdcException(String callingClass, int errorLevel, String message,
@@ -66,13 +57,10 @@ public class PdcException extends SilverpeasException implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public PdcException(String callingClass, int errorLevel, String message,
@@ -82,14 +70,11 @@ public class PdcException extends SilverpeasException implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public PdcException(String callingClass, int errorLevel, String message,
@@ -99,10 +84,7 @@ public class PdcException extends SilverpeasException implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

@@ -31,8 +31,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 /**
  * @author Nicolas EYSSERIC
  */
-public class SearchContext implements ContainerPositionInterface,
-    java.io.Serializable {
+public class SearchContext implements ContainerPositionInterface, java.io.Serializable {
   private ArrayList criterias = new ArrayList();
   private String userId = null; // user who search
 

@@ -24,7 +24,6 @@ import java.util.List;
 
 /**
  * Classe utilisee pour le mapping castor
- * 
  * @author sdevolder
  */
 public class AxisType {

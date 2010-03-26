@@ -38,7 +38,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
  * description, location)
  */
 public class GlobalSilverResult extends GlobalSilverContent implements java.io.Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private String titleLink = null;
   private String downloadLink = null;
@@ -53,7 +53,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setLocation(gsc.getLocation());
     super.setURL(gsc.getURL());
     super.setScore(1);
-    
+
     super.setThumbnailHeight(gsc.getThumbnailHeight());
     super.setThumbnailMimeType(gsc.getThumbnailMimeType());
     super.setThumbnailWidth(gsc.getThumbnailWidth());

@@ -50,13 +50,9 @@ public class QuestionContainerContentManager {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param qC
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param qC the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public static int createSilverContent(Connection con,
@@ -67,19 +63,16 @@ public class QuestionContainerContentManager {
     SilverTrace.info("questionContainer",
         "QuestionContainerContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     return getContentManager().addSilverContent(con, qC.getPK().getId(),
         qC.getPK().getComponentName(), userId, scv);
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a PublicationDetail
-   * 
-   * @param pubDetail
-   *          the content
-   * @param silverObjectId
-   *          the unique identifier of the content
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   * @param pubDetail the content
+   * @param silverObjectId the unique identifier of the content
    */
   public static void updateSilverContentVisibility(QuestionContainerHeader qC,
       boolean isVisible) throws ContentManagerException {
@@ -91,7 +84,7 @@ public class QuestionContainerContentManager {
       SilverTrace.info("questionContainer",
           "QuestionContainerContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-              + scv.toString());
+          + scv.toString());
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           qC.getPK().getComponentName(), silverContentId);
       ClassifyEngine.clearCache();
@@ -111,11 +104,8 @@ public class QuestionContainerContentManager {
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param pubPK the identifiant of the content to unregister
    */
   public static void deleteSilverContent(Connection con, QuestionContainerPK pk)
       throws ContentManagerException {
@@ -124,7 +114,7 @@ public class QuestionContainerContentManager {
     SilverTrace.info("questionContainer",
         "QuestionContainerContentManager.deleteSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = "
-            + contentId);
+        + contentId);
     getContentManager().removeSilverContent(con, contentId,
         pk.getComponentName());
   }

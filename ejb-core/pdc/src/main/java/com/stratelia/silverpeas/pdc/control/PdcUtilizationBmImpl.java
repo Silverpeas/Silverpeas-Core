@@ -112,15 +112,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
-   * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We
-   * indicate the Object SilverPeas which map the database.
+   * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We indicate the Object
+   * SilverPeas which map the database.
    */
   private SilverpeasBeanDAO dao = null;
 
@@ -136,9 +134,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns an axis used by an instance
-   * 
-   * @param usedAxisId
-   *          - the whished used axis.
+   * @param usedAxisId - the whished used axis.
    * @return an UsedAxis
    */
   public UsedAxis getUsedAxis(String usedAxisId) throws PdcException {
@@ -155,7 +151,6 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of used axis sorted.
-   * 
    * @return a list sorted or null otherwise
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException {
@@ -176,7 +171,6 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of axis header sorted.
-   * 
    * @return a list sorted or null otherwise
    */
   public List getAxisHeaderUsedByInstanceId(String instanceId)
@@ -211,9 +205,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns the usedAxis based on a defined axis
-   * 
-   * @param axisId
-   *          - the id of the axis
+   * @param axisId - the id of the axis
    */
   private List getUsedAxisByAxisId(Connection con, int axisId)
       throws PdcException {
@@ -232,9 +224,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Create an used axis into the data base.
-   * 
-   * @param usedAxis
-   *          - the object which contains all data about utilization of an axis
+   * @param usedAxis - the object which contains all data about utilization of an axis
    * @return usedAxisId
    */
   public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
@@ -243,7 +233,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     try {
       if (PdcUtilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
           new Integer(usedAxis.getPK().getId()).intValue(), usedAxis
-              .getAxisId(), usedAxis.getBaseValue(), treeId)) {
+          .getAxisId(), usedAxis.getBaseValue(), treeId)) {
         return 1;
       } else {
         dao.add(usedAxis);
@@ -264,9 +254,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update an used axis into the data base.
-   * 
-   * @param usedAxis
-   *          - the object which contains all data about utilization of the axis
+   * @param usedAxis - the object which contains all data about utilization of the axis
    */
   public int updateUsedAxis(UsedAxis usedAxis, String treeId)
       throws PdcException {
@@ -280,7 +268,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       if (newBaseValue != oldBaseValue) {
         if (PdcUtilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
             new Integer(usedAxis.getPK().getId()).intValue(), usedAxis
-                .getAxisId(), usedAxis.getBaseValue(), treeId))
+            .getAxisId(), usedAxis.getBaseValue(), treeId))
           return 1;
       }
       dao.update(usedAxis);
@@ -299,9 +287,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * delete the used axis from the data base
-   * 
-   * @param usedAxisId
-   *          - the id of the used axe
+   * @param usedAxisId - the id of the used axe
    */
   public void deleteUsedAxis(String usedAxisId) throws PdcException {
     try {
@@ -314,12 +300,8 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param usedAxisIds
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException {
@@ -341,12 +323,8 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param axisId
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxisByAxisId(Connection con, String axisId)
@@ -361,12 +339,8 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param valueId
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   private void deleteUsedAxisByValueId(Connection con, int valueId, int axisId)
@@ -382,12 +356,8 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param valueId
-   * 
    * @throws PdcException
-   * 
    * @see
    */
 
@@ -406,9 +376,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update a base value from the PdcUtilizationDAO
-   * 
-   * @param valueId
-   *          - the base value that must be updated
+   * @param valueId - the base value that must be updated
    */
   private void updateBaseValue(Connection con, int oldBaseValue,
       int newBaseValue, int axisId, String treeId, String instanceId)
@@ -483,10 +451,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection openConnection() throws PdcException {
@@ -502,10 +467,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void closeConnection(Connection con) {

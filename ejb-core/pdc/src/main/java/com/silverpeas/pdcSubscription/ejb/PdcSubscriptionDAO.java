@@ -121,8 +121,9 @@ public class PdcSubscriptionDAO {
     return result;
   }
 
-  public final static String GET_CRITERIAS_BY_SC_ID_QUERY = "SELECT id, pdcSubscriptionId, axisId, value FROM "
-      + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
+  public final static String GET_CRITERIAS_BY_SC_ID_QUERY =
+      "SELECT id, pdcSubscriptionId, axisId, value FROM "
+          + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
 
   private static ArrayList getCriteriasBySubscriptionID(Connection conn,
       int scId) throws PdcSubscriptionRuntimeException, SQLException {
@@ -387,7 +388,7 @@ public class PdcSubscriptionDAO {
         throw new PdcSubscriptionRuntimeException(
             "PdcSubscriptionDAO.removePDCSubscriptionById",
             SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_RECORD_NOTFOUND", String
-                .valueOf(id));
+            .valueOf(id));
       }
 
     } finally {

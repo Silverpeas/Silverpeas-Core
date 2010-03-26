@@ -30,16 +30,14 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
 public class CoordinateRuntimeException extends SilverpeasRuntimeException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -48,13 +46,10 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
@@ -64,13 +59,10 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
@@ -80,14 +72,11 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
@@ -96,8 +85,7 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "coordinates";

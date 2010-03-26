@@ -36,36 +36,35 @@ import com.stratelia.webactiv.calendar.model.ToDoHeader;
 
 public interface CalendarBmBusinessSkeleton {
   /**
-   * To be able to get user login, CalendarBm need to be connected to admin
-   * services
+   * To be able to get user login, CalendarBm need to be connected to admin services
    */
   // public void setUserConnections(AdminUserConnections userConnections);
 
   /**
-   * getDaySchedulablesForUser() for a particular user returns all the events
-   * scheduled on a particular day. This includes all kinds of events
+   * getDaySchedulablesForUser() for a particular user returns all the events scheduled on a
+   * particular day. This includes all kinds of events
    */
   public Collection getDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) throws RemoteException;
 
   /**
-   * getNextDaySchedulablesForUser() for a particular user returns the next
-   * events scheduled. This includes all kinds of events
+   * getNextDaySchedulablesForUser() for a particular user returns the next events scheduled. This
+   * includes all kinds of events
    */
   public Collection getNextDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) throws RemoteException;
 
   /**
-   * getPeriodSchedulablesForUser() for a particular user returns all the events
-   * scheduled during a particular period. This includes all kinds of events
+   * getPeriodSchedulablesForUser() for a particular user returns all the events scheduled during a
+   * particular period. This includes all kinds of events
    */
   public Collection getPeriodSchedulablesForUser(String begin, String end,
       String userId, String categoryId, String participation)
       throws RemoteException;
 
   /**
-   * countMonthSchedulablesForUser() for a particular user, counts the number of
-   * schedules for each day in the month
+   * countMonthSchedulablesForUser() for a particular user, counts the number of schedules for each
+   * day in the month
    */
   public Collection countMonthSchedulablesForUser(String month, String userId,
       String categoryId, String participation) throws RemoteException;
@@ -103,8 +102,7 @@ public interface CalendarBmBusinessSkeleton {
       CalendarException;
 
   /**
-   * updateJournal() update the journal entry, specified by the id, in the
-   * database
+   * updateJournal() update the journal entry, specified by the id, in the database
    */
   public void updateJournal(JournalHeader journal) throws RemoteException,
       CalendarException;
@@ -113,8 +111,7 @@ public interface CalendarBmBusinessSkeleton {
    * updateToDo() update the todo entry, specified by the id, in the database
    */
   /*
-   * public void updateToDo(ToDoHeader todo) throws RemoteException,
-   * CreateException;
+   * public void updateToDo(ToDoHeader todo) throws RemoteException, CreateException;
    */
   public void updateToDo(ToDoHeader todo) throws RemoteException,
       CalendarException;
@@ -141,22 +138,21 @@ public interface CalendarBmBusinessSkeleton {
       throws RemoteException;
 
   /**
-   * getOutlookJournalHeadersForUser() returns the journalHeaders for user
-   * represented by the userId
+   * getOutlookJournalHeadersForUser() returns the journalHeaders for user represented by the userId
    */
   public Collection getExternalJournalHeadersForUser(String userId)
       throws RemoteException;
 
   /**
-   * getExternalJournalHeadersForUserAfterDate() returns the journalHeaders for
-   * user represented by the userId for which start date after given date
+   * getExternalJournalHeadersForUserAfterDate() returns the journalHeaders for user represented by
+   * the userId for which start date after given date
    */
   public Collection getExternalJournalHeadersForUserAfterDate(String userId,
       Date startDate) throws RemoteException;
 
   /**
-   * getJournalHeadersForUserAfterDate() returns the journalHeaders for user
-   * represented by the userId for which start date after given date
+   * getJournalHeadersForUserAfterDate() returns the journalHeaders for user represented by the
+   * userId for which start date after given date
    */
   public Collection getJournalHeadersForUserAfterDate(String userId,
       Date startDate, int nbReturned) throws RemoteException;

@@ -26,8 +26,8 @@ package com.stratelia.silverpeas.pdc.model;
 import com.silverpeas.util.i18n.Translation;
 
 /**
- * This class contains headers of axis. And uses the persistence class for the
- * DAO. The user can access to the axis main information.
+ * This class contains headers of axis. And uses the persistence class for the DAO. The user can
+ * access to the axis main information.
  */
 public class AxisHeaderI18N extends Translation implements java.io.Serializable {
 

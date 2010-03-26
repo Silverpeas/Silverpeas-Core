@@ -44,10 +44,7 @@ import javax.ejb.*;
 
 /**
  * Interface declaration
- * 
- * 
  * @author neysseri
  */
-public interface QuestionContainerBm extends QuestionContainerBmSkeleton,
-    EJBObject {
+public interface QuestionContainerBm extends QuestionContainerBmSkeleton, EJBObject {
 }

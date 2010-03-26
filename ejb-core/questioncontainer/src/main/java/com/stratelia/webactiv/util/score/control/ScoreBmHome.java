@@ -53,8 +53,6 @@ import javax.ejb.CreateException;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface ScoreBmHome extends javax.ejb.EJBHome {
@@ -65,13 +63,9 @@ public interface ScoreBmHome extends javax.ejb.EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   public ScoreBm create() throws RemoteException, CreateException;

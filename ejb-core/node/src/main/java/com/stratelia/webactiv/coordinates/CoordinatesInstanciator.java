@@ -49,7 +49,7 @@ public class CoordinatesInstanciator extends SQLRequest {
       String userId) throws InstanciationException {
     SilverTrace.info("coordinates", "CoordinatesInstanciator.delete()",
         "root.MSG_GEN_PARAM_VALUE", "delete called with space = " + spaceId
-            + " and component = " + componentId);
+        + " and component = " + componentId);
 
     setDeleteQueries();
 
@@ -58,13 +58,9 @@ public class CoordinatesInstanciator extends SQLRequest {
 
   /**
    * Delete all data of one forum instance from the forum table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

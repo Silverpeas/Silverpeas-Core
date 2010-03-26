@@ -51,7 +51,7 @@ public class SilverStatisticsVolumeAlimentation {
     if (resources == null) {
       try {
         resources = FileUtil.loadBundle(
-                "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
+            "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
       } catch (Exception ex) {
         SilverTrace.error("silverstatistics",
             "SilverStatisticsVolumeAlimentation",
@@ -103,7 +103,7 @@ public class SilverStatisticsVolumeAlimentation {
             while (iteratorUserIdCountVolume.hasNext()) {
               UserIdCountVolumeCouple currentUserIdCountVolume =
                   (UserIdCountVolumeCouple) iteratorUserIdCountVolume
-                      .next();
+                  .next();
 
               /*
                * System.out.println("\n addStatVolume = "+" userId= "+

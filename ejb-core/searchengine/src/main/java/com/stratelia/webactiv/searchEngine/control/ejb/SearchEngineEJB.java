@@ -50,6 +50,7 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
 
   ResourceLocator pdcSettings = new ResourceLocator(
       "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
+
   /**
    * Create a SearchEngineBm. The results set is initialized empty.
    */

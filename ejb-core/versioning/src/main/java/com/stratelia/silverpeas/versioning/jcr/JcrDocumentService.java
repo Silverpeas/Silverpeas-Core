@@ -38,13 +38,10 @@ public interface JcrDocumentService {
   public void updateDocument(DocumentVersion document);
 
   /**
-   * Indicate if the node for the specified attachment is currently locked (for
-   * example by Office in the case of a webdav online edition).
-   * 
-   * @param attachment
-   *          the attachment.
-   * @param language
-   *          the language to obtain the file.
+   * Indicate if the node for the specified attachment is currently locked (for example by Office in
+   * the case of a webdav online edition).
+   * @param attachment the attachment.
+   * @param language the language to obtain the file.
    * @return true if the node is locked - false otherwise.
    * @throws RepositoryException
    */

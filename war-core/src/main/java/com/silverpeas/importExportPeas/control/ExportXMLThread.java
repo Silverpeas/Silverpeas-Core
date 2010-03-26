@@ -54,7 +54,7 @@ public class ExportXMLThread extends ExportThread {
       ImportExport importExport = new ImportExport();
       m_ExportReport =
           importExport
-              .processExport(super.m_toAwake.getUserDetail(), language, pksToExport, rootId);
+          .processExport(super.m_toAwake.getUserDetail(), language, pksToExport, rootId);
       SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
           "------------TOUT EST OK-----------");
       m_isEncours = false;

@@ -44,20 +44,15 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class TreeManagerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public TreeManagerException(String callingClass, int errorLevel,
@@ -67,13 +62,10 @@ public class TreeManagerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public TreeManagerException(String callingClass, int errorLevel,
@@ -83,13 +75,10 @@ public class TreeManagerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public TreeManagerException(String callingClass, int errorLevel,
@@ -99,14 +88,11 @@ public class TreeManagerException extends SilverpeasException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public TreeManagerException(String callingClass, int errorLevel,
@@ -116,10 +102,7 @@ public class TreeManagerException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

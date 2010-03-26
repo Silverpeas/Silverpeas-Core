@@ -86,12 +86,12 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     return jndiName;
   }
 
-   @Override
+  @Override
   protected Properties getJNDIProperties() {
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
     try {
-      if(PathTestUtil.class.getClassLoader().getResource("jndi.properties") != null) {
+      if (PathTestUtil.class.getClassLoader().getResource("jndi.properties") != null) {
         env.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
       }
     } catch (IOException ex) {
@@ -108,7 +108,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     return dataSet;
   }
 
-   /**
+  /**
    * Workaround to be able to use Sun's JNDI file system provider on Unix
    * @param ic : the JNDI initial context
    * @param jndiName : the binding name

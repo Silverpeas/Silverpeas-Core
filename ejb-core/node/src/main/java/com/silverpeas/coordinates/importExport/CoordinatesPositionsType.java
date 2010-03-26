@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * @author dlesimple
- * 
  */
 public class CoordinatesPositionsType {
 

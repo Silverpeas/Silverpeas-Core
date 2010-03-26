@@ -104,7 +104,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
 
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
       ResourceBundle resources = FileUtil.loadBundle(
-              "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
+          "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
 
       initSchedulerStatistics(resources
           .getString("scheduledGetStatVolumeTimeStamp"), STAT_VOLUME_JOB_NAME,

@@ -55,8 +55,6 @@ import com.stratelia.webactiv.util.score.model.ScorePK;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface ScoreBmSkeleton {
@@ -67,12 +65,8 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetail
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void addScore(ScoreDetail scoreDetail) throws RemoteException;
@@ -83,12 +77,8 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteScore(ScorePK scorePK) throws RemoteException;
@@ -99,13 +89,9 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteScoreByFatherPK(ScorePK scorePK, String fatherId)
@@ -117,14 +103,9 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getAllScores(ScorePK scorePK) throws RemoteException;
@@ -135,15 +116,10 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getUserScores(ScorePK scorePK, String userId)
@@ -155,16 +131,11 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getUserScoresByFatherId(ScorePK scorePK, String fatherId,
@@ -176,16 +147,11 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param nbBestScores
    * @param fatherId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
@@ -197,16 +163,11 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param nbWorstScores
    * @param fatherId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getWorstScoresByFatherId(ScorePK scorePK,
@@ -218,15 +179,10 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public int getNbVotersByFatherId(ScorePK scorePK, String fatherId)
@@ -238,15 +194,10 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public float getAverageScoreByFatherId(ScorePK scorePK, String fatherId)
@@ -258,17 +209,12 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
    * @param participationId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(ScorePK scorePK,
@@ -281,15 +227,10 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getScoresByFatherId(ScorePK scorePK, String fatherId)
@@ -297,16 +238,11 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scorePK
    * @param fatherId
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public int getUserNbParticipationsByFatherId(ScorePK scorePK,
@@ -314,12 +250,8 @@ public interface ScoreBmSkeleton {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scoreDetail
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateScore(ScoreDetail scoreDetail) throws RemoteException;

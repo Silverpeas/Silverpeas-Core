@@ -54,7 +54,7 @@ public class ThesaurusBmEJB implements SessionBean {
       throw new ThesaurusBmRuntimeException("ThesaurusBmEJB.getSynonyms",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
           "idTree = " + idTree + ", idTerm = " + idTerm + ", idVoca = "
-              + idVoca, e);
+          + idVoca, e);
     }
     return synonyms;
   }

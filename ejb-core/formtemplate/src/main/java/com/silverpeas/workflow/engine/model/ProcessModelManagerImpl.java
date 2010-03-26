@@ -134,9 +134,11 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    */
   private List<String> findProcessModels(String strProcessModelDir)
       throws UtilException, IOException {
-    Iterator<File> subFoldersIterator = FileFolderManager.getAllSubFolder(strProcessModelDir).iterator();
+    Iterator<File> subFoldersIterator =
+        FileFolderManager.getAllSubFolder(strProcessModelDir).iterator();
     Iterator<String> subFolderModelsIterator;
-    Iterator<File> currentDirModelsIterator = FileFolderManager.getAllFile(strProcessModelDir).iterator();
+    Iterator<File> currentDirModelsIterator =
+        FileFolderManager.getAllFile(strProcessModelDir).iterator();
     List<String> processModels = new ArrayList<String>();
     File subFolder;
 

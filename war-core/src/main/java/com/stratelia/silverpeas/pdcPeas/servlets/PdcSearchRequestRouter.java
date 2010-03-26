@@ -802,8 +802,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         destination = "/pdcPeas/jsp/webTab.jsp";
       } else if ("markAsRead".equals(function)) {
-          PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, request);
-          destination = "/pdcPeas/jsp/blank.html";
+        PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, request);
+        destination = "/pdcPeas/jsp/blank.html";
       } else {
         destination = "/pdcPeas/jsp/" + function;
       }

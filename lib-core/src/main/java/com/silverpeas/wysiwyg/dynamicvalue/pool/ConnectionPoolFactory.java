@@ -34,8 +34,7 @@ import org.xml.sax.InputSource;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This class allow to initiate a connectionPool implementation and  gets a connection from the pool 
- * 
+ * This class allow to initiate a connectionPool implementation and gets a connection from the pool
  */
 public class ConnectionPoolFactory {
   final static String ConfigPoolFilename = "ConnectionSettings.xml";
@@ -72,7 +71,7 @@ public class ConnectionPoolFactory {
         Unmarshaller unmar = new Unmarshaller(mapping);
         poolInfo =
             (ConnectionPoolInformation) unmar.unmarshal(new InputSource(ConnectionPoolFactory.class
-                .getResourceAsStream(ConfigPoolFilename)));
+            .getResourceAsStream(ConfigPoolFilename)));
 
         SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
             " information about datasource : poolInformation detail :" + poolInfo.toString());
@@ -92,7 +91,8 @@ public class ConnectionPoolFactory {
     // gets a connectionPool
     if (pool == null) {
       // check the class to instantiate the correct class.
-      // this code must be replace by the use of a properties file or connectionSettings.xml if there are more than 2 pool
+      // this code must be replace by the use of a properties file or connectionSettings.xml if
+      // there are more than 2 pool
       // implementations
       if (poolInfo != null && StringUtils.isNotEmpty(poolInfo.getConnectionType())) {
         String className = null;

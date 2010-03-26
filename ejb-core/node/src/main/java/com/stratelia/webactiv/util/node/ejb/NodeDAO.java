@@ -57,7 +57,8 @@ public class NodeDAO {
       + "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM SB_Node_Node WHERE "
       + "nodeId = ? AND instanceId = ?";
 
-  private static Hashtable<String, ArrayList<NodeDetail>> alltrees = new Hashtable<String, ArrayList<NodeDetail>>();
+  private static Hashtable<String, ArrayList<NodeDetail>> alltrees =
+      new Hashtable<String, ArrayList<NodeDetail>>();
 
   /**
    * This class must not be instanciated
@@ -481,7 +482,8 @@ public class NodeDAO {
     return getAllHeaders(con, nodePK, sorting, 0);
   }
 
-  public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, int level) throws SQLException {
+  public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, int level)
+      throws SQLException {
     return getAllHeaders(con, nodePK, null, level);
   }
 
@@ -490,7 +492,8 @@ public class NodeDAO {
    * @return A collection of NodeDetail
    * @since 1.6
    */
-  public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, String sorting, int level)
+  public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, String sorting,
+      int level)
       throws SQLException {
     List<NodeDetail> headers = new ArrayList<NodeDetail>();
     StringBuffer nodeStatement = new StringBuffer();

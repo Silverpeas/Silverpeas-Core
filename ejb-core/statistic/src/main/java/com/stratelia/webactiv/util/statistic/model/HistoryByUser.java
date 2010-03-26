@@ -36,9 +36,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  * @author
  */
 public class HistoryByUser implements Serializable {
-  
+
   private static final long serialVersionUID = 1L;
-  
+
   private UserDetail user;
   private Date lastAccess;
   private int nbAccess;

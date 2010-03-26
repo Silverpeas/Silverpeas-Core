@@ -66,7 +66,8 @@ public class PublicationDAO {
   // used only for kmelia
   // keys : componentId
   // values : Collection of PublicationDetail
-  private static Hashtable<String, Collection<PublicationDetail>> lastPublis = new Hashtable<String, Collection<PublicationDetail>>();
+  private static Hashtable<String, Collection<PublicationDetail>> lastPublis =
+      new Hashtable<String, Collection<PublicationDetail>>();
   private static String publicationTableName = "SB_Publication_Publi";
   private static String publicationFatherTableName = "SB_Publication_PubliFather";
   private static String nodeTableName = "SB_Node_Node";
@@ -1066,7 +1067,8 @@ public class PublicationDAO {
     }
   }
 
-  public static Collection<PublicationDetail> selectByStatus(Connection con, List<String> componentIds,
+  public static Collection<PublicationDetail> selectByStatus(Connection con,
+      List<String> componentIds,
       String status) throws SQLException {
     List<PublicationDetail> list = new ArrayList<PublicationDetail>();
     if (componentIds != null && componentIds.size() > 0) {
@@ -1158,7 +1160,8 @@ public class PublicationDAO {
     return list;
   }
 
-  public static Collection<PublicationPK> selectPKsByStatus(Connection con, List<String> componentIds,
+  public static Collection<PublicationPK> selectPKsByStatus(Connection con,
+      List<String> componentIds,
       String status) throws SQLException {
     List<PublicationPK> list = new ArrayList<PublicationPK>();
     if (componentIds != null && componentIds.size() > 0) {

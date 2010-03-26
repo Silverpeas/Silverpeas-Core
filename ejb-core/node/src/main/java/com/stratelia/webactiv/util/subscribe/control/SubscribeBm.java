@@ -53,16 +53,13 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface SubscribeBm extends EJBObject {
 
   /**
-   * addPublicationInNode() This method has to be called each time a publication
-   * is added in a node. This will enable to send email if some users are
-   * subscribers of this node.
+   * addPublicationInNode() This method has to be called each time a publication is added in a node.
+   * This will enable to send email if some users are subscribers of this node.
    */
   // public void addPublicationInNode(PublicationPK pub, NodePK node) throws
   // RemoteException;
@@ -71,13 +68,9 @@ public interface SubscribeBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param node
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void removeSubscribe(String userId, NodePK node)
@@ -85,25 +78,17 @@ public interface SubscribeBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void removeUserSubscribes(String userId) throws RemoteException;
 
   /**
    * Method declaration
-   * 
-   * 
    * @param node
    * @param path
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void removeNodeSubscribes(NodePK node, String path)
@@ -111,14 +96,9 @@ public interface SubscribeBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getUserSubscribePKs(String userId) throws RemoteException;
@@ -126,16 +106,11 @@ public interface SubscribeBm extends EJBObject {
   // NEWD DLE
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param space
    * @param componentName
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   // public Collection getUserSubscribePKsBySpaceAndComponent(String userId,
@@ -143,15 +118,10 @@ public interface SubscribeBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param componentName
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getUserSubscribePKsByComponent(String userId,
@@ -161,14 +131,9 @@ public interface SubscribeBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param node
-   * 
    * @return a Collection of userId
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getNodeSubscriberDetails(NodePK node)
@@ -176,14 +141,9 @@ public interface SubscribeBm extends EJBObject {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nodePKs
-   * 
    * @return a Collection of userId
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getNodeSubscriberDetails(Collection nodePKs)

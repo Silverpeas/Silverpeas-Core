@@ -152,11 +152,11 @@ public class SchedulableList {
           if (((startHour.compareTo(schedule.getStartHour()) >= 0) && (startHour
               .compareTo(schedule.getEndHour()) < 0))
               || ((endHour.compareTo(schedule.getStartHour()) > 0) && (endHour
-                  .compareTo(schedule.getEndHour()) <= 0))
+              .compareTo(schedule.getEndHour()) <= 0))
               || ((startHour.compareTo(schedule.getStartHour()) <= 0) && (endHour
-                  .compareTo(schedule.getStartHour()) > 0))
+              .compareTo(schedule.getStartHour()) > 0))
               || ((startHour.compareTo(schedule.getEndHour()) < 0) && (endHour
-                  .compareTo(schedule.getEndHour()) >= 0)))
+              .compareTo(schedule.getEndHour()) >= 0)))
             result.add(schedule);
       } else if (obj instanceof SchedulableGroup) {
         SchedulableGroup schedule = (SchedulableGroup) obj;
@@ -165,11 +165,11 @@ public class SchedulableList {
           if (((startHour.compareTo(schedule.getStartHour()) >= 0) && (startHour
               .compareTo(schedule.getEndHour()) < 0))
               || ((endHour.compareTo(schedule.getStartHour()) > 0) && (endHour
-                  .compareTo(schedule.getEndHour()) <= 0))
+              .compareTo(schedule.getEndHour()) <= 0))
               || ((startHour.compareTo(schedule.getStartHour()) <= 0) && (endHour
-                  .compareTo(schedule.getStartHour()) > 0))
+              .compareTo(schedule.getStartHour()) > 0))
               || ((startHour.compareTo(schedule.getEndHour()) < 0) && (endHour
-                  .compareTo(schedule.getEndHour()) >= 0)))
+              .compareTo(schedule.getEndHour()) >= 0)))
             result.add(schedule);
       }
     }

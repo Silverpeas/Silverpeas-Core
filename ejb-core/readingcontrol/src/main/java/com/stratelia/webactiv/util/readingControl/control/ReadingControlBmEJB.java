@@ -77,7 +77,7 @@ public class ReadingControlBmEJB implements SessionBean {
   public void addReadingControls(Collection userIds, PublicationPK pubPK) {
     SilverTrace
         .info("readingControl", "ReadingControlBmEJB.addReadingControls()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
@@ -108,7 +108,7 @@ public class ReadingControlBmEJB implements SessionBean {
           "ReadingControlBmEJB.removeReadingControl()",
           SilverpeasRuntimeException.ERROR,
           "readingControl.EX_REMOVE_READING_CONTROL_FAILED", "pubPK = "
-              + pubPK.toString(), e);
+          + pubPK.toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -164,7 +164,7 @@ public class ReadingControlBmEJB implements SessionBean {
   public Collection getReadingControls(PublicationPK pubPK) {
     SilverTrace
         .info("readingControl", "ReadingControlBmEJB.getReadingControls()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     Collection result = null;
     try {
@@ -220,8 +220,9 @@ public class ReadingControlBmEJB implements SessionBean {
 
     // check the controlled users who have read
     while (historyIterator.hasNext()) {
-      HistoryNodePublicationActorDetail historyItem = (HistoryNodePublicationActorDetail) historyIterator
-          .next();
+      HistoryNodePublicationActorDetail historyItem =
+          (HistoryNodePublicationActorDetail) historyIterator
+              .next();
       String actorId = historyItem.getUserId();
       java.util.Date date = historyItem.getDate();
       if (result.containsKey(actorId)) {

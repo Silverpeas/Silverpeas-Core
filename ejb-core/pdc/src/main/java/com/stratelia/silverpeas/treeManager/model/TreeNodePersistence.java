@@ -72,12 +72,9 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
-public class TreeNodePersistence extends SilverpeasBean implements
-    java.io.Serializable {
+public class TreeNodePersistence extends SilverpeasBean implements java.io.Serializable {
   private String treeId;
   private String name;
   private String description;
@@ -91,8 +88,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TreeNodePersistence() {
@@ -115,8 +110,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
    * @param name
    * @param description
@@ -125,7 +118,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
    * @param path
    * @param levelNumber
    * @param fatherId
-   * 
    * @see
    */
   private void init(String id, String treeId, String name, String description,
@@ -145,8 +137,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param pk
    * @param name
    * @param description
@@ -155,7 +145,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
    * @param path
    * @param levelNumber
    * @param fatherId
-   * 
    * @see
    */
   public TreeNodePersistence(TreeNodePK pk, String treeId, String name,
@@ -175,8 +164,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param name
    * @param description
@@ -185,7 +172,6 @@ public class TreeNodePersistence extends SilverpeasBean implements
    * @param path
    * @param levelNumber
    * @param fatherId
-   * 
    * @see
    */
   public TreeNodePersistence(String id, String treeId, String name,
@@ -213,10 +199,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -225,10 +208,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDescription() {
@@ -237,10 +217,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCreationDate() {
@@ -249,10 +226,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCreatorId() {
@@ -261,10 +235,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPath() {
@@ -273,10 +244,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getLevelNumber() {
@@ -285,10 +253,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getOrderNumber() {
@@ -297,10 +262,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getFatherId() {
@@ -317,10 +279,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
-   * 
    * @see
    */
   public void setCreationDate(String date) {
@@ -329,10 +288,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param creatorId
-   * 
    * @see
    */
   public void setCreatorId(String creatorId) {
@@ -341,10 +297,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param fatherId
-   * 
    * @see
    */
   public void setFatherId(String fatherId) {
@@ -353,10 +306,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param path
-   * 
    * @see
    */
   public void setPath(String path) {
@@ -365,10 +315,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param levelNumber
-   * 
    * @see
    */
   public void setLevelNumber(int levelNumber) {
@@ -377,10 +324,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param levelNumber
-   * 
    * @see
    */
   public void setOrderNumber(int orderNumber) {
@@ -397,10 +341,7 @@ public class TreeNodePersistence extends SilverpeasBean implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {

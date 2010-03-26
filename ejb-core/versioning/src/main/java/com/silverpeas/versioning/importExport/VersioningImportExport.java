@@ -67,7 +67,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * @author neysseri
- * 
  */
 public class VersioningImportExport {
 
@@ -96,7 +95,6 @@ public class VersioningImportExport {
   }
 
   /**
-   * 
    * @param objectId
    * @param componentId
    * @param attachments
@@ -189,13 +187,11 @@ public class VersioningImportExport {
   }
 
   /**
-   * 
    * @param pk
    * @param exportPath
    * @param relativeExportPath
-   * @param extensionFilter
-   *          : permet de filtrer un type de document en particulier, par son
-   *          extension.
+   * @param extensionFilter : permet de filtrer un type de document en particulier, par son
+   * extension.
    * @return
    * @throws RemoteException
    */
@@ -241,7 +237,7 @@ public class VersioningImportExport {
     String fichierJointExport = exportPath
         + File.separator
         + FileServerUtils.replaceAccentChars(attachmentCopy
-            .getLogicalName());
+        .getLogicalName());
     try {
       FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
     } catch (IOException e) {
@@ -252,8 +248,9 @@ public class VersioningImportExport {
     attachmentCopy.setPhysicalName(relativeExportPath
         + File.separator
         + FileServerUtils.replaceAccentChars(attachmentCopy
-            .getLogicalName()));
-    attachmentCopy.setLogicalName(FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
+        .getLogicalName()));
+    attachmentCopy.setLogicalName(FileServerUtils.replaceAccentChars(attachmentCopy
+        .getLogicalName()));
     return attachmentCopy;
   }
 
@@ -266,7 +263,7 @@ public class VersioningImportExport {
       try {
         VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-                VersioningBmHome.class);
+            VersioningBmHome.class);
         versioningBm = versioningBmHome.create();
       } catch (Exception e) {
         throw new VersioningRuntimeException(
@@ -298,7 +295,7 @@ public class VersioningImportExport {
     AttachmentDetail attachment = new AttachmentDetail(pk, version
         .getPhysicalName(), version.getLogicalName(), version.getComments(),
         version.getMimeType(), version.getSize(), "Versioning", version
-            .getCreationDate(), document.getForeignKey());
+        .getCreationDate(), document.getForeignKey());
     attachment.setTitle(document.getName());
 
     String info = document.getDescription();
@@ -499,7 +496,7 @@ public class VersioningImportExport {
       if (launchCallback) {
         CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
             userIdCallback, document.getForeignKey().getInstanceId(), document
-                .getForeignKey().getId());
+            .getForeignKey().getId());
       }
     }
     return nbFilesProcessed;
@@ -516,26 +513,26 @@ public class VersioningImportExport {
   }
 
   public List copyFiles(String componentId, List documents, String path) {
-		List 			copiedAttachments 	= new ArrayList();
-		Iterator 		it			 		= documents.iterator();
-		Document		document			= null;
-		DocumentVersion	version				= null;
-		List<DocumentVersion>	versions			= null;
-		Iterator<DocumentVersion> itVersions = null;
-		while (it.hasNext()) {
-			document = (Document) it.next();
-			versions = document.getVersionsType().getListVersions();
-			itVersions= versions.iterator();
-			while (itVersions.hasNext()) {
-				version = itVersions.next();
-				copyFile(componentId, version, path);
-				if (version.getSize()!=0)
-					copiedAttachments.add(version);
-			}
+    List copiedAttachments = new ArrayList();
+    Iterator it = documents.iterator();
+    Document document = null;
+    DocumentVersion version = null;
+    List<DocumentVersion> versions = null;
+    Iterator<DocumentVersion> itVersions = null;
+    while (it.hasNext()) {
+      document = (Document) it.next();
+      versions = document.getVersionsType().getListVersions();
+      itVersions = versions.iterator();
+      while (itVersions.hasNext()) {
+        version = itVersions.next();
+        copyFile(componentId, version, path);
+        if (version.getSize() != 0)
+          copiedAttachments.add(version);
+      }
 
-		}
-		return copiedAttachments;
-	}
+    }
+    return copiedAttachments;
+  }
 
   private void copyFile(String componentId, DocumentVersion version, String path) {
     String fileToUpload = version.getPhysicalName();
@@ -552,7 +549,7 @@ public class VersioningImportExport {
     while (fileToCreate.exists()) {
       SilverTrace.info("versioning", "VersioningImportExport.copyFile()",
           "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists="
-              + fileToCreate.getAbsolutePath());
+          + fileToCreate.getAbsolutePath());
 
       // To prevent overwriting
       physicalName = new Long(new Date().getTime()).toString() + "." + type;

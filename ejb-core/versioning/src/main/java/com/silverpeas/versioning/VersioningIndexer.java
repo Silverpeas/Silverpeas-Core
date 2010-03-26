@@ -44,7 +44,6 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 
 /**
  * @author neysseri
- * 
  */
 public class VersioningIndexer {
 
@@ -55,7 +54,7 @@ public class VersioningIndexer {
       throws RemoteException {
     SilverTrace.info("versioning", "VersioningIndexer.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "documentToIndex = "
-            + documentToIndex.toString());
+        + documentToIndex.toString());
 
     String space = documentToIndex.getPk().getSpace();
     String component = documentToIndex.getPk().getComponentName();
@@ -106,7 +105,6 @@ public class VersioningIndexer {
 
   /**
    * to create path to version
-   * 
    * @return String
    * @exception VersioningRuntimeException
    * @author Michael Nikolaenko
@@ -137,7 +135,7 @@ public class VersioningIndexer {
       String objectType = "Versioning";
       PublicationTemplate pub = PublicationTemplateManager
           .getPublicationTemplate(indexEntry.getComponent() + ":" + objectType
-              + ":" + xmlFormName);
+          + ":" + xmlFormName);
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (Exception e) {

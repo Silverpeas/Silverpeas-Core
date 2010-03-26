@@ -225,22 +225,16 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions",
           SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_AXE", "axisId: "
-              + axisId, e);
+          + axisId, e);
     }
   }
 
   /**
-   * Create two lists of Value. Then, we replace the first Value list by the
-   * second
-   * 
-   * @param con
-   *          - a connection to the database
-   * @param axisId
-   *          - the id of the axis
-   * @param oldPath
-   *          - a list of path
-   * @param newPath
-   *          - a list of path
+   * Create two lists of Value. Then, we replace the first Value list by the second
+   * @param con - a connection to the database
+   * @param axisId - the id of the axis
+   * @param oldPath - a list of path
+   * @param newPath - a list of path
    */
   public void createValuesAndReplace(Connection con, String axisId,
       ArrayList oldPath, ArrayList newPath) throws PdcException {
@@ -299,9 +293,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * search a defined position for one usedAxis
-   * 
-   * @param usedAxis
-   *          - the UsedAxis object
+   * @param usedAxis - the UsedAxis object
    * @return true if for one UsedAxis, a position exists, false otherwise
    */
   public boolean hasAlreadyPositions(List objectIdList, UsedAxis usedAxis)
@@ -472,8 +464,8 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       // Call the classifyEngine to get the objects
       return classifyEngine.findSilverOjectByCriterias(alCriterias,
           containerManager.getFilterPositionsByComponentIdStatement(null,
-              alComponentId), contentManager.getPositionsByGenericSearch(
-              authorId, afterDate, beforeDate), afterDate, beforeDate,
+          alComponentId), contentManager.getPositionsByGenericSearch(
+          authorId, afterDate, beforeDate), afterDate, beforeDate,
           recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.findSilverContentIdByPosition",

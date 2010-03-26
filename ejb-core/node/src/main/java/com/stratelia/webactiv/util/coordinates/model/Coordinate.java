@@ -31,8 +31,6 @@ import java.util.Collection;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -43,18 +41,14 @@ public class Coordinate implements Serializable {
 
   /**
    * Empty Constructor needed for mapping Castor
-   * 
    */
   public Coordinate() {
   }
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param coordinateId
    * @param coordinatePoints
-   * 
    * @see
    */
   public Coordinate(int coordinateId, Collection coordinatePoints) {
@@ -64,10 +58,7 @@ public class Coordinate implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getCoordinateId() {
@@ -76,10 +67,7 @@ public class Coordinate implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getCoordinatePoints() {
@@ -88,10 +76,7 @@ public class Coordinate implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param coordinateId
-   * 
    * @see
    */
   public void setCoordinateId(int coordinateId) {
@@ -100,10 +85,7 @@ public class Coordinate implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param coordinatePoints
-   * 
    * @see
    */
   public void setCoordinatePoints(Collection coordinatePoints) {
@@ -112,10 +94,7 @@ public class Coordinate implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {

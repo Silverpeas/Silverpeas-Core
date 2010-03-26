@@ -86,7 +86,7 @@ public class DynamicValueReplacement {
         try {
           message =
               new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle",
-                  language);         
+              language);
           if (message != null) {
             firstOption = message.getString("DynamicValues");
           }
@@ -100,8 +100,8 @@ public class DynamicValueReplacement {
             .append(
             " <select id=\"dynamicValues_").append(fieldName).append(
             "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues" +
-                FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
-                "();this.selectedIndex=0;\">")
+            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
+            "();this.selectedIndex=0;\">")
             .append("<option value=\"\">" + firstOption + "</option>");
         for (Iterator<DynamicValue> iterator = list.iterator(); iterator.hasNext();) {
           dynamicValue = iterator.next();
@@ -215,6 +215,6 @@ public class DynamicValueReplacement {
     ResourceLocator resource =
         new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
     return SilverpeasSettings.readBoolean(resource, "activateDynamicValue", false);
-    }
+  }
 
 }

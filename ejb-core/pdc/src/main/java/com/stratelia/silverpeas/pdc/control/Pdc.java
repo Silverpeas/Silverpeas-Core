@@ -31,9 +31,8 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * This object is used by the MainSessionController like userPanel,
- * personalization. It allows to transmit data from pdcPeas to component.
- * 
+ * This object is used by the MainSessionController like userPanel, personalization. It allows to
+ * transmit data from pdcPeas to component.
  * @author neysseri
  */
 public class Pdc {
@@ -51,7 +50,7 @@ public class Pdc {
       gsc = (GlobalSilverContent) selectedSilverContents.get(i);
       SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()",
           "root.MSG_GEN_PARAM_VALUE", "new silverContent selected = "
-              + gsc.getName());
+          + gsc.getName());
     }
   }
 

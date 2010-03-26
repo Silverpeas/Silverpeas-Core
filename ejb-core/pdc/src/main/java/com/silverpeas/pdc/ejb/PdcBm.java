@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 
 /**
  * Interface declaration
- * 
  * @author neysseri
  */
 public interface PdcBm extends EJBObject {

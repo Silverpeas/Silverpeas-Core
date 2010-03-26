@@ -38,8 +38,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class AxisHeaderI18NDAO {
@@ -50,8 +48,6 @@ public class AxisHeaderI18NDAO {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public AxisHeaderI18NDAO() {
@@ -86,7 +82,7 @@ public class AxisHeaderI18NDAO {
 
         SilverTrace.info("Pdc", "AxisHeaderI18NDAO.getTranslations",
             "root.MSG_GEN_PARAM_VALUE", "translation " + translation.getId()
-                + " for axisId = " + axisId);
+            + " for axisId = " + axisId);
         allTranslations.add(translation);
       }
     } finally {

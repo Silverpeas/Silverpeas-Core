@@ -26,9 +26,8 @@ package com.stratelia.webactiv.util.contact.model;
 import java.io.Serializable;
 
 /**
- * This object contains the description of a complete contact (contact
- * parameter, model detail, info)
- * 
+ * This object contains the description of a complete contact (contact parameter, model detail,
+ * info)
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -39,7 +38,6 @@ public class CompleteContact implements Serializable {
 
   /**
    * Create a new CompleteContact
-   * 
    * @param pubDetail
    * @param modelId
    * @see com.stratelia.webactiv.util.contact.model.PulicationDetail
@@ -52,7 +50,6 @@ public class CompleteContact implements Serializable {
 
   /**
    * Get the contact parameters
-   * 
    * @return a ContactDetail - the contact parameters
    * @see com.stratelia.webactiv.util.contact.model.PulicationDetail
    * @since 1.0

@@ -51,7 +51,7 @@ class SQLStatement extends Object {
     StringBuffer sSQLStatement = new StringBuffer(100);
     sSQLStatement.append("UPDATE ").append(m_sClassifyTable).append(" SET ")
         .append(m_sAxisColumn).append(nNextAvailableAxis).append(" = ").append(
-            nLogicalAxisId);
+        nLogicalAxisId);
     sSQLStatement.append(" WHERE (").append(m_sPositionIdColumn).append(
         " = -1)");
 
@@ -63,7 +63,7 @@ class SQLStatement extends Object {
     StringBuffer sSQLStatement = new StringBuffer(100);
     sSQLStatement.append("UPDATE ").append(m_sClassifyTable).append(" SET ")
         .append(m_sAxisColumn).append(nAxisId).append(" = -1 WHERE ").append(
-            m_sPositionIdColumn).append(" = -1");
+        m_sPositionIdColumn).append(" = -1");
     return sSQLStatement.toString();
   }
 
@@ -76,7 +76,7 @@ class SQLStatement extends Object {
     // Build the SQL statement to classify the object
     sSQLStatement.append("INSERT INTO ").append(m_sClassifyTable).append(" (")
         .append(m_sPositionIdColumn).append(", ").append(
-            m_sSilverObjectIdColumn).append(", ");
+        m_sSilverObjectIdColumn).append(", ");
 
     // visibility attributes
     // sSQLStatement.append(m_sBeginDateColumn + ", " + m_sEndDateColumn + ", "
@@ -196,7 +196,7 @@ class SQLStatement extends Object {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     sSQLStatement.append("UPDATE ").append(m_sClassifyTable).append(" SET ")
         .append(m_sPositionIdColumn).append(" = ").append(
-            newPosition.getPositionId()).append(", ");
+        newPosition.getPositionId()).append(", ");
     List alValues = newPosition.getValues();
     for (int nI = 0; nI < alValues.size(); nI++) {
       Value oneValue = (Value) alValues.get(nI);
@@ -262,11 +262,9 @@ class SQLStatement extends Object {
 
   /*
    * Build the SQL statement to find the objects.
-   * 
-   * @param recursiveSearch if true, the search will be made on value and all
-   * subvalues (first and classic Silverpeas implementation). If set to false,
-   * the search will be made only one value (useful for taglib functionality)
-   * 
+   * @param recursiveSearch if true, the search will be made on value and all subvalues (first and
+   * classic Silverpeas implementation). If set to false, the search will be made only one value
+   * (useful for taglib functionality)
    * @return the Sql query string
    */
   public String buildFindByCriteriasStatementByJoin(List alCriterias,
@@ -290,7 +288,7 @@ class SQLStatement extends Object {
     String whereClause = "";
     sSQLStatement.append(" SELECT CEC.").append(m_sSilverObjectIdColumn)
         .append(" FROM ").append(m_sClassifyTable).append(" CEC,").append(
-            containerMgrLinks).append(" CML,").append(contentMgr)
+        containerMgrLinks).append(" CML,").append(contentMgr)
         .append(" CMC");
     sSQLStatement.append(" WHERE ");
     sSQLStatement.append(" CEC.").append(m_sPositionIdColumn).append(" = CML.")
@@ -428,7 +426,7 @@ class SQLStatement extends Object {
 
     sSQLStatement.append("SELECT COUNT(*) FROM ").append(m_sClassifyTable)
         .append(" CEC, SB_ContentManager_Content CMC WHERE CEC.").append(
-            m_sSilverObjectIdColumn).append(" = CMC.silverContentId AND (CEC.")
+        m_sSilverObjectIdColumn).append(" = CMC.silverContentId AND (CEC.")
         .append(m_sPositionIdColumn).append(" <> -1) ");
     for (int nI = 0; alCriterias != null && nI < alCriterias.size(); nI++)
 
@@ -469,7 +467,7 @@ class SQLStatement extends Object {
         m_sSilverObjectIdColumn).append(")");
     sSQLStatement.append(" FROM ").append(m_sClassifyTable).append(" CEC, ")
         .append(containerMgrLinks).append(
-            " CML, SB_ContentManager_Content CMC ");
+        " CML, SB_ContentManager_Content CMC ");
     sSQLStatement.append(" WHERE CEC.").append(m_sPositionIdColumn).append(
         " = CML.").append(containerMgrLinksKey);
     sSQLStatement.append(" AND CEC.").append(m_sSilverObjectIdColumn).append(
@@ -563,7 +561,7 @@ class SQLStatement extends Object {
         .append(nAxisId);
     sSQLStatement.append(" FROM ").append(m_sClassifyTable).append(" CEC, ")
         .append(joinStatementAllPositions.getTable(0)).append(
-            " CML, SB_ContentManager_Content CMC ");
+        " CML, SB_ContentManager_Content CMC ");
     sSQLStatement.append(" WHERE CEC.").append(m_sPositionIdColumn).append(
         " = CML.").append(joinStatementAllPositions.getJoinKey(0));
     sSQLStatement.append(" AND CEC.").append(m_sSilverObjectIdColumn).append(
@@ -608,7 +606,7 @@ class SQLStatement extends Object {
         .append(" CEC, ")
         .append(joinStatementAllPositions.getTable(0))
         .append(
-            " CML, SB_ContentManager_Content CMC, SB_ContentManager_Instance CMI ");
+        " CML, SB_ContentManager_Content CMC, SB_ContentManager_Instance CMI ");
     sSQLStatement.append(" WHERE CEC.").append(m_sPositionIdColumn).append(
         " = CML.").append(joinStatementAllPositions.getJoinKey(0));
     sSQLStatement.append(" AND CEC.").append(m_sSilverObjectIdColumn).append(

@@ -42,11 +42,9 @@ import com.stratelia.silverpeas.silvertrace.*;
 import com.stratelia.silverpeas.util.JoinStatement;
 
 /**
- * This class represents the ClassifyEngine API It gives access to functions for
- * classifying, unclassifying and searching SilverObjetIds
- * 
- * Assumption : The SilverObjetIds processed are int values from 0 to n The axis
- * processed are int values from 0 to n
+ * This class represents the ClassifyEngine API It gives access to functions for classifying,
+ * unclassifying and searching SilverObjetIds Assumption : The SilverObjetIds processed are int
+ * values from 0 to n The axis processed are int values from 0 to n
  */
 
 public class ClassifyEngine extends Object {
@@ -113,7 +111,7 @@ public class ClassifyEngine extends Object {
       throw new ClassifyEngineException("ClassifyEngine.registerAxis",
           SilverpeasException.ERROR,
           "classifyEngine.EX_AXIS_ALREADY_REGISTERED", "nLogicalAxisId: "
-              + nLogicalAxisId);
+          + nLogicalAxisId);
 
     try {
       synchronized (m_anRegisteredAxis) {
@@ -123,7 +121,7 @@ public class ClassifyEngine extends Object {
           throw new ClassifyEngineException("ClassifyEngine.registerAxis",
               SilverpeasException.ERROR,
               "classifyEngine.EX_NOMORE_AVAILABLE_AXIS", "nLogicalAxisId: "
-                  + nLogicalAxisId);
+              + nLogicalAxisId);
 
         // build the statement to classify
         String sSQLStatement = SQLStatement.buildRegisterAxisStatement(
@@ -261,7 +259,7 @@ public class ClassifyEngine extends Object {
     SilverTrace.error("classifyEngine", "ClassifyEngine.getPhysicalAxisId",
         "root.MSG_GEN_PARAM_VALUE",
         "Can't get physical axis Id, nLogicalAxisId: " + nLogicalAxisId
-            + ", m_anRegisteredAxis : " + printRegisteredAxis());
+        + ", m_anRegisteredAxis : " + printRegisteredAxis());
     throw new ClassifyEngineException("ClassifyEngine.getPhysicalAxisId",
         SilverpeasException.ERROR, "classifyEngine.EX_CANT_GET_PHYSICAL_AXIS",
         "nLogicalAxisId: " + nLogicalAxisId);
@@ -333,7 +331,7 @@ public class ClassifyEngine extends Object {
       throw new ClassifyEngineException(
           "ClassifyEngine.isPositionAlreadyExists", SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID", "sSQLStatement= "
-              + sSQLStatement, e);
+          + sSQLStatement, e);
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
@@ -348,9 +346,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Classify the given SilverObjectid within the classifyEngine If the given
-   * connection is null, then we have to open a connection and close it Return
-   * the PositionId
+   * Classify the given SilverObjectid within the classifyEngine If the given connection is null,
+   * then we have to open a connection and close it Return the PositionId
    */
   public int classifySilverObject(Connection connection, int nSilverObjectId,
       Position position) throws ClassifyEngineException {
@@ -394,7 +391,7 @@ public class ClassifyEngine extends Object {
       throw new ClassifyEngineException("ClassifyEngine.classifySilverObject",
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_CLASSIFY_SILVEROBJECTID", "nSilverObjectId= "
-              + nSilverObjectId, e);
+          + nSilverObjectId, e);
     } finally {
       try {
         DBUtil.close(prepStmt);
@@ -409,9 +406,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Remove the given SilverObjectId at th egiven position within the
-   * classifyEngine If the given connection is null, then we have to open a
-   * connection and close it
+   * Remove the given SilverObjectId at th egiven position within the classifyEngine If the given
+   * connection is null, then we have to open a connection and close it
    */
   public void unclassifySilverObjectByPosition(Connection connection,
       int nSilverObjectId, Position position) throws ClassifyEngineException {
@@ -499,9 +495,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Remove the SilverObject referenced with the given positionId within the
-   * classifyEngine If the given connection is null, then we have to open a
-   * connection and close it
+   * Remove the SilverObject referenced with the given positionId within the classifyEngine If the
+   * given connection is null, then we have to open a connection and close it
    */
   public void unclassifySilverObjectByPositionId(Connection connection,
       int nPositionId) throws ClassifyEngineException {
@@ -547,8 +542,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * update the given new position within the classifyEngine If the given
-   * connection is null, then we have to open a connection and close it
+   * update the given new position within the classifyEngine If the given connection is null, then
+   * we have to open a connection and close it
    */
   public void updateSilverObjectPosition(Connection connection,
       Position newPosition) throws ClassifyEngineException {
@@ -605,9 +600,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * update several position with the given new position within the
-   * classifyEngine If the given connection is null, then we have to open a
-   * connection and close it add by SAN
+   * update several position with the given new position within the classifyEngine If the given
+   * connection is null, then we have to open a connection and close it add by SAN
    */
   public void updateSilverObjectPositions(Connection connection,
       List classifyValues, int nSilverObjectId) throws ClassifyEngineException {
@@ -647,7 +641,7 @@ public class ClassifyEngine extends Object {
           "ClassifyEngine.updateSilverObjectPositions",
           SilverpeasException.ERROR,
           "classifyEngine.EX_CANT_UPDATE_SILVEROBJECTID_POSITION", "axisId= "
-              + value.getAxisId(), e);
+          + value.getAxisId(), e);
     } finally {
       try {
         DBUtil.close(prepStmt);
@@ -669,8 +663,7 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Find all the SilverObjectId corresponding to the given criterias and the
-   * given Join Statement
+   * Find all the SilverObjectId corresponding to the given criterias and the given Join Statement
    */
   public List findSilverOjectByCriterias(List alGivenCriterias,
       JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
@@ -1061,9 +1054,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Return a List of PertinentAxis corresponding to the given criterias for the
-   * given AxisIds The return list is ordered like the given one considering the
-   * AxisId
+   * Return a List of PertinentAxis corresponding to the given criterias for the given AxisIds The
+   * return list is ordered like the given one considering the AxisId
    */
   public List getPertinentAxis(List alGivenCriterias, List alAxisIds)
       throws ClassifyEngineException {
@@ -1145,9 +1137,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Return a List of PertinentAxis corresponding to the given criterias for the
-   * given AxisIds and given Join Statement The return list is ordered like the
-   * given one considering the AxisId
+   * Return a List of PertinentAxis corresponding to the given criterias for the given AxisIds and
+   * given Join Statement The return list is ordered like the given one considering the AxisId
    */
   public List getPertinentAxisByJoin(List alGivenCriterias, List alAxisIds,
       JoinStatement joinStatementAllPositions) throws ClassifyEngineException {
@@ -1206,8 +1197,7 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Return a PertinentAxis object corresponding to the given AxisId, rootValue
-   * and search Criterias
+   * Return a PertinentAxis object corresponding to the given AxisId, rootValue and search Criterias
    */
   public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
       List alCriterias, int nAxisId, String sRootValue,
@@ -1296,8 +1286,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Return a List of PertinentValues corresponding to the givenAxisId The
-   * return list is ordered like the given one considering the AxisId
+   * Return a List of PertinentValues corresponding to the givenAxisId The return list is ordered
+   * like the given one considering the AxisId
    */
   public List getPertinentValues(List alGivenCriterias, int nLogicalAxisId)
       throws ClassifyEngineException {
@@ -1365,8 +1355,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Return a List of PertinentValues corresponding to the givenAxisId The
-   * return list is ordered like the given one considering the AxisId
+   * Return a List of PertinentValues corresponding to the givenAxisId The return list is ordered
+   * like the given one considering the AxisId
    */
   public List getPertinentValuesByJoin(List alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
@@ -1398,8 +1388,8 @@ public class ClassifyEngine extends Object {
       // Build the statement
       String sSQLStatement = SQLStatement
           .buildGetPertinentValueByJoinStatement(alCriterias, this
-              .getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
-              today);
+          .getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
+          today);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",
@@ -1441,8 +1431,8 @@ public class ClassifyEngine extends Object {
   }
 
   /*
-   * Return a List of ObjectValuePair corresponding to the givenAxisId The
-   * return list is ordered like the given one considering the AxisId
+   * Return a List of ObjectValuePair corresponding to the givenAxisId The return list is ordered
+   * like the given one considering the AxisId
    */
   public List getObjectValuePairsByJoin(List alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
@@ -1474,8 +1464,8 @@ public class ClassifyEngine extends Object {
       // Build the statement
       String sSQLStatement = SQLStatement
           .buildGetObjectValuePairsByJoinStatement(alCriterias, this
-              .getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
-              today, true);
+          .getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
+          today, true);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",

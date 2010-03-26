@@ -33,7 +33,6 @@ import java.util.List;
 
 /**
  * @author sdevolder
- * 
  */
 public class PdcPositionsType {
 

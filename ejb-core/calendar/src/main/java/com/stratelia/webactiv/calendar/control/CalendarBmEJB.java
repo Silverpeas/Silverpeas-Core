@@ -126,7 +126,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throw new CalendarRuntimeException(
           "CalendarBmEJB.getNotCompletedToDosForUser(String userId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId="
-              + userId, e);
+          + userId, e);
     } finally {
       freeConnection(con);
     }
@@ -172,10 +172,10 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       String externalId) throws RemoteException {
     SilverTrace
         .info(
-            "calendar",
-            "getExternalTodos(String spaceId, String componentId, String externalId)",
-            "root.MSG_GEN_ENTER_METHOD", "space=" + spaceId + ", component="
-                + componentId + ", externalId=" + externalId);
+        "calendar",
+        "getExternalTodos(String spaceId, String componentId, String externalId)",
+        "root.MSG_GEN_ENTER_METHOD", "space=" + spaceId + ", component="
+        + componentId + ", externalId=" + externalId);
     Connection con = getConnection();
     try {
       Collection result = ToDoDAO.getToDoHeadersByExternalId(con, spaceId,
@@ -185,8 +185,8 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throw new CalendarRuntimeException(
           "CalendarBmEJB.getExternalTodos(String spaceId, String componentId, String externalId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "spaceId="
-              + spaceId + ", componentId=" + componentId + ", externalId="
-              + externalId, e);
+          + spaceId + ", componentId=" + componentId + ", externalId="
+          + externalId, e);
     } finally {
       freeConnection(con);
     }
@@ -203,7 +203,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throw new CalendarRuntimeException(
           "CalendarBmEJB.getToDoHeader(String todoId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO", "todoId="
-              + todoId, e);
+          + todoId, e);
     } finally {
       freeConnection(con);
     }
@@ -370,7 +370,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       String categoryId, String participation) throws RemoteException {
     SilverTrace.info("calendar", "CalendarBmEJB. removeToDo(String id)",
         "root.MSG_GEN_ENTER_METHOD", "day=" + day + "userId=" + userId
-            + "categoryId=" + categoryId + "participation=" + participation);
+        + "categoryId=" + categoryId + "participation=" + participation);
     Connection con = getConnection();
     try {
       Collection result = JournalDAO.getDayJournalHeadersForUser(con, day,
@@ -390,7 +390,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     SilverTrace.info("calendar",
         "CalendarBmEJB.getNextDaySchedulablesForUser(String id)",
         "root.MSG_GEN_ENTER_METHOD", "day=" + day + "userId=" + userId
-            + "categoryId=" + categoryId + "participation=" + participation);
+        + "categoryId=" + categoryId + "participation=" + participation);
     Connection con = getConnection();
     try {
       Collection result = JournalDAO.getNextJournalHeadersForUser(con, day,
@@ -605,12 +605,10 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   }
 
   /*
-   * public JournalHeader getJournalHeader(String journalId) throws
-   * RemoteException { SilverTrace.info("calendar",
-   * "CalendarBmEJB.getJournalHeader(String journalId)"
-   * ,"root.MSG_GEN_ENTER_METHOD","journalId="+journalId); Connection con =
-   * getConnection(); try { JournalHeader journal =
-   * JournalDAO.getJournalHeader(con, journalId); return journal; } catch
+   * public JournalHeader getJournalHeader(String journalId) throws RemoteException {
+   * SilverTrace.info("calendar", "CalendarBmEJB.getJournalHeader(String journalId)"
+   * ,"root.MSG_GEN_ENTER_METHOD","journalId="+journalId); Connection con = getConnection(); try {
+   * JournalHeader journal = JournalDAO.getJournalHeader(con, journalId); return journal; } catch
    * (Exception e) { throw new
    * CalendarRuntimeException("CalendarBmEJB.getJournalHeader(String journalId)"
    * ,SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNAL",e); } finally {
@@ -673,9 +671,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       java.util.Date startDate) throws RemoteException {
     SilverTrace
         .info(
-            "calendar",
-            "CalendarBmEJB.getOutlookJournalHeadersForUserAfterDate(String userId, Date startDate)",
-            "root.MSG_GEN_ENTER_METHOD", "outlookId=" + userId);
+        "calendar",
+        "CalendarBmEJB.getOutlookJournalHeadersForUserAfterDate(String userId, Date startDate)",
+        "root.MSG_GEN_ENTER_METHOD", "outlookId=" + userId);
     Connection con = getConnection();
     try {
       Collection journals = JournalDAO
@@ -758,9 +756,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throws RemoteException {
     SilverTrace
         .info(
-            "calendar",
-            "CalendarBmEJB.removeJournalAttendee(String journalId,Attendee attendee)",
-            "root.MSG_GEN_ENTER_METHOD");
+        "calendar",
+        "CalendarBmEJB.removeJournalAttendee(String journalId,Attendee attendee)",
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       AttendeeDAO.removeJournalAttendee(con, journalId, attendee);
@@ -769,9 +767,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       } catch (Exception e) {
         SilverTrace
             .warn(
-                "calendar",
-                "CalendarBmEJB.removeJournalAttendee(String journalId,Attendee attendee)",
-                "root.EX_INDEX_FAILED", "", e);
+            "calendar",
+            "CalendarBmEJB.removeJournalAttendee(String journalId,Attendee attendee)",
+            "root.EX_INDEX_FAILED", "", e);
       }
 
     } catch (Exception e) {
@@ -907,9 +905,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       } catch (Exception e) {
         SilverTrace
             .warn(
-                "calendar",
-                "CalendarBmEJB.removeToDoAttendee(String todoId,Attendee attendee)",
-                "root.EX_INDEX_FAILED", "", e);
+            "calendar",
+            "CalendarBmEJB.removeToDoAttendee(String todoId,Attendee attendee)",
+            "root.EX_INDEX_FAILED", "", e);
       }
 
     } catch (Exception e) {
@@ -974,8 +972,8 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
         if (toAdd) {
           Attendee attendee;
           /*
-           * if (userIds[i].equals(todoHeader.getDelegatorId())) attendee = new
-           * Attendee(journalId, userIds[i], ParticipationStatus.ACCEPTED); else
+           * if (userIds[i].equals(todoHeader.getDelegatorId())) attendee = new Attendee(journalId,
+           * userIds[i], ParticipationStatus.ACCEPTED); else
            */
           attendee = new Attendee(userIds[i]);
           addToDoAttendee(todoId, attendee);
@@ -1025,7 +1023,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     SilverTrace.info("calendar",
         "CalendarBmEJB.addJournalCategory(String journalId,String categoryId)",
         "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId + ", categoryId="
-            + categoryId);
+        + categoryId);
     Connection con = getConnection();
     try {
       CategoryDAO.addJournalCategory(con, journalId, categoryId);
@@ -1044,10 +1042,10 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throws RemoteException {
     SilverTrace
         .info(
-            "calendar",
-            "CalendarBmEJB.removeJournalCategory(String journalId,String categoryId)",
-            "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId
-                + ", categoryId=" + categoryId);
+        "calendar",
+        "CalendarBmEJB.removeJournalCategory(String journalId,String categoryId)",
+        "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId
+        + ", categoryId=" + categoryId);
     Connection con = getConnection();
     try {
       CategoryDAO.removeJournalCategory(con, journalId, categoryId);
@@ -1084,9 +1082,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throws RemoteException {
     SilverTrace
         .info(
-            "calendar",
-            "CalendarBmEJB.setJournalCategories(String journalId,String[] categoryIds)",
-            "root.MSG_GEN_ENTER_METHOD");
+        "calendar",
+        "CalendarBmEJB.setJournalCategories(String journalId,String[] categoryIds)",
+        "root.MSG_GEN_ENTER_METHOD");
     Collection current = getJournalCategories(journalId);
     // search for element to remove
     Iterator j = current.iterator();
@@ -1198,7 +1196,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   public void addHolidayDate(HolidayDetail holiday) throws RemoteException {
     SilverTrace.info("calendar", "calendarBmEJB.addHolidayDate()",
         "root.MSG_GEN_ENTER_METHOD", "holidayDate="
-            + holiday.getDate().toString());
+        + holiday.getDate().toString());
     Connection con = getConnection();
     try {
       HolidaysDAO.addHolidayDate(con, holiday);
@@ -1206,7 +1204,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throw new CalendarRuntimeException("calendarBmEJB.addHolidayDate()",
           SilverpeasRuntimeException.ERROR,
           "calendar.ADDING_HOLIDAYDATE_FAILED", "date = "
-              + holiday.getDate().toString(), re);
+          + holiday.getDate().toString(), re);
     } finally {
       freeConnection(con);
     }
@@ -1215,7 +1213,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   public void addHolidayDates(List holidayDates) throws RemoteException {
     SilverTrace.info("calendar", "calendarBmEJB.addHolidayDates()",
         "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()="
-            + holidayDates.size());
+        + holidayDates.size());
     Connection con = getConnection();
     try {
       HolidayDetail holiday = null;
@@ -1235,7 +1233,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   public void removeHolidayDate(HolidayDetail holiday) throws RemoteException {
     SilverTrace.info("calendar", "calendarBmEJB.removeHolidayDate()",
         "root.MSG_GEN_ENTER_METHOD", "holidayDate="
-            + holiday.getDate().toString());
+        + holiday.getDate().toString());
     Connection con = getConnection();
     try {
       HolidaysDAO.removeHolidayDate(con, holiday);
@@ -1243,7 +1241,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throw new CalendarRuntimeException("calendarBmEJB.removeHolidayDate()",
           SilverpeasRuntimeException.ERROR,
           "calendar.REMOVING_HOLIDAYDATE_FAILED", "date = "
-              + holiday.getDate().toString(), re);
+          + holiday.getDate().toString(), re);
     } finally {
       freeConnection(con);
     }
@@ -1252,7 +1250,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   public void removeHolidayDates(List holidayDates) throws RemoteException {
     SilverTrace.info("calendar", "calendarBmEJB.removeHolidayDates()",
         "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()="
-            + holidayDates.size());
+        + holidayDates.size());
     Connection con = getConnection();
     try {
       HolidayDetail holiday = null;

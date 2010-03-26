@@ -50,11 +50,9 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
 
   /*
    * (non-Javadoc)
-   * 
    * @seecom.stratelia.webactiv.util.document.model.jcr.impl.JcrdocumentDao#
    * createdocumentNode(javax.jcr.Session,
-   * com.stratelia.webactiv.util.document.model.DocumentVersion,
-   * java.lang.String)
+   * com.stratelia.webactiv.util.document.model.DocumentVersion, java.lang.String)
    */
   public void createDocumentNode(Session session, DocumentVersion document)
       throws RepositoryException, IOException {
@@ -83,11 +81,9 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
 
   /*
    * (non-Javadoc)
-   * 
    * @seecom.stratelia.webactiv.util.document.model.jcr.impl.JcrdocumentDao#
    * deletedocumentNode(javax.jcr.Session,
-   * com.stratelia.webactiv.util.document.model.DocumentVersion,
-   * java.lang.String)
+   * com.stratelia.webactiv.util.document.model.DocumentVersion, java.lang.String)
    */
   public void deleteDocumentNode(Session session, DocumentVersion document)
       throws RepositoryException, IOException {
@@ -144,15 +140,11 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
   }
 
   /**
-   * Indicate if the node for the specified attachment is currently locked (for
-   * example by Office in the case of a webdav online edition).
-   * 
-   * @param session
-   *          the JCR session.
-   * @param attachment
-   *          the attachment.
-   * @param language
-   *          the language to obtain the file.
+   * Indicate if the node for the specified attachment is currently locked (for example by Office in
+   * the case of a webdav online edition).
+   * @param session the JCR session.
+   * @param attachment the attachment.
+   * @param language the language to obtain the file.
    * @return true if the node is locked - false otherwise.
    * @throws RepositoryException
    */
@@ -169,11 +161,8 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
 
   /**
    * Add a folder node into the repository
-   * 
-   * @param parent
-   *          the parent node
-   * @param name
-   *          the name of the new node
+   * @param parent the parent node
+   * @param name the name of the new node
    * @return the created node.
    * @throws ItemExistsException
    * @throws PathNotFoundException
@@ -196,13 +185,9 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
 
   /**
    * Add a file node into the repository
-   * 
-   * @param parent
-   *          the folder node containing the file node.
-   * @param document
-   *          the document for the file.
-   * @param language
-   *          the language for the file.
+   * @param parent the folder node containing the file node.
+   * @param document the document for the file.
+   * @param language the language for the file.
    * @return the created node.
    * @throws IOException
    * @throws RepositoryException

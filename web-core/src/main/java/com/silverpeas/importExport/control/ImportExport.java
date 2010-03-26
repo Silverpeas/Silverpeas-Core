@@ -966,7 +966,7 @@ public class ImportExport {
           PublicationDetail pubDetail = (PublicationDetail) unbalancedPublicationsDetails.next();
           PublicationType publicationType =
               gedIE.getPublicationCompleteById(new Integer(pubDetail.getId()).toString(),
-                  componentId);
+              componentId);
           publicationFileNameRelativePath = componentLabel + File.separator + pubDetail.getId()
               + File.separator + "index.html";
           HtmlExportPublicationGenerator unbalanced = new HtmlExportPublicationGenerator(

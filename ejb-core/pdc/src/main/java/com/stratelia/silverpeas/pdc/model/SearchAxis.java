@@ -84,9 +84,7 @@ public class SearchAxis extends PertinentAxis implements java.io.Serializable {
   }
 
   /*
-   * public void addValue(SearchValue value) { if (values == null) values = new
-   * ArrayList();
-   * 
+   * public void addValue(SearchValue value) { if (values == null) values = new ArrayList();
    * values.add(value); }
    */
 

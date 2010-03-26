@@ -49,15 +49,13 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -66,13 +64,10 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
@@ -82,13 +77,10 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
@@ -98,14 +90,11 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
@@ -115,10 +104,7 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

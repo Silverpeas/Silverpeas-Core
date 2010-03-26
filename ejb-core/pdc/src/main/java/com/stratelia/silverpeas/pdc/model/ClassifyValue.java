@@ -28,8 +28,7 @@ import java.util.List;
 /**
  * @author Nicolas EYSSERIC
  */
-public class ClassifyValue extends
-    com.stratelia.silverpeas.classifyEngine.Value implements
+public class ClassifyValue extends com.stratelia.silverpeas.classifyEngine.Value implements
     java.io.Serializable {
 
   private List fullPath = null;

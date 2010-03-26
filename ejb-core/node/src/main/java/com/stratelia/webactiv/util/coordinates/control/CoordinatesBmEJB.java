@@ -45,20 +45,15 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
-public class CoordinatesBmEJB implements javax.ejb.SessionBean,
-    CoordinatesBmBusinessSkeleton {
+public class CoordinatesBmEJB implements javax.ejb.SessionBean, CoordinatesBmBusinessSkeleton {
 
   private String dbName = JNDINames.PUBLICATION_DATASOURCE;
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public CoordinatesBmEJB() {
@@ -66,10 +61,7 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -83,10 +75,7 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -101,16 +90,12 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
   }
 
   /**
-   * Used only by the specific job'peas SmallAds This method must not be used by
-   * an another Job'peas Instead, you must use getCoordinatesByFatherPaths()
-   * 
+   * Used only by the specific job'peas SmallAds This method must not be used by an another Job'peas
+   * Instead, you must use getCoordinatesByFatherPaths()
    * @param fatherIds
    * @param pk
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getCoordinatesByFatherIds(ArrayList fatherIds,
@@ -122,12 +107,12 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
       SilverTrace.info("coordinates",
           "CoordinatesBmEJB.getCoordinatesByFatherIds()",
           "root.MSG_GEN_PARAM_VALUE", "fatherIds BEFORE sorting : "
-              + fatherIds.toString());
+          + fatherIds.toString());
       Collections.sort(fatherIds);
       SilverTrace.info("coordinates",
           "CoordinatesBmEJB.getCoordinatesByFatherIds()",
           "root.MSG_GEN_PARAM_VALUE", "fatherIds AFTER sorting : "
-              + fatherIds.toString());
+          + fatherIds.toString());
       coordinates = CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
     } catch (Exception e) {
       throw new CoordinateRuntimeException(
@@ -160,22 +145,17 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
    * @param coordinatePoints
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public int addCoordinate(CoordinatePK pk, ArrayList coordinatePoints)
       throws RemoteException {
     SilverTrace.info("coordinates", "CoordinatesBmEJB.addCoordinate()",
         "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = "
-            + coordinatePoints.toString());
+        + coordinatePoints.toString());
     Connection con = getConnection();
     int coordinateId;
 
@@ -193,13 +173,9 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
    * @param coordinates
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteCoordinates(CoordinatePK pk, ArrayList coordinates)
@@ -222,13 +198,9 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
    * @param coordinatePoints
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteCoordinatesByPoints(CoordinatePK pk,
@@ -236,7 +208,7 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
     SilverTrace.info("coordinates",
         "CoordinatesBmEJB.deleteCoordinatesByPoints()",
         "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = "
-            + coordinatePoints.toString());
+        + coordinatePoints.toString());
     Connection con = getConnection();
 
     try {
@@ -253,15 +225,10 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param coordinateIds
    * @param pk
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public ArrayList getCoordinatesByCoordinateIds(ArrayList coordinateIds,
@@ -269,7 +236,7 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
     SilverTrace.info("coordinates",
         "CoordinatesBmEJB.getCoordinatesByCoordinateIds()",
         "root.MSG_GEN_PARAM_VALUE", "coordinateIds = "
-            + coordinateIds.toString());
+        + coordinateIds.toString());
     Connection con = getConnection();
 
     try {
@@ -287,13 +254,9 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
    * @param point
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point)
@@ -317,15 +280,10 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pk
    * @param nodeId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId)
@@ -348,8 +306,6 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbCreate() {
@@ -357,8 +313,6 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -366,8 +320,6 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -375,8 +327,6 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -384,10 +334,7 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean,
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {

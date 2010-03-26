@@ -55,9 +55,11 @@ public class HistoryNodePublicationActorDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetails(ResultSet rs, String space,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetails(ResultSet rs,
+      String space,
       String componentName) throws SQLException {
-    List<HistoryNodePublicationActorDetail> list = new ArrayList<HistoryNodePublicationActorDetail>();
+    List<HistoryNodePublicationActorDetail> list =
+        new ArrayList<HistoryNodePublicationActorDetail>();
     java.util.Date date;
     String actorId = "";
     String nodeId = "";
@@ -246,7 +248,8 @@ public class HistoryNodePublicationActorDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(Connection con,
+  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(
+      Connection con,
       String tableName, PublicationPK pubPK) throws SQLException {
     SilverTrace.info("statistic",
         "HistoryNodePublicationActorDAO.getHistoryDetailByPublication",

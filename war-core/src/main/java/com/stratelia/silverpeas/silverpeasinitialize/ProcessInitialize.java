@@ -34,8 +34,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
  * @author eDurand
@@ -43,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class ProcessInitialize implements Runnable {
-  
+
   protected static Logger logger = LoggerFactory.getLogger(ProcessInitialize.class);
   protected File m_InitializeSettingsFile;
 
@@ -81,12 +79,13 @@ public class ProcessInitialize implements Runnable {
           throw new Exception("Class " + InitializeClass + " isn't a IInitialize.");
         }
         if (!init.Initialize()) {
-          LogMsg(this, "processInitializeSettingsFile", InitializeClass + ".Initialize() failed.", null);
+          LogMsg(this, "processInitializeSettingsFile", InitializeClass + ".Initialize() failed.",
+              null);
         }
       }
-      
+
       String callBack = p.getProperty("CallBack");
-      if (callBack != null  && Boolean.parseBoolean(callBack)) {
+      if (callBack != null && Boolean.parseBoolean(callBack)) {
         String CallBackClass = p.getProperty("CallBackClass");
         Class c = Class.forName(CallBackClass);
         CallBack cb = (CallBack) c.newInstance();
@@ -119,8 +118,6 @@ public class ProcessInitialize implements Runnable {
     }
     return result;
   }
-
-
 
   /**
    * Method declaration

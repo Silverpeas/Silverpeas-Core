@@ -79,7 +79,7 @@ public class SMTPListener extends AbstractListener {
       m_Pwd = mailerSettings.getString("SMTPPwd");
     }
     m_SmtpDebug = mailerSettings.getBoolean("SMTPDebug", false);
-    isSmtpSecure  = mailerSettings.getBoolean("SMTPSecure", false);
+    isSmtpSecure = mailerSettings.getBoolean("SMTPSecure", false);
   }
 
   /**
@@ -220,7 +220,7 @@ public class SMTPListener extends AbstractListener {
       email.setSentDate(new Date());
 
       // create a Transport connection (TCP)
-      if(isSmtpSecure) {
+      if (isSmtpSecure) {
         transport = session.getTransport(SMTPConstant.SECURE_TRANSPORT);
       } else {
         transport = session.getTransport(SMTPConstant.SIMPLE_TRANSPORT);

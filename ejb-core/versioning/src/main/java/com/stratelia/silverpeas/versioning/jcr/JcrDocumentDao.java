@@ -40,7 +40,6 @@ public interface JcrDocumentDao {
 
   /**
    * Update the DocumentVersion using the node
-   * 
    * @param session
    * @param document
    * @throws RepositoryException
@@ -51,7 +50,6 @@ public interface JcrDocumentDao {
 
   /**
    * Update the node using the DocumentVersion
-   * 
    * @param session
    * @param document
    * @throws RepositoryException
@@ -61,15 +59,11 @@ public interface JcrDocumentDao {
       throws RepositoryException, IOException;
 
   /**
-   * Indicate if the node for the specified attachment is currently locked (for
-   * example by Office in the case of a webdav online edition).
-   * 
-   * @param session
-   *          the JCR session.
-   * @param attachment
-   *          the attachment.
-   * @param language
-   *          the language to obtain the file.
+   * Indicate if the node for the specified attachment is currently locked (for example by Office in
+   * the case of a webdav online edition).
+   * @param session the JCR session.
+   * @param attachment the attachment.
+   * @param language the language to obtain the file.
    * @return true if the node is locked - false otherwise.
    * @throws RepositoryException
    */

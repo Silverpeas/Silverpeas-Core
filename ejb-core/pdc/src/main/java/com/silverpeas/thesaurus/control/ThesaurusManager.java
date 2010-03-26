@@ -39,11 +39,8 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Class ThesaurusManager
- * 
- * Classe servant d'interface aux autres composants ayant besoin du thesaurus
+ * Class ThesaurusManager Classe servant d'interface aux autres composants ayant besoin du thesaurus
  * (module pdc et searchEngine)
- * 
  */
 public class ThesaurusManager {
 
@@ -54,18 +51,12 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des synonymes d'un mot donné (ce mot peut-etre un terme
-   * ou un synonyme) pour un utilisateur donné retourne une Collection de
-   * String
-   * 
-   * 
+   * Retourne la liste des synonymes d'un mot donné (ce mot peut-etre un terme ou un synonyme) pour
+   * un utilisateur donné retourne une Collection de String
    * @param mot
    * @param idUser
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see getJargon, getSynonymsTerm, getSynonyms, isExist
    */
   public Collection getSynonyms(String mot, String idUser)
@@ -113,19 +104,14 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des mots synonymes d'un terme dans un vocabulaire donné
-   * retourne une Collection de String
-   * 
-   * 
+   * Retourne la liste des mots synonymes d'un terme dans un vocabulaire donné retourne une
+   * Collection de String
    * @param idVoca
    * @param term
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see com.stratelia.silverpeas.pdc.control.PdcBm.getValues,
-   *      com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
+   * com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
   private Collection getSynonymsTerm(long idVoca, String term)
       throws ThesaurusException {
@@ -167,19 +153,14 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des autres synonymes d'un mot étant un synonyme d'un
-   * terme dans un vocabulaire donné retourne une Collection de String
-   * 
-   * 
+   * Retourne la liste des autres synonymes d'un mot étant un synonyme d'un terme dans un
+   * vocabulaire donné retourne une Collection de String
    * @param idVoca
    * @param synonym
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms,
-   *      com.stratelia.silverpeas.pdc.control.PdcBm.getValue
+   * com.stratelia.silverpeas.pdc.control.PdcBm.getValue
    */
   private Collection getSynonyms(long idVoca, String synonym)
       throws ThesaurusException {
@@ -231,15 +212,10 @@ public class ThesaurusManager {
 
   /**
    * Retourne vrai si le nom appartient au tableau
-   * 
-   * 
    * @param nom
    * @param tab
-   * 
    * @return boolean
-   * 
    * @throws
-   * 
    * @see
    */
   private boolean isExist(String nom, Collection tab) {
@@ -253,18 +229,13 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des synonymes d'un terme pour un utilisateur donné
-   * retourne une Collection de String
-   * 
-   * 
+   * Retourne la liste des synonymes d'un terme pour un utilisateur donné retourne une Collection de
+   * String
    * @param idTree
    * @param idTerm
    * @param idUser
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see getJargon, com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
   public Collection getSynonyms(long idTree, long idTerm, String idUser)
@@ -310,19 +281,14 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne la liste des synonymes d'un terme pour un utilisateur donné, à
-   * partir de son axe retourne une Collection de String
-   * 
-   * 
+   * Retourne la liste des synonymes d'un terme pour un utilisateur donné, à partir de son axe
+   * retourne une Collection de String
    * @param axisId
    * @param idUser
-   * 
    * @return Collection
-   * 
    * @throws ThesaurusException
-   * 
    * @see getJargon, com.stratelia.silverpeas.pdc.control.PdcBm.getRoot,
-   *      com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
+   * com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
   public Collection getSynonymsAxis(String axisId, String idUser)
       throws ThesaurusException {
@@ -367,16 +333,10 @@ public class ThesaurusManager {
   }
 
   /**
-   * Retourne le jargon utilisé par l'utilisateur retourne un Jargon ou null
-   * s'il n'a pas de jargon
-   * 
-   * 
+   * Retourne le jargon utilisé par l'utilisateur retourne un Jargon ou null s'il n'a pas de jargon
    * @param idUser
-   * 
    * @return Jargon
-   * 
    * @throws ThesaurusException
-   * 
    * @see com.silverpeas.thesaurus.control.ThesaurusBm.getJargon
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
@@ -393,16 +353,10 @@ public class ThesaurusManager {
   }
 
   /**
-   * Supprime les synonymes de tous les termes associés à l'axe passé en
-   * paramètre
-   * 
-   * 
+   * Supprime les synonymes de tous les termes associés à l'axe passé en paramètre
    * @param idTree
-   * 
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see com.silverpeas.thesaurus.control.ThesaurusBm.deleteSynonymsAxis
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
@@ -419,16 +373,10 @@ public class ThesaurusManager {
 
   /**
    * Supprime les synonymes de tous les termes passés en paramètre
-   * 
-   * 
    * @param idTree
-   * @param idTerms
-   *          : List de String
-   * 
+   * @param idTerms : List de String
    * @return
-   * 
    * @throws ThesaurusException
-   * 
    * @see com.silverpeas.thesaurus.control.ThesaurusBm.deleteSynonymsTerms
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List idTerms)

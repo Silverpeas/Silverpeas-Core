@@ -27,8 +27,8 @@ import com.stratelia.webactiv.persistence.*;
 import java.lang.Comparable;
 
 /**
- * This class contains a full information about a Synonym a Synonym is linked to
- * a Vocabulary and a Value (idTree - idTerm)
+ * This class contains a full information about a Synonym a Synonym is linked to a Vocabulary and a
+ * Value (idTree - idTerm)
  */
 
 public class Synonym extends SilverpeasBean implements Comparable {

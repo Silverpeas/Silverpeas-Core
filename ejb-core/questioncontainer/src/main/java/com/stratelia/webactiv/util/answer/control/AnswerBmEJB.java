@@ -40,13 +40,10 @@ import com.stratelia.webactiv.util.answer.model.AnswerRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
- * Answer Business Manager See AnswerBmBusinessSkeleton for methods
- * documentation
- * 
+ * Answer Business Manager See AnswerBmBusinessSkeleton for methods documentation
  * @author neysseri
  */
-public class AnswerBmEJB implements javax.ejb.SessionBean,
-    AnswerBmBusinessSkeleton {
+public class AnswerBmEJB implements javax.ejb.SessionBean, AnswerBmBusinessSkeleton {
   private String dbName = JNDINames.ANSWER_DATASOURCE;
 
   public AnswerBmEJB() {
@@ -76,7 +73,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean,
       throws RemoteException {
     SilverTrace.info("answer", "AnswerBmEJB.recordThisAnswerAsVote()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK + ", answerPK="
-            + answerPK);
+        + answerPK);
     Connection con = null;
 
     try {
@@ -102,8 +99,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean,
 
       // Transform the 'special' caracters for storing them in Database
       /*
-       * Iterator i = answers.iterator(); while (i.hasNext()) { Answer ans =
-       * (Answer) i.next();
+       * Iterator i = answers.iterator(); while (i.hasNext()) { Answer ans = (Answer) i.next();
        * ans.setLabel(Encode.transformStringForBD(ans.getLabel()));
        * ans.setComment(Encode.transformStringForBD(ans.getComment())); }
        */
@@ -122,7 +118,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean,
       throws RemoteException {
     SilverTrace.info("answer", "AnswerBmEJB.addAnswerToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK
-            + " and answer = " + answer.toString());
+        + " and answer = " + answer.toString());
     Connection con = null;
 
     try {
@@ -167,7 +163,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean,
       throws RemoteException {
     SilverTrace.info("answer", "AnswerBmEJB.deleteAnswerToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK + ", answerId="
-            + answerId);
+        + answerId);
     Connection con = null;
 
     try {
@@ -186,7 +182,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean,
       throws RemoteException {
     SilverTrace.info("answer", "AnswerBmEJB.updateAnswerToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK + ", answer="
-            + answer.toString());
+        + answer.toString());
     Connection con = null;
 
     try {

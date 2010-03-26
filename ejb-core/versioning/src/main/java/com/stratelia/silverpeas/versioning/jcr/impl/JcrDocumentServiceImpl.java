@@ -46,11 +46,8 @@ public class JcrDocumentServiceImpl implements JcrDocumentService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.webactiv.util.document.model.jcr.impl.JcrDocumentService#
-   * createDocument(com.stratelia.webactiv.util.document.model.DocumentVersion,
-   * java.lang.String)
+   * @see com.stratelia.webactiv.util.document.model.jcr.impl.JcrDocumentService#
+   * createDocument(com.stratelia.webactiv.util.document.model.DocumentVersion, java.lang.String)
    */
   public void createDocument(DocumentVersion document) {
     Session session = null;
@@ -77,12 +74,8 @@ public class JcrDocumentServiceImpl implements JcrDocumentService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.webactiv.util.document.model.jcr.impl.JcrDocumentService#
-   * getUpdatedDocument
-   * (com.stratelia.webactiv.util.document.model.DocumentVersion,
-   * java.lang.String)
+   * @see com.stratelia.webactiv.util.document.model.jcr.impl.JcrDocumentService# getUpdatedDocument
+   * (com.stratelia.webactiv.util.document.model.DocumentVersion, java.lang.String)
    */
   public void getUpdatedDocument(DocumentVersion document) {
     Session session = null;
@@ -109,11 +102,8 @@ public class JcrDocumentServiceImpl implements JcrDocumentService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.stratelia.webactiv.util.document.model.jcr.impl.JcrDocumentService#
-   * deleteDocument(com.stratelia.webactiv.util.document.model.DocumentVersion,
-   * java.lang.String)
+   * @see com.stratelia.webactiv.util.document.model.jcr.impl.JcrDocumentService#
+   * deleteDocument(com.stratelia.webactiv.util.document.model.DocumentVersion, java.lang.String)
    */
   public void deleteDocument(DocumentVersion document) {
     Session session = null;
@@ -162,13 +152,10 @@ public class JcrDocumentServiceImpl implements JcrDocumentService {
   }
 
   /**
-   * Indicate if the node for the specified attachment is currently locked (for
-   * example by Office in the case of a webdav online edition).
-   * 
-   * @param attachment
-   *          the attachment.
-   * @param language
-   *          the language to obtain the file.
+   * Indicate if the node for the specified attachment is currently locked (for example by Office in
+   * the case of a webdav online edition).
+   * @param attachment the attachment.
+   * @param language the language to obtain the file.
    * @return true if the node is locked - false otherwise.
    * @throws RepositoryException
    */

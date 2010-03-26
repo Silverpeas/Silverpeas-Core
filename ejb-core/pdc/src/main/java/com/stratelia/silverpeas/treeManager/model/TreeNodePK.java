@@ -45,18 +45,13 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
-   * 
    * @see
    */
   public TreeNodePK(String id) {
@@ -65,12 +60,9 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param space
    * @param componentName
-   * 
    * @see
    */
   public TreeNodePK(String id, String space, String componentName) {
@@ -79,11 +71,8 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param pk
-   * 
    * @see
    */
   public TreeNodePK(String id, WAPrimaryKey pk) {
@@ -92,10 +81,7 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getRootTableName() {
@@ -104,10 +90,7 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getTableName() {
@@ -116,12 +99,8 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param other
-   * 
    * @return
-   * 
    * @see
    */
   public boolean equals(Object other) {
@@ -135,10 +114,7 @@ public class TreeNodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int hashCode() {

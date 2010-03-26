@@ -36,7 +36,6 @@ import com.stratelia.webactiv.util.subscribe.model.SubscribeRuntimeException;
 
 /**
  * @author neysseri
- * 
  */
 public class SubscribeCallBack extends CallBack {
 
@@ -44,20 +43,20 @@ public class SubscribeCallBack extends CallBack {
   }
 
   /*
-   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
-   * int, java.lang.String, java.lang.Object)
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
+   * java.lang.String, java.lang.Object)
    */
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("subscribe", "SubscribeCallBack.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-            + iParam);
+        + iParam);
 
     if (iParam == -1) {
       SilverTrace.info("subscribe", "SubscribeCallBack.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "userId is null. Callback stopped ! action = " + action
-              + ", sParam = " + sParam + ", extraParam = "
-              + extraParam.toString());
+          + ", sParam = " + sParam + ", extraParam = "
+          + extraParam.toString());
       return;
     }
 
@@ -71,7 +70,6 @@ public class SubscribeCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
   public void subscribe() {

@@ -33,8 +33,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class contains a full information about a Jargon a Jargon is linked to a
- * Vocabulary and a User (UserDetail or Group)
+ * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a
+ * User (UserDetail or Group)
  */
 
 public class Jargon extends SilverpeasBean {

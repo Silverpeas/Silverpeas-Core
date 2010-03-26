@@ -51,9 +51,10 @@ public class InterestCenterDAO {
   public final static String DATE_FORMAT = "yyyy/MM/dd";
 
   /** getICByUserID sql query constant */
-  public final static String GET_IC_BY_USERID_QUERY = "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
-      + ICENTER_TABLE_NAME + " a WHERE a.ownerId = ? ";
+  public final static String GET_IC_BY_USERID_QUERY =
+      "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
+          + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
+          + ICENTER_TABLE_NAME + " a WHERE a.ownerId = ? ";
 
   /**
    * @return a list of <code>InterestCenter</code>s by user id provided
@@ -89,13 +90,13 @@ public class InterestCenterDAO {
   }
 
   /** getICByPK sql query constant */
-  public final static String GET_IC_BY_PK_QUERY = "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
-      + ICENTER_TABLE_NAME + " a WHERE a.id = ? ";
+  public final static String GET_IC_BY_PK_QUERY =
+      "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
+          + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
+          + ICENTER_TABLE_NAME + " a WHERE a.id = ? ";
 
   /**
-   * @param icPK
-   *          <code>InterestCenter</code> id
+   * @param icPK <code>InterestCenter</code> id
    * @return InterestCenter by its id
    */
   public static InterestCenter getICByPK(Connection con, int icID)
@@ -126,9 +127,8 @@ public class InterestCenterDAO {
   }
 
   /**
-   * @param rs
-   *          ResultSet to Create <code>InterestCentre</code> from. ResultSet
-   *          shoud be already positioned
+   * @param rs ResultSet to Create <code>InterestCentre</code> from. ResultSet shoud be already
+   * positioned
    */
   private static InterestCenter getICformRS(ResultSet rs,
       java.sql.Connection con) throws SQLException, DAOException {
@@ -169,10 +169,14 @@ public class InterestCenterDAO {
   }
 
   /** createIC sql query constant */
-  public final static String CREATE_IC_QUERY = "INSERT  INTO "
-      + ICENTER_TABLE_NAME
-      + " (id, name, criteria, "
-      + " workSpaceId, peasId, authorId, afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+  public final static String CREATE_IC_QUERY =
+      "INSERT  INTO "
+          +
+          ICENTER_TABLE_NAME
+          +
+          " (id, name, criteria, "
+          +
+          " workSpaceId, peasId, authorId, afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
    * @return id of <code>InterestCenter</code> created
@@ -223,7 +227,7 @@ public class InterestCenterDAO {
       if (result < 1) {
         throw new DAOException("InterestCenterDAO.createIC",
             "InterestCenter.WRONG_CREATED_ROW_NUMBER", "ID: " + newId
-                + ". DataObject: " + interestCenter);
+            + ". DataObject: " + interestCenter);
       }
 
       ArrayList list = interestCenter.getPdcContext();
@@ -240,10 +244,14 @@ public class InterestCenterDAO {
   }
 
   /** updateIC sql query constant */
-  public final static String UPDATE_IC_QUERY = "UPDATE  "
-      + ICENTER_TABLE_NAME
-      + " SET name = ?, criteria = ?, "
-      + " workSpaceId = ?, peasId = ?, authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
+  public final static String UPDATE_IC_QUERY =
+      "UPDATE  "
+          +
+          ICENTER_TABLE_NAME
+          +
+          " SET name = ?, criteria = ?, "
+          +
+          " workSpaceId = ?, peasId = ?, authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
 
   /**
    * perform updates of provided InterestCenter
@@ -281,7 +289,7 @@ public class InterestCenterDAO {
       if (result < 1) {
         throw new DAOException("InterestCenterDAO.updateIC",
             "InterestCenter.WRONG_UPDATED_ROW_NUMBER", interestCenter
-                .toString());
+            .toString());
       }
 
       ArrayList list = interestCenter.getPdcContext();
@@ -295,9 +303,8 @@ public class InterestCenterDAO {
   }
 
   /**
-   * @param pks
-   *          ArrayList of <code>java.lang.Integer</code> - id's of
-   *          <code>InterestCenter</code>s to be deleted
+   * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
+   * to be deleted
    */
   public static void removeICByPK(Connection con, ArrayList removePKList)
       throws SQLException, DAOException {
@@ -312,8 +319,7 @@ public class InterestCenterDAO {
       + ICENTER_TABLE_NAME + " where id = ?";
 
   /**
-   * @param pk
-   *          an id of <code>InterestCenter</code> to be deleted
+   * @param pk an id of <code>InterestCenter</code> to be deleted
    */
   public static void removeICByPK(Connection con, int removeID)
       throws SQLException, DAOException {
@@ -385,9 +391,7 @@ public class InterestCenterDAO {
 
   /**
    * Appends a list of SearchCriteria to the InterestCenter by InterestCenterID
-   * 
-   * @param icId
-   *          InterestCenterID
+   * @param icId InterestCenterID
    */
   public static int[] appendPdcContext(Connection con, ArrayList pdcContext,
       int icId) throws SQLException, DAOException {
@@ -425,8 +429,8 @@ public class InterestCenterDAO {
         if (result < 1) {
           throw new DAOException("InterestCenterDAO.appendPdcContext",
               "InterestCenter.WRONG_CREATED_ROW_NUMBER", "Criteria: "
-                  + criteria + ". ID = " + newId + ". For InterestCenter ID = "
-                  + icId);
+              + criteria + ". ID = " + newId + ". For InterestCenter ID = "
+              + icId);
         }
         generatedPKs[i] = newId;
       }
@@ -440,9 +444,7 @@ public class InterestCenterDAO {
 
   /**
    * Updates SearchCriterias list for interestCenter by InterestCenterID
-   * 
-   * @param icId
-   *          InterestCenterID
+   * @param icId InterestCenterID
    */
   public static void updatePdcContext(Connection con, ArrayList list, int icId)
       throws SQLException, DAOException {
@@ -464,9 +466,7 @@ public class InterestCenterDAO {
 
   /**
    * Remove all SearchCriterias for provided interestCenterID
-   * 
-   * @param icId
-   *          InterestCenterID
+   * @param icId InterestCenterID
    */
   public static void removePdcContext(Connection con, int icId)
       throws SQLException, DAOException {

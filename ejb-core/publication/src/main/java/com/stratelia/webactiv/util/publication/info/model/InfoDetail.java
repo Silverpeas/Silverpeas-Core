@@ -46,7 +46,8 @@ public class InfoDetail implements Serializable {
   // added for indexation
   private int indexOperation = IndexManager.ADD;
 
-  public InfoDetail(InfoPK pk, Collection<InfoTextDetail> textList, Collection<InfoImageDetail> imageList,
+  public InfoDetail(InfoPK pk, Collection<InfoTextDetail> textList,
+      Collection<InfoImageDetail> imageList,
       Collection<InfoLinkDetail> linkList, String content) {
     setPK(pk);
     setInfoTextList(textList);

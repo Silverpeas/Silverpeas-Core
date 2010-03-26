@@ -63,25 +63,19 @@ import com.stratelia.webactiv.util.score.model.ScoreRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ScoreDAO {
 
-  public static final String SCORECOLUMNNAMES = "scoreId, qcId, userId, scoreParticipationId, scoreScore, scoreElapsedTime,scoreParticipationDate,scoreSuggestion";
+  public static final String SCORECOLUMNNAMES =
+      "scoreId, qcId, userId, scoreParticipationId, scoreScore, scoreElapsedTime,scoreParticipationDate,scoreSuggestion";
 
   /**
    * Method declaration
-   * 
-   * 
    * @param rs
    * @param scorePK
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   private static ScoreDetail getScoreFromResultSet(ResultSet rs, ScorePK scorePK)
@@ -104,13 +98,9 @@ public class ScoreDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param scoreDetail
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void addScore(Connection con, ScoreDetail scoreDetail)
@@ -156,13 +146,9 @@ public class ScoreDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param scoreDetail
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void updateScore(Connection con, ScoreDetail scoreDetail)
@@ -206,14 +192,10 @@ public class ScoreDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param scorePK
    * @param fatherId
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static void deleteScoreByFatherPK(Connection con, ScorePK scorePK,
@@ -318,16 +300,11 @@ public class ScoreDAO {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param scorePK
    * @param fatherId
-   * 
    * @return
-   * 
    * @throws SQLException
-   * 
    * @see
    */
   public static Collection getScoresByFatherId(Connection con, ScorePK scorePK,
@@ -456,7 +433,7 @@ public class ScoreDAO {
           sumPoints = rs.getInt(1);
           average = Math
               .round(((new Float(sumPoints).floatValue()) / (new Float(nbVoters)
-                  .floatValue())) * 10)
+              .floatValue())) * 10)
               / (new Float(10).floatValue());
         }
       } finally {

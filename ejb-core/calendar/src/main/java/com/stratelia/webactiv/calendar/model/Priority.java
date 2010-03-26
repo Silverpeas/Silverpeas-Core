@@ -35,36 +35,31 @@ public class Priority implements Serializable, Comparable {
   }
 
   /**
-   * The minimum allowable priority value. Please note that this refers to the
-   * case where no priority is set. This case happens to be represented by the
-   * value 0 which is the lowest integer value allowable.
+   * The minimum allowable priority value. Please note that this refers to the case where no
+   * priority is set. This case happens to be represented by the value 0 which is the lowest integer
+   * value allowable.
    */
   public static final int MINIMUM_PRIORITY = 0;
 
   /**
-   * The maximum alloable priority value. Please note that this refers to the
-   * highest possible integer value for priority. When interpreting this value
-   * it is seen as the lowest priority because the value 1 is the highest
-   * priority value.
+   * The maximum alloable priority value. Please note that this refers to the highest possible
+   * integer value for priority. When interpreting this value it is seen as the lowest priority
+   * because the value 1 is the highest priority value.
    */
   public static final int MAXIMUM_PRIORITY = 9;
 
   private int priority = 2;
 
   /**
-   * This is the default constructor. It is used by Castor. You should probably
-   * use the constructor that takes an integer argument in your application
-   * code.
+   * This is the default constructor. It is used by Castor. You should probably use the constructor
+   * that takes an integer argument in your application code.
    */
   public Priority() {
   }
 
   /**
-   * The purpose of this method is to create a new priority property with the
-   * given initial value.
-   * 
-   * @param newval
-   *          The initial value of the priority property
+   * The purpose of this method is to create a new priority property with the given initial value.
+   * @param newval The initial value of the priority property
    */
   public Priority(int newval) throws CalendarException {
     setValue(newval);
@@ -72,9 +67,7 @@ public class Priority implements Serializable, Comparable {
 
   /**
    * The purpose of this method is to set the value of the priority property.
-   * 
-   * @param newval
-   *          The new value for the priority property
+   * @param newval The new value for the priority property
    */
 
   public void setValue(int newval) throws CalendarException {
@@ -95,11 +88,10 @@ public class Priority implements Serializable, Comparable {
   }
 
   /*
-   * public void setValue(int newval) { if(newval > MAXIMUM_PRIORITY) { throw
-   * new EJBException("The priority has to be greater than or equals to 0."); }
-   * else if(newval < MINIMUM_PRIORITY) { throw new
-   * EJBException("The priority has to be lower than or equals to 9"); } else {
-   * priority = newval; } }
+   * public void setValue(int newval) { if(newval > MAXIMUM_PRIORITY) { throw new
+   * EJBException("The priority has to be greater than or equals to 0."); } else if(newval <
+   * MINIMUM_PRIORITY) { throw new EJBException("The priority has to be lower than or equals to 9");
+   * } else { priority = newval; } }
    */
   public int getValue() {
     return priority;

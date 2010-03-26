@@ -1726,7 +1726,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
       Collection<PublicationDetail> detailList =
           PublicationDAO.selectBetweenDate(con, beginDate, endDate,
-              instanceId);
+          instanceId);
       Iterator<PublicationDetail> it = detailList.iterator();
       int i = 0;
       PublicationDetail pubDetail = null;

@@ -108,9 +108,12 @@ public class TreeDAO {
 
   public static void updateNode(Connection con, TreeNode node)
       throws SQLException {
-    String updateQuery = "update "
-        + TreeTable
-        + " set name = ? , description = ? , path = ? , levelNumber = ? , fatherId = ? , orderNumber = ? , lang = ? where treeId = ? and id = ? ";
+    String updateQuery =
+        "update "
+            +
+            TreeTable
+            +
+            " set name = ? , description = ? , path = ? , levelNumber = ? , fatherId = ? , orderNumber = ? , lang = ? where treeId = ? and id = ? ";
     PreparedStatement prepStmt = null;
 
     try {
@@ -196,11 +199,8 @@ public class TreeDAO {
 
   /**
    * Update path of decendante nodes of the deleted node.
-   * 
-   * @param con
-   *          - the connection to the database
-   * @param oldFather
-   *          - the deleted node
+   * @param con - the connection to the database
+   * @param oldFather - the deleted node
    */
   public static void updatePath(Connection con, String oldFather, String treeId)
       throws SQLException {
@@ -226,13 +226,9 @@ public class TreeDAO {
 
   /**
    * Update the old path by the new path.
-   * 
-   * @param con
-   *          - the connection to the database
-   * @param oldPath
-   *          - the old path that it must be updated
-   * @param newPath
-   *          - the new path
+   * @param con - the connection to the database
+   * @param oldPath - the old path that it must be updated
+   * @param newPath - the new path
    */
   private static void updatePath(Connection con, String oldPath,
       String newPath, String treeId) throws SQLException {
@@ -252,11 +248,8 @@ public class TreeDAO {
 
   /**
    * Returns a list of path
-   * 
-   * @param con
-   *          - the connection to the database
-   * @param oldFather
-   *          - the deleted node
+   * @param con - the connection to the database
+   * @param oldFather - the deleted node
    * @return a list of String
    */
   private static ArrayList getPathes(Connection con, String oldFather,

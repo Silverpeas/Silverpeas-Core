@@ -27,7 +27,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * This object contains the description of document
- * 
  * @author Georgy Shakirin
  * @version 1.0
  */

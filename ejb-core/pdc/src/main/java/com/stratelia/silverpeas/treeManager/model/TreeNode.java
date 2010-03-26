@@ -74,8 +74,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
@@ -93,8 +91,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public TreeNode() {
@@ -103,8 +99,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param id
    * @param name
    * @param description
@@ -113,7 +107,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
    * @param path
    * @param levelNumber
    * @param fatherId
-   * 
    * @see
    */
   private void init(String id, String treeId, String name, String description,
@@ -133,8 +126,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param pk
    * @param name
    * @param description
@@ -143,7 +134,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
    * @param path
    * @param levelNumber
    * @param fatherId
-   * 
    * @see
    */
   public TreeNode(TreeNodePK pk, String treeId, String name,
@@ -163,8 +153,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param id
    * @param name
    * @param description
@@ -173,7 +161,6 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
    * @param path
    * @param levelNumber
    * @param fatherId
-   * 
    * @see
    */
   public TreeNode(String id, String treeId, String name, String description,
@@ -215,10 +202,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -238,10 +222,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getDescription() {
@@ -261,10 +242,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCreationDate() {
@@ -273,10 +251,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getCreatorId() {
@@ -285,10 +260,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPath() {
@@ -297,10 +269,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getLevelNumber() {
@@ -309,10 +278,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getOrderNumber() {
@@ -321,10 +287,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getFatherId() {
@@ -341,10 +304,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param date
-   * 
    * @see
    */
   public void setCreationDate(String date) {
@@ -353,10 +313,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param creatorId
-   * 
    * @see
    */
   public void setCreatorId(String creatorId) {
@@ -365,10 +322,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param fatherId
-   * 
    * @see
    */
   public void setFatherId(String fatherId) {
@@ -377,10 +331,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param path
-   * 
    * @see
    */
   public void setPath(String path) {
@@ -389,10 +340,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param levelNumber
-   * 
    * @see
    */
   public void setLevelNumber(int levelNumber) {
@@ -401,10 +349,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param levelNumber
-   * 
    * @see
    */
   public void setOrderNumber(int orderNumber) {
@@ -413,10 +358,7 @@ public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {

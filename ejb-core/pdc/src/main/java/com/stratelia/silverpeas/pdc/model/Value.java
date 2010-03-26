@@ -76,7 +76,6 @@ public class Value extends TreeNode implements java.io.Serializable {
 
   /**
    * Returns the id of the mother value
-   * 
    * @return an id
    */
   public String getMotherId() {

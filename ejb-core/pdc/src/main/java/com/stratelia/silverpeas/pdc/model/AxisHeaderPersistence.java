@@ -27,12 +27,10 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 /**
- * This class contains headers of axis. And uses the persistence class for the
- * DAO. The user can access to the axis main information.
- * 
+ * This class contains headers of axis. And uses the persistence class for the DAO. The user can
+ * access to the axis main information.
  */
-public class AxisHeaderPersistence extends SilverpeasBean implements
-    java.io.Serializable {
+public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Serializable {
 
   /**
    * The name of the axe
@@ -88,7 +86,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the name of the axe.
-   * 
    * @return the name
    */
   public String getName() {
@@ -97,9 +94,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set a name for an axe
-   * 
-   * @param name
-   *          - the name of the axe
+   * @param name - the name of the axe
    */
   public void setName(String name) {
     this.name = name;
@@ -107,7 +102,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the type of the axe.
-   * 
    * @return the type
    */
   public String getAxisType() {
@@ -116,9 +110,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set a type for an axe
-   * 
-   * @param type
-   *          - the type of the axe
+   * @param type - the type of the axe
    */
   public void setAxisType(String type) {
     this.type = type;
@@ -126,7 +118,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the order of the axe.
-   * 
    * @return the order
    */
   public int getAxisOrder() {
@@ -135,9 +126,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set an order for an axe
-   * 
-   * @param order
-   *          - the order of the axe
+   * @param order - the order of the axe
    */
   public void setAxisOrder(int order) {
     this.order = order;
@@ -145,7 +134,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the id of the axe root.
-   * 
    * @return the root id
    */
   public int getRootId() {
@@ -154,9 +142,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set a root id for an axe
-   * 
-   * @param rootId
-   *          - the id of the axe root
+   * @param rootId - the id of the axe root
    */
   public void setRootId(int rootId) {
     this.rootId = rootId;
@@ -164,7 +150,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the date of creation of the axe.
-   * 
    * @return the creationDate
    */
   public String getCreationDate() {
@@ -173,9 +158,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set a date of creation for an axe
-   * 
-   * @param creationDate
-   *          - the date of creation of the axe
+   * @param creationDate - the date of creation of the axe
    */
   public void setCreationDate(String creationDate) {
     this.creationDate = creationDate;
@@ -183,7 +166,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the id of the axe owner.
-   * 
    * @return the creatorId
    */
   public String getCreatorId() {
@@ -192,9 +174,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set the id of the axe owner.
-   * 
-   * @param creatorId
-   *          - the id of the axe owner.
+   * @param creatorId - the id of the axe owner.
    */
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
@@ -202,7 +182,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Returns the description of the axe.
-   * 
    * @return the description
    */
   public String getDescription() {
@@ -211,9 +190,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * set a description for an axe
-   * 
-   * @param description
-   *          - the description of the axe
+   * @param description - the description of the axe
    */
   public void setDescription(String description) {
     this.description = description;
@@ -229,7 +206,6 @@ public class AxisHeaderPersistence extends SilverpeasBean implements
 
   /**
    * Converts the contents of the key into a readable String.
-   * 
    * @return The string representation of this object
    */
   public String toString() {

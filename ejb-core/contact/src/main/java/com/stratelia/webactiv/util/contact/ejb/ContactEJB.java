@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class ContactEJB implements EntityBean {
-  
+
   private static final long serialVersionUID = -5005219904431811704L;
   private EntityContext context;
   private ContactPK pk;

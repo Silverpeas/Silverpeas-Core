@@ -26,9 +26,8 @@ package com.stratelia.webactiv.util.contact.model;
 import java.io.Serializable;
 
 /**
- * This object contains the description of a contact and a node (contact
- * parameter, model detail, info)
- * 
+ * This object contains the description of a contact and a node (contact parameter, model detail,
+ * info)
  * @author SC
  * @version 1.0
  */
@@ -40,7 +39,6 @@ public class ContactFatherDetail implements Serializable {
 
   /**
    * Create a new ContactFatherDetail
-   * 
    * @param contactDetail
    * @param nodeId
    * @param nodeName
@@ -54,7 +52,6 @@ public class ContactFatherDetail implements Serializable {
 
   /**
    * Get the contact parameters
-   * 
    * @return a ContactDetail - the contact parameters
    * @see com.stratelia.webactiv.util.contact.model.PulicationDetail
    * @since 1.0

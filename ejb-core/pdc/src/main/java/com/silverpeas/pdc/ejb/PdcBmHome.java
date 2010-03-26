@@ -29,7 +29,6 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- * 
  * @author neysseri
  */
 public interface PdcBmHome extends EJBHome {

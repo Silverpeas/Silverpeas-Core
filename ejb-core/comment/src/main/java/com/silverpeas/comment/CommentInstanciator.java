@@ -37,7 +37,6 @@ import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * @author neysseri
- * 
  */
 public class CommentInstanciator implements ComponentsInstanciatorIntf {
 

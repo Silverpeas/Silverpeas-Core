@@ -73,13 +73,10 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
  */
 
 /**
- * Question Business Manager See QuestionBmBusinessSkeleton for methods
- * documentation
- * 
+ * Question Business Manager See QuestionBmBusinessSkeleton for methods documentation
  * @author neysseri
  */
-public class QuestionBmEJB implements javax.ejb.SessionBean,
-    QuestionBmBusinessSkeleton {
+public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessSkeleton {
 
   private AnswerBm currentAnswerBm = null;
   private QuestionResultBm currentQuestionResultBm = null;
@@ -123,7 +120,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
       String fatherId) throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.getQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", fatherId = " + fatherId);
+        + ", fatherId = " + fatherId);
     Connection con = null;
 
     try {
@@ -162,10 +159,8 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
 
       // Transform the 'special' caracters for storing them in Database
       /*
-       * question.setLabel(Encode.transformStringForBD(question.getLabel()));
-       * question
-       * .setDescription(Encode.transformStringForBD(question.getDescription
-       * ()));
+       * question.setLabel(Encode.transformStringForBD(question.getLabel())); question
+       * .setDescription(Encode.transformStringForBD(question.getDescription ()));
        * question.setClue(Encode.transformStringForBD(question.getClue()));
        */
 
@@ -204,7 +199,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.deleteQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", fatherId = " + fatherId);
+        + ", fatherId = " + fatherId);
     Connection con = null;
     AnswerBm answerBm = getAnswerBm();
     QuestionResultBm questionResultBm = getQuestionResultBm();
@@ -266,12 +261,9 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
         "root.MSG_GEN_ENTER_METHOD", "questionDetail = " + questionDetail);
     // Transform the 'special' caracters for storing them in Database
     /*
-     * questionDetail.setLabel(Encode.transformStringForBD(questionDetail.getLabel
-     * ()));
-     * questionDetail.setDescription(Encode.transformStringForBD(questionDetail
-     * .getDescription()));
-     * questionDetail.setClue(Encode.transformStringForBD(questionDetail
-     * .getClue()));
+     * questionDetail.setLabel(Encode.transformStringForBD(questionDetail.getLabel ()));
+     * questionDetail.setDescription(Encode.transformStringForBD(questionDetail .getDescription()));
+     * questionDetail.setClue(Encode.transformStringForBD(questionDetail .getClue()));
      */
 
     updateQuestionHeader(questionDetail);
@@ -289,11 +281,9 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
 
       // Transform the 'special' caracters for storing them in Database
       /*
-       * questionDetail.setLabel(Encode.transformStringForBD(questionDetail.getLabel
-       * ()));
+       * questionDetail.setLabel(Encode.transformStringForBD(questionDetail.getLabel ()));
        * questionDetail.setDescription(Encode.transformStringForBD(questionDetail
-       * .getDescription()));
-       * questionDetail.setClue(Encode.transformStringForBD(
+       * .getDescription())); questionDetail.setClue(Encode.transformStringForBD(
        * questionDetail.getClue()));
        */
 
@@ -314,12 +304,9 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
 
     // Transform the 'special' caracters for storing them in Database
     /*
-     * questionDetail.setLabel(Encode.transformStringForBD(questionDetail.getLabel
-     * ()));
-     * questionDetail.setDescription(Encode.transformStringForBD(questionDetail
-     * .getDescription()));
-     * questionDetail.setClue(Encode.transformStringForBD(questionDetail
-     * .getClue()));
+     * questionDetail.setLabel(Encode.transformStringForBD(questionDetail.getLabel ()));
+     * questionDetail.setDescription(Encode.transformStringForBD(questionDetail .getDescription()));
+     * questionDetail.setClue(Encode.transformStringForBD(questionDetail .getClue()));
      */
 
     deleteAnswersToAQuestion(questionDetail.getPK());
@@ -352,7 +339,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.deleteAnswerToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", answerPK = " + answerPK);
+        + ", answerPK = " + answerPK);
     getAnswerBm().deleteAnswerToAQuestion(new ForeignPK(questionPK),
         answerPK.getId());
   }
@@ -400,7 +387,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean,
       try {
         QuestionResultBmHome questionResultBmHome = (QuestionResultBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONRESULTBM_EJBHOME,
-                QuestionResultBmHome.class);
+            QuestionResultBmHome.class);
 
         currentQuestionResultBm = questionResultBmHome.create();
       } catch (Exception e) {

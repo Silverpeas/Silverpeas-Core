@@ -39,7 +39,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class ConnectionPoolWithJDBC implements ConnectionPool {
 
-  private static DataSource ds= null;
+  private static DataSource ds = null;
 
   private static ConnectionPoolInformation poolInfo = null;
 
@@ -67,27 +67,30 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
    * implementation
    */
   private static void initializeDatasource() {
-    SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(), " Datasource initialization : starting ...");
+    SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
+        " Datasource initialization : starting ...");
     if (ds == null) {
-      //check if the information for the pool creation is present.
+      // check if the information for the pool creation is present.
       if (poolInfo == null) {
         SilverTrace
             .error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
-                "wysiwig.CONNECTION_INIALIZATION_FAILED");
-        throw new TechnicalException(ConnectionPoolWithJDBC.class.toString() +
-            " : An error occurred  during the connection initialization. The Pool information must be set");
+            "wysiwig.CONNECTION_INIALIZATION_FAILED");
+        throw new TechnicalException(
+            ConnectionPoolWithJDBC.class.toString() +
+                " : An error occurred  during the connection initialization. The Pool information must be set");
       }
-      
-      SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(), " Datasource initialization : poolInfo detail :: "+poolInfo.toString());
-      
-      //driver registration
+
+      SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
+          " Datasource initialization : poolInfo detail :: " + poolInfo.toString());
+
+      // driver registration
       DriverAdapterCPDS cpds = new DriverAdapterCPDS();
       try {
         cpds.setDriver(poolInfo.getDriver());
       } catch (ClassNotFoundException e) {
         SilverTrace
             .error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
-                "wysiwig.DRIVER_MISSING");
+            "wysiwig.DRIVER_MISSING");
         throw new TechnicalException(
             ConnectionPoolWithJDBC.class.toString() +
                 " : An error occurred  during the connection initializatoin. The JDBC driver isn't in the classpath",
@@ -96,7 +99,7 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
       cpds.setUrl(poolInfo.getUrl());
       cpds.setUser(poolInfo.getUser());
       cpds.setPassword(poolInfo.getPassword());
-      
+
       // datasource object creation
       SharedPoolDataSource tds = new SharedPoolDataSource();
       tds.setConnectionPoolDataSource(cpds);
@@ -107,15 +110,16 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
       tds.setNumTestsPerEvictionRun(poolInfo.getNumTestsPerEvictionRun());
       tds.setMinEvictableIdleTimeMillis(poolInfo.getMinEvictableIdleTimeMillis());
       ds = tds;
-     
-      SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(), " Datasource initialization : ending ...");
+
+      SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
+          " Datasource initialization : ending ...");
     }
   }
 
   /**
    * @return the poolInfo
    */
-  public  ConnectionPoolInformation getPoolInformation() {
+  public ConnectionPoolInformation getPoolInformation() {
     return poolInfo;
   }
 

@@ -28,7 +28,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It's the UsedAxis PrimaryKey object It identify an axe used by an instance
- * 
  * @author Nicolas EYSSERIC
  */
 public class UsedAxisPK extends WAPrimaryKey implements Serializable {
@@ -52,8 +51,7 @@ public class UsedAxisPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    */
   public UsedAxisPK(String id, WAPrimaryKey pk) {
     super(id, pk);
@@ -61,7 +59,6 @@ public class UsedAxisPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object root table name
-   * 
    * @return the root table name of the object
    */
   public String getRootTableName() {
@@ -70,7 +67,6 @@ public class UsedAxisPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Return the object table name
-   * 
    * @return the table name of the object
    */
   public String getTableName() {
@@ -79,10 +75,8 @@ public class UsedAxisPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Check if an another object is equal to this object
-   * 
    * @return true if other is equals to this object
-   * @param other
-   *          the object to compare to this NodePK
+   * @param other the object to compare to this NodePK
    */
   public boolean equals(Object other) {
     if (!(other instanceof UsedAxisPK))
@@ -95,7 +89,6 @@ public class UsedAxisPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

@@ -43,13 +43,11 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * This is the Contact Data Access Object.
- * 
  * @author Nicolas Eysseric
  */
 public class ContactDAO {
   /**
    * This class must not be instanciated
-   * 
    * @since 1.0
    */
   public ContactDAO() {
@@ -57,13 +55,9 @@ public class ContactDAO {
 
   /**
    * Add a new father to this contact
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the contact ContactPK
-   * @param fatherPK
-   *          the father NodePK to add
+   * @param con Connection to database
+   * @param pubPK the contact ContactPK
+   * @param fatherPK the father NodePK to add
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.contact.model.ContactPK
    * @exception java.sql.SQLException
@@ -86,13 +80,9 @@ public class ContactDAO {
 
   /**
    * Remove a father to this contact
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the contact ContactPK
-   * @param fatherPK
-   *          the father NodePK to delete
+   * @param con Connection to database
+   * @param pubPK the contact ContactPK
+   * @param fatherPK the father NodePK to delete
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.contact.model.ContactPK
    * @exception java.sql.SQLException
@@ -116,11 +106,8 @@ public class ContactDAO {
 
   /**
    * Delete all fathers to this contact
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the contact ContactPK
+   * @param con Connection to database
+   * @param pubPK the contact ContactPK
    * @see com.stratelia.webactiv.util.contact.model.ContactPK
    * @exception java.sql.SQLException
    * @since 1.0
@@ -141,15 +128,11 @@ public class ContactDAO {
   }
 
   /**
-   * Delete links between contact and father when contacts are linked to a
-   * father which is a descendant of a node
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the contact ContactPK
-   * @param originPK
-   *          the node which is deleted
+   * Delete links between contact and father when contacts are linked to a father which is a
+   * descendant of a node
+   * @param con Connection to database
+   * @param pubPK the contact ContactPK
+   * @param originPK the node which is deleted
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.contact.model.ContactPK
    * @exception java.sql.SQLException
@@ -193,15 +176,11 @@ public class ContactDAO {
   }
 
   /**
-   * Delete links between contact and father when contacts are linked to a
-   * father which is a descendant of a node
-   * 
-   * @param con
-   *          Connection to database
-   * @param pubPK
-   *          the contact ContactPK
-   * @param originPK
-   *          the node which is deleted
+   * Delete links between contact and father when contacts are linked to a father which is a
+   * descendant of a node
+   * @param con Connection to database
+   * @param pubPK the contact ContactPK
+   * @param originPK the node which is deleted
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @see com.stratelia.webactiv.util.contact.model.ContactPK
    * @exception java.sql.SQLException
@@ -522,8 +501,8 @@ public class ContactDAO {
       ContactDetail pub = loadRow(con, pubPK);
       contacts.add(pub);
       /*
-       * commented by Seb ContactDetail pub = selectByContactPK(con, pubPK); if
-       * (pub != null) contacts.add(pub);
+       * commented by Seb ContactDetail pub = selectByContactPK(con, pubPK); if (pub != null)
+       * contacts.add(pub);
        */
     }
     return contacts;

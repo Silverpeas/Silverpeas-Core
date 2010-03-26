@@ -70,8 +70,6 @@ import com.stratelia.webactiv.util.subscribe.model.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class SubscribeBmEJB implements SessionBean {
@@ -81,8 +79,6 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public SubscribeBmEJB() {
@@ -90,10 +86,7 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection getConnection() {
@@ -109,10 +102,7 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void freeConnection(Connection con) {
@@ -128,11 +118,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param node
-   * 
    * @see
    */
   public void addSubscribe(String userId, NodePK node) {
@@ -153,11 +140,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param node
-   * 
    * @see
    */
   public void removeSubscribe(String userId, NodePK node) {
@@ -179,10 +163,7 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @see
    */
   public void removeUserSubscribes(String userId) {
@@ -205,11 +186,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param node
    * @param path
-   * 
    * @see
    */
   public void removeNodeSubscribes(NodePK node, String path) {
@@ -232,12 +210,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getUserSubscribePKs(String userId) {
@@ -264,41 +238,28 @@ public class SubscribeBmEJB implements SessionBean {
   // NEWD DLE
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param space
    * @param componentName
-   * 
    * @return
-   * 
    * @see
    */
   /*
-   * public Collection getUserSubscribePKsBySpaceAndComponent(String userId,
-   * String space, String componentName) { SilverTrace.info("subscribe",
-   * "SubscribeBmEJB.getUserSubscribePKsBySpaceAndComponent",
-   * "root.MSG_GEN_ENTER_METHOD"); Connection con = null;
-   * 
-   * try { con = getConnection(); Collection result =
-   * NodeActorLinkDAO.getNodePKsByActorSpaceAndComponent(con, rootTableName,
-   * userId, space, componentName);
-   * 
-   * return result; } catch (Exception e) { throw newSubscribeRuntimeException(
-   * "SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
-   * SilverpeasRuntimeException.ERROR,
-   * "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e); } finally {
-   * freeConnection(con); } }
+   * public Collection getUserSubscribePKsBySpaceAndComponent(String userId, String space, String
+   * componentName) { SilverTrace.info("subscribe",
+   * "SubscribeBmEJB.getUserSubscribePKsBySpaceAndComponent", "root.MSG_GEN_ENTER_METHOD");
+   * Connection con = null; try { con = getConnection(); Collection result =
+   * NodeActorLinkDAO.getNodePKsByActorSpaceAndComponent(con, rootTableName, userId, space,
+   * componentName); return result; } catch (Exception e) { throw newSubscribeRuntimeException(
+   * "SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()", SilverpeasRuntimeException.ERROR,
+   * "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e); } finally { freeConnection(con); }
+   * }
    */
   /**
    * Method declaration
-   * 
-   * 
    * @param userId
    * @param componentName
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getUserSubscribePKsByComponent(String userId,
@@ -327,12 +288,8 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param node
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getNodeSubscriberDetails(NodePK node) {
@@ -378,10 +335,7 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @throws CreateException
-   * 
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -389,8 +343,6 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbRemove() {
@@ -398,8 +350,6 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbActivate() {
@@ -407,8 +357,6 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @see
    */
   public void ejbPassivate() {
@@ -416,10 +364,7 @@ public class SubscribeBmEJB implements SessionBean {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param sc
-   * 
    * @see
    */
   public void setSessionContext(SessionContext sc) {

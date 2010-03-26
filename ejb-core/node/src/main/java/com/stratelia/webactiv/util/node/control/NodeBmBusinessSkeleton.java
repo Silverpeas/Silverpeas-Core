@@ -283,7 +283,7 @@ public interface NodeBmBusinessSkeleton {
    * @see
    */
   public void deleteIndex(NodePK pk) throws RemoteException;
-  
+
   public void sortNodes(List<NodePK> nodePKs) throws RemoteException;
 
 }

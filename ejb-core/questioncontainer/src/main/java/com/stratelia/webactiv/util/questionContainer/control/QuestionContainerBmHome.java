@@ -46,21 +46,15 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- * 
- * 
  * @author neysseri
  */
 public interface QuestionContainerBmHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   QuestionContainerBm create() throws RemoteException, CreateException;

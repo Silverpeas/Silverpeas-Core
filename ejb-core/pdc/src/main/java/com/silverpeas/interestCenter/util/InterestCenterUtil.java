@@ -56,7 +56,7 @@ public class InterestCenterUtil {
       try {
         InterestCenterBmHome icEjbHome = (InterestCenterBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-                InterestCenterBmHome.class);
+            InterestCenterBmHome.class);
         icEjb = icEjbHome.create();
       } catch (Exception e) {
         throw new InterestCenterRuntimeException(
@@ -67,10 +67,7 @@ public class InterestCenterUtil {
   }
 
   /**
-   * Method getICByUserId
-   * 
-   * returns ArrayList of all InterestCenter objects for user given by userId
-   * 
+   * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
   public ArrayList getICByUserId(int userId) throws RemoteException {
     initEJB();
@@ -78,10 +75,7 @@ public class InterestCenterUtil {
   }
 
   /**
-   * Method getICByPK
-   * 
-   * returns Interest Center given by id
-   * 
+   * Method getICByPK returns Interest Center given by id
    */
   public InterestCenter getICByID(int id) throws RemoteException {
     initEJB();
@@ -89,11 +83,8 @@ public class InterestCenterUtil {
   }
 
   /**
-   * Method isICExists
-   * 
-   * returns true if InterstCenter with given name is already exists, false in
+   * Method isICExists returns true if InterstCenter with given name is already exists, false in
    * other case
-   * 
    */
 
   public int isICExists(String nameIC, int userId) throws RemoteException {
@@ -114,10 +105,7 @@ public class InterestCenterUtil {
   }
 
   /**
-   * Method createIC
-   * 
-   * creates new InterestCenter
-   * 
+   * Method createIC creates new InterestCenter
    */
   public int createIC(InterestCenter icToCreate) throws RemoteException {
     initEJB();

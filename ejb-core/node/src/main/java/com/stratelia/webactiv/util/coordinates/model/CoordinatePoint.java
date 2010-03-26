@@ -30,8 +30,6 @@ import java.io.Serializable;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -47,19 +45,15 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Empty Constructor needed for mapping Castor
-   * 
    */
   public CoordinatePoint() {
   }
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param coordinateId
    * @param nodeId
    * @param leaf
-   * 
    * @see
    */
   public CoordinatePoint(int coordinateId, int nodeId, boolean leaf) {
@@ -71,13 +65,10 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param coordinateId
    * @param nodeId
    * @param leaf
    * @param level
-   * 
    * @see
    */
   public CoordinatePoint(int coordinateId, int nodeId, boolean leaf, int level) {
@@ -89,14 +80,11 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param coordinateId
    * @param nodeId
    * @param leaf
    * @param level
    * @param displayOrder
-   * 
    * @see
    */
   public CoordinatePoint(int coordinateId, int nodeId, boolean leaf, int level,
@@ -110,10 +98,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getCoordinateId() {
@@ -122,10 +107,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getNodeId() {
@@ -134,10 +116,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public boolean isLeaf() {
@@ -146,10 +125,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -158,10 +134,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getLevel() {
@@ -170,10 +143,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public int getOrder() {
@@ -182,10 +152,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param coordinateId
-   * 
    * @see
    */
   public void setCoordinateId(int coordinateId) {
@@ -194,10 +161,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param nodeId
-   * 
    * @see
    */
   public void setNodeId(int nodeId) {
@@ -206,10 +170,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param leaf
-   * 
    * @see
    */
   public void setLeaf(boolean leaf) {
@@ -218,10 +179,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param name
-   * 
    * @see
    */
   public void setName(String name) {
@@ -230,10 +188,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param level
-   * 
    * @see
    */
   public void setLevel(int level) {
@@ -242,10 +197,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param order
-   * 
    * @see
    */
   public void setOrder(int order) {
@@ -254,10 +206,7 @@ public class CoordinatePoint implements Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String toString() {

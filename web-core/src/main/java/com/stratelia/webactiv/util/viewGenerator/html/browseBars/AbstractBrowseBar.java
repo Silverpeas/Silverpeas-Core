@@ -309,12 +309,11 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   public String getComponentJavascriptCallback() {
     return componentJavascriptCallback;
   }
-  
-  public void setClickable(boolean clickable)
-  {
+
+  public void setClickable(boolean clickable) {
     this.clickable = clickable;
   }
-  
+
   public boolean isClickable() {
     return clickable;
   }

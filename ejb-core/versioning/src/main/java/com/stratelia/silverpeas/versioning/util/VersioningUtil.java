@@ -127,7 +127,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @return
    */
   private AdminController getAdmin() {
@@ -166,7 +165,6 @@ public class VersioningUtil {
 
   /**
    * Get document version by id
-   * 
    * @param documentVersionPK
    * @return DocumentVersion
    * @throws RemoteException
@@ -400,7 +398,7 @@ public class VersioningUtil {
       throws RemoteException {
     SilverTrace.info("versioningPeas", "VersioningUtil.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "documentToIndex = "
-            + documentToIndex.toString());
+        + documentToIndex.toString());
 
     indexer.createIndex(documentToIndex, lastVersion);
   }
@@ -425,7 +423,6 @@ public class VersioningUtil {
 
   /**
    * Update document version
-   * 
    * @param documentVersionPK
    * @return DocumentVersion
    */
@@ -445,7 +442,7 @@ public class VersioningUtil {
       try {
         VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-                VersioningBmHome.class);
+            VersioningBmHome.class);
         versioning_bm = vscEjbHome.create();
       } catch (Exception e) {
         // NEED
@@ -468,7 +465,7 @@ public class VersioningUtil {
     try {
       SilverTrace.debug("versioning", "VersioningUtil.checkinFile()",
           "root.MSG_GEN_ENTER_METHOD", "documentId = " + documentId
-              + "Type version=" + versionType);
+          + "Type version=" + versionType);
 
       DocumentVersion documentVersion = getLastVersion(new DocumentPK(
           new Integer(documentId).intValue()));
@@ -486,7 +483,7 @@ public class VersioningUtil {
 
       SilverTrace.debug("versioning", "VersioningUtil.checkinOfficeFile()",
           "root.MSG_GEN_ENTER_METHOD", "newDocumentVersion.getId() = "
-              + newDocumentVersion.getPk().getId());
+          + newDocumentVersion.getPk().getId());
 
       String newVersionFile = FileRepositoryManager
           .getAbsolutePath(componentId)
@@ -510,7 +507,6 @@ public class VersioningUtil {
 
   /**
    * to check document out
-   * 
    * @return void
    * @exception RemoteException
    */
@@ -521,7 +517,6 @@ public class VersioningUtil {
 
   /**
    * Create a new version of a document
-   * 
    * @param DocumentVersion
    * @return DocumentVersion
    */
@@ -545,7 +540,6 @@ public class VersioningUtil {
 
   /**
    * to add new document version
-   * 
    * @return DocumentVersion
    * @exception RemoteException
    */
@@ -556,7 +550,6 @@ public class VersioningUtil {
 
   /**
    * to add new document version
-   * 
    * @return DocumentVersion
    * @exception RemoteException
    */
@@ -641,7 +634,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @throws RemoteException
    */
   public void setFileRights(Document document) throws RemoteException {
@@ -687,7 +679,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @throws RemoteException
    */
@@ -731,7 +722,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @return
    */
@@ -755,7 +745,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @return
    * @throws RemoteException
    */
@@ -764,7 +753,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @return
    */
@@ -793,7 +781,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @return
    * @throws RemoteException
@@ -804,7 +791,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @throws RemoteException
    */
@@ -816,7 +802,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @return
    * @throws RemoteException
@@ -829,7 +814,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param profiles
    * @param role
    * @return
@@ -845,7 +829,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param profile
    * @throws RemoteException
    */
@@ -865,7 +848,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @param role
    * @param topicId
    * @return
@@ -885,7 +867,6 @@ public class VersioningUtil {
   }
 
   /**
-   * 
    * @return
    */
   public NodeBm getNodeBm() {

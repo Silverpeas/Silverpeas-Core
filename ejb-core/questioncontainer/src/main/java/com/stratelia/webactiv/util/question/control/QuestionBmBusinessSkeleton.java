@@ -53,40 +53,28 @@ import com.stratelia.webactiv.util.question.model.QuestionPK;
  */
 
 /**
- * A question is composed by its self attributes (see Question.java) and some
- * possibles answers (Answer.java) Reply from a user is stored in
- * QuestionResult.java. It's the link between Question, Answer and User.
- * 
+ * A question is composed by its self attributes (see Question.java) and some possibles answers
+ * (Answer.java) Reply from a user is stored in QuestionResult.java. It's the link between Question,
+ * Answer and User.
  * @author neysseri
  */
 public interface QuestionBmBusinessSkeleton {
 
   /**
    * Get a question
-   * 
-   * @param questionPK
-   *          the question id
-   * 
+   * @param questionPK the question id
    * @return a Question
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Question getQuestion(QuestionPK questionPK) throws RemoteException;
 
   /**
    * Get all questions for a given father
-   * 
-   * @param questionPK
-   *          the question id
-   * @param fatherId
-   *          the father id
-   * 
+   * @param questionPK the question id
+   * @param fatherId the father id
    * @return a Collection of Question
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getQuestionsByFatherPK(QuestionPK questionPK,
@@ -94,28 +82,18 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Create a new question
-   * 
-   * @param question
-   *          the question to create
-   * 
+   * @param question the question to create
    * @return the id of the new question
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public QuestionPK createQuestion(Question question) throws RemoteException;
 
   /**
    * Create some questions to a given father
-   * 
-   * @param questions
-   *          a Collection of Question to create
-   * @param fatherId
-   *          the father id
-   * 
+   * @param questions a Collection of Question to create
+   * @param fatherId the father id
    * @throws RemoteException
-   * 
    * @see
    */
   public void createQuestions(Collection questions, String fatherId)
@@ -123,14 +101,9 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Delete the questions of a father
-   * 
-   * @param questionPK
-   *          the question context
-   * @param fatherId
-   *          the father id
-   * 
+   * @param questionPK the question context
+   * @param fatherId the father id
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteQuestionsByFatherPK(QuestionPK questionPK, String fatherId)
@@ -138,36 +111,24 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Delete a question
-   * 
-   * @param questionPK
-   *          the question id to delete
-   * 
+   * @param questionPK the question id to delete
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteQuestion(QuestionPK questionPK) throws RemoteException;
 
   /**
    * Update a question
-   * 
-   * @param questionDetail
-   *          the question to update
-   * 
+   * @param questionDetail the question to update
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateQuestion(Question questionDetail) throws RemoteException;
 
   /**
    * Update a question header (self attributes)
-   * 
-   * @param questionDetail
-   *          the question attributes
-   * 
+   * @param questionDetail the question attributes
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateQuestionHeader(Question questionDetail)
@@ -175,12 +136,8 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Update the answers to a question
-   * 
-   * @param questionDetail
-   *          the question containing the answers
-   * 
+   * @param questionDetail the question containing the answers
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateAnswersToAQuestion(Question questionDetail)
@@ -188,12 +145,8 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Update an answer to a question
-   * 
-   * @param answerDetail
-   *          the answer to update
-   * 
+   * @param answerDetail the answer to update
    * @throws RemoteException
-   * 
    * @see
    */
   public void updateAnswerToAQuestion(Answer answerDetail)
@@ -201,12 +154,8 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Delete all answers to a question
-   * 
-   * @param questionPK
-   *          the question id
-   * 
+   * @param questionPK the question id
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteAnswersToAQuestion(QuestionPK questionPK)
@@ -214,14 +163,9 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Delete an answer to a question
-   * 
-   * @param answerPK
-   *          the answer id to delete
-   * @param questionPK
-   *          the question id
-   * 
+   * @param answerPK the answer id to delete
+   * @param questionPK the question id
    * @throws RemoteException
-   * 
    * @see
    */
   public void deleteAnswerToAQuestion(AnswerPK answerPK, QuestionPK questionPK)
@@ -229,12 +173,8 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Create some answers to a question
-   * 
-   * @param questionDetail
-   *          the question which contains the answers
-   * 
+   * @param questionDetail the question which contains the answers
    * @throws RemoteException
-   * 
    * @see
    */
   public void createAnswersToAQuestion(Question questionDetail)
@@ -242,16 +182,10 @@ public interface QuestionBmBusinessSkeleton {
 
   /**
    * Add an answer to a question
-   * 
-   * @param answerDetail
-   *          the new answer
-   * @param questionPK
-   *          the question id
-   * 
+   * @param answerDetail the new answer
+   * @param questionPK the question id
    * @return the PK of the new answer
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public AnswerPK createAnswerToAQuestion(Answer answerDetail,

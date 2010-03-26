@@ -46,21 +46,15 @@ import java.rmi.RemoteException;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface SubscribeBmHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   SubscribeBm create() throws RemoteException, CreateException;

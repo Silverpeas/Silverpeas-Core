@@ -227,7 +227,7 @@ public class NotationDAO {
   private static Notation resultSet2Notation(ResultSet rs) throws SQLException {
     return new Notation(rs.getInt(COLUMN_ID), rs.getString(COLUMN_INSTANCEID),
         rs.getString(COLUMN_EXTERNALID), rs.getInt(COLUMN_EXTERNALTYPE), rs
-            .getString(COLUMN_AUTHOR), rs.getInt(COLUMN_NOTE));
+        .getString(COLUMN_AUTHOR), rs.getInt(COLUMN_NOTE));
   }
 
 }

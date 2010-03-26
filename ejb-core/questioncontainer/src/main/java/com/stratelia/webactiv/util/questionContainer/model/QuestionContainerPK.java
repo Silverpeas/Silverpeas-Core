@@ -28,7 +28,6 @@ import com.stratelia.webactiv.util.*;
 
 /**
  * It's the QuestionContainer PrimaryKey object It identify a QuestionContainer
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -60,7 +59,7 @@ public class QuestionContainerPK extends WAPrimaryKey implements Serializable {
     return (id.equals(((QuestionContainerPK) other).getId()))
         && (space.equals(((QuestionContainerPK) other).getSpace()))
         && (componentName.equals(((QuestionContainerPK) other)
-            .getComponentName()));
+        .getComponentName()));
   }
 
   public int hashCode() {

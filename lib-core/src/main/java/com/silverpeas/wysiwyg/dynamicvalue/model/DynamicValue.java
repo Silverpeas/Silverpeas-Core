@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * class used to store data information used by the dynamic value functionality
  */
-public class DynamicValue implements Serializable{
+public class DynamicValue implements Serializable {
 
   /**
    * key is used in HTML code as follows : "#{<key>}". This key is visible only in HTML editor.
@@ -53,8 +53,7 @@ public class DynamicValue implements Serializable{
    */
   public DynamicValue() {
   }
-  
- 
+
   /**
    * full constructor
    * @param key the key is used in HTML code as follows : "#{<key>}".
@@ -62,12 +61,12 @@ public class DynamicValue implements Serializable{
    * @param startDate the start date of key validity
    * @param endDate the end date of key validity
    */
-  public DynamicValue(String key, String value, Date startDate, Date endDate ) {
+  public DynamicValue(String key, String value, Date startDate, Date endDate) {
     this.key = key;
     this.value = value;
     this.startDate = startDate;
     this.enDate = endDate;
-    
+
   }
 
   /**

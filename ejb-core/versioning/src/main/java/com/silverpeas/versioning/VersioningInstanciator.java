@@ -40,8 +40,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-public class VersioningInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class VersioningInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   private VersioningBm versioningBm = null;
 

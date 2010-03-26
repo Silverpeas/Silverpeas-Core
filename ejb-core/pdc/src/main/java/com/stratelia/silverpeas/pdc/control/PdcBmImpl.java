@@ -279,28 +279,24 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
-   * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We
-   * indicate the Object SilverPeas which map the database.
+   * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We indicate the Object
+   * SilverPeas which map the database.
    */
   private SilverpeasBeanDAO dao = null;
 
   private AxisHeaderI18NDAO axisHeaderI18NDAO = (AxisHeaderI18NDAO) new AxisHeaderI18NDAO();
 
   /**
-   * PdcUtilizationBm, the pdc utilization interface to manage which axis are
-   * used by which instance
+   * PdcUtilizationBm, the pdc utilization interface to manage which axis are used by which instance
    */
   private PdcUtilizationBm pdcUtilizationBm = (PdcUtilizationBm) new PdcUtilizationBmImpl();
 
   /**
-   * PdcClassifyBm, the pdc classify interface to manage how are classified
-   * object in the pdc
+   * PdcClassifyBm, the pdc classify interface to manage how are classified object in the pdc
    */
   private PdcClassifyBm pdcClassifyBm = (PdcClassifyBm) new PdcClassifyBmImpl();
 
@@ -313,8 +309,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @see
    */
   public PdcBmImpl() {
@@ -329,9 +323,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a list of axes sorted in according to the axe type.
-   * 
-   * @param type
-   *          - the whished type of the axe.
+   * @param type - the whished type of the axe.
    * @return a sorted list.
    */
   public List getAxisByType(String type) throws PdcException {
@@ -390,7 +382,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a list of axes sorted.
-   * 
    * @return a list sorted or null otherwise
    */
   public List getAxis() throws PdcException {
@@ -409,7 +400,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the number of axe for one type.
-   * 
    * @return the number of axe
    */
   public int getNbAxisByType(String type) throws PdcException {
@@ -418,7 +408,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the number of axe.
-   * 
    * @return the number of axe
    */
   public int getNbAxis() throws PdcException {
@@ -427,7 +416,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the max number of axis.
-   * 
    * @return the max number of axis
    */
   public int getNbMaxAxis() throws PdcException {
@@ -436,11 +424,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Create an axe into the data base.
-   * 
-   * @param axisHeader
-   *          - the object which contains all data about an axe
-   * @return 1 if the maximun of axe is atteignable, 2 if the axe already exist,
-   *         0 otherwise
+   * @param axisHeader - the object which contains all data about an axe
+   * @return 1 if the maximun of axe is atteignable, 2 if the axe already exist, 0 otherwise
    */
   public int createAxis(AxisHeader axisHeader) throws PdcException {
 
@@ -483,11 +468,12 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         }
 
         // build of the Value
-        com.stratelia.silverpeas.pdc.model.Value value = new com.stratelia.silverpeas.pdc.model.Value(
-            "unknown", new Integer(axisHeader.getRootId()).toString(),
-            axisHeader.getName(), axisHeader.getDescription(), axisHeader
+        com.stratelia.silverpeas.pdc.model.Value value =
+            new com.stratelia.silverpeas.pdc.model.Value(
+                "unknown", new Integer(axisHeader.getRootId()).toString(),
+                axisHeader.getName(), axisHeader.getDescription(), axisHeader
                 .getCreationDate(), axisHeader.getCreatorId(), "unknown", -1,
-            -1, "unknown");
+                -1, "unknown");
 
         value.setLanguage(axisHeader.getLanguage());
         value.setRemoveTranslation(axisHeader.isRemoveTranslation());
@@ -498,7 +484,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         axisHeader.setRootId((new Integer(treeId)).intValue());
         SilverTrace
             .info("Pdc", "PdcBmImpl.createAxis()", "root.MSG_GEN_PARAM_VALUE",
-                "axisHeader = " + axisHeader.toString());
+            "axisHeader = " + axisHeader.toString());
         AxisHeaderPersistence ahp = new AxisHeaderPersistence(axisHeader);
         AxisPK axisPK = (AxisPK) dao.add(con, ahp);
 
@@ -520,9 +506,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update an axe into the data base.
-   * 
-   * @param axisHeader
-   *          - the object which contains all data about an axe
+   * @param axisHeader - the object which contains all data about an axe
    * @return 2 if the axe already exist, 0 otherwise
    */
   public int updateAxis(AxisHeader axisHeader) throws PdcException {
@@ -586,13 +570,13 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         // update root value linked to this axis
         SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()",
             "root.MSG_GEN_PARAM_VALUE", "axisHeader.getPK().getId() = "
-                + axisHeader.getPK().getId());
+            + axisHeader.getPK().getId());
         AxisHeader oldAxisHeader = getAxisHeader(con, axisHeader.getPK()
             .getId());
 
         SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()",
             "root.MSG_GEN_PARAM_VALUE", "oldAxisHeader.getRootId() = "
-                + oldAxisHeader.getRootId());
+            + oldAxisHeader.getRootId());
 
         // regarder si le nom et la description ont changé en fonction de la
         // langue
@@ -601,11 +585,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
         if (oldAxisHeader.getName() != null
             && !oldAxisHeader.getName().toLowerCase().equals(
-                axisHeader.getName().toLowerCase()))
+            axisHeader.getName().toLowerCase()))
           axisNameHasChanged = true;
         if (oldAxisHeader.getDescription() != null
             && !oldAxisHeader.getDescription().toLowerCase().equals(
-                axisHeader.getDescription().toLowerCase()))
+            axisHeader.getDescription().toLowerCase()))
           axisDescHasChanged = true;
         else if (oldAxisHeader.getDescription() == null
             && axisHeader.getDescription() != null)
@@ -617,10 +601,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           String treeId = (new Integer(oldAxisHeader.getRootId())).toString();
           /*
            * TreeNode root = tree.getRoot(con, treeId); TreeNode node = new
-           * TreeNode(root.getPK().getId(), root.getTreeId(),
-           * axisHeader.getName(), axisHeader.getDescription(),
-           * root.getCreationDate(), root.getCreatorId(), root.getPath(),
-           * root.getLevelNumber(), root.getOrderNumber(), root.getFatherId());
+           * TreeNode(root.getPK().getId(), root.getTreeId(), axisHeader.getName(),
+           * axisHeader.getDescription(), root.getCreationDate(), root.getCreatorId(),
+           * root.getPath(), root.getLevelNumber(), root.getOrderNumber(), root.getFatherId());
            * node.setLanguage(root.getLanguage());
            * node.setRemoveTranslation(root.isRemoveTranslation());
            * node.setTranslationId(root.getTranslationId());
@@ -628,8 +611,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           TreeNode root = tree.getRoot(con, treeId);
           TreeNode node = new TreeNode(root.getPK().getId(), root.getTreeId(),
               axisHeader.getName(), axisHeader.getDescription(), root
-                  .getCreationDate(), root.getCreatorId(), root.getPath(), root
-                  .getLevelNumber(), root.getOrderNumber(), root.getFatherId());
+              .getCreationDate(), root.getCreatorId(), root.getPath(), root
+              .getLevelNumber(), root.getOrderNumber(), root.getFatherId());
           node.setLanguage(axisHeader.getLanguage());
           node.setRemoveTranslation(axisHeader.isRemoveTranslation());
           node.setTranslationId(axisHeader.getTranslationId());
@@ -724,9 +707,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * delete the axe from the data base and all its subtrees.
-   * 
-   * @param axisId
-   *          - the id of the selected axe
+   * @param axisId - the id of the selected axe
    */
   public void deleteAxis(Connection con, String axisId) throws PdcException {
     try {
@@ -765,9 +746,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a detail axe (header,values).
-   * 
-   * @param axisId
-   *          - the id of the selected axe.
+   * @param axisId - the id of the selected axe.
    * @return the Axis Object
    */
   public Axis getAxisDetail(String axisId) throws PdcException {
@@ -806,9 +785,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a value from an axe.
-   * 
-   * @param valueId
-   *          - the id of the selected value
+   * @param valueId - the id of the selected value
    * @return the Value object
    */
   public com.stratelia.silverpeas.pdc.model.Value getValue(String axisId,
@@ -833,9 +810,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a value from an axe.
-   * 
-   * @param valueId
-   *          - the id of the selected value
+   * @param valueId - the id of the selected value
    * @return the Value object
    */
   public com.stratelia.silverpeas.pdc.model.Value getAxisValue(String valueId,
@@ -858,15 +833,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return a list of axis values having the value name in parameter
-   * 
-   * 
-   * @param valueName
-   *          - the name of the value.
-   * 
+   * @param valueName - the name of the value.
    * @return List
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public List getAxisValuesByName(String valueName) throws PdcException {
@@ -888,17 +857,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * Return a list of String corresponding to the valueId of the value in
-   * parameter
-   * 
-   * 
+   * Return a list of String corresponding to the valueId of the value in parameter
    * @param axisId
    * @param valueId
-   * 
    * @return List of String
-   * 
    * @throws PdcException
-   * 
    * @see getDaughters
    */
   public List getDaughterValues(String axisId, String valueId)
@@ -911,8 +874,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
       Iterator i = listValues.iterator();
       while (i.hasNext()) {
-        com.stratelia.silverpeas.pdc.model.Value value = (com.stratelia.silverpeas.pdc.model.Value) i
-            .next();
+        com.stratelia.silverpeas.pdc.model.Value value =
+            (com.stratelia.silverpeas.pdc.model.Value) i
+                .next();
         listValuesString.add(value.getPK().getId());
       }
     } catch (Exception exce_select) {
@@ -927,17 +891,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * Return a list of String corresponding to the valueId of the value in
-   * parameter
-   * 
-   * 
+   * Return a list of String corresponding to the valueId of the value in parameter
    * @param axisId
    * @param valueId
-   * 
    * @return List of String
-   * 
    * @throws PdcException
-   * 
    * @see getDaughters
    */
   public List getFilteredAxisValues(String rootId, AxisFilter filter)
@@ -964,14 +922,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return the Value corresponding to the axis done
-   * 
-   * 
    * @param axisId
-   * 
    * @return com.stratelia.silverpeas.pdc.model.Value
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public com.stratelia.silverpeas.pdc.model.Value getRoot(String axisId)
@@ -998,9 +951,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns all values from an axe.
-   * 
-   * @param axeId
-   *          - the id of the selected axe
+   * @param axeId - the id of the selected axe
    * @return a list of values
    */
   private List getAxisValues(int treeId) throws PdcException {
@@ -1028,11 +979,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * insert a value which is defined like a mother value
-   * 
-   * @param valueToInsert
-   *          - a Value object
-   * @param refValue
-   *          - the id of the Value to insert
+   * @param valueToInsert - a Value object
+   * @param refValue - the id of the Value to insert
    * @return 1 if the name already exist 0 otherwise
    */
   public int insertMotherValue(
@@ -1088,13 +1036,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Move a value under a new father
-   * 
-   * @param axis
-   *          : l'axe concerné
-   * @param valueToMove
-   *          - a Value object
-   * @param newFatherId
-   *          - the id of the new father
+   * @param axis : l'axe concerné
+   * @param valueToMove - a Value object
+   * @param newFatherId - the id of the new father
    * @return 1 if the name already exist 0 otherwise
    */
   public int moveValueToNewFatherId(Axis axis, Value valueToMove,
@@ -1146,11 +1090,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * 
    * retourne les droits hérités sur la valeur
-   * 
-   * @param current
-   *          value
+   * @param current value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
@@ -1184,11 +1125,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * 
    * retourne les droits sur la valeur
-   * 
-   * @param current
-   *          value
+   * @param current value
    * @return List(List userIds, List groupIds)
    * @throws PdcException
    */
@@ -1254,11 +1192,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * 
    * met à jour les droits sur la valeur
-   * 
-   * @param ArrayList
-   *          ( ArrayList UsersId, ArrayList GroupsId), current value
+   * @param ArrayList ( ArrayList UsersId, ArrayList GroupsId), current value
    * @return
    * @throws PdcException
    */
@@ -1300,7 +1235,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Supprime les droits associés au userid
-   * 
    * @param userId
    * @throws SQLException
    */
@@ -1318,7 +1252,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Supprime les droits associés au groupid
-   * 
    * @param groupId
    * @throws SQLException
    */
@@ -1336,11 +1269,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return tree where the root value is the refValue.
-   * 
-   * @param con
-   *          - the connection to the database
-   * @param refValue
-   *          - the id of the reference Value Object
+   * @param con - the connection to the database
+   * @param refValue - the id of the reference Value Object
    * @return a list of each pathes found
    * @throws PdcException
    */
@@ -1371,14 +1301,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param valueToInsert
    * @param refValue
    * @param axisId
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   private void insertMotherValueToRootValue(Connection con,
@@ -1396,15 +1322,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param valueToInsert
    * @param refValue
-   * 
    * @return
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   private int insertMotherValueToValue(Connection con,
@@ -1432,11 +1353,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * insert a value which is defined like a daughter value
-   * 
-   * @param valueToInsert
-   *          - a Value object
-   * @param refValue
-   *          - the id of the Value to insert
+   * @param valueToInsert - a Value object
+   * @param refValue - the id of the Value to insert
    * @return 1 if the name already exist 0 otherwise
    */
   public int createDaughterValue(
@@ -1469,9 +1387,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update the selected value
-   * 
-   * @param value
-   *          - a Value object
+   * @param value - a Value object
    * @return 1 if the name already exist 0 otherwise
    */
   public int updateValue(com.stratelia.silverpeas.pdc.model.Value value,
@@ -1492,8 +1408,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         TreeNode node = new TreeNode(value.getPK().getId(), treeId, value
             .getName(), value.getDescription(), oldValue.getCreationDate(),
             oldValue.getCreatorId(), oldValue.getPath(), oldValue
-                .getLevelNumber(), value.getOrderNumber(), oldValue
-                .getFatherId());
+            .getLevelNumber(), value.getOrderNumber(), oldValue
+            .getFatherId());
         node.setLanguage(value.getLanguage());
         node.setRemoveTranslation(value.isRemoveTranslation());
         node.setTranslationId(value.getTranslationId());
@@ -1511,9 +1427,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Delete a value and it's sub tree
-   * 
-   * @param valueId
-   *          - the id of the select value
+   * @param valueId - the id of the select value
    */
   public void deleteValueAndSubtree(Connection con, String valueId,
       String axisId, String treeId) throws PdcException {
@@ -1531,7 +1445,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
       SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree",
           "root.MSG_GEN_PARAM_VALUE", "oldPath.size() = " + oldPath.size()
-              + ", oldPath =" + oldPath.toString());
+          + ", oldPath =" + oldPath.toString());
 
       TreeNodePK treeNodePK = new TreeNodePK(valueId);
 
@@ -1591,11 +1505,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * Delete the selected value. If a daughter of the selected value is named
-   * like a sister of her mother the delete is not possible.
-   * 
-   * @param valueId
-   *          - the id of the select value
+   * Delete the selected value. If a daughter of the selected value is named like a sister of her
+   * mother the delete is not possible.
+   * @param valueId - the id of the select value
    * @return null if the delete is possible, the name of her daughter else.
    */
   public String deleteValue(Connection con, String valueId, String axisId,
@@ -1670,11 +1582,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns the full path of the value
-   * 
-   * @param valueId
-   *          - the id of the selected value (value is not empty)
-   * @return the complet path - It's a List of ArrayList. Each ArrayList
-   *         contains the name, the id and the treeId of the value in the path.
+   * @param valueId - the id of the selected value (value is not empty)
+   * @return the complet path - It's a List of ArrayList. Each ArrayList contains the name, the id
+   * and the treeId of the value in the path.
    */
   public List getFullPath(String valueId, String treeId) throws PdcException {
     Connection con = openConnection(true);
@@ -1701,11 +1611,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * This method searches if a name of axes is alreadey used !
-   * 
-   * @param axis
-   *          - a list of axes
-   * @param name
-   *          - the name of the axe
+   * @param axis - a list of axes
+   * @param name - the name of the axe
    * @return true if the name of the axe exists, false otherwise
    */
   private boolean isAxisNameExist(List axis, AxisHeader axisToCheck) {
@@ -1732,11 +1639,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * This method searches if a name of values is alreadey used !
-   * 
-   * @param values
-   *          - a list of values
-   * @param name
-   *          - the name of the value
+   * @param values - a list of values
+   * @param name - the name of the value
    * @return true if the name of the value exists, false otherwise
    */
   private boolean isValueNameExist(List values,
@@ -1763,13 +1667,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * This method searches if one name of valuesToCheck is alreadey used !
-   * 
-   * @param values
-   *          - a list of values
-   * @param valuesToCheck
-   *          - a list of values to check
-   * @return the name of the value if the name of one value exists, null
-   *         otherwise
+   * @param values - a list of values
+   * @param valuesToCheck - a list of values to check
+   * @return the name of the value if the name of one value exists, null otherwise
    */
   private String isValueNameExist(List values, List valuesToCheck) {
     Iterator it = valuesToCheck.iterator();
@@ -1789,20 +1689,14 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns an AxisHeader Object.
-   * 
-   * @param axisId
-   *          - the id of the selected axe
+   * @param axisId - the id of the selected axe
    * @return an AxisHeader
    */
   /*
-   * public AxisHeader getAxisHeader(String axisId) { AxisHeader axisHeader =
-   * null;
-   * 
-   * try { axisHeader = (AxisHeader) dao.findByPrimaryKey(new AxisPK(axisId)); }
-   * catch (PersistenceException err_select) { SilverTrace.info("PDC",
-   * "PdcBmImpl.getAxisHeader", "Pdc.CANNOT_RETRIEVE_HEADER_AXE", err_select); }
-   * 
-   * return axisHeader; }
+   * public AxisHeader getAxisHeader(String axisId) { AxisHeader axisHeader = null; try { axisHeader
+   * = (AxisHeader) dao.findByPrimaryKey(new AxisPK(axisId)); } catch (PersistenceException
+   * err_select) { SilverTrace.info("PDC", "PdcBmImpl.getAxisHeader",
+   * "Pdc.CANNOT_RETRIEVE_HEADER_AXE", err_select); } return axisHeader; }
    */
 
   public AxisHeader getAxisHeader(String axisId) {
@@ -1839,11 +1733,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * Returns an AxisHeader Object. (pass the connection WORK AROUND FOR THE
-   * connection BUG !!!!!!!)
-   * 
-   * @param axisId
-   *          - the id of the selected axe
+   * Returns an AxisHeader Object. (pass the connection WORK AROUND FOR THE connection BUG !!!!!!!)
+   * @param axisId - the id of the selected axe
    * @return an AxisHeader
    */
   private AxisHeader getAxisHeader(Connection connection, String axisId) {
@@ -1863,11 +1754,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Returns a list of Value Object.
-   * 
-   * @param con
-   *          - a connection
-   * @param refValue
-   *          - the id of the selected axe
+   * @param con - a connection
+   * @param refValue - the id of the selected axe
    * @return a list
    */
   private List getDaughters(Connection con, String refValue, String treeId) {
@@ -1920,9 +1808,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Creates a list of Value objects with a list of treeNodes objects
-   * 
-   * @param treeNodes
-   *          - a list of TreeNode objects
+   * @param treeNodes - a list of TreeNode objects
    * @return a Value list
    */
   private List createValuesList(List treeNodes) {
@@ -1938,9 +1824,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Creates a Value object with a TreeNode object
-   * 
-   * @param treeNode
-   *          - a TreeNode Object
+   * @param treeNode - a TreeNode Object
    * @return a Value Object
    */
   private com.stratelia.silverpeas.pdc.model.Value createValue(TreeNode treeNode) {
@@ -1974,14 +1858,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param instanceId
-   * 
    * @return
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public List getUsedAxisByInstanceId(String instanceId) throws PdcException {
@@ -1990,14 +1869,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param usedAxis
-   * 
    * @return
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public int addUsedAxis(UsedAxis usedAxis) throws PdcException {
@@ -2010,14 +1884,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param usedAxis
-   * 
    * @return
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public int updateUsedAxis(UsedAxis usedAxis) throws PdcException {
@@ -2065,13 +1934,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * recherche si la valeur de base de l'axe est une valeur ascendante par
-   * rapport aux valeurs se trouvant dans SB_Classify...
-   * 
-   * @param objectIdList
-   *          - une list d'objets se trouvant dans une instance donnée
-   * @param usedAxis
-   *          - l'objet UsedAxis contenant la nouvelle valeur de base
+   * recherche si la valeur de base de l'axe est une valeur ascendante par rapport aux valeurs se
+   * trouvant dans SB_Classify...
+   * @param objectIdList - une list d'objets se trouvant dans une instance donnée
+   * @param usedAxis - l'objet UsedAxis contenant la nouvelle valeur de base
    * @return vrai si la valeur de base est une valeur ascendante sinon faux
    */
   private boolean isAscendanteBaseValue(List objectIdList, UsedAxis usedAxis)
@@ -2085,9 +1951,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update a base value from the PdcUtilization table
-   * 
-   * @param valueId
-   *          - the base value that must be updated
+   * @param valueId - the base value that must be updated
    */
   private void updateBaseValueInInstances(Connection con,
       String baseValueToUpdate, String axisId, String treeId)
@@ -2103,14 +1967,12 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
     pdcUtilizationBm.updateOrDeleteBaseValue(con,
         new Integer(baseValueToUpdate).intValue(), new Integer(newBaseValue)
-            .intValue(), new Integer(axisId).intValue(), treeId);
+        .intValue(), new Integer(axisId).intValue(), treeId);
   }
 
   /**
    * Update some base values from the PdcUtilization table
-   * 
-   * @param baseValuesToUpdate
-   *          - the base values that must be updated
+   * @param baseValuesToUpdate - the base values that must be updated
    */
   private void updateBaseValuesInInstances(Connection con,
       String baseValueToUpdate, String axisId, String treeId)
@@ -2151,12 +2013,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param usedAxisId
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxis(String usedAxisId) throws PdcException {
@@ -2165,12 +2023,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param usedAxisIds
-   * 
    * @throws PdcException
-   * 
    * @see
    */
   public void deleteUsedAxis(Collection usedAxisIds) throws PdcException {
@@ -2224,9 +2078,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.stratelia.silverpeas.pdc.control.PdcBm#copyPositions(int,
-   * java.lang.String, int, java.lang.String)
+   * @see com.stratelia.silverpeas.pdc.control.PdcBm#copyPositions(int, java.lang.String, int,
+   * java.lang.String)
    */
   public void copyPositions(int fromObjectId, String fromInstanceId,
       int toObjectId, String toInstanceId) throws PdcException {
@@ -2284,11 +2137,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * From the usedAxis, retrieve the UsedAxis corresponding to axisId
-   * 
-   * @param usedAxis
-   *          a List of UsedAxis
-   * @param axisId
-   *          the axis id to search
+   * @param usedAxis a List of UsedAxis
+   * @param axisId the axis id to search
    * @return the UsedAxis found or null if no object found
    */
   private UsedAxis getUsedAxis(List usedAxis, int axisId) {
@@ -2415,10 +2265,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           int treeId = Integer.parseInt(getTreeId(Integer.toString(value
               .getAxisId())));
           /*
-           * AxisHeader axisHeader =
-           * getAxisHeader(Integer.toString(value.getAxisId()), false); // get
-           * the header of the axe to obtain the rootId. int treeId =
-           * axisHeader.getRootId();
+           * AxisHeader axisHeader = getAxisHeader(Integer.toString(value.getAxisId()), false); //
+           * get the header of the axe to obtain the rootId. int treeId = axisHeader.getRootId();
            */
 
           // enrichit le classifyValue avec le chemin complet de la racine
@@ -2570,7 +2418,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     SilverTrace.info("Pdc",
         "PdcBmImpl.getPertinentDaughterValuesByInstanceIds",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", valueId = "
-            + valueId + ", userId = " + searchContext.getUserId());
+        + valueId + ", userId = " + searchContext.getUserId());
 
     // List pertinentValues = pdcClassifyBm.getPertinentValues(searchContext,
     // new Integer(axisId).intValue(),
@@ -2586,11 +2434,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           .get(d);
       SilverTrace
           .debug(
-              "pdcPeas",
-              "PdcSearchSessionController.getPertinentDaughterValuesByInstanceIds()",
-              "root.MSG_GEN_PARAM_VALUE", "valueId = " + value.getPK().getId()
-                  + ", valueName = " + value.getName() + ", nbObjects = "
-                  + value.getNbObjects());
+          "pdcPeas",
+          "PdcSearchSessionController.getPertinentDaughterValuesByInstanceIds()",
+          "root.MSG_GEN_PARAM_VALUE", "valueId = " + value.getPK().getId()
+          + ", valueName = " + value.getName() + ", nbObjects = "
+          + value.getNbObjects());
     }
 
     return pertinentDaughters;
@@ -2627,8 +2475,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       SilverTrace.debug("pdcPeas",
           "PdcSearchSessionController.getFirstLevelAxisValuesByInstanceIds()",
           "root.MSG_GEN_PARAM_VALUE", "valueId = " + value.getPK().getId()
-              + ", valueName = " + value.getName() + ", nbObjects = "
-              + value.getNbObjects());
+          + ", valueName = " + value.getName() + ", nbObjects = "
+          + value.getNbObjects());
     }
 
     return pertinentDaughters;
@@ -2670,7 +2518,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       throws PdcException {
     SilverTrace.info("Pdc", "PdcBmImpl.filterValues",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", motherId = "
-            + motherId);
+        + motherId);
     Connection con = openConnection(true);
     ArrayList descendants = null;
     ArrayList emptyValues = new ArrayList();
@@ -2763,11 +2611,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
             descendants.remove(nI--);
           else {
             /*
-             * PertinentAxis pertinentAxis =
-             * pdcClassifyBm.getPertinentAxis(searchContext, axisId,
-             * descendantPath, joinStatement); SilverTrace.info("Pdc",
-             * "PdcBmImpl.filterValues", "root.MSG_GEN_PARAM_VALUE",
-             * "apres getPertinentAxis()"); if(pertinentAxis.getNbObjects() > 0)
+             * PertinentAxis pertinentAxis = pdcClassifyBm.getPertinentAxis(searchContext, axisId,
+             * descendantPath, joinStatement); SilverTrace.info("Pdc", "PdcBmImpl.filterValues",
+             * "root.MSG_GEN_PARAM_VALUE", "apres getPertinentAxis()");
+             * if(pertinentAxis.getNbObjects() > 0)
              * descendant.setNbObjects(pertinentAxis.getNbObjects()); else {
              * emptyValues.add(descendantPath); descendants.remove(nI--); }
              */
@@ -2838,11 +2685,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * To know if classifying is mandatory on a given component
-   * 
-   * @param componentId
-   *          - id of the component to test
-   * @return true if at least one axis has been selected on component AND at
-   *         least one axis is mandatory
+   * @param componentId - id of the component to test
+   * @return true if at least one axis has been selected on component AND at least one axis is
+   * mandatory
    * @throws PdcException
    */
   public boolean isClassifyingMandatory(String componentId) throws PdcException {
@@ -2892,10 +2737,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private Connection openConnection() throws PdcException {
@@ -2912,10 +2754,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void closeConnection(Connection con) {
@@ -2931,10 +2770,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private Connection openConnection(boolean autoCommit) {
@@ -2951,10 +2787,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void rollbackConnection(Connection con) {
@@ -2970,10 +2803,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
-   * 
    * @see
    */
   private void commitConnection(Connection con) {
@@ -3033,8 +2863,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         Position pos = (Position) alPositions.get(0);
         List alValues = pos.getValues();
         for (int nI = 0; alValues != null && nI < alValues.size(); nI++) {
-          com.stratelia.silverpeas.classifyEngine.Value value = (com.stratelia.silverpeas.classifyEngine.Value) alValues
-              .get(nI);
+          com.stratelia.silverpeas.classifyEngine.Value value =
+              (com.stratelia.silverpeas.classifyEngine.Value) alValues
+                  .get(nI);
           if (value.getAxisId() != -1 && value.getValue() != null)
             searchContext.addCriteria(new SearchCriteria(value.getAxisId(),
                 value.getValue()));

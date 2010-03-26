@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * Classe utilisee pour le (un)marshalling Castor
- * 
  * @author neysseri
  */
 public class DocumentsType {

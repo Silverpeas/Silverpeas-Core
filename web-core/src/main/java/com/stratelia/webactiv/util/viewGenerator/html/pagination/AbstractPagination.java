@@ -161,7 +161,7 @@ public abstract class AbstractPagination implements Pagination {
     if (nbPagesAround == -1) {
       nbPagesAround =
           Integer.parseInt(GraphicElementFactory.getSettings().getString(
-              "Pagination.NumberOfPagesAround", "10"));
+          "Pagination.NumberOfPagesAround", "10"));
     }
     return nbPagesAround;
   }

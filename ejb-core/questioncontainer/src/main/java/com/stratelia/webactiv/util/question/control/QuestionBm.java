@@ -45,8 +45,6 @@ import javax.ejb.*;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface QuestionBm extends EJBObject, QuestionBmBusinessSkeleton {

@@ -776,7 +776,7 @@ public class AgendaHtmlView {
         result.append("<span ");
         result.append(weekDayOffStyle).append(">").append(
             agendaSessionController.getString("jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0,
-                3));
+            3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH)).append("</span>");
       } else {
         result
@@ -971,7 +971,7 @@ public class AgendaHtmlView {
         result.append("<span ");
         result.append(dayOffStyle).append(">").append(
             agendaSessionController.getString("jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0,
-                3));
+            3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
         result.append("</span>");
       } else {

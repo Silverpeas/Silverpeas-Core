@@ -278,10 +278,12 @@ public interface PublicationBmBusinessSkeleton {
   public Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK)
       throws RemoteException;
 
-  public Collection<PublicationPK> getPublicationPKsByStatus(String status, List<String> componentIds)
+  public Collection<PublicationPK> getPublicationPKsByStatus(String status,
+      List<String> componentIds)
       throws RemoteException;
 
-  public Collection<PublicationDetail> getPublicationsByStatus(String status, List<String> componentIds)
+  public Collection<PublicationDetail> getPublicationsByStatus(String status,
+      List<String> componentIds)
       throws RemoteException;
 
   /**
@@ -340,11 +342,13 @@ public interface PublicationBmBusinessSkeleton {
       PublicationPK pubPK, String sorting, String status)
       throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(ArrayList<String> fatherIds,
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
+      ArrayList<String> fatherIds,
       PublicationPK pubPK, String sorting, ArrayList<String> status)
       throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(ArrayList<String> fatherIds,
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
+      ArrayList<String> fatherIds,
       PublicationPK pubPK, String sorting, ArrayList<String> status,
       boolean filterOnVisibilityPeriod) throws RemoteException;
 

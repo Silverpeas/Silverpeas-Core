@@ -47,14 +47,12 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author n.chaix
  */
 public class ClassifyEngineException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructor constructor
+   * -------------------------------------------------------------------------- constructor
+   * constructor
    */
   public ClassifyEngineException(String callingClass, int errorLevel,
       String message) {
@@ -78,10 +76,7 @@ public class ClassifyEngineException extends SilverpeasException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

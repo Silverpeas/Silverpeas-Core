@@ -74,13 +74,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("versioning",
             "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
 
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("versioning",
             "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
       default:
@@ -292,7 +292,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
 
     SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
         "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getLanguages() = "
-            + notifMetaData.getLanguages());
+        + notifMetaData.getLanguages());
 
     notifMetaData.addUserRecipient(Integer.toString(doc.getOwnerId()));
 
@@ -307,7 +307,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
 
     SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
         "root.MSG_GEN_PARAM_VALUE", " notifMetaData = "
-            + notifMetaData.toString());
+        + notifMetaData.toString());
 
     // 2. envoie de la notification
     try {

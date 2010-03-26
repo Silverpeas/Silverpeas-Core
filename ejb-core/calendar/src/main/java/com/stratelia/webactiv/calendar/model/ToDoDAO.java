@@ -38,13 +38,15 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ToDoDAO {
 
-  public static final String COLUMNNAMES = "id, name, delegatorId, description, priority, classification, startDay, "
-      + "startHour, endDay, endHour, percentCompleted, completedDay, duration, spaceId, componentId, externalId";
-  private static final String TODOCOLUMNNAMES = "CalendarToDo.id, CalendarToDo.name, CalendarToDo.delegatorId, CalendarToDo.description, "
-      + "CalendarToDo.priority, CalendarToDo.classification, CalendarToDo.startDay, "
-      + "CalendarToDo.startHour, CalendarToDo.endDay, CalendarToDo.endHour, CalendarToDo.percentCompleted, "
-      + "CalendarToDo.completedDay, CalendarToDo.duration, CalendarToDo.spaceId, CalendarToDo.componentId, "
-      + "CalendarToDo.externalId";
+  public static final String COLUMNNAMES =
+      "id, name, delegatorId, description, priority, classification, startDay, "
+          + "startHour, endDay, endHour, percentCompleted, completedDay, duration, spaceId, componentId, externalId";
+  private static final String TODOCOLUMNNAMES =
+      "CalendarToDo.id, CalendarToDo.name, CalendarToDo.delegatorId, CalendarToDo.description, "
+          + "CalendarToDo.priority, CalendarToDo.classification, CalendarToDo.startDay, "
+          + "CalendarToDo.startHour, CalendarToDo.endDay, CalendarToDo.endHour, CalendarToDo.percentCompleted, "
+          + "CalendarToDo.completedDay, CalendarToDo.duration, CalendarToDo.spaceId, CalendarToDo.componentId, "
+          + "CalendarToDo.externalId";
 
   public static String addToDo(Connection con, ToDoHeader toDo)
       throws SQLException, UtilException {
@@ -176,7 +178,7 @@ public class ToDoDAO {
     String selectStatement = "select " + ToDoDAO.TODOCOLUMNNAMES
         + ", lower(name) " + " from CalendarToDo "
         + " WHERE (delegatorId = ?) " + " and (completedDay IS NULL)" +
-        // " and (percentCompleted <> 100) "+
+            // " and (percentCompleted <> 100) "+
         // " and (CalendarToDo.id = CalendarToDoAttendee.todoId) " +
         // " order by priority, endDay, endHour";
         " order by lower(name)";

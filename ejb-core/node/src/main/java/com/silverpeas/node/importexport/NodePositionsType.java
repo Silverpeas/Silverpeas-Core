@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * Classe utilisee pour le (un)marshalling Castor
- * 
  * @author sdevolder
  */
 public class NodePositionsType {
@@ -46,8 +45,7 @@ public class NodePositionsType {
   }
 
   /**
-   * @param listNodePositionType
-   *          The listNodePositionType to set.
+   * @param listNodePositionType The listNodePositionType to set.
    */
   public void setListNodePositionType(List listNodePositionType) {
     this.listNodePositionType = listNodePositionType;

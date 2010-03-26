@@ -38,8 +38,9 @@ public abstract class Schedulable implements java.io.Serializable {
   private Priority priority = null;
   private String externalId = null;
 
-  protected static final java.text.SimpleDateFormat completeFormat = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd HH:mm");
+  protected static final java.text.SimpleDateFormat completeFormat =
+      new java.text.SimpleDateFormat(
+          "yyyy/MM/dd HH:mm");
   protected static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
       "yyyy/MM/dd");
   protected static final java.text.SimpleDateFormat hourFormat = new java.text.SimpleDateFormat(

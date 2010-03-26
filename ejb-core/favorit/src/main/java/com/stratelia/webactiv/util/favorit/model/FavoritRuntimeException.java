@@ -30,8 +30,6 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */
@@ -39,11 +37,8 @@ public class FavoritRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param message
    * @param nested
-   * 
    * @see
    */
   public FavoritRuntimeException(String message, Exception nested) {
@@ -52,10 +47,7 @@ public class FavoritRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

@@ -49,15 +49,13 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ScoreRuntimeException extends SilverpeasRuntimeException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public ScoreRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -66,13 +64,10 @@ public class ScoreRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public ScoreRuntimeException(String callingClass, int errorLevel,
@@ -82,13 +77,10 @@ public class ScoreRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public ScoreRuntimeException(String callingClass, int errorLevel,
@@ -98,14 +90,11 @@ public class ScoreRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public ScoreRuntimeException(String callingClass, int errorLevel,
@@ -114,8 +103,7 @@ public class ScoreRuntimeException extends SilverpeasRuntimeException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "score";

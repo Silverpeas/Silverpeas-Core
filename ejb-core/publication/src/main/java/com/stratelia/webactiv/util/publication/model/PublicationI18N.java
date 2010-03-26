@@ -30,7 +30,7 @@ import com.silverpeas.util.i18n.Translation;
 public class PublicationI18N extends Translation implements Serializable {
 
   private static final long serialVersionUID = -3608883875752659027L;
-  
+
   private String name = null;
   private String description = null;
   private String keywords = null;

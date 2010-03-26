@@ -373,11 +373,10 @@ public class VersioningDAO {
       }
 
       /*
-       * List readers = document.getReadList();
-       * if (readers != null && readers.size() != 0) { for (int i = 0; i < readers.size(); i++) {
-       * Reader reader = (Reader) readers.get(i); reader.setDocumentId(newId);
-       * reader.setInstanceId(document.getPk().getComponentName()); } ReadListDAO.addReaders(conn,
-       * readers); }
+       * List readers = document.getReadList(); if (readers != null && readers.size() != 0) { for
+       * (int i = 0; i < readers.size(); i++) { Reader reader = (Reader) readers.get(i);
+       * reader.setDocumentId(newId); reader.setInstanceId(document.getPk().getComponentName()); }
+       * ReadListDAO.addReaders(conn, readers); }
        */
 
       List<Worker> workers = document.getWorkList();
@@ -1035,7 +1034,7 @@ public class VersioningDAO {
     }
 
     PreparedStatement prepStmt = null;
-    
+
     try {
 
       WorkListDAO.removeAllWorkers(conn, documentPK, true);

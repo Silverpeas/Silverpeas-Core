@@ -30,8 +30,6 @@ import javax.ejb.*;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  * @version %I%, %G%
  */

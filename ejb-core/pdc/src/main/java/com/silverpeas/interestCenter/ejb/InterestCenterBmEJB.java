@@ -42,9 +42,8 @@ import java.util.ArrayList;
 import java.sql.Connection;
 
 /**
- * InterestCenterBm EJB implementation for detailed comments for each method see
- * remote interface class
- * 
+ * InterestCenterBm EJB implementation for detailed comments for each method see remote interface
+ * class
  * @see InterestCenterBm
  */
 public class InterestCenterBmEJB implements SessionBean {

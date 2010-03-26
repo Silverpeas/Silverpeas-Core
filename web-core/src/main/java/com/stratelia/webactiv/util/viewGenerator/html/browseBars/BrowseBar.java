@@ -115,9 +115,11 @@ public interface BrowseBar extends SimpleGraphicElement {
   public void setElements(List<BrowseBarElement> elements);
 
   public String getBreadCrumb();
-  
+
   public void setSpaceJavascriptCallback(String callback);
+
   public void setComponentJavascriptCallback(String callback);
+
   public void setClickable(boolean clickable);
 
 }

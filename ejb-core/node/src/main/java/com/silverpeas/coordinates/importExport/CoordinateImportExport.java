@@ -48,17 +48,14 @@ import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * Classe gerant la manipulation des axes de coordinates pour le module
- * d'importExport.
- * 
+ * Classe gerant la manipulation des axes de coordinates pour le module d'importExport.
  * @author dlesimple
  */
 public class CoordinateImportExport {
 
   /**
    * @param componentId
-   * @param axisPath
-   *          (/0/1024/1043,/0/1036,/0/1040)
+   * @param axisPath (/0/1024/1043,/0/1036,/0/1040)
    * @return coordinateId
    * @throws CoordinateRuntimeException
    */
@@ -94,7 +91,7 @@ public class CoordinateImportExport {
         SilverTrace.info("coordinates",
             "CoordinateImportExport.addPositions()",
             "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = "
-                + path.toString());
+            + path.toString());
         Iterator pathIt = path.iterator();
         while (pathIt.hasNext()) {
           nodeDetail = (NodeDetail) pathIt.next();
@@ -132,7 +129,7 @@ public class CoordinateImportExport {
     SilverTrace.debug("coordinates",
         "CoordinateImportExport.getNodeDetailByName()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + name + " nodeRootId="
-            + nodeRootId + " componentId=" + componentId);
+        + nodeRootId + " componentId=" + componentId);
     try {
       NodeDetail nodeDetail = getNodeBm().getDetailByNameAndFatherId(
           new NodePK("useless", componentId), name, nodeRootId);
@@ -146,9 +143,7 @@ public class CoordinateImportExport {
   }
 
   /**
-   * Get ArrayList of valuePath (/xx/yyy, /xx/yyy/zzzz/ to arrayList with /xx/yy
-   * then /xx/yyy/zzzz)
-   * 
+   * Get ArrayList of valuePath (/xx/yyy, /xx/yyy/zzzz/ to arrayList with /xx/yy then /xx/yyy/zzzz)
    * @param valuePath
    * @return ArrayList
    */
@@ -167,9 +162,8 @@ public class CoordinateImportExport {
   }
 
   /**
-   * Get ArrayList of valuePath labels (/xx/yyy, /xx/yyy/zzzz/ to arrayList with
-   * Axe1 > value15 then Axe2 > value5)
-   * 
+   * Get ArrayList of valuePath labels (/xx/yyy, /xx/yyy/zzzz/ to arrayList with Axe1 > value15 then
+   * Axe2 > value5)
    * @param valuePath
    * @return ArrayList of displayName: Axe1 > value15
    */
@@ -212,7 +206,6 @@ public class CoordinateImportExport {
 
   /**
    * Get axis of the component
-   * 
    * @param componentId
    * @return
    */
@@ -243,7 +236,6 @@ public class CoordinateImportExport {
 
   /**
    * Get axis header with Children
-   * 
    * @param componentId
    * @return
    */
@@ -283,7 +275,6 @@ public class CoordinateImportExport {
 
   /**
    * Get children of an axis
-   * 
    * @param nodePK
    * @param takeAxisInChildrenList
    * @return
@@ -308,7 +299,6 @@ public class CoordinateImportExport {
   }
 
   /**
-   * 
    * @param componentId
    * @return
    */
@@ -328,16 +318,14 @@ public class CoordinateImportExport {
 
   /**
    * Add position top the axis
-   * 
-   * @param position
-   *          , ComponentId
+   * @param position , ComponentId
    * @return nodePK
    */
   public NodeDetail addPosition(NodeDetail position, String axisId,
       String componentId) {
     SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
         "root.MSG_GEN_PARAM_VALUE", "fatherId = " + axisId + " And position = "
-            + position.toString());
+        + position.toString());
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(DateUtil.today2SQLDate());
     NodeDetail fatherDetail = null;
@@ -347,8 +335,8 @@ public class CoordinateImportExport {
     fatherDetail = getNodeHeader(axisId, componentId);
     SilverTrace
         .info("coordinates", "CoordinateImportExport.addPosition()",
-            "root.MSG_GEN_PARAM_VALUE", "fatherDetail = "
-                + fatherDetail.toString());
+        "root.MSG_GEN_PARAM_VALUE", "fatherDetail = "
+        + fatherDetail.toString());
     try {
       fatherDetail = getNodeHeader(axisId, componentId);
       positionPK = getNodeBm().createNode(position, fatherDetail);
@@ -357,7 +345,7 @@ public class CoordinateImportExport {
       positionDetail = getNodeHeader(positionPK);
       SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
           "root.MSG_GEN_PARAM_VALUE", "positionDetail = "
-              + positionDetail.toString());
+          + positionDetail.toString());
     } catch (Exception e) {
       throw new CoordinateRuntimeException(
           "CoordinateImportExport.addPosition()",
@@ -369,7 +357,6 @@ public class CoordinateImportExport {
 
   /**
    * Get node Detail
-   * 
    * @param nodePK
    * @param componentId
    * @return
@@ -389,7 +376,6 @@ public class CoordinateImportExport {
 
   /**
    * Get node Detail
-   * 
    * @param id
    * @param componentId
    * @return
@@ -417,7 +403,7 @@ public class CoordinateImportExport {
     try {
       CoordinatesBmHome kscEjbHome = (CoordinatesBmHome) EJBUtilitaire
           .getEJBObjectRef(JNDINames.COORDINATESBM_EJBHOME,
-              CoordinatesBmHome.class);
+          CoordinatesBmHome.class);
       coordinatesBm = kscEjbHome.create();
     } catch (Exception e) {
       throw new CoordinateRuntimeException(
@@ -447,7 +433,6 @@ public class CoordinateImportExport {
 
   /**
    * Generate index files with combination
-   * 
    * @param filesNames
    * @param nodeIds
    * @param cur

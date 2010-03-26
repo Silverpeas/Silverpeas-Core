@@ -28,7 +28,6 @@ package com.silverpeas.node.importexport;
 
 /**
  * Classe utilisée pour le (un)marshalling Castor
- * 
  * @author sdevolder
  */
 public class NodePositionType {

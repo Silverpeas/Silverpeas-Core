@@ -63,25 +63,19 @@ import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * This class is made to access database only (table SB_Question_Question)
- * 
  * @author neysseri
  */
 public class QuestionDAO {
 
-  public static final String QUESTIONCOLUMNNAMES = "questionId, qcId, questionLabel, questionDescription, questionClue, questionImage, questionIsQCM, questionType, questionIsOpen, questionCluePenalty, questionMaxTime, questionDisplayOrder, questionNbPointsMin, questionNbPointsMax, instanceId, style";
+  public static final String QUESTIONCOLUMNNAMES =
+      "questionId, qcId, questionLabel, questionDescription, questionClue, questionImage, questionIsQCM, questionType, questionIsOpen, questionCluePenalty, questionMaxTime, questionDisplayOrder, questionNbPointsMin, questionNbPointsMax, instanceId, style";
 
   /**
    * Build a Question object with data from the resultset
-   * 
-   * @param rs
-   *          the Resultset which contains data
-   * @param questionPK
-   *          the context
-   * 
+   * @param rs the Resultset which contains data
+   * @param questionPK the context
    * @return a Question
-   * 
    * @throws SQLException
-   * 
    */
   private static Question getQuestionFromResultSet(ResultSet rs,
       QuestionPK questionPK) throws SQLException {
@@ -120,16 +114,10 @@ public class QuestionDAO {
 
   /**
    * Return a question
-   * 
-   * @param con
-   *          the Connection to dataBase
-   * @param questionPK
-   *          the question id
-   * 
+   * @param con the Connection to dataBase
+   * @param questionPK the question id
    * @return a Question
-   * 
    * @throws SQLException
-   * 
    */
   public static Question getQuestion(Connection con, QuestionPK questionPK)
       throws SQLException {
@@ -159,24 +147,17 @@ public class QuestionDAO {
 
   /**
    * Return the questions linked to a given father
-   * 
-   * @param con
-   *          the Connection to dataBase
-   * @param questionPK
-   *          the question id
-   * @param fatherId
-   *          the father id
-   * 
+   * @param con the Connection to dataBase
+   * @param questionPK the question id
+   * @param fatherId the father id
    * @return a Collection of Question
-   * 
    * @throws SQLException
-   * 
    */
   public static Collection getQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {
     SilverTrace.info("question", "QuestionDAO.getQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", fatherId = " + fatherId);
+        + ", fatherId = " + fatherId);
 
     ArrayList result = new ArrayList();
     ResultSet rs = null;
@@ -207,16 +188,10 @@ public class QuestionDAO {
 
   /**
    * Create a new question
-   * 
-   * @param con
-   *          the Connection to dataBase
-   * @param question
-   *          the Question to create
-   * 
+   * @param con the Connection to dataBase
+   * @param question the Question to create
    * @return the QuestionPK of the new question
-   * 
    * @throws SQLException
-   * 
    */
   public static QuestionPK createQuestion(Connection con, Question question)
       throws SQLException {
@@ -279,14 +254,9 @@ public class QuestionDAO {
 
   /**
    * Update a question
-   * 
-   * @param con
-   *          the Connection to dataBase
-   * @param question
-   *          the Question to update
-   * 
+   * @param con the Connection to dataBase
+   * @param question the Question to update
    * @throws SQLException
-   * 
    */
   public static void updateQuestion(Connection con, Question question)
       throws SQLException {
@@ -337,14 +307,9 @@ public class QuestionDAO {
 
   /**
    * Delete a question
-   * 
-   * @param con
-   *          the Connection to dataBase
-   * @param questionPK
-   *          the question id
-   * 
+   * @param con the Connection to dataBase
+   * @param questionPK the question id
    * @throws SQLException
-   * 
    */
   public static void deleteQuestion(Connection con, QuestionPK questionPK)
       throws SQLException {
@@ -367,22 +332,16 @@ public class QuestionDAO {
 
   /**
    * Delete all questions linked to a given father
-   * 
-   * @param con
-   *          the Connection to dataBase
-   * @param questionPK
-   *          to know the context
-   * @param fatherId
-   *          the father id
-   * 
+   * @param con the Connection to dataBase
+   * @param questionPK to know the context
+   * @param fatherId the father id
    * @throws SQLException
-   * 
    */
   public static void deleteQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {
     SilverTrace.info("question", "QuestionDAO.deleteQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", fatherId = " + fatherId);
+        + ", fatherId = " + fatherId);
 
     String deleteStatement = "delete from " + questionPK.getTableName()
         + " where qcId = ? and instanceId = ?";
