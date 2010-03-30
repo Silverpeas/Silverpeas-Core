@@ -104,7 +104,6 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
     <servlet-class>com.stratelia.webactiv.servlets.CredentialsServlet</servlet-class>
   </servlet>
   <servlet>
-    <display-name>OnlineFileServer</display-name>
     <display-name>FileServer</display-name>
     <servlet-name>FileServer</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.FileServer</servlet-class>
