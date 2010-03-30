@@ -1018,15 +1018,20 @@ public class PublicationDAO {
    * @see
    */
   public static Collection<PublicationDetail> selectByPublicationPKs(Connection con,
-      Collection<PublicationPK> publicationPKs) throws SQLException {
+      Collection<PublicationPK> publicationPKs) {
     ArrayList<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     Iterator<PublicationPK> iterator = publicationPKs.iterator();
 
     while (iterator.hasNext()) {
       PublicationPK pubPK = iterator.next();
-      PublicationDetail pub = loadRow(con, pubPK);
-
-      publications.add(pub);
+      PublicationDetail pub;
+      try {
+        pub = loadRow(con, pubPK);
+        publications.add(pub);
+      } catch (Exception e) {
+        SilverTrace.error("publication", "PublicationDAO.selectByPublicationPKs",
+            "publication.GETTING_PUBLICATION_FAILED", "pubPK = " + pubPK.toString());
+      }
     }
     return publications;
   }
