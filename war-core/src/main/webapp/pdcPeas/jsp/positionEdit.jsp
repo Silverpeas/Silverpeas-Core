@@ -101,9 +101,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 	int				variant			= 0;
 	String			baseValueId		= null;
 	String			baseValuePath	= null;
-	String 		valueTreeId     = null;
-	int				optionOfBaseValue = -1;
-	int				option			= -1;
+	String 			valueTreeId     = null;
 
 	Value			value			= null;
 	String			valueName		= null;
@@ -143,6 +141,7 @@ function listValues () {
         }
 		i = i+3;
 	}
+	//alert("listValues = "+z);
 	return z;
 }
 
@@ -187,9 +186,17 @@ function sendData() {
 	}
 }
 
-function test(i, object, reload) {
+function test(object, reload) {
 	if (object.options[object.selectedIndex].value == 'A') {
-		object.selectedIndex = eval(document.chooseValues.elements[i].value);
+		//There is a base value, selected value is a parent of this base value
+		//This is not allowed. So, base value must be selected by default
+		var baseValue = object.name+"|"+document.getElementById("BaseValue_"+object.name).value;
+		//alert(object.name + " = "+baseValue);
+		for(i=0;i<object.length;++i)
+		{
+			if(object.options[i].value == baseValue)
+				object.selectedIndex = i;
+		}		
 	}
 	
 	if (reload == 'true') {
@@ -201,7 +208,7 @@ function test(i, object, reload) {
 }
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
   <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
@@ -224,8 +231,6 @@ function test(i, object, reload) {
 		variant			=	axis.getVariant();
 			
 		baseValueId		=	new Integer(axis.getBaseValue()).toString();
-		optionOfBaseValue = -1;
-		option			= -1;
 		baseValuePath	=	"";
 		for (int a = 0; a<axisValues.size(); a++) {
 			value		= (Value) axisValues.get(a);
@@ -287,7 +292,7 @@ function test(i, object, reload) {
       <tr> 
         <td class="txtlibform" nowrap width="30%"><%=axisName%>&nbsp;:</td>
         <td width="70%"> 
-          <select name="<%=axisId%>" onChange="test(<%=2*nbAxis+1%>, this, '<%=activeThesaurus.booleanValue()%>')">
+          <select name="<%=axisId%>" onChange="test(this, '<%=activeThesaurus.booleanValue()%>')">
 		  <%
 				for (int v = 0; v<axisValues.size(); v++) 
 				{
@@ -308,12 +313,10 @@ function test(i, object, reload) {
 					//test si le chemin de la valeur courante contient la valeur de base
 					//if (isValueAllowed(valuePath, baseValueIds) || valueIsBaseValue(valueId, baseValueIds)) {
 					if (isValueAllowed(valuePath, baseValuePaths) || valueIsBaseValue(valueId, baseValueIds)) {
-						option++;
 						
 						//premier affichage de la page : on doit sélectionner la valeur de la position
 						if (positionValueId != null && positionValueId.equals(valuePath+valueId+"/")) {
 							sSelStatus = "selected";
-							optionOfBaseValue = option;
 						} 
 						
 						else { //cas du rechargement de la page si l'on a change de selection dans une combo
@@ -341,7 +344,6 @@ function test(i, object, reload) {
 					} else {
 						if (valueIsAscendant(valueId, baseValuePaths)) {
 							out.println("<option class=intfdcolor51 value=\"A\">"+increment+valueName+"</option>");
-							option++;
 						}
 					}
 				} //fin du for sur les valeurs
@@ -357,8 +359,7 @@ function test(i, object, reload) {
 					if (! anElementSelected) {
 						selectedAttr = "selected";
 					}
-			
-					//out.println("<option value=\"-\" "+selectedAttr+"></option>");
+
 					out.println("<option value=\""+axisId+"|-\""+selectedAttr+"></option>");
 				}				
 		  %>
@@ -372,8 +373,8 @@ function test(i, object, reload) {
 		  }
 		  
 		  %>
-		  <input type="hidden" name="AxisName_<%=axisId%>" value="<%=axisName%>">
-		  <input type="hidden" name="OptionNumberOfBaseValue<%=axisId%>" value="<%=optionOfBaseValue%>">
+		  <input type="hidden" name="AxisName_<%=axisId%>" value="<%=axisName%>"/>
+		  <input type="hidden" id="BaseValue_<%=axisId%>" value="<%=baseValuePath%>"/>
 		  <% if (mandatory == 1) { %>
 	          <img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"> 
 		  <% } %>

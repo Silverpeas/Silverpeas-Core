@@ -115,9 +115,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 	String		invariantValue	= null;
 	String		baseValueId		= null;
 	String		baseValuePath	= null;
-	int			optionOfBaseValue = -1;
-	int			option			= -1;
-
+	
 	Value		value			= null;
 	String		valueName		= null;
 	String		valueId			= null;
@@ -197,10 +195,17 @@ function sendData() {
 	}
 }
 
-function test(i, object, reload) {
-	//j'ai une valeur de base obligatoire 
+function test(object, reload) {
 	if (object.options[object.selectedIndex].value == 'A') {
-		object.selectedIndex = eval(document.chooseValues.elements[i].value);
+		//There is a base value, selected value is a parent of this base value
+		//This is not allowed. So, base value must be selected by default
+		var baseValue = object.name+"|"+document.getElementById("BaseValue_"+object.name).value;
+		//alert(object.name + " = "+baseValue);
+		for(i=0;i<object.length;++i)
+		{
+			if(object.options[i].value == baseValue)
+				object.selectedIndex = i;
+		}		
 	}
 	
 	if (reload == 'true') {
@@ -234,8 +239,6 @@ function test(i, object, reload) {
 		axisName		=	axis._getAxisName(language);
 		axisValues		=	axis._getAxisValues();
 		baseValueId		=	new Integer(axis.getBaseValue()).toString();
-		optionOfBaseValue = -1;
-		option			= -1;
 		invariantValue	=	axis._getInvariantValue();
 		nbAxis++;
 
@@ -278,7 +281,7 @@ function test(i, object, reload) {
       <tr> 
         <td class="txtlibform" nowrap width="30%"><%=axisName%>&nbsp;:</td>
         <td width="70%"> 
-          <select name="<%=axisId%>" onChange="test(<%=2*nbAxis+1%>, this, '<%=activeThesaurus.booleanValue()%>')">
+          <select name="<%=axisId%>" onChange="test(this, '<%=activeThesaurus.booleanValue()%>')">
 		  <%
 				String selectedAttr = "";
 				boolean bSearchContextValueDone = false;
@@ -312,8 +315,6 @@ function test(i, object, reload) {
 						//test si le chemin de la valeur courante contient la valeur de base
 						if (isValueAllowed || isBaseValue) 
 						{
-							option++;
-							
 							//premier load de la page
 							if (listValues.size() == 0) {
 								// The SearchContext is used (if any)
@@ -342,7 +343,6 @@ function test(i, object, reload) {
 							if (mandatory == 1 && isBaseValue) {
 									sSelStatus = "selected";
 									anElementSelected = true;
-									optionOfBaseValue = option;
 							}
 							
 							out.println("<option value=\""+axisId+"|"+valuePath+valueId+"/\" "+sSelStatus+">"+increment+valueName+"</option>");
@@ -356,7 +356,6 @@ function test(i, object, reload) {
 						} else {
 							if (isAscendentValue) {
 								out.println("<option class=intfdcolor51 value=\"A\">"+increment+valueName+"</option>");
-								option++;
 							}
 						}
 					} 
@@ -365,15 +364,11 @@ function test(i, object, reload) {
 					else {
 						//Seule la valeur invariante peut être sélectionnée	
 						if (isValueAllowed || isBaseValue) {
-						
-							option++;
-							
 							if (invariantValue.equals(valuePath+valueId+"/")) {
 								out.println("<option value=\""+axisId+"|"+valuePath+valueId+"/\" selected>"+increment+valueName+"</option>");
 								valueIdSelected = valueId;
 								valueTreeIdSelected = valueTreeId;
 								anElementSelected = true;
-								optionOfBaseValue = option;
 							} else {
 								out.println("<option class=intfdcolor51 value=\"A\">"+increment+valueName+"</option>");					
 							  }
@@ -382,7 +377,6 @@ function test(i, object, reload) {
 						} else {
 							if (isAscendentValue) {
 								out.println("<option class=intfdcolor51 value=\"A\">"+increment+valueName+"</option>");
-								option++;
 							}
 						}
 					}
@@ -410,8 +404,8 @@ function test(i, object, reload) {
 		  }
 		  
 		  %>
-		  <input type="hidden" name="AxisName_<%=axisId%>" value="<%=axisName%>">
-		  <input type="hidden" name="OptionNumberOfBaseValue<%=axisId%>" value="<%=optionOfBaseValue%>">
+		  <input type="hidden" name="AxisName_<%=axisId%>" value="<%=axisName%>"/>
+		  <input type="hidden" id="BaseValue_<%=axisId%>" value="<%=baseValuePath%>"/>
 		  <% if (mandatory == 1) { %>
 	          <img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"> 
 		  <% } %>
