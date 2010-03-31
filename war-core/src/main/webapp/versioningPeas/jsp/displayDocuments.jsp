@@ -660,10 +660,10 @@ function addVersion(id, webdav)
 {
 	checkout(id, webdav);
 
-	SP_openWindow("<%=httpServerBase+m_context%>/RVersioningPeas/jsp/versions.jsp?DocId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&Url=<%=callbackURL%>&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
+	//SP_openWindow("<%=httpServerBase+m_context%>/RVersioningPeas/jsp/versions.jsp?DocId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&Url=<%=callbackURL%>&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
 
-	/*var url = "<%=httpServerBase+m_context%>/RVersioningPeas/jsp/AddNewVersion?documentId="+id;
-	SP_openWindow(url, "test", "700", "400","scrollbars=no, resizable, alwaysRaised");*/
+	var url = "<%=httpServerBase+m_context%>/RVersioningPeas/jsp/AddNewVersion?documentId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&ReturnURL=<%=URLEncoder.encode(m_context+callbackURL)%>";
+	SP_openWindow(url, "test", "700", "400","scrollbars=no, resizable, alwaysRaised");
 }
 
 function AddAttachment()

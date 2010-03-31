@@ -162,9 +162,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
               Worker user = (Worker) new_users.get(addIndex);
               Worker new_user =
                   new Worker(user.getUserId(), Integer.parseInt(versioningSC.getEditingDocument()
-                      .getPk().getId()),
-                      0, user.isApproval(), true, versioningSC.getComponentId(),
-                      user.getType(), user.isSaved(), user.isUsed(), user.getListType());
+                  .getPk().getId()),
+                  0, user.isApproval(), true, versioningSC.getComponentId(),
+                  user.getType(), user.isSaved(), user.isUsed(), user.getListType());
               new_users.add(addIndex + 1, new_user);
               users_count++;
             }
@@ -466,7 +466,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
           logicalName =
               logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName
-                  .length());
+              .length());
           type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
               logicalName.length());
           physicalName = new Long(new Date().getTime()).toString() + "." + type;
@@ -550,7 +550,13 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             }
           }
 
-          destination = getDestination("ViewVersions", componentSC, request);
+          String returnURL = FileUploadUtil.getParameter(items, "ReturnURL");
+          if (!StringUtil.isDefined(returnURL)) {
+            destination = getDestination("ViewVersions", componentSC, request);
+          } else {
+            request.setAttribute("urlToReload", returnURL);
+            destination = rootDestination + "closeWindow.jsp";
+          }
         }
       } else {
         destination = rootDestination + function;
@@ -750,7 +756,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
       PagesContext context =
           new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC
-              .getComponentId(), versioningSC.getUserId());
+          .getComponentId(), versioningSC.getUserId());
       context.setObjectId(objectId);
 
       form.update(items, data, context);
@@ -788,7 +794,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
       PagesContext context =
           new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC
-              .getComponentId(), versioningSC.getUserId());
+          .getComponentId(), versioningSC.getUserId());
       context.setObjectId(objectId);
 
       isEmpty = form.isEmpty(items, data, context);

@@ -216,6 +216,7 @@
       Window window = gef.getWindow();
       Frame frame = gef.getFrame();
       BrowseBar browseBar = window.getBrowseBar();
+      browseBar.setClickable(false);
       OperationPane operationPane = window.getOperationPane();
 
       String userPanelIcon = m_context + "/util/icons/readingControl.gif";

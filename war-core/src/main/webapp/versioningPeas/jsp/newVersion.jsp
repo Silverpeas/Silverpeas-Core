@@ -34,6 +34,7 @@
       ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
       String documentId = request.getParameter("documentId");
+      String returnURL = request.getParameter("ReturnURL");
 
       String documentPathLabel = messages.getString("newDocumentVersion");
       String versionTypeLabel = messages.getString("typeOfVersion");
@@ -67,6 +68,7 @@
         out.println(gef.getLookStyleSheet());
   %>
   <head>
+  	<script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
     <script type="text/javascript"  language="Javascript">
       function rtrim(texte){
         while (texte.substring(0,1) == ' '){
@@ -130,6 +132,32 @@
         alert("<%=pleaseFill%>");
       }
     }
+
+    function showDnD()
+	{
+		<%
+		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+		String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
+		String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
+		String language = versioningSC.getLanguage();
+		String pathInstallerJre = GeneralPropertiesManager.getGeneralResourceLocator().getString("pathInstallerJre");
+	  	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
+	    	pathInstallerJre = m_sAbsolute + pathInstallerJre;
+	  	String indexIt = "0";
+	  	if (versioningSC.isIndexable())
+	  		indexIt = "1";
+		String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+m_MainSessionCtrl.getUserId()+"&ComponentId="+componentId+"&Id="+publicationId+"&IndexIt="+indexIt+"&DocumentId="+documentId;
+		String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
+		String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
+		%>
+		showHideDragDrop('<%=publicURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningPublic_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/raduploadSingle.properties','<%=workURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+	}
+
+	function uploadCompleted(s)
+	{
+		self.opener.location = '<%=returnURL%>';
+		self.close();
+	}
     </script>
     <% if (formUpdate != null) {%>
     <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
@@ -149,11 +177,33 @@
 
           out.println(window.printBefore());
           out.println(frame.printBefore());
+          
+          if (dragAndDropEnable) { %>
+          <table width="100%" border="0" id="DropZone">
+      		<tr>
+      			<td colspan="3" align="right">
+          			<a href="javascript:showDnD()" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
+        		</td>
+      		</tr>
+      		<tr>
+        		<td>
+          			<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img alt=""border" src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+        		</td>
+        		<td width="2%"><img alt="border"  src="<%=m_context%>/util/icons/colorPix/1px.gif" width="10px"/></td>
+        		<td>
+          			<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px; width: 100%" valign="top"><img alt="border" src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+        		</td>
+      		</tr>
+    	  </table>
+    	  <br/>
+    	  <% } //end if dragAndDropEnable
+          
           out.println(board.printBefore());
     %>
     <form name="addForm" action="<%=m_context%>/RVersioningPeas/jsp/SaveNewVersion" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
-      <input type="hidden" name="documentId" value="<%=documentId%>">
-      <input type="hidden" name="publicationId" value="<%=publicationId%>">
+      <input type="hidden" name="documentId" value="<%=documentId%>"/>
+      <input type="hidden" name="publicationId" value="<%=publicationId%>"/>
+      <input type="hidden" name="ReturnURL" value="<%=returnURL%>"/>
       <input type="hidden" name="radio">
 
       <table cellpadding="5" cellspacing="0" border="0" width="100%">
@@ -172,7 +222,7 @@
           <td class="txtlibform">
             <%=versionTypeLabel%> :
           </td>
-          <td align=left valign="baseline">            
+          <td align=left valign="baseline">
             <%
                   // display radio button
                   for (int i = 0; i < radioButtonLabel.length; i++) {
@@ -196,8 +246,8 @@
             : <%=requiredFieldLabel%>)
           </td>
         </tr>
-
       </table>
+      
       <%
             if (formUpdate != null) {
       %><br/>
