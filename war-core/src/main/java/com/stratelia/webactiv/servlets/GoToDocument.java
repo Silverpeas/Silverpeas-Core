@@ -26,7 +26,6 @@ package com.stratelia.webactiv.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -34,7 +33,6 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class GoToDocument extends GoTo {
 
@@ -86,12 +84,6 @@ public class GoToDocument extends GoTo {
               .getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId()));
         }
       }
-
-      if (!isAccessAuthorized)
-        throw new AccessForbiddenException("GoToFile.getDestination", SilverpeasException.WARNING,
-            null);
-
-      return "useless";
     }
 
     return "ComponentId=" + componentId + "&AttachmentId=" + version.getPk().getId() +
