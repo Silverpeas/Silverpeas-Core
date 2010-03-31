@@ -447,7 +447,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("ChangeSearchType")) {
         processChangeSearchType(function, pdcSC, request);
 
-        destination = doGlobalView(pdcSC, request);
+        destination = doGlobalView(pdcSC, request, false);
       } else if (function.startsWith("LoadAdvancedSearch")) {
 
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
@@ -848,6 +848,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
   private String doGlobalView(PdcSearchSessionController pdcSC, HttpServletRequest request)
       throws Exception, PdcException, ContentManagerException {
+    return doGlobalView(pdcSC, request, true);
+  }
+
+  private String doGlobalView(PdcSearchSessionController pdcSC, HttpServletRequest request,
+      boolean saveUserChoice)
+      throws Exception, PdcException, ContentManagerException {
     this.initContainerContentInfo(pdcSC, true, null);
     pdcSC.setContainerPeas(containerPeasPDC);
 
@@ -856,7 +862,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       clearUserChoices(pdcSC);
     }
 
-    PdcSearchRequestRouterHelper.saveUserChoices(pdcSC, request);
+    if (saveUserChoice) {
+      PdcSearchRequestRouterHelper.saveUserChoices(pdcSC, request);
+    }
 
     if (pdcSC.getSearchType() >= 1) {
       PdcSearchRequestRouterHelper.setUserChoices(request, pdcSC);
