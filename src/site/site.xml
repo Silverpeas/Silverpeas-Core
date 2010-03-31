@@ -44,12 +44,24 @@
     <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="images/zeroturnaround.gif" />
   </poweredBy>
   <body>
-    <menu name="Overview">
+    <head>
+      <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-2015926-3");
+pageTracker._trackPageview();
+} catch(err) {}
+      </script>
+    </head>
+    <menu name="Overview" collapsable="true">
       <item name="Introduction" href="index.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
     </menu>
-    <menu name="CAS">
+    <menu name="CAS" collapsable="true">
       <item name="Introduction" href="cas/SSO-CAS.html"/>
       <item name="Certificates Configuration" href="cas/certificates.html"/>
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html"/>
