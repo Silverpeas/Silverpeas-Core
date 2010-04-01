@@ -44,68 +44,9 @@ import com.stratelia.webactiv.calendar.model.SchedulableList;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * CVS Informations
- *
- * $Id: AgendaHtmlView.java,v 1.7 2009/01/09 14:45:27 neysseri Exp $
- *
- * $Log: AgendaHtmlView.java,v $
- * Revision 1.7  2009/01/09 14:45:27  neysseri
- * Modifications des CSS utilisées pour look V5 + refonte page ajout/modification d'événement
- *
- * Revision 1.6  2008/07/11 11:29:49  dlesimple
- * Correction bug visu évènement public journée complète d'un agenda tiers: on ne pouvait pas voir le nom et desc
- *
- * Revision 1.5  2008/04/16 07:23:19  neysseri
- * no message
- *
- * Revision 1.4.6.6  2008/04/08 15:14:45  dlesimple
- * Correction look jours ouvrés
- *
- * Revision 1.4.6.5  2008/03/26 16:39:17  dlesimple
- * Gestion visibilité jours non ouvrés
- *
- * Revision 1.4.6.4  2008/03/25 15:21:37  dlesimple
- * Gestion des jours non ouvrés
- *
- * Revision 1.4.6.3  2008/03/19 16:08:14  dlesimple
- * Gestion Jours ouvrés
- *
- * Revision 1.4.6.2  2008/03/06 15:13:36  dlesimple
- * Import export iCal
- *
- * Revision 1.4.6.1  2008/02/29 16:28:11  dlesimple
- * Infobulle evénèment (rubrique + description)
- *
- * Revision 1.4  2006/02/23 18:28:07  dlesimple
- * Agenda partagé
- *
- * Revision 1.3  2005/09/30 14:15:59  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.2  2004/12/22 15:18:31  neysseri
- * Possibilité d'indiquer les jours non sélectionnables
- * + nettoyage sources
- * + précompilation jsp
- *
- * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
- * no message
- *
- * Revision 1.6  2002/05/29 09:22:16  groccia
- * portage netscape
- *
- * Revision 1.5.12.1  2002/05/07 15:12:19  fsauvand
- * no message
- *
- * Revision 1.5  2002/01/18 15:43:18  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- *
- */
 public class AgendaHtmlView {
 
   public static final int BYDAY = 1;
@@ -117,7 +58,7 @@ public class AgendaHtmlView {
   private int BEGINHOUR = 8;
   private int ENDHOUR = 18;
   private String startDate;
-  private Vector schedules = new Vector();
+  private Vector<Schedulable> schedules = new Vector<Schedulable>();
   private CalendarHtmlView calendarHtmlView = null;
   private int viewType = 0;
   private AgendaSessionController agendaSessionController;
@@ -427,7 +368,7 @@ public class AgendaHtmlView {
         "<TABLE border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n";
     result += "  <TR nowrap>\n";
     result += "    <TD width=\"100%\">";
-    Vector all = dayList.getWithoutHourSchedules();
+    Vector<Schedulable> all = dayList.getWithoutHourSchedules();
 
     result +=
         "      <TABLE class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">";
@@ -435,7 +376,7 @@ public class AgendaHtmlView {
     if (all.size() > 0) {
 
       for (int i = 0; i < all.size(); i++) {
-        Schedulable schedule = (Schedulable) all.elementAt(i);
+        Schedulable schedule = all.elementAt(i);
         result += "  <TR><span class=\"txtnote\">";
         if (i == 0) {
           result += "    <TD width=\"50\" rowspan=\"" + all.size()
@@ -457,7 +398,7 @@ public class AgendaHtmlView {
           result += "      <A HREF=\"" + "javascript:onClick=viewJournal('"
               + schedule.getId() + "')\"";
           result += getInfoBulle(schedule);
-          result += Encode.javaStringToHtmlString(schedule.getName()) + "</A>";
+          result += EncodeHelper.javaStringToHtmlString(schedule.getName()) + "</A>";
         }
 
         result += " &nbsp;(" + agendaSessionController.getString("allDay")
@@ -483,7 +424,7 @@ public class AgendaHtmlView {
 
     int i = BEGINHOUR;
     int maxColumns = 0;
-    List lastGoOn = null;
+    List<Schedulable> lastGoOn = null;
     List<Schedulable> goOn;
 
     while (i < ENDHOUR) {
@@ -504,14 +445,14 @@ public class AgendaHtmlView {
       dayList.getStartingSchedules(hour, nextHour);
       goOn = new ArrayList<Schedulable>();
       for (int dayListIterator = 0; dayListIterator < schedules.size(); dayListIterator++) {
-        Schedulable sched = (Schedulable) schedules.elementAt(dayListIterator);
+        Schedulable sched = schedules.elementAt(dayListIterator);
 
         if (sched.isOver(thisHour)) {
           goOn.add(sched);
         }
       }
 
-      if ((goOn.isEmpty()) && (maxColumns == 0)) {
+      if ((!goOn.isEmpty()) && (maxColumns == 0)) {
         // compute the number of columns to display
         maxColumns = 1;
         int maxTime = 0;
@@ -532,7 +473,7 @@ public class AgendaHtmlView {
           }
           countColumns = 0;
           for (int iterator = 0; iterator < schedules.size(); iterator++) {
-            Schedulable sched = (Schedulable) schedules.elementAt(iterator);
+            Schedulable sched = schedules.elementAt(iterator);
 
             if (sched.isOver(tmpThisHour)) {
               countColumns++;
@@ -576,7 +517,7 @@ public class AgendaHtmlView {
         maxColumns = 0;
       } else {
         for (int goOnIterator = 0; goOnIterator < goOn.size(); goOnIterator++) {
-          Schedulable schedule = (Schedulable) goOn.get(goOnIterator);
+          Schedulable schedule = goOn.get(goOnIterator);
           boolean start = true;
 
           if (lastGoOn != null) {
@@ -607,7 +548,7 @@ public class AgendaHtmlView {
 
             String color = "intfdcolor2";
             for (int iterator = 0; iterator < schedules.size(); iterator++) {
-              Schedulable sched = (Schedulable) schedules.elementAt(iterator);
+              Schedulable sched = schedules.elementAt(iterator);
 
               if (!sched.getId().equals(schedule.getId())) {
                 if (sched.isOver(schedule)) {
@@ -642,7 +583,7 @@ public class AgendaHtmlView {
                 } else {
                   result += schedule.getStartHour() + "<BR>";
                 }
-                result += Encode.javaStringToHtmlString(schedule.getName())
+                result += EncodeHelper.javaStringToHtmlString(schedule.getName())
                     + "</A>";
               }
             } else {
@@ -822,7 +763,7 @@ public class AgendaHtmlView {
             result.append("      <A HREF=\"javascript:onClick=viewJournal('").append(
                 schedule.getId()).append("')\"");
             result.append(getInfoBulle(schedule));
-            result.append(Encode.javaStringToHtmlString(schedule.getName()));
+            result.append(EncodeHelper.javaStringToHtmlString(schedule.getName()));
             result.append("      </A>");
           }
           result.append("  </TD></TR>\n");
@@ -1053,16 +994,16 @@ public class AgendaHtmlView {
    * @throws AgendaException
    */
   private String getInfoBulle(Schedulable schedule) throws AgendaException {
-    Collection categories = agendaSessionController.getJournalCategories(schedule.getId());
+    Collection<Category> categories = agendaSessionController.getJournalCategories(schedule.getId());
     if (!StringUtil.isDefined(schedule.getDescription())
         && categories.isEmpty()) {
       return ">";
     }
 
     String categs = "";
-    Iterator categoriesIt = categories.iterator();
+    Iterator<Category> categoriesIt = categories.iterator();
     while (categoriesIt.hasNext()) {
-      Category categorie = (Category) categoriesIt.next();
+      Category categorie = categoriesIt.next();
       categs += categorie.getName() + "&nbsp;";
     }
 
