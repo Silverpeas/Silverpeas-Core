@@ -35,6 +35,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,9 +75,8 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void displayScripts(PrintWriter out,
-      FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+      throws java.io.IOException {
 
     String language = PagesContext.getLanguage();
 
@@ -88,8 +88,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
+          Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
@@ -105,16 +104,14 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void display(PrintWriter out,
-      Field field,
-      FieldTemplate template,
+  public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String value = "";
     String keys = "";
     String values = "";
     String html = "";
     String language = PagesContext.getLanguage();
-
+    String cssClass = null;
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
@@ -129,7 +126,15 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
       value = field.getValue(language);
     }
 
-    html += "<SELECT id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+    if (parameters.containsKey("class")) {
+      cssClass = (String) parameters.get("class");
+      if (StringUtil.isDefined(cssClass))
+        cssClass = "class=\"" + cssClass + "\"";
+    }
+    if (StringUtil.isDefined(cssClass))
+      html += "<SELECT " + cssClass + " id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+    else
+      html += "<SELECT id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
     if (template.isDisabled() || template.isReadOnly()) {
       html += " disabled";
@@ -154,9 +159,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     int nbTokens = stKeys.countTokens();
 
     if (stKeys.countTokens() != stValues.countTokens()) {
-      SilverTrace.error("form",
-          "ListBoxFieldDisplayer.display",
-          "form.EX_ERR_ILLEGAL_PARAMETERS",
+      SilverTrace.error("form", "ListBoxFieldDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
           "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
     } else {
       for (int i = 0; i < nbTokens; i++) {
@@ -175,19 +178,15 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     html += "</SELECT>\n";
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-        !template.isHidden() && PagesContext.
-        useMandatory()) {
+        !template.isHidden() && PagesContext.useMandatory()) {
       html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\"/>";
     }
 
     out.println(html);
   }
 
-  public List<String> update(String newValue,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext)
-      throws FormException {
+  public List<String> update(String newValue, Field field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",

@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.jsp.JspWriter;
 
@@ -41,6 +42,7 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcRefField;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -74,18 +76,15 @@ public class XmlForm extends AbstractForm {
     // StringWriter sw = new StringWriter();
     PrintWriter out = new PrintWriter(sw, true);
 
-    if (pagesContext.getPrintTitle() && getTitle() != null
-        && getTitle().length() > 0) {
-      out
-          .println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+    if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
+      out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
       out.println("<tr>");
       out.println("<td CLASS=intfdcolor4 NOWRAP>");
-      out
-          .println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
+      out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
       out.println("<tr>");
       out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
-      out.println("<img border=\"0\" src=\"" + Util.getIcon("px")
-          + "\" width=5><span class=txtNav>" + getTitle() + "</span>");
+      out.println("<img border=\"0\" src=\"" + Util.getIcon("px") +
+          "\" width=5><span class=txtNav>" + getTitle() + "</span>");
       out.println("</td>");
       out.println("</tr>");
       out.println("</table>");
@@ -111,8 +110,7 @@ public class XmlForm extends AbstractForm {
       } else {
         out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
       }
-      out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId()
-          + "\">");
+      out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId() + "\">");
 
       // out.flush();
       // jw.write(sw.toString());
@@ -142,8 +140,7 @@ public class XmlForm extends AbstractForm {
             try {
               field = record.getField(fieldName);
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlForm.toString",
-                  "form.EXP_UNKNOWN_FIELD", null, fe);
+              SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_FIELD", null, fe);
             }
           }
 
@@ -153,15 +150,12 @@ public class XmlForm extends AbstractForm {
                 fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
               }
 
-              fieldDisplayer = TypeManager.getDisplayer(fieldType,
-                  fieldDisplayerName);
+              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
-                lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(
-                    fieldTemplate, pc);
+                lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
               }
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlForm.toString",
-                  "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+              SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
             }
           }
         }
@@ -190,8 +184,7 @@ public class XmlForm extends AbstractForm {
           try {
             field = record.getField(fieldName);
           } catch (FormException fe) {
-            SilverTrace.error("form", "XmlForm.toString",
-                "form.EXP_UNKNOWN_FIELD", null, fe);
+            SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_FIELD", null, fe);
           }
 
           if (field != null) {
@@ -199,11 +192,9 @@ public class XmlForm extends AbstractForm {
               if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
                 fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
 
-              fieldDisplayer = TypeManager.getDisplayer(fieldType,
-                  fieldDisplayerName);
+              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlForm.toString",
-                  "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+              SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
             }
 
             if (fieldDisplayer != null) {
@@ -211,41 +202,34 @@ public class XmlForm extends AbstractForm {
               // out = new PrintWriter(sw, true);
               out.println("<tr align=center>");
               if (fieldLabel != null && !fieldLabel.equals("")) {
-                out
-                    .println("<td class=\"intfdcolor4\" valign=\"top\" align=left nowrap>");
-                out.println("<span class=\"txtlibform\">" + fieldLabel
-                    + " :</span>");
+                out.println("<td class=\"intfdcolor4\" valign=\"top\" align=left nowrap>");
+                out.println("<span class=\"txtlibform\">" + fieldLabel + " :</span>");
                 out.println("</TD>");
               }
 
-              out
-                  .println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
+              out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
               if (field == null) {
                 try {
                   field = fieldTemplate.getEmptyField();
                 } catch (FormException fe) {
-                  SilverTrace.error("form", "XmlForm.toString",
-                      "form.EXP_UNKNOWN_FIELD", null, fe);
+                  SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_FIELD", null, fe);
                 }
               }
 
               try {
-                fieldDisplayer.display(out, record.getField(fieldName),
-                    fieldTemplate, pc);
+                fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.toString",
-                    "form.EX_CANT_GET_FORM", null, fe);
+                SilverTrace.error("form", "XmlForm.toString", "form.EX_CANT_GET_FORM", null, fe);
               }
 
-              if (isMandatory && !isDisabled && !isReadOnly && !isHidden
-                  && fieldDisplayer.isDisplayedMandatory())
+              if (isMandatory && !isDisabled && !isReadOnly && !isHidden &&
+                  fieldDisplayer.isDisplayedMandatory())
                 mandatory = true;
               out.println("</TD>");
               out.println("</TR>");
               // out.flush();
               // jw.write(sw.toString());
-              pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(
-                  fieldTemplate, pc));
+              pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
             }
           }
         }
@@ -255,10 +239,9 @@ public class XmlForm extends AbstractForm {
       if (mandatory) {
         out.println("<tr align=left>");
         out.println("<td colspan=\"2\">");
-        out.println("(<img border=\"0\" src=\""
-            + Util.getIcon("mandatoryField")
-            + "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;"
-            + Util.getString("GML.requiredField", language) + ")");
+        out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField") +
+            "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;" +
+            Util.getString("GML.requiredField", language) + ")");
         out.println("</TD>");
         out.println("</TR>");
       }
@@ -294,18 +277,15 @@ public class XmlForm extends AbstractForm {
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
 
-      if (pagesContext.getPrintTitle() && getTitle() != null
-          && getTitle().length() > 0) {
-        out
-            .println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+      if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
+        out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
         out.println("<tr>");
         out.println("<td CLASS=intfdcolor4 NOWRAP>");
-        out
-            .println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
+        out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
         out.println("<tr>");
         out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
-        out.println("<img border=\"0\" src=\"" + Util.getIcon("px")
-            + "\" width=5><span class=txtNav>" + getTitle() + "</span>");
+        out.println("<img border=\"0\" src=\"" + Util.getIcon("px") +
+            "\" width=5><span class=txtNav>" + getTitle() + "</span>");
         out.println("</td>");
         out.println("</tr>");
         out.println("</table>");
@@ -329,13 +309,11 @@ public class XmlForm extends AbstractForm {
           out
               .println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
         } else {
-          out
-              .println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
+          out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
         }
 
         if (record != null) {
-          out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\""
-              + record.getId() + "\">");
+          out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId() + "\">");
         }
 
         out.flush();
@@ -369,8 +347,7 @@ public class XmlForm extends AbstractForm {
               try {
                 field = record.getField(fieldName);
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display",
-                    "form.EXP_UNKNOWN_FIELD", null, fe);
+                SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
               }
             }
 
@@ -380,15 +357,13 @@ public class XmlForm extends AbstractForm {
                   fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
                 }
 
-                fieldDisplayer = TypeManager.getDisplayer(fieldType,
-                    fieldDisplayerName);
+                fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
                 if (fieldDisplayer != null) {
-                  lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(
-                      fieldTemplate, pc);
+                  lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
                 }
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display",
-                    "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+                SilverTrace
+                    .error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
               }
             }
           }
@@ -400,9 +375,11 @@ public class XmlForm extends AbstractForm {
         boolean isDisabled;
         boolean isReadOnly;
         boolean isHidden;
+        String fieldClass = null;
         itFields = listField.iterator();
         while (itFields.hasNext()) {
           fieldTemplate = itFields.next();
+          Map<String, String> parameters = fieldTemplate.getParameters(language);
           if (fieldTemplate != null) {
             fieldName = fieldTemplate.getFieldName();
             fieldLabel = fieldTemplate.getLabel(language);
@@ -412,14 +389,16 @@ public class XmlForm extends AbstractForm {
             isDisabled = fieldTemplate.isDisabled();
             isReadOnly = fieldTemplate.isReadOnly();
             isHidden = fieldTemplate.isHidden();
+            fieldClass = "";
+            if (parameters.containsKey("classLabel"))
+              fieldClass = (String) parameters.get("classLabel");
 
             field = null;
             if (record != null) {
               try {
                 field = record.getField(fieldName);
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display",
-                    "form.EXP_UNKNOWN_FIELD", null, fe);
+                SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
               }
             }
 
@@ -428,54 +407,53 @@ public class XmlForm extends AbstractForm {
                 if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
                   fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
 
-                fieldDisplayer = TypeManager.getDisplayer(fieldType,
-                    fieldDisplayerName);
+                fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display",
-                    "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+                SilverTrace
+                    .error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
               }
 
               if (fieldDisplayer != null) {
                 sw = new StringWriter();
                 out = new PrintWriter(sw, true);
                 out.println("<tr align=center>");
-                out
-                    .println("<td class=\"intfdcolor4\" valign=\"top\" align=left>");
-                if (fieldLabel != null && !fieldLabel.equals(""))
-                  out.println("<span class=\"txtlibform\">" + fieldLabel
-                      + " :</span>");
-                else
+                out.println("<td class=\"intfdcolor4\" valign=\"top\" align=left>");
+                if (fieldLabel != null && !fieldLabel.equals("")) {
+                  if (StringUtil.isDefined(fieldClass))
+                    out.println("<span class=\"" + fieldClass + "\">" + fieldLabel + " :</span>");
+                  else
+                    out.println("<span class=\"txtlibform\">" + fieldLabel + " :</span>");
+                } else
                   out.println("<span class=\"txtlibform\">&nbsp;</span>");
                 out.println("</TD>");
-                out
-                    .println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
+                out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
 
                 if (field == null) {
                   try {
                     field = fieldTemplate.getEmptyField();
                   } catch (FormException fe) {
-                    SilverTrace.error("form", "XmlForm.display",
-                        "form.EXP_UNKNOWN_FIELD", null, fe);
+                    SilverTrace
+                        .error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
                   }
                 }
 
                 try {
                   fieldDisplayer.display(out, field, fieldTemplate, pc);
                 } catch (FormException fe) {
-                  SilverTrace.error("form", "XmlForm.display",
-                      "form.EX_CANT_GET_FORM", null, fe);
+                  SilverTrace.error("form", "XmlForm.display", "form.EX_CANT_GET_FORM", null, fe);
                 }
-                if (isMandatory && !isDisabled && !isHidden
-                    && fieldDisplayer.isDisplayedMandatory()
-                    && (!isReadOnly || fieldType.equals(JdbcRefField.TYPE))) {
+                if (isMandatory && !isDisabled && !isHidden &&
+                    fieldDisplayer.isDisplayedMandatory() &&
+                    (!isReadOnly || fieldType.equals(JdbcRefField.TYPE))) {
                   mandatory = true;
                 }
                 out.println("</TD>");
                 out.println("</TR>");
                 out.flush();
                 jw.write(sw.toString());
-                pc.incCurrentFieldIndex(fieldDisplayer
-                    .getNbHtmlObjectsDisplayed(fieldTemplate, pc));
+                pc
+                    .incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
+                        pc));
               }
             }
           }
@@ -485,10 +463,9 @@ public class XmlForm extends AbstractForm {
         if (mandatory) {
           out.println("<tr align=left>");
           out.println("<td colspan=\"2\">");
-          out.println("(<img border=\"0\" src=\""
-              + Util.getIcon("mandatoryField")
-              + "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;"
-              + Util.getString("GML.requiredField", language) + ")");
+          out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField") +
+              "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;" +
+              Util.getString("GML.requiredField", language) + ")");
           out.println("</TD>");
           out.println("</TR>");
         }
@@ -502,8 +479,7 @@ public class XmlForm extends AbstractForm {
         jw.write(sw.toString());
       }
     } catch (java.io.IOException fe) {
-      SilverTrace.error("form", "XmlForm.display", "form.EXP_CANT_WRITE", null,
-          fe);
+      SilverTrace.error("form", "XmlForm.display", "form.EXP_CANT_WRITE", null, fe);
     }
   }
 }

@@ -78,9 +78,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out,
-      FieldTemplate template,
-      PagesContext pagesContext) throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
+      throws java.io.IOException {
     String language = pagesContext.getLanguage();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
@@ -100,8 +99,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       out.println("	}\n");
       out.println("	if(checked == false) {\n");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
+          Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
@@ -118,9 +116,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   @Override
-  public void display(PrintWriter out,
-      Field field,
-      FieldTemplate template,
+  public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String selectedValues = "";
     List<String> valuesFromDB = new ArrayList<String>();
@@ -129,6 +125,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     String html = "";
     int cols = 1;
     String language = PagesContext.getLanguage();
+    String cssClass = null;
 
     String mandatoryImg = Util.getIcon("mandatoryField");
 
@@ -157,14 +154,19 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       values = parameters.get("values");
     }
 
+    if (parameters.containsKey("class")) {
+      cssClass = (String) parameters.get("class");
+      if (StringUtil.isDefined(cssClass))
+        cssClass = "class=\"" + cssClass + "\"";
+    }
+
     try {
       if (parameters.containsKey("cols")) {
         cols = (Integer.valueOf(parameters.get("cols"))).intValue();
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
-          (String) parameters.
-          get("cols"));
+          (String) parameters.get("cols"));
       cols = 1;
     }
 
@@ -184,9 +186,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     int nbTokens = getNbHtmlObjectsDisplayed(template, PagesContext);
 
     if (stKeys.countTokens() != stValues.countTokens()) {
-      SilverTrace.error("form",
-          "CheckBoxDisplayer.display",
-          "form.EX_ERR_ILLEGAL_PARAMETERS",
+      SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
           "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
     } else {
       html += "<table border=0>";
@@ -203,7 +203,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
         html +=
             "<INPUT type=\"checkbox\" id=\"" + fieldName + "\" name=\"" + fieldName +
-            "\" value=\"" + optKey + "\" ";
+                "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled ";
@@ -215,11 +215,13 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
         html += ">&nbsp;" + optValue;
 
+        if (StringUtil.isDefined(cssClass))
+          html += "</span>";
+
         // last checkBox
         if (i == nbTokens - 1) {
           if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-              !template.isHidden() && PagesContext.
-              useMandatory()) {
+              !template.isHidden() && PagesContext.useMandatory()) {
             html +=
                 "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
           }
@@ -244,8 +246,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
-      PagesContext pageContext) throws
-      FormException {
+      PagesContext pageContext) throws FormException {
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_ENTER_METHOD",
         "parameterName = " + template.getFieldName());
     String value = "";
@@ -270,11 +271,8 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   }
 
   @Override
-  public List<String> update(String values,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext)
-      throws FormException {
+  public List<String> update(String values, Field field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
       throw new FormException("CheckBoxDisplayer.update", "form.EX_NOT_CORRECT_TYPE",

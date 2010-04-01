@@ -42,6 +42,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 
@@ -150,7 +151,6 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     String fieldName = template.getFieldName();
-
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     // Suggestions used ?
@@ -164,6 +164,13 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
           textField.getSuggestions(fieldName, template.getTemplateName(), pageContext
           .getComponentId());
     }
+
+    String cssClass = null;
+	if (parameters.containsKey("class")) {
+		cssClass = (String) parameters.get("class");
+		if (cssClass != null)
+			cssClass = "class=\""+cssClass+"\"";
+	}
 
     String defaultValue =
         (parameters.containsKey("default") ? parameters.get("default") : "");
@@ -191,7 +198,9 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     } else if (template.isReadOnly()) {
       input.setReadOnly(true);
     }
-
+    if (StringUtil.isDefined(cssClass))
+        input.setClass(cssClass);
+    
     IMG img = null;
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && pageContext.

@@ -44,6 +44,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.ArrayList;
@@ -128,8 +129,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * </UL>
    */
   public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pagesContext)
-      throws FormException {
+      PagesContext pagesContext) throws FormException {
     if (!field.getTypeName().equals(DateField.TYPE)) {
       SilverTrace.info("form", "DateFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           DateField.TYPE);
@@ -138,9 +138,15 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     String language = pagesContext.getLanguage();
     Map<String, String> parameters = template.getParameters(language);
     String fieldName = template.getFieldName();
+    String cssClass = null;
 
-    String defaultParam =
-        (parameters.containsKey("default") ? parameters.get("default") : "");
+    if (parameters.containsKey("class")) {
+      cssClass = (String) parameters.get("class");
+      if (StringUtil.isDefined(cssClass))
+        cssClass = "class=\"" + cssClass + "\"";
+    }
+
+    String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
     String defaultValue = "";
     if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues())
       defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
@@ -154,8 +160,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     input.setName(fieldName);
     input.setValue(EncodeHelper.javaStringToHtmlString(value));
     input.setType(template.isHidden() ? Input.hidden : Input.text);
-    input.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
-        : "10");
+    input.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength") : "10");
     input.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
     if (parameters.containsKey("border")) {
       input.setBorder(Integer.parseInt(parameters.get("border")));
@@ -188,7 +193,10 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
 
       container.addElement("&nbsp;");
       Span span = new Span();
-      span.setClass("txtnote");
+      if (StringUtil.isDefined(cssClass))
+        span.setClass(cssClass);
+      else
+        span.setClass("txtnote");
       span.addElement("(" + Util.getString("GML.dateFormatExemple", language) + ")");
       container.addElement(span);
 
@@ -216,8 +224,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field doesn't accept the new value.
    */
   public List<String> update(String newValue, Field field, FieldTemplate template,
-      PagesContext pagesContext)
-      throws FormException {
+      PagesContext pagesContext) throws FormException {
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
       field.setValue(newValue, pagesContext.getLanguage());
     } else {

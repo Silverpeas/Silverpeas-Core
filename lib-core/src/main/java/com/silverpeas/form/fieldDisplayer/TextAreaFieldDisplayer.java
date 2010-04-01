@@ -35,6 +35,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,8 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     String rows = "6";
     String cols = "48";
     String html = "";
-
+    String cssClass = null;
+    
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
@@ -132,7 +134,16 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.isNull())
       value = field.getValue(PagesContext.getLanguage());
 
-    html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+	if (parameters.containsKey("class")) {
+		cssClass = (String) parameters.get("class");
+		if (StringUtil.isDefined(cssClass))
+			cssClass = "class=\"" + cssClass + "\"";
+	}
+
+    if (StringUtil.isDefined(cssClass))
+        html += "<span " + cssClass + ">";
+    
+	html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
     if (parameters.containsKey("rows")) {
       rows = parameters.get("rows");
@@ -151,6 +162,9 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     html += " >" + EncodeHelper.javaStringToHtmlString(value) + "</TEXTAREA>";
+
+    if (StringUtil.isDefined(cssClass))
+        html += "</span>";
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && PagesContext.useMandatory()) {
