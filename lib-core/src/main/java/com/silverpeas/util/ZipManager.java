@@ -38,11 +38,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.nio.charset.Charset;
 
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 
 /**
  * Classe contenant des méthodes statiques de gestion des fichiers zip
@@ -179,25 +177,26 @@ public class ZipManager {
       throws FileNotFoundException, IOException {
 
     FileOutputStream os = null;
-    ZipOutputStream zos = null;
+    ZipArchiveOutputStream zos = null;
     try {
       byte[] buf = new byte[4096]; // read buffer
 
       // Création du flux de sortie du fichier zip
       os = new FileOutputStream(outfilename);
       // création du flux zip
-      zos = new ZipOutputStream(os);
-
+      zos = new ZipArchiveOutputStream(os);
+      zos.setFallbackToUTF8(true);
+      zos.setEncoding(Charset.defaultCharset().name());
       // Création d'un champs ZipEntry pour le fichier à compresser dans le
       // fichier zip à creer
-      zos.putNextEntry(new ZipEntry(filePathNameToCreate));
+      zos.putArchiveEntry(new ZipArchiveEntry(filePathNameToCreate));
 
       // Lecture du fichier et écriture dans le fichier zip
       int len = 0;
       while ((len = inputStream.read(buf)) > 0) {
         zos.write(buf, 0, len);
       }
-      zos.closeEntry();
+      zos.closeArchiveEntry();
 
       // inputStream.close();//Ce nest pas dans cette méthode que l'on doit
       // fermer le flux d'entrée
@@ -238,9 +237,9 @@ public class ZipManager {
     try {
       zf = new ZipFile(srcF);
 
-      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
+      Enumeration<ZipArchiveEntry> entries = (Enumeration<ZipArchiveEntry>) zf.getEntries();
       while (entries.hasMoreElements()) {
-        ZipEntry ze = entries.nextElement();
+        ZipArchiveEntry ze = entries.nextElement();
         File f = new File(dir, ze.getName());
         try {
           // create intermediary directories - sometimes zip don't add them
@@ -285,12 +284,9 @@ public class ZipManager {
     int nbFiles = 0;
     try {
       zf = new ZipFile(srcF);
-      // zf = new ZipFile(srcF);
-      ZipEntry ze = null;
-
-      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
+      Enumeration<ZipArchiveEntry> entries = (Enumeration<ZipArchiveEntry>) zf.getEntries();
       while (entries.hasMoreElements()) {
-        ze = (ZipEntry) entries.nextElement();
+        ZipArchiveEntry ze = entries.nextElement();
         if (!ze.isDirectory()) {
           nbFiles++;
         }
