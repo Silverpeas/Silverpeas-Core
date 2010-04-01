@@ -23,10 +23,7 @@
  */
 package com.silverpeas.util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,13 +33,14 @@ import java.util.List;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.nio.charset.Charset;
-import java.util.jar.JarInputStream;
-
-import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
-import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
+import de.schlichtherle.io.ArchiveException;
+import de.schlichtherle.io.File;
+import de.schlichtherle.io.FileInputStream;
+import de.schlichtherle.io.FileOutputStream;
+import de.schlichtherle.util.zip.ZipEntry;
+import de.schlichtherle.util.zip.ZipFile;
+import de.schlichtherle.util.zip.ZipOutputStream;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Classe contenant des méthodes statiques de gestion des fichiers zip
@@ -60,13 +58,14 @@ public class ZipManager {
    */
   public static long compressPathToZip(String filename, String outfilename)
       throws FileNotFoundException, IOException {
-    JarArchiveOutputStream zos = null;
+    long size = 0l;
+    ZipOutputStream zos = null;
     File file = new File(filename);
     try {
       // Création du flux de sortie du fichier zip
       FileOutputStream os = new FileOutputStream(outfilename);
       // création du flux zip
-      zos = new JarArchiveOutputStream(os);
+      zos = new ZipOutputStream(os);
       if (file.isFile() || file.list().length == 0) // cas fichier ou cas
       // dossier vide
       {
@@ -76,17 +75,17 @@ public class ZipManager {
         // Création d'un champs ZipEntry pour le fichier à compresser dans le
         // fichier zip à creer
         //
-        zos.putArchiveEntry(new JarArchiveEntry (filename));
+        zos.putNextEntry(new ZipEntry(filename));
         // Lecture du fichier et écriture dans le fichier zip
         int len = 0;
         while ((len = is.read(buf)) > 0) {
           zos.write(buf, 0, len);
         }
-        zos.closeArchiveEntry();
+        zos.closeEntry();
         is.close();
       } else {
         // Récupération du contenu du dossier
-        File[] listcontenuPath = file.listFiles();
+        File[] listcontenuPath = (File[]) file.listFiles();
         for (File file1 : listcontenuPath) {
           compressPathToZip(file1.getPath(), file.getName() + File.separatorChar
               + file1.getName(), outfilename, zos);
@@ -96,13 +95,15 @@ public class ZipManager {
       // Si je ne ferme pas le stream, je ne peux pas avoir la taille du
       // fichier.
       File fileZip = new File(outfilename);
-      return fileZip.length();
+      size = fileZip.length();
+      File.umount(fileZip);
     } finally {
       try {
         zos.close();
       } catch (Exception ex) {
       }
     }
+    return size;
   }
 
   /**
@@ -115,7 +116,7 @@ public class ZipManager {
    * @throws IOException
    */
   private static void compressPathToZip(String filename, String fileToCreate,
-      String outfilename, JarArchiveOutputStream zos) throws FileNotFoundException,
+      String outfilename, ZipOutputStream zos) throws FileNotFoundException,
       IOException {
     File file = new File(filename);
     if (file.isFile()) // cas fichier
@@ -123,13 +124,13 @@ public class ZipManager {
       byte[] buf = new byte[4096]; // read buffer
       // Création du flux d'entrée du fichier à compresser
       FileInputStream is = new FileInputStream(filename);
-      zos.putArchiveEntry(new JarArchiveEntry(fileToCreate));
+      zos.putNextEntry(new ZipEntry(fileToCreate));
       // Lecture du fichier et écriture dans le fichier zip
       int len = 0;
       while ((len = is.read(buf)) > 0) {
         zos.write(buf, 0, len);
       }
-      zos.closeArchiveEntry();
+      zos.closeEntry();
       is.close();
     } else {
       String[] listContenuStringPath = file.list();
@@ -175,36 +176,19 @@ public class ZipManager {
   public static void compressStreamToZip(InputStream inputStream,
       String filePathNameToCreate, String outfilename)
       throws FileNotFoundException, IOException {
-
-    FileOutputStream os = null;
-    JarArchiveOutputStream zos = null;
+    ZipOutputStream zos = null;
     try {
-      byte[] buf = new byte[4096]; // read buffer
-
-      // Création du flux de sortie du fichier zip
-      os = new FileOutputStream(outfilename);
-      // création du flux zip
-      zos = new JarArchiveOutputStream(os);
-      zos.setFallbackToUTF8(true);
-      zos.setEncoding(Charset.defaultCharset().name());
-      // Création d'un champs ZipEntry pour le fichier à compresser dans le
-      // fichier zip à creer
-      zos.putArchiveEntry(new JarArchiveEntry(filePathNameToCreate));
-
-      // Lecture du fichier et écriture dans le fichier zip
+      byte[] buf = new byte[4096];
+      zos = new ZipOutputStream(new FileOutputStream(outfilename));
+      zos.putNextEntry(new ZipEntry(filePathNameToCreate));
       int len = 0;
       while ((len = inputStream.read(buf)) > 0) {
         zos.write(buf, 0, len);
       }
-      zos.closeArchiveEntry();
-
-      // inputStream.close();//Ce nest pas dans cette méthode que l'on doit
-      // fermer le flux d'entrée
-      zos.close();
+      zos.closeEntry();
     } finally {
-      try {
-        zos.close();
-      } catch (Exception e) {
+      if (zos != null) {
+        IOUtils.closeQuietly(zos);
       }
     }
   }
@@ -213,7 +197,7 @@ public class ZipManager {
    * Do the work.
    * @exception IOException Thrown in unrecoverable error.
    */
-  public static void extract(File source, File dest) throws UtilException {
+  public static void extract(java.io.File source, java.io.File dest) throws UtilException {
     if (source == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
           "util.EXE_SOURCE_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
@@ -222,71 +206,29 @@ public class ZipManager {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
           "util.EXE_DESTINATION_FILE_ATTRIBUTE_MUST_BE_SPECIFIED");
     }
-    extractFile(source, dest);
-  }
-
-  /**
-   * Extracting a zip format file
-   * @param File - File to extract
-   * @param File - Destination path
-   * @return nothing
-   */
-  @SuppressWarnings("unchecked")
-  private static void extractFile(File srcF, File dir) {
-    ZipFile zf = null;
+    File zipFile = new File(source);
+    File destination = new File(dest);
+    zipFile.archiveCopyAllTo(destination);
     try {
-      zf = new ZipFile(srcF);
-
-      Enumeration<ZipArchiveEntry> entries = (Enumeration<ZipArchiveEntry>) zf.getEntries();
-      while (entries.hasMoreElements()) {
-        ZipArchiveEntry ze = entries.nextElement();
-        File f = new File(dir, ze.getName());
-        try {
-          // create intermediary directories - sometimes zip don't add them
-          File dirF = new File(f.getParent());
-          dirF.mkdirs();
-          if (ze.isDirectory()) {
-            f.mkdirs();
-          } else {
-            byte[] buffer = new byte[1024];
-            int length = 0;
-            InputStream zis = zf.getInputStream(ze);
-            FileOutputStream fos = new FileOutputStream(f);
-            while ((length = zis.read(buffer)) >= 0) {
-              fos.write(buffer, 0, length);
-            }
-            fos.close();
-          }
-        } catch (FileNotFoundException ex) {
-          SilverTrace.warn("util", "ZipManager.extractFile()",
-              "root.EX_FILE_NOT_FOUND", "file = " + f.getPath(), ex);
-        }
-      }
-    } catch (IOException ioe) {
-      SilverTrace.warn("util", "ZipManager.extractFile()",
-          "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
-          + srcF.getPath(), ioe);
-    } finally {
-      if (zf != null) {
-        try {
-          zf.close();
-        } catch (IOException e) {
-          SilverTrace.warn("util", "ZipManager.expandFile()",
-              "util.EXE_ERROR_WHILE_CLOSING_ZIPINPUTSTREAM", null, e);
-        }
-      }
+      File.umount(zipFile);
+    } catch (ArchiveException ioe) {
+      SilverTrace.warn("util", "ZipManager.extractFile()", "util.EXE_ERROR_WHILE_EXTRACTING_FILE", "sourceFile = "
+          + source.getPath(), ioe);
     }
   }
 
   @SuppressWarnings("unchecked")
-  public static int getNbFiles(File srcF) {
+  public static int getNbFiles(java.io.File srcF) {
     ZipFile zf = null;
     int nbFiles = 0;
     try {
       zf = new ZipFile(srcF);
-      Enumeration<ZipArchiveEntry> entries = (Enumeration<ZipArchiveEntry>) zf.getEntries();
+      // zf = new ZipFile(srcF);
+      ZipEntry ze = null;
+
+      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
       while (entries.hasMoreElements()) {
-        ZipArchiveEntry ze = entries.nextElement();
+        ze = (ZipEntry) entries.nextElement();
         if (!ze.isDirectory()) {
           nbFiles++;
         }

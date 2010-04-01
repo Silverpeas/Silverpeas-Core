@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.silverpeas.util;
 
 import java.util.Enumeration;
@@ -34,8 +30,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -50,14 +46,14 @@ public class ZipManagerTest {
   public ZipManagerTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
+  @Before
+  public void setUpClass() throws Exception {
     File tempDir = new File(base + File.separatorChar + "target" + File.separatorChar + "temp");
     tempDir.mkdirs();
   }
 
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  @After
+  public void tearDownClass() throws Exception {
     File tempDir = new File(base + File.separatorChar + "target" + File.separatorChar + "temp");
     FileUtils.forceDelete(tempDir);
   }
@@ -71,11 +67,8 @@ public class ZipManagerTest {
     String path = base + File.separatorChar + "target" + File.separatorChar
             + "test-classes" + File.separatorChar + "ZipSample";
     String outfilename = base + File.separatorChar + "target" + File.separatorChar
-            + "temp" + File.separatorChar + "testCompressPathToZip.zip";
-    long expResult = 800L;
-    long result = ZipManager.compressPathToZip(path, outfilename);
-    assertTrue(expResult - 200L < result);
-    assertTrue(result < expResult + 200L);
+            + "temp" + File.separatorChar + "testCompressPathToZip.zip";   
+    ZipManager.compressPathToZip(path, outfilename);
     ZipFile zipFile = new ZipFile(new File(outfilename), Charset.defaultCharset().name());
     Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
     int nbEntries = 0;
@@ -142,7 +135,7 @@ public class ZipManagerTest {
     assertNotNull(file);
     assertTrue(file.exists());
     assertTrue(file.isFile());
-    int result = ZipManager.getNbFiles(new File(outfilename));
+    int result = ZipManager.getNbFiles(file);
     assertEquals(5, result);
   }
 }
