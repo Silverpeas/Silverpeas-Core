@@ -345,8 +345,7 @@ public class VersioningImportExport {
         List versions = getVersioningBm().getDocumentVersions(
             existingDocument.getPk());
         if (versions != null && versions.size() > 0) {
-          DocumentVersion lastVersion = (DocumentVersion) versions.get(versions
-              .size() - 1);
+          DocumentVersion lastVersion = (DocumentVersion) versions.get(0);
 
           int majorNumber = lastVersion.getMajorNumber();
           int minorNumber = lastVersion.getMinorNumber();
