@@ -37,9 +37,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.nio.charset.Charset;
+import java.util.jar.JarInputStream;
 
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
+import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
 /**
@@ -58,15 +60,13 @@ public class ZipManager {
    */
   public static long compressPathToZip(String filename, String outfilename)
       throws FileNotFoundException, IOException {
-    ZipArchiveOutputStream zos = null;
+    JarArchiveOutputStream zos = null;
     File file = new File(filename);
     try {
       // Création du flux de sortie du fichier zip
       FileOutputStream os = new FileOutputStream(outfilename);
       // création du flux zip
-      zos = new ZipArchiveOutputStream(os);
-      zos.setFallbackToUTF8(true);
-      zos.setEncoding(Charset.defaultCharset().name());
+      zos = new JarArchiveOutputStream(os);
       if (file.isFile() || file.list().length == 0) // cas fichier ou cas
       // dossier vide
       {
@@ -76,7 +76,7 @@ public class ZipManager {
         // Création d'un champs ZipEntry pour le fichier à compresser dans le
         // fichier zip à creer
         //
-        zos.putArchiveEntry(new ZipArchiveEntry(filename));
+        zos.putArchiveEntry(new JarArchiveEntry (filename));
         // Lecture du fichier et écriture dans le fichier zip
         int len = 0;
         while ((len = is.read(buf)) > 0) {
@@ -115,7 +115,7 @@ public class ZipManager {
    * @throws IOException
    */
   private static void compressPathToZip(String filename, String fileToCreate,
-      String outfilename, ZipArchiveOutputStream zos) throws FileNotFoundException,
+      String outfilename, JarArchiveOutputStream zos) throws FileNotFoundException,
       IOException {
     File file = new File(filename);
     if (file.isFile()) // cas fichier
@@ -123,7 +123,7 @@ public class ZipManager {
       byte[] buf = new byte[4096]; // read buffer
       // Création du flux d'entrée du fichier à compresser
       FileInputStream is = new FileInputStream(filename);
-      zos.putArchiveEntry(new ZipArchiveEntry(fileToCreate));
+      zos.putArchiveEntry(new JarArchiveEntry(fileToCreate));
       // Lecture du fichier et écriture dans le fichier zip
       int len = 0;
       while ((len = is.read(buf)) > 0) {
@@ -177,19 +177,19 @@ public class ZipManager {
       throws FileNotFoundException, IOException {
 
     FileOutputStream os = null;
-    ZipArchiveOutputStream zos = null;
+    JarArchiveOutputStream zos = null;
     try {
       byte[] buf = new byte[4096]; // read buffer
 
       // Création du flux de sortie du fichier zip
       os = new FileOutputStream(outfilename);
       // création du flux zip
-      zos = new ZipArchiveOutputStream(os);
+      zos = new JarArchiveOutputStream(os);
       zos.setFallbackToUTF8(true);
       zos.setEncoding(Charset.defaultCharset().name());
       // Création d'un champs ZipEntry pour le fichier à compresser dans le
       // fichier zip à creer
-      zos.putArchiveEntry(new ZipArchiveEntry(filePathNameToCreate));
+      zos.putArchiveEntry(new JarArchiveEntry(filePathNameToCreate));
 
       // Lecture du fichier et écriture dans le fichier zip
       int len = 0;
