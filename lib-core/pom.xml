@@ -88,6 +88,10 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.sourceforge</groupId>
       <artifactId>cryptolib</artifactId>
     </dependency>

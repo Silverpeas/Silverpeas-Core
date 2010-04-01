@@ -27,11 +27,12 @@
  */
 package com.silverpeas.util;
 
+import java.util.Enumeration;
+import java.nio.charset.Charset;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -75,8 +76,8 @@ public class ZipManagerTest {
     long result = ZipManager.compressPathToZip(path, outfilename);
     assertTrue(expResult - 200L < result);
     assertTrue(result < expResult + 200L);
-    ZipFile zipFile = new ZipFile(new File(outfilename));
-    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+    ZipFile zipFile = new ZipFile(new File(outfilename), Charset.defaultCharset().name());
+    Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
     int nbEntries = 0;
     while (entries.hasMoreElements()) {
       ZipEntry entry = entries.nextElement();
