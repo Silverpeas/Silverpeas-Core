@@ -24,7 +24,6 @@
 package com.silverpeas.util;
 
 import java.util.Enumeration;
-import java.nio.charset.Charset;
 import java.io.File;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
@@ -69,7 +68,7 @@ public class ZipManagerTest {
     String outfilename = base + File.separatorChar + "target" + File.separatorChar
             + "temp" + File.separatorChar + "testCompressPathToZip.zip";   
     ZipManager.compressPathToZip(path, outfilename);
-    ZipFile zipFile = new ZipFile(new File(outfilename), Charset.defaultCharset().name());
+    ZipFile zipFile = new ZipFile(new File(outfilename), "UTF-8");
     Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
     int nbEntries = 0;
     while (entries.hasMoreElements()) {
