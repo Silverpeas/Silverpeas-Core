@@ -419,7 +419,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								{
 									displayAllVersionsLink = true;
 								}
-								else if (!profile.equals("user") && (document_version.getMajorNumber() > 1 || (document_version.getMajorNumber() == 0 && document_version.getMinorNumber() > 1) || (document_version.getMajorNumber() == 1 && document_version.getMinorNumber() >= 1)))
+								else if (!profile.equals("user") && versioning_util.getDocumentVersions(document.getPk()).size()>1)
 								{
 								  	displayAllVersionsLink = true;
 								}
