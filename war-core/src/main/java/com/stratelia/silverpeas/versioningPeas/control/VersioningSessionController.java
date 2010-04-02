@@ -1100,19 +1100,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   public boolean isUserInRole(String userId, SilverpeasRole role) {
     ProfileInst profile = getComponentProfile(role.toString());
-    if (profile.getAllUsers() != null && profile.getAllUsers().contains(userId)) {
-      return true;
-    }
-    List<String> groupsIds = profile.getAllGroups();
-    for (String groupId : groupsIds) {
-      UserDetail[] users = getOrganizationController().getAllUsersOfGroup(
-          groupId);
-      for (UserDetail user : users) {
-        if (user != null && user.getId().equals(userId))
-          return true;
-      }
-    }
-    return false;
+    return isUserInRole(userId, profile);
   }
 
   /**
@@ -1125,7 +1113,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       throws RemoteException {
     if (!useRights())
       return true;
-    return isAdmin(userId) || isPublisher(userId) || isReader(document, userId);
+    return isReader(document, userId);
   }
 
   private boolean useRights() {
@@ -1144,38 +1132,53 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       throws RemoteException {
     boolean isWriter = false;
     setEditingDocument(document);
-    ProfileInst profile = null;
 
     if (VER_USE_NONE.equals(fileRightsMode)
         || VER_USE_READERS.equals(fileRightsMode)) {
-      profile = getInheritedProfile(WRITER);
+      // check component profiles or topic profiles (kmelia case with rights on topic)
+      isWriter = isUserInRole(userId, getInheritedProfile(WRITER));
+      if (!isWriter) {
+        isWriter = isUserInRole(userId, getInheritedProfile(PUBLISHER));
+        if (!isWriter) {
+          isWriter = isUserInRole(userId, getInheritedProfile(ADMIN));
+          ;
+        }
+      }
     } else {
-      profile = getCurrentProfile(WRITER);
+      // check document profiles
+      isWriter = isUserInRole(userId, getCurrentProfile(WRITER));
+      if (!isWriter) {
+        isWriter = isUserInRole(userId, getCurrentProfile(PUBLISHER));
+        if (!isWriter) {
+          isWriter = isUserInRole(userId, getCurrentProfile(ADMIN));
+          ;
+        }
+      }
     }
-    if (profile == null) {
-      return false;
-    }
+    return isWriter;
+  }
+
+  private boolean isUserInRole(String userId, ProfileInst profile) {
     SilverTrace.info("versioningPeas",
-        "VersioningSessionController.isWriter()", "root.MSG_GEN_ENTER_METHOD",
+        "VersioningSessionController.isUserInRole()", "root.MSG_GEN_ENTER_METHOD",
         "document = " + document.getPk().getId() + ", userId = " + userId
-        + "profile=" + getProfile());
-    if (profile.getAllUsers() != null)
-      isWriter = profile.getAllUsers().contains(userId);
-    if (!isWriter) {
-      Iterator<String> itGroupsIds = profile.getAllGroups().iterator();
-      while (itGroupsIds.hasNext()) {
-        String groupId = (String) itGroupsIds.next();
-        UserDetail[] users = getOrganizationController().getAllUsersOfGroup(
-            groupId);
-        UserDetail user = null;
-        for (int i = 0; i < users.length; i++) {
-          user = users[i];
+        + "profile=" + profile.getName());
+    boolean userInRole = false;
+    if (profile.getAllUsers() != null) {
+      userInRole = profile.getAllUsers().contains(userId);
+    }
+    if (!userInRole) {
+      // check in groups
+      List<String> groupsIds = profile.getAllGroups();
+      for (String groupId : groupsIds) {
+        UserDetail[] users = getOrganizationController().getAllUsersOfGroup(groupId);
+        for (UserDetail user : users) {
           if (user != null && user.getId().equals(userId))
             return true;
         }
       }
     }
-    return isWriter;
+    return userInRole;
   }
 
   /**
@@ -1421,7 +1424,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param role
    * @return
    */
-  @SuppressWarnings("unchecked")
   public ProfileInst getDocumentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getEditingDocument().getPk().getId();
@@ -1448,7 +1450,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param role
    * @return
    */
-  @SuppressWarnings("unchecked")
   public ProfileInst getCurrentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getEditingDocument().getPk().getId();
@@ -1503,7 +1504,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param topicId
    * @return
    */
-  @SuppressWarnings("unchecked")
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles = getAdmin().getProfilesByObject(topicId,
         ObjectType.NODE, getComponentId());
@@ -1623,6 +1623,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param role
    * @throws RemoteException
    */
+  @SuppressWarnings("unchecked")
   private void setFileRights(String role) throws RemoteException {
     // Access file saved rights
     Selection sel = getSelection();
