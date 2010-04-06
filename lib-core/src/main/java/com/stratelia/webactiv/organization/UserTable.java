@@ -582,8 +582,11 @@ public class UserTable extends Table {
 
     concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id",
         concatAndOr, andOr);
-    concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId,
-        "ST_User.domainId", concatAndOr, andOr);
+    if (userModel.domainId >= 0) {
+      // users are not bound to "domaine mixte"
+      concatAndOr = addIdToQuery(ids, theQuery, userModel.domainId,
+          "ST_User.domainId", concatAndOr, andOr);
+    }
     concatAndOr = addParamToQuery(params, theQuery, userModel.specificId,
         "ST_User.specificId", concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, userModel.login,
