@@ -211,6 +211,10 @@
       <groupId>ecs</groupId>
       <artifactId>ecs</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

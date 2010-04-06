@@ -1,0 +1,183 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.silverpeas.util;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+/**
+ *
+ * @author ehugonnet
+ */
+public class StringUtilTest {
+
+  public StringUtilTest() {
+  }
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+  }
+
+  @Before
+  public void setUp() {
+  }
+
+  @After
+  public void tearDown() {
+  }
+
+  /**
+   * Test of isDefined method, of class StringUtil.
+   */
+  @Test
+  public void testIsDefined() {
+    assertTrue(StringUtil.isDefined("1"));
+    assertTrue(StringUtil.isDefined("   "));
+    assertFalse(StringUtil.isDefined(""));
+    assertFalse(StringUtil.isDefined("null"));
+    assertFalse(StringUtil.isDefined("NuLl"));
+    assertFalse(StringUtil.isDefined(null));
+  }
+
+  /**
+   * Test of isInteger method, of class StringUtil.
+   */
+  @Test
+  public void testIsInteger() {
+    assertTrue(StringUtil.isInteger("1"));
+    assertTrue(StringUtil.isInteger("00100"));
+    assertFalse(StringUtil.isInteger("1.1"));
+    assertFalse(StringUtil.isInteger("a"));
+    assertTrue(StringUtil.isInteger("0"));
+    assertTrue(StringUtil.isInteger("-1"));
+  }
+
+  /**
+   * Test of escapeQuote method, of class StringUtil.
+   */
+  @Test
+  public void testEscapeQuote() {
+    String text = "'hello'";
+    String expResult = " hello ";
+    String result = StringUtil.escapeQuote(text);
+    assertEquals(expResult, result);
+  }
+
+  /**
+   * Test of format method, of class StringUtil.
+   */
+  /*@Test
+  public void testFormat() {
+  System.out.println("format");
+  String label = "";
+  Map<String, ?> values = null;
+  String expResult = "";
+  String result = StringUtil.format(label, values);
+  assertEquals(expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail("The test case is a prototype.");
+  }*/
+  /**
+   * Test of truncate method, of class StringUtil.
+   */
+  /* @Test
+  public void testTruncate() {
+  System.out.println("truncate");
+  String text = "";
+  int maxLength = 0;
+  String expResult = "";
+  String result = StringUtil.truncate(text, maxLength);
+  assertEquals(expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail("The test case is a prototype.");
+  }*/
+  /**
+   * Test of isValidEmailAddress method, of class StringUtil.
+   */
+  @Test
+  public void testIsValidEmailAddress() {
+    // Test variations in the email name
+    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.com"));
+    assertTrue(StringUtil.isValidEmailAddress("steven.haines@javasrc.com"));
+    assertTrue(StringUtil.isValidEmailAddress("steven-haines@javasrc.com"));
+    assertTrue(StringUtil.isValidEmailAddress("steven+haines@javasrc.com"));
+    assertTrue(StringUtil.isValidEmailAddress("steven_haines@javasrc.com"));
+    assertFalse(StringUtil.isValidEmailAddress("steven#haines@javasrc.com"));
+
+    // Test variations in the domain name
+    assertTrue(StringUtil.isValidEmailAddress("steve@java-src.com"));
+    assertTrue(StringUtil.isValidEmailAddress("steve@java.src.com"));
+    assertFalse(StringUtil.isValidEmailAddress("steve@java\\src.com"));
+
+    // Test variations in the domain name
+    assertFalse(StringUtil.isValidEmailAddress("steve@javasrc.a"));
+    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.aa"));
+    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.aaa"));
+    assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.aaaa"));
+    assertFalse(StringUtil.isValidEmailAddress("steve@javasrc.aaaaa"));
+
+    // Test that the email address marks the beginning of the string
+    assertFalse(StringUtil.isValidEmailAddress("aaa steve@javasrc.com"));
+
+    // Test that the email address marks the end of the string
+    assertFalse(StringUtil.isValidEmailAddress("steve@javasrc.com aaa"));
+  }
+
+  /**
+   * Test of convertToEncoding method, of class StringUtil.
+   */
+  @Test
+  public void testConvertToEncoding() throws UnsupportedEncodingException {
+    assertEquals("élève", StringUtil.convertToEncoding(new String("élève".getBytes("UTF-8")),
+        "UTF-8"));
+    assertNotSame("élève", StringUtil.convertToEncoding(new String("élève".getBytes("ISO-8859-1")),
+        "UTF-8"));
+  }
+
+  /**
+   * Test of getBooleanValue method, of class StringUtil.
+   */
+  @Test
+  public void testGetBooleanValue() {
+    assertTrue(StringUtil.getBooleanValue("1"));
+    assertTrue(StringUtil.getBooleanValue("yes"));
+    assertTrue(StringUtil.getBooleanValue("YeS"));
+    assertTrue(StringUtil.getBooleanValue("trUe"));
+    assertTrue(StringUtil.getBooleanValue("oUi"));
+    assertTrue(StringUtil.getBooleanValue("Y"));
+    assertFalse(StringUtil.getBooleanValue(""));
+    assertFalse(StringUtil.getBooleanValue("no"));
+    assertFalse(StringUtil.getBooleanValue("0"));
+    assertFalse(StringUtil.getBooleanValue(null));
+  }
+
+  /**
+   * Test of detectEncoding method, of class StringUtil.
+   */
+  @Test
+  public void testDetectEncoding() throws UnsupportedEncodingException {
+    String testString = "voici une chaîne créée exprès";
+    String expectedResult = "ISO-8859-1";
+    String result = StringUtil.detectEncoding(testString.getBytes("ISO-8859-1"), null);
+    assertEquals(expectedResult, result);
+    result = StringUtil.detectEncoding(testString.getBytes("ISO-8859-1"), "UTF-8");
+    assertEquals(expectedResult, result);
+    expectedResult = "UTF-8";
+    result = StringUtil.detectEncoding(testString.getBytes("UTF-8"), null);
+    assertEquals(expectedResult, result);
+    result = StringUtil.detectEncoding(testString.getBytes("UTF-8"), "UTF-8");
+    assertEquals(expectedResult, result);
+  }
+}

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -111,7 +110,7 @@ public class FileUtil implements MimeTypes {
     while (strToken.hasMoreElements()) {
       folders.add(strToken.nextToken().trim());
     }
-    return (String[]) folders.toArray(new String[folders.size()]);
+    return folders.toArray(new String[folders.size()]);
   }
 
   /**

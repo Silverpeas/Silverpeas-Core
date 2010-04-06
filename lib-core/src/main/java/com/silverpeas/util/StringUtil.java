@@ -23,7 +23,10 @@
  */
 package com.silverpeas.util;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -69,7 +72,7 @@ public class StringUtil {
    * @return The formatted string, filled with values of the map.
    */
   public static String format(String label, Map<String, ?> values) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     int startIndex = label.indexOf(PATTERN_START);
     int endIndex;
     String patternKey;
@@ -145,9 +148,9 @@ public class StringUtil {
     return result;
   }
 
-  public static final String convertToEncoding(String toConvert, String encoding) {
+  public static String convertToEncoding(String toConvert, String encoding) {
     try {
-      return new String(toConvert.getBytes(System.getProperty("file.encoding")), encoding);
+      return new String(toConvert.getBytes(Charset.defaultCharset()), encoding);
     } catch (UnsupportedEncodingException ex) {
       return toConvert;
     }
@@ -162,5 +165,26 @@ public class StringUtil {
     return "true".equalsIgnoreCase(expression) || "yes".equalsIgnoreCase(expression)
         || "y".equalsIgnoreCase(expression) || "oui".equalsIgnoreCase(expression)
         || "1".equalsIgnoreCase(expression);
+  }
+
+
+
+  /**
+   * Method for trying to detect encoding
+   * @param data some data to try to detect the encoding.
+   * @param declaredEncoding expected encoding.
+   * @return
+   */
+  public static String detectEncoding(byte[] data, String declaredEncoding) {
+    CharsetDetector detector = new CharsetDetector();
+    if (!StringUtil.isDefined(declaredEncoding)) {
+      detector.setDeclaredEncoding("ISO-8859-1");
+    } else {
+      detector.setDeclaredEncoding(declaredEncoding);
+    }
+    detector.setText(data);
+    CharsetMatch detectedEnc = detector.detect();
+    return detectedEnc.getName();
+
   }
 }
