@@ -107,23 +107,23 @@ public class AjaxServlet extends HttpServlet {
       SilverTrace.error("attachment", "AjaxServlet.checkout", "root.MSG_GEN_PARAM_VALUE", e);
     }
 
-    if (checkOutOK)
+    if (checkOutOK) {
       return "ok";
-    else
-      return "nok";
+    }
+    return "nok";
   }
 
   private String checkin(HttpServletRequest req) {
     String idAttachment = req.getParameter("Id");
     String fileLanguage = req.getParameter("FileLanguage");
-    boolean update = Boolean.valueOf(req.getParameter("update_attachment")).booleanValue();
-    boolean force = Boolean.valueOf(req.getParameter("force_release")).booleanValue();
+    boolean update = Boolean.parseBoolean(req.getParameter("update_attachment"));
+    boolean force = Boolean.parseBoolean(req.getParameter("force_release")) && getMainSessionController(
+        req).getCurrentUserDetail().isAccessAdmin();
     try {
       if (!AttachmentController.checkinFile(idAttachment, false, update, force, fileLanguage)) {
         return "locked";
-      } else {
-        return "ok";
       }
+      return "ok";
     } catch (AttachmentException e) {
       SilverTrace.error("attachment", "AjaxServlet.checkin", "root.MSG_GEN_PARAM_VALUE", e);
     }
@@ -147,7 +147,6 @@ public class AjaxServlet extends HttpServlet {
         if (lang.equals("all")) {
           // suppresion de l'objet
           AttachmentController.deleteAttachment(atPK);
-
           return "attachmentRemoved";
         } else {
           AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(atPK);
@@ -170,8 +169,9 @@ public class AjaxServlet extends HttpServlet {
               AttachmentController.updateAttachment(attachment, indexIt);
 
               hasMoreTranslations = tokenizer.hasMoreTokens();
-              if (hasMoreTranslations)
+              if (hasMoreTranslations) {
                 lang = tokenizer.nextToken();
+              }
             }
 
             return "translationsRemoved";
@@ -211,8 +211,10 @@ public class AjaxServlet extends HttpServlet {
   }
 
   private boolean isIndexable(HttpServletRequest req) {
-    return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt"))
-        .booleanValue();
+    return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt")).booleanValue();
   }
 
+  private MainSessionController getMainSessionController(HttpServletRequest request) {
+    return (MainSessionController) request.getSession().getAttribute("SilverSessionController");
+  }
 }

@@ -1197,13 +1197,12 @@ public class AttachmentController {
    * @param String attachmentId
    * @param String componentId
    * @param String updateMode
-   * @return false
+   * @return false if the file is locked - true if the checkin succeeded.
    * @throws AttachmentException
    */
   public static boolean checkinFile(String attachmentId, boolean upload,
       boolean update, boolean force, String language)
       throws AttachmentException {
-
     try {
       SilverTrace.debug("attachment",
           "AttachmentController.checkinOfficeFile()",
@@ -1219,7 +1218,6 @@ public class AttachmentController {
         SilverTrace.warn("attachment",
             "AttachmentController.checkinOfficeFile()",
             "attachment.NODE_LOCKED");
-
         return false;
       }
 
@@ -1227,9 +1225,7 @@ public class AttachmentController {
       boolean invokeCallback = false;
 
       if (update || upload) {
-
-        // To update date and author
-        String workerId = new String(attachmentDetail.getWorkerId());
+        String workerId = attachmentDetail.getWorkerId();
         attachmentDetail.setCreationDate(null);
         attachmentDetail.setAuthor(workerId);
         invokeCallback = true;
@@ -1257,8 +1253,7 @@ public class AttachmentController {
       attachmentDetail.setReservationDate(null);
       attachmentDetail.setAlertDate(null);
       attachmentDetail.setExpiryDate(null);
-      AttachmentController.updateAttachment(attachmentDetail, false,
-          invokeCallback);
+      AttachmentController.updateAttachment(attachmentDetail, false, invokeCallback);
     } catch (Exception e) {
       e.printStackTrace();
       SilverTrace.error("attachment",
@@ -1267,7 +1262,6 @@ public class AttachmentController {
       throw new AttachmentException("AttachmentController.checkinOfficeFile()",
           SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
     }
-
     return true;
   }
 

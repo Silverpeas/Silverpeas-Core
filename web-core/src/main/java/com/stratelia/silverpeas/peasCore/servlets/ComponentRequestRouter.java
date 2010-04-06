@@ -364,11 +364,11 @@ public abstract class ComponentRequestRouter extends HttpServlet {
   // space)
   private ComponentSessionController getComponentSessionController(
       HttpSession session, String componentId) {
-    if (componentId == null)
+    if (componentId == null) {
       return (ComponentSessionController) session.getAttribute("Silverpeas_"
           + getSessionControlBeanName());
-    else
-      return (ComponentSessionController) session.getAttribute("Silverpeas_"
+    }
+    return (ComponentSessionController) session.getAttribute("Silverpeas_"
           + getSessionControlBeanName() + "_" + componentId);
   }
 
