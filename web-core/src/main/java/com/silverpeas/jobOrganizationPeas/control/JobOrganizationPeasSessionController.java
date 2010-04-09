@@ -165,35 +165,37 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       if (getCurrentUserId() == null)
         return null;
       userInfos = getAdminController().getUserFull(getCurrentUserId());
-      String[] specificKeys = userInfos.getPropertiesNames();
-      int nbStdInfos = 4;
-      int nbInfos = nbStdInfos + specificKeys.length;
-      currentInfos = new String[nbInfos][2];
-      currentInfos[0][0] = "GML.lastName";
-      currentInfos[0][1] = userInfos.getFirstName();
-      currentInfos[1][0] = "GML.surname";
-      currentInfos[1][1] = userInfos.getLastName();
-      currentInfos[2][0] = "GML.eMail";
-      currentInfos[2][1] = userInfos.geteMail();
-      currentInfos[3][0] = "GML.login";
-      currentInfos[3][1] = userInfos.getLogin();
-      String currentKey = null;
-      String currentValue = null;
-      for (int iSL = nbStdInfos; iSL < currentInfos.length; iSL++) {
-        currentKey = specificKeys[iSL - nbStdInfos];
-        // On affiche pas le mot de passe !
-        if (!currentKey.equals("password")) {
-          // Label
-          currentInfos[iSL][0] = userInfos.getSpecificLabel(getLanguage(),
-              currentKey);
-          // Valeur
-          currentValue = userInfos.getValue(currentKey);
-          if (currentKey.equals("passwordValid"))
-            if (currentValue.equals("true"))
-              currentValue = "GML.yes";
-            else
-              currentValue = "GML.no";
-          currentInfos[iSL][1] = currentValue;
+      if (userInfos != null) {
+        String[] specificKeys = userInfos.getPropertiesNames();
+        int nbStdInfos = 4;
+        int nbInfos = nbStdInfos + specificKeys.length;
+        currentInfos = new String[nbInfos][2];
+        currentInfos[0][0] = "GML.lastName";
+        currentInfos[0][1] = userInfos.getFirstName();
+        currentInfos[1][0] = "GML.surname";
+        currentInfos[1][1] = userInfos.getLastName();
+        currentInfos[2][0] = "GML.eMail";
+        currentInfos[2][1] = userInfos.geteMail();
+        currentInfos[3][0] = "GML.login";
+        currentInfos[3][1] = userInfos.getLogin();
+        String currentKey = null;
+        String currentValue = null;
+        for (int iSL = nbStdInfos; iSL < currentInfos.length; iSL++) {
+          currentKey = specificKeys[iSL - nbStdInfos];
+          // On affiche pas le mot de passe !
+          if (!currentKey.equals("password")) {
+            // Label
+            currentInfos[iSL][0] = userInfos.getSpecificLabel(getLanguage(),
+                currentKey);
+            // Valeur
+            currentValue = userInfos.getValue(currentKey);
+            if (currentKey.equals("passwordValid"))
+              if (currentValue.equals("true"))
+                currentValue = "GML.yes";
+              else
+                currentValue = "GML.no";
+            currentInfos[iSL][1] = currentValue;
+          }
         }
       }
     }
