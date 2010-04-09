@@ -612,7 +612,6 @@ function checkin(id, force) {
       else {
         if (data == "ok") {
           SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=no, resizable, alwaysRaised");
-          menuCheckin(id);
         }
       }
     }, "html");

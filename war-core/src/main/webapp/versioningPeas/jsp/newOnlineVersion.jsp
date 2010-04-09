@@ -73,6 +73,7 @@ function checkIn()
 {
 	$.get('<%=m_context%>/AjaxVersioning', {DocId:'<%=documentId%>',Action:'Checkin',force_release:'<%=request.getParameter("force_release")%>'},
     function(data) {
+      window.opener.menuCheckin('<%=documentId%>');
       window.close();
     }, "html");
 }
