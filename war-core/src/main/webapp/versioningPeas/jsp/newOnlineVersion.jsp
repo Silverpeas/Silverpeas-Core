@@ -46,10 +46,10 @@
   pageContext.setAttribute("radios", radioButtonLabel);
   
   String documentId = (String) request.getAttribute("DocumentId");
-  Form 				formUpdate 	= (Form) request.getAttribute("XMLForm");
-  DataRecord 			data 		= (DataRecord) request.getAttribute("XMLData"); 
-  String				xmlFormName = (String) request.getAttribute("XMLFormName");
-  PagesContext		context		= (PagesContext) request.getAttribute("PagesContext");
+  Form formUpdate = (Form) request.getAttribute("XMLForm");
+  DataRecord data = (DataRecord) request.getAttribute("XMLData");
+  String xmlFormName = (String) request.getAttribute("XMLFormName");
+  PagesContext context = (PagesContext) request.getAttribute("PagesContext");
   if (context != null)
   {
   	context.setBorderPrinted(false);
@@ -62,6 +62,7 @@
 <title></title>
 <view:looknfeel />
 <head>
+  <script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 function addNewVersion()
 {
@@ -70,8 +71,10 @@ function addNewVersion()
 }
 function checkIn()
 {
-	window.opener.checkin('<%=documentId%>', false);
-	window.close();
+	$.get('<%=m_context%>/AjaxVersioning', {DocId:'<%=documentId%>',Action:'Checkin',force_release:'<%=request.getParameter("force_release")%>'},
+    function(data) {
+      window.close();
+    }, "html");
 }
 </script>
 <% if (formUpdate != null) { %>

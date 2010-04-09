@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
+import com.silverpeas.util.StringUtil;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -65,9 +66,11 @@ public class AjaxServlet extends HttpServlet {
       result = deleteAttachment(req, versioningSC);
     } else if ("Checkout".equals(action)) {
       result = checkout(req, versioningSC);
+    } else if ("IsLocked".equals(action)) {
+      result = isLocked(req, versioningSC);
     } else if ("Checkin".equals(action)) {
       result = checkin(req, versioningSC);
-    } else if ("Sort".equals(action)) {
+    }else if ("Sort".equals(action)) {
       result = sort(req, versioningSC);
     }
 
@@ -108,26 +111,43 @@ public class AjaxServlet extends HttpServlet {
     }
   }
 
-  private String checkin(HttpServletRequest req, VersioningSessionController versioningSC) {
+  private String isLocked(HttpServletRequest req, VersioningSessionController versioningSC) {
     String docId = req.getParameter("DocId");
-    boolean update = Boolean.valueOf(req.getParameter("update_attachment")).booleanValue();
-    boolean force = Boolean.valueOf(req.getParameter("force_release")).booleanValue();
     try {
-      DocumentPK documentPK =
-          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
+      DocumentPK documentPK = new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
       Document document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
       }
-      document.setStatus(0);
-      if (versioningSC.checkDocumentIn(documentPK, Integer.parseInt(getUserId(req)))) {
+      if (!versioningSC.isDocumentLocked(documentPK)) {
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
         return "ok";
-      } else {
-        return "locked";
       }
+      return "locked";
+    } catch (Exception e) {
+      SilverTrace.error("versioningPeas", "AjaxServlet.checkin", "root.MSG_GEN_PARAM_VALUE", e);
+      return e.getMessage();
+    }
+  }
+
+  private String checkin(HttpServletRequest req, VersioningSessionController versioningSC) {
+    String docId = req.getParameter("DocId");
+    boolean force = StringUtil.getBooleanValue(req.getParameter("force_release"));
+    try {
+      DocumentPK documentPK = new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
+      Document document = versioningSC.getEditingDocument();
+      if (document == null) {
+        document = versioningSC.getDocument(documentPK);
+        versioningSC.setEditingDocument(document);
+      }
+      if (versioningSC.checkDocumentIn(documentPK, Integer.parseInt(getUserId(req)), force)) {
+        document = versioningSC.getDocument(documentPK);
+        versioningSC.setEditingDocument(document);
+        return "ok";
+      }
+      return "locked";
     } catch (Exception e) {
       SilverTrace.error("versioningPeas", "AjaxServlet.checkin", "root.MSG_GEN_PARAM_VALUE", e);
       return e.getMessage();

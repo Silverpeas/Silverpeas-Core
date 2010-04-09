@@ -68,7 +68,7 @@
         out.println("<script>window.opener.location.href=window.opener.location.href;</script>");//window.close();
       } else if ("checkin".equals(action)) {
         document.setStatus(0);
-        if (versioningSC.checkDocumentIn(documentPK, user_id)) {
+        if (versioningSC.checkDocumentIn(documentPK, user_id, false)) {
           document = versioningSC.getDocument(documentPK);
           versioningSC.setEditingDocument(document);
           need_submit = true;

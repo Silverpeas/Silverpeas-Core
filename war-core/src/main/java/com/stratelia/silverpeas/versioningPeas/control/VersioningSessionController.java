@@ -85,19 +85,18 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 public class VersioningSessionController extends AbstractComponentSessionController {
   private static ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.webactiv.general", "");
-  private static String m_context = generalSettings.getString("ApplicationURL");
-
-  private static final String DOCUMENT_VERSION_SHOW_VERSIONS_URL = m_context
+  private final static String APPLICATION_CONTEXT = generalSettings.getString("ApplicationURL");
+  private static final String DOCUMENT_VERSION_SHOW_VERSIONS_URL = APPLICATION_CONTEXT
       + "/RVersioningPeas/jsp/versions.jsp";
-  private static final String DOCUMENT_VERSION_NEW_DOCUMENT_URL = m_context
+  private static final String DOCUMENT_VERSION_NEW_DOCUMENT_URL = APPLICATION_CONTEXT
       + "/RVersioningPeas/jsp/newDocument.jsp";
-  private static final String DOCUMENT_VERSION_NEW_VERSION_URL = m_context
+  private static final String DOCUMENT_VERSION_NEW_VERSION_URL = APPLICATION_CONTEXT
       + "/RVersioningPeas/jsp/newVersion.jsp";
-  private static final String ICON_LOCKED_PATH = m_context
+  private static final String ICON_LOCKED_PATH = APPLICATION_CONTEXT
       + "/util/icons/lock.gif";
-  private static final String ICON_UNLOCKED_PATH = m_context
+  private static final String ICON_UNLOCKED_PATH = APPLICATION_CONTEXT
       + "/util/icons/unlock.gif";
-  private static final String DOCUMENT_VERSION_DELETE_DOCUMENT_URL = m_context
+  private static final String DOCUMENT_VERSION_DELETE_DOCUMENT_URL = APPLICATION_CONTEXT
       + "/RVersioningPeas/jsp/deleteDocument.jsp";
 
   // For Office files direct update
@@ -766,15 +765,31 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public boolean checkDocumentIn(DocumentPK documentPK, int user_id)
+  public boolean checkDocumentIn(DocumentPK documentPK, int user_id, boolean force)
       throws RemoteException {
     initEJB();
+    boolean forcing = force && getUserDetail("" + user_id).isAccessAdmin();
     DocumentVersion lastVersion = getLastVersion(documentPK);
-    if (!RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
+    if (forcing || !RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
       versioning_bm.checkDocumentIn(documentPK, user_id);
       return true;
     }
     return false;
+  }
+
+
+  /**
+   * to check document in
+   * @return void
+   * @exception RemoteException
+   * @author Michael Nikolaenko
+   * @version 1.0
+   */
+  public boolean isDocumentLocked(DocumentPK documentPK)
+      throws RemoteException {
+    initEJB();
+    DocumentVersion lastVersion = getLastVersion(documentPK);
+    return RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion);
   }
 
   /**
@@ -1347,7 +1362,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       profile = new ProfileInst();
       profile.setName(role);
     } else if (profile != null && inheritedProfile == null) {
-      // do nothing
+      profile = profile;
     } else if (profile == null && inheritedProfile != null) {
       profile = inheritedProfile;
     } else {

@@ -49,7 +49,7 @@
 <link rel="stylesheet" type="text/css" href="<%=m_context %>/util/yui/menu/assets/menu.css"/>
 <script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 
-<style>
+<style type="text/css">
 <!--
 a.yuimenuitemlabel-disabled:hover {
 	color: #B9B9B9;
@@ -144,7 +144,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload("+documentId+","+webDavOK+")\">"+resources.getString("versioning.checkOutAndDownload")+"</a></li>");
 		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit("+documentId+")\">"+resources.getString("versioning.checkOutAndEditOnline")+"</a></li>");
 		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:addVersion("+documentId+")\">"+resources.getString("addNewVersion")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin("+documentId+","+version.isOpenOfficeCompatibleDocument()+")\">"+resources.getString("checkIn")+"</a></li>");
+		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin("+documentId+",false)\">"+resources.getString("checkIn")+"</a></li>");
 		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:validateFile("+documentId+")\">"+resources.getString("operation.validate")+"</a></li>");
 		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:refuseFile("+documentId+")\">"+resources.getString("operation.refuse")+"</a></li>");
 		out.println("</ul>");
@@ -339,7 +339,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	             	%>
 					<li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem">
 								 <span class="lineMain">
-	                             <IMG id="img_<%=document.getPk().getId() %>" alt="" src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>" width="20" <%=iconStyle%>/>&nbsp;
+	                             <img id="img_<%=document.getPk().getId() %>" alt="" src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>" width="20" <%=iconStyle%>/>&nbsp;
 				                 <A id="url<%=document.getPk().getId() %>" href="<%=documentVersionUrl%>" target="_blank"><%=document.getName()%></A>
 				                 &nbsp;(<span id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>)
 
@@ -386,25 +386,25 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								if (document_version.isSpinfireDocument() && spinfireViewerEnable)
 							    {
 									    %>
-								    	<div id="switchView" name="switchView" style="display: none">
-						    				<a href="#" onClick="changeView3d(<%=document_version.getPk().getId()%>)"><img name="iconeView" valign="bottom" border="0" src="/util/icons/masque3D.gif"></a>
-						    			</div>
-									    <div id="<%=document_version.getPk().getId()%>" style="display: none">
-											<OBJECT classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
-											width="300" height="200" id="XV" >
-											<PARAM NAME="ModelName" VALUE="<%=documentVersionUrl%>">
-											<PARAM NAME="BorderWidth" VALUE="1">
-											<PARAM NAME="ReferenceFrame" VALUE="1">
-											<PARAM NAME="ViewportActiveBorder" VALUE="FALSE">
-											<PARAM NAME="DisplayMessages" VALUE="TRUE">
-											<PARAM NAME="DisplayInfo" VALUE="TRUE">
-											<PARAM NAME="SpinX" VALUE="0">
-											<PARAM NAME="SpinY" VALUE="0">
-											<PARAM NAME="SpinZ" VALUE="0">
-											<PARAM NAME="AnimateTransitions" VALUE="0">
-											<PARAM NAME="ZoomFit" VALUE="1">
-											</OBJECT>
-										</div>
+                                        <div id="switchView" name="switchView" style="display: none">
+                                          <a href="#" onClick="changeView3d(<%=document_version.getPk().getId()%>)"><img name="iconeView" valign="bottom" border="0" src="/util/icons/masque3D.gif"></a>
+                                        </div>
+                                        <div id="<%=document_version.getPk().getId()%>" style="display: none">
+                                          <OBJECT classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
+                                                  width="300" height="200" id="XV" >
+                                            <PARAM NAME="ModelName" VALUE="<%=documentVersionUrl%>">
+                                            <PARAM NAME="BorderWidth" VALUE="1">
+                                            <PARAM NAME="ReferenceFrame" VALUE="1">
+                                            <PARAM NAME="ViewportActiveBorder" VALUE="FALSE">
+                                            <PARAM NAME="DisplayMessages" VALUE="TRUE">
+                                            <PARAM NAME="DisplayInfo" VALUE="TRUE">
+                                            <PARAM NAME="SpinX" VALUE="0">
+                                            <PARAM NAME="SpinY" VALUE="0">
+                                            <PARAM NAME="SpinZ" VALUE="0">
+                                            <PARAM NAME="AnimateTransitions" VALUE="0">
+                                            <PARAM NAME="ZoomFit" VALUE="1">
+                                          </OBJECT>
+                                        </div>
 										<%
 							    }							   
 								if (StringUtil.isDefined(document_version.getXmlForm()))
@@ -435,18 +435,20 @@ void displayActions(Document document, DocumentVersion version, String profile, 
         	  out.println("</ul>");
 	     	  out.println("</TD></TR>");
 	     	  if (contextualMenuEnabled && dragAndDropEnable) { %>
-	 			<tr><td align="right">
-				<table width="100%">
-					<tr>
-		 				<td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
-					</tr>
-					<tr>
-						<td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
-						<td width="5%">&nbsp;</td>
-						<td><div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
-					</tr>
-				</tr>
-				</table>
+              <tr>
+                <td align="right">
+                  <table width="100%">
+                    <tr>
+                      <td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
+                    </tr>
+                    <tr>
+                      <td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
+                      <td width="5%">&nbsp;</td>
+                      <td><div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
 	 		  <% } %>
 	 		  <% if (contextualMenuEnabled && !dragAndDropEnable) { %>
 	 				<tr><td align="right"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add") %>...</a></td></tr>
@@ -598,48 +600,31 @@ function checkoutAndEdit(id)
 	window.open(url);
 }
 
-function checkin(id,webdav)
-{
-	if (id > 0) {
-		var webdavUpdate = 'false';
-		if (webdav)
-		{
-			if(confirm('<%=attResources.getString("confirm.checkin.message")%>')) {
-				webdavUpdate='true';
-			}
-		}
-		
-		if (webdavUpdate == 'false')
-		{
-			//release the file without changing it
-			$.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'Checkin',update_attachment:webdavUpdate,force_release:forceRelease}, 
-					function(data){
-						data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
-						if (data == "locked")
-						{
-							displayWarning();
-						}
-						else 
-						{
-							if (data == "ok")
-							{
-								menuCheckin(id);
-							}
-						}
-					}, "html");
-		}
-		else
-		{
-			SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=no, resizable, alwaysRaised");
-		}
-	}
+function checkin(id, force) {
+  if (id > 0) {
+    //release the file without changing it
+    $.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'IsLocked',force_release:force},
+    function(data) {
+      data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+      if (data == "locked") {
+        displayWarning();
+      }
+      else {
+        if (data == "ok") {
+          SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=no, resizable, alwaysRaised");
+          menuCheckin(id);
+        }
+      }
+    }, "html");
+  }
+  else
+  {
+    SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=no, resizable, alwaysRaised");
+  }
 }
 
-function newVersionAdded(documentId, majorNumber, minorNumber)
-{
-	//alert("newVersionAdded");
+function newVersionAdded(documentId, majorNumber, minorNumber) {
 	menuCheckin(documentId);
-
 	$('#version_'+documentId).html("v"+majorNumber+"."+minorNumber);
 }
 
@@ -656,12 +641,8 @@ function menuCheckin(id)
 	$('#worker'+id).css({'visibility':'hidden'});
 }
 
-function addVersion(id, webdav)
-{
+function addVersion(id, webdav) {
 	checkout(id, webdav);
-
-	//SP_openWindow("<%=httpServerBase+m_context%>/RVersioningPeas/jsp/versions.jsp?DocId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&Url=<%=callbackURL%>&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
-
 	var url = "<%=httpServerBase+m_context%>/RVersioningPeas/jsp/AddNewVersion?documentId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&ReturnURL=<%=URLEncoder.encode(m_context+callbackURL)%>";
 	SP_openWindow(url, "test", "700", "400","scrollbars=no, resizable, alwaysRaised");
 }

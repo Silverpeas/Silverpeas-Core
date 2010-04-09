@@ -69,15 +69,18 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
 
+    @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new VersioningSessionController(mainSessionCtrl, componentContext);
   }
 
+    @Override
   public String getSessionControlBeanName() {
     return "versioningPeas";
   }
 
+    @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
@@ -577,15 +580,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       VersioningSessionController versioningSC, String comments, String radio,
       int userId, boolean force, boolean addXmlForm) throws RemoteException {
     DocumentVersion lastVersion = versioningSC.getLastVersion(document.getPk());
-    if (!force
-        && RepositoryHelper.getJcrDocumentService().isNodeLocked(lastVersion)) {
-      return null;
-    }
-    String physicalName = new Long(new Date().getTime()).toString()
-        + "."
-        + lastVersion.getLogicalName().substring(
-        lastVersion.getLogicalName().indexOf(".") + 1,
-        lastVersion.getLogicalName().length());
+    String physicalName = new Date().getTime() + "." + lastVersion.getLogicalName().substring(
+        lastVersion.getLogicalName().indexOf(".") + 1, lastVersion.getLogicalName().length());
     DocumentVersion newVersion = new DocumentVersion(null, document.getPk(),
         lastVersion.getMajorNumber(), lastVersion.getMinorNumber(), userId,
         new Date(), comments, Integer.parseInt(radio), lastVersion.getStatus(),
@@ -595,8 +591,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     if (addXmlForm) {
       newVersion.setXmlForm(versioningSC.getXmlForm());
     }
-    newVersion = versioningSC.addNewDocumentVersion(newVersion);
-    versioningSC.checkDocumentIn(document.getPk(), userId);
+    versioningSC.checkDocumentIn(document.getPk(), userId, force);
+    newVersion = versioningSC.addNewDocumentVersion(newVersion);   
     return newVersion.getPk();
   }
 
