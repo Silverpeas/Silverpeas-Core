@@ -56,12 +56,12 @@ pageTracker._trackPageview();
 } catch(err) {}
       </script>
     </head>
-    <menu name="Overview" collapsable="true">
+    <menu name="Overview" collapse="true">
       <item name="Introduction" href="index.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
     </menu>
-    <menu name="CAS" collapsable="true">
+    <menu name="CAS" collapse="true">
       <item name="Introduction" href="cas/SSO-CAS.html"/>
       <item name="Certificates Configuration" href="cas/certificates.html"/>
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html"/>
