@@ -81,6 +81,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
     String language = pagesContext.getLanguage();
+    String fieldName = template.getFieldName();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "CheckBoxDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
@@ -88,20 +89,19 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
-      int currentIndex = new Integer(pagesContext.getCurrentFieldIndex()).intValue();
-      int fin = currentIndex + getNbHtmlObjectsDisplayed(template, pagesContext);
-      out.println("	var checked = false;\n");
-      out.println("	for (var i = " + currentIndex + "; i < " + fin + "; i++) {\n");
-      out.println("		if (document.forms[" + pagesContext.getFormIndex() +
-          "].elements[i].checked) {\n");
-      out.println("			checked = true;\n");
-      out.println("		}\n");
-      out.println("	}\n");
-      out.println("	if(checked == false) {\n");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n \";");
-      out.println("		errorNb++;");
-      out.println("	}");
+      out.println(" var checked = false;\n");
+      out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext) +
+          "; i++) {\n");
+      out.println("   if (document.getElementsByName('" + fieldName + "')[i].checked) {\n");
+      out.println("     checked = true;\n");
+      out.println("   }\n");
+      out.println(" }\n");
+      out.println(" if(checked == false) {\n");
+      out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " +
+          Util.getString("GML.MustBeFilled",
+          language) + "\\n \";");
+      out.println("   errorNb++;");
+      out.println(" }");
     }
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
@@ -203,7 +203,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
 
         html +=
             "<INPUT type=\"checkbox\" id=\"" + fieldName + "\" name=\"" + fieldName +
-                "\" value=\"" + optKey + "\" ";
+            "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled ";

@@ -75,10 +75,10 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
 
-    String language = PagesContext.getLanguage();
+    String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
@@ -86,15 +86,23 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
           TextField.TYPE);
     }
 
-    if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println(" if (!document.getElementById('" + fieldName + "').checked) {\n");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n \";");
-      out.println("		errorNb++;");
-      out.println("	}");
+    if (template.isMandatory() && pagesContext.useMandatory()) {
+      out.println(" var checked = false;\n");
+      out.println(" for (var i = 0; i < " + getNbHtmlObjectsDisplayed(template, pagesContext) +
+          "; i++) {\n");
+      out.println("   if (document.getElementsByName('" + fieldName + "')[i].checked) {\n");
+      out.println("     checked = true;\n");
+      out.println("   }\n");
+      out.println(" }\n");
+      out.println(" if(checked == false) {\n");
+      out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " +
+          Util.getString("GML.MustBeFilled",
+          language) + "\\n \";");
+      out.println("   errorNb++;");
+      out.println(" }");
     }
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
   /**
@@ -201,7 +209,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
           html += "<span " + cssClass + ">";
         html +=
             "<INPUT type=\"radio\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
-                optKey + "\" ";
+            optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled ";
