@@ -77,15 +77,10 @@ public class SilverMessageFactory {
         // get the only one
         pmb = (POPUPMessageBean) (collectionPopupMessage.toArray()[0]);
         try {
-          // CBO : ADD
           String body = pmb.getBody();
           if (body.startsWith("COMMUNICATION")) {
             body = body.substring(13);
           }
-          // CBO : FIN ADD
-
-          // CBO : UPDATE
-          // int longTextId = Integer.parseInt(pmb.getBody());
           int longTextId = Integer.parseInt(body);
 
           msg = LongText.getLongText(longTextId);
@@ -96,8 +91,6 @@ public class SilverMessageFactory {
           msg = pmb.getBody();
         }
         if (msg != null) {
-          // CBO : UPDATE
-          // silverMessage = new SilverMessage ("ALERT");
           if (pmb.getBody().startsWith("COMMUNICATION")) {
             silverMessage = new SilverMessage("COMMUNICATION");
           } else {

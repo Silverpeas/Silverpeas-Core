@@ -105,7 +105,7 @@ public class ArrayCellSelect extends ArrayCell implements SimpleGraphicElement {
       selectedValues.add(values.get(iterator.next().intValue()));
     }
 
-    return (String[]) selectedValues.toArray();
+    return (String[]) selectedValues.toArray(new String[selectedValues.size()]);
   }
 
   /**

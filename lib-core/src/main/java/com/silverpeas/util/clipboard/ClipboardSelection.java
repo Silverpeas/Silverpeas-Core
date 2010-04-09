@@ -89,7 +89,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
    * ------------------------------
    */
   public synchronized DataFlavor[] getTransferDataFlavors() {
-    return ((DataFlavor[]) (supportedFlavorsList.toArray()));
+    return ((DataFlavor[]) (supportedFlavorsList.toArray(new DataFlavor[supportedFlavorsList.size()])));
   }
 
   /**
