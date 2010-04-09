@@ -151,11 +151,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public void setSpaceIdAndSubSpaceId(String spaceId) {
     if (StringUtil.isDefined(spaceId)) {
       List<SpaceInst> spacePath = orga.getSpacePath(spaceId);
-
-      SpaceInst space = spacePath.get(0);
-      SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
-      setSpaceId(space.getId());
-      setSubSpaceId(subSpace.getId());
+      if (!spacePath.isEmpty()) {
+        SpaceInst space = spacePath.get(0);
+        SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
+        setSpaceId(space.getId());
+        setSubSpaceId(subSpace.getId());
+      }
       setComponentId(null);
     }
   }
@@ -170,10 +171,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
     if (!StringUtil.isDefined(spaceId)) {
       List<SpaceInst> spacePath = orga.getSpacePathToComponent(componentId);
-      SpaceInst space = spacePath.get(0);
-      SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
-      setSpaceId(space.getId());
-      setSubSpaceId(subSpace.getId());
+      if (!spacePath.isEmpty()) {
+        SpaceInst space = spacePath.get(0);
+        SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
+        setSpaceId(space.getId());
+        setSubSpaceId(subSpace.getId());
+      }
     } else {
       setSpaceId(spaceId);
       setSubSpaceId(subSpaceId);
