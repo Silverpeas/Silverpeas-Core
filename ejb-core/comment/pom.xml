@@ -5,13 +5,13 @@
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>5.0</version>
+    <version>5.1-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>comment</artifactId>
   <packaging>ejb</packaging>
-  <version>5.0</version>
+  <version>5.1-SNAPSHOT</version>
   <name>EJB Comment</name>
 	
   <dependencies>
