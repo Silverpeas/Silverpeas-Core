@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
         version="2.0">
+  <description>View Generator 1.0 core library</description>
+  <display-name>View Generator</display-name>
   <tlib-version>1.0</tlib-version>
-  <jsp-version>2.0</jsp-version>
   <short-name>view</short-name>
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
-  <display-name>View Generator</display-name>
-  <description>View Generator 1.0 core library</description>
+
   <tag>
+    <description>Simple tag to display a Board. A Board should be used inside a Frame.</description>
     <name>board</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.board.BoardTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a Board. A Board should be used inside a Frame.</description>
   </tag>
   <tag>
+    <description>Simple tag to display a frame. A Frame should be used inside a Window.</description>
     <name>frame</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.frame.FrameTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a frame. A Frame should be used inside a Window.</description>
     <attribute>
       <name>title</name>
       <rtexprvalue>true</rtexprvalue>
@@ -31,426 +31,426 @@
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to create HTML to access the look and feel.</description>
     <name>looknfeel</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.LookAndStyleTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to create HTML to access the look and feel.</description>
   </tag>
   <tag>
+    <description>Simple tag to display a list of icons.</description>
     <name>icons</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPaneTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a list of icons.</description>
     <attribute>
+      <description>orientation de la liste des icones (vertical, horizontal)</description>
       <name>orientation</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
-      <description>orientation de la liste des icones (vertical, horizontal)</description>
     </attribute>
     <attribute>
+      <description>espacement des icones</description>
       <name>spacing</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
-      <description>espacement des icones</description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display an icon.</description>
     <name>icon</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.icons.IconTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display an icon.</description>
     <attribute>
+      <description>clé de l'icone a afficher</description>
       <name>iconName</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>clé de l'icone a afficher</description>
     </attribute>
     <attribute>
+      <description>texte alternatif</description>
       <name>altText</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>texte alternatif</description>
     </attribute>
     <attribute>
+      <description>action associee a l'icone</description>
       <name>action</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>action associee a l'icone</description>
     </attribute>
     <attribute>
+      <description>clé de l'icone a afficher</description>
       <name>imagePath</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>clé de l'icone a afficher</description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display a list of tabs.</description>
     <name>tabs</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a list of tabs.</description>
   </tag>
   <tag>
+    <description>Simple tag to display a list of tabs. It should be used inside a Window.</description>
     <name>tab</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.tabs.TabTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a list of tabs. It should be used inside a Window.</description>
     <attribute>
+      <description>Display lable inside the tab.</description>
       <name>label</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>Display lable inside the tab.</description>
     </attribute>
     <attribute>
+      <description>Action for the tab.</description>
       <name>action</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>Action for the tab.</description>
     </attribute>
     <attribute>
+      <description>true or false, to indicate if this tab is selected of not.</description>
       <name>selected</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>true or false, to indicate if this tab is selected of not.
-      </description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display a button.</description>
     <name>button</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.buttons.ButtonTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a button.</description>
     <attribute>
+      <description>The display label in the button.</description>
       <name>label</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The display label in the button.</description>
     </attribute>
     <attribute>
+      <description>The action of the button.</description>
       <name>action</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The action of the button.</description>
     </attribute>
     <attribute>
+      <description>
+        true or false to indicate if the button is disabled or not.
+      </description>
       <name>disabled</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
-      <description>
-        true or false to indicate if the button is disabled or not.
-      </description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display a window. A window can contain TabbedPane, Frames and Boards. It should be used after the BrowseBar and the OperationPane.</description>
     <name>window</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.window.WindowTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a window. A window can contain TabbedPane, Frames and Boards. It should be used after the BrowseBar and the OperationPane.</description>
   </tag>
   <tag>
+    <description>Simple tag to define a Window browsebar. It should be declared and used before a Window.</description>
     <name>browseBar</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to define a Window browsebar. It should be declared and used before a Window.</description>
     <attribute>
+      <description>Extra information to be displayed.</description>
       <name>extraInformations</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>Extra information to be displayed.</description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>
     <name>browseBarElt</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElementTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>
     <attribute>
+      <description>The url for the browseBar element.</description>
       <name>link</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The url for the browseBar element.</description>
     </attribute>
     <attribute>
+      <description>The content to be displayed for the browseBar element.</description>
       <name>label</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The content to be displayed for the browseBar element.</description>
     </attribute>
     <attribute>
+      <description>Id for the element data for the current component.</description>
       <name>id</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>Id for the element data for the current component.</description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to define an operationPane: a panel with a list of operations (could be a menu).
+    It should be declared and used before a Window. It contains a list of operation tags.
+    </description>
     <name>operationPane</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to define an operationPane: a panel with a list of operations (could be a menu).
-    It should be declared and used before a Window. It contains a list of operation tags.</description>
   </tag>
   <tag>
+    <description>Simple tag to define an operation in an OperationPane.</description>
     <name>operation</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to define an operation in an OperationPane.</description>
     <attribute>
+      <description>The action for this operation.</description>
       <name>action</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The action for this operation.</description>
     </attribute>
     <attribute>
+      <description>The icon for this operation.</description>
       <name>icon</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The icon for this operation.</description>
     </attribute>
     <attribute>
+      <description>Alternative text to the icon of this operation.</description>
       <name>altText</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>Alternative text to the icon of this operation.</description>
     </attribute>
   </tag>
   <tag>
+    <description>Tag to create an ArrayPane: a table to display a list of data.</description>
     <name>arrayPane</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneTag</tag-class>
     <body-content>JSP</body-content>
-    <description>Tag to create an ArrayPane: a table to display a list of data.</description>
     <attribute>
       <name>title</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <name>var</name>
-      <rtexprvalue>true</rtexprvalue>
-      <required>true</required>
-      <type>java.lang.String</type>
       <description>Name of the ArrayPane in the SessionScope</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <name>routingAddress</name>
-      <rtexprvalue>true</rtexprvalue>
-      <required>false</required>
-      <type>java.lang.String</type>
       <description>URL to be used to sort the content.</description>
+      <name>routingAddress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
     </attribute>
   </tag>
   <tag>
+    <description>Tag to create a column header for an ArrayPane</description>
     <name>arrayColumn</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumnTag</tag-class>
     <body-content>empty</body-content>
-    <description>Tag to create a column header for an ArrayPane</description>
     <attribute>
+      <description>The String to be displayed as a title in the Column Header</description>
       <name>title</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The String to be displayed as a title in the Column Header</description>
     </attribute>
     <attribute>
+      <description>If the column is sortable</description>
       <name>sortable</name>
       <type>boolean</type>
-      <description>If the column is sortable</description>
     </attribute>
   </tag>
   <tag>
+    <description>Tag to create a new line in the ArrayPane</description>
     <name>arrayLine</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLineTag</tag-class>
     <body-content>JSP</body-content>
-    <description>Tag to create a new line in the ArrayPane</description>
   </tag>
   <tag>
+    <description>Tag to create a new cell in the current line of the ArrayPane.</description>
     <name>arrayCellText</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellTextTag</tag-class>
     <body-content>JSP</body-content>
-    <description>Tag to create a new cell in the current line of the ArrayPane.</description>
     <attribute>
+      <description>The text to be displayed if the body is empty</description>
       <name>text</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The text to be displayed if the body is empty</description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to define a pagination navigation bar.</description>
     <name>pagination</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to define a pagination navigation bar.</description>
     <attribute>
+      <description>
+        Lien de l'action.
+      </description>
       <name>action</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        Lien de l'action.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        Total number of pages.
+      </description>
       <name>nbPages</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
       <description>
         Total number of pages.
       </description>
-    </attribute>
-    <attribute>
       <name>currentPage</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Integer</type>
-      <description>
-        Total number of pages.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        Param name to pass the page number (starting at 0) to be displayed.
+      </description>
       <name>pageParam</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        Param name to pass the page number (starting at 0) to be displayed.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        Alt message for previous page.
+      </description>
       <name>altPreviousAction</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        Alt message for previous page.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        Alt message for next page.
+      </description>
       <name>altNextAction</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        Alt message for next page.
-      </description>
     </attribute>
   </tag>
   <tag>
+    <description>Equivalent of the JSTL fmt:setBundle tag but with support for the ResourceWrapper</description>
     <name>setBundle</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.SetBundleTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Equivalent of the JSTL fmt:setBundle tag but with support for the ResourceWrapper</description>
     <attribute>
+      <description>
+        Scope to store the bundle.
+      </description>
       <name>scope</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        Scope to store the bundle.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        The name of the variabl containing the bundle.
+      </description>
       <name>var</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        The name of the variabl containing the bundle.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        The ResourceBundle.
+      </description>
       <name>bundle</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.util.ResourceBundle</type>
-      <description>
-        The ResourceBundle.
-      </description>
     </attribute>
     <attribute>
+      <description>Basename of the bundle.</description>
       <name>basename</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
-      <description>Basename of the bundle.</description>
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to display a div with the style corresponding to the mime type.</description>
     <name>mimeTypeIcon</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.icons.MimeTypeIconTag
     </tag-class>
     <body-content>JSP</body-content>
-    <description>Simple tag to display a div with the style corresponding to the mime type.</description>
     <attribute>
+      <description>
+        The file's name.
+      </description>
       <name>fileName</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        The file's name.
-      </description>
     </attribute>
     <attribute>
+      <description>
+        The file's extension.
+      </description>
       <name>fileExtension</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>
-        The file's extension.
-      </description>
     </attribute>
     <attribute>
+      <description>The unique id for the div element.
+      </description>
       <name>divId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
-      <description>The unique id for the div element.
-      </description>
     </attribute>
   </tag>
 </taglib>
