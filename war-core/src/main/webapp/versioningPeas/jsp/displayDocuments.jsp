@@ -247,7 +247,9 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	String s_topicRightsEnabled = request.getParameter("TopicRightsEnabled");
 	String sIndexIt		= request.getParameter("IndexIt");
 	String callbackURL  = request.getParameter("CallbackUrl");
-	String xmlForm 		= m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "XmlFormForFiles");;
+	String xmlForm 		= m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "XmlFormForFiles");
+	String sHideAllVersionsLink = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "hideAllVersionsLink");
+	boolean hideAllVersionsLink = StringUtil.getBooleanValue(sHideAllVersionsLink) && profile.equals("user");
 	
 	boolean indexIt = "1".equals(sIndexIt);
 
@@ -414,7 +416,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 									<br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString("versioning.xmlForm.View")%></a>
 									<%
 								}
-								boolean displayAllVersionsLink = false;  
+								boolean displayAllVersionsLink = false;
 								if ("user".equals(profile) && document_version.getMajorNumber() > 1)
 								{
 									displayAllVersionsLink = true;
@@ -424,7 +426,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								  	displayAllVersionsLink = true;
 								}
 								%>
-								<% if (displayAllVersionsLink) { %>
+								<% if (displayAllVersionsLink && !hideAllVersionsLink) { %>
 									<br/>>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a><br/>
 								<% } %>
 							</li>
