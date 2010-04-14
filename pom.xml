@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>5.0</version>
+    <version>6.0</version>
   </parent>
 
   <scm>
-    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/trunk</connection>
-    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/core/trunk</developerConnection>
+    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</connection>
+    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</developerConnection>
     <url>https://repository.silverpeas.org/redmine/repositories/show/silverpeas-core</url>
   </scm>
 
