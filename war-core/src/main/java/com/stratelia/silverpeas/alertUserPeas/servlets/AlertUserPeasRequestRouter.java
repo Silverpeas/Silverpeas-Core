@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.alertUserPeas.servlets;
 
+import com.silverpeas.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.alertUserPeas.control.AlertUserPeasSessionController;
@@ -49,7 +49,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
    * @see
    */
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new AlertUserPeasSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -70,13 +70,15 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+          ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
     AlertUserPeasSessionController scc = (AlertUserPeasSessionController) componentSC;
     SilverTrace.info("alertUserPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
-
+            "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
     try {
+      if (!StringUtil.isDefined(request.getCharacterEncoding())) {
+        request.setCharacterEncoding("UTF-8");
+      }
       if (function.equals("Main")) {
         scc.init();
         destination = getDestination("ToSelection", scc, request);
@@ -101,21 +103,18 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
           request.setAttribute("HostComponentName", scc.getHostComponentName());
           request.setAttribute("HostSpaceName", scc.getHostSpaceName());
           destination = "/alertUserPeas/jsp/writeMessage.jsp";
-        } else
-          destination = getDestination("Close", scc, request); // pas de users
-        // ou groupes
-        // selectionnes
-        // => fermeture
-        // fenêtre
+        } else {
+          //No users or groups => clsoing the popup
+          destination = getDestination("Close", scc, request);
+        }
       } else if (function.startsWith("Close")) // fermeture de la fenêtre
       {
         destination = "/alertUserPeas/jsp/close.jsp";
-      } else if (function.startsWith("ToAlert")) // nav vers message attente
-      // notification
-      {
+      } else if (function.startsWith("ToAlert")) {
         request.setAttribute("HostComponentName", scc.getHostComponentName());
         request.setAttribute("HostSpaceName", scc.getHostSpaceName());
-        scc.prepareNotification(request.getParameter("messageAux"));
+        String message = new String(request.getParameter("messageAux").getBytes("ISO-8859-1"), "UTF-8");
+        scc.prepareNotification(message);
         destination = "/alertUserPeas/jsp/sendMessage.jsp";
       } else if (function.startsWith("Notify")) // Notification
       {
@@ -130,8 +129,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
     }
 
     SilverTrace.info("alertUserPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+            "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
-
 }

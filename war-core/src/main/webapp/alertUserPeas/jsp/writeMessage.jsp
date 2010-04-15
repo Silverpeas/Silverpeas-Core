@@ -23,10 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+      response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+      response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+      response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
@@ -34,142 +35,135 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="check.jsp" %>
 
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<html>
+  <head>
+    <title><%=resource.getString("GML.popupTitle")%></title>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-<script language="JavaScript">
-function validateUsers() {
-	document.EDform.submit();
-}
-</script>
-</HEAD>
-<%
-	String componentURL = (String)request.getAttribute("myComponentURL");
-	UserDetail[] userDetails = (UserDetail[])request.getAttribute("UserR");
-	Group[] groups = (Group[])request.getAttribute("GroupR");
-	PairObject hostComponentNameObject = (PairObject) request.getAttribute("HostComponentName");
-	String hostSpaceName = (String) request.getAttribute("HostSpaceName");
-	String hostComponentName = (String) hostComponentNameObject.getFirst(); 
-%>
+    <%
+          out.println(gef.getLookStyleSheet());
+    %>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+    <script language="JavaScript">
+      function validateUsers() {
+        document.EDform.submit();
+      }
+    </script>
+  </head>
+  <%
+        String componentURL = (String) request.getAttribute("myComponentURL");
+        UserDetail[] userDetails = (UserDetail[]) request.getAttribute("UserR");
+        Group[] groups = (Group[]) request.getAttribute("GroupR");
+        PairObject hostComponentNameObject = (PairObject) request.getAttribute("HostComponentName");
+        String hostSpaceName = (String) request.getAttribute("HostSpaceName");
+        String hostComponentName = (String) hostComponentNameObject.getFirst();
+  %>
 
-<%
-	browseBar.setDomainName(hostSpaceName);
-	browseBar.setComponentName(hostComponentName);
+  <body>
 
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
+    <%
+          browseBar.setDomainName(hostSpaceName);
+          browseBar.setComponentName(hostComponentName);
 
-	//button
-	Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validateUsers();", false);
+          out.println(window.printBefore());
+          out.println(frame.printBefore());
 
-
-	//Icons
-	String noColorPix = resource.getIcon("alertUserPeas.px");
-%>
-
-			
-<FORM name="EDform" Action="<%=componentURL%>ToAlert" METHOD="POST">
-<CENTER>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
-	<tr> 
-		<td nowrap>
-			<table border="0" cellspacing="0" cellpadding="0" class="contourintfdcolor" width="100%"><!--tabl1-->
-				<%
-				if (userDetails.length > 0)
-				{
-				%>
-				<TR>
-					<TD align="center" class="txttitrecol" colspan="2">
-						<%=resource.getString("GML.users")%>
-					</TD>
-				</TR>
-				<TR>
-					<TD colspan="2" align="center" class="intfdcolor" height="1" width="70%"><img src="<%=noColorPix%>"></TD>
-				</TR>
-				
-				<%
-				for(int i=0; i < userDetails.length; i++)
-				{
-					UserDetail userDetail = userDetails[i];
-					String actorName = userDetail.getFirstName() + " " + userDetail.getLastName();
-					%>
-					<TR>
-						<TD align="center" colspan="2">
-							<%=actorName%>
-						</TD>
-					</TR>
-					<%
-				}
-				%>
-				<TR width="70%">
-					<TD colspan="2" align="center" class="intfdcolor"  height="1" width="70%"><img src="<%=noColorPix%>"></TD>
-				</TR>
-				<%
-				}
-				%>
-				<%
-				if (groups.length > 0)
-				{
-				%>
-				<TR>
-					<TD align="center" class="txttitrecol" colspan="2">
-						<%=resource.getString("GML.groupes")%>
-					</TD>
-				</TR>
-				<TR>
-					<TD colspan="2" align="center" class="intfdcolor" height="1" width="70%"><img src="<%=noColorPix%>"></TD>
-				</TR>
-
-				<%
-				for(int i=0; i < groups.length; i++)
-				{
-					Group group = groups[i];
-					String groupName = group.getName();
-					%>
-					<TR>
-						<TD align="center" colspan="2">
-							<%=groupName%>
-						</TD>
-					</TR>
-					<%
-				}
-				%>
-				<TR width="70%">
-					<TD colspan="2" align="center" class="intfdcolor"  height="1" width="70%"><img src="<%=noColorPix%>"></TD>
-				</TR>
-				<%
-				}
-				%>
-				<TR>
-					<TD colspan="2" align="center" class="txtlibform">
-						<b><%=resource.getString("AuthorMessage")%></b> : <BR><textarea cols="80" rows="8" name="messageAux"></textarea>
-					</TD>
-				</TR>
-			</TABLE>
-		</td>
-	</tr>
-</table>
-</CENTER>
-</FORM>
-<%
-	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(validateButton);
-	buttonPane.addButton(cancelButton);
-	buttonPane.setHorizontalPosition();
-	out.println("<BR><center>"+buttonPane.print()+"<br></center>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+          //button
+          Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+          Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validateUsers();", false);
 
 
+          //Icons
+          String noColorPix = resource.getIcon("alertUserPeas.px");
+    %>
 
 
-</BODY>
-</HTML>
+    <form name="EDform" Action="<%=componentURL%>ToAlert" method="POST" accept-charset="UTF-8">
+      <center>
+        <table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
+          <tr>
+            <td nowrap>
+              <table border="0" cellspacing="0" cellpadding="0" class="contourintfdcolor" width="100%"><!--tabl1-->
+                <%
+                   if (userDetails.length > 0) {
+                %>
+                <tr>
+                  <td align="center" class="txttitrecol" colspan="2">
+                    <%=resource.getString("GML.users")%>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" align="center" class="intfdcolor" height="1" width="70%"><img src="<%=noColorPix%>"></td>
+                </tr>
+
+                <%
+                      for (int i = 0; i < userDetails.length; i++) {
+                        UserDetail userDetail = userDetails[i];
+                        String actorName = userDetail.getFirstName() + " " + userDetail.getLastName();
+                %>
+                <tr>
+                  <td align="center" colspan="2">
+                    <%=actorName%>
+                  </td>
+                </tr>
+                <%
+                       }
+                %>
+                <tr width="70%">
+                  <td colspan="2" align="center" class="intfdcolor"  height="1" width="70%"><img src="<%=noColorPix%>"></td>
+                </tr>
+                <%
+                     }
+                     if (groups.length > 0) {
+                %>
+                <tr>
+                  <td align="center" class="txttitrecol" colspan="2">
+                    <%=resource.getString("GML.groupes")%>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" align="center" class="intfdcolor" height="1" width="70%"><img src="<%=noColorPix%>"></td>
+                </tr>
+
+                <%
+                                        for (int i = 0; i < groups.length; i++) {
+                                          Group group = groups[i];
+                                          String groupName = group.getName();
+                %>
+                <tr>
+                  <td align="center" colspan="2">
+                    <%=groupName%>
+                  </td>
+                </tr>
+                <%
+                                        }
+                %>
+                <tr width="70%">
+                  <td colspan="2" align="center" class="intfdcolor"  height="1" width="70%"><img src="<%=noColorPix%>"></td>
+                </tr>
+                <%
+                      }
+                %>
+                <tr>
+                  <td colspan="2" align="center" class="txtlibform">
+                    <b><%=resource.getString("AuthorMessage")%></b> : <br/><textarea cols="80" rows="8" name="messageAux"></textarea>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </form>
+    <%
+          ButtonPane buttonPane = gef.getButtonPane();
+          buttonPane.addButton(validateButton);
+          buttonPane.addButton(cancelButton);
+          buttonPane.setHorizontalPosition();
+          out.println("<br/><center>" + buttonPane.print() + "<br></center>");
+          out.println(frame.printAfter());
+          out.println(window.printAfter());
+    %>
+  </body>
+</html>
