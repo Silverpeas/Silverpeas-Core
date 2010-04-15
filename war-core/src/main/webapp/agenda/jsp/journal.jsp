@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 
 <%@ include file="checkAgenda.jsp.inc" %>
@@ -38,7 +39,7 @@
   String action = request.getParameter("Action"); //Add || Update || View (vient de choisir une categorie) 
   													// || DiffusionListOK (vient de choisir des participants dans le UserPanel)
   													// ReallyAdd || ReallyUpdate
-  													// CategoryOK (viens de choisir des catégories)
+  													// CategoryOK (viens de choisir des catï¿½gories)
   													
 	if (!StringUtil.isDefined(action))
 		action = "Update";
@@ -672,7 +673,7 @@ else
 	        <td><textarea name="Description" wrap="VIRTUAL" rows="6" cols="60"  <% if (readOnly) out.print("disabled");%>><%if (journal.getDescription() != null) out.println(Encode.javaStringToHtmlString(journal.getDescription()));%></textarea></td>
           </tr>
 		  <tr>
-		    <!-- affichage de la date de début de note -->
+		    <!-- affichage de la date de dï¿½but de note -->
             <td class="txtlibform"><%= agenda.getString("dateDebutNote") %> :</td>
 			<td><input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                 if (journal != null) 

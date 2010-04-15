@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -139,7 +140,7 @@ if (action != null) {
     } else if (action.equals("IndexPdc")) {
     	ai.indexPdc();
     }
-    indexMessage = "Indexation lancée en tâche de fond !";
+    indexMessage = "Indexation lancï¿½e en tï¿½che de fond !";
 }
 
 %>
@@ -153,7 +154,7 @@ if (action != null) {
 <script language="JavaScript">
 function index(action, compo, space)
 {
-	var message = "Vous êtes sur le point de réindexer ";
+	var message = "Vous ï¿½tes sur le point de rï¿½indexer ";
 	if (action == "Index")
 	{
 		if (compo.length > 1)
@@ -169,7 +170,7 @@ function index(action, compo, space)
 		message += "tout le portail";
 	else if (action == "IndexPdc")
 		message += "le plan de classement";
-	message += ". \nEtes-vous sûr de vouloir effectuer cette opération ?";
+	message += ". \nEtes-vous sï¿½r de vouloir effectuer cette opï¿½ration ?";
 	if (confirm(message))
 		location.href="applicationIndexer.jsp?Action="+action+"&PersonalCompo="+compo+"&SpaceId="+space+"&ComponentId="+compo;
 }

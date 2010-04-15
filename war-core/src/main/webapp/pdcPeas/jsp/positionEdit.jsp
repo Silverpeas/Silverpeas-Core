@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
 <%@ page import="com.silverpeas.thesaurus.*"%>
@@ -58,11 +59,11 @@ boolean valueIsAscendant(String valueId, String baseValuePaths) {
 	return false;
 }
 
-//fonction qui sert a afficher les synonymes du terme selectionné dans la combo
+//fonction qui sert a afficher les synonymes du terme selectionnï¿½ dans la combo
 String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTree, String idTerm) throws ThesaurusException {
 		String synonyms = "";
 		boolean first = true;
-		if (jargon != null && activeThesaurus.booleanValue()) {//activé
+		if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
 			ThesaurusManager thesaurus = new ThesaurusManager();
@@ -253,7 +254,7 @@ function test(object, reload) {
 				positionValue	= (ClassifyValue) positionValues.get(pv);
 				positionAxisId	= positionValue.getAxisId();
 				if (positionAxisId == axisId) {
-					//L'axe est bien utilisé dans la position
+					//L'axe est bien utilisï¿½ dans la position
 					positionValueId = positionValue.getValue();
 				}
 			}
@@ -267,14 +268,14 @@ function test(object, reload) {
 		String  baseValueIds	= new Integer(baseValueId).toString()+",";
 		String	baseValuePaths	= baseValuePath+",";
 		int memIndice = i;
-		//Recherche si l'axe est utilisé plusieurs fois
+		//Recherche si l'axe est utilisï¿½ plusieurs fois
 		for (int j=i+1; j<usedAxis.size(); j++) {
 			UsedAxis	checkAxis		=	(UsedAxis) usedAxis.get(j);
 			int			checkAxisId		=	checkAxis.getAxisId();
 
 			if (checkAxisId == axisId) {
-				//L'axe est utilisé au moins 2 fois
-				//on doit mémoriser baseValueId et baseValuePath
+				//L'axe est utilisï¿½ au moins 2 fois
+				//on doit mï¿½moriser baseValueId et baseValuePath
 				baseValueIds	+= new Integer(checkAxis.getBaseValue()).toString()+",";
 				baseValuePaths	+= checkAxis._getBaseValuePath()+checkAxis.getBaseValue()+"/,";
 			} else {
@@ -286,7 +287,7 @@ function test(object, reload) {
 
 		String valueIdSelected = null;
 		String valueTreeIdSelected = null;
-		boolean anElementSelected = false; //true si un des termes != "" a ete selectionné dans la combo
+		boolean anElementSelected = false; //true si un des termes != "" a ete selectionnï¿½ dans la combo
 
   %>
       <tr> 
@@ -314,7 +315,7 @@ function test(object, reload) {
 					//if (isValueAllowed(valuePath, baseValueIds) || valueIsBaseValue(valueId, baseValueIds)) {
 					if (isValueAllowed(valuePath, baseValuePaths) || valueIsBaseValue(valueId, baseValueIds)) {
 						
-						//premier affichage de la page : on doit sélectionner la valeur de la position
+						//premier affichage de la page : on doit sï¿½lectionner la valeur de la position
 						if (positionValueId != null && positionValueId.equals(valuePath+valueId+"/")) {
 							sSelStatus = "selected";
 						} 

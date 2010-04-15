@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.external.filesharing.dao;
 
 import java.sql.Connection;
@@ -127,9 +128,9 @@ public class TicketDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(fileId));
       if (versioning) {
-        prepStmt.setInt(2, 1);
+        prepStmt.setString(2, "1");
       } else {
-        prepStmt.setInt(2, 0);
+        prepStmt.setString(2, "0");
       }
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -178,9 +179,9 @@ public class TicketDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
-      prepStmt.setInt(3, 0);
+      prepStmt.setString(3, "0");
       if (ticket.isVersioning()) {
-        prepStmt.setInt(3, 1);
+        prepStmt.setString(3, "1");
       }
       prepStmt.setString(4, ticket.getCreatorId());
       prepStmt.setString(5, "" + today.getTime());
@@ -300,10 +301,7 @@ public class TicketDAO {
 
     ticket.setFileId(rs.getInt("fileId"));
     ticket.setComponentId(rs.getString("componentId"));
-    boolean versioning = false;
-    if (rs.getInt("versioning") == 1) {
-      versioning = true;
-    }
+    boolean versioning = "1".equals(rs.getString("versioning"));
     ticket.setVersioning(versioning);
     ticket.setCreatorId(rs.getString("creatorId"));
     String creationDate = null;

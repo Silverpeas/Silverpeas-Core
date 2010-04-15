@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
@@ -130,7 +131,7 @@ String pdcContext = m_context+"/Rpdc/jsp/";
 %>
 
 <%!
-int maxEltAuthorized = 5; // nombre min d'éléments avant la troncature du chemin 
+int maxEltAuthorized = 5; // nombre min d'ï¿½lï¿½ments avant la troncature du chemin 
 int nbShowedEltAuthorized = 2 ; // nombre de noeud que l'on veut afficher avant les ...
 String troncateSeparator = " ... ";
 String separatorPath = " / "; // separateur pour le chemin complet
@@ -142,15 +143,15 @@ String separatorPath = " / "; // separateur pour le chemin complet
 */
 
 /**
-* Cette méthode construit un hyperlien à partir d'un nom et de son lien
-* @param unit - un objet contenant un nom et un lien. Cette valeur ne doit pas être nulle
+* Cette mï¿½thode construit un hyperlien ï¿½ partir d'un nom et de son lien
+* @param unit - un objet contenant un nom et un lien. Cette valeur ne doit pas ï¿½tre nulle
 * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
 * @return le texte en dur ou au format hypelien
 */
 String linkedNode(Value unit, boolean isLinked){
         String node = "";
         
-        // Attention la partie hyperlink est à faire !!!!
+        // Attention la partie hyperlink est ï¿½ faire !!!!
         if (isLinked){
                 node = "<a href="+(String)unit.getPath()+">"+(String)unit.getName()+"</a> ";
         } else {
@@ -162,15 +163,15 @@ String linkedNode(Value unit, boolean isLinked){
 
 
 /**
-* Cette méthode construit le chemin complet tronqué pour accéder à une valeur
-* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas être nulle
+* Cette mï¿½thode construit le chemin complet tronquï¿½ pour accï¿½der ï¿½ une valeur
+* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas ï¿½tre nulle
 * @param completPath - le chemin que l'on veut tronquer
-* @param withLastValue - on garde ou non la valeur sélectionnée
-* @return completPath - le chemin fabriqué
+* @param withLastValue - on garde ou non la valeur sï¿½lectionnï¿½e
+* @return completPath - le chemin fabriquï¿½
 */
 String troncatePath(String completPath, ArrayList list, boolean isLinked, int withLastValue){
 		Value value = null;
-        // prend les nbShowedEltAuthorized 1er éléments
+        // prend les nbShowedEltAuthorized 1er ï¿½lï¿½ments
         for (int nb=0; nb < nbShowedEltAuthorized; nb++){
 				value = (Value) list.get(nb);
                 completPath +=  linkedNode(value, isLinked)+separatorPath;
@@ -180,7 +181,7 @@ String troncatePath(String completPath, ArrayList list, boolean isLinked, int wi
         // colle ici les points de suspension
         completPath += troncateSeparator+separatorPath;
 
-        // prend les nbShowedEltAuthorized derniers éléments
+        // prend les nbShowedEltAuthorized derniers ï¿½lï¿½ments
         for (int nb=nbShowedEltAuthorized+withLastValue ; nb>withLastValue ; nb--){
 				value = (Value) list.get(list.size() - nb);
                 completPath +=  linkedNode(value, isLinked)+separatorPath;
@@ -191,17 +192,17 @@ String troncatePath(String completPath, ArrayList list, boolean isLinked, int wi
 }
 
 /**
-* Cette méthode construit le chemin complet pour accéder à une valeur
-* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas être nulle
+* Cette mï¿½thode construit le chemin complet pour accï¿½der ï¿½ une valeur
+* @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas ï¿½tre nulle
 * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
-* @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur sélectionnée. 
-*                                               1 si l'on ne souhaite afficher que le chemin complet sans la valeur sélectionnée
-* @return completPath - le chemin fabriqué
+* @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur sï¿½lectionnï¿½e. 
+*                                               1 si l'on ne souhaite afficher que le chemin complet sans la valeur sï¿½lectionnï¿½e
+* @return completPath - le chemin fabriquï¿½
 */
 String buildCompletPath(ArrayList list, boolean isLinked, int withLastValue){
         String completPath = "";
-        // on regarde d'en un 1er temps le nombre d'élément de la liste que l'on reçoit.
-        // si ce nombre est strictement supérieur à maxEltAuthorized alors on doit tronquer le chemin complet
+        // on regarde d'en un 1er temps le nombre d'ï¿½lï¿½ment de la liste que l'on reï¿½oit.
+        // si ce nombre est strictement supï¿½rieur ï¿½ maxEltAuthorized alors on doit tronquer le chemin complet
         // et l'afficher comme suit : noeud1 / noeud2 / ... / noeudn-1 / noeudn
 		Value value = null;
         if (list.size() > maxEltAuthorized){
@@ -216,7 +217,7 @@ String buildCompletPath(ArrayList list, boolean isLinked, int withLastValue){
         if ( (completPath == "") || (completPath.equals("/")) ){
                 completPath = null;
         } else {
-                completPath = completPath.substring(0,completPath.length()-separatorPath.length()); // retire le dernier séparateur
+                completPath = completPath.substring(0,completPath.length()-separatorPath.length()); // retire le dernier sï¿½parateur
         }
 
         return completPath;

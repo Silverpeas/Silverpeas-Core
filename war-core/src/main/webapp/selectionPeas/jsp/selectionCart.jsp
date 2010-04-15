@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="check.jsp" %>
 
 <%
@@ -211,7 +212,7 @@ function getObjects(type, selected)
 		// au moins une checkbox exist
 		var nbBox = boxItems.length;
 		if ( (nbBox == null) && (boxItems.checked == selected) ){
-			// il n'y a qu'une checkbox non selectionnée
+			// il n'y a qu'une checkbox non selectionnï¿½e
 			items += boxItems.value+",";
 		} else{
 			// search not checked boxes 
@@ -250,13 +251,13 @@ function getObjects(type, selected)
     {
 		  // Affiche un tableau
           arrayPane = gef.getArrayPane("sets", componentURL+"CartDoOperation", request, session);
-		  // Affiche le nombre de ligne total du tableau dans la même page
+		  // Affiche le nombre de ligne total du tableau dans la mï¿½me page
 		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.m_SetByBrowsePage);
 		  arrayPane.setTitle(setText);
 		  arrayPane.setPaginationJavaScriptCallback("changeSetsPage");
           
           arrayColumn = null;
-		  // Définition des entêtes de colonnes
+		  // Dï¿½finition des entï¿½tes de colonnes
           arrayColumn = arrayPane.addArrayColumn(setMiniFilterSelect + "&nbsp;");
           arrayColumn.setSortable(false);
           arrayColumn.setWidth("40px");
@@ -296,12 +297,12 @@ function getObjects(type, selected)
     {
         // Affiche un tableau
         arrayPane = gef.getArrayPane("elements", componentURL+"CartDoOperation", request, session);
-        // Affiche le nombre de ligne total du tableau dans la même page
+        // Affiche le nombre de ligne total du tableau dans la mï¿½me page
         arrayPane.setVisibleLineNumber(SelectionPeasSettings.m_ElementByBrowsePage);
   		arrayPane.setTitle(elementText);
   		arrayPane.setPaginationJavaScriptCallback("changeElementsPage");
 
-        // Définition des entêtes de colonnes
+        // Dï¿½finition des entï¿½tes de colonnes
         arrayColumn = arrayPane.addArrayColumn(elementMiniFilterSelect + "&nbsp;");
         arrayColumn.setSortable(false);
         arrayColumn.setWidth("40px");

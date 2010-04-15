@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
 
 <%@ include file="../portletImport.jsp"%>
@@ -68,19 +69,19 @@ else
       	task 		= (Schedulable) events.next();
       	taskname 	= Encode.convertHTMLEntities(task.getName());
       	
-      	// convertir la date de l'évènement
+      	// convertir la date de l'ï¿½vï¿½nement
     	Calendar taskDate = Calendar.getInstance();
     	taskDate.setTime(task.getStartDate());
     	taskDate.set(Calendar.HOUR_OF_DAY, 0);
     	taskDate.set(Calendar.MINUTE, 0);
-    	// formatage de la date sous forme jj/mm/aaaa pour paramètre de agenda.jsp
+    	// formatage de la date sous forme jj/mm/aaaa pour paramï¿½tre de agenda.jsp
     	String date = DateUtil.getInputDate(task.getStartDate(), language);
     	
     	taskURL	= m_sContext+URLManager.getURL(URLManager.CMP_AGENDA)+"agenda.jsp?Action=SelectDay&Day="+date;
     	
     	if (today.equals(taskDate))
     	{
-    		// évènement du jour
+    		// ï¿½vï¿½nement du jour
     		if ( task.getStartHour() != null)
     		  	out.println("&#149; " + message.getString("today") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
     		else
@@ -88,7 +89,7 @@ else
     	}
     	else if (tomorrow.equals(taskDate))
     	{
-    		// évènement du lendemain
+    		// ï¿½vï¿½nement du lendemain
     		if ( task.getStartHour() != null)
     		  	out.println("&#149; " + message.getString("tomorrow") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");    
     		else

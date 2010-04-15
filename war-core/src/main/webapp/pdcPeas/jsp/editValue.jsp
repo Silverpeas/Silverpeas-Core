@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp"%>
 
 <%
@@ -39,7 +40,7 @@ if (translation == null || translation.equals("null"))
 	translation = I18NHelper.defaultLanguage;
 }
 
-// initialisation des différentes variables pour l'affichage
+// initialisation des diffï¿½rentes variables pour l'affichage
 String valueName		= value.getName(translation);
 String valueDescription = value.getDescription(translation);
 String valueId			= value.getPK().getId();
@@ -56,7 +57,7 @@ String		order			= ""; // pour affichage des options du tag select
 String completPath = buildCompletPath(list, false, 1, translation);
 
 if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
-	// Le nom de la valeur entrée par l'utilisateur existe deja
+	// Le nom de la valeur entrï¿½e par l'utilisateur existe deja
 	errorMessage = "<font size=2 color=#FF6600><b>"+resource.getString("pdcPeas.valueAlreadyExist")+"</b></font>";	
 }
 

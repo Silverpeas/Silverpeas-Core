@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager,
 				 java.net.URLEncoder,
 				 java.util.ArrayList,
@@ -35,7 +36,7 @@
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {
 	String synonyms = "";
 	boolean first = true;
-	if (jargon != null && activeThesaurus.booleanValue()) {//activé
+	if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 		//synonymes du terme
 		String				idUser			= jargon.getIdUser();
 		ThesaurusManager	thesaurus		= new ThesaurusManager();
@@ -61,7 +62,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, Value value)
 	boolean first		= true;
 	String	idTree		= value.getTreeId();
 	String	idTerm		= value.getPK().getId();
-	if (jargon != null && activeThesaurus.booleanValue()) {//activé
+	if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 		//synonymes du terme
 		String				idUser			= jargon.getIdUser();
 		ThesaurusManager	thesaurus		= new ThesaurusManager();
@@ -247,7 +248,7 @@ if (theBeforeDate == null)
 	theBeforeDate = "";
 
 
-//récupération des données pour l'espace de recherche
+//rï¿½cupï¿½ration des donnï¿½es pour l'espace de recherche
 Vector searchDomains			= (Vector) request.getAttribute("searchDomains");
 String currentSearchDomainId	= (String) request.getAttribute("currentSearchDomainId");
 currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
@@ -545,7 +546,7 @@ function calculateAction()
 	document.AdvancedSearch.submit();
 }
 
-//fonction pour force la soumission du formulaire par la touche entrée
+//fonction pour force la soumission du formulaire par la touche entrï¿½e
 function checkEnter(e){
 	var characterCode;
 	if(e && e.which){
@@ -640,7 +641,7 @@ out.println(window.printBefore());
 %>
 <CENTER>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
-  <!-- champs caché pour voir ou non les axes secondaires -->
+  <!-- champs cachï¿½ pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
   <input type="hidden" name="showNotOnlyPertinentAxisAndValues" value="<%=showNotOnlyPertinentAxisAndValues%>">
   <input type="hidden" name="AxisId">

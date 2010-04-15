@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
 <%!
 
@@ -239,7 +240,7 @@ function init()
 %>
 	<!-- </td> -->
 	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20px" height="1px"></td>
-	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0px" height="1px"></td><td><a href="javaScript:raz()"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="Remise à zéro"/></a></td>
+	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0px" height="1px"></td><td><a href="javaScript:raz()"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="Remise ï¿½ zï¿½ro"/></a></td>
 	</tr></table>
 </form>
 </CENTER>

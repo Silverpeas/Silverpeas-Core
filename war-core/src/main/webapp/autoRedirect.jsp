@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 	response.setHeader( "Expires", "Tue, 21 Dec 1993 23:59:59 GMT" );
 	response.setHeader( "Pragma", "no-cache" );
@@ -53,7 +54,7 @@ if (strGoTo != null)
 	
 	//System.out.println("strGoTo = "+strGoTo);
 
-	//deux cas, deux parsing différents :
+	//deux cas, deux parsing diffï¿½rents :
 	//1 - commence par /RpdcSearch --> PDC (moteur de recherche)
 	//2 - commence par /R****/kmelia124/searchResult.jsp?... --> composants (moteur de recherche || notifications)
 	
@@ -110,7 +111,7 @@ SilverTrace.info("authentication", "autoRedirect.jsp", "root.MSG_GEN_PARAM_VALUE
 MainSessionController	m_MainSessionCtrl	= (MainSessionController) session.getAttribute("SilverSessionController");
 GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-//L'utilisateur n'est pas connecté ou est connecté en anonyme. Il retourne à la page de login.
+//L'utilisateur n'est pas connectï¿½ ou est connectï¿½ en anonyme. Il retourne ï¿½ la page de login.
 if (m_MainSessionCtrl == null || (gef != null && gef.getFavoriteLookSettings().getString("guestId").equals(m_MainSessionCtrl.getUserId())))
 {
 %>
@@ -121,7 +122,7 @@ if (m_MainSessionCtrl == null || (gef != null && gef.getFavoriteLookSettings().g
 }
 else
 {
-	//Il retourne à la page de login s'il n'est pas autorisé sur le composant cible.
+	//Il retourne ï¿½ la page de login s'il n'est pas autorisï¿½ sur le composant cible.
 	if ((componentId != null && !m_MainSessionCtrl.getOrganizationController().isComponentAvailable(componentId, m_MainSessionCtrl.getUserId()))
 		|| (spaceId != null && !m_MainSessionCtrl.getOrganizationController().isSpaceAvailable(spaceId, m_MainSessionCtrl.getUserId())))
 	{

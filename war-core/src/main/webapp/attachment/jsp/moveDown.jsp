@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<!--Définition des informations globales de la page --->
+
+<!--Dï¿½finition des informations globales de la page --->
 <%@ page language="java" %>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
@@ -74,7 +75,7 @@
         //create AttachmentPK with id and spaceId and componentId
         AttachmentPK atPK = new AttachmentPK(idAttachment, componentId);
 
-        //recupération de l'objet
+        //recupï¿½ration de l'objet
         AttachmentDetail atDetail = AttachmentController.searchAttachmentByPK(atPK);
         
         //suppresion de l'objet

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
 
 <%@ include file="../portletImport.jsp"%>
@@ -48,13 +49,13 @@ else
 		link = (LinkDetail) links.next();
 		if (link.isVisible())
 		{
-			// afficher que les liens que l'utilisateur a topé "visible en page d'accueil"
+			// afficher que les liens que l'utilisateur a topï¿½ "visible en page d'accueil"
 			String lien = link.getUrl();
 			String name = Encode.convertHTMLEntities(link.getName());
 			if (!StringUtil.isDefined(name))
 				name = lien;
 			
-			// ajouter le context devant le lien si nécéssaire
+			// ajouter le context devant le lien si nï¿½cï¿½ssaire
 			if (lien.indexOf("://") == -1)
 				lien = URLManager.getApplicationURL() + lien;
 

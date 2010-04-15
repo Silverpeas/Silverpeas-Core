@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%!
@@ -42,7 +43,7 @@ int getDescendantsNbObjects(String valueId, List daughters) {
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, String axisId) throws ThesaurusException {
 		String synonyms = "";
 		boolean first = true;
-		if (jargon != null && activeThesaurus.booleanValue()) {//activé
+		if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
 			ThesaurusManager thesaurus = new ThesaurusManager();
@@ -68,7 +69,7 @@ String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, String axisId
 String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTree, String idTerm) throws ThesaurusException {
 		String synonyms = "";
 		boolean first = true;
-		if (jargon != null && activeThesaurus.booleanValue()) {//activé
+		if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
 			ThesaurusManager thesaurus = new ThesaurusManager();
@@ -162,12 +163,12 @@ if (showSndSearchAxis == null)
 
 
 // l'objet SearchContext n'est pas vide
-// mais on le fait maintenant, car l'instruction precedente à un impact sur
+// mais on le fait maintenant, car l'instruction precedente ï¿½ un impact sur
 // la liste de SearchContext
 if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
-	// on récupère tous les contextes
+	// on rï¿½cupï¿½re tous les contextes
 	criteriaList = searchContext.getCriterias();
-	// et on récupère dans une liste tous les axes que ne doivent pas apparaitre
+	// et on rï¿½cupï¿½re dans une liste tous les axes que ne doivent pas apparaitre
 	// dans le primaire ou secondaire 
 	for (int i=0;i<criteriaList.size() ;i++ ){
 		searchCriteria = (SearchCriteria) criteriaList.get(i); // searchCriteria qui appartient au critere de recherche
@@ -256,7 +257,7 @@ function positionOfInput(inputName){
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == true) ){
-				// il n'y a qu'une checkbox selectionnée
+				// il n'y a qu'une checkbox selectionnï¿½e
 				selectItems += boxItems.value.split('-')[0];
 			} else{
 				// search checked boxes 
@@ -287,7 +288,7 @@ function positionOfInput(inputName){
 	}
 	
 	// Montre les valeurs filles de la valeur choisie
-	// et ferme normalement les autres valeur filles visualisées
+	// et ferme normalement les autres valeur filles visualisï¿½es
 	function showDaughterValues(axisId,valueId){
 		document.AdvancedSearch.AxisId.value = axisId;
 		document.AdvancedSearch.ValueId.value = valueId;
@@ -297,7 +298,7 @@ function positionOfInput(inputName){
 	}
 
 	// Montre les valeurs filles de la valeur choisie
-	// et ferme normalement les autres valeur filles visualisées
+	// et ferme normalement les autres valeur filles visualisï¿½es
 	function collapseValue(axisId,valueId){
 		document.AdvancedSearch.AxisId.value = axisId;
 		document.AdvancedSearch.ValueId.value = valueId;
@@ -315,7 +316,7 @@ function positionOfInput(inputName){
 	}
 
 	function modifySearchContext(axisIdAndValueId){
-		// on recupere les données liées à la sélection
+		// on recupere les donnï¿½es liï¿½es ï¿½ la sï¿½lection
 		document.AdvancedSearch.AxisId.value = axisIdAndValueId.split('-')[0];
 		document.AdvancedSearch.ValueId.value = axisIdAndValueId.split('-')[1];
 
@@ -350,8 +351,8 @@ function positionOfInput(inputName){
 	
 	//Test si l'utilisateur courant a un jargon
 	/*if (jargon != null) {//l'utilisateur utilise un jargon
-		if (activeThesaurus.booleanValue()) {//activé
-			//affichage du bouton de désactivation du thesaurus
+		if (activeThesaurus.booleanValue()) {//activï¿½
+			//affichage du bouton de dï¿½sactivation du thesaurus
 			operationPane.addOperation(resource.getIcon("pdcPeas.icoDesactivateThesaurus"), resource.getString("pdcPeas.desactivateThesaurus"), "javascript:desactivateThesaurus()");
 		}
 		else {
@@ -377,7 +378,7 @@ function positionOfInput(inputName){
 
 <CENTER>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
-  <!-- champs caché pour voir ou non les axes secondaires -->
+  <!-- champs cachï¿½ pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
   <input type="hidden" name="AxisId">
   <input type="hidden" name="ValueId">
@@ -498,10 +499,10 @@ function positionOfInput(inputName){
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
 						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
-						// on n'affiche pas les axes que l'on a sélectionné pour la recherche
+						// on n'affiche pas les axes que l'on a sï¿½lectionnï¿½ pour la recherche
 						if (!axisCriteriaList.contains(axisId)){	
 							if (axisId.equals(selectedAxisId)){ 
-									//recherche du detail de la valeur sélectionnée
+									//recherche du detail de la valeur sï¿½lectionnï¿½e
 									String selectedValueFullPath = "";
 									String selectedValuePath = "";
 									for (int x = 0; x < daughters.size(); x++) {
@@ -618,7 +619,7 @@ function positionOfInput(inputName){
 								nbPrimarySearchCriteria++;
 							}
 							// maintenant, s'il n'y a plus d'axes car ils ont tous
-							// été sélectionnés pour la recherche, on affiche une ligne vide
+							// ï¿½tï¿½ sï¿½lectionnï¿½s pour la recherche, on affiche une ligne vide
 							if (nbPrimarySearchCriteria == primaryAxis.size()){
 								out.println("<tr>");
 								out.println("<td width=\"100%\" class=\"txtnav\" bgcolor=\"EDEDED\">&nbsp;</td>");
@@ -662,14 +663,14 @@ function positionOfInput(inputName){
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
 						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
-						// on n'affiche pas les axes que l'on a sélectionné pour la recherche
+						// on n'affiche pas les axes que l'on a sï¿½lectionnï¿½ pour la recherche
 						if (!axisCriteriaList.contains(axisId)){
 
 					%>
 						<tr>
 							<td bgcolor="#FFFFFF" width="100%">
 							<% if (axisId.equals(selectedAxisId))	{ 
-									//recherche du detail de la valeur sélectionnée
+									//recherche du detail de la valeur sï¿½lectionnï¿½e
 									String selectedValueFullPath = "";
 									String selectedValuePath = "";
 									for (int x = 0; x < daughters.size(); x++) {
@@ -782,7 +783,7 @@ function positionOfInput(inputName){
 								nbSecondarySearchCriteria++;
 						}
 						// maintenant, s'il n'y a plus d'axes car ils ont tous
-						// été sélectionnés pour la recherche, on affiche une ligne vide
+						// ï¿½tï¿½ sï¿½lectionnï¿½s pour la recherche, on affiche une ligne vide
 
 						if (nbSecondarySearchCriteria == secondaryAxis.size()){
 							out.println("<tr>");

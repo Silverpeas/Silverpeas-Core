@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
 <%@ page import="com.stratelia.silverpeas.versioning.model.Document"%>
 
@@ -93,7 +94,7 @@ boolean full = false;
 				
 				if (att.getExpiryDate() != null)
 				{
-					// convertir la date de l'évènement
+					// convertir la date de l'ï¿½vï¿½nement
                     Calendar atDate = Calendar.getInstance();
                     atDate.setTime(att.getExpiryDate());
                     atDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -103,20 +104,20 @@ boolean full = false;
                     String date = DateUtil.getInputDate(att.getExpiryDate(), language);
                     if (today.equals(atDate))
                     {
-                    	// évènement du jour
+                    	// ï¿½vï¿½nement du jour
                    		out.println(" (" + message.getString("today") + ")");
                     }
                     else if (tomorrow.equals(atDate))
                     {
-                    	// évènement du lendemain
+                    	// ï¿½vï¿½nement du lendemain
                       	out.println(" (" + message.getString("tomorrow") + ")");    
                     }
                     else          
                     {
-                      	// recherche du libellé du jour
+                      	// recherche du libellï¿½ du jour
                     	int day = atDate.get(Calendar.DAY_OF_WEEK);
                      	String jour = "GML.jour" + day;
-						// recherche du libellé du mois
+						// recherche du libellï¿½ du mois
                     	int month = atDate.get(Calendar.MONTH);
                       	String mois = "GML.mois" + month;
                			out.println(" (" + generalMessage.getString(jour)+ " " + atDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR) + ")");
@@ -130,7 +131,7 @@ boolean full = false;
 				}
 			}
 		}
-		// traitement des liens vers les fichiers joints versionnés
+		// traitement des liens vers les fichiers joints versionnï¿½s
 		if (documents != null && documents.hasNext()) 
 		{
 			while (documents.hasNext()) 
@@ -143,7 +144,7 @@ boolean full = false;
 				
 				if (doc.getExpiryDate() != null)
 				{
-					// convertir la date de l'évènement
+					// convertir la date de l'ï¿½vï¿½nement
                        Calendar veDate = Calendar.getInstance();
                        veDate.setTime(doc.getExpiryDate());
                        veDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -153,20 +154,20 @@ boolean full = false;
                        String date = DateUtil.getInputDate(doc.getExpiryDate(), language);
                        if (today.equals(veDate))
                        {
-                       		// évènement du jour
+                       		// ï¿½vï¿½nement du jour
                       		out.println(" (" + message.getString("today") + ")");
                        }
                        else if (tomorrow.equals(veDate))
                        {
-                       		// évènement du lendemain
+                       		// ï¿½vï¿½nement du lendemain
                       		out.println(" (" + message.getString("tomorrow") + ")");
                         }
                        else          
                        {
-                         	// recherche du libellé du jour
+                         	// recherche du libellï¿½ du jour
                        		int day = veDate.get(Calendar.DAY_OF_WEEK);
                         	String jour = "GML.jour" + day;
-							// recherche du libellé du mois
+							// recherche du libellï¿½ du mois
                        		int month = veDate.get(Calendar.MONTH);
                          	String mois = "GML.mois" + month;
                   			out.println(" ("+ generalMessage.getString(jour)+ " " + veDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + veDate.get(Calendar.YEAR) + ")");
@@ -182,7 +183,7 @@ boolean full = false;
 	 }
 	 else
 	 {
-	 	out.println("Aucun fichier réservé !");
+	 	out.println("Aucun fichier rï¿½servï¿½ !");
 	 }
 	 out.flush();
 %>

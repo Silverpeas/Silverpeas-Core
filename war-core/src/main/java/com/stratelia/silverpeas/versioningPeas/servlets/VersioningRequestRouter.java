@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import java.io.File;
@@ -69,18 +70,18 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
 
-    @Override
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new VersioningSessionController(mainSessionCtrl, componentContext);
   }
 
-    @Override
+  @Override
   public String getSessionControlBeanName() {
     return "versioningPeas";
   }
 
-    @Override
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
@@ -592,7 +593,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       newVersion.setXmlForm(versioningSC.getXmlForm());
     }
     versioningSC.checkDocumentIn(document.getPk(), userId, force);
-    newVersion = versioningSC.addNewDocumentVersion(newVersion);   
+    newVersion = versioningSC.addNewDocumentVersion(newVersion);
     return newVersion.getPk();
   }
 

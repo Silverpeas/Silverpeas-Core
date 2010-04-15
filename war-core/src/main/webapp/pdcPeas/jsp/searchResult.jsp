@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
 <%@ page import="com.silverpeas.thesaurus.*"%>
@@ -34,7 +35,7 @@
 String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTree, String idTerm) throws ThesaurusException {
 		String synonyms = "";
 		boolean first = true;
-		if (jargon != null && activeThesaurus.booleanValue()) {//activé
+		if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
 			ThesaurusManager thesaurus = new ThesaurusManager();
@@ -74,9 +75,9 @@ ArrayList axisCriteriaList = new ArrayList();
 
 // l'objet SearchContext n'est pas vide
 if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
-	// on récupère tous les contextes
+	// on rï¿½cupï¿½re tous les contextes
 	criteriaList = searchContext.getCriterias();
-	// et on récupère dans une liste tous les axes que ne doivent pas apparaitre
+	// et on rï¿½cupï¿½re dans une liste tous les axes que ne doivent pas apparaitre
 	// dans le primaire ou secondaire
 	for (int i=0;i<criteriaList.size() ;i++ ){
 		searchCriteria = (SearchCriteria) criteriaList.get(i);
@@ -126,7 +127,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == true) ){
-				// il n'y a qu'une checkbox selectionnée
+				// il n'y a qu'une checkbox selectionnï¿½e
 				selectItems += boxItems.value.split('-')[0];
 			} else{
 				// search checked boxes 
@@ -147,7 +148,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
 	}
 
 	function modifySearchContext(axisIdAndValueId){
-		// on recupere les données liées à la sélection
+		// on recupere les donnï¿½es liï¿½es ï¿½ la sï¿½lection
 		document.searchContext.AxisId.value = axisIdAndValueId.split('-')[0];
 		document.searchContext.ValueId.value = axisIdAndValueId.split('-')[1];
 
@@ -173,7 +174,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
 %>
 <CENTER>
 <form name="searchContext" action="ViewContext" method="post">
-  <!-- champs caché pour voir ou non les axes secondaires -->
+  <!-- champs cachï¿½ pour voir ou non les axes secondaires -->
   <input type="hidden" name="AxisId">
   <input type="hidden" name="ValueId">
   <input type="hidden" name="Ids">
@@ -280,7 +281,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
   </table>
   <%
     out.println(separator);
-	// Affichage des résultats de la recherche
+	// Affichage des rï¿½sultats de la recherche
 	
 	// Publication du contenu
 

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp"%>
 <%!
 
@@ -71,9 +72,9 @@ if (showSndSearchAxis == null)
 
 // l'objet SearchContext n'est pas vide
 if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
-	// on récupère tous les contextes
+	// on rï¿½cupï¿½re tous les contextes
 	criteriaList = searchContext.getCriterias();
-	// et on récupère dans une liste tous les axes que ne doivent pas apparaitre
+	// et on rï¿½cupï¿½re dans une liste tous les axes que ne doivent pas apparaitre
 	// dans le primaire ou secondaire
 	for (int i=0;i<criteriaList.size() ;i++ ){
 		searchCriteria = (SearchCriteria) criteriaList.get(i);
@@ -112,7 +113,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == true) ){
-				// il n'y a qu'une checkbox selectionnée
+				// il n'y a qu'une checkbox selectionnï¿½e
 				selectItems += boxItems.value;
 			} else{
 				// search checked boxes 
@@ -149,7 +150,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 	}
 	
 	// Montre les valeurs filles de la valeur choisie
-	// et ferme normalement les autres valeur filles visualisées
+	// et ferme normalement les autres valeur filles visualisï¿½es
 	function showDaughterValues(axisId,valueId){
 		document.searchContext.AxisId.value = axisId;
 		document.searchContext.ValueId.value = valueId;
@@ -167,7 +168,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 	}
 
 	function modifySearchContext(axisIdAndValueId){
-		// on recupere les données liées à la sélection
+		// on recupere les donnï¿½es liï¿½es ï¿½ la sï¿½lection
 		document.searchContext.AxisId.value = axisIdAndValueId.split('-')[0];
 		document.searchContext.ValueId.value = axisIdAndValueId.split('-')[1];
 
@@ -202,7 +203,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 
 <CENTER>
 <form name="searchContext" action="ViewContext" method="post">
-  <!-- champs caché pour voir ou non les axes secondaires -->
+  <!-- champs cachï¿½ pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
   <input type="hidden" name="AxisId">
   <input type="hidden" name="ValueId">
@@ -313,7 +314,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
 						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
-						// on n'affiche pas les axes que l'on a sélectionné pour la recherche
+						// on n'affiche pas les axes que l'on a sï¿½lectionnï¿½ pour la recherche
 						if (!axisCriteriaList.contains(axisId)){	
 							// S'il s'agit d'un multiple de deux alors on grise
 							if ( (i%2)==0 ){
@@ -322,7 +323,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 								colorBand = whiteBand;
 							} 
 							if (axisId.equals(selectedAxisId)){ 
-									//recherche du detail de la valeur sélectionnée
+									//recherche du detail de la valeur sï¿½lectionnï¿½e
 									String selectedValueFullPath = "";
 									String selectedValuePath = "";
 									for (int x = 0; x < daughters.size(); x++) {
@@ -413,7 +414,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 								nbPrimarySearchCriteria++;
 							}
 							// maintenant, s'il n'y a plus d'axes car ils ont tous
-							// été sélectionnés pour la recherche, on affiche une ligne vide
+							// ï¿½tï¿½ sï¿½lectionnï¿½s pour la recherche, on affiche une ligne vide
 							if (nbPrimarySearchCriteria == primaryAxis.size()){
 								out.println("<tr>");
 								out.println("<td width=\"100%\" class=\"txtnav\" bgcolor=\"EDEDED\">&nbsp;</td>");
@@ -460,7 +461,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
 						axisName = searchAxis.getAxisName();
 						nbPositions = searchAxis.getNbObjects();
-						// on n'affiche pas les axes que l'on a sélectionné pour la recherche
+						// on n'affiche pas les axes que l'on a sï¿½lectionnï¿½ pour la recherche
 						if (!axisCriteriaList.contains(axisId)){	
 					
 							// S'il s'agit d'un multiple de deux alors on grise
@@ -470,7 +471,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 								colorBand = whiteBand;
 							} 
 							if (axisId.equals(selectedAxisId))	{ 
-									//recherche du detail de la valeur sélectionnée
+									//recherche du detail de la valeur sï¿½lectionnï¿½e
 									String selectedValueFullPath = "";
 									String selectedValuePath = "";
 									for (int x = 0; x < daughters.size(); x++) {
@@ -561,7 +562,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 								nbSecondarySearchCriteria++;
 						}
 						// maintenant, s'il n'y a plus d'axes car ils ont tous
-						// été sélectionnés pour la recherche, on affiche une ligne vide
+						// ï¿½tï¿½ sï¿½lectionnï¿½s pour la recherche, on affiche une ligne vide
 						if (nbSecondarySearchCriteria == secondaryAxis.size()){
 							out.println("<tr>");
 							out.println("<td width=\"100%\" class=\"txtnav\" bgcolor=\""+colorBand+"\">&nbsp;</td>");

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -75,11 +76,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		function isCorrect(nom) {
 	    	if (nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
 		        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
-		        nom.indexOf("²")>-1 || nom.indexOf("é")>-1 || nom.indexOf("è")>-1 ||
-		        nom.indexOf("ç")>-1 || nom.indexOf("à")>-1 || nom.indexOf("^")>-1 ||
-		        nom.indexOf("ù")>-1 || nom.indexOf("°")>-1 || /*nom.indexOf("¨")>-1 ||*/
-		        nom.indexOf("£")>-1 || nom.indexOf("µ")>-1 || nom.indexOf("§")>-1 ||
-		        nom.indexOf("¤")>-1) {
+		        nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 ||
+		        nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("^")>-1 ||
+		        nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || /*nom.indexOf("ï¿½")>-1 ||*/
+		        nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 ||
+		        nom.indexOf("ï¿½")>-1) {
 		    }
 		    return true;
 	     }
@@ -97,7 +98,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	            }
 	            else if (!isCorrect(file))
 	            {
-		        	// verif caractères speciaux contenus dans le nom du fichier
+		        	// verif caractï¿½res speciaux contenus dans le nom du fichier
 	            	alert("<%=message.getString("NameFile")%> <%=message.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(message.getString("Char7"))%>\n");
 	            }	        
 	            else 

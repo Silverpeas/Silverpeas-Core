@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="check.jsp" %>
 <%
 	Board board = gef.getBoard(); 
@@ -211,7 +212,7 @@ out.println(board.printAfter());
   {
 	  Group group = null;
       for(int i=0; i<subGroups.length; i++){
-          //création des ligne de l'arrayPane
+          //crï¿½ation des ligne de l'arrayPane
     	  group = subGroups[i];
     	  if (group != null)
     	  {
@@ -248,7 +249,7 @@ out.println(board.printAfter());
   if (subUsers != null)
   {
       for(int i=0; i<subUsers.length; i++){
-          //création des ligne de l'arrayPane
+          //crï¿½ation des ligne de l'arrayPane
           ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
           IconPane iconPane1User = gef.getIconPane();
           Icon userIcon = iconPane1User.addIcon();

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import com.silverpeas.util.StringUtil;
@@ -70,7 +71,7 @@ public class AjaxServlet extends HttpServlet {
       result = isLocked(req, versioningSC);
     } else if ("Checkin".equals(action)) {
       result = checkin(req, versioningSC);
-    }else if ("Sort".equals(action)) {
+    } else if ("Sort".equals(action)) {
       result = sort(req, versioningSC);
     }
 
@@ -114,7 +115,8 @@ public class AjaxServlet extends HttpServlet {
   private String isLocked(HttpServletRequest req, VersioningSessionController versioningSC) {
     String docId = req.getParameter("DocId");
     try {
-      DocumentPK documentPK = new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
+      DocumentPK documentPK =
+          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
       Document document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);
@@ -136,7 +138,8 @@ public class AjaxServlet extends HttpServlet {
     String docId = req.getParameter("DocId");
     boolean force = StringUtil.getBooleanValue(req.getParameter("force_release"));
     try {
-      DocumentPK documentPK = new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
+      DocumentPK documentPK =
+          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
       Document document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);

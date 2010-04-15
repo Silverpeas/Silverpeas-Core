@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp"%>
 
 <%
@@ -41,7 +42,7 @@ if (translation == null || translation.equals("null"))
 {
 	translation = I18NHelper.defaultLanguage;
 }
-// initialisation des différentes variables pour l'affichage
+// initialisation des diffï¿½rentes variables pour l'affichage
 String valueName		= valueToMove.getName(translation);
 String valueId			= valueToMove.getPK().getId();
 int valueNbDoc 			= valueToMove.getNbObjects();
@@ -51,7 +52,7 @@ String errorMessage = null;
 String completPath = buildCompletPath(list, false, 1, translation);
 
 if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
-	// Le nom de la valeur entrée par l'utilisateur existe deja
+	// Le nom de la valeur entrï¿½e par l'utilisateur existe deja
 	errorMessage = "<font size=2 color=#FF6600><b>"+resource.getString("pdcPeas.valueAlreadyExist")+"</b></font>";	
 }
 %>
@@ -123,7 +124,7 @@ function sendData(action)
 		<td>
 			<select name="newFatherId" onChange="javaScript:sendData('ToMoveValueGetSisters')">
 			<%
-			// affiche l'arbre courant moins le subtree à déplacer et moins les valeurs pour lesquelles le user n'a pas de droit
+			// affiche l'arbre courant moins le subtree ï¿½ dï¿½placer et moins les valeurs pour lesquelles le user n'a pas de droit
 			ArrayList axisValues = (ArrayList) axis.getValues();	
 			int valueLevel = -1;
 			String increment = "";	
@@ -139,8 +140,8 @@ function sendData(action)
 				if (value.getPK().getId().equals(newMotherId))
 					newMother = "selected";
 				
-				// si la valeur = celle que l'on veut déplacer, on ne l'affiche pas
-				// c'est à dire si le chemin commence par celui de la valeur à déplacer + son id
+				// si la valeur = celle que l'on veut dï¿½placer, on ne l'affiche pas
+				// c'est ï¿½ dire si le chemin commence par celui de la valeur ï¿½ dï¿½placer + son id
 				if ( (!value.getPath().startsWith(valueToMove.getPath()+ valueToMove.getPK().getId() +"/")) && !(value.getPK().getId().equals(valueToMove.getPK().getId()) ) )
 				{
 						valueName = value.getName(translation);

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="check.jsp" %>
 <%
     String pageName = (String)request.getAttribute("pageName");
@@ -314,12 +315,12 @@ out.println(frame.printBefore());
 		  // Affiche un tableau
           ArrayPane arrayPane = gef.getArrayPane("List", "#", request,session);
           String    isChecked = "";
-		  // Affiche le nombre de ligne total du tableau dans la même page
+		  // Affiche le nombre de ligne total du tableau dans la mï¿½me page
 		  arrayPane.setVisibleLineNumber(-1);
 		  arrayPane.setTitle(pageName);
           
           ArrayColumn arrayColumn = null;
-		  // Définition des entêtes de colonnes
+		  // Dï¿½finition des entï¿½tes de colonnes
           if (isMultiSelect || isSelectable)
           {
               if (isMultiSelect)

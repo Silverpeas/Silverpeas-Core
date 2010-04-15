@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.agenda.control.AgendaAccess,
                  java.util.Iterator,
                  java.net.URLEncoder,
@@ -355,7 +356,7 @@ function jumpToComponent(componentId) {
   <tr>
     <td valign="top" width="50%">
       <!-------------------------------------------------------------------------------------->
-      <!------------------------------- Dernières publications ------------------------------->
+      <!------------------------------- Derniï¿½res publications ------------------------------->
       <!-------------------------------------------------------------------------------------->
       <%
       	int nbLatestPublications = Integer.parseInt(homePageSettings.getString("latestPublicationsNumber", "5"));
@@ -501,7 +502,7 @@ function jumpToComponent(componentId) {
                     } 
                     else 
                     {
-                    	// si on a moins de 5 évènements 
+                    	// si on a moins de 5 ï¿½vï¿½nements 
                     	if (tasks.size() < nbLatestEvents) 
                     		nbEvents = tasks.size();
                       
@@ -525,16 +526,16 @@ function jumpToComponent(componentId) {
                       	{
                           	Schedulable task = (Schedulable) tasks.get(i);
                           	
-                          	// convertir la date de l'évènement
+                          	// convertir la date de l'ï¿½vï¿½nement
                         	Calendar taskDate = Calendar.getInstance();
                         	taskDate.setTime(task.getStartDate());
                         	taskDate.set(Calendar.HOUR_OF_DAY, 0);
                         	taskDate.set(Calendar.MINUTE, 0);
-                        	// formatage de la date sous forme jj/mm/aaaa pour paramètre de agenda.jsp
+                        	// formatage de la date sous forme jj/mm/aaaa pour paramï¿½tre de agenda.jsp
                         	String date = DateUtil.getInputDate(task.getStartDate(), language);
                         	if (today.equals(taskDate))
                         	{
-                        		// évènement du jour
+                        		// ï¿½vï¿½nement du jour
                         		if ( task.getStartHour() != null)
                         		  	out.println("&#149; " + message.getString("today") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+m_sContext+URLManager.getURL(URLManager.CMP_AGENDA)+"agenda.jsp?Action=SelectDay&Day="+date+"\">" + task.getName() + "</a><BR>");
                         		else
@@ -542,7 +543,7 @@ function jumpToComponent(componentId) {
                         	}
                         	else if (tomorrow.equals(taskDate))
                         	{
-                        		// évènement du lendemain
+                        		// ï¿½vï¿½nement du lendemain
                         		if ( task.getStartHour() != null)
                         		  	out.println("&#149; " + message.getString("tomorrow") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+m_sContext+URLManager.getURL(URLManager.CMP_AGENDA)+"agenda.jsp?Action=SelectDay&Day="+date+"\">" + task.getName() + "</a><BR>");    
                         		else
@@ -550,10 +551,10 @@ function jumpToComponent(componentId) {
                         	}
                         	else          
                         	{
-                        	  	// recherche du libellé du jour
+                        	  	// recherche du libellï¿½ du jour
                         		int day = taskDate.get(Calendar.DAY_OF_WEEK);
                         	 	String jour = "GML.jour" + day;
-								// recherche du libellé du mois
+								// recherche du libellï¿½ du mois
                         		int month = taskDate.get(Calendar.MONTH);
                         	  	String mois = "GML.mois" + month;
                         	  	if ( task.getStartHour() != null)
@@ -741,19 +742,19 @@ function jumpToComponent(componentId) {
 								LinkDetail link = (LinkDetail) it.next();
 								if (link.isVisible())
 								{
-									// afficher que les liens que l'utilisateur a topé "visible en page d'accueil"
+									// afficher que les liens que l'utilisateur a topï¿½ "visible en page d'accueil"
 									String lien = link.getUrl();
 									String name = link.getName();
 									if (name.equals(""))
 										name = lien;
-									// ajouter le context devant le lien si nécéssaire
+									// ajouter le context devant le lien si nï¿½cï¿½ssaire
 									if (lien.indexOf("://") == -1)
 									{
 										String context = URLManager.getApplicationURL();
 										lien = context + lien;
 									}
 									String popup = "";
-									// regarder si on doit l'ouvrir dans une autre fenêtre 
+									// regarder si on doit l'ouvrir dans une autre fenï¿½tre 
 									if (link.isPopup())
 										popup = "target=_blank";
 									out.println("&#149; <a href='" + lien + "' " + popup + ">" + name + "</a>");
@@ -779,7 +780,7 @@ function jumpToComponent(componentId) {
 		</table>
 		</div>
       <!-------------------------------------------------------------------------------------->
-      <!------------------------------- Fichiers réservés ------------------------------------>
+      <!------------------------------- Fichiers rï¿½servï¿½s ------------------------------------>
       <!-------------------------------------------------------------------------------------->
       <%
       boolean full = false;
@@ -835,7 +836,7 @@ function jumpToComponent(componentId) {
 							
 								if (att.getExpiryDate() != null)
 								{
-									// convertir la date de l'évènement
+									// convertir la date de l'ï¿½vï¿½nement
 			                        Calendar atDate = Calendar.getInstance();
 			                        atDate.setTime(att.getExpiryDate());
 			                        atDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -845,20 +846,20 @@ function jumpToComponent(componentId) {
 			                        String date = DateUtil.getInputDate(att.getExpiryDate(), language);
 			                        if (today.equals(atDate))
 			                        {
-			                        	// évènement du jour
+			                        	// ï¿½vï¿½nement du jour
 		                        		out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+att.getPK().getInstanceId()+"')\">"+name+"</a> " + " (" + message.getString("today") + ") <BR>");
 			                        }
 			                        else if (tomorrow.equals(atDate))
 			                        {
-			                        	// évènement du lendemain
+			                        	// ï¿½vï¿½nement du lendemain
 		                           	  	out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+att.getPK().getInstanceId()+"')\">"+name+"</a> " + " (" + message.getString("tomorrow") + ") <BR>");    
 			                        }
 			                        else          
 			                        {
-			                          	// recherche du libellé du jour
+			                          	// recherche du libellï¿½ du jour
 			                        	int day = atDate.get(Calendar.DAY_OF_WEEK);
 			                         	String jour = "GML.jour" + day;
-										// recherche du libellé du mois
+										// recherche du libellï¿½ du mois
 			                        	int month = atDate.get(Calendar.MONTH);
 			                          	String mois = "GML.mois" + month;
 			                   			out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+att.getPK().getInstanceId()+"')\">"+name+"</a> " + " (" + generalMessage.getString(jour)+ " " + atDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR) + ") " + "<BR>");
@@ -872,7 +873,7 @@ function jumpToComponent(componentId) {
 								}
 							}
 						}
-						// traitement des liens vers les fichiers joints versionnés
+						// traitement des liens vers les fichiers joints versionnï¿½s
 						if (versioning != null && versioning.size() > 0 ) 
 						{
 							Iterator i = versioning.iterator();
@@ -885,7 +886,7 @@ function jumpToComponent(componentId) {
 								
 								if (doc.getExpiryDate() != null)
 								{
-									// convertir la date de l'évènement
+									// convertir la date de l'ï¿½vï¿½nement
 			                        Calendar veDate = Calendar.getInstance();
 			                        veDate.setTime(doc.getExpiryDate());
 			                        veDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -895,20 +896,20 @@ function jumpToComponent(componentId) {
 			                        String date = DateUtil.getInputDate(doc.getExpiryDate(), language);
 			                        if (today.equals(veDate))
 			                        {
-			                        	// évènement du jour
+			                        	// ï¿½vï¿½nement du jour
 		                        		out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+doc.getPk().getInstanceId()+"')\">"+name+"</a>" + " (" + message.getString("today") + ") <BR>");
 			                        }
 			                        else if (tomorrow.equals(veDate))
 			                        {
-			                        	// évènement du lendemain
+			                        	// ï¿½vï¿½nement du lendemain
 		                        		out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+doc.getPk().getInstanceId()+"')\">"+name+"</a>" + " (" + message.getString("tomorrow") + ") <BR>");
 				                        }
 			                        else          
 			                        {
-			                          	// recherche du libellé du jour
+			                          	// recherche du libellï¿½ du jour
 			                        	int day = veDate.get(Calendar.DAY_OF_WEEK);
 			                         	String jour = "GML.jour" + day;
-										// recherche du libellé du mois
+										// recherche du libellï¿½ du mois
 			                        	int month = veDate.get(Calendar.MONTH);
 			                          	String mois = "GML.mois" + month;
 			                   			out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+doc.getPk().getInstanceId()+"')\">"+name+"</a>" + " ("+ generalMessage.getString(jour)+ " " + veDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + veDate.get(Calendar.YEAR) + ") <BR>");

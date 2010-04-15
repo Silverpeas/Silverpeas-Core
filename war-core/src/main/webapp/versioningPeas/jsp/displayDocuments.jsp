@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
@@ -174,7 +175,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 		  		out.println("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
 				if (document.getStatus()==Document.STATUS_CHECKOUTED)
 				{
-				  	//réservé
+				  	//rï¿½servï¿½
 				  	if (useFileSharing) 
 					{
 						out.println("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
@@ -441,7 +442,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
                 <td align="right">
                   <table width="100%">
                     <tr>
-                      <td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
+                      <td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Dï¿½poser rapidement un fichier...</a></td>
                     </tr>
                     <tr>
                       <td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>

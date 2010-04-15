@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
@@ -152,7 +153,7 @@ function ConfirmAndSend(textToDisplay,targetURL)
 			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("pdcPeas.1px")%>"></TD>
 		</TR>
 		<%
-		// il faut afficher les droits hérités
+		// il faut afficher les droits hï¿½ritï¿½s
 		while (i < groupsInherited.size()) 
 		{
 			group = (Group) groupsInherited.get(i);

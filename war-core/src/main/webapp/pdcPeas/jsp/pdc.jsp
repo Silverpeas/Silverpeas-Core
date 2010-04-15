@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,12 +23,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp"%>
 
 <%
 
 // recuperation des parametres
-String 	viewType 		= (String) request.getAttribute("ViewType"); // type d'axes à visualiser P(rimaire) ou S(econdaire)
+String 	viewType 		= (String) request.getAttribute("ViewType"); // type d'axes ï¿½ visualiser P(rimaire) ou S(econdaire)
 List 	axisList 		= (List) request.getAttribute("AxisList"); // a list of axis header
 String 	creationAllowed = (String) request.getAttribute("CreationAllowed"); // String to authorize the creation
 String 	displayLanguage = (String) request.getAttribute("DisplayLanguage");
@@ -68,7 +69,7 @@ ArrayLine arrayLine = null;
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == true) ){
-				// il n'y a qu'une checkbox selectionnée
+				// il n'y a qu'une checkbox selectionnï¿½e
 				selectItems += boxItems.value;
 			} else{
 				// search checked boxes 

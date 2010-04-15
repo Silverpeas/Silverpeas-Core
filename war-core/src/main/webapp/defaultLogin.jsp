@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="headLog.jsp" %>
@@ -144,8 +145,8 @@ function checkSubmit(ev)
 </head>
 <body>
       <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
-        <div id="top"></div> <!-- Backgroud foncé -->
-        <div class="page"> <!-- Centrage horizontal des éléments (960px) -->
+        <div id="top"></div> <!-- Backgroud foncï¿½ -->
+        <div class="page"> <!-- Centrage horizontal des ï¿½lï¿½ments (960px) -->
             <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %></div>
             <div id="background"> <!-- image de fond du formulaire -->    	
                 <div class="cadre">   
@@ -222,7 +223,7 @@ function checkSubmit(ev)
 			nbCookiesFound=0;
 			var domainId = <%=domainId%>;
 		
-			/* Si le domainId n'est pas dans la requête, alors récupération depuis le cookie */
+			/* Si le domainId n'est pas dans la requï¿½te, alors rï¿½cupï¿½ration depuis le cookie */
 			if(domainId == null && GetCookie("defaultDomain") != null)
 			{ 
 				<% for (int i = 0 ; i < domains.size() && domains.size() > 1; i++) { %>

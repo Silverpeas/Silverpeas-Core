@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -27,11 +27,11 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	LinkDetail 	link			= (LinkDetail) request.getAttribute("Link");
 	Boolean		isVisibleB		= (Boolean) request.getAttribute("IsVisible");
 
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	boolean 	isVisible		= isVisibleB.booleanValue();
 	
 	int 		linkId 			= 0;
@@ -42,7 +42,7 @@
 	boolean 	popup			= false;
 	String		action 			= "CreateLink";
 	
-	// dans le cas d'une mise à jour, récupération des données :
+	// dans le cas d'une mise ï¿½ jour, rï¿½cupï¿½ration des donnï¿½es :
 	if (link != null)
 	{
 		linkId 			= link.getLinkId();
@@ -55,7 +55,7 @@
 		popup			= link.isPopup();
 		action 			= "UpdateLink";
 	}
-	// déclaration des boutons
+	// dï¿½claration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
     Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
 	

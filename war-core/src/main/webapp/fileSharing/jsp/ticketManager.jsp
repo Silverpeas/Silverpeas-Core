@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,10 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	TicketDetail 	ticket		= (TicketDetail) request.getAttribute("Ticket");
 	
 	String 		keyFile			= "";
@@ -48,7 +49,7 @@
 	String		action 			= "CreateTicket";
 	String		type			= null;		//versioning or not
 	
-	// dans le cas d'une mise à jour, récupération des données :
+	// dans le cas d'une mise ï¿½ jour, rï¿½cupï¿½ration des donnï¿½es :
 	if (ticket != null)
 	{
 		keyFile			= ticket.getKeyFile();
@@ -73,7 +74,7 @@
 	}
 	if (action.equals("CreateTicket"))
 	{
-		// en création, récupération des données du fichier depuis attachment
+		// en crï¿½ation, rï¿½cupï¿½ration des donnï¿½es du fichier depuis attachment
 		id				= (String) request.getAttribute("FileId");
 		componentId		= (String) request.getAttribute("ComponentId");
 		fileId 			= Integer.parseInt(id);
@@ -82,7 +83,7 @@
 		versioning		= ((Boolean) request.getAttribute("Versioning")).booleanValue();
 	}
 	
-	// déclaration des boutons
+	// dï¿½claration des boutons
 	Button validateButton;
 	if (action.equals("CreateTicket"))
 		validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendDataCreate();", false);
@@ -264,7 +265,7 @@ function editDate(nameElem)
   	{ %>
 	  	<tr><td colspan="2">
 	  	<%
-		// liste des téléchargements déjà effectués
+		// liste des tï¿½lï¿½chargements dï¿½jï¿½ effectuï¿½s
 		
 		ArrayPane arrayPane = gef.getArrayPane("downloadList", "EditTicket?KeyFile="+keyFile, request, session);
 		arrayPane.addArrayColumn(resource.getString("fileSharing.downloadDate"));

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
 <%@ page import="com.silverpeas.thesaurus.*"%>
@@ -59,7 +60,7 @@ boolean valueIsAscendant(String valueId, String baseValuePaths) {
 
 String getValueSearchContext(SearchContext searchContext, int axisId)
 {
-		if (searchContext != null) { //searchContext peut etre null si on a changé la selection d'une combo
+		if (searchContext != null) { //searchContext peut etre null si on a changï¿½ la selection d'une combo
 			ArrayList alCriterias = searchContext.getCriterias();
 			for(int nI=0; alCriterias != null && nI < alCriterias.size(); nI++)
 			{
@@ -72,11 +73,11 @@ String getValueSearchContext(SearchContext searchContext, int axisId)
 		return null;
 }
 
-//fonction qui sert a afficher les synonymes du terme selectionné dans la combo
+//fonction qui sert a afficher les synonymes du terme selectionnï¿½ dans la combo
 String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTree, String idTerm) throws ThesaurusException {
 		String synonyms = "";
 		boolean first = true;
-		if (jargon != null && activeThesaurus.booleanValue()) {//activé
+		if (jargon != null && activeThesaurus.booleanValue()) {//activï¿½
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
 			ThesaurusManager thesaurus = new ThesaurusManager();
@@ -101,7 +102,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 %>
 <%
 	List 			usedAxis 		= (List) request.getAttribute("UsedAxis");
-	SearchContext 	searchContext 	= (SearchContext) request.getAttribute("SearchContext"); //est null si a changé la selection d'une combo
+	SearchContext 	searchContext 	= (SearchContext) request.getAttribute("SearchContext"); //est null si a changï¿½ la selection d'une combo
 	Jargon 			jargon 			= (Jargon) request.getAttribute("Jargon");
 	Boolean 		activeThesaurus = (Boolean) request.getAttribute("ActiveThesaurus");	
 	Collection 		listValues 		= (Collection) request.getAttribute("ListValues");	
@@ -259,14 +260,14 @@ function test(object, reload) {
 		String  baseValueIds	= new Integer(baseValueId).toString()+",";
 		String	baseValuePaths	= baseValuePath+",";
 		int memIndice = i;
-		//Recherche si l'axe est utilisé plusieurs fois
+		//Recherche si l'axe est utilisï¿½ plusieurs fois
 		for (int j=i+1; j<usedAxis.size(); j++) {
 			UsedAxis	checkAxis		=	(UsedAxis) usedAxis.get(j);
 			int			checkAxisId		=	checkAxis.getAxisId();
 
 			if (checkAxisId == axisId) {
-				//L'axe est utilisé au moins 2 fois
-				//on doit mémoriser baseValueId et baseValuePath
+				//L'axe est utilisï¿½ au moins 2 fois
+				//on doit mï¿½moriser baseValueId et baseValuePath
 				baseValueIds	+= new Integer(checkAxis.getBaseValue()).toString()+",";
 				//baseValuePaths	+= checkAxis._getBaseValuePath()+",";
 				baseValuePaths	+= checkAxis._getBaseValuePath()+checkAxis.getBaseValue()+"/,";
@@ -287,7 +288,7 @@ function test(object, reload) {
 				boolean bSearchContextValueDone = false;
 				String valueIdSelected = null;
 				String valueTreeIdSelected = null;
-				boolean anElementSelected = false; //true si un des termes != "" a ete selectionné dans la combo
+				boolean anElementSelected = false; //true si un des termes != "" a ete selectionnï¿½ dans la combo
 				boolean isBaseValue = false;
 				boolean isValueAllowed = false;
 				boolean isAscendentValue = false;
@@ -362,7 +363,7 @@ function test(object, reload) {
 					
 					//on a une valeur invariante
 					else {
-						//Seule la valeur invariante peut être sélectionnée	
+						//Seule la valeur invariante peut ï¿½tre sï¿½lectionnï¿½e	
 						if (isValueAllowed || isBaseValue) {
 							if (invariantValue.equals(valuePath+valueId+"/")) {
 								out.println("<option value=\""+axisId+"|"+valuePath+valueId+"/\" selected>"+increment+valueName+"</option>");
@@ -384,7 +385,7 @@ function test(object, reload) {
 				
 				
 				//affichage du dernier element de valeur = "" si une valeur n'est pas obligatoire pour cet axe
-				//selectionné si rien d'autre n'a été selectionné dans la combo
+				//selectionnï¿½ si rien d'autre n'a ï¿½tï¿½ selectionnï¿½ dans la combo
 				
 				if (mandatory == 0 && !bSearchContextValueDone) {
 					if (! anElementSelected) {
@@ -431,7 +432,7 @@ function test(object, reload) {
     out.println(board.printAfter());
     
     ButtonPane buttonPane = gef.getButtonPane();
-	// si aucune position n'est définie alors on ne permet pas la validation
+	// si aucune position n'est dï¿½finie alors on ne permet pas la validation
 	if (axisValues != null && axisValues.size() != 0) {
 		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));
 	}

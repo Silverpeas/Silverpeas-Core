@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
@@ -232,7 +233,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == selected) ){
-				// il n'y a qu'une checkbox non selectionnée
+				// il n'y a qu'une checkbox non selectionnï¿½e
 				items += boxItems.value+",";
 			} else{
 				// search not checked boxes 
@@ -265,17 +266,17 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	function selectEveryResult(chkMaster) {
 		var boxItems = document.AdvancedSearch.resultObjects;
 		if (boxItems != null){
-			// référence
+			// rï¿½fï¿½rence
 			var selected = chkMaster.checked;
 			
 			// au moins une checkbox existe
 			var nbBox = boxItems.length;
 			if (nbBox == null) {
-				// il n'y a qu'une checkbox dont le "checked" est identique à la référence
+				// il n'y a qu'une checkbox dont le "checked" est identique ï¿½ la rï¿½fï¿½rence
 				boxItems.checked = selected;
 				
 			} else {
-				// on coche (ou décoche) les checkboxs, en fonction de la valeur de référence
+				// on coche (ou dï¿½coche) les checkboxs, en fonction de la valeur de rï¿½fï¿½rence
 				for (i=0; i<boxItems.length; i++ ){
 					if (!boxItems[i].disabled)
 						boxItems[i].checked = selected;
@@ -581,7 +582,7 @@ function dymsend(query ) {
 			
 			} if (StringUtil.isDefined(sDownloadURL))
 			{
-				//affiche le lien pour le téléchargement
+				//affiche le lien pour le tï¿½lï¿½chargement
 				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");
 			}
 			if (sCreatorName != null && sCreatorName.length()>0)

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
 
@@ -47,10 +48,10 @@
 	//use AttachmentPK to build the foreign key of customer object.
 	AttachmentPK foreignKey =  new AttachmentPK(id, componentId);
 
-	//Création d'un objet fichier
+	//Crï¿½ation d'un objet fichier
 	File f = new File(path);
 	if(f.isFile()){
-		//récupération du nom, la dernière occurrence contiendra le nom du fichier
+		//rï¿½cupï¿½ration du nom, la derniï¿½re occurrence contiendra le nom du fichier
 		StringTokenizer strt = new java.util.StringTokenizer(path, File.separator);
 		int nbToken = strt.countTokens();
 		int k = 0;
@@ -61,7 +62,7 @@
 		}
 		physicalName= path;
 	
-		//récupération du mimeType
+		//rï¿½cupï¿½ration du mimeType
 		mimeType = AttachmentController.getMimeType(logicalName);
 		//create AttachmentDetail Object
 		AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, "link", mimeType, f.length(), context, creationDate, foreignKey);
@@ -101,7 +102,7 @@
 							<tr>
 								<td align="center">
 									<B><%if (isExistFile) 
-												out.println(messages.getString("liaisonTerminée"));
+												out.println(messages.getString("liaisonTerminï¿½e"));
 											else
 												out.println(messages.getString("liaisonInaccessible"));%>
 									</B>
@@ -116,7 +117,7 @@
 			ButtonPane buttonPane2 = gef.getButtonPane();
         String paramDelimiter = "?";
         if (url.indexOf("?") != -1) {
-                //Il existe déjà un '?' dans la chaine url
+                //Il existe dï¿½jï¿½ un '?' dans la chaine url
                 paramDelimiter = "&";
         }
 			buttonPane2.addButton((Button) gef.getFormButton(resources.getString("GML.back"), "javascript:window.opener.location.href='"+m_Context+ url + paramDelimiter + "Id="+id + "&Component=" + componentId + "'; window.close()", false));

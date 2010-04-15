@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -24,6 +24,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+
 <portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd/etc/opt/SUNWportal/dtd/portlet.xsd" version="1.0">
 
 
@@ -166,7 +167,7 @@
  </portlet>
  
  <portlet>
-        <description>Actualités</description>
+        <description>Actualitï¿½s</description>
         <portlet-name>QuickInfosPortlet</portlet-name>
         <display-name>QuickInfosPortlet</display-name>
         <portlet-class>com.silverpeas.portlets.QuickInfosPortlet</portlet-class>
@@ -182,7 +183,7 @@
  </portlet>
  
  <portlet>
-        <description>Mes fichiers réservés</description>
+        <description>Mes fichiers rï¿½servï¿½s</description>
         <portlet-name>MyCheckOutFiles</portlet-name>
         <display-name>MyCheckOutFiles</display-name>
         <portlet-class>com.silverpeas.portlets.MyCheckOutFiles</portlet-class>

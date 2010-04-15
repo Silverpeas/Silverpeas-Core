@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp"%>
 <%
 	String type = (String) request.getAttribute("ViewType");
@@ -77,7 +78,7 @@
 
 	// pour affichage des options du tag select 
 	Iterator it = null;
-	int nbItemShowed = 1; // cas ou ce serait le 1er axe de créer
+	int nbItemShowed = 1; // cas ou ce serait le 1er axe de crï¿½er
 	if (!selectedAxis.isEmpty()){
 		it = selectedAxis.iterator();
 		if (selectedAxis.size() < 5) {
@@ -144,7 +145,7 @@
 		}
 
 		if (axisType == 'P'){
-			// définition des noms d'axe et de leur ordre de l'axe primaire
+			// dï¿½finition des noms d'axe et de leur ordre de l'axe primaire
 			<%
 			if (!primaryAxis.isEmpty()){
 				// la liste n'est pas vide, on construit les instructions javascript pour reconstuire dynamique la liste
@@ -163,17 +164,17 @@
 				}	
 				o++;
 				// ajoute le dernier element
-				if (modification == null) // création
+				if (modification == null) // crï¿½ation
 					out.println("document.axisForm.Order.options["+item+"] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\""+o+"\",true,\"selected\");");
 				else
 					out.println("document.axisForm.Order.options["+item+"] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\""+o+"\");");
 			} else {
 				out.println("document.axisForm.Order.options[0] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\"0\",true,\"selected\");");
 			}
-			out.println("document.axisForm.Order.size = 5"); // définition en dur de la taille de la liste :-(
+			out.println("document.axisForm.Order.size = 5"); // dï¿½finition en dur de la taille de la liste :-(
 			%>
 		} else {
-			// définition des noms d'axe et de leur ordre
+			// dï¿½finition des noms d'axe et de leur ordre
 			<% 
 			if (!secondaryAxis.isEmpty()){
 				Iterator IteratorS = secondaryAxis.iterator();
@@ -191,14 +192,14 @@
 				}
 				o++;
 				// ajoute le dernier element
-				if (modification == null) // création
+				if (modification == null) // crï¿½ation
 					out.println("document.axisForm.Order.options["+item+"] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\""+o+"\",true,\"selected\");");
 				else
 					out.println("document.axisForm.Order.options["+item+"] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\""+o+"\");");
 			} else {
 				out.println("document.axisForm.Order.options[0] = new Option(\"<"+resource.getString("pdcPeas.EndTag")+">\",\"0\",true,\"selected\");");
 			}
-			out.println("document.axisForm.Order.size = 5"); // définition en dur de la taille de la liste :-(
+			out.println("document.axisForm.Order.size = 5"); // dï¿½finition en dur de la taille de la liste :-(
 			%>
 		}
 	}
@@ -285,9 +286,9 @@
         <td class="textePetitBold"><%=resource.getString("pdcPeas.brothersAxis")%>&nbsp;:<br>
 			<%
 				out.println("<select name=\"Order\" size=\""+new Integer(nbItemShowed).toString()+"\">");
-				// test s'il ne s'agit pas du premier axe que l'on créait.
+				// test s'il ne s'agit pas du premier axe que l'on crï¿½ait.
 				if (!selectedAxis.isEmpty()){
-					// affiche les axes frères
+					// affiche les axes frï¿½res
 					while (it.hasNext()){
 						tempAxisHeader = (AxisHeader)it.next();
 						axisName = Encode.javaStringToHtmlString(tempAxisHeader.getName());
@@ -299,7 +300,7 @@
 					// calcul le dernier ordre
 					int newOrder_tmp = (new Integer(order)).intValue() + 1;
 					String newOrder = (new Integer(newOrder_tmp)).toString();
-					if (modification == null) // création
+					if (modification == null) // crï¿½ation
 						out.println("<option value=\""+newOrder+"\" selected>&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");
 					else
 						out.println("<option value=\""+newOrder+"\">&lt;"+resource.getString("pdcPeas.EndTag")+"&gt;</option>");

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkPdc.jsp"%>
 
 <%
@@ -31,13 +32,13 @@ Value 	value 			= (Value) request.getAttribute("Value"); // l'objet Value pour a
 String 	isRoot 			= (String) request.getAttribute("Root"); // si c'est une valeur racine ou pas.
 List 	list 			= (List) request.getAttribute("Path"); // le chemin complet ou l'on peut retrouver la valeur selectionnee
 String 	daughterName 	= (String) request.getAttribute("DaughterNameWhichAlreadyExist"); //Dans le cas de la suppression, une des valeurs fille peut avoir 
-																					  //le même nom qu'une des soeurs de la valeur que l'on veut supprimer
+																					  //le mï¿½me nom qu'une des soeurs de la valeur que l'on veut supprimer
 																					  //! C'est interdit !
 String 	displayLanguage = (String) request.getAttribute("DisplayLanguage");
 
 boolean	isAdmin			= ((Boolean) request.getAttribute("IsAdmin")).booleanValue();
 
-// initialisation des différentes variables pour l'affichage
+// initialisation des diffï¿½rentes variables pour l'affichage
 String valueName 		= value.getName(displayLanguage);
 String valueDescription = value.getDescription(displayLanguage);
 int valueNbDoc 			= value.getNbObjects();

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -97,7 +97,7 @@ function SubmitWithVerif()
 						}
 						else
 						{
-							alert("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
+							alert("Crï¿½ation impossible...\nUn utilisateur de mï¿½me nom, mï¿½me prï¿½nom et mï¿½me email existe dï¿½jï¿½ !");
 						}
 					});
 		<% } else { %>

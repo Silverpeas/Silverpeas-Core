@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
@@ -71,7 +72,7 @@ ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authe
 		    	return false;
 	    	}
 	    	else if (passed == false) {
-		    	alert("Votre mot de passe doit comporter au moins huit caractères et être composé d'une combinaison de trois types de caractères (à choisir entre minuscules, majuscules, chiffres et signes spéciaux). ");
+		    	alert("Votre mot de passe doit comporter au moins huit caractï¿½res et ï¿½tre composï¿½ d'une combinaison de trois types de caractï¿½res (ï¿½ choisir entre minuscules, majuscules, chiffres et signes spï¿½ciaux). ");
 		    	return false;
 	    	}
 	    	else {
@@ -84,8 +85,8 @@ ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authe
 
 <body>
 	<form id="changePwdForm" action="<%=m_context%>/CredentialsServlet/EffectiveChangePassword" method="post">
-        <div id="top"></div> <!-- Backgroud foncé -->
-        <div class="page"> <!-- Centrage horizontal des éléments (960px) -->
+        <div id="top"></div> <!-- Backgroud foncï¿½ -->
+        <div class="page"> <!-- Centrage horizontal des ï¿½lï¿½ments (960px) -->
             <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %></div>
             <div id="background"> <!-- image de fond du formulaire -->    	
                 <div class="cadre">   
