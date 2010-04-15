@@ -23,6 +23,9 @@
  */
 package com.silverpeas.workflow.engine.instance;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.Actor;
 import com.silverpeas.workflow.api.model.State;
@@ -57,6 +60,11 @@ public class WorkingUser extends AbstractReferrableObject {
    */
   private String userId = null;
 
+  /**
+   * @field-name usersRole
+   */
+  private String usersRole = null;
+  
   /**
    * @field-name state
    */
@@ -138,6 +146,22 @@ public class WorkingUser extends AbstractReferrableObject {
   }
 
   /**
+   * Get the user role
+   * @return user role name
+   */
+  public String getUsersRole() {
+    return usersRole;
+  }
+
+  /**
+   * Set the user role
+   * @param usersRole role
+   */
+  public void setUsersRole(String usersRole) {
+    this.usersRole = usersRole;
+  }
+  
+  /**
    * Get the instance for which user is affected
    * @return instance
    */
@@ -173,6 +197,31 @@ public class WorkingUser extends AbstractReferrableObject {
   }
 
   /**
+   * Converts WorkingUser to Actors
+   * @return an object implementing Actor interface
+   */
+  public Collection<Actor> toActors() throws WorkflowException {
+    State state = processInstance.getProcessModel().getState(this.state);
+    Collection<Actor> actors = new ArrayList<Actor>();
+    
+    // first add user by id
+    if (this.getUserId() != null) {
+	    User user = WorkflowHub.getUserManager().getUser(this.getUserId());
+	    actors.add( new ActorImpl(user, role, state) );
+    }
+    
+    // then add users by role
+    if (this.usersRole != null) {
+      User[] users = WorkflowHub.getUserManager().getUsersInRole(usersRole, processInstance.getModelId());
+      for (User anUser : users) {
+        actors.add( new ActorImpl(anUser, role, state) );
+      }
+    }
+    
+    return actors;
+  }
+  
+  /**
    * Get User information from an array of workingUsers
    * @param workingUsers an array of WorkingUser objects
    * @return an array of objects implementing User interface and containing user details
@@ -193,6 +242,6 @@ public class WorkingUser extends AbstractReferrableObject {
    * @return The unique key.
    */
   public String getKey() {
-    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole());
+    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this.getUsersRole());
   }
 }

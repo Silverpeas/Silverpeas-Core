@@ -51,6 +51,7 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -64,7 +65,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
   private static String COLUMNS =
       " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
-
+  
   /**
    * @return the DB connection
    */
@@ -132,10 +133,15 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   public ProcessInstance[] getProcessInstances(String peasId, User user,
       String role) throws WorkflowException {
+    return getProcessInstances(peasId, user, role, null);
+  }
+  
+  public ProcessInstance[] getProcessInstances(String peasId, User user,
+      String role, String[] userRoles) throws WorkflowException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String selectQuery = "";
+    StringBuffer selectQuery = new StringBuffer();
     Vector instances = new Vector();
 
     try {
@@ -145,23 +151,51 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       con = this.getConnection();
 
       if (role.equals("supervisor")) {
-        selectQuery = "select * from SB_Workflow_ProcessInstance instance where modelId = ?";
-        prepStmt = con.prepareStatement(selectQuery);
+        selectQuery.append("select * from SB_Workflow_ProcessInstance instance where modelId = ?");
+        prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
       } else {
-        selectQuery = "select " + COLUMNS
-            + " from SB_Workflow_ProcessInstance I ";
-        selectQuery += "where I.modelId = ? ";
-        selectQuery += "and exists (";
-        selectQuery +=
-            "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and intUser.userId = ? and intUser.role = ? ";
-        selectQuery += "union ";
-        selectQuery +=
-            "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and wkUser.userId = ? and wkUser.role = ? ";
-        selectQuery += ")";
-        selectQuery += "order by I.instanceId desc";
+        selectQuery.append("select ").append(COLUMNS).append(" from SB_Workflow_ProcessInstance I ");
+        selectQuery.append("where I.modelId = ? ");
+        selectQuery.append("and exists (");
+        selectQuery.append(
+            "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and (");
+        selectQuery.append("intUser.userId = ? ");
+        if ( (userRoles != null) && (userRoles.length>0) ) {
+          selectQuery.append(" or intUser.usersRole in (");
+          boolean first = true;
+          for (String userRole : userRoles) {
+            if (!first) {
+              selectQuery.append(", ");            
+            }
+            selectQuery.append("'").append(userRole).append("'");
+            first = false;
+          }
+          selectQuery.append(")"); 
+        }
+        selectQuery.append(") and intUser.role = ? ");
+        selectQuery.append("union ");
+        selectQuery.append(
+            "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and (");
+        selectQuery.append("wkUser.userId = ? ");
+        if ( (userRoles != null) && (userRoles.length>0) ) {
+          selectQuery.append(" or wkUser.usersRole in (");
+          boolean first = true;
+          for (String userRole : userRoles) {
+            if (!first) {
+              selectQuery.append(", ");            
+            }
+            selectQuery.append("'").append(userRole).append("'");
+            first = false;
+          }
+          selectQuery.append(")"); 
+        }
 
-        prepStmt = con.prepareStatement(selectQuery);
+        selectQuery.append(") and wkUser.role = ? ");
+        selectQuery.append(")");
+        selectQuery.append("order by I.instanceId desc");
+
+        prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
         prepStmt.setString(2, user.getUserId());
         prepStmt.setString(3, role);
@@ -183,9 +217,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       }
 
       // getHistory
-      selectQuery = "select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc";
-
-      prepStmt = con.prepareStatement(selectQuery);
+      prepStmt = con.prepareStatement("select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc");
 
       for (int i = 0; i < instances.size(); i++) {
         instance = (ProcessInstanceImpl) instances.get(i);
@@ -212,9 +244,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
       // getActiveStates
       Vector states = null;
-      selectQuery = "select * from SB_Workflow_ActiveState where instanceId = ? order by id asc";
-
-      prepStmt = con.prepareStatement(selectQuery);
+      prepStmt = con.prepareStatement("select * from SB_Workflow_ActiveState where instanceId = ? order by id asc");
 
       for (int i = 0; i < instances.size(); i++) {
         instance = (ProcessInstanceImpl) instances.get(i);

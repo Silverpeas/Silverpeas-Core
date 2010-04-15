@@ -107,6 +107,13 @@ public interface UpdatableProcessInstance extends ProcessInstance {
       throws WorkflowException;
 
   /**
+   * Remove all working users for given state
+   * @param state state for which the user is interested
+   */
+  public void removeWorkingUsers(State state)
+      throws WorkflowException;
+  
+  /**
    * Add an user in the interested user list
    * @param user user to add
    * @param state state for which the user is interested
@@ -123,6 +130,12 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    */
   public void removeInterestedUser(User user, State state, String role)
       throws WorkflowException;
+
+  /**
+   * Remove all interested users for given state
+   * @param state state for which the user is interested
+   */
+  void removeInterestedUsers(State state) throws WorkflowException;
 
   /**
    * Lock this instance by admin for all states
@@ -149,4 +162,5 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    * @param question the question to cancel
    */
   public void cancelQuestion(Question question) throws WorkflowException;
+
 }

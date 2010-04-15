@@ -45,6 +45,18 @@ public interface ProcessInstanceManager {
       String role) throws WorkflowException;
 
   /**
+   * Get the list of process instances for a given peas Id, user and role, and user's roles.
+   * @param peasId id of processManager instance
+   * @param user user for who the process instance list is
+   * @param role role name of the user for who the process instance list is (useful when user has
+   * @param userRoles all role names that user has for this component instance
+   * different roles)
+   * @return an array of ProcessInstance objects
+   */
+  public ProcessInstance[] getProcessInstances(String peasId, User user,
+      String role, String[] userRoles) throws WorkflowException;
+
+  /**
    * Get the list of process instances for a given peas Id, that have the given state activated
    * @param peasId id of processManager instance
    * @param state activated state

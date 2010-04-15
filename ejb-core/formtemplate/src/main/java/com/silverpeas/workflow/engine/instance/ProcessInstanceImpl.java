@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -388,7 +389,18 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   private void addWorkingUser(User user, String state, String role)
       throws WorkflowException {
     WorkingUser wkUser = new WorkingUser();
-    wkUser.setUserId(user.getUserId());
+    
+    /*
+     * 2 use cases :
+     * - define working user by user Id
+     * - define working user by a role
+     */
+    if (user != null) {
+      wkUser.setUserId(user.getUserId());
+    }
+    else {
+      wkUser.setUsersRole(role);
+    }
     wkUser.setState(state);
     wkUser.setRole(role);
     wkUser.setProcessInstance(this);
@@ -396,9 +408,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       workingUsers.add(wkUser);
 
     // add this operation in undo history
-    if (!inUndoProcess)
-      this.addUndoHistoryStep("addWorkingUser", user.getUserId() + "##" + state
-          + "##" + role);
+    if (!inUndoProcess) {
+      if (user !=null) {
+        this.addUndoHistoryStep("addWorkingUser", user.getUserId() + "##" + state
+            + "##" + role);
+      }
+      else {
+        this.addUndoHistoryStep("addWorkingUser", state
+            + "##" + role);
+      }
+    }
   }
 
   /**
@@ -424,17 +443,28 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     // Build virtual working user to find the true one end delete it
     userToDelete = new WorkingUser();
-    userToDelete.setUserId(user.getUserId());
+    if (user != null) {
+      userToDelete.setUserId(user.getUserId());
+    }
+    else {
+      userToDelete.setUsersRole(role);
+    }
     userToDelete.setState(state);
     userToDelete.setRole(role);
-
+      
     // try to find and delete the right working user
     workingUsers.remove(userToDelete);
 
     // add this operation in undo history
-    if (!inUndoProcess)
-      this.addUndoHistoryStep("removeWorkingUser", user.getUserId() + "##"
-          + state + "##" + role);
+    if (!inUndoProcess) {
+      if (user != null) {
+        this.addUndoHistoryStep("removeWorkingUser", user.getUserId() + "##"
+            + state + "##" + role);
+      }
+      else {
+        this.addUndoHistoryStep("removeWorkingUser", state + "##" + role);
+      }
+    }
   }
 
   /**
@@ -456,8 +486,19 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   private void addInterestedUser(User user, String state, String role)
       throws WorkflowException {
+
     InterestedUser intUser = new InterestedUser();
-    intUser.setUserId(user.getUserId());
+    /*
+     * 2 use cases :
+     * - define interested user by user Id
+     * - define interested user by a role
+     */
+    if (user != null) {
+      intUser.setUserId(user.getUserId());
+    }
+    else {
+      intUser.setUsersRole(role);
+    }
     intUser.setState(state);
     intUser.setRole(role);
     intUser.setProcessInstance(this);
@@ -465,9 +506,15 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       interestedUsers.add(intUser);
 
     // add this operation in undo history
-    if (!inUndoProcess)
-      this.addUndoHistoryStep("addInterestedUser", user.getUserId() + "##"
-          + state + "##" + role);
+    if (!inUndoProcess) {
+      if (user != null) {
+        this.addUndoHistoryStep("addInterestedUser", user.getUserId() + "##"
+            + state + "##" + role);
+      }
+      else {
+        this.addUndoHistoryStep("addInterestedUser", state + "##" + role);
+      }
+    }
   }
 
   /**
@@ -493,7 +540,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     // Build virtual interestedUser user to find the true one end delete it
     userToDelete = new InterestedUser();
-    userToDelete.setUserId(user.getUserId());
+    if (user != null) {
+      userToDelete.setUserId(user.getUserId());
+    }
+    else {
+      userToDelete.setUsersRole(role);
+    }
     userToDelete.setState(state);
     userToDelete.setRole(role);
 
@@ -501,9 +553,15 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     interestedUsers.remove(userToDelete);
 
     // add this operation in undo history
-    if (!inUndoProcess)
-      this.addUndoHistoryStep("removeInterestedUser", user.getUserId() + "##"
-          + state + "##" + role);
+    if (!inUndoProcess) {
+      if (user != null) {
+        this.addUndoHistoryStep("removeInterestedUser", user.getUserId() + "##"
+            + state + "##" + role);
+      }
+      else {
+        this.addUndoHistoryStep("removeInterestedUser", state + "##" + role);
+      }
+    }
   }
 
   /**
@@ -1067,7 +1125,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
-      actors.add(wkUser.toActor());
+      actors.addAll(wkUser.toActors());
     }
 
     return (Actor[]) actors.toArray(new Actor[0]);
@@ -1083,13 +1141,60 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
       if (wkUser.getState().equals(state))
-        actors.add(wkUser.toActor());
+        actors.addAll(wkUser.toActors());
     }
 
     return (Actor[]) actors.toArray(new Actor[0]);
   }
 
-  /**
+  
+	@Override
+	public void removeWorkingUsers(State state) throws WorkflowException {
+		Iterator itWkUsers = workingUsers.iterator();
+		while (itWkUsers.hasNext()) {
+			WorkingUser wkUser = (WorkingUser) itWkUsers.next();
+	        if (wkUser.getState().equals(state.getName())) {
+	            // add this operation in undo history
+	            if (!inUndoProcess) {
+	              if (wkUser.getUserId() != null) {
+	                this.addUndoHistoryStep("removeWorkingUser", wkUser.getUserId() + "##"
+	                    + state.getName() + "##" + wkUser.getRole());
+	              }
+	              else {
+	                this.addUndoHistoryStep("removeWorkingUser", state.getName() + "##" + wkUser.getRole());
+	              }
+	            }
+
+	            // remove it
+	            itWkUsers.remove();
+	        }
+		}
+	}
+
+	@Override
+	public void removeInterestedUsers(State state) throws WorkflowException {
+		Iterator itIntUsers = interestedUsers.iterator();
+		while (itIntUsers.hasNext()) {
+			InterestedUser intUser = (InterestedUser) itIntUsers.next();
+	        if (intUser.getState().equals(state.getName())) {
+	            // add this operation in undo history
+	            if (!inUndoProcess) {
+	              if (intUser.getUserId() != null) {
+	                this.addUndoHistoryStep("removeInterestedUser", intUser.getUserId() + "##"
+	                    + state.getName() + "##" + intUser.getRole());
+	              }
+	              else {
+	                this.addUndoHistoryStep("removeInterestedUser", state.getName() + "##" + intUser.getRole());
+	              }
+	            }
+
+	            // remove it
+	            itIntUsers.remove();
+	        }
+		}
+	}
+	
+/**
    * @param state
    * @return Actor[]
    */
@@ -1100,7 +1205,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
       if (wkUser.getState().equals(state) && wkUser.getRole().equals(role))
-        actors.add(wkUser.toActor());
+        actors.addAll(wkUser.toActors());
     }
 
     return (Actor[]) actors.toArray(new Actor[0]);
@@ -1116,8 +1221,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
-      if (wkUser.getUserId().equals(userId)
-          && wkUser.getRole().equals(roleName))
+      boolean userMatch = (wkUser.getUserId() != null) && (wkUser.getUserId().equals(userId));
+      boolean usersRoleMatch = (wkUser.getUsersRole() != null) && (wkUser.getUsersRole().equals(roleName));
+      boolean wkUserMatch = userMatch || usersRoleMatch;
+      if ( wkUserMatch && wkUser.getRole().equals(roleName) )
         stateNames.add(wkUser.getState());
     }
 
@@ -1352,12 +1459,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     // Process first "user in Role"
     for (int i = 0; i < userInRoles.length; i++) {
-      User[] users = userManager.getUsersInRole(userInRoles[i].getRoleName(),
-          modelId);
-      for (int j = 0; users != null && j < users.length; j++) {
-        actors
-            .add(new ActorImpl(users[j], userInRoles[i].getRoleName(), state));
-      }
+//      User[] users = userManager.getUsersInRole(userInRoles[i].getRoleName(),
+//          modelId);
+//      for (int j = 0; users != null && j < users.length; j++) {
+//        actors
+//            .add(new ActorImpl(users[j], userInRoles[i].getRoleName(), state));
+//      }
+        actors.add(new ActorImpl(null, userInRoles[i].getRoleName(), state));
     }
 
     // Then process related users
@@ -1470,14 +1578,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         }
 
         else if (action.equals("addWorkingUser")) {
-          // The number of parameters must be : 3
-          if (st.countTokens() != 3)
+          // The number of parameters must be : 3 or 2
+          if ( (st.countTokens() != 3) && (st.countTokens() != 2) )
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
                 "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS",
                 "method addWorkingUser - found:" + st.countTokens()
-                + " instead of 3");
+                + " instead of 2 or 3");
 
-          String userId = st.nextToken();
+          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
           String state = st.nextToken();
           String role = st.nextToken();
           User user = WorkflowHub.getUserManager().getUser(userId);
@@ -1487,14 +1595,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         }
 
         else if (action.equals("removeWorkingUser")) {
-          // The number of parameters must be : 3
-          if (st.countTokens() != 3)
+          // The number of parameters must be : 3 or 2
+          if ( (st.countTokens() != 3) && (st.countTokens() != 2) )
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
                 "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS",
                 "method addWorkingUser - found:" + st.countTokens()
-                + " instead of 3");
+                + " instead of 2 or 3");
 
-          String userId = st.nextToken();
+          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
           String state = st.nextToken();
           String role = st.nextToken();
           User user = WorkflowHub.getUserManager().getUser(userId);
@@ -1503,14 +1611,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         }
 
         else if (action.equals("addInterestedUser")) {
-          // The number of parameters must be : 3
-          if (st.countTokens() != 3)
+          // The number of parameters must be : 3 or 2
+          if ( (st.countTokens() != 3) && (st.countTokens() != 2) )
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
                 "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS",
                 "method addInterestedUser - found:" + st.countTokens()
-                + " instead of 3");
+                + " instead of 2 or 3");
 
-          String userId = st.nextToken();
+          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
           String state = st.nextToken();
           String role = st.nextToken();
           User user = WorkflowHub.getUserManager().getUser(userId);
@@ -1519,14 +1627,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         }
 
         else if (action.equals("removeInterestedUser")) {
-          // The number of parameters must be : 3
-          if (st.countTokens() != 3)
+          // The number of parameters must be : 3 or 2
+          if ( (st.countTokens() != 3) && (st.countTokens() != 2) )
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
                 "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS",
                 "method removeInterestedUser - found:" + st.countTokens()
-                + " instead of 3");
+                + " instead of 2 or 3");
 
-          String userId = st.nextToken();
+          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
           String state = st.nextToken();
           String role = st.nextToken();
           User user = WorkflowHub.getUserManager().getUser(userId);

@@ -1,0 +1,13 @@
+ALTER TABLE SB_Workflow_InterestedUser
+ADD usersrole varchar (50) NULL
+;
+ALTER TABLE SB_Workflow_InterestedUser
+ALTER userId drop NOT NULL
+;
+
+ALTER TABLE SB_Workflow_WorkingUser
+ADD usersrole varchar (50) NULL
+;
+ALTER TABLE SB_Workflow_WorkingUser
+ALTER userId drop NOT NULL
+;

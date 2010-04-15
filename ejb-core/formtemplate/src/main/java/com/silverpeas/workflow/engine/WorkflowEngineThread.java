@@ -1139,7 +1139,9 @@ class WorkflowTools {
     // Assign tasks to these working users
     Task[] tasks = taskManager.createTasks(actors, instance);
     for (int i = 0; i < tasks.length; i++) {
-      taskManager.assignTask(tasks[i]);
+      if (tasks[i].getUser() != null) {
+        taskManager.assignTask(tasks[i]);
+      }
     }
 
     // Declare these working users in instance
@@ -1177,24 +1179,14 @@ class WorkflowTools {
     // Unassign tasks to these working users
     Task[] tasks = taskManager.createTasks(actors, instance);
     for (int i = 0; i < tasks.length; i++) {
-      taskManager.unAssignTask(tasks[i]);
+      if (tasks[i].getUser() != null) {
+        taskManager.unAssignTask(tasks[i]);
+      }
     }
 
-    // Remove these working users from instance
-    for (int i = 0; i < actors.length; i++) {
-      instance.removeWorkingUser(actors[i].getUser(), state, actors[i]
-          .getUserRoleName());
-    }
-
-    // Get the interested users
-    QualifiedUsers intUsers = state.getInterestedUsers();
-    actors = instance.getActors(intUsers, state);
-
-    // Remove these interested users from instance
-    for (int i = 0; i < actors.length; i++) {
-      instance.removeInterestedUser(actors[i].getUser(), state, actors[i]
-          .getUserRoleName());
-    }
+    // removes interested users and working users for resolved state
+    instance.removeInterestedUsers(state);
+    instance.removeWorkingUsers(state);
   }
 
   /**

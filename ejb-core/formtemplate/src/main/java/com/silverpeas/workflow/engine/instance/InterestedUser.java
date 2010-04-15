@@ -48,6 +48,11 @@ public class InterestedUser extends AbstractReferrableObject {
   private String userId = null;
 
   /**
+   * @field-name usersRole
+   */
+  private String usersRole = null;
+
+  /**
    * @field-name processInstance
    * @field-type com.silverpeas.workflow.engine.instance.ProcessInstanceImpl
    * @sql-name instanceId
@@ -135,6 +140,22 @@ public class InterestedUser extends AbstractReferrableObject {
   }
 
   /**
+   * Get the user role
+   * @return user role name
+   */
+  public String getUsersRole() {
+    return usersRole;
+  }
+
+  /**
+   * Set the user role
+   * @param usersRole role
+   */
+  public void setUsersRole(String usersRole) {
+    this.usersRole = usersRole;
+  }
+  
+  /**
    * Get the instance to which user is interested
    * @return instance
    */
@@ -179,6 +200,6 @@ public class InterestedUser extends AbstractReferrableObject {
    * @return The unique key.
    */
   public String getKey() {
-    return (this.getUserId() + "##" + this.getState() + "##" + this.getRole());
+    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this.getUsersRole());
   }
 }
