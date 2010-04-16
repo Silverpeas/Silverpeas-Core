@@ -27,6 +27,7 @@
 <%@ page import="java.net.URLDecoder"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%!
@@ -151,6 +152,7 @@ int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletio
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 %>
+
 
 
 <html>
@@ -359,10 +361,12 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 		}
 	<%}%>
 
-function dymsend(query ) {
-	document.AdvancedSearch.query.value = query;
-	document.AdvancedSearch.submit();
-}
+	<% if(spellingWords!= null && StringUtil.isDefined(spellingWords[0])){ %>
+		function dymsend() {
+			document.AdvancedSearch.query.value = '<%=EncodeHelper.javaStringToJsString(spellingWords[0])%>';
+			document.AdvancedSearch.submit();
+		}
+	<% } %>
 </script>
 </HEAD>
 <BODY>
@@ -504,7 +508,7 @@ function dymsend(query ) {
 						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%> 				
 						
 					</span>	
-					<a href="javascript:dymsend('<%=spellingWords[0]%>');"><b><span class="spellWord"> <%=spellingWords[0]%></span></b></a>
+					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords[0]%></span></b></a>
 					<p>&nbsp;</p>
 				</td>
 			</tr>
