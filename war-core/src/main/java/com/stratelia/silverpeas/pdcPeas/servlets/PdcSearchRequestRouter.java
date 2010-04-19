@@ -79,13 +79,11 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
 
@@ -513,7 +511,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         // This is the main function of global search
         boolean pdcUsedDuringSearch = false;
 
-        // recupere les parametres
+        // recupere les parametres (Only for a global search in advanced mode)
         String icId = request.getParameter("icId");
 
         QueryParameters searchParameters = null;
@@ -805,6 +803,124 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       } else if ("markAsRead".equals(function)) {
         PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, request);
         destination = "/pdcPeas/jsp/blank.html";
+      } else if (function.startsWith("CustomLookSearch")) {
+        // Specific search which handle FULLTEXT and PDC search
+
+        // Retrieve all request parameters
+        String query = request.getParameter("query");        
+        
+        // TODO implements keywords search instead of full text search 
+        String mode = request.getParameter("mode");
+        if ("clear".equals(mode)) {
+          clearUserChoices(pdcSC);
+          pdcSC.resetResultPage();
+          pdcSC.resetSearchPage();
+        }
+
+        String resultPage = request.getParameter("ResultPage");
+        pdcSC.setResultPage(resultPage);
+
+        String searchType = request.getParameter("searchType");
+        if (searchType != null && !"".equals(searchType)) {
+          pdcSC.setSearchType(Integer.parseInt(searchType));
+        } else {
+          pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
+        }
+
+        pdcSC.setSelectedSilverContents(new ArrayList());
+
+        // Use pdc search only if user has selected an axis value
+        boolean pdcUsedDuringSearch = false;
+        String listAxis = request.getParameter("listAxis");
+        // Reset current search context.
+        pdcSC.getSearchContext().clearCriterias();
+
+        // Check PDC search context
+        if (StringUtil.isDefined(listAxis)) {
+          pdcUsedDuringSearch = true;
+          // Initialize search context
+          String[] arrayAxis = listAxis.split(",\\s*");
+          for (String curAxis : arrayAxis) {
+            pdcSC.getSearchContext().addCriteria(new SearchCriteria(Integer.parseInt(curAxis.substring("Axis".length(), curAxis.indexOf("="))), curAxis.substring(curAxis.indexOf("=") + 1)));
+          }
+        }
+
+        // Initialize query parameters
+        QueryParameters searchParameters = pdcSC.getQueryParameters();
+        searchParameters.setKeywords(query);
+        String curSpaceId = request.getParameter("spaces");
+        if (!StringUtil.isDefined(curSpaceId)) {
+          curSpaceId = null;
+        }
+        searchParameters.setSpaceId(curSpaceId);
+        String componentId = request.getParameter("componentSearch");
+        if (!StringUtil.isDefined(componentId)) {
+          componentId = null;
+        }
+        searchParameters.setInstanceId(componentId);
+        pdcSC.buildComponentListWhereToSearch(curSpaceId, componentId);
+
+        if (pdcSC.getSearchContext() != null && !pdcSC.getSearchContext().isEmpty()) {
+          pdcUsedDuringSearch = true;
+        }
+
+        if (containerPeasPDC == null) {
+          this.initContainerContentInfo(pdcSC, true, null);
+          pdcSC.setContainerPeas(containerPeasPDC);
+        }
+
+        List<Integer> alSilverContentIds = null;
+        if (pdcUsedDuringSearch) {
+          // the search context is not empty. We have to search all silvercontentIds according to
+          // query settings
+          alSilverContentIds = searchAllSilverContentId(pdcSC, searchParameters);
+        }
+        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
+            "root.MSG_GEN_PARAM_VALUE", "avant search");
+        // the query string contains something
+        if (searchParameters.isDefined()) {
+          // We have to search objects from classical search and merge it eventually with result
+          // from PDC
+          MatchingIndexEntry[] ie = pdcSC.search(); // launch the classical research
+
+          if (pdcUsedDuringSearch) {
+            pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_MIXED);
+
+            // We retain only objects which are presents in the both search result list
+            MatchingIndexEntry[] result = mixedSearch(ie, alSilverContentIds);
+
+            // filtre les résultats affichables
+            pdcSC.setIndexEntries(result);
+          } else {
+            pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_FULLTEXT);
+
+            // filtre les résultats affichables
+            pdcSC.setIndexEntries(ie);
+          }
+
+        } else {
+          pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_PDC);
+
+          // get the list of silvercontents according to the list of silvercontent ids
+          List<GlobalSilverContent> alSilverContents = pdcSearchOnly(alSilverContentIds, pdcSC);
+
+          pdcSC.setResults(alSilverContents);
+          pdcSC.setPDCResults(alSilverContents);
+        }
+        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
+            "root.MSG_GEN_PARAM_VALUE", "après search");
+
+        if (StringUtil.isDefined(pdcSC.getResultPage())
+            && !pdcSC.getResultPage().equals("globalResult")
+            && !pdcSC.getResultPage().equals("pdaResult.jsp")) {
+          PdcSearchRequestRouterHelper.processItemsPagination(function, pdcSC, request);
+        } else {
+          setDefaultDataToNavigation(request, pdcSC);
+        }
+
+        // destination = "/pdcPeas/jsp/globalResult.jsp";
+        destination = getDestinationForResults(pdcSC);
+        
       } else {
         destination = "/pdcPeas/jsp/" + function;
       }

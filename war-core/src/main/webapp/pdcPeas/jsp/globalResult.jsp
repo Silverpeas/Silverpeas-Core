@@ -401,10 +401,11 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	if ( isXmlSearchVisible )
 		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);	
 	
-	out.println(tabs.print());
+	out.println("<div id=\"globalResultTab\">" + tabs.print() + "</div>");
 	
     out.println(frame.printBefore());
     
+    out.println("<div id=\"globalResultForm\">");
     out.println(board.printBefore());
 
 %>
@@ -487,6 +488,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	//CBO : FIN ADD
 
 	out.println(board.printAfter());
+	out.println("</div>");
     out.println("<br>");
 	out.println(board.printBefore());
 
