@@ -9,7 +9,6 @@
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>lib-core</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Lib Core</name>
 

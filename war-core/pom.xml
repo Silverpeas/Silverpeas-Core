@@ -9,7 +9,6 @@
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>war-core</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Core Webapp</name>
 

@@ -10,7 +10,6 @@
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>authentication</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>ejb</packaging>
   <name>EJB Authentication</name>
 </project>
