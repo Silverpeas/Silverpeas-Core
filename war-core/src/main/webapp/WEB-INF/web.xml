@@ -32,6 +32,11 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
 
   <context-param>
     <!-- Init Parameters -->
+    <param-name>contextConfigLocation</param-name>
+    <param-value>WEB-INF/config/spring*.xml</param-value>
+  </context-param>
+  <context-param>
+    <!-- Init Parameters -->
     <param-name>request_response_factory.minSizeParam</param-name>
     <param-value>0</param-value>
   </context-param>
@@ -80,6 +85,9 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   </filter-mapping>
 
   <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <listener>
     <listener-class>com.stratelia.silverpeas.silverpeasinitialize.SilverpeasContextInitializer</listener-class>
   </listener>
   <listener>
@@ -93,187 +101,147 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   </listener>
 
   <servlet>
-    <display-name>AuthenticationServlet</display-name>
     <servlet-name>AuthenticationServlet</servlet-name>
     <servlet-class>com.stratelia.silverpeas.servlets.AuthenticationServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>CredentialsServlet</servlet-name>
-    <display-name>CredentialsServlet</display-name>
-    <description>no description</description>
     <servlet-class>com.stratelia.webactiv.servlets.CredentialsServlet</servlet-class>
   </servlet>
   <servlet>
-    <display-name>FileServer</display-name>
     <servlet-name>FileServer</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.FileServer</servlet-class>
   </servlet>
   <servlet>
-    <display-name>OnlineFileServer</display-name>
     <servlet-name>OnlineFileServer</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.OnlineFileServer</servlet-class>
   </servlet>
   <servlet>
-    <display-name>TempFileServer</display-name>
     <servlet-name>TempFileServer</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.TempFileServer</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>FileUploader</servlet-name>
-    <display-name>FileUploader</display-name>
     <servlet-class>com.stratelia.webactiv.servlets.FileUploader</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>RestOnlineFileServer</servlet-name>
-    <display-name>RestOnlineFileServer</display-name>
     <servlet-class>com.stratelia.webactiv.servlets.RestOnlineFileServer</servlet-class>
   </servlet>
   <servlet>
-    <display-name>GoToPublication</display-name>
     <servlet-name>GoToPublication</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.GoToPublication</servlet-class>
   </servlet>
   <servlet>
-    <display-name>GoToTopic</display-name>
     <servlet-name>GoToTopic</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.GoToTopic</servlet-class>
   </servlet>
   <servlet>
-    <display-name>GoToComponent</display-name>
     <servlet-name>GoToComponent</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.GoToComponent</servlet-class>
   </servlet>
   <servlet>
-    <display-name>GoToSpace</display-name>
     <servlet-name>GoToSpace</servlet-name>
     <servlet-class>com.stratelia.webactiv.servlets.GoToSpace</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToFile</servlet-name>
-    <display-name>GoToFile</display-name>
     <servlet-class>com.stratelia.webactiv.servlets.GoToFile</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToDocument</servlet-name>
-    <display-name>GoToDocument</display-name>
-    <description>no description</description>
     <servlet-class>com.stratelia.webactiv.servlets.GoToDocument</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToVersion</servlet-name>
-    <display-name>GoToVersion</display-name>
-    <description>no description</description>
     <servlet-class>com.stratelia.webactiv.servlets.GoToVersion</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>MainRequestRouter</servlet-name>
-    <display-name>MainRequestRouter</display-name>
+    <servlet-name>MainRequestRouter</servlet-name>    
     <servlet-class>com.stratelia.webactiv.servlets.MainRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>LoginServlet</servlet-name>
-    <display-name>LoginServlet</display-name>
+    <servlet-name>LoginServlet</servlet-name>    
     <servlet-class>com.stratelia.webactiv.servlets.LoginServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>LogoutServlet</servlet-name>
-    <display-name>LogoutServlet</display-name>
+    <servlet-name>LogoutServlet</servlet-name>    
     <servlet-class>com.stratelia.webactiv.servlets.LogoutServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>POPUPRequestRouter</servlet-name>
-    <display-name>POPUPRequestRouter</display-name>
+    <servlet-name>POPUPRequestRouter</servlet-name>    
     <servlet-class>com.silverpeas.notificationserver.channel.popup.POPUPRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>SILVERMAILRequestRouter</servlet-name>
-    <display-name>SILVERMAILRequestRouter</display-name>
+    <servlet-name>SILVERMAILRequestRouter</servlet-name>    
     <servlet-class>com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AlertUserPeasRequestRouter</servlet-name>
-    <display-name>AlertUserPeasRequestRouter</display-name>
+    <servlet-name>AlertUserPeasRequestRouter</servlet-name>    
     <servlet-class>com.stratelia.silverpeas.alertUserPeas.servlets.AlertUserPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>ClipboardRequestRouter</servlet-name>
-    <display-name>ClipboardRequestRouter</display-name>
+    <servlet-name>ClipboardRequestRouter</servlet-name>    
     <servlet-class>com.stratelia.silverpeas.clipboardPeas.servlets.ClipboardRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GenericPanelPeasRequestRouter</servlet-name>
-    <display-name>GenericPanelPeasRequestRouter</display-name>
+    <servlet-name>GenericPanelPeasRequestRouter</servlet-name>    
     <servlet-class>com.stratelia.silverpeas.genericPanelPeas.servlets.GenericPanelPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>JobDomainPeasRequestRouter</servlet-name>
-    <display-name>JobDomainPeasRequestRouter</display-name>
+    <servlet-name>JobDomainPeasRequestRouter</servlet-name>    
     <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>JobDomainPeasAjaxServlet</servlet-name>
-    <display-name>JobDomainPeasAjaxServlet</display-name>
+    <servlet-name>JobDomainPeasAjaxServlet</servlet-name>    
     <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasAjaxServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
-    <display-name>JobManagerPeasRequestRouter</display-name>
     <servlet-class>com.silverpeas.jobManagerPeas.servlets.JobManagerPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>JobOrganizationPeasRequestRouter</servlet-name>
-    <display-name>JobOrganizationPeasRequestRouter</display-name>
+    <servlet-name>JobOrganizationPeasRequestRouter</servlet-name>    
     <servlet-class>com.silverpeas.jobOrganizationPeas.servlets.JobOrganizationPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>JobStartPagePeasRequestRouter</servlet-name>
-    <display-name>JobStartPagePeasRequestRouter</display-name>
+    <servlet-name>JobStartPagePeasRequestRouter</servlet-name>    
     <servlet-class>com.silverpeas.jobStartPagePeas.servlets.JobStartPagePeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>DragAndDrop</servlet-name>
-    <display-name>DragAndDrop</display-name>
+    <servlet-name>DragAndDrop</servlet-name>    
     <servlet-class>com.silverpeas.attachment.servlets.DragAndDrop</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ActifyToAttachment</servlet-name>
-    <display-name>ActifyToAttachment</display-name>
-    <description>Acknowledge of 3d conversion</description>
     <servlet-class>com.silverpeas.attachment.servlets.ActifyToAttachment</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcRequestRouter</servlet-name>
-    <display-name>PdcRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcUtilizationRequestRouter</servlet-name>
-    <display-name>PdcUtilizationRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcUtilizationRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcClassifyRequestRouter</servlet-name>
-    <display-name>PdcClassifyRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcClassifyRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcSearchRequestRouter</servlet-name>
-    <display-name>PdcSearchRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcSearchRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>CommunicationUserRequestRouter</servlet-name>
-    <display-name>CommunicationUserRequestRouter</display-name>
     <servlet-class>com.silverpeas.communicationUser.servlets.CommunicationUserRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxCommunicationUserServlet</servlet-name>
-    <display-name>AjaxCommunicationUserServlet</display-name>
     <servlet-class>com.silverpeas.communicationUser.servlets.AjaxCommunicationUserServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PdcSubscriptionPeasRequestRouter</servlet-name>
-    <display-name>PdcSubscriptionPeasRequestRouter</display-name>
     <servlet-class>com.silverpeas.pdcSubscriptionPeas.servlets.PdcSubscriptionPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
@@ -282,89 +250,76 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   </servlet>
   <servlet>
     <description>The webdav servlet that connects HTTP request to the repository.</description>
-    <servlet-name>Webdav</servlet-name>    
+    <servlet-name>Webdav</servlet-name>
     <servlet-class>com.silverpeas.jcrutil.servlets.SimpleWebdavServlet</servlet-class>
     <init-param>
       <description>Defines the prefix for spooling resources out of the repository.</description>
       <param-name>resource-path-prefix</param-name>
-      <param-value>/repository</param-value>      
+      <param-value>/repository</param-value>
     </init-param>
     <init-param>
       <description>Defines various dav-resource configuration parameters.</description>
       <param-name>resource-config</param-name>
-      <param-value>/WEB-INF/classes/webdav-config.xml</param-value>      
+      <param-value>/WEB-INF/classes/webdav-config.xml</param-value>
     </init-param>
     <load-on-startup>4</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>JcrInitializer</servlet-name>
-    <display-name>JcrInitializer</display-name>
     <servlet-class>com.silverpeas.jcrutil.servlets.RepositoryAccessServlet</servlet-class>
     <init-param>
       <description>Spring JCR configuration file</description>
       <param-name>configuration</param-name>
-      <param-value>/WEB-INF/config/spring-jcr.xml /WEB-INF/config/spring-jdbc-datasource.xml /WEB-INF/config/spring-pdcPeas.xml</param-value>
+      <param-value>/WEB-INF/config/jcr/spring-jcr.xml /WEB-INF/config/jcr/spring-jdbc-datasource.xml</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>PersoPeasRequestRouter</servlet-name>
-    <display-name>PersoPeasRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.personalizationPeas.servlets.PersoPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxServletSilverpeasV5</servlet-name>
-    <display-name>AjaxServletSilverpeasV5</display-name>
     <servlet-class>com.silverpeas.lookV5.AjaxServletLookV5</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxActionServlet</servlet-name>
-    <display-name>AjaxActionServlet</display-name>
     <servlet-class>com.silverpeas.lookV5.AjaxActionServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PersonalSpaceJSONServlet</servlet-name>
-    <display-name>PersonalSpaceJSONServlet</display-name>
     <servlet-class>com.silverpeas.lookV5.PersonalSpaceJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SelectionPeasRequestRouter</servlet-name>
-    <display-name>SelectionPeasRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.selectionPeas.servlets.SelectionPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SelectionPeasWrapper</servlet-name>
-    <display-name>SelectionPeasWrapper</display-name>
     <servlet-class>com.stratelia.silverpeas.selectionPeas.servlets.SelectionPeasWrapper</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AgendaRequestRouter</servlet-name>
-    <display-name>AgendaRequestRouter</display-name>
     <servlet-class>com.stratelia.webactiv.agenda.servlets.AgendaRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GoToAgenda</servlet-name>
-    <display-name>GoToAgenda</display-name>
     <servlet-class>com.stratelia.webactiv.agenda.servlets.GoToAgenda</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AgendaRssServlet</servlet-name>
-    <display-name>AgendaRssServlet</display-name>
     <servlet-class>com.stratelia.webactiv.agenda.servlets.AgendaRssServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SubscribeAgenda</servlet-name>
-    <display-name>SubscribeAgenda</display-name>
     <servlet-class>com.stratelia.webactiv.agenda.servlets.SubscribeAgenda</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PortletRequestRooter</servlet-name>
-    <display-name>PortletRequestRooter</display-name>
     <servlet-class>com.stratelia.silverpeas.portlet.control.PortletRequestRooter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AjaxPortlet</servlet-name>
-    <display-name>AjaxPortlet</display-name>
     <servlet-class>com.silverpeas.portlets.AjaxPortlets</servlet-class>
   </servlet>
   <servlet>
@@ -399,42 +354,34 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   </servlet>
   <servlet>
     <servlet-name>TodoRequestRouter</servlet-name>
-    <display-name>TodoRequestRouter</display-name>
     <servlet-class>com.stratelia.webactiv.todo.servlets.TodoRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>MyLinksPeasRequestRouter</servlet-name>
-    <display-name>MyLinksPeasRequestRouter</display-name>
     <servlet-class>com.silverpeas.myLinksPeas.servlets.MyLinksPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>InterestCenterPeasRequestRouter</servlet-name>
-    <display-name>InterestCenterPeasRequestRouter</display-name>
     <servlet-class>com.silverpeas.interestCenterPeas.servlets.InterestCenterPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>NotificationUserRequestRouter</servlet-name>
-    <display-name>NotificationUserRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.notificationUser.servlets.NotificationUserRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TemplateDesignerRequestRouter</servlet-name>
-    <display-name>TemplateDesignerRequestRouter</display-name>
     <servlet-class>com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ThesaurusRequestRouter</servlet-name>
-    <display-name>ThesaurusRequestRouter</display-name>
     <servlet-class>com.silverpeas.thesaurusPeas.servlets.ThesaurusRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>VersioningRequestRouter</servlet-name>
-    <display-name>VersioningRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.VersioningRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
-    <display-name>SilverStatisticsPeasRequestRouter</display-name>
     <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.SilverStatisticsPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
@@ -443,74 +390,52 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   </servlet>
   <servlet>
     <servlet-name>FormTemplateRequestRouter</servlet-name>
-    <display-name>FormTemplateRequestRouter</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.formTemplate.servlets.FormTemplateRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>VersioningDragAndDrop</servlet-name>
-    <display-name>VersioningDragAndDrop</display-name>
-    <description>no description</description>
     <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.DragAndDrop</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>FileSharingRequestRouter</servlet-name>
-    <display-name>FileSharingRequestRouter</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.external.filesharing.servlets.FileSharingRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GetInfoFromKey</servlet-name>
-    <display-name>GetInfoFromKey</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.external.filesharing.servlets.GetInfoFromKeyServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GetLinkFile</servlet-name>
-    <display-name>GetLinkFile</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.external.filesharing.servlets.GetLinkFileServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ImportExportRequestRouter</servlet-name>
-    <display-name>ImportExportRequestRouter</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.importExportPeas.servlets.ImportExportRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ImportDragAndDrop</servlet-name>
-    <display-name>ImportDragAndDrop</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.importExportPeas.servlets.ImportDragAndDrop</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>WorkflowDesignerRequestRouter</servlet-name>
-    <display-name>WorkflowDesignerRequestRouter</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.workflowdesigner.servlets.WorkflowDesignerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>WebConnectionsRequestRouter</servlet-name>
-    <display-name>WebConnectionsRequestRouter</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.external.webConnections.servlets.WebConnectionsRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AttachmentAjaxServlet</servlet-name>
-    <display-name>AttachmentAjaxServlet</display-name>
-    <description>no description</description>
     <servlet-class>com.silverpeas.attachment.servlets.AjaxServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>VersioningAjaxServlet</servlet-name>
-    <display-name>VersioningAjaxServlet</display-name>
-    <description>no description</description>
     <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.AjaxServlet</servlet-class>
   </servlet>
   <!--
   <servlet>
     <servlet-name>AjaxFileUploadServlet</servlet-name>
-    <display-name>AjaxFileUploadServlet</display-name>
+    
     <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
     <init-param>
       <param-name>UPLOAD_DIRECTORY</param-name>
