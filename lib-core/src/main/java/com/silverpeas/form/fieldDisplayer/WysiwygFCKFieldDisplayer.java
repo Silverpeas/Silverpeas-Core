@@ -42,8 +42,11 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -157,8 +160,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         DynamicValueReplacement replacement = new DynamicValueReplacement();
-        out.println(replacement.replaceKeyByValue(code));
+        code = replacement.replaceKeyByValue(code);
       }
+      out.println(code);
 
     } else {
       out.println("<TABLE>");
@@ -167,6 +171,26 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
         out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName));
         out.println("</td></tr>");
+      }
+      // storage file : HTML select building
+      List<ComponentInstLight> fileStorage =
+          WysiwygController.getStorageFile(pageContext.getUserId());
+      if (!fileStorage.isEmpty()) {
+        ResourceLocator resources = new ResourceLocator(
+            "com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<select id=\"storageFile_" + fieldName +
+            "\" name=\"componentId\" onchange=\"openStorageFilemanager" +
+            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
+            "();this.selectedIndex=0\">");
+        stringBuilder.append("<option value=\"\">").append(
+            resources.getString("storageFile.select.title")).append("</option>");
+        for (ComponentInstLight component : fileStorage) {
+          stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
+              component.getLabel(contentLanguage)).append("</option>");
+        }
+        stringBuilder.append("</select>");
+        out.println(stringBuilder.toString());
       }
 
       out.println("<TR>");
@@ -190,11 +214,13 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = false;");
       out.println("oFCKeditor.ReplaceTextarea();");
 
+      // field name used to generate a javascript function name
+      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
 
         out.println("function chooseDynamicValues" +
-            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) + "(){");
+            fieldNameFunction + "(){");
         out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
         out.println("oEditor.Focus();");
         out.println("index = document.getElementById(\"dynamicValues_" + fieldName +
@@ -205,6 +231,37 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         out.println("oEditor.InsertHtml('#{'+str+'}');");
         out.println("} }");
       }
+
+      // storage file : javascript functions
+      out.println("var storageFileWindow=window;");
+      out.println("function openStorageFilemanager" + fieldNameFunction + "(){");
+      out.println("index = document.getElementById(\"storageFile_" + fieldName +
+          "\").selectedIndex;");
+      out.println("var componentId = document.getElementById(\"storageFile_" + fieldName +
+          "\").options[index].value;");
+      out.println("if (index != 0){  ");
+      out
+          .println("url = \"" + URLManager.getApplicationURL() +
+              "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname=" +
+              fieldNameFunction + "\";");
+      out.println("windowName = \"StorageFileWindow\";");
+      out.println("width = \"750\";");
+      out.println("height = \"580\";");
+      out
+          .println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
+      out.println("if (!storageFileWindow.closed && storageFileWindow.name==windowName)");
+      out.println("storageFileWindow.close();");
+      out
+          .println("storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
+      out.println("}}");
+
+      out.println("function insertAttachmentLink" + fieldNameFunction + "(url,img,label){");
+      out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
+      out.println("oEditor.Focus();");
+      out
+          .println("oEditor.InsertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\"> '+label+'</a> ');");
+      out.println("}");
+
       out.println("</script>");
 
       if (template.isMandatory() && pageContext.useMandatory()) {
