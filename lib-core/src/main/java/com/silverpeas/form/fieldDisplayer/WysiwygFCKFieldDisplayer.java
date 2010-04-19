@@ -157,9 +157,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         DynamicValueReplacement replacement = new DynamicValueReplacement();
-        code = replacement.replaceKeyByValue(code);
+        out.println(replacement.replaceKeyByValue(code));
       }
-      out.println(code);
+
     } else {
       out.println("<TABLE>");
       // dynamic value functionality

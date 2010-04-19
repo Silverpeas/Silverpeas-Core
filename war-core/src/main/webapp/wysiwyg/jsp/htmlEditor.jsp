@@ -53,6 +53,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.File"%>
 <%@ page import="javax.servlet.http.*"%>
 
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%
     String spaceId = "";
     String componentId = "";
@@ -248,7 +249,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     browseBar.setExtraInformation(browseInformation);
 %>
 
-<HTML>
+
+<%@page import="com.silverpeas.treeMenu.model.NodeType"%><HTML>
 <HEAD>
 <TITLE>Silverpeas Wysiwyg Editor</TITLE>
 <%
@@ -380,6 +382,26 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				oEditor.InsertHtml('#{'+str+'}');
 		}
 	}
+var storageFileWindow=window;
+function openStorageFilemanager(){
+	index = document.getElementById("storageFile").selectedIndex;
+	var componentId = document.getElementById("storageFile").options[index].value;
+	if (index != 0){	
+		url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=<%=NodeType.COMPONENT%>";
+		windowName = "StorageFileWindow";
+		width = "750";
+		height = "580";
+		windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
+		if (!storageFileWindow.closed && storageFileWindow.name==windowName)
+			storageFileWindow.close();
+		storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);
+	}
+}
+
+function insertAttachmentLink(url,img,label){
+	oEditor.Focus();
+	oEditor.InsertHtml('<a href="'+url+'"> <img src="'+img+'" width="20" border="0"> '+label+'</a> ');
+}
 </script>
 
 <%
@@ -397,6 +419,18 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 		<table border=0 cellpadding=0 cellspacing=0>
 			<tr class="TB_Expand">
 			<td class="TB_Expand" align="center">
+			
+		<% List fileStorage = WysiwygController.getStorageFile(userId);
+ 		   request.setAttribute("fileStorage",fileStorage);
+		%>
+		<c:if test="<%=!fileStorage.isEmpty()%>">
+			<select id="storageFile" name="componentId" onchange="openStorageFilemanager();this.selectedIndex=0">
+			<option value=""><%=message.getString("storageFile.select.title")%></option>
+			<c:forEach items="${fileStorage}" var="option" > 
+				<option value="${option.id}"><%= ((ComponentInstLight)pageContext.findAttribute("option")).getLabel(language) %></option> 		
+			</c:forEach>
+			</select>
+	  </c:if>
 				<select id="images" name="images" onchange="choixImage();this.selectedIndex=0">
 					<option selected><%=message.getString("Image")%></option>
 							<%

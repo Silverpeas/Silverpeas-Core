@@ -45,6 +45,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -1224,6 +1225,30 @@ public class WysiwygController {
       }
     }
     return galleries;
+  }
+
+  /**
+   * Gets the components dedicated to file storage
+   * @param userId the user identifier is used to retrieve only the authorized components for the
+   * user
+   * @return a components list
+   */
+  public static List<ComponentInstLight> getStorageFile(String userId) {
+    // instiate all needed objects
+    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+    OrganizationController controller = new OrganizationController();
+    // gets all kmelia components
+    CompoSpace[] compoIds = controller.getCompoForUser(userId, "kmelia");
+    for (CompoSpace compoSpace : compoIds) {
+      // retain only the components considered as a file storage
+      if ("yes".equalsIgnoreCase(controller.getComponentParameterValue(compoSpace.getComponentId(),
+          "publicFiles"))) {
+        ComponentInstLight component =
+            controller.getComponentInstLight(compoSpace.getComponentId());
+        components.add(component);
+      }
+    }
+    return components;
   }
 
 }
