@@ -26,6 +26,7 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,10 +38,14 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
@@ -85,6 +90,8 @@ public class NotificationSender implements java.io.Serializable {
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {
 
+    OrganizationController orgaController = new OrganizationController();
+
     // String[] allUsers;
     HashSet usersSet = new HashSet();
     Collection userRecipients = metaData.getUserRecipients();
@@ -105,13 +112,25 @@ public class NotificationSender implements java.io.Serializable {
           .next())));
     }
 
-    OrganizationController orgaController = new OrganizationController();
+    Set languages = metaData.getLanguages();
+    String language = null;
+
+    // ajout des destinataires dans le corps du message
+    Iterator<String> il = languages.iterator();
+    while (il.hasNext()) {
+      language = il.next();
+      String newContent =
+          addReceivers(usersSet, metaData.getContent(language), language, orgaController);
+      metaData.setContent(newContent, language);
+    }
+
+    saveNotification(metaData, usersSet);
+
     Hashtable usersLanguage = orgaController.getUsersLanguage(new ArrayList(
         usersSet));
 
-    Set languages = metaData.getLanguages();
     Iterator iLanguages = languages.iterator();
-    String language = null;
+
     NotificationParameters params = null;
     List userIds = null;
 
@@ -148,6 +167,49 @@ public class NotificationSender implements java.io.Serializable {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
+  private String addReceivers(HashSet usersSet, String content, String language,
+      OrganizationController orgaController) {
+    ResourceLocator m_Multilang = new ResourceLocator(
+        "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
+        language);
+    String result = "";
+    String listReceivers = "\n" + m_Multilang.getString("NameOfReceivers");
+    List<String> users = new ArrayList<String>();
+    String userName = "";
+    boolean first = true;
+    Iterator<String> it = usersSet.iterator();
+    while (it.hasNext()) {
+      if (!first) {
+        listReceivers = listReceivers + ", ";
+      }
+      String userId = it.next();
+      users.add(userId);
+      userName = orgaController.getUserDetail(userId).getDisplayedName();
+      listReceivers = listReceivers + userName;
+      first = false;
+    }
+    result = content + listReceivers;
+    return result;
+  }
+
+  private void saveNotification(NotificationMetaData metaData, HashSet usersSet)
+      throws NotificationManagerException {
+    getNotificationInterface().saveNotifUser(metaData, usersSet);
+  }
+
+  private SendedNotificationInterface getNotificationInterface()
+      throws NotificationManagerException {
+    SendedNotificationInterface notificationInterface = null;
+    try {
+      notificationInterface = new SendedNotificationInterfaceImpl();
+    } catch (Exception e) {
+      throw new NotificationManagerException(
+          "NotificationSender.getNotificationInterface()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return notificationInterface;
+  }
+
   private List getUserIds(String lang, Hashtable usersLanguage) {
     List userIds = new ArrayList(usersLanguage.keySet());
     Iterator languages = usersLanguage.values().iterator();
@@ -165,7 +227,7 @@ public class NotificationSender implements java.io.Serializable {
     }
     SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",
         "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
-        + lang + "' ");
+            + lang + "' ");
     return result;
   }
 

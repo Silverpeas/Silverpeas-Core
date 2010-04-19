@@ -98,6 +98,7 @@ function deleteCanal(id){
 	//Onglets
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("LireNotification"), m_context + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main", false);
+	tabbedPane.addTab(resource.getString("SendedUserNotifications"), m_context + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "SendedUserNotifications", false);
 	tabbedPane.addTab(resource.getString("ParametrerNotification"), "personalization_Notification.jsp?Action=LanguageView", true);
 	out.println(tabbedPane.print());
 	

@@ -27,12 +27,24 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterfaceImpl;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
@@ -89,6 +101,102 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       throws SILVERMAILException {
     return SILVERMAILPersistence.getMessageOfFolder(Integer
         .parseInt(getUserId()), folderName);
+  }
+
+  /**
+   * Method declaration
+   * @param userId
+   * @return
+   * @throws NotificationManagerException
+   * @see
+   */
+  public List<SendedNotificationDetail> getUserMessageList()
+      throws NotificationManagerException {
+    String userId = getUserId();
+    List<SendedNotificationDetail> notifByUser = new ArrayList<SendedNotificationDetail>();
+    List<SendedNotificationDetail> sendedNotifByUser = new ArrayList<SendedNotificationDetail>();
+    try {
+      notifByUser = getNotificationInterface().getAllNotifByUser(userId);
+      for (SendedNotificationDetail sendedNotif : notifByUser) {
+        sendedNotif.setSource(getSource(sendedNotif.getComponentId()));
+        sendedNotifByUser.add(sendedNotif);
+
+      }
+    } catch (NotificationManagerException e) {
+      throw new NotificationManagerException(
+          "NotificationSender.getUserMessageList()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return sendedNotifByUser;
+  }
+
+  /**
+   * Method declaration
+   * @param userId
+   * @return
+   * @throws NotificationManagerException
+   * @see
+   */
+  public SendedNotificationDetail getSendedNotification(String notifId)
+      throws NotificationManagerException {
+    SendedNotificationDetail sendedNotification = null;
+    try {
+      sendedNotification = getNotificationInterface().getNotification(Integer.parseInt(notifId));
+      sendedNotification.setSource(getSource(sendedNotification.getComponentId()));
+    } catch (NotificationManagerException e) {
+      throw new NotificationManagerException(
+          "NotificationSender.getUserMessageList()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return sendedNotification;
+  }
+
+  private String getSource(String componentId) {
+    ResourceLocator m_Multilang = new ResourceLocator(
+        "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
+        getLanguage());
+    String source = m_Multilang.getString("UserNotification");
+    if (StringUtil.isDefined(componentId)) {
+      OrganizationController orga = new OrganizationController();
+      ComponentInst instance = orga.getComponentInst(componentId);
+      SpaceInst space = orga.getSpaceInstById(instance.getDomainFatherId());
+      source = space.getName() + " - " + instance.getLabel();
+    }
+
+    return source;
+  }
+
+  public void deleteSendedNotif(String notifId) throws NotificationManagerException {
+    try {
+      getNotificationInterface().deleteNotif(Integer.parseInt(notifId));
+    } catch (NotificationManagerException e) {
+      throw new NotificationManagerException(
+          "NotificationSender.deleteSendedNotif()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+
+  public void deleteAllSendedNotif() throws NotificationManagerException {
+    try {
+      getNotificationInterface().deleteNotifByUser(getUserId());
+    } catch (NotificationManagerException e) {
+      throw new NotificationManagerException(
+          "NotificationSender.deleteAllSendedNotif()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+
+  private SendedNotificationInterface getNotificationInterface()
+      throws NotificationManagerException {
+    SendedNotificationInterface notificationInterface = null;
+    try {
+      notificationInterface = new SendedNotificationInterfaceImpl();
+    } catch (Exception e) {
+      throw new NotificationManagerException(
+          "NotificationSender.getNotificationInterface()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return notificationInterface;
   }
 
   /**
