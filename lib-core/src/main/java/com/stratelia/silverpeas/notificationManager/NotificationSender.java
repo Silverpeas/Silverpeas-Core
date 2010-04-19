@@ -80,22 +80,51 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   /**
+   * Indicates if the notification is manual (sent by a Silverpeas user) or automatic.
+   * @param metaData the notification metadata.
+   * @return true if the notification is sent by a Silverpeas user - false otherwise.
+   */
+  protected boolean isNotificationManual(NotificationMetaData metaData) {
+    return StringUtil.isInteger(metaData.getSender());
+  }
+
+  /**
+   * Add all recipients to the notification message and save the notification for history.
+   * @param usersSet set of the recipients.
+   * @param languages set of recipients languages.
+   * @param metaData the message metadata.
+   * @param orgaController the controller.
+   * @throws NotificationManagerException
+   */
+  protected void manageManualNotification(Set usersSet, Set<String> languages,
+      NotificationMetaData metaData,
+      OrganizationController orgaController) throws NotificationManagerException {
+    if (isNotificationManual(metaData)) {
+      for (String language : languages) {
+        String newContent =
+            addReceivers(usersSet, metaData.getContent(language), language, orgaController);
+        metaData.setContent(newContent, language);
+      }
+      saveNotification(metaData, usersSet);
+    }
+  }
+
+  /**
    * Method declaration
    * @param aMediaType
    * @param Metadata
    * @throws NotificationManagerException
    * @see
    */
-
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {
 
     OrganizationController orgaController = new OrganizationController();
 
     // String[] allUsers;
-    HashSet usersSet = new HashSet();
-    Collection userRecipients = metaData.getUserRecipients();
-    Collection groupRecipients = metaData.getGroupRecipients();
+    HashSet<String> usersSet = new HashSet<String>();
+    Collection<String> userRecipients = metaData.getUserRecipients();
+    Collection<String> groupRecipients = metaData.getGroupRecipients();
 
     // Delete doublons between direct users and users included in groups
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
@@ -106,30 +135,14 @@ public class NotificationSender implements java.io.Serializable {
     usersSet.addAll(userRecipients);
 
     // Then get users included in groups
-    Iterator iter = groupRecipients.iterator();
-    while (iter.hasNext()) {
-      usersSet.addAll(Arrays.asList(m_Manager.getUsersFromGroup((String) iter
-          .next())));
+    for(String groupId : groupRecipients){
+      usersSet.addAll(Arrays.asList(m_Manager.getUsersFromGroup(groupId)));
     }
-
-    Set languages = metaData.getLanguages();
-    String language = null;
-
-    // ajout des destinataires dans le corps du message
-    Iterator<String> il = languages.iterator();
-    while (il.hasNext()) {
-      language = il.next();
-      String newContent =
-          addReceivers(usersSet, metaData.getContent(language), language, orgaController);
-      metaData.setContent(newContent, language);
-    }
-
-    saveNotification(metaData, usersSet);
+    Set<String> languages = metaData.getLanguages();
+    manageManualNotification(usersSet, languages, metaData, orgaController);
 
     Hashtable usersLanguage = orgaController.getUsersLanguage(new ArrayList(
         usersSet));
-
-    Iterator iLanguages = languages.iterator();
 
     NotificationParameters params = null;
     List userIds = null;
@@ -138,9 +151,7 @@ public class NotificationSender implements java.io.Serializable {
     Set allUserIds = usersLanguage.keySet();
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
         "root.MSG_GEN_PARAM_VALUE", "allUserIds = " + allUserIds);
-    while (iLanguages.hasNext()) {
-      language = (String) iLanguages.next();
-
+    for (String language : languages) {
       SilverTrace.info("notificationManager",
           "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
           "language = " + language);
@@ -167,7 +178,7 @@ public class NotificationSender implements java.io.Serializable {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private String addReceivers(HashSet usersSet, String content, String language,
+  private String addReceivers(Set usersSet, String content, String language,
       OrganizationController orgaController) {
     ResourceLocator m_Multilang = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
@@ -192,7 +203,7 @@ public class NotificationSender implements java.io.Serializable {
     return result;
   }
 
-  private void saveNotification(NotificationMetaData metaData, HashSet usersSet)
+  private void saveNotification(NotificationMetaData metaData, Set usersSet)
       throws NotificationManagerException {
     getNotificationInterface().saveNotifUser(metaData, usersSet);
   }

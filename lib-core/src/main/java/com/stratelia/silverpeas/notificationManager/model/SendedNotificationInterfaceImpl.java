@@ -26,9 +26,9 @@ package com.stratelia.silverpeas.notificationManager.model;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -47,7 +47,7 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
   public SendedNotificationInterfaceImpl() {
   }
 
-  public void saveNotifUser(NotificationMetaData metaData, HashSet usersSet)
+  public void saveNotifUser(NotificationMetaData metaData, Set usersSet)
       throws NotificationManagerException {
     Connection con = initCon();
     try {
