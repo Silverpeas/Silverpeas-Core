@@ -24,7 +24,9 @@
 package com.stratelia.webactiv.util.publication.model;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 
@@ -43,6 +45,35 @@ public class CompletePublication implements Serializable {
   private InfoDetail infoDetail;
 
   /**
+   * The publications linked to the current publication
+   */
+  private List<ForeignPK> linkList = null;
+
+  /**
+   * The publications which are a reference to the current publication
+   */
+  private List<ForeignPK> reverseLinkList = null;
+
+  /**
+   * @param pubDetail
+   * @param modelDetail
+   * @param infoDetail
+   * @param linkList The publications linked to the current publication
+   * @param reverseLinkList The publications which are a reference to the current publication
+   * @see com.stratelia.webactiv.util.publication.model.PulicationDetail
+   * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
+   * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
+   */
+  public CompletePublication(PublicationDetail pubDetail, ModelDetail modelDetail,
+      InfoDetail infoDetail, List<ForeignPK> linkList, List<ForeignPK> reverseLinkList) {
+    this.pubDetail = pubDetail;
+    this.modelDetail = modelDetail;
+    this.infoDetail = infoDetail;
+    this.linkList = linkList;
+    this.reverseLinkList = reverseLinkList;
+  }
+
+  /**
    * Create a new CompletePublication
    * @param pubDetail
    * @param modelDetail
@@ -58,6 +89,7 @@ public class CompletePublication implements Serializable {
     this.modelDetail = modelDetail;
     this.infoDetail = infoDetail;
   }
+
 
   /**
    * Get the publication parameters
@@ -87,5 +119,33 @@ public class CompletePublication implements Serializable {
    */
   public InfoDetail getInfoDetail() {
     return infoDetail;
+  }
+
+  /**
+   * @return the linkList
+   */
+  public List<ForeignPK> getLinkList() {
+    return linkList;
+  }
+
+  /**
+   * @param linkList the linkList to set
+   */
+  public void setLinkList(List<ForeignPK> linkList) {
+    this.linkList = linkList;
+  }
+
+  /**
+   * @return the reverseLinkList
+   */
+  public List<ForeignPK> getReverseLinkList() {
+    return reverseLinkList;
+  }
+
+  /**
+   * @param reverseLinkList the reverseLinkList to set
+   */
+  public void setReverseLinkList(List<ForeignPK> reverseLinkList) {
+    this.reverseLinkList = reverseLinkList;
   }
 }

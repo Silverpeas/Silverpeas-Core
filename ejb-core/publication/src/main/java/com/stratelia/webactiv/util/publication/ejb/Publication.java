@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.ejb.EJBObject;
 
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
@@ -162,5 +163,10 @@ public interface Publication extends EJBObject {
    */
   public InfoDetail getInfoDetail() throws RemoteException, SQLException;
 
-  public void deleteInfoLinks(List<String> pubIds) throws RemoteException, SQLException;
+  /**
+   * Removes links between publications and the current publication
+   * @param links list of links to remove
+   * @throws SQLException
+   */
+  public void deleteInfoLinks(List<ForeignPK> links) throws SQLException, RemoteException;
 }

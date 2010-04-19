@@ -263,6 +263,27 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
 
+  /**
+   * gets the available component for a given user
+   * @param userId user identifier used to get component
+   * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
+   * @return a list of ComponentInstLight object
+   * @throws AdminException
+   */
+  public List<ComponentInstLight> getAvailComponentInstLights(String userId, String componentName) {
+    try {
+      return m_Admin.getAvailComponentInstLights(userId, componentName);
+    } catch (AdminException e) {
+      SilverTrace.error("admin",
+          "getAvailComponentInstLights",
+          "admin.MSG_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
+          "user Id : '" + userId + "', component name: '" + componentName + "'",
+          e);
+      return new ArrayList<ComponentInstLight>();
+    }
+
+  }
+
   public String[] getComponentIdsForUser(String sUserId, String sCompoName) {
     try {
       return m_Admin.getComponentIdsByNameAndUserId(sUserId, sCompoName);

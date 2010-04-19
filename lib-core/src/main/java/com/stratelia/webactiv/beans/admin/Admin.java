@@ -4032,6 +4032,18 @@ public class Admin extends Object {
   }
 
   /**
+   * gets the available component for a given user
+   * @param userId user identifier used to get component
+   * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
+   * @return a list of ComponentInstLight object
+   * @throws AdminException
+   */
+  public List<ComponentInstLight> getAvailComponentInstLights(
+      String userId, String componentName) throws AdminException {
+    return m_ComponentInstManager.getAvailComponentInstLights(m_DDManager, userId, componentName);
+  }
+
+  /**
    * Get the tuples (space id, compo id) allowed for the given user and given component name
    */
   public CompoSpace[] getCompoForUser(String sUserId, String sComponentName)

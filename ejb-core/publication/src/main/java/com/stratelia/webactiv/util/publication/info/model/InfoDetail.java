@@ -34,12 +34,16 @@ import java.util.Iterator;
 
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 
+
 public class InfoDetail implements Serializable {
 
   private static final long serialVersionUID = 1449129863941833416L;
   private InfoPK pk = null;
   private Collection<InfoTextDetail> textList = null;
   private Collection<InfoImageDetail> imageList = null;
+  /**
+   * @deprecated use linkList from CompletePublication
+   */
   private Collection<InfoLinkDetail> linkList = null;
   private String content = null;
 
@@ -95,10 +99,20 @@ public class InfoDetail implements Serializable {
     this.imageList = imageList;
   }
 
+  /**
+   * @deprecated use getLinkList() method from CompletePublication class
+   * @see @link {com.stratelia.webactiv.util.publication.model.CompletePublication.getLinkList()}
+   * @return
+   */
   public Collection<InfoLinkDetail> getInfoLinkList() {
     return linkList;
   }
 
+  /**
+   * @deprecated use setLinkList() method from CompletePublication class
+   * @see {@link com.stratelia.webactiv.util.publication.model.CompletePublication.setLinkList()}
+   * @param linkList
+   */
   public void setInfoLinkList(Collection<InfoLinkDetail> linkList) {
     this.linkList = linkList;
   }

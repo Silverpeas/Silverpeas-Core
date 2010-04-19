@@ -567,15 +567,18 @@ public class PublicationEJB implements EntityBean {
     }
   }
 
-  public void deleteInfoLinks(List<String> pubIds) throws SQLException {
+  /**
+   * Removes links between publications in the current publication
+   * @param links list of links to remove
+   * @throws SQLException
+   */
+  public void deleteInfoLinks(List<ForeignPK> links) throws SQLException {
     Connection con = getConnection();
 
     try {
-      String pubId = null;
       PublicationPK targetPK = null;
-      for (int p = 0; p < pubIds.size(); p++) {
-        pubId = pubIds.get(p);
-        targetPK = new PublicationPK(pubId, this.pk.getInstanceId());
+      for (ForeignPK link : links) {
+        targetPK = new PublicationPK(link.getId(), link.getInstanceId());
         SeeAlsoDAO.deleteLink(con, this.pk, targetPK);
       }
       isModified = true;
@@ -607,15 +610,11 @@ public class PublicationEJB implements EntityBean {
 
       // Get links
       List<ForeignPK> links = SeeAlsoDAO.getLinks(con, pubDetail.getPK());
-      ForeignPK link = null;
-      InfoLinkDetail infoLink = null;
-      for (int l = 0; l < links.size(); l++) {
-        link = links.get(l);
-        infoLink = new InfoLinkDetail(null, "useless", "useless", link.getId());
-        infoDetail.getInfoLinkList().add(infoLink);
-      }
 
-      return new CompletePublication(pubDetail, modelDetail, infoDetail);
+      // gets reverse links
+      List<ForeignPK> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubDetail.getPK());
+
+      return new CompletePublication(pubDetail, modelDetail, infoDetail, links, reverseLinks);
     } finally {
       freeConnection(con);
     }

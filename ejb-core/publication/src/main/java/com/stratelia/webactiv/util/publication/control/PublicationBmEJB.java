@@ -51,6 +51,7 @@ import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -998,12 +999,18 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     }
   }
 
-  public void deleteInfoLinks(PublicationPK pubPK, List<String> pubIds)
+  /**
+   * Removes links between publications and the specified publication
+   * @param pubPK
+   * @param links list of links to remove
+   * @throws RemoteException
+   */
+  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links)
       throws RemoteException {
     Publication pub = findPublication(pubPK);
 
     try {
-      pub.deleteInfoLinks(pubIds);
+      pub.deleteInfoLinks(links);
     } catch (Exception e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.deleteInfoLinks()",
@@ -1918,6 +1925,38 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     SilverTrace.info("kmax", "KmeliaBmEJB.getPublicationCoordinates()",
         "root.MSG_GEN_EXIT_METHOD");
     return coordinates;
+  }
+
+  /**
+   * Updates the publication links
+   * @param pubPK publication identifier which you want to update links
+   * @param links list of publication to link with current.
+   * @throws RemoteException
+   */
+  public void addLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException {
+    Connection con = null;
+    try {
+      if (links != null) {
+        con = getConnection();
+        PublicationPK targetPK = null;
+        // deletes existing links
+        SeeAlsoDAO.deleteLinksByObjectId(con, pubPK);
+        for (ForeignPK link : links) {
+          targetPK = new PublicationPK(link.getId(), link
+              .getInstanceId());
+          // adds links
+          SeeAlsoDAO.addLink(con, pubPK, targetPK);
+        }
+      }
+    } catch (Exception e) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.addLinks()",
+          SilverpeasRuntimeException.ERROR,
+          "publication.UPDATING_INFO_DETAIL_FAILED",
+          "pubId = " + pubPK.getId(), e);
+    } finally {
+      freeConnection(con);
+    }
   }
 
   /**

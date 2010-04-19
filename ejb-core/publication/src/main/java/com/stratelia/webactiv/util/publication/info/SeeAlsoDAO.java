@@ -171,4 +171,40 @@ public class SeeAlsoDAO {
       DBUtil.close(rs, prepStmt);
     }
   }
+
+  /**
+   * gets the publication identifiers which reference given publication
+   * @param con SQL connection
+   * @param objectPK publication identifier which are searching referencer
+   * @return a list of publication identifier
+   * @throws SQLException
+   */
+  public static List<ForeignPK> getReverseLinks(Connection con, WAPrimaryKey objectPK)
+      throws SQLException {
+    ResultSet rs = null;
+    String selectStatement = "select objectId, objectInstanceId  from "
+        + SEEALSO_TABLENAME + " where targetId   = ? AND targetInstanceId = ? ";
+    PreparedStatement prepStmt = con.prepareStatement(selectStatement);
+
+    try {
+      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
+      prepStmt.setString(2, objectPK.getInstanceId());
+      rs = prepStmt.executeQuery();
+
+      String objectId = "";
+      String objectInstanceId = "";
+      List<ForeignPK> list = new ArrayList<ForeignPK>();
+      while (rs.next()) {
+        objectId = Integer.toString(rs.getInt(1));
+        objectInstanceId = rs.getString(2);
+        ForeignPK targetPK = new ForeignPK(objectId, objectInstanceId);
+
+        list.add(targetPK);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+
+  }
 }

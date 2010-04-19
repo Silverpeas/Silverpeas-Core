@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -252,7 +253,7 @@ public interface PublicationBmBusinessSkeleton {
   public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
       throws RemoteException;
 
-  public void deleteInfoLinks(PublicationPK pubPK, List<String> pubIds)
+  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links)
       throws RemoteException;
 
   /**
@@ -447,4 +448,12 @@ public interface PublicationBmBusinessSkeleton {
 
   public Collection<Coordinate> getCoordinates(String pubId, String componentId)
       throws RemoteException;
+
+  /**
+   * Updates the publication links
+   * @param pubPK publication identifier which you want to update links
+   * @param links list of publication to link with current.
+   * @throws RemoteException
+   */
+  public void addLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException;
 }
