@@ -1835,11 +1835,13 @@ td.browsebar a:hover {
 #portletPages #thick {
 	float: left;
 	width: 49%;
+	padding-bottom: 100px;
 }
 
 #portletPages #thin {
 	float: right;
 	width: 49%;
+	padding-bottom: 100px;
 }
 
 /*- [ portlet ] --------------------------- */
