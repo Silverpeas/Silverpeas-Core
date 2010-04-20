@@ -363,7 +363,15 @@ public class Admin extends Object {
 
         // Delete subspaces
         for (int i = 0; sSubSpaceIds != null && i < sSubSpaceIds.length; i++) {
-          deleteSpaceInstById(sUserId, sSubSpaceIds[i], true, false);
+          deleteSpaceInstById(sUserId, sSubSpaceIds[i], false, true);
+        }
+
+        // Delete subspaces already in bin
+        List<SpaceInstLight> removedSpaces = getRemovedSpaces();
+        for (SpaceInstLight removedSpace : removedSpaces) {
+          if (sDriverSpaceId.equals(removedSpace.getFatherId())) {
+            deleteSpaceInstById(sUserId, removedSpace.getFullId(), false, true);
+          }
         }
 
         // delete the space profiles instance
@@ -375,8 +383,15 @@ public class Admin extends Object {
         // Delete the components
         ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
         for (int nI = 0; nI < alCompoInst.size(); nI++) {
-          deleteComponentInst(sUserId,
-              getClientComponentId((alCompoInst.get(nI)).getId()), true, false);
+          deleteComponentInst(sUserId, alCompoInst.get(nI).getId(), true, false);
+        }
+
+        // Delete the components already in bin
+        List<ComponentInstLight> removedComponents = getRemovedComponents();
+        for (ComponentInstLight removedComponent : removedComponents) {
+          if (sClientSpaceId.equals(removedComponent.getDomainFatherId())) {
+            deleteComponentInst(sUserId, removedComponent.getId(), true, false);
+          }
         }
 
         // Delete the space in tables
@@ -399,7 +414,7 @@ public class Admin extends Object {
       }
       throw new AdminException("Admin.deleteSpaceInstById",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACE", "user Id : '"
-          + sUserId + "', space Id : '" + sClientSpaceId + "'");
+          + sUserId + "', space Id : '" + sClientSpaceId + "'", e);
     }
   }
 
