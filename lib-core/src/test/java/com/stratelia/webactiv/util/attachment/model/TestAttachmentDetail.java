@@ -72,13 +72,13 @@ public class TestAttachmentDetail extends TestCase {
     assertTrue(attachment.isOpenOfficeCompatible("fr"));
     assertEquals("kmelia57", attachment.getInstanceId());
     assertEquals(
-        "/silverpeas//OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
+        "/silverpeas/OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
         "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88869&MimeType=application/vnd" +
         ".oasis.opendocument.presentation&Directory=Attachment" + File.separatorChar +"tests"
         + File.separatorChar + "simpson" + File.separatorChar + "bart" + File.separatorChar,
         attachment.getOnlineURL());
     assertEquals(
-        "componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/frenchScrum.odp",
         attachment.getWebURL());
     assertEquals(
@@ -128,13 +128,13 @@ public class TestAttachmentDetail extends TestCase {
     assertTrue(attachment.isOpenOfficeCompatible("fr"));
     assertEquals("kmelia57", attachment.getInstanceId());
     assertEquals(
-        "/silverpeas//OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
+        "/silverpeas/OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
         "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88869&MimeType=application/vnd" +
         ".oasis.opendocument.presentation&Directory=Attachment"+ File.separatorChar + "tests"
         + File.separatorChar + "simpson" + File.separatorChar + "bart" + File.separatorChar,
         attachment.getOnlineURL());
     assertEquals(
-        "componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/frenchScrum.odp",
         attachment.getWebURL());
     assertEquals(
@@ -184,12 +184,12 @@ public class TestAttachmentDetail extends TestCase {
     assertTrue(attachment.isOpenOfficeCompatible("fr"));
     assertEquals("kmelia57", attachment.getInstanceId());
     assertEquals(
-        "/silverpeas//OnlineFileServer/Spec-Silverpeas-p3-1_2.doc?ComponentId=kmelia57&Sour" +
+        "/silverpeas/OnlineFileServer/Spec-Silverpeas-p3-1_2.doc?ComponentId=kmelia57&Sour" +
         "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88378&MimeType=application/msword&Directory=Attachment" 
         + File.separatorChar + "tests" + File.separatorChar + "simpson"+ File.separatorChar + "bart"
         + File.separatorChar, attachment.getOnlineURL());
     assertEquals(
-        "componentId/kmelia57/attachmentId/100/lang/fr" +
+        "/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
         "/name/Spec-Silverpeas-p3-1_2.doc",
         attachment.getWebURL());
     assertEquals(

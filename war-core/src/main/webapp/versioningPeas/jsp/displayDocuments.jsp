@@ -175,7 +175,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 		  		out.println("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
 				if (document.getStatus()==Document.STATUS_CHECKOUTED)
 				{
-				  	//r�serv�
+				  	//locked
 				  	if (useFileSharing) 
 					{
 						out.println("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
@@ -331,7 +331,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
         		}
 	        	  if (document_version != null)
 	        	  {
-	             		String documentVersionUrl = versioning_util.getDocumentVersionURL(componentId, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId());
+	             		String documentVersionUrl = m_context + versioning_util.getDocumentVersionURL(componentId, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId());
 	
 	             		if ("1".equals(fromAlias))
 	             		{

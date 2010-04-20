@@ -45,11 +45,11 @@ public class FileServerUtilsTest {
   public void testGetAttachmentURL() {
     String url = FileServerUtils.getAttachmentURL("myComponent12", "toto_le_beau.JPG", "18512", "");
     assertNotNull(url);
-    assertEquals("componentId/myComponent12/attachmentId/18512/lang//name/toto_le_beau.JPG",
+    assertEquals("/attached_file/componentId/myComponent12/attachmentId/18512/lang//name/toto_le_beau.JPG",
         url);
     url = FileServerUtils.getAttachmentURL("myComponent12", "toto_le_beau.JPG", "18512", null);
     assertNotNull(url);
-    assertEquals("componentId/myComponent12/attachmentId/18512/lang/fr/name/toto_le_beau.JPG",
+    assertEquals("/attached_file/componentId/myComponent12/attachmentId/18512/lang/fr/name/toto_le_beau.JPG",
         url);
   }
 }

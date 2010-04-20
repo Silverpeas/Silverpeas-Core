@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.HashMap;
 
 /**
  * @author NEY
@@ -87,7 +88,7 @@ public class FileServerUtils extends Object {
   public static String getWebUrl(String spaceId, String componentId,
       String logicalName, String physicalName, String mimeType,
       String subDirectory) {
-    StringBuffer url = new StringBuffer();
+    StringBuilder url = new StringBuilder();
 
     String newLogicalName = replaceSpecialChars(logicalName);
 
@@ -98,13 +99,9 @@ public class FileServerUtils extends Object {
   }
 
   public static String getUrl(String componentId, String logicalName) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
-
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-
-    url.append(m_context).append("/FileServer/").append(newLogicalName).append(
+    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId);
     return url.toString();
   }
@@ -112,13 +109,10 @@ public class FileServerUtils extends Object {
   public static String getUrl(String spaceId, String componentId,
       String logicalName, String physicalName, String mimeType,
       String subDirectory) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
-
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
 
-    url.append(m_context).append("/FileServer/").append(newLogicalName).append(
+    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId).append("&SourceFile=").append(
         physicalName).append("&MimeType=").append(mimeType).append(
         "&Directory=").append(subDirectory);
@@ -127,13 +121,9 @@ public class FileServerUtils extends Object {
 
   public static String getOnlineURL(String componentId, String logicalName,
       String physicalName, String mimeType, String subDirectory) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
-
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-
-    url.append(m_context).append("/OnlineFileServer/").append(newLogicalName).
+    url.append(getApplicationContext()).append("/OnlineFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&SourceFile=").
         append(physicalName).append("&MimeType=").append(mimeType).append(
         "&Directory=").append(subDirectory);
@@ -146,7 +136,7 @@ public class FileServerUtils extends Object {
         "root.MSG_GEN_ENTER_METHOD",
         "componentId = " + componentId + ", logicalName = " + logicalName + ", " +
         "attachmentId = " + attachmentId + ", lang = " + lang);
-    StringBuffer url = new StringBuffer();
+    StringBuilder url = new StringBuilder();
     String language = lang;
     if (language == null) {
       language = I18NHelper.defaultLanguage;
@@ -154,7 +144,7 @@ public class FileServerUtils extends Object {
     SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL",
         "root.MSG_GEN_PARAM_VALUE", "language = " + language);
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append("componentId/").append(componentId).append("/attachmentId/").
+    url.append("/attached_file/").append("componentId/").append(componentId).append("/attachmentId/").
         append(attachmentId).append("/lang/").append(language).append("/name/").
         append(newLogicalName);
     return url.toString();
@@ -162,27 +152,19 @@ public class FileServerUtils extends Object {
 
   public static String getVersionedDocumentURL(String componentId,
       String logicalName, String documentId, String versionId) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
-
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("/attached_file").append("/componentId/").
+    url.append("/attached_file").append("/componentId/").
         append(componentId).append("/documentId/").append(documentId).append(
-        "/versionId/").append(versionId).append("/name/").append(
-        newLogicalName);
+        "/versionId/").append(versionId).append("/name/").append(newLogicalName);
     return url.toString();
   }
 
   public static String getAliasURL(String componentId, String logicalName,
       String attachmentId) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
-
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-
-    url.append(m_context).append("/AliasFileServer/").append(newLogicalName).
+    url.append(getApplicationContext()).append("/AliasFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&AttachmentId=").
         append(attachmentId);
     return url.toString();
@@ -190,22 +172,18 @@ public class FileServerUtils extends Object {
 
   public static String getAliasURL(String componentId, String logicalName,
       String documentId, String versionId) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
-
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-
-    url.append(m_context).append("/AliasFileServer/").append(newLogicalName).
+    url.append(getApplicationContext()).append("/AliasFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&DocumentId=").
-        append(documentId).append("&VersionId=" + versionId);
+        append(documentId).append("&VersionId=").append(versionId);
     return url.toString();
   }
 
   public static Map<String, String> getMappedUrl(String spaceId,
       String componentId, String logicalName, String physicalName,
       String mimeType, String subDirectory) {
-    Map<String, String> parameters = new Hashtable<String, String>();
+    Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("SpaceId", spaceId);
     parameters.put("ComponentId", componentId);
     parameters.put("SourceFile", physicalName);
@@ -223,11 +201,9 @@ public class FileServerUtils extends Object {
 
   public static String getUrl(String logicalName, String physicalName,
       String mimeType) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("/FileServer/").append(newLogicalName).append(
+    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?SourceFile=").append(physicalName).append(
         "&TypeUpload=link&MimeType=").append(mimeType);
     return url.toString();
@@ -236,15 +212,13 @@ public class FileServerUtils extends Object {
   public static String getUrl(String spaceId, String componentId,
       String userId, String logicalName, String physicalName, String mimeType,
       boolean archiveIt, int pubId, int nodeId, String subDirectory) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
+    StringBuilder url = new StringBuilder();
     char archiveItStr = 'N';
     if (archiveIt) {
       archiveItStr = 'Y';
     }
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("/FileServer/").append(newLogicalName).append(
+    url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId).append("&UserId=").append(userId).
         append("&SourceFile=").append(physicalName).append("&MimeType=").append(
         mimeType);
@@ -256,11 +230,9 @@ public class FileServerUtils extends Object {
 
   public static String getUrlToTempDir(String logicalName, String physicalName,
       String mimeType) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
-        getString("ApplicationURL");
+    StringBuilder url = new StringBuilder();
     String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(m_context).append("/TempFileServer/").append(newLogicalName);
+    url.append(getApplicationContext()).append("/TempFileServer/").append(newLogicalName);
     return url.toString();
   }
 
@@ -280,5 +252,14 @@ public class FileServerUtils extends Object {
     newLogicalName = newLogicalName.replace('>', '_');
     newLogicalName = newLogicalName.replace('|', '_');
     return newLogicalName;
+  }
+
+  public static String getApplicationContext(){
+    String applicationContext = GeneralPropertiesManager.getGeneralResourceLocator().
+        getString("ApplicationURL");
+    if(applicationContext.endsWith("/")){
+      applicationContext = applicationContext.substring(0, applicationContext.length() - 1);
+    }
+    return applicationContext;
   }
 }

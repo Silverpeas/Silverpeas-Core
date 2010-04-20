@@ -216,7 +216,7 @@
                 getAttachmentIcon(contentLanguage) + "\" width=\"20\" valign=\"absmiddle\" " + iconStyle + ">");
           }
 
-          url = attachmentDetail.getAttachmentURL(contentLanguage);
+          url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
           if ("1".equals(fromAlias)) {
             url = attachmentDetail.getAliasURL(contentLanguage);
           }

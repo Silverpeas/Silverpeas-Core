@@ -230,9 +230,7 @@ public class VersioningUtil {
 
   public String getDocumentVersionURL(String componentId, String logicalName,
       String documentId, String versionId) {
-    return FileServerUtils.getUrl(componentId, logicalName) + "&DocumentId="
-        + documentId + "&VersionId=" + versionId + "&Name="
-        + FileServerUtils.replaceSpecialChars(logicalName);
+    return FileServerUtils.getVersionedDocumentURL(componentId, logicalName, documentId, versionId);
   }
 
   public String getDownloadEstimation(int size) {

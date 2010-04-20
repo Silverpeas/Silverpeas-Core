@@ -62,6 +62,7 @@ public class DragAndDrop extends HttpServlet {
    * @param config
    * @see
    */
+  @Override
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -79,6 +80,7 @@ public class DragAndDrop extends HttpServlet {
    * @throws ServletException
    * @see
    */
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
@@ -213,5 +215,6 @@ public class DragAndDrop extends HttpServlet {
     } catch (Exception e) {
       SilverTrace.error("attachment", "DragAndDrop.doPost", "ERREUR", e);
     }
+    res.getOutputStream().println("SUCCESS");
   }
 }
