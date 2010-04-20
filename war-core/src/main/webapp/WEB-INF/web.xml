@@ -33,7 +33,7 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   <context-param>
     <!-- Init Parameters -->
     <param-name>contextConfigLocation</param-name>
-    <param-value>WEB-INF/config/spring*.xml</param-value>
+    <param-value>WEB-INF/config/spring-*.xml WEB-INF/config/jcr/spring-*.xml</param-value>
   </context-param>
   <context-param>
     <!-- Init Parameters -->
@@ -267,11 +267,6 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
   <servlet>
     <servlet-name>JcrInitializer</servlet-name>
     <servlet-class>com.silverpeas.jcrutil.servlets.RepositoryAccessServlet</servlet-class>
-    <init-param>
-      <description>Spring JCR configuration file</description>
-      <param-name>configuration</param-name>
-      <param-value>/WEB-INF/config/jcr/spring-jcr.xml /WEB-INF/config/jcr/spring-jdbc-datasource.xml</param-value>
-    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>

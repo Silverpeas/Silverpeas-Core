@@ -23,6 +23,7 @@
  */
 package com.silverpeas.jcrutil.servlets;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -114,25 +115,10 @@ public class RepositoryAccessServlet extends HttpServlet {
             "Only one repository access servlet allowed per web-app.");
       }
       getServletContext().setAttribute(CTX_PARAM_THIS, this);
-      String jcrConfigurationFile = getServletConfig().getInitParameter(
-          "configuration");
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
-          "RepositoryAccessServlet.init()", "Configuration file : "
-          + jcrConfigurationFile);
-      XmlWebApplicationContext context = new XmlWebApplicationContext();
-      context.setServletContext(getServletContext());
-      String[] configLocations = StringUtils.tokenizeToStringArray(
-          jcrConfigurationFile,
-          ConfigurableWebApplicationContext.CONFIG_LOCATION_DELIMITERS);
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
-          "RepositoryAccessServlet.init()", "Configuration locations : "
-          + String.valueOf(configLocations));
-      context.setConfigLocations(configLocations);
-      context.refresh();
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Spring context loaded.");
-      repository = (Repository) context.getBean("repository");
-      config = (RmiConfiguration) context.getBean("rmi-configuration");
+      repository = (Repository) BasicDaoFactory.getBean("repository");
+      config = (RmiConfiguration) BasicDaoFactory.getBean("rmi-configuration");
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "About to launch cleaner Thread");
       cleaner = new PeriodicJcrCleaner(repository);

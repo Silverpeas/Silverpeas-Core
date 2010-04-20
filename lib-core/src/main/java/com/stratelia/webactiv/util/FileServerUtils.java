@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.util;
 
-import java.util.Hashtable;
 import java.util.Map;
 
 import com.silverpeas.util.i18n.I18NHelper;

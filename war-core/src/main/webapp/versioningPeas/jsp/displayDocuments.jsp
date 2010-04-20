@@ -442,7 +442,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
                 <td align="right">
                   <table width="100%">
                     <tr>
-                      <td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Dï¿½poser rapidement un fichier...</a></td>
+                      <td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
                     </tr>
                     <tr>
                       <td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>

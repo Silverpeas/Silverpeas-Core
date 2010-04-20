@@ -45,7 +45,7 @@
     <property name="name" value="${jcr.rmi.name}" />
   </bean>
 
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <bean id="jcrPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
         <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
@@ -53,6 +53,7 @@
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
   </bean>
 
   <bean id="jcrAccessManager" scope="prototype" class="com.stratelia.webactiv.jaas.SilverpeasAccessManager">
