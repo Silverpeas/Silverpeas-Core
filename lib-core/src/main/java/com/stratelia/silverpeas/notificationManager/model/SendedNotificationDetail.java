@@ -33,6 +33,10 @@ import java.util.List;
  */
 public class SendedNotificationDetail implements Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4746255546630667116L;
   private int notifId;
   private int userId;
   private int messageType;

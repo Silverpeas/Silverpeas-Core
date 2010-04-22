@@ -35,20 +35,24 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class NotificationMetaData implements java.io.Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   private int messageType;
   private Date date;
   private String sender;
   private String source;
   private String link;
   private String sessionId;
-  private Collection userRecipients;
-  private Collection groupRecipients;
+  private Collection<String> userRecipients;
+  private Collection<String> groupRecipients;
   private Connection connection; // usefull to send notification from ejb part
   private String componentId;
   private boolean isAnswerAllowed = false;
 
-  private Hashtable titles = new Hashtable();
-  private Hashtable contents = new Hashtable();
+  private Hashtable<String, String> titles = new Hashtable<String, String>();
+  private Hashtable<String, String> contents = new Hashtable<String, String>();
 
   /**
    * Default Constructor
@@ -80,8 +84,8 @@ public class NotificationMetaData implements java.io.Serializable {
     source = "";
     link = "";
     sessionId = "";
-    userRecipients = new ArrayList();
-    groupRecipients = new ArrayList();
+    userRecipients = new ArrayList<String>();
+    groupRecipients = new ArrayList<String>();
     connection = null;
     componentId = "";
     isAnswerAllowed = false;
@@ -92,7 +96,7 @@ public class NotificationMetaData implements java.io.Serializable {
     contents.put(language, content);
   }
 
-  public Set getLanguages() {
+  public Set<String> getLanguages() {
     return titles.keySet();
   }
 
@@ -274,7 +278,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * Set message user recipients
    * @param userRecipients the user ids that must receive this message
    */
-  public void setUserRecipients(Collection userRecipients) {
+  public void setUserRecipients(Collection<String> userRecipients) {
     this.userRecipients = userRecipients;
   }
 
@@ -282,7 +286,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * Get message user recipients
    * @return the message user recipients
    */
-  public Collection getUserRecipients() {
+  public Collection<String> getUserRecipients() {
     return userRecipients;
   }
 
@@ -318,7 +322,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * Set message group recipients
    * @param groupRecipients the group ids that must receive this message
    */
-  public void setGroupRecipients(Collection groupRecipients) {
+  public void setGroupRecipients(Collection<String> groupRecipients) {
     this.groupRecipients = groupRecipients;
   }
 
@@ -326,7 +330,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * Get message group recipients
    * @return the message group recipients
    */
-  public Collection getGroupRecipients() {
+  public Collection<String> getGroupRecipients() {
     return groupRecipients;
   }
 

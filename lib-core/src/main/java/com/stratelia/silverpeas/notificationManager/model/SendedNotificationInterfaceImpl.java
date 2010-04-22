@@ -47,14 +47,12 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
   public SendedNotificationInterfaceImpl() {
   }
 
-  public void saveNotifUser(NotificationMetaData metaData, Set usersSet)
+  public void saveNotifUser(NotificationMetaData metaData, Set<String> usersSet)
       throws NotificationManagerException {
     Connection con = initCon();
     try {
 
       List<String> users = new ArrayList<String>();
-      String userName = "";
-      boolean first = true;
       Iterator<String> it = usersSet.iterator();
       while (it.hasNext()) {
         String userId = it.next();

@@ -119,7 +119,7 @@ public class SendedNotificationDAO {
       prepStmt.setInt(1, notifId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-         users.add(Integer.toString(rs.getInt("userId")));
+        users.add(Integer.toString(rs.getInt("userId")));
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -222,11 +222,9 @@ public class SendedNotificationDAO {
     notif.setSessionId(rs.getString("sessionId"));
     notif.setComponentId(rs.getString("componentId"));
     // récupération du body depuis la table ST_LongText à partir de l'id
-    int id = rs.getInt("body");
     String body = "";
     try {
       int longTextId = -1;
-
       longTextId = rs.getInt("body");
       body = LongText.getLongText(longTextId);
     } catch (Exception e) {

@@ -96,9 +96,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @throws NotificationManagerException
    * @see
    */
-  public ArrayList getDefaultAddresses() throws NotificationManagerException {
+  public ArrayList<Properties> getDefaultAddresses() throws NotificationManagerException {
     // Retreive all default addresses except Trashbean address
-    ArrayList al = new ArrayList();
+    ArrayList<Properties> al = new ArrayList<Properties>();
     NotificationManager nm = new NotificationManager(getLanguage());
     int uId = Integer.parseInt(getUserId());
 
@@ -117,7 +117,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @throws NotificationManagerException
    * @see
    */
-  public ArrayList getNotifPriorities() throws NotificationManagerException {
+  public ArrayList<Properties> getNotifPriorities() throws NotificationManagerException {
     NotificationManager nm = new NotificationManager(getLanguage());
     return nm.getNotifPriorities();
   }
@@ -128,11 +128,11 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @throws NotificationUserException
    * @see
    */
-  public ArrayList getAvailableGroups() throws NotificationUserException {
+  public ArrayList<Properties> getAvailableGroups() throws NotificationUserException {
     Group[] allGroups = null;
     Properties p;
     int i;
-    ArrayList ar = new ArrayList();
+    ArrayList<Properties> ar = new ArrayList<Properties>();
 
     allGroups = getOrganizationController().getAllGroups();
     for (i = 0; i < allGroups.length; i++) {
@@ -149,11 +149,11 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @return
    * @see
    */
-  public ArrayList getAvailableUsers() {
+  public ArrayList<Properties> getAvailableUsers() {
     UserDetail[] allUsers = null;
     Properties p;
     int i;
-    ArrayList ar = new ArrayList();
+    ArrayList<Properties> ar = new ArrayList<Properties>();
 
     allUsers = getOrganizationController().getAllUsers();
     for (i = 0; i < allUsers.length; i++) {
@@ -188,9 +188,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
     SilverTrace
         .debug("notificationUser",
-        "NotificationUsersessionController.sendMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-        + priorityId);
+            "NotificationUsersessionController.sendMessage()",
+            "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
+                + priorityId);
 
     if ((notificationId != null) && (notificationId.length() > 0)) {
       notifTypeId = Integer.parseInt(notificationId);
@@ -220,11 +220,11 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     return NotificationSender.getIdsArrayFromIdsLine(src);
   }
 
-  public String buildOptions(ArrayList ar, String selectValue, String selectText) {
+  public String buildOptions(ArrayList<Properties> ar, String selectValue, String selectText) {
     return buildOptions(ar, selectValue, selectText, false);
   }
 
-  public String buildOptions(ArrayList ar, String selectValue,
+  public String buildOptions(ArrayList<Properties> ar, String selectValue,
       String selectText, boolean bSorted) {
     StringBuffer valret = new StringBuffer();
     Properties elmt = null;
@@ -244,16 +244,16 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator() {
-          public int compare(Object o1, Object o2) {
+        public int compare(Object o1, Object o2) {
           return (((Properties) o1).getProperty("name")).toUpperCase()
               .compareTo(((Properties) o2).getProperty("name").toUpperCase());
-          }
+        }
 
         public boolean equals(Object o) {
           return false;
-          }
-                });
-      arToDisplay = new ArrayList(theList.length);
+        }
+      });
+      arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
       }
@@ -342,11 +342,11 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     return idGroups;
   }
 
-  public ArrayList getSelectedUsers(String[] selectedUersId)
+  public ArrayList<Properties> getSelectedUsers(String[] selectedUersId)
       throws NotificationUserException {
     Properties p;
     int i;
-    ArrayList ar = new ArrayList();
+    ArrayList<Properties> ar = new ArrayList<Properties>();
     UserDetail[] selectedUsers = null;
 
     if (selectedUersId != null && selectedUersId.length > 0) {
@@ -370,7 +370,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     return ar;
   }
 
-  public ArrayList getSelectedGroups(String[] selectedGroupsId)
+  public ArrayList<Properties> getSelectedGroups(String[] selectedGroupsId)
       throws NotificationUserException {
     SilverTrace.debug("notificationUser",
         "NotificationUsersessionController.getSelectedGroups()",
@@ -378,7 +378,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     Group[] selectedGroups = null;
     Properties p;
     int i;
-    ArrayList ar = new ArrayList();
+    ArrayList<Properties> ar = new ArrayList<Properties>();
 
     if (selectedGroupsId != null && selectedGroupsId.length > 0) {
       selectedGroups = this.getGroupList(selectedGroupsId);

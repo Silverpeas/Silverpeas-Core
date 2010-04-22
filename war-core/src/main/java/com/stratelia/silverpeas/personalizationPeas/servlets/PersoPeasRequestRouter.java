@@ -213,8 +213,8 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
           SilverTrace.info(getSessionControlBeanName(),
               "PersoPeasRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-              + " - userLastName=" + userLastName + " userEmail="
-              + userEmail);
+                  + " - userLastName=" + userLastName + " userEmail="
+                  + userEmail);
 
           String userLoginQuestion = request.getParameter("userLoginQuestion");
           userLoginQuestion = (userLoginQuestion != null
@@ -260,6 +260,10 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
               .getString("Error_unknown"));
         }
         destination = getDestination("ChangePassword", componentSC, request);
+      } else if (function.startsWith("SaveChannels")) {
+        String selectedChannels = request.getParameter("SelectedChannels");
+        personalizationScc.saveChannels(selectedChannels);
+        destination = "/personalizationPeas/jsp/personalization_Notification.jsp";
       } else {
         destination = "/personalizationPeas/jsp/" + function;
       }

@@ -26,7 +26,6 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,6 +54,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * @version %I%, %G%
  */
 public class NotificationSender implements java.io.Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 4165938893905145809L;
+
   protected NotificationManager m_Manager = null;
 
   protected int m_instanceId = -1;
@@ -96,7 +100,7 @@ public class NotificationSender implements java.io.Serializable {
    * @param orgaController the controller.
    * @throws NotificationManagerException
    */
-  protected void manageManualNotification(Set usersSet, Set<String> languages,
+  protected void manageManualNotification(Set<String> usersSet, Set<String> languages,
       NotificationMetaData metaData,
       OrganizationController orgaController) throws NotificationManagerException {
     if (isNotificationManual(metaData)) {
@@ -135,20 +139,20 @@ public class NotificationSender implements java.io.Serializable {
     usersSet.addAll(userRecipients);
 
     // Then get users included in groups
-    for(String groupId : groupRecipients){
+    for (String groupId : groupRecipients) {
       usersSet.addAll(Arrays.asList(m_Manager.getUsersFromGroup(groupId)));
     }
     Set<String> languages = metaData.getLanguages();
     manageManualNotification(usersSet, languages, metaData, orgaController);
 
-    Hashtable usersLanguage = orgaController.getUsersLanguage(new ArrayList(
-        usersSet));
+    Hashtable<String, String> usersLanguage =
+        orgaController.getUsersLanguage(new ArrayList<String>(usersSet));
 
     NotificationParameters params = null;
-    List userIds = null;
+    List<String> userIds = null;
 
     // All usersId to notify
-    Set allUserIds = usersLanguage.keySet();
+    Set<String> allUserIds = usersLanguage.keySet();
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
         "root.MSG_GEN_PARAM_VALUE", "allUserIds = " + allUserIds);
     for (String language : languages) {
@@ -178,7 +182,7 @@ public class NotificationSender implements java.io.Serializable {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private String addReceivers(Set usersSet, String content, String language,
+  private String addReceivers(Set<String> usersSet, String content, String language,
       OrganizationController orgaController) {
     ResourceLocator m_Multilang = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
@@ -203,7 +207,7 @@ public class NotificationSender implements java.io.Serializable {
     return result;
   }
 
-  private void saveNotification(NotificationMetaData metaData, Set usersSet)
+  private void saveNotification(NotificationMetaData metaData, Set<String> usersSet)
       throws NotificationManagerException {
     getNotificationInterface().saveNotifUser(metaData, usersSet);
   }
@@ -221,19 +225,19 @@ public class NotificationSender implements java.io.Serializable {
     return notificationInterface;
   }
 
-  private List getUserIds(String lang, Hashtable usersLanguage) {
-    List userIds = new ArrayList(usersLanguage.keySet());
-    Iterator languages = usersLanguage.values().iterator();
-    List result = new ArrayList();
+  private List<String> getUserIds(String lang, Hashtable<String, String> usersLanguage) {
+    List<String> userIds = new ArrayList<String>(usersLanguage.keySet());
+    Iterator<String> languages = usersLanguage.values().iterator();
+    List<String> result = new ArrayList<String>();
     String language = null;
     int u = 0;
     while (languages.hasNext()) {
-      language = (String) languages.next();
+      language = languages.next();
       SilverTrace.debug("notificationManager",
           "NotificationSender.getUserIds()", "root.MSG_GEN_PARAM_VALUE",
           "language = " + language);
       if (lang.equalsIgnoreCase(language))
-        result.add((String) userIds.get(u));
+        result.add(userIds.get(u));
       u++;
     }
     SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",

@@ -32,6 +32,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
@@ -54,14 +55,14 @@ public class SendedUserNotifications implements SILVERMAILRequestHandler {
    */
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
-    
+
     // passer en paramètre la liste dans la request
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-    List sendedNotifs = new ArrayList();
+    List<SendedNotificationDetail> sendedNotifs = new ArrayList<SendedNotificationDetail>();
     try {
       sendedNotifs = silvermailScc.getUserMessageList();
     } catch (NotificationManagerException e) {
-      
+
     }
     request.setAttribute("SendedNotifs", sendedNotifs);
     return "/SILVERMAIL/jsp/sendedUserNotifications.jsp";

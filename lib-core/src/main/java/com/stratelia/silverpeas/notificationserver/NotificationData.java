@@ -27,9 +27,9 @@
 package com.stratelia.silverpeas.notificationserver;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Hashtable;
 
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Title: Notification Server Description: contains a Notification structure Copyright: Copyright
@@ -39,6 +39,10 @@ import com.stratelia.silverpeas.silvertrace.*;
  */
 
 public class NotificationData implements Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   // private fields
   private String mLoginUser;
   private String mLoginPassword;
@@ -358,37 +362,37 @@ public class NotificationData implements Serializable {
     if (SilverTrace.getTraceLevel("notificationServer", true) <= SilverTrace.TRACE_LEVEL_INFO) {
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "LoginUser : "
-          + mLoginUser);
+              + mLoginUser);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Message : " + mMessage);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "NotificationId : "
-          + Long.toString(mNotificationId));
+              + Long.toString(mNotificationId));
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderId : " + mSenderId);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Answer allowed : "
-          + mAnswerAllowed);
+              + mAnswerAllowed);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderName : "
-          + mSenderName);
+              + mSenderName);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Comment : " + mComment);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetChannel : "
-          + mTargetChannel);
+              + mTargetChannel);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetReceipt : "
-          + mTargetReceipt);
+              + mTargetReceipt);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetName : "
-          + mTargetName);
+              + mTargetName);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "PrioritySpeed : "
-          + mPrioritySpeed);
+              + mPrioritySpeed);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "ReportToSenderStatus : "
-          + mReportToSenderStatus);
+              + mReportToSenderStatus);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "ReportToSenderTargetChannel : " + mReportToSenderTargetChannel);
@@ -400,7 +404,7 @@ public class NotificationData implements Serializable {
           "ReportToSenderTargetParam : " + mReportToSenderTargetParam);
       SilverTrace.info("notificationServer", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "ReportToLogStatus : "
-          + mReportToLogStatus);
+              + mReportToLogStatus);
     }
   }
 

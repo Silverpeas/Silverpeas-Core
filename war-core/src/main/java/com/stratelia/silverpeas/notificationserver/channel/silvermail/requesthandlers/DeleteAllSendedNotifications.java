@@ -31,6 +31,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
@@ -56,10 +57,10 @@ public class DeleteAllSendedNotifications implements SILVERMAILRequestHandler {
     try {
       SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
       silvermailScc.deleteAllSendedNotif();
-      List sendedNotifs = silvermailScc.getUserMessageList();
+      List<SendedNotificationDetail> sendedNotifs = silvermailScc.getUserMessageList();
       request.setAttribute("SendedNotifs", sendedNotifs);
     } catch (NotificationManagerException e) {
-      
+
     }
     return "/SILVERMAIL/jsp/sendedUserNotifications.jsp";
   }

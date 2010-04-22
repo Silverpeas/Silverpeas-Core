@@ -42,6 +42,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class NotificationUserRequestRouter extends ComponentRequestRouter {
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = -5858231857279380747L;
+
+  /**
    * Method declaration
    * @param mainSessionCtrl
    * @param componentContext
