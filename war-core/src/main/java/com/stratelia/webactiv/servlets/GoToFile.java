@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.servlets;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,15 +37,16 @@ public class GoToFile extends GoTo {
 
   private static final long serialVersionUID = 1L;
 
+  @Override
   public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+          HttpServletResponse res) throws Exception {
     boolean isLoggedIn = isUserLogin(req);
 
     // Check first if attachment exists
-    AttachmentDetail attachment = AttachmentController
-        .searchAttachmentByPK(new AttachmentPK(objectId));
-    if (attachment == null)
+    AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(objectId));
+    if (attachment == null) {
       return null;
+    }
 
     String componentId = attachment.getInstanceId();
     String foreignId = attachment.getForeignKey().getId();
@@ -60,25 +60,25 @@ public class GoToFile extends GoTo {
         if (componentId.startsWith("kmelia")) {
           try {
             ComponentSecurity security = (ComponentSecurity) Class.forName(
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
+                    "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
             isAccessAuthorized = security.isAccessAuthorized(componentId,
-                getUserId(req), foreignId);
+                    getUserId(req), foreignId);
           } catch (Exception e) {
             SilverTrace.error("peasUtil", "GoToFile.doPost",
-                "root.EX_CLASS_NOT_INITIALIZED",
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
+                    "root.EX_CLASS_NOT_INITIALIZED",
+                    "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
             return null;
           }
         }
 
         if (isAccessAuthorized) {
-          res.sendRedirect(attachment.getAttachmentURL());
+          res.sendRedirect(req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort() + '/'+ req.getContextPath() + attachment.getAttachmentURL());
         }
       }
 
     }
 
-    return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId=" +
-        foreignId;
+    return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="
+            + foreignId;
   }
 }
