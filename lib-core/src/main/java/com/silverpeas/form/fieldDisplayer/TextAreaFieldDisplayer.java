@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
@@ -121,7 +122,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     String cols = "48";
     String html = "";
     String cssClass = null;
-    
+
     String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
@@ -134,16 +135,16 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.isNull())
       value = field.getValue(PagesContext.getLanguage());
 
-	if (parameters.containsKey("class")) {
-		cssClass = (String) parameters.get("class");
-		if (StringUtil.isDefined(cssClass))
-			cssClass = "class=\"" + cssClass + "\"";
-	}
+    if (parameters.containsKey("class")) {
+      cssClass = (String) parameters.get("class");
+      if (StringUtil.isDefined(cssClass))
+        cssClass = "class=\"" + cssClass + "\"";
+    }
 
     if (StringUtil.isDefined(cssClass))
-        html += "<span " + cssClass + ">";
-    
-	html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+      html += "<span " + cssClass + ">";
+
+    html += "<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
     if (parameters.containsKey("rows")) {
       rows = parameters.get("rows");
@@ -164,7 +165,7 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     html += " >" + EncodeHelper.javaStringToHtmlString(value) + "</TEXTAREA>";
 
     if (StringUtil.isDefined(cssClass))
-        html += "</span>";
+      html += "</span>";
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && PagesContext.useMandatory()) {

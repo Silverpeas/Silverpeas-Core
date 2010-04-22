@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -47,9 +47,9 @@ public class SendedNotificationDAO {
     try {
       String query =
           "insert into ST_NotifSended "
-              +
-              "(notifId, userId, messageType, notifDate, title, link, sessionId, componentId, body)"
-              + " values (?,?,?,?,?,?,?,?,?)";
+          +
+          "(notifId, userId, messageType, notifDate, title, link, sessionId, componentId, body)"
+          + " values (?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       notifId = DBUtil.getNextId("ST_NotifSended", "notifId");

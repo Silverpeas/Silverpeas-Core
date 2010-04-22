@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.io.File;
@@ -110,8 +111,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    */
   public AttachmentDetail(WAPrimaryKey foreignKey) {
     SilverTrace.info("attachment",
-            "Contructor AttachmentDetail(WAPrimaryKey foreignKey)",
-            "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
+        "Contructor AttachmentDetail(WAPrimaryKey foreignKey)",
+        "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
     this.foreignKey = foreignKey;
   }
 
@@ -130,15 +131,15 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * @version
    */
   public AttachmentDetail(AttachmentPK attachPK, String physicalName,
-          String logicalName, String description, String type, long size,
-          String context, Date creationDate, WAPrimaryKey foreignKey, String author) {
+      String logicalName, String description, String type, long size,
+      String context, Date creationDate, WAPrimaryKey foreignKey, String author) {
     pk = attachPK;
     if (pk == null) {
       SilverTrace.info("attachment", "Contructor with author",
-              "root.MSG_GEN_PARAM_VALUE", "pk = null !");
+          "root.MSG_GEN_PARAM_VALUE", "pk = null !");
     } else {
       SilverTrace.info("attachment", "Contructor with author",
-              "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+          "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     }
     this.physicalName = physicalName;
     this.logicalName = logicalName;
@@ -154,12 +155,12 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
   }
 
   public AttachmentDetail(AttachmentPK attachPK, String physicalName,
-          String logicalName, String description, String type, long size,
-          String context, Date creationDate, WAPrimaryKey foreignKey) {
+      String logicalName, String description, String type, long size,
+      String context, Date creationDate, WAPrimaryKey foreignKey) {
     pk = attachPK;
     SilverTrace.info("attachment",
-            "Contructor without author and without title",
-            "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+        "Contructor without author and without title",
+        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     this.physicalName = physicalName;
     this.logicalName = logicalName;
     this.description = description;
@@ -173,12 +174,12 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
   }
 
   public AttachmentDetail(AttachmentPK attachPK, String physicalName,
-          String logicalName, String description, String type, long size,
-          String context, Date creationDate, WAPrimaryKey foreignKey, String title,
-          String info, int orderNum) {
+      String logicalName, String description, String type, long size,
+      String context, Date creationDate, WAPrimaryKey foreignKey, String title,
+      String info, int orderNum) {
     pk = attachPK;
     SilverTrace.info("attachment", "Contructor without author but with title",
-            "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     this.physicalName = physicalName;
     this.logicalName = logicalName;
     this.description = description;
@@ -209,16 +210,16 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * @see com.stratelia.util.WAPrimaryKey
    */
   public AttachmentDetail(AttachmentPK attachPK, String physicalName,
-          String logicalName, String description, String type, long size,
-          String context, Date creationDate, WAPrimaryKey foreignKey,
-          String author, String title) {
+      String logicalName, String description, String type, long size,
+      String context, Date creationDate, WAPrimaryKey foreignKey,
+      String author, String title) {
     pk = attachPK;
     if (pk == null) {
       SilverTrace.info("attachment", "Contructor with author and title",
-              "root.MSG_GEN_PARAM_VALUE", "pk = null !");
+          "root.MSG_GEN_PARAM_VALUE", "pk = null !");
     } else {
       SilverTrace.info("attachment", "Contructor with author an title",
-              "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+          "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     }
     this.physicalName = physicalName;
     this.logicalName = logicalName;
@@ -243,8 +244,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
   public AttachmentDetail(AttachmentPK attachPK) {
     pk = attachPK;
     SilverTrace.info("attachment",
-            "Contructor AttachmentDetail(AttachmentPK attachPK)",
-            "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+        "Contructor AttachmentDetail(AttachmentPK attachPK)",
+        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
   }
 
   /**
@@ -262,10 +263,10 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
   public void setPK(AttachmentPK pk) {
     if (pk == null) {
       SilverTrace.info("attachment", "AttachmentDetail.setPK()",
-              "root.MSG_GEN_PARAM_VALUE", "pk is null !");
+          "root.MSG_GEN_PARAM_VALUE", "pk is null !");
     } else {
       SilverTrace.info("attachment", "AttachmentDetail.setPK()",
-              "root.MSG_GEN_PARAM_VALUE", "pk is not null = " + pk.toString());
+          "root.MSG_GEN_PARAM_VALUE", "pk is not null = " + pk.toString());
     }
 
     this.pk = pk;
@@ -328,7 +329,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    */
   public void setLogicalName(String logicalName) {
     SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()",
-            "root.MSG_GEN_PARAM_VALUE", "logicalName = " + logicalName);
+        "root.MSG_GEN_PARAM_VALUE", "logicalName = " + logicalName);
     this.logicalName = logicalName;
   }
 
@@ -368,7 +369,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
       return getType();
     }
     if (!StringUtil.isDefined(detail.getType())
-            || detail.getType().equalsIgnoreCase(DEFAULT_MIME_TYPE)) {
+        || detail.getType().equalsIgnoreCase(DEFAULT_MIME_TYPE)) {
       return AttachmentController.getMimeType(detail.getLogicalName());
     }
     return detail.getType();
@@ -599,8 +600,9 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * Retourne l'URL de l'attachment. Cette URL est construite a partir des autres informations
    * @see
    */
-  public String getAttachmentURL(String language) {    
-    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getLogicalName(language), pk.getId(), language);
+  public String getAttachmentURL(String language) {
+    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getLogicalName(language), pk
+        .getId(), language);
   }
 
   public String getAttachmentURL() {
@@ -608,19 +610,20 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
   }
 
   public String getOnlineURL(String language) {
-    String theContext = FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(context));
+    String theContext =
+        FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(context));
     String thePhysicalName = getPhysicalName(language);
     String theLogicalName = getLogicalName(language);
     String theType = getType(language);
 
     String valret = FileServerUtils.getOnlineURL(pk.getComponentName(),
-            theLogicalName, thePhysicalName, theType, theContext);
+        theLogicalName, thePhysicalName, theType, theContext);
     if (thePhysicalName != null) {
       String extension = FileRepositoryManager.getFileExtension(thePhysicalName);
       if ("exe".equalsIgnoreCase(extension)
-              || "pdf".equalsIgnoreCase(extension)) {
+          || "pdf".equalsIgnoreCase(extension)) {
         valret += "&logicalName="
-                + FileServerUtils.replaceSpecialChars(theLogicalName);
+            + FileServerUtils.replaceSpecialChars(theLogicalName);
       }
     }
     return valret;
@@ -635,16 +638,16 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     String logicalName = getLogicalName(language);
 
     String valret = FileServerUtils.getAliasURL(pk.getInstanceId(),
-            logicalName, pk.getId());
+        logicalName, pk.getId());
     if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
       valret += "&lang=" + language;
     }
     if (physicalName != null) {
       String extension = FileRepositoryManager.getFileExtension(physicalName);
       if ("exe".equalsIgnoreCase(extension)
-              || "pdf".equalsIgnoreCase(extension)) {
+          || "pdf".equalsIgnoreCase(extension)) {
         valret += "&logicalName="
-                + FileServerUtils.replaceSpecialChars(logicalName);
+            + FileServerUtils.replaceSpecialChars(logicalName);
       }
     }
     return valret;
@@ -656,7 +659,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
 
   protected String getLanguage(String language) {
     if (language != null
-            && ("fr".equalsIgnoreCase(language) || "".equals(language.trim()))) {
+        && ("fr".equalsIgnoreCase(language) || "".equals(language.trim()))) {
       return null;
     }
     return language;
@@ -669,7 +672,9 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     if (!webAppContext.endsWith("/")) {
       webAppContext = webAppContext + '/';
     }
-    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(messages.getString("webdav.workspace")).append('/').append(getJcrPath(getLanguage(language)));
+    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(
+        messages.getString("webdav.workspace")).append('/').append(
+        getJcrPath(getLanguage(language)));
     return url.toString();
   }
 
@@ -699,11 +704,11 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    */
   public String getWebURL() {
     SilverTrace.info("attachment", "Contructor getWebURL()",
-            "root.MSG_GEN_PARAM_VALUE", "pk is not null !");
+        "root.MSG_GEN_PARAM_VALUE", "pk is not null !");
     String valret = FileServerUtils.getAttachmentURL(pk.getInstanceId(),
-            logicalName, pk.getId(), getLanguage());
+        logicalName, pk.getId(), getLanguage());
     SilverTrace.info("attachment", "Contructor getWebURL()",
-            "root.MSG_GEN_PARAM_VALUE", valret);
+        "root.MSG_GEN_PARAM_VALUE", valret);
     return valret;
   }
 
@@ -720,44 +725,46 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
       valret = physicalName;
     } else {
       if ((attGr == GROUP_FILE) || (attGr == GROUP_DIR)) {
-        String theContext = FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(context));
+        String theContext =
+            FileRepositoryManager.getRelativePath(FileRepositoryManager
+                .getAttachmentContext(context));
         int nodeId = 0;
         if (fatherId == null) {
           nodeId = new Integer(fatherId).intValue();
         }
         valret = FileServerUtils.getUrl(pk.getSpace(), pk.getComponentName(),
-                userId, logicalName, physicalName, type, true, new Integer(
-                foreignKey.getId()).intValue(), nodeId, theContext);
+            userId, logicalName, physicalName, type, true, new Integer(
+            foreignKey.getId()).intValue(), nodeId, theContext);
         SilverTrace.info("attachment",
-                "AttachmentDetail.getAttachmentURLToMemorize",
-                "root.MSG_GEN_PARAM_VALUE",
-                "(attGr == GROUP_FILE) || (attGr == GROUP_DIR) : url = " + valret);
+            "AttachmentDetail.getAttachmentURLToMemorize",
+            "root.MSG_GEN_PARAM_VALUE",
+            "(attGr == GROUP_FILE) || (attGr == GROUP_DIR) : url = " + valret);
       } else {
         valret = FileServerUtils.getUrl(logicalName, physicalName, type);
         SilverTrace.info("attachment",
-                "AttachmentDetail.getAttachmentURLToMemorize",
-                "root.MSG_GEN_PARAM_VALUE",
-                "(attGr != GROUP_FILE) && (attGr != GROUP_DIR) : url = " + valret);
+            "AttachmentDetail.getAttachmentURLToMemorize",
+            "root.MSG_GEN_PARAM_VALUE",
+            "(attGr != GROUP_FILE) && (attGr != GROUP_DIR) : url = " + valret);
       }
     }
     SilverTrace.info("attachment",
-            "AttachmentDetail.getAttachmentURLToMemorize",
-            "root.MSG_GEN_PARAM_VALUE", "physicalName = " + physicalName);
+        "AttachmentDetail.getAttachmentURLToMemorize",
+        "root.MSG_GEN_PARAM_VALUE", "physicalName = " + physicalName);
 
     valret += "&attachmentId=" + pk.getId();
 
     if (physicalName != null) {
       String extension = FileRepositoryManager.getFileExtension(physicalName);
       if ("exe".equalsIgnoreCase(extension)
-              || "pdf".equalsIgnoreCase(extension)) {
+          || "pdf".equalsIgnoreCase(extension)) {
         valret += "&logicalName="
-                + FileServerUtils.replaceSpecialChars(logicalName);
+            + FileServerUtils.replaceSpecialChars(logicalName);
       }
     }
 
     SilverTrace.info("attachment",
-            "AttachmentDetail.getAttachmentURLToMemorize",
-            "root.MSG_GEN_PARAM_VALUE", "valret = " + valret);
+        "AttachmentDetail.getAttachmentURLToMemorize",
+        "root.MSG_GEN_PARAM_VALUE", "valret = " + valret);
     return valret;
   }
 
@@ -772,7 +779,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
       valret = FileRepositoryManager.getFileIcon(fileType);
     } else {
       if (getAttachmentGroup() == GROUP_HTML_LINK
-              || getAttachmentGroup() == GROUP_DUMMY) {
+          || getAttachmentGroup() == GROUP_DUMMY) {
         valret = FileRepositoryManager.getFileIcon("html");
       }
     }
@@ -838,8 +845,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     String type = getType(language);
     if (type != null) {
       SilverTrace.info("attachment", "AttachmentDetail.isOfficeDocument()",
-              "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-              + MS_OFFICE_MIME_TYPES.contains(type));
+          "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
+          + MS_OFFICE_MIME_TYPES.contains(type));
       isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(type);
     }
     return isOfficeDocument;
@@ -852,7 +859,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    */
   public String getAttachmentPath(String language) {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
-            FileRepositoryManager.getAttachmentContext(getContext()));
+        FileRepositoryManager.getAttachmentContext(getContext()));
     if (!directory.endsWith(File.separator)) {
       directory = directory + File.separatorChar;
     }
@@ -893,8 +900,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
       isSpinfireDocument = getType(language).equals(SPINFIRE_MIME_TYPE);
     }
     SilverTrace.info("attachment", "AttachmentDetail.isSpinfireDocument()",
-            "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-            + isSpinfireDocument);
+        "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
+        + isSpinfireDocument);
     return isSpinfireDocument;
   }
 
@@ -902,8 +909,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     boolean isSpinfireDocument = false;
     if (getType() != null) {
       SilverTrace.info("attachment", "AttachmentDetail.isSpinfireDocument()",
-              "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-              + getType().equals(SPINFIRE_MIME_TYPE));
+          "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
+          + getType().equals(SPINFIRE_MIME_TYPE));
       isSpinfireDocument = getType().equals(SPINFIRE_MIME_TYPE);
     }
     return isSpinfireDocument;
@@ -918,7 +925,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     boolean isReadOnly = false;
     isReadOnly = (getWorkerId() != null);
     SilverTrace.info("attachment", "AttachmentDetail.isReadOnly()",
-            "root.MSG_GEN_PARAM_VALUE", "isReadOnly = " + isReadOnly);
+        "root.MSG_GEN_PARAM_VALUE", "isReadOnly = " + isReadOnly);
 
     return isReadOnly;
   }
@@ -970,7 +977,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
 
   private AttachmentDetailI18N getAttachment(String language) {
     AttachmentDetailI18N p = (AttachmentDetailI18N) getTranslations().get(
-            language);
+        language);
     if (p == null) {
       p = (AttachmentDetailI18N) getNextTranslation();
     }
@@ -1006,7 +1013,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    */
   public void checkMimeType() {
     if (logicalName != null
-            && (!StringUtil.isDefined(type) || type.equalsIgnoreCase(DEFAULT_MIME_TYPE))) {
+        && (!StringUtil.isDefined(type) || type.equalsIgnoreCase(DEFAULT_MIME_TYPE))) {
       type = AttachmentController.getMimeType(logicalName);
     }
   }
