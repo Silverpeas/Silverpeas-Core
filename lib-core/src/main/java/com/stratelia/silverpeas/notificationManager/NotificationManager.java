@@ -735,7 +735,7 @@ public class NotificationManager implements NotificationParameterNames {
   public void testNotifAddress(int aNotificationAddressId, int aUserId)
       throws NotificationManagerException {
     NotifSchema schema = null;
-    NotificationData[] nds = null;
+    NotificationData nd = null;
     NotificationServer ns = new NotificationServer();
     NotificationParameters params = new NotificationParameters();
 
@@ -746,10 +746,8 @@ public class NotificationManager implements NotificationParameterNames {
       params.sMessage = m_Multilang.getString("testMsgBody");
       params.iFromUserId = aUserId;
       // TODO : plusieurs "nd" à créer et à ajouter au "ns"
-      nds = createNotificationData(params, Integer.toString(aUserId), schema);
-      for (int i = 0; i < nds.length; i++) {
-        ns.addNotification(nds[i]);
-      }
+      nd = createNotificationData(params, Integer.toString(aUserId), schema);
+      ns.addNotification(nd);
       SilverTrace.info("notificationManager",
           "NotificationManager.testNotifAddress()", "root.MSG_GEN_EXIT_METHOD",
           "Test Notification Done !!!");
@@ -822,7 +820,7 @@ public class NotificationManager implements NotificationParameterNames {
           SilverTrace.info("notificationManager",
               "NotificationManager.notifyUsers()", "root.MSG_GEN_PARAM_VALUE",
               "notifUserId : " + aUserIds[i]);
-          nds = createNotificationData(params, aUserIds[i], schema);
+          nds = createAllNotificationData(params, aUserIds[i], schema);
 
           for (int j = 0; j < nds.length; j++) {
             ns.addNotification(nds[j]);
@@ -1339,7 +1337,143 @@ public class NotificationManager implements NotificationParameterNames {
    * @throws UtilException
    * @see
    */
-  protected NotificationData[] createNotificationData(
+  protected NotificationData createNotificationData(
+      NotificationParameters params, String aUserId, NotifSchema schema)
+      throws UtilException {
+    NotificationData nd = new NotificationData();
+    NotifAddressRow nar = null;
+    NotifChannelRow ncr = null;
+    StringBuffer theMessage = new StringBuffer(100);
+    Hashtable theExtraParams = new Hashtable();
+
+    nar = getNotifAddressRow(params, Integer.parseInt(aUserId), schema);
+    ncr = schema.notifChannel.getNotifChannel(nar.getNotifChannelId());
+
+    // set the channel
+    nd = new NotificationData();
+    nd.setTargetChannel(ncr.getName());
+    // set the destination address
+    nd.setTargetReceipt(nar.getAddress());
+    // Set subject parameter
+    SilverTrace
+          .info("notificationManager",
+              "NotificationManager.createNotificationData()",
+              "root.MSG_GEN_PARAM_VALUE", "params.iFromUserId ="
+                  + params.iFromUserId);
+    if ("Y".equalsIgnoreCase(ncr.getSubjectAvailable())) {
+      theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
+    } else if (params.iFromUserId < 0) {
+      theMessage.append(m_Multilang.getString("subject") + " : "
+            + params.sTitle + "\n\n");
+    }
+
+    String senderName;
+    if (params.iFromUserId < 0) {
+      senderName = params.senderName;
+    } else {
+      senderName = getUserFullName(params.iFromUserId);
+    }
+
+    SilverTrace.info("notificationManager",
+          "NotificationManager.createNotificationData()",
+          "root.MSG_GEN_PARAM_VALUE", "iFromUserId =" + params.iFromUserId);
+
+    if (FROM_UID.equalsIgnoreCase(ncr.getFromAvailable())) {
+      theExtraParams.put(NotificationParameterNames.FROM, Integer
+            .toString(params.iFromUserId));
+      nd.setSenderId(new Integer(params.iFromUserId).toString());
+      SilverTrace.info("notificationManager",
+            "NotificationManager.createNotificationData()",
+            "root.MSG_GEN_PARAM_VALUE", "nd.getSenderId() =" + nd.getSenderId());
+    } else if (FROM_EMAIL.equalsIgnoreCase(ncr.getFromAvailable())) {
+      String fromEmail = senderName;
+      if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
+        fromEmail = getUserEmail(params.iFromUserId);
+        if ("".equals(fromEmail)) {
+          if (m_Admin == null)
+            m_Admin = new Admin();
+          fromEmail = m_Admin.getAdministratorEmail();
+        }
+      }
+      theExtraParams.put(NotificationParameterNames.FROM, fromEmail);
+      SilverTrace.info("notificationManager",
+            "NotificationManager.createNotificationData()",
+            "root.MSG_GEN_PARAM_VALUE", "nd.getUserEmail(params.iFromUserId) ="
+                + getUserEmail(params.iFromUserId));
+    } else if (FROM_NAME.equalsIgnoreCase(ncr.getFromAvailable())) {
+      theExtraParams.put(NotificationParameterNames.FROM, senderName);
+    } else {
+      theMessage.append(m_Multilang.getString("from") + " : " + senderName
+            + "\n\n");
+    }
+
+    // Set Url parameter
+    if (params.sURL != null && params.sURL.length() > 0) {
+      theExtraParams.put(NotificationParameterNames.URL, (params.sURL
+            .startsWith("http") ? params.sURL : getUserAutoRedirectURL(aUserId,
+            params.sURL)));
+    }
+
+    // Set Source parameter
+    if (params.sSource != null && params.sSource.length() > 0) {
+      theExtraParams.put(NotificationParameterNames.SOURCE, params.sSource);
+    } else {
+      if (params.iComponentInstance != -1) {
+        try {
+          // New feature : if source is not set, we display space's name and
+          // component's label
+          theExtraParams.put(NotificationParameterNames.SOURCE,
+                getComponentFullName("" + params.iComponentInstance));
+        } catch (Exception e) {
+          SilverTrace.warn("notificationManager",
+                "NotificationManager.createNotificationData()",
+                "notificationManager.EX_CANT_GET_INSTANCE_INFO", "instanceId = "
+                    + params.iComponentInstance, e);
+        }
+      }
+    }
+
+    // Set sessionId parameter
+    if (params.sSessionId != null && params.sSessionId.length() > 0) {
+      theExtraParams.put(NotificationParameterNames.SESSIONID,
+            params.sSessionId);
+    }
+
+    // Set date parameter
+    if (params.dDate != null) {
+      theExtraParams.put(NotificationParameterNames.DATE, params.dDate);
+    }
+
+    if (params.sLanguage != null) {
+      theExtraParams.put(NotificationParameterNames.LANGUAGE, params.sLanguage);
+    }
+
+    nd.setSenderName(senderName);
+
+    if (theExtraParams.size() > 0) {
+      nd.setTargetParam(theExtraParams);
+    }
+
+    theMessage.append(params.sMessage);
+
+    nd.setMessage(theMessage.toString());
+    nd.setAnswerAllowed(params.bAnswerAllowed);
+
+    // Cas de la messagerie instatanée
+    if (params.iMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
+      nd.setComment(NotificationParameterNames.COMMUNICATION);// attribut
+      // comment non
+      // utilisé
+    }
+
+    SilverTrace.info("notificationManager",
+          "NotificationManager.createNotificationData()",
+          "root.MSG_GEN_PARAM_VALUE", "nd.isAnswerAllowed() ="
+              + nd.isAnswerAllowed());
+    return nd;
+  }
+
+  protected NotificationData[] createAllNotificationData(
       NotificationParameters params, String aUserId, NotifSchema schema)
       throws UtilException {
     NotificationData[] nds = null;
