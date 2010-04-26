@@ -53,7 +53,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </p>
       </subsection>
       <subsection name="Postgresql">
-        <p>Silverpeas can use any JDBC compliant RDBMS, however the Open source solution is pre-configured to run on PostgreSQL 8.x. 
+        <p>Silverpeas can use any JDBC compliant RDBMS, however the Open source solution is pre-configured to run on PostgreSQL 8.x.
         which can be downloaded from <a href="http://www.postgresql.org/download/">here</a>.
         </p>
         <p>You will have to create a database <i>SilverpeasV5</i> with a user <i>postgres/postgres</i> with administrative rights.

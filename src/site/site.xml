@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+
     Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
@@ -10,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,25 +24,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+
 <project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>Silverpeas</name>
     <src>images/bandeauTop-.jpg</src>
-    <href>http://www.silverpeas.com/</href>
+    <href>http://www.silverpeas.org/</href>
   </bannerLeft>
   <publishDate position="right" format="yyyy-MM-dd" />
   <version position="right" />
   <skin>
     <groupId>com.silverpeas.services</groupId>
     <artifactId>silverpeas-site-skin</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
   </skin>
   <!-- Powered By -->
   <poweredBy>
     <logo name="Netbeans 6.8" href="http://netbeans.org/downloads/index.html" img="http://netbeans.org/images_www/collateral/68/netbeans-110x32.png" />
-    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://www.silverpeas.org/docs/core/images/eclipse_bckgr_logo_fc_xsm.jpg" />
-    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png" />
-    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://www.silverpeas.org/docs/core/images/zeroturnaround.gif" />
+    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="/images/eclipse_bckgr_logo_fc_xsm.jpg" />
+    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="/images/logos/maven-feather.png" />
+    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="/images/zeroturnaround.gif" />
   </poweredBy>
   <body>
     <head>
@@ -56,16 +58,17 @@ pageTracker._trackPageview();
 } catch(err) {}
       </script>
     </head>
-    <menu name="Overview" collapse="true">
+    <breadcrumbs><item name="Silverpeas" href="http://www.silverpeas.com"/></breadcrumbs>
+    <menu name="Overview" collapse="false">
       <item name="Introduction" href="index.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
     </menu>
-    <menu name="CAS" collapse="true">
-      <item name="Introduction" href="cas/SSO-CAS.html"/>
-      <item name="Certificates Configuration" href="cas/certificates.html"/>
-      <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html"/>
-      <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html"/>
+    <menu name="CAS" collapse="false">
+      <item name="Introduction" href="cas/SSO-CAS.html" collapse="false"/>
+      <item name="Certificates Configuration" href="cas/certificates.html" collapse="false" />
+      <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="false" />
+      <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html" collapse="false" />
     </menu>
     <menu ref="reports" />
   </body>
