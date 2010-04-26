@@ -1184,6 +1184,9 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
       con = getConnection();
       scoreBm.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
 
+      // suppression des commentaires
+      QuestionContainerDAO.deleteComments(con, questionContainerPK);
+      
       // get all questions to delete results
       Collection<Question> questions =
           questionBm.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
