@@ -1785,6 +1785,46 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
+  /**
+   * This method allow user to search over multiple component selection
+   * @param space
+   * @param components a list of selected components
+   */
+  public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
+    SilverTrace.info("pdcPeas",
+        "PdcSearchSessionController.buildComponentListWhereToSearch()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
+        + components);
+
+    componentList = new ArrayList<String>();
+
+    if (space == null) {
+      String[] allowedComponentIds = getUserAvailComponentIds();
+      // Il n'y a pas de restriction sur un espace particulier
+      for (int i = 0; i < allowedComponentIds.length; i++) {
+        if (isSearchable(allowedComponentIds[i])) {
+          componentList.add(allowedComponentIds[i]);
+        }
+      }
+    } else {
+      if (components == null) {
+        // Restriction sur un espace. La recherche doit avoir lieu
+        String[] asAvailCompoForCurUser = getOrganizationController()
+            .getAvailCompoIds(space, getUserId());
+        for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
+          if (isSearchable(asAvailCompoForCurUser[nI])) {
+            componentList.add(asAvailCompoForCurUser[nI]);
+          }
+        }
+      } else {
+        for (String component : components) {
+          componentList.add(component);
+        }
+      }
+    }
+  }
+
+  
   private boolean isSearchable(String componentId) {
     if (componentId.startsWith("silverCrawler")
         || componentId.startsWith("gallery")

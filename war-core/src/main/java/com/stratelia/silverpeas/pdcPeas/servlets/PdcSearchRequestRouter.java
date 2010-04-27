@@ -822,9 +822,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         String searchType = request.getParameter("searchType");
         if (searchType != null && !"".equals(searchType)) {
-          pdcSC.setSearchType(Integer.parseInt(searchType));
+          if ("Normal".equals(searchType))
+            pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
+          else
+            pdcSC.setSearchType(Integer.parseInt(searchType));
         } else {
-          pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
+          pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
         }
 
         pdcSC.setSelectedSilverContents(new ArrayList());
@@ -853,12 +856,17 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           curSpaceId = null;
         }
         searchParameters.setSpaceId(curSpaceId);
-        String componentId = request.getParameter("componentSearch");
-        if (!StringUtil.isDefined(componentId)) {
-          componentId = null;
+        String strComponentIds = request.getParameter("componentSearch");
+        List<String> componentIds = null;
+        if (StringUtil.isDefined(strComponentIds)) {
+          componentIds = new ArrayList<String>();
+          String[] listIds = strComponentIds.split(",\\s*");
+          for (String comp : listIds) {
+            componentIds.add(comp);
+          }
         }
-        searchParameters.setInstanceId(componentId);
-        pdcSC.buildComponentListWhereToSearch(curSpaceId, componentId);
+        searchParameters.setInstanceId(strComponentIds);
+        pdcSC.buildCustomComponentListWhereToSearch(curSpaceId, componentIds);
 
         if (pdcSC.getSearchContext() != null && !pdcSC.getSearchContext().isEmpty()) {
           pdcUsedDuringSearch = true;
