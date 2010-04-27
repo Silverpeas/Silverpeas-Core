@@ -209,8 +209,10 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	if (spaceLevel == 0)
   	{
 	  	var spaceHeader = document.getElementById(spaceId);
-		spaceHeader.setAttribute("class", "spaceLevel1");
-	  	spaceHeader.setAttribute("className", "spaceLevel1");
+	  	if (spaceHeader) {
+			spaceHeader.setAttribute("class", "spaceLevel1");
+		  	spaceHeader.setAttribute("className", "spaceLevel1");
+	  	}
 	}
   	 
   	try
