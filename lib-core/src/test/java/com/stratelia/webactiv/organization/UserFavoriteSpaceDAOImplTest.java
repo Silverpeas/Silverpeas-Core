@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.organization;
 
-import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -35,7 +34,6 @@ import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 
 import org.dbunit.JndiBasedDBTestCase;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
@@ -68,6 +66,7 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
     ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
     ic.rebind(props.getProperty("jndi.name"), ref);
     jndiName = props.getProperty("jndi.name");
+    super.setUp();
   }
 
   protected String getLookupName() {
@@ -89,25 +88,7 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
     return dataSet;
   }
 
-  public void testFillDb() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getDatabaseTester().getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
+  
   @Test
   public void testGetListUserFavoriteSpace() {
     UserFavoriteSpaceDAOImpl ufsDAO = new UserFavoriteSpaceDAOImpl();
@@ -160,12 +141,12 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
     assertEquals(0, listUFS.size());
   }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @Override
+  protected DatabaseOperation getTearDownOperation() throws Exception {
+    return DatabaseOperation.DELETE_ALL;
   }
 
-  /*
-   * @AfterClass public static void oneTimeTearDown() { // one-time cleanup code }
-   */
+
+
 
 }
