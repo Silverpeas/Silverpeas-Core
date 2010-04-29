@@ -369,7 +369,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	<% } %>
 </script>
 </HEAD>
-<BODY>
+<BODY class="searchEngine" id="globalResult">
 <form name="AdvancedSearch" action="javascript:sendQuery()" method="post">
 <%
 	browseBar.setComponentName(resource.getString("pdcPeas.ResultPage"));
@@ -409,7 +409,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
     out.println(board.printBefore());
 
 %>
-		<table border="0" cellspacing="0" cellpadding="5" width="100%">
+		<table id="globalResultQuery" border="0" cellspacing="0" cellpadding="5" width="100%">
         <tr align="center">
           <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.SearchFind")%></td>
           <td align="left" valign="middle">
@@ -421,16 +421,16 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
           </td>
         </tr>
         </table>
-
+ 
 <%
 	//CBO : ADD
 	if ("All".equals(displayParamChoices) || "Res".equals(displayParamChoices)) 
 	{
 %>
-		<table border="0" cellspacing="0" cellpadding="5" width="100%">
+		<table id="globalResultParamDisplay" border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr align="center">
-          <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.NbResultSearch")%></td>
-          <td align="left" valign="selectNS"><select name="nbRes" size="1" onChange="javascript:changeResDisplay()">
+          <td valign="middle" align="left" class="txtlibform" width="30%" id="globalResultParamDisplayLabel"><%=resource.getString("pdcPeas.NbResultSearch")%></td>
+          <td align="left" valign="selectNS" id="globalResultParamDisplayOptions"><select name="nbRes" size="1" onChange="javascript:changeResDisplay()">
             <%
 				String selected = "";
 				if (choiceNbResToDisplay != null)
@@ -478,7 +478,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 		  </td>
         </tr>
 		<% if (activeSelection.booleanValue() || exportEnabled.booleanValue()) { %>
-			<tr>
+			<tr id="globalResultSelectAllResult">
 				<td class="txtlibform"><%=resource.getString("pdcPeas.selectAll") %></td><td><input type="checkbox" name="selectAll" onClick="selectEveryResult(this);"></td></tr>
 			</tr>
 		<% }  %>	
@@ -490,6 +490,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	out.println(board.printAfter());
 	out.println("</div>");
     out.println("<br>");
+    out.println("<div id=\"globalResultList\">");
 	out.println(board.printBefore());
 
 	if (results != null)
@@ -503,7 +504,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 		out.println("<tr><td>");
 	if(spellingWords!= null && spellingWords[0]!= null && !spellingWords[0].equals("")){ 
 %>
-		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
 			<tr >
 				<td> 
 					<span class="spellText" > 		  
@@ -516,7 +517,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 			</tr>
 		</table>
 <%  }
-		out.println("<table border=\"0\">");
+		out.println("<table border=\"0\"  id=\"globalResultListDetails\">");
 		GlobalSilverResult	gsr			= null;
 						
 		for(int nI=0; resultsOnThisPage != null && nI < resultsOnThisPage.size(); nI++){
@@ -535,7 +536,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 				sCreationDate	= null;
 			}
 			
-			out.println("<tr>");
+			out.println("<tr class=\"" + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
 			
 			if (showPertinence)
 				out.println("<td valign=\"top\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"</td>");
@@ -632,8 +633,9 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 		out.println("</table>");
 	}
 	out.println(board.printAfter());
-	
+  	out.println("</div>");
     out.println("<br>");
+    out.println("<div id=\"globalResultHelp\">");
 	out.println(board.printBefore());
     %>
 		<table width="100%" border="0"><tr><td valign="top" width="30%">
@@ -662,6 +664,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 		</tr></table>
 	<%
 	out.println(board.printAfter());
+	out.println("</div>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
