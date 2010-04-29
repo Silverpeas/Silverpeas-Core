@@ -1,4 +1,5 @@
-<%--
+
+<%@page import="com.silverpeas.glossary.HighlightGlossaryTerms"%><%--
 
     Copyright (C) 2000 - 2009 Silverpeas
 
@@ -43,6 +44,9 @@
   String spaceId     	= request.getParameter("SpaceId");
   String componentId 	= request.getParameter("ComponentId");
   String language 		= request.getParameter("Language");
+  String axisId         = request.getParameter("axisId");
+  String highlightFirst = request.getParameter("highlightFirst");
+  
 
   try {
 	  if (StringUtil.isDefined(language))
@@ -66,6 +70,10 @@
 		  if(DynamicValueReplacement.isActivate()){
 		    DynamicValueReplacement replacement = new DynamicValueReplacement();
 		    content = replacement.replaceKeyByValue(content);
+		  }
+		  //highlight glossary term
+		  if(StringUtil.isDefined(axisId)){ 	  
+		  		content = HighlightGlossaryTerms.searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
 		  }
 		  out.println(content);
 	  }

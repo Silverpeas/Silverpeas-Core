@@ -453,4 +453,39 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
+  <tag>
+	<description>Tag to highlight some terms contained in his body</description>
+	<name>highlight</name>
+	<tag-class>
+		com.stratelia.webactiv.util.viewGenerator.html.glossary.HighlightTermTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<description>The css class used to highlight a word .</description>
+		<name>className</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>The Glossary identifier (pdc axis).</description>
+		<name>axisId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>indicates if all a term occurrences must be highlight or only the fisrt</description>
+		<name>onlyFirst</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
+		<description>indicates the language used to display the definition term.</description>
+		<name>language</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
 </taglib>
