@@ -116,8 +116,7 @@ public class GraphicElementFactory extends Object {
 
   public static ResourceLocator getGeneralSettings() {
     if (generalSettings == null) {
-      generalSettings = new ResourceLocator("com.stratelia.webactiv.general",
-          "fr");
+      generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "fr");
     }
     return generalSettings;
   }
@@ -128,8 +127,7 @@ public class GraphicElementFactory extends Object {
       if (mainSessionController != null) {
         language = mainSessionController.getFavoriteLanguage();
       }
-      multilang =
-          new ResourceLocator(
+      multilang = new ResourceLocator(
           "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
           language);
     }
@@ -144,8 +142,7 @@ public class GraphicElementFactory extends Object {
   public static ResourceLocator getSettings() {
     if (settings == null) {
       settings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings",
-          "");
+          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
     }
     return settings;
   }
@@ -209,7 +206,7 @@ public class GraphicElementFactory extends Object {
    * @param look
    * @see
    */
-  public void setLook(String look) {
+  public final void setLook(String look) {
     lookSettings = getLookSettings();
     String selectedLook = null;
 
@@ -277,15 +274,14 @@ public class GraphicElementFactory extends Object {
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     String charset = getGeneralSettings().getString("charset", "ISO-8859-1");
-    StringBuffer code = new StringBuffer();
-
-    code
-        .append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset="
-        + charset + "\">\n");
+    StringBuilder code = new StringBuilder();
+    code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
+    code.append(charset);
+    code.append("\">\n");
 
     if (externalStylesheet == null) {
-      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
-          contextPath).append(standardStyle).append("\">\n");
+      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(contextPath);
+      code.append(standardStyle).append("\">\n");
 
       code.append("<!--[if IE]>");
       code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
@@ -293,8 +289,8 @@ public class GraphicElementFactory extends Object {
       code.append("<![endif]-->");
 
       if (lookStyle.length() > 0) {
-        code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"")
-            .append(lookStyle).append("\">");
+        code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"");
+        code.append(lookStyle).append("\">");
       }
     } else {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
@@ -314,12 +310,12 @@ public class GraphicElementFactory extends Object {
 
   private String getYahooElements() {
     String contextPath = getGeneralSettings().getString("ApplicationURL");
-    StringBuffer code = new StringBuffer();
+    StringBuilder code = new StringBuilder();
 
     code.append("<!-- CSS for Menu -->");
-    code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
-        + getSettings().getString("YUIMenuCss",
-        contextPath + "/util/yui/menu/assets/menu.css") + "\">");
+    code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+    code.append(getSettings().getString("YUIMenuCss", contextPath + "/util/yui/menu/assets/menu.css"));
+    code.append("\">");
     code.append("<!-- Page-specific styles -->");
     code.append("<style type=\"text/css\">");
     code.append("    div.yuimenu {");
@@ -327,14 +323,12 @@ public class GraphicElementFactory extends Object {
     code.append("    visibility:hidden;");
     code.append("    }");
     code.append("</style>");
-
-    code.append("<script type=\"text/javascript\" src=\"" + contextPath
-        + "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
-    code.append("<script type=\"text/javascript\" src=\"" + contextPath
-        + "/util/yui/container/container_core-min.js\"></script>");
-    code.append("<script type=\"text/javascript\" src=\"" + contextPath
-        + "/util/yui/menu/menu-min.js\"></script>");
-
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
+    code.append("/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
+    code.append("/util/yui/container/container_core-min.js\"></script>");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
+    code.append("/util/yui/menu/menu-min.js\"></script>");
     return code.toString();
   }
 
@@ -732,15 +726,15 @@ public class GraphicElementFactory extends Object {
 
   public Pagination getPagination(int nbItems, int nbItemsPerPage,
       int firstItemIndex) {
-    String paginationClassName = getFavoriteLookSettings().getString(
-        "Pagination");
+    String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination = null;
+    if(paginationClassName == null) {
+      paginationClassName = "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
+    }
     try {
-      pagination = (Pagination) Class.forName(paginationClassName)
-          .newInstance();
+      pagination = (Pagination) Class.forName(paginationClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.info("viewgenerator",
-          "GraphicElementFactory.getPagination()",
+      SilverTrace.info("viewgenerator", "GraphicElementFactory.getPagination()",
           "viewgenerator.EX_CANT_GET_PAGINATION", "", e);
       pagination = new PaginationSP();
     }

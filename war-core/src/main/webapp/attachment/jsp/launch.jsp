@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false"%>
 <%  response.setContentType("application/x-java-jnlp-file");
   response.setHeader("Content-Disposition","inline; filename=launch.jnlp");
@@ -102,8 +102,8 @@
 	}
 %>
 
-<c:set var="login"><%=java.net.URLEncoder.encode(login)%></c:set>
-<c:set var="encPassword"><%=java.net.URLEncoder.encode(encPassword)%></c:set>
+<c:set var="login"><%=java.net.URLEncoder.encode(login, "UTF-8")%></c:set>
+<c:set var="encPassword"><%=java.net.URLEncoder.encode(encPassword, "UTF-8")%></c:set>
 <fmt:setLocale value="${userLanguage}" />
 <view:setBundle basename="com.stratelia.webactiv.util.attachment.Attachment" var="attachmentConfig" />
 <fmt:message key="ms.office.installation.path" bundle="${attachmentConfig}" var="msoffice_path" scope="request"/>

@@ -21,13 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +35,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -80,24 +77,22 @@ public class DragAndDrop extends HttpServlet {
       IOException {
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     boolean runOnUnix = !FileUtil.isWindows();
-    SilverTrace.info("importExportPeas", "DragAndDrop", "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " +
-        runOnUnix);
+    SilverTrace.info("importExportPeas", "DragAndDrop", "root.MSG_GEN_PARAM_VALUE", "runOnUnix = "
+        + runOnUnix);
 
     try {
       String componentId = req.getParameter("ComponentId");
       SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId);
       String id = req.getParameter("Id");
-      SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " +
-          id);
+      SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = "
+          + id);
       int userId = Integer.parseInt(req.getParameter("UserId"));
       SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "userId = " + userId);
       int versionType = Integer.parseInt(req.getParameter("Type"));
       String indexIt = req.getParameter("IndexIt");
-      boolean bIndexIt = false;
-      if ("1".equals(indexIt))
-        bIndexIt = true;
+      boolean bIndexIt = "1".equals(indexIt);
 
       String documentId = req.getParameter("DocumentId");
 
@@ -108,68 +103,61 @@ public class DragAndDrop extends HttpServlet {
       int minorNumber = 0;
 
       String fullFileName = null;
-      for (int i = 0; i < items.size(); i++) {
-        FileItem item = items.get(i);
-        SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-            "item #" + i + " = " + item.getFieldName());
-        SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-            "item #" + i + " = " + item.getName());
-
+      for (FileItem item : items) {
         if (!item.isFormField()) {
-          fullFileName = item.getName();
-          if (fullFileName != null && runOnUnix) {
-            fullFileName = fullFileName.replace('\\', File.separatorChar);
+          String fileUploadId = item.getFieldName().substring(4);
+          String fileName = item.getName();
+          if (fileName != null) {
+            fileName = fileName.replace('\\', File.separatorChar);
+            fileName = fileName.replace('/', File.separatorChar);
             SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-                "fullFileName on Unix = " + fullFileName);
+                "file = " + fileName);
+            long size = item.getSize();
+            SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+                "item #" + fullFileName + " size = " + size);
+            String type = FileRepositoryManager.getFileExtension(fileName);
+            String mimeType = AttachmentController.getMimeType(fileName);
+            String physicalName = new Date().getTime() + "." + type;
+            File savedFile = new File(vie.getVersioningPath(componentId) + physicalName);
+            File parent = savedFile.getParentFile();
+            if (!parent.exists()) {
+              parent.mkdirs();
+            }
+            item.write(savedFile);
+            DocumentPK documentPK = new DocumentPK(-1, componentId);
+            if (StringUtil.isDefined(documentId)) {
+              documentPK.setId(documentId);
+            }
+            DocumentVersionPK versionPK = new DocumentVersionPK(-1, documentPK);
+            ForeignPK foreignPK = new ForeignPK(id, componentId);
+            Document document = new Document(documentPK, foreignPK, fileName, null,
+                Document.STATUS_CHECKINED, userId, null, null, componentId, null, null, 0, 0);
+
+            DocumentVersion version = new DocumentVersion(versionPK, documentPK, majorNumber,
+                minorNumber, userId, new Date(), null, versionType,
+                DocumentVersion.STATUS_VALIDATION_NOT_REQ, physicalName, fileName, mimeType,
+                new Long(size).intValue(), componentId);
+
+            List<DocumentVersion> versions = new ArrayList<DocumentVersion>();
+            versions.add(version);
+            VersionsType versionsType = new VersionsType();
+            versionsType.setListVersions(versions);
+            document.setVersionsType(versionsType);
+            List<Document> documents = new ArrayList<Document>();
+            documents.add(document);
+
+            vie.importDocuments(foreignPK, documents, userId, bIndexIt);
+          } else {
+            SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+                "item " + item.getFieldName() + "=" + item.getString());
           }
-
-          String fileName =
-              fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName
-              .length());
-          SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "file = " + fileName);
-
-          long size = item.getSize();
-          SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "item #" + i + " size = " + size);
-
-          String type = FileRepositoryManager.getFileExtension(fileName);
-          String mimeType = AttachmentController.getMimeType(fileName);
-          String physicalName = new Long(new Date().getTime()).toString() + "." + type;
-
-          item.write(new File(vie.getVersioningPath(componentId) + physicalName));
-
-          DocumentPK documentPK = new DocumentPK(-1, componentId);
-          if (StringUtil.isDefined(documentId)) {
-            documentPK.setId(documentId);
-          }
-
-          DocumentVersionPK versionPK = new DocumentVersionPK(-1, documentPK);
-          ForeignPK foreignPK = new ForeignPK(id, componentId);
-
-          Document document =
-              new Document(documentPK, foreignPK, fileName, null, Document.STATUS_CHECKINED,
-              userId, null, null, componentId, null, null, 0, 0);
-
-          DocumentVersion version =
-              new DocumentVersion(versionPK, documentPK, majorNumber, minorNumber, userId,
-              new Date(), null, versionType, DocumentVersion.STATUS_VALIDATION_NOT_REQ,
-              physicalName, fileName, mimeType, new Long(size).intValue(), componentId);
-
-          List<DocumentVersion> versions = new ArrayList<DocumentVersion>();
-          versions.add(version);
-          VersionsType versionsType = new VersionsType();
-          versionsType.setListVersions(versions);
-          document.setVersionsType(versionsType);
-
-          List<Document> documents = new ArrayList<Document>();
-          documents.add(document);
-
-          vie.importDocuments(foreignPK, documents, userId, bIndexIt);
         }
       }
     } catch (Exception e) {
       SilverTrace.error("versioningPeas", "DragAndDrop.doPost", "ERREUR", e);
+      res.getOutputStream().println("ERROR");
+      return;
     }
+    res.getOutputStream().println("SUCCESS");
   }
 }

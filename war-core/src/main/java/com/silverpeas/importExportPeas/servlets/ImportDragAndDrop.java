@@ -21,13 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
 package com.silverpeas.importExportPeas.servlets;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +66,7 @@ public class ImportDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
+  @Override
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -78,18 +76,24 @@ public class ImportDragAndDrop extends HttpServlet {
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost",
         "root.MSG_GEN_ENTER_METHOD");
     boolean runOnUnix = !FileUtil.isWindows();
-    SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
-        "runOnUnix = " + runOnUnix);
+    SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE", "runOnUnix = "
+        + runOnUnix);
+    if (!FileUploadUtil.isRequestMultipart(request)) {
+      res.getOutputStream().println("SUCCESS");
+      return;
+    }
 
     try {
       String componentId = request.getParameter("ComponentId");
@@ -110,50 +114,41 @@ public class ImportDragAndDrop extends HttpServlet {
           + ", draftMode = " + draftMode);
 
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
-          + File.separator + topicId
-          + new Long(new Date().getTime()).toString() + File.separator;
+          + File.separator + topicId + new Date().getTime() + File.separator;
 
       List<FileItem> items = FileUploadUtil.parseRequest(request);
-
       String parentPath = FileUploadUtil.getParameter(items, "userfile_parent");
       SilverTrace.info("importExportPeas", "Drop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
-
-      String fullFileName = null;
-      SilverTrace.info("importExportPeas", "Drop.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "debut de la boucle");
-      for (int i = 0; i < items.size(); i++) {
-        FileItem item = items.get(i);
-        fullFileName = item.getName();
-        SilverTrace.info("importExportPeas", "Drop.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
-            + item.getFieldName() + " - " + fullFileName);
-
-        String fileName = null;
-        if (fullFileName != null && parentPath != null
-            && !parentPath.equals("")) {
-          if (parentPath.endsWith(":\\")) // special case for file on root of
-          // disk
-          {
-            parentPath = parentPath.substring(0, parentPath.indexOf(":") + 1);
+      SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "debut de la boucle");
+      for (FileItem item : items) {
+        if (!item.isFormField()) {
+          String fileUploadId = item.getFieldName().substring(4);
+          parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null,
+              "UTF-8");
+          String fileName = item.getName();
+          if (StringUtil.isDefined(parentPath)) {
+            if (parentPath.endsWith(":\\")) { // special case for file on root of disk
+              parentPath = parentPath.substring(0, parentPath.indexOf(":") + 1);
+            }
           }
-
-          fileName = fullFileName.substring(fullFileName.indexOf(parentPath)
-              + 1 + parentPath.length());
           SilverTrace.info("importExportPeas", "Drop.doPost",
               "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
-          if (fileName != null && runOnUnix) {
+          if (fileName != null) {
             fileName = fileName.replace('\\', File.separatorChar);
+            fileName = fileName.replace('/', File.separatorChar);
+            if (fileName.indexOf(File.separatorChar) >= 0) {
+              fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
+              parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.lastIndexOf(File.separatorChar));
+            }
             SilverTrace.info("importExportPeas", "Drop.doPost",
                 "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
           }
-
-          if (fileName.indexOf(File.separator) != -1 && ignoreFolders != null
-              && "1".equals(ignoreFolders)) {
-            continue;
+          if (!"1".equals(ignoreFolders)) {
+            fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
           }
-
-          if (!savePath.equals("")) {
+          if (!"".equals(savePath)) {
             File f = new File(savePath + fileName);
             File parent = f.getParentFile();
             if (!parent.exists()) {
@@ -161,6 +156,9 @@ public class ImportDragAndDrop extends HttpServlet {
             }
             item.write(f);
           }
+        } else {
+          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
+              + item.getFieldName() + " - " + item.getString());
         }
       }
       AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -180,8 +178,7 @@ public class ImportDragAndDrop extends HttpServlet {
           userDetail, componentId);
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
 
-      boolean isVersioningUsed = ImportExportHelper
-          .isVersioningUsed(componentInst);
+      boolean isVersioningUsed = ImportExportHelper.isVersioningUsed(componentInst);
 
       boolean isDraftUsed = "1".equals(draftMode);
 
@@ -194,15 +191,17 @@ public class ImportDragAndDrop extends HttpServlet {
             isVersioningUsed, isDraftUsed);
         ImportReportManager.setEndDate(new Date());
       } catch (Exception ex) {
-        massiveReport
-            .setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
+        massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
+        res.getOutputStream().println("ERROR");
+        return;
       }
       // Delete import Folder
       FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "FileUploader.doPost",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+      res.getOutputStream().println("ERROR");
+      return;
     }
+    res.getOutputStream().println("SUCCESS");
   }
-
 }

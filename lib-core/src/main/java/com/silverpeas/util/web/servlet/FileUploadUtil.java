@@ -52,12 +52,12 @@ public class FileUploadUtil {
 
   public static final String DEFAULT_ENCODING = "ISO-8859-1";
 
-  public static final boolean isRequestMultipart(HttpServletRequest request) {
+  public static boolean isRequestMultipart(HttpServletRequest request) {
     return ServletFileUpload.isMultipartContent(request);
   }
 
   @SuppressWarnings("unchecked")
-  public static final List<FileItem> parseRequest(HttpServletRequest request)
+  public static List<FileItem> parseRequest(HttpServletRequest request)
       throws UtilException {
     try {
       // Create a factory for disk-based file items
@@ -74,7 +74,7 @@ public class FileUploadUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static final List<FileItem> parseRequest(HttpServletRequest request, int maxSize)
+  public static List<FileItem> parseRequest(HttpServletRequest request, int maxSize)
       throws UtilException {
     try { // Create a factory for disk-based file items
       DiskFileItemFactory factory = new DiskFileItemFactory();

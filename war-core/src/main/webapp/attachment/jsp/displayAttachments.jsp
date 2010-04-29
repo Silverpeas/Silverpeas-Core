@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
@@ -91,7 +91,6 @@
       String callbackURL = request.getParameter("CallbackUrl");
       String xmlForm = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(
           componentId, "XmlFormForFiles");
-      ;
 
       boolean useXMLForm = StringUtil.isDefined(xmlForm);
       boolean useFileSharing = (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".
@@ -306,7 +305,6 @@
 <br/>
 <%
         }
-        //out.println("</TD>");
 
         if ("bottom".equals(attachmentPosition) && a < nbAttachmentPerLine) {
           out.println("<TD width=\"30\">&nbsp;</TD>");
@@ -319,12 +317,6 @@
                 "<TR><TD colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</TD></TR>");
           }
         }
-        /*else if ("right".equals(attachmentPosition))
-        {
-        out.println("</TR>");
-        if (itAttachments.hasNext())
-        out.println("<TR><TD>&nbsp;</TD></TR>");
-        }*/
         author = "";
         if (a == 3) {
           a = 1;
@@ -337,7 +329,7 @@
 %>
 <% if (contextualMenuEnabled && dragAndDropEnable) {%>
 <tr><td align="right">
-    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanationShort_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
+    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanationShort_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">DÃ©poser rapidement un fichier...</a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
   </td>
   <% }%>

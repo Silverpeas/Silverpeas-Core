@@ -103,8 +103,7 @@ public class DragAndDrop extends HttpServlet {
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.Attachment", "");
     boolean runOnUnix = !FileUtil.isWindows();
-    boolean actifyPublisherEnable = settings.getBoolean(
-        "ActifyPublisherEnable", false);
+    boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
 
     SilverTrace.info("importExportPeas", "DragAndDrop",
         "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
@@ -121,9 +120,7 @@ public class DragAndDrop extends HttpServlet {
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
       String context = req.getParameter("Context");
       String indexIt = req.getParameter("IndexIt");
-      boolean bIndexIt = false;
-      if ("1".equals(indexIt))
-        bIndexIt = true;
+      boolean bIndexIt = "1".equals(indexIt);
 
       DiskFileUpload dfu = new DiskFileUpload();
       List items = dfu.parseRequest(req);
@@ -135,7 +132,7 @@ public class DragAndDrop extends HttpServlet {
             "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
             + item.getFieldName());
         SilverTrace.info("attachment", "DragAndDrop.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = " + item.getName());
+            "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = " + item.getName() + "; " + item.getString("UTF-8"));
 
         if (!item.isFormField()) {
           // create AttachmentPK with spaceId and componentId
