@@ -30,11 +30,16 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.UserRoleRow;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ProfileInstManager extends Object {
@@ -287,18 +292,25 @@ public class ProfileInstManager extends Object {
   /**
    * Get all the profiles Id for the given user
    */
-  public String[] getProfileIdsOfUser(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
+  public String[] getProfileIdsOfUser(String sUserId, List<String> groupIds) throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.userRole
-          .getAllUserRoleIdsOfUser(idAsInt(sUserId));
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId));
+      List<String> roleIds = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleIds.add(Integer.toString(role.id));
+      }
+
+      return roleIds.toArray(new String[roleIds.size()]);
+
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.getProfileIdsOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_PROFILES",
-          "user Id: '" + sUserId + "'", e);
+      throw new AdminException("ProfiledObjectManager.getUserProfileNames",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
     }
   }
 
@@ -307,16 +319,26 @@ public class ProfileInstManager extends Object {
    */
   public String[] getProfileIdsOfGroup(DomainDriverManager ddManager,
       String sGroupId) throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.userRole
-          .getAllUserRoleIdsOfGroup(idAsInt(sGroupId));
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<String> groupIds = new ArrayList<String>();
+      groupIds.add(sGroupId);
+      List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, -1);
+      List<String> roleIds = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleIds.add(Integer.toString(role.id));
+      }
+
+      return roleIds.toArray(new String[roleIds.size()]);
+
     } catch (Exception e) {
-      throw new AdminException("ProfileInstManager.getProfileIdsOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
-          "group Id: '" + sGroupId + "'", e);
+      throw new AdminException("ProfiledObjectManager.getProfileIdsOfGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
     }
   }
 

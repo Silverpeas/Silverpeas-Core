@@ -24,10 +24,16 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
+import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.organization.GroupRow;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class GroupManager {
@@ -241,6 +247,31 @@ public class GroupManager {
     }
   }
 
+  public Group getGroup(String groupId) throws AdminException {
+    return getGroup(groupId, true);
+  }
+
+  public Group getGroup(String groupId, boolean addUserIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      Group group = GroupDAO.getGroup(con, groupId);
+
+      if (addUserIds) {
+        // TODO: implementation must be done
+      }
+
+      return group;
+
+    } catch (Exception e) {
+      throw new AdminException("GroupManager.getGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
   /**
    * Get group information with the given id from Silverpeas
    */
@@ -287,24 +318,28 @@ public class GroupManager {
   /**
    * Get the all the sub groups id of a given group
    */
-  public String[] getAllSubGroupIdsRecursively(DomainDriverManager ddManager,
-      String superGroupId) throws AdminException {
+  public List<String> getAllSubGroupIdsRecursively(String superGroupId) throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      String[] asGroupIds = ddManager.organization.group
-          .getAllSubGroupIds(idAsInt(superGroupId));
-
-      if (asGroupIds != null)
-        return asGroupIds;
-      else
-        return new String[0];
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      return getSubGroupIds(con, superGroupId);
     } catch (Exception e) {
       throw new AdminException("GroupManager.getAllSubGroupIdsRecursively",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_CHILDREN_GROUP_IDS",
           "father group Id: '" + superGroupId + "'", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
     }
+  }
+
+  private List<String> getSubGroupIds(Connection con, String groupId) throws SQLException {
+    List<String> groupIds = new ArrayList<String>();
+    List<Group> groups = GroupDAO.getSubGroups(con, groupId);
+    for (Group group : groups) {
+      groupIds.add(group.getId());
+      groupIds.addAll(getSubGroupIds(con, group.getId()));
+    }
+    return groupIds;
   }
 
   /**
@@ -594,13 +629,13 @@ public class GroupManager {
             + " (père="
             + getGroup(ddManager, group.getSuperGroupId())
             .getSpecificId()
-            + ") dans les tables ST_Group, ST_UserSet et maj de ST_UserSet_UserSet_Rel...",
+            + ") dans la table ST_Group",
             null);
       else
         // pas de père
         SynchroReport.info("GroupManager.addGroup()", "Ajout du groupe "
             + group.getName()
-            + " (groupe racine) dans les tables ST_Group et ST_UserSet...",
+            + " (groupe racine) dans la table ST_Group...",
             null);
       ddManager.organization.group.createGroup(gr);
       String sGroupId = idAsString(gr.id);
@@ -609,7 +644,7 @@ public class GroupManager {
       SynchroReport.info("GroupManager.addGroup()",
           "Inclusion des utilisateurs directement associés au groupe "
           + group.getName()
-          + " (tables ST_Group_User_Rel et ST_UserSet_User_Rel)", null);
+          + " (table ST_Group_User_Rel)", null);
       String[] asUserIds = group.getUserIds();
       int nUserAdded = 0;
       for (int nI = 0; nI < asUserIds.length; nI++)
@@ -700,21 +735,21 @@ public class GroupManager {
       if (group.getSuperGroupId() != null)
         strInfoSycnhro =
             "Maj du groupe "
-                +
-                group.getName()
-                +
-                " (père="
-                +
-                getGroup(ddManager, group.getSuperGroupId()).getSpecificId()
-                +
-                ") dans la base (table ST_Group et éventuellement ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel)...";
+            +
+            group.getName()
+            +
+            " (père="
+            +
+            getGroup(ddManager, group.getSuperGroupId()).getSpecificId()
+            +
+            ") dans la base (table ST_Group)...";
       else
         strInfoSycnhro =
             "Maj du groupe "
-                +
-                group.getName()
-                +
-                " (groupe racine) dans la base (table ST_Group et éventuellement ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel)...";
+            +
+            group.getName()
+            +
+            " (groupe racine) dans la base (table ST_Group)...";
       SynchroReport.info("GroupManager.updateGroup()", strInfoSycnhro, null);
       // Update the group node
       GroupRow gr = Group2GroupRow(group);
@@ -723,13 +758,13 @@ public class GroupManager {
       // Update the users if necessary
       SynchroReport
           .info(
-              "GroupManager.updateGroup()",
-              "Maj éventuelle des relations du groupe "
-                  +
-                  group.getName()
-                  +
-                  " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel et ST_UserSet_User_Rel)",
-              null);
+          "GroupManager.updateGroup()",
+          "Maj éventuelle des relations du groupe "
+          +
+          group.getName()
+          +
+          " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)",
+          null);
 
       String[] asOldUsersId = ddManager.organization.user
           .getDirectUserIdsOfGroup(idAsInt(sGroupId));// ds ST_Group_User_Rel
@@ -852,22 +887,34 @@ public class GroupManager {
     return alChildrenGroupInst;
   }
 
-  /**
-   * Get space ids manageable by given group
-   */
-  public String[] getManageableSpaceIds(DomainDriverManager ddManager,
-      String sGroupId) throws AdminException {
+  public List<String> getManageableGroupIds(String userId, List<String> groupIds)
+      throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.group
-          .getManageableSpaceIds(idAsInt(sGroupId));
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return GroupDAO.getManageableGroupIds(con, userId, groupIds);
     } catch (Exception e) {
-      throw new AdminException("GroupManager.getManageableSpaceIds",
+      throw new AdminException("GroupManager.getManageableGroupIds",
           SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "group Id: '"
-          + sGroupId + "'", e);
+          "admin.EX_ERR_GET_USER_MANAGEABLE_GROUP_IDS", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
+    }
+  }
+
+  public int getNBUsersDirectlyInGroup(String groupId) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return GroupDAO.getNBUsersDirectlyInGroup(con, groupId);
+    } catch (Exception e) {
+      throw new AdminException("GroupManager.getNBUsersDirectlyInGroup",
+          SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_OF_GROUP", e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 

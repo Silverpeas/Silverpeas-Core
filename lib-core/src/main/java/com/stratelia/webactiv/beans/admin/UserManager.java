@@ -30,11 +30,17 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.util.security.X509Factory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
+import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.organization.UserRow;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class UserManager extends Object {
@@ -75,47 +81,44 @@ public class UserManager extends Object {
   }
 
   /**
-   * Get the users of given profile
-   */
-  public String[] getUsersOfProfile(DomainDriverManager ddManager,
-      String sProfileId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user
-          .getAllUserIdsOfUserRole(idAsInt(sProfileId));
-    } catch (Exception e) {
-      throw new AdminException("UserManager.getUsersOfProfile",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_PROFILE",
-          "profile Id: '" + sProfileId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
    * Get the users that are in the group or one of his sub-groups
    */
-  public UserDetail[] getAllUsersOfGroup(DomainDriverManager ddManager,
-      String sGroupId) throws AdminException {
-    UserRow[] urs = null;
-    UserDetail[] aus = null;
-
+  public UserDetail[] getAllUsersOfGroups(List<String> groupIds) throws AdminException {
+    if (groupIds == null || groupIds.size() == 0) {
+      return new UserDetail[0];
+    }
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      urs = ddManager.organization.user.getAllUsersOfGroup(idAsInt(sGroupId));
-      // Convert UserRow objects in UserDetail Object
-      aus = new UserDetail[urs.length];
-      for (int nI = 0; nI < urs.length; nI++) {
-        aus[nI] = userRow2UserDetail(urs[nI]);
-      }
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      return aus;
+      List<UserDetail> users = UserDAO.getUsersOfGroups(con, groupIds);
+
+      return users.toArray(new UserDetail[users.size()]);
     } catch (Exception e) {
-      throw new AdminException("UserManager.getAllUsersOfGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS",
-          "GroupId = '" + sGroupId + "'", e);
+      throw new AdminException("UserManager.getAllUsersOfGroups",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get the user ids that are in the group or one of his sub-groups
+   */
+  public List<String> getAllUserIdsOfGroups(List<String> groupIds) throws AdminException {
+    if (groupIds == null || groupIds.size() == 0) {
+      return new ArrayList<String>();
+    }
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return UserDAO.getUserIdsOfGroups(con, groupIds);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getAllUsersOfGroups",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 
@@ -212,108 +215,22 @@ public class UserManager extends Object {
   }
 
   /**
-   * Get the available space ids for given user
-   */
-  public String[] getAllowedSpaceIds(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user.getAllSpaceIds(idAsInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException("UserManager.getAllowedSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SPACE_IDS",
-          "user Id: '" + sUserId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the available space ids for given user according space father id
-   */
-  public String[] getAllowedSpaceIdsByFatherId(DomainDriverManager ddManager,
-      String sUserId, String fatherId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user.getSpaceIdsByFatherId(
-          idAsInt(sUserId), idAsInt(fatherId));
-    } catch (Exception e) {
-      throw new AdminException("UserManager.getAllowedSpaceIdsByFatherId",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SPACE_IDS",
-          "user Id: '" + sUserId + "', fatherId = " + fatherId, e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the available root space ids for given user
-   */
-  public String[] getAllowedRootSpaceIds(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user.getRootSpaceIds(idAsInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException("UserManager.getAllowedRootSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SPACE_IDS",
-          "user Id = " + sUserId, e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
    * Get space ids manageable by given user
    */
-  public String[] getManageableSpaceIds(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
+  public String[] getManageableSpaceIds(String sUserId, List<String> groupIds)
+      throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user
-          .getManageableSpaceIds(idAsInt(sUserId));
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      List<String> spaceIds = SpaceDAO.getManageableSpaceIds(con, sUserId, groupIds);
+      return spaceIds.toArray(new String[spaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException("UserManager.getManageableSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId
           + "'", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get space ids manageable by given user
-   */
-  public String[] getManageableSubSpaceIds(DomainDriverManager ddManager,
-      String sUserId, String sSpaceId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user.getManageableSubSpaceIds(
-          idAsInt(sUserId), idAsInt(sSpaceId));
-    } catch (Exception e) {
-      throw new AdminException("UserManager.getManageableSubSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId
-          + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  public List<String> getManageableGroupIds(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.user
-          .getManageableGroupIds(idAsInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException("UserManager.getManageableSpaceIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_MANAGEABLE_GROUP_IDS", "userId = " + sUserId,
-          e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
     }
   }
 
@@ -462,7 +379,34 @@ public class UserManager extends Object {
     }
   }
 
-  public String[] searchUsersIds(DomainDriverManager ddManager, String groupId,
+  public String[] searchUsersIds(DomainDriverManager ddManager, List<String> userIds,
+      UserDetail modelUser) throws AdminException {
+    UserRow model;
+
+    try {
+      // Get users from Silverpeas
+      ddManager.getOrganizationSchema();
+
+      model = userDetail2UserRow(modelUser);
+      if ((modelUser.getId() == null) || (modelUser.getId().length() <= 0)) {
+        model.id = -2;
+      }
+      if ((modelUser.getDomainId() == null)
+          || (modelUser.getDomainId().length() <= 0)) {
+        model.domainId = -2;
+      }
+      
+      // Get users of domain from Silverpeas database
+      return ddManager.organization.user.searchUsersIds(userIds, model);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.searchUsersIds",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+
+  /*public String[] searchUsersIds(DomainDriverManager ddManager, String groupId,
       String componentId, String[] aProfileId, UserDetail modelUser)
       throws AdminException {
     String[] uids = null;
@@ -498,7 +442,7 @@ public class UserManager extends Object {
     } finally {
       ddManager.releaseOrganizationSchema();
     }
-  }
+  }*/
 
   /**
    * Add the given user in Silverpeas and specific domain

@@ -30,37 +30,37 @@
     <requirement>
     </requirement>
 
-    <current version="022">
+    <current version="023">
         <create_table>
-            <file name="oracle\busCore\022\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="oracle\busCore\022\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
         <create_constraint>
-            <file name="oracle\busCore\022\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="oracle\busCore\022\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
         <init>
-            <file name="oracle\busCore\022\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="oracle\busCore\022\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
             <file name="java\dbBuilder_ep.jar" type="javalib" classname="com.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
         </init>
         <create_index>
-            <file name="oracle\busCore\022\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_index>
         <drop_index>
-            <file name="oracle\busCore\022\drop_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\drop_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_index>       
         <drop_table>
-            <file name="oracle\busCore\022\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="oracle\busCore\022\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_table>
         <drop_constraint>
-            <file name="oracle\busCore\022\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="oracle\busCore\022\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_constraint>
         <clean>
-            <file name="oracle\busCore\022\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="oracle\busCore\022\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\busCore\023\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </clean>
     </current>
 
@@ -193,5 +193,11 @@
             <file name="oracle\busCore\up021\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
        </create_table>
 	</upgrade>
+
+	<upgrade version="022">
+       <drop_table>
+            <file name="oracle\busCore\up022\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </drop_table>
+    </upgrade>
 
 </contribution>

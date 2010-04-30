@@ -134,45 +134,6 @@
   <st_userrole_user_rel userroleid="60" userid="10" />
   <st_userrole_user_rel userroleid="62" userid="11" />
 
-  <st_userset usersettype="S" usersetid="3" />
-  <st_userset usersettype="X" usersetid="2" />
-  <st_userset usersettype="X" usersetid="4" />
-  <st_userset usersettype="I" usersetid="60" />
-  <st_userset usersettype="R" usersetid="58" />
-  <st_userset usersettype="R" usersetid="59" />
-  <st_userset usersettype="R" usersetid="60" />
-  <st_userset usersettype="R" usersetid="61" />
-  <st_userset usersettype="R" usersetid="62" />
-
-  <st_userset_user_rel usersettype="R" usersetid="58" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="60" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="61" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="60" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="61" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="60" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="60" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="60" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="62" userid="11" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="60" userid="11" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="11" linkscount="1" />
-
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="X" subsetid="2" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="60" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="60" subsettype="R" subsetid="58" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="58" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="60" subsettype="R" subsetid="59" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="59" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="60" subsettype="R" subsetid="60" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="60" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="60" subsettype="R" subsetid="61" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="61" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="60" subsettype="R" subsetid="62" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="62" linkscount="1" />
-
   <sb_contentmanager_instance instanceid="10" componentid="kmelia60" containertype="containerPDC" contenttype="kmelia" />
   <sb_contentmanager_content silvercontentid="200" internalcontentid="4" contentinstanceid="10" authorid="7"
   creationdate="2008-05-15" begindate="2008/05/15"  enddate="9999/99/99" isvisible="1"/>

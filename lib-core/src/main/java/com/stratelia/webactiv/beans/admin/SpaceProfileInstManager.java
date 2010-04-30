@@ -285,25 +285,6 @@ public class SpaceProfileInstManager {
   }
 
   /**
-   * Get all the space profiles Id for the given user
-   */
-  public String[] getSpaceProfileIdsOfUser(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.spaceUserRole
-          .getAllSpaceUserRoleIdsOfUser(idAsInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException(
-          "SpaceProfileInstManager.getSpaceProfileIdsOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_SPACEPROFILES",
-          "user Id: '" + sUserId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
    * Converts SpaceProfileInst to SpaceUserRoleRow
    */
   private SpaceUserRoleRow makeSpaceUserRoleRow(

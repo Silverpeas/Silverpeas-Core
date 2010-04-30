@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2010 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+	<st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
+
+	<st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+	<uniqueid maxid="1" tablename="st_user"/>
+
+	<domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"/>
+	<uniqueid maxid="1" tablename="domainsp_user"/>
+
+	<st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
+	<uniqueid maxid="1" tablename="st_group"/>
+	
+	<domainsp_group id="1" name="Groupe 1"/>
+	<uniqueid maxid="1" tablename="domainsp_group"/>
+	
+	<st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
+	<st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
+	<uniqueid maxid="2" tablename="st_space"/>
+	
+	<st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
+	<st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>
+	<uniqueid maxid="2" tablename="st_componentinstance"/>
+	
+	<domainsp_group_user_rel/>
+	<st_group_user_rel/>
+	<st_spaceuserrole/>
+	<st_spaceuserrole_user_rel/>
+	<st_spaceuserrole_group_rel/>
+	<st_userrole/>
+	<st_userrole_user_rel/>
+	<st_userrole_group_rel/>
+</dataset>

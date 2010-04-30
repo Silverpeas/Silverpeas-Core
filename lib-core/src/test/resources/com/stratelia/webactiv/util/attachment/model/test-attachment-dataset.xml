@@ -136,45 +136,6 @@
   <st_userrole_user_rel userroleid="60" userid="10" />
   <st_userrole_user_rel userroleid="62" userid="11" />
 
-  <st_userset usersettype="S" usersetid="3" />
-  <st_userset usersettype="X" usersetid="4" />
-  <st_userset usersettype="I" usersetid="57" />
-  <st_userset usersettype="R" usersetid="58" />
-  <st_userset usersettype="R" usersetid="59" />
-  <st_userset usersettype="R" usersetid="60" />
-  <st_userset usersettype="R" usersetid="61" />
-  <st_userset usersettype="R" usersetid="62" />
-
-
-  <st_userset_user_rel usersettype="R" usersetid="58" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="57" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="61" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="57" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="61" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="57" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="60" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="57" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="62" userid="11" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="57" userid="11" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="11" linkscount="1" />
-
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="X" subsetid="4" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="57" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="57" subsettype="R" subsetid="58" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="58" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="57" subsettype="R" subsetid="59" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="59" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="57" subsettype="R" subsetid="60" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="60" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="57" subsettype="R" subsetid="61" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="61" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="57" subsettype="R" subsetid="62" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="62" linkscount="1" />
-
   <sb_node_node nodeid="0" nodename="Accueil" nodedescription="La Racine" nodecreationdate="2008/04/23"
     nodecreatorid="0" nodepath="/" nodelevelnumber="1" nodefatherid="-1" modelid="" nodestatus="Visible"
     instanceid="kmelia57" ordernumber="0" rightsdependson="-1" />

@@ -134,49 +134,6 @@ public class SpaceUserRoleTable extends Table {
       "select id from ST_SpaceUserRole where spaceId = ?";
 
   /**
-   * Returns all the SpaceUserRoles of an user.
-   */
-  public SpaceUserRoleRow[] getAllSpaceUserRolesOfUser(int userId)
-      throws AdminPersistenceException {
-    return (SpaceUserRoleRow[]) getRows(SELECT_ALL_USER_SPACEUSERROLES, userId)
-        .toArray(new SpaceUserRoleRow[0]);
-  }
-
-  static final private String SELECT_ALL_USER_SPACEUSERROLES = "select "
-      + SPACEUSERROLE_COLUMNS + " from ST_SpaceUserRole,ST_UserSet_User_Rel"
-      + " where id=userSetId and userSetType='M' and userId=?";
-
-  /**
-   * Returns all the SpaceUserRole ids of an user.
-   */
-  public String[] getAllSpaceUserRoleIdsOfUser(int userId)
-      throws AdminPersistenceException {
-    return (String[]) getRows(SELECT_ALL_USER_SPACEUSERROLE_IDS, userId)
-        .toArray(new String[0]);
-  }
-
-  static final private String SELECT_ALL_USER_SPACEUSERROLE_IDS =
-      "select id from ST_SpaceUserRole,ST_UserSet_User_Rel"
-      + " where id=userSetId and userSetType='M' and userId=?";
-
-  /**
-   * Returns all the spaceUserRole of a given user for a given space.
-   */
-  public SpaceUserRoleRow[] getAllSpaceUserRolesOfUserOfSpace(int userId,
-      int spaceId) throws AdminPersistenceException {
-    int[] params = new int[] { spaceId, userId };
-    return (SpaceUserRoleRow[]) getRows(
-        SELECT_ALL_USER_SPACEUSERROLES_IN_SPACE, params).toArray(
-        new SpaceUserRoleRow[0]);
-  }
-
-  static final private String SELECT_ALL_USER_SPACEUSERROLES_IN_SPACE = "select "
-      + SPACEUSERROLE_COLUMNS
-      + " from ST_SpaceUserRole,ST_UserSet_User_Rel"
-      + " where id=userSetId and spaceId=?"
-      + " and userSetType='M' and userId=?";
-
-  /**
    * Returns all the direct SpaceUserRoles of user.
    */
   public SpaceUserRoleRow[] getDirectSpaceUserRolesOfUser(int userId)
@@ -232,7 +189,7 @@ public class SpaceUserRoleTable extends Table {
 
     insertRow(INSERT_SPACEUSERROLE, spaceUserRole);
 
-    if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
+    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
       organization.userSet.createUserSet("M", spaceUserRole.id);
       organization.userSet.addUserSetInUserSet("M", spaceUserRole.id, "S",
           spaceUserRole.spaceId);
@@ -240,7 +197,7 @@ public class SpaceUserRoleTable extends Table {
       organization.userSet.createUserSet("X", spaceUserRole.id);
       organization.userSet.addUserSetInUserSet("X", spaceUserRole.id, "S",
           spaceUserRole.spaceId);
-    }
+    }*/
   }
 
   static final private String INSERT_SPACEUSERROLE = "insert into"
@@ -304,33 +261,15 @@ public class SpaceUserRoleTable extends Table {
       removeGroupFromSpaceUserRole(groups[i].id, id);
     }
 
-    if (spaceUserRole.roleName.equalsIgnoreCase("manager"))
+    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager"))
       organization.userSet.removeUserSet("M", id);
     else
-      organization.userSet.removeUserSet("X", id);
+      organization.userSet.removeUserSet("X", id);*/
 
     updateRelation(DELETE_SPACEUSERROLE, id);
   }
 
   static final private String DELETE_SPACEUSERROLE = "delete from ST_SpaceUserRole where id = ?";
-
-  /**
-   * Tests if a user has a given role (recursive).
-   */
-  public boolean isUserInRole(int userId, int spaceUserRoleId)
-      throws AdminPersistenceException {
-    int[] ids = new int[] { userId, spaceUserRoleId };
-    Integer result = getInteger(SELECT_COUNT_USERSET_USER_REL, ids);
-
-    if (result == null)
-      return false;
-    else
-      return result.intValue() >= 1;
-  }
-
-  static final private String SELECT_COUNT_USERSET_USER_REL =
-      "select linksCount from ST_UserSet_User_Rel"
-      + " where userId = ? and userSetId = ? and userSetType='M'";
 
   /**
    * Tests if a user has a given role (not recursive).
@@ -377,11 +316,11 @@ public class SpaceUserRoleTable extends Table {
     int[] params = new int[] { spaceUserRoleId, userId };
     updateRelation(INSERT_A_SPACEUSERROLE_USER_REL, params);
 
-    if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
+    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
       organization.userSet.addUserInUserSet(userId, "M", spaceUserRoleId);
     } else {
       organization.userSet.addUserInUserSet(userId, "X", spaceUserRoleId);
-    }
+    }*/
   }
 
   static final private String INSERT_A_SPACEUSERROLE_USER_REL =
@@ -400,21 +339,6 @@ public class SpaceUserRoleTable extends Table {
           + "'");
     }
 
-    SynchroReport.debug("SpaceUserRoleTable.removeUserFromSpaceUserRole()",
-        "Retrait (ou décrément) de la relation entre l'utilisateur d'ID "
-        + userId + " et l'espace d'ID " + spaceUserRoleId
-        + " dans la table ST_UserSet_User_Rel", null);
-
-    SpaceUserRoleRow spaceUserRole = getSpaceUserRole(spaceUserRoleId);
-    if (spaceUserRole != null) {
-      if (spaceUserRole.roleName.equalsIgnoreCase("manager"))
-        organization.userSet
-            .removeUserFromUserSet(userId, "M", spaceUserRoleId);
-      else
-        organization.userSet
-            .removeUserFromUserSet(userId, "X", spaceUserRoleId);
-    }
-
     int[] params = new int[] { spaceUserRoleId, userId };
     SynchroReport.debug("SpaceUserRoleTable.removeUserFromSpaceUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " de role d'espace d'ID "
@@ -425,25 +349,6 @@ public class SpaceUserRoleTable extends Table {
 
   static final private String DELETE_SPACEUSERROLE_USER_REL =
       "delete from ST_SpaceUserRole_User_Rel where spaceUserRoleId = ? and userId = ?";
-
-  /**
-   * Tests if a group has a given role (recursive).
-   */
-  public boolean isGroupInRole(int groupId, int spaceUserRoleId)
-      throws AdminPersistenceException {
-    int[] ids = new int[] { groupId, spaceUserRoleId };
-    Integer result = getInteger(SELECT_COUNT_USERSET_GROUP_REL, ids);
-
-    if (result == null)
-      return false;
-    else
-      return result.intValue() >= 1;
-  }
-
-  static final private String SELECT_COUNT_USERSET_GROUP_REL =
-      "select linksCount from ST_UserSet_UserSet_Rel"
-      + " where subSetType='G' and subSetId=?"
-      + " and   superSetType='M' and superSetId = ?";
 
   /**
    * Tests if a group has a given role (not recursive).
@@ -490,13 +395,13 @@ public class SpaceUserRoleTable extends Table {
     int[] params = new int[] { spaceUserRoleId, groupId };
     updateRelation(INSERT_A_SPACEUSERROLE_GROUP_REL, params);
 
-    if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
+    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
       organization.userSet.addUserSetInUserSet("G", groupId, "M",
           spaceUserRoleId);
     } else {
       organization.userSet.addUserSetInUserSet("G", groupId, "X",
           spaceUserRoleId);
-    }
+    }*/
   }
 
   static final private String INSERT_A_SPACEUSERROLE_GROUP_REL =
@@ -513,23 +418,6 @@ public class SpaceUserRoleTable extends Table {
           SilverpeasException.ERROR,
           "admin.EX_ERR_GROUP_NOT_IN_SPACE_USERROLE", "space userrole id: '"
           + spaceUserRoleId + "', group id: '" + groupId + "'");
-    }
-
-    SynchroReport.debug("SpaceUserRoleTable.removeGroupFromSpaceUserRole()",
-        "Suppression (ou décrément) des relations liant le groupe d'ID "
-        + groupId + " et l'espace d'ID " + spaceUserRoleId
-        + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
-        null);
-
-    SpaceUserRoleRow spaceUserRole = getSpaceUserRole(spaceUserRoleId);
-    if (spaceUserRole != null) {
-      if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
-        organization.userSet.removeUserSetFromUserSet("G", groupId, "M",
-            spaceUserRoleId);
-      } else {
-        organization.userSet.removeUserSetFromUserSet("G", groupId, "X",
-            spaceUserRoleId);
-      }
     }
 
     int[] params = new int[] { spaceUserRoleId, groupId };

@@ -24,17 +24,22 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.cache.TreeCache;
+import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceI18NRow;
 import com.stratelia.webactiv.organization.SpaceRow;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SpaceInstManager {
@@ -170,7 +175,7 @@ public class SpaceInstManager {
         // Set the attributes of the space Inst
         spaceInst.setId(idAsString(space.id));
         spaceInst.setDomainFatherId(idAsString(space.domainFatherId));
-        spaceInst.setLevel(getSpaceLevel(ddManager, space.id));
+        spaceInst.setLevel(getSpaceLevel(space.id));
         spaceInst.setName(space.name);
         spaceInst.setDescription(space.description);
         spaceInst.setCreatorUserId(idAsString(space.createdBy));
@@ -236,7 +241,7 @@ public class SpaceInstManager {
       SpaceInstLight spaceInstLight = new SpaceInstLight(spaceRow);
 
       // Add level
-      spaceInstLight.setLevel(getSpaceLevel(ddManager, spaceRow.id));
+      spaceInstLight.setLevel(getSpaceLevel(spaceRow.id));
 
       // Add translations
       setTranslations(ddManager, spaceInstLight, spaceRow);
@@ -284,11 +289,9 @@ public class SpaceInstManager {
     }
   }
 
-  private int getSpaceLevel(DomainDriverManager ddManager, int spaceId)
+  private int getSpaceLevel(int spaceId)
       throws AdminException {
-    String[] asParents = ddManager.organization.space
-        .getAllFatherSpaceIds(spaceId);
-    return asParents.length;
+    return TreeCache.getSpacePath(Integer.toString(spaceId)).size() - 1;
   }
 
   /**
@@ -309,7 +312,13 @@ public class SpaceInstManager {
       // String[] asParents =
       // ddManager.organization.space.getAllFatherSpaceIds(space.id);
       // spaceInst.setLevel(asParents.length);
-      spaceInst.setLevel(getSpaceLevel(ddManager, space.id));
+      int spaceLevel = -1;
+      if (spaceInst.isRoot()) {
+        spaceLevel = 0;
+      } else {
+        spaceLevel = getSpaceLevel(space.domainFatherId)+1;
+      }
+      spaceInst.setLevel(spaceLevel);
       spaceInst.setName(space.name);
       spaceInst.setDescription(space.description);
       spaceInst.setCreatorUserId(idAsString(space.createdBy));
@@ -425,96 +434,6 @@ public class SpaceInstManager {
   }
 
   /**
-   * Return the all the spaces ids available in Silverpeas
-   */
-  public String[] getAllowedSpaceIds(DomainDriverManager ddManager, int userId)
-      throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] rows = ddManager.organization.space.getAllSpacesOfUser(userId);
-
-      if (rows != null) {
-        String[] ids = new String[rows.length];
-        for (int r = 0; r < rows.length; r++) {
-          ids[r] = Integer.toString(rows[r].id);
-        }
-        return ids;
-      } else
-        return new String[0];
-    } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getAllowedSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALLOWED_SPACEIDS", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Return the all the spaces ids available in Silverpeas
-   */
-  public String[] getAllowedRootSpaceIds(DomainDriverManager ddManager,
-      int userId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] rows = ddManager.organization.space
-          .getAllRootSpacesOfUser(userId);
-
-      if (rows != null) {
-        String[] ids = new String[rows.length];
-        for (int r = 0; r < rows.length; r++) {
-          ids[r] = Integer.toString(rows[r].id);
-        }
-        return ids;
-      } else
-        return new String[0];
-    } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getAllowedRootSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALLOWED_SPACEIDS", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  public List<SpaceInstLight> getAllowedSubSpaces(DomainDriverManager ddManager, String userId,
-      String spaceId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] spaceRows = ddManager.organization.space.getSubSpacesOfUser(
-          idAsInt(userId), idAsInt(spaceId));
-
-      return spaceRows2SpaceInstLights(ddManager, spaceRows);
-    } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getSubSpacesOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  public String[] getAllowedSubSpaceIds(DomainDriverManager ddManager,
-      String userId, String spaceId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] rows = ddManager.organization.space.getSubSpacesOfUser(
-          idAsInt(userId), idAsInt(spaceId));
-
-      if (rows != null) {
-        String[] ids = new String[rows.length];
-        for (int r = 0; r < rows.length; r++) {
-          ids[r] = Integer.toString(rows[r].id);
-        }
-        return ids;
-      } else
-        return new String[0];
-    } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getSubSpacesOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
    * Returns all components which has been removed but not definitely deleted
    */
   public List<SpaceInstLight> getRemovedSpaces(DomainDriverManager ddManager)
@@ -533,22 +452,36 @@ public class SpaceInstManager {
   }
 
   /**
-   * Return subspaces of a space for a given user
+   * Return subspaces of a space
    * @return a List of SpaceInstLight
    */
-  public List<SpaceInstLight> getSubSpacesOfUser(DomainDriverManager ddManager, String userId,
-      String spaceId) throws AdminException {
+  public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] spaceRows = ddManager.organization.space.getSubSpacesOfUser(
-          idAsInt(userId), idAsInt(spaceId));
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      return spaceRows2SpaceInstLights(ddManager, spaceRows);
+      return SpaceDAO.getSubSpaces(con, Integer.parseInt(spaceId));
+
     } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.getSubSpacesOfUser",
+      throw new AdminException("SpaceInstManager.getSubSpaces",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
+    }
+  }
+
+  public List<String> getRootSpaceIds() throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return SpaceDAO.getRootSpaceIds(con);
+
+    } catch (Exception e) {
+      throw new AdminException("SpaceInstManager.getRootSpaceIds",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_ROOTSPACEIDS", e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 
@@ -788,34 +721,37 @@ public class SpaceInstManager {
     }
   }
 
-  /**
-   * Move first given space under the second one if second space is null, move the space as a root
-   * space
-   */
-  public void moveSpace(DomainDriverManager ddManager, String sSpaceId,
-      String sFatherSpaceId, SpaceInst space) throws AdminException {
-    String sOldFatherId = space.getDomainFatherId();
-
+  public List<SpaceInstLight> getAllSpaces(DomainDriverManager ddManager) throws AdminException {
+    List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
     try {
-      // if space has already a father, remove link Userset
-      if (sOldFatherId != null) {
-        ddManager.organization.userSet.removeUserSetFromUserSet("S",
-            idAsInt(sSpaceId), "S", idAsInt(sOldFatherId));
+      ddManager.getOrganizationSchema();
+      SpaceRow[] spaceRows = ddManager.organization.space.getAllSpaces();
+      for (int r = 0; r < spaceRows.length; r++) {
+        SpaceInstLight space = new SpaceInstLight(spaceRows[r]);
+        spaces.add(space);
       }
-
-      // replace domain father id with the new one
-      space.setDomainFatherId(sFatherSpaceId);
-      this.updateSpaceInst(ddManager, space);
-
-      // Create link Userset
-      ddManager.organization.userSet.addUserSetInUserSet("S",
-          idAsInt(sSpaceId), "S", idAsInt(sFatherSpaceId));
     } catch (Exception e) {
-      throw new AdminException("SpaceInstManager.moveSpace",
-          SilverpeasException.ERROR, "admin.EX_ERR_MOVE_SPACE",
-          "move space Id : '" + sSpaceId + "', under space Id : '"
-          + sFatherSpaceId + "'", e);
+      throw new AdminException("SpaceInstManager.getAllSpaces",
+          SilverpeasException.ERROR, "admin.EX_GETTING_ALL_SPACES", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
     }
+    return spaces;
+  }
+
+  public List<String> getManageableSpaceIds(String userId, List<String> groupIds)
+      throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      return SpaceDAO.getManageableSpaceIds(con, userId, groupIds);
+    } catch (Exception e) {
+      throw new AdminException("SpaceInstManager.getManageableSpaceIds",
+          SilverpeasException.ERROR, "admin.EX_GETTING_MANAGEABLE_SPACEIDS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+
   }
 
   /**

@@ -84,20 +84,6 @@ public class GroupTable extends Table {
       + " from ST_Group where id = ?";
 
   /**
-   * Returns all the space ids manageable by the given group.
-   */
-  public String[] getManageableSpaceIds(int groupId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_MANAGEABLE_SPACE_IDS, groupId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ALL_MANAGEABLE_SPACE_IDS =
-      "select distinct spaceId from ST_UserSet_UserSet_Rel, ST_SpaceUserRole"
-      + " where superSetType='M' and id=superSetId"
-      + " and subSetType='G' and subSetId=?";
-
-  /**
    * Returns Group whith the given specificId and domainId.
    */
   public GroupRow getGroupBySpecificId(int domainId, String specificId)
@@ -243,20 +229,6 @@ public class GroupTable extends Table {
       "select id from ST_Group where superGroupId = ?";
 
   /**
-   * Returns all the recursives subGroupIds of a given superGroup.
-   */
-  public String[] getAllSubGroupIds(int superGroupId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_SUBGROUPS, superGroupId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ALL_SUBGROUPS = "select id"
-      + " from ST_Group, ST_UserSet_UserSet_Rel"
-      + " where id=subSetId and subSetType='G'"
-      + " and   superSetType='G' and superSetId = ?";
-
-  /**
    * Returns all the Root Groups having a given domain id.
    */
   public GroupRow[] getAllRootGroupsOfDomain(int domainId)
@@ -309,20 +281,6 @@ public class GroupTable extends Table {
       + " where sg.id=g.superGroupId and g.id=?";
 
   /**
-   * Returns all the recursives superGroups of a given subGroup.
-   */
-  public GroupRow[] getAllSuperGroups(int subGroupId)
-      throws AdminPersistenceException {
-    return (GroupRow[]) getRows(SELECT_ALL_SUPERGROUPS, subGroupId).toArray(
-        new GroupRow[0]);
-  }
-
-  static final private String SELECT_ALL_SUPERGROUPS = "select "
-      + GROUP_COLUMNS + " from ST_Group,ST_UserSet_UserSet_Rel"
-      + " where id=superSetId and superSetType='G'"
-      + " and   subSetType='G' and subSetId = ?";
-
-  /**
    * Returns all the groups of a given user (not recursive).
    */
   public GroupRow[] getDirectGroupsOfUser(int userId)
@@ -334,19 +292,6 @@ public class GroupTable extends Table {
   static final private String SELECT_USER_GROUPS = "select " + GROUP_COLUMNS
       + " from ST_Group,ST_Group_User_Rel"
       + " where id = groupId and userId = ?";
-
-  /**
-   * Returns all the groups of a given user (recursive).
-   */
-  public GroupRow[] getAllGroupsOfUser(int userId)
-      throws AdminPersistenceException {
-    return (GroupRow[]) getRows(SELECT_ALL_USER_GROUPS, userId).toArray(
-        new GroupRow[0]);
-  }
-
-  static final private String SELECT_ALL_USER_GROUPS = "select "
-      + GROUP_COLUMNS + " from ST_Group,ST_UserSet_User_Rel"
-      + " where id=userSetId and userSetType='G' and userId=?";
 
   /**
    * Returns all the groups in a given userRole (not recursive).
@@ -375,20 +320,6 @@ public class GroupTable extends Table {
       + " where id = groupId and userRoleId = ?";
 
   /**
-   * Returns all the groups in a given userRole (recursive).
-   */
-  public GroupRow[] getAllGroupsInUserRole(int userRoleId)
-      throws AdminPersistenceException {
-    return (GroupRow[]) getRows(SELECT_ALL_USERROLE_GROUPS, userRoleId)
-        .toArray(new GroupRow[0]);
-  }
-
-  static final private String SELECT_ALL_USERROLE_GROUPS = "select "
-      + GROUP_COLUMNS + " from ST_Group,ST_UserSet_UserSet_Rel"
-      + " where id=subSetId and subSetType = 'G'"
-      + " and   superSetType='R' and superSetId=?";
-
-  /**
    * Returns all the groups in a given spaceUserRole (not recursive).
    */
   public GroupRow[] getDirectGroupsInSpaceUserRole(int spaceUserRoleId)
@@ -413,20 +344,6 @@ public class GroupTable extends Table {
   static final private String SELECT_SPACEUSERROLE_GROUP_IDS =
       "select id from ST_Group,ST_SpaceUserRole_Group_Rel"
       + " where id = groupId and spaceUserRoleId = ?";
-
-  /**
-   * Returns all the groups in a given spaceUserRole (recursive).
-   */
-  public GroupRow[] getAllGroupsInSpaceUserRole(int spaceUserRoleId)
-      throws AdminPersistenceException {
-    return (GroupRow[]) getRows(SELECT_ALL_SPACEUSERROLE_GROUPS,
-        spaceUserRoleId).toArray(new GroupRow[0]);
-  }
-
-  static final private String SELECT_ALL_SPACEUSERROLE_GROUPS = "select "
-      + GROUP_COLUMNS + " from ST_Group,ST_UserSet_UserSet_Rel"
-      + " where id=subSetId and subSetType = 'G'"
-      + " and   superSetType='M' and superSetId=?";
 
   /**
    * Returns all the groups in a given groupUserRole (not recursive).
@@ -628,18 +545,6 @@ public class GroupTable extends Table {
     SynchroReport.debug("GroupTable.createGroup()", "Ajout de " + group.name
         + ", requête : " + INSERT_GROUP, null);
     insertRow(INSERT_GROUP, group);
-    SynchroReport.debug("GroupTable.createGroup()", "Ajout du groupe "
-        + group.name + " dans la table ST_UserSet", null);
-    organization.userSet.createUserSet("G", group.id);
-
-    if (superGroup != null) {
-      SynchroReport.debug("GroupTable.createGroup()",
-          "Ajout (ou incrément) de relations entre le groupe " + group.name
-          + " d'ID " + group.id + " et son groupe père d'ID "
-          + superGroup.id + " dans la table ST_UserSet_UserSet_Rel", null);
-      organization.userSet.addUserSetInUserSet("G", group.id, "G",
-          superGroup.id);
-    }
 
     CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_GROUP, group.id,
         null, null);
@@ -685,38 +590,6 @@ public class GroupTable extends Table {
     SynchroReport.debug("GroupTable.updateGroup()", "Maj de " + group.name
         + ", Id=" + group.id + ", requête : " + UPDATE_GROUP, null);
     updateRow(UPDATE_GROUP, group);
-    if ((oldGroup != null) && (oldGroup.superGroupId != -1)
-        && (group.superGroupId != oldGroup.superGroupId)) {
-      SynchroReport
-          .debug(
-          "GroupTable.updateGroup()",
-          "Suppression (ou décrément) des relations liant le groupe "
-          + group.name
-          + " d'ID "
-          + group.id
-          + " et le groupe d'ID "
-          + oldGroup.superGroupId
-          + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
-          null);
-      organization.userSet.removeUserSetFromUserSet("G", group.id, "G",
-          oldGroup.superGroupId);
-    }
-    if ((oldGroup != null) && (group.superGroupId != -1)
-        && (group.superGroupId != oldGroup.superGroupId)) {
-      SynchroReport
-          .debug(
-          "GroupTable.updateGroup()",
-          "Ajout (ou incrément) de relations entre le groupe "
-          + group.name
-          + " d'ID "
-          + group.id
-          + " et le groupe d'ID "
-          + group.superGroupId
-          + " dans les tables ST_UserSet_UserSet_Rel et ST_UserSet_User_Rel",
-          null);
-      organization.userSet.addUserSetInUserSet("G", group.id, "G",
-          group.superGroupId);
-    }
   }
 
   static final private String UPDATE_GROUP = "update ST_Group set"
@@ -797,7 +670,7 @@ public class GroupTable extends Table {
         + group.name + " dans la base", null);
 
     // remove the empty group.
-    organization.userSet.removeUserSet("G", id);
+    //organization.userSet.removeUserSet("G", id);
     SynchroReport.debug("GroupTable.removeGroup()", "Suppression de "
         + group.name + " (ID=" + id + "), requête : " + DELETE_GROUP, null);
     updateRelation(DELETE_GROUP, id);
@@ -806,27 +679,9 @@ public class GroupTable extends Table {
   static final private String DELETE_GROUP = "delete from ST_Group where id = ?";
 
   /**
-   * Tests if a user is in a given group (recursive).
-   */
-  public boolean isUserInGroup(int userId, int groupId)
-      throws AdminPersistenceException {
-    int[] ids = new int[] { userId, groupId };
-    Integer result = getInteger(SELECT_COUNT_USERSET_USER_REL, ids);
-
-    if (result == null)
-      return false;
-    else
-      return result.intValue() >= 1;
-  }
-
-  static final private String SELECT_COUNT_USERSET_USER_REL =
-      "select linksCount from ST_UserSet_User_Rel"
-      + " where userId = ? and userSetId = ? and userSetType='G'";
-
-  /**
    * Tests if a user is in given group (not recursive).
    */
-  public boolean isUserDirectlyInGroup(int userId, int groupId)
+  private boolean isUserDirectlyInGroup(int userId, int groupId)
       throws AdminPersistenceException {
     int[] ids = new int[] { userId, groupId };
     Integer result = getInteger(SELECT_COUNT_GROUP_USER_REL, ids);
@@ -868,11 +723,6 @@ public class GroupTable extends Table {
         "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID "
         + groupId + ", requête : " + INSERT_A_GROUP_USER_REL, null);
     updateRelation(INSERT_A_GROUP_USER_REL, params);
-    SynchroReport.debug("GroupTable.addUserInGroup()",
-        "Ajout (ou incrément) de relations entre l'utilisateur d'ID " + userId
-        + " et le groupe d'ID : " + groupId
-        + " dans la table ST_UserSet_User_Rel", null);
-    organization.userSet.addUserInUserSet(userId, "G", groupId);
   }
 
   /**
@@ -913,11 +763,6 @@ public class GroupTable extends Table {
             "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID "
             + groupId + ", requête : " + INSERT_A_GROUP_USER_REL, null);
         updateRelation(INSERT_A_GROUP_USER_REL, params);
-        SynchroGroupReport.debug("GroupTable.addUsersInGroup()",
-            "Ajout (ou incrément) de relations entre l'utilisateur d'ID "
-            + userId + " et le groupe d'ID : " + groupId
-            + " dans la table ST_UserSet_User_Rel", null);
-        organization.userSet.addUserInUserSet(userId, "G", groupId);
       }
     }
   }
@@ -935,11 +780,6 @@ public class GroupTable extends Table {
           SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_IN_GROUP",
           "group id: '" + groupId + "', user id: '" + userId + "'");
     }
-    SynchroReport.debug("GroupTable.removeUserFromGroup()",
-        "Retrait (ou décrément) des relations liant l'utilisateur d'ID "
-        + userId + " et le groupe d'ID : " + groupId
-        + " dans la table ST_UserSet_User_Rel", null);
-    organization.userSet.removeUserFromUserSet(userId, "G", groupId);
 
     int[] params = new int[] { groupId, userId };
     SynchroReport.debug("GroupTable.removeUserFromGroup()",
@@ -976,12 +816,6 @@ public class GroupTable extends Table {
       }
 
       if (userInGroup) {
-        SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()",
-            "Retrait (ou décrément) des relations liant l'utilisateur d'ID "
-            + userId + " et le groupe d'ID : " + groupId
-            + " dans la table ST_UserSet_User_Rel", null);
-        organization.userSet.removeUserFromUserSet(userId, "G", groupId);
-
         int[] params = new int[] { groupId, userId };
         SynchroGroupReport.debug("GroupTable.removeUsersFromGroup()",
             "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "

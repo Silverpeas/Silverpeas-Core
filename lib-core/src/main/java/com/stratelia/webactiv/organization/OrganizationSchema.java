@@ -50,7 +50,6 @@ public class OrganizationSchema extends Schema {
     instanceData = new InstanceDataTable(this);
     userRole = new UserRoleTable(this);
     spaceUserRole = new SpaceUserRoleTable(this);
-    userSet = new UserSetTable(this);
     accessLevel = new AccessLevelTable(this);
     groupUserRole = new GroupUserRoleTable(this);
   }
@@ -66,7 +65,6 @@ public class OrganizationSchema extends Schema {
   public InstanceDataTable instanceData = null;
   public UserRoleTable userRole = null;
   public SpaceUserRoleTable spaceUserRole = null;
-  public UserSetTable userSet = null;
   public AccessLevelTable accessLevel = null;
   public GroupUserRoleTable groupUserRole = null;
 }

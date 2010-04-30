@@ -24,10 +24,16 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
+import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
 import com.stratelia.webactiv.organization.UserRoleRow;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ProfiledObjectManager {
@@ -68,45 +74,27 @@ public class ProfiledObjectManager {
     return profiles;
   }
 
-  public String[] getUserProfileNames(DomainDriverManager ddManager,
-      int objectId, String objectType, int componentId, int userId)
-      throws AdminException {
-    String[] profileNames = null;
+  public String[] getUserProfileNames(int objectId, String objectType, int componentId, int userId,
+      List<String> groupIds) throws AdminException {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      // Get the profiles
-      UserRoleRow[] roles = ddManager.organization.userRole
-          .getRolesOfUserAndObject(objectId, objectType, componentId, userId);
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      profileNames = new String[roles.length];
-      for (int r = 0; r < roles.length; r++) {
-        profileNames[r] = roles[r].roleName;
+      List<UserRoleRow> roles =
+          RoleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);
+      List<String> roleNames = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleNames.add(role.roleName);
       }
+
+      return roleNames.toArray(new String[roleNames.size()]);
+
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getUserProfileNames",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILE", "objectId = "
-          + objectId + ", componentId = " + componentId + ", userId = "
-          + userId, e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-    return profileNames;
-  }
-
-  public boolean isObjectAvailable(DomainDriverManager ddManager, int userId,
-      int objectId, String objectType, int componentId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.userRole.isObjectAvailable(userId,
-          componentId, objectId, objectType);
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.isComponentAvailable",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "userId = " + userId
-          + ", componentId = " + componentId + ", objectId = " + objectId,
-          e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
     }
   }
 

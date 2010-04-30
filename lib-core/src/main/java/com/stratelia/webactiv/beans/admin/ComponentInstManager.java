@@ -24,19 +24,24 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.SpaceRow;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ComponentInstManager {
@@ -562,180 +567,6 @@ public class ComponentInstManager {
   }
 
   /**
-   * Get the component ids allowed for the given user Id
-   */
-  public String[] getAvailCompoIds(DomainDriverManager ddManager, String sUserId)
-      throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.instance.getAvailCompoIds(idAsInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getAvailCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-          + sUserId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the component ids allowed for the given user Id
-   */
-  public String[] getAvailCompoIds(DomainDriverManager ddManager,
-      String sUserId, String componentName) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      // return
-      // ddManager.organization.instance.getAvailableComponentIds(idAsInt(sUserId),
-      // componentName);
-
-      List<ComponentInstanceRow> rows = ddManager.organization.instance.getAvailableComponents(
-          idAsInt(sUserId), componentName);
-
-      String[] ids = new String[rows.size()];
-      ComponentInstanceRow row = null;
-      for (int i = 0; rows != null && i < rows.size(); i++) {
-        row = rows.get(i);
-        ids[i] = Integer.toString(row.id);
-      }
-
-      return ids;
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getAvailCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-          + sUserId + "', componentName = " + componentName, e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the component ids allowed for the given user Id
-   */
-  public List<ComponentInstLight> getAvailComponentInstLights(DomainDriverManager ddManager,
-      String sUserId, String componentName) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      List<ComponentInstanceRow> componentRows = ddManager.organization.instance
-          .getAvailableComponents(idAsInt(sUserId), componentName);
-      List<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
-      Iterator<ComponentInstanceRow> i = componentRows.iterator();
-      while (i.hasNext()) {
-        ComponentInstanceRow row = (ComponentInstanceRow) i.next();
-        ComponentInstLight component = new ComponentInstLight(row);
-        component.setId(component.getName() + component.getId());
-        component.setDomainFatherId("WA" + component.getDomainFatherId());
-        result.add(component);
-      }
-      return result;
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getAvailCompoIds",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-          + sUserId + "', componentName = " + componentName, e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  public boolean isComponentAvailable(DomainDriverManager ddManager,
-      String sUserId, String componentId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.instance.isComponentAvailable(
-          idAsInt(sUserId), idAsInt(componentId));
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.isComponentAvailable",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-          + sUserId + "', componentId = " + componentId, e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the component ids allowed for the given user Id in the given space
-   */
-  public String[] getAvailCompoIdsInSpace(DomainDriverManager ddManager,
-      String spaceId, String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      ComponentInstanceRow[] rows = ddManager.organization.instance
-          .getAvailCompoInSpace(idAsInt(spaceId), idAsInt(sUserId));
-
-      String[] ids = new String[rows.length];
-      ComponentInstanceRow row = null;
-      for (int i = 0; rows != null && i < rows.length; i++) {
-        row = rows[i];
-        ids[i] = Integer.toString(row.id);
-      }
-
-      return ids;
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getAvailCompoIdsInSpace",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-          + sUserId + "', space Id: '" + spaceId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the components allowed for the given user Id in the given space
-   */
-  public List<ComponentInstLight> getAvailCompoInSpace(DomainDriverManager ddManager,
-      String spaceId, String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      ComponentInstanceRow[] componentRows = ddManager.organization.instance
-          .getAvailCompoInSpace(idAsInt(spaceId), idAsInt(sUserId));
-
-      return componentInstanceRows2ComponentInstLights(componentRows);
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getAvailCompoInSpace",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENTS", "user id: '" + sUserId
-          + "', space Id: '" + spaceId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
-   * Get the component ids allowed for the given user Id in the given space
-   */
-  public String[] getAvailCompoIdsInSpaceAtRoot(DomainDriverManager ddManager,
-      String sClientSpaceId, String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      ComponentInstanceRow[] rows = ddManager.organization.instance
-          .getAvailComposInSpaceAtRoot(idAsInt(sClientSpaceId),
-          idAsInt(sUserId));
-
-      String[] ids = new String[rows.length];
-      ComponentInstanceRow row = null;
-      for (int i = 0; rows != null && i < rows.length; i++) {
-        row = rows[i];
-        ids[i] = Integer.toString(row.id);
-      }
-
-      return ids;
-    } catch (Exception e) {
-      throw new AdminException(
-          "ComponentInstManager.getAvailCompoIdsInSpaceAtRoot",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user id: '"
-          + sUserId + "', space Id: '" + sClientSpaceId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
    * Get the component ids with the given component name
    */
   public String[] getAllCompoIdsByComponentName(DomainDriverManager ddManager,
@@ -771,22 +602,69 @@ public class ComponentInstManager {
       ddManager.releaseOrganizationSchema();
     }
   }
-
-  /*
-   * Get the component ids recursively in the given space
-   */
-  public String[] getAllCompoIdsInSpace(DomainDriverManager ddManager,
-      String sClientSpaceId) throws AdminException {
+ 
+  public String[] getComponentIdsInSpace(int spaceId) throws AdminException
+  {
+    Connection con = null;
     try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.instance
-          .getAllCompoIdsInSpace(idAsInt(sClientSpaceId));
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      
+      //getting all componentIds available for user
+      List<String> componentIds = ComponentDAO.getComponentIdsInSpace(con, spaceId);
+      return componentIds.toArray(new String[componentIds.size()]);
+      
     } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.getAllCompoIdsInSpace",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALL_COMPONENT_IDS",
-          "space Id: '" + sClientSpaceId + "'", e);
+      throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
     } finally {
-      ddManager.releaseOrganizationSchema();
+      DBUtil.close(con);
+    }
+  }
+  
+  public List<ComponentInstLight> getComponentsInSpace(int spaceId) throws AdminException
+  {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      
+      //getting all components in given space
+      return ComponentDAO.getComponentsInSpace(con, spaceId);
+      
+    } catch (Exception e) {
+      throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  public List<String> getAllowedComponentIds(int userId, List<String> groupIds) throws AdminException
+  {
+    return getAllowedComponentIds(userId, groupIds, null);
+  }
+  
+  public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId) throws AdminException
+  {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      
+      if (StringUtil.isDefined(spaceId))
+      {
+        //getting componentIds available for user in given space (not subspaces)
+        return ComponentDAO.getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId);
+      }
+      else
+      {
+        //getting all componentIds available for user
+        return ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId);
+      }
+
+    } catch (Exception e) {
+      throw new AdminException("SpaceInstManager.getAllowedRootSpaceIds",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALLOWED_SPACEIDS", e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 

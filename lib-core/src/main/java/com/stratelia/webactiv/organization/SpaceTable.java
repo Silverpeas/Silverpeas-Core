@@ -206,82 +206,6 @@ public class SpaceTable extends Table {
       + " and   i.id = ?";
 
   /**
-   * Returns all the Root Space allowed to a given user.
-   */
-  public SpaceRow[] getAllRootSpacesOfUser(int userId)
-      throws AdminPersistenceException {
-    return (SpaceRow[]) getRows(SELECT_ALL_USER_ROOT_SPACES, userId).toArray(
-        new SpaceRow[0]);
-  }
-
-  static final private String SELECT_ALL_USER_ROOT_SPACES = "select "
-      + aliasColumns("ST_Space", SPACE_COLUMNS)
-      + " from ST_Space,ST_UserSet_User_Rel"
-      + " where ST_Space.id=userSetId and userSetType='S' and userId=?"
-      + " and ST_Space.domainFatherId is null"
-      + " and ST_Space.isPersonal is null"
-      + " and ST_Space.spaceStatus is null" + " union" + " SELECT "
-      + aliasColumns("S", SPACE_COLUMNS)
-      + " FROM   ST_UserSet_UserSet_Rel, ST_ComponentInstance C, ST_Space S"
-      + " WHERE subSetType = 'I' AND subSetId = C.id AND S.id = superSetId"
-      + " AND S.domainFatherId is null" + " AND S.spaceStatus is null"
-      + " AND S.isPersonal is null"
-      + " AND C.isPublic = 1" + " order by orderNum";
-
-  /**
-   * Returns all the Space allowed to a given user.
-   */
-  public SpaceRow[] getAllSpacesOfUser(int userId)
-      throws AdminPersistenceException {
-    return (SpaceRow[]) getRows(SELECT_ALL_USER_SPACES, userId).toArray(
-        new SpaceRow[0]);
-  }
-
-  /*
-   * static final private String SELECT_ALL_USER_SPACES = "select "+SPACE_COLUMNS +
-   * " from ST_Space,ST_UserSet_User_Rel" + " where id=userSetId and userSetType='S' and userId=?" +
-   * " order by ST_Space.orderNum";
-   */
-
-  static final private String SELECT_ALL_USER_SPACES = "select "
-      + aliasColumns("ST_Space", SPACE_COLUMNS)
-      + " from ST_UserSet_User_Rel, ST_Space"
-      + " where userSetType='S' and ST_Space.id = userSetId"
-      + " and ST_Space.isPersonal is null"
-      + " and ST_Space.spaceStatus is null" + " and userId = ?" + " union"
-      + " SELECT " + aliasColumns("S", SPACE_COLUMNS)
-      + " FROM   ST_UserSet_UserSet_Rel, ST_ComponentInstance C, ST_Space S"
-      + " WHERE subSetType = 'I' AND subSetId = C.id AND S.id = superSetId"
-      + " AND C.isPublic = 1" + " ORDER BY orderNum";
-
-  /**
-   * Returns all spaces allowed to a given user for a given space.
-   */
-  public SpaceRow[] getSubSpacesOfUser(int userId, int spaceId)
-      throws AdminPersistenceException {
-    int[] ids = new int[4];
-    ids[0] = userId;
-    ids[1] = spaceId;
-    ids[2] = spaceId;
-    ids[3] = spaceId;
-    return (SpaceRow[]) getRows(SELECT_USER_SUBSPACES, ids).toArray(
-        new SpaceRow[0]);
-  }
-
-  static final private String SELECT_USER_SUBSPACES = "select "
-      + aliasColumns("ST_Space", SPACE_COLUMNS)
-      + " from ST_Space, ST_UserSet_User_Rel, ST_UserSet_UserSet_Rel"
-      + " where ST_Space.id=userSetId and userSetType='S' and userId=?"
-      + " and superSetId=? and superSetType='S' and subSetType='S' and subSetId=id"
-      + " and ST_Space.domainFatherId = ?"
-      + " and ST_Space.spaceStatus is null" + " union" + " SELECT "
-      + aliasColumns("S", SPACE_COLUMNS)
-      + " FROM ST_UserSet_UserSet_Rel, ST_ComponentInstance C, ST_Space S"
-      + " WHERE subSetType = 'I' AND subSetId = C.id AND S.id = superSetId"
-      + " AND S.domainFatherId = ?" + " AND S.spaceStatus is null"
-      + " AND C.isPublic = 1" + " ORDER BY orderNum";
-
-  /**
    * Returns all the space ids having a given superSpace.
    */
   public String[] getDirectSubSpaceIds(int superSpaceId)
@@ -293,19 +217,6 @@ public class SpaceTable extends Table {
   static final private String SELECT_SUBSPACE_IDS = "select id from ST_Space"
       + " where domainFatherId = ?" + " and spaceStatus is null"
       + " order by orderNum";
-
-  /**
-   * Returns all the father space ids of given space
-   */
-  public String[] getAllFatherSpaceIds(int spaceId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_FATHER_SPACE_IDS, spaceId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ALL_FATHER_SPACE_IDS =
-      "select superSetId from ST_UserSet_UserSet_Rel"
-      + " where superSetType='S' and subSetType='S'" + " and subSetId = ?";
 
   /**
    * Inserts in the database a new space row.
@@ -323,13 +234,7 @@ public class SpaceTable extends Table {
     }
 
     insertRow(INSERT_SPACE, space);
-    organization.userSet.createUserSet("S", space.id);
-
-    if (superSpace != null) {
-      organization.userSet.addUserSetInUserSet("S", space.id, "S",
-          superSpace.id);
-    }
-
+    
     CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_SPACE, space.id,
         null, null);
   }
@@ -495,7 +400,7 @@ public class SpaceTable extends Table {
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACE");
     }
 
-    organization.userSet.removeUserSet("S", id);
+    //organization.userSet.removeUserSet("S", id);
     updateRelation(DELETE_SPACE, id);
   }
 

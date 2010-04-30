@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +49,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.cache.AdminCache;
+import com.stratelia.webactiv.beans.admin.cache.Space;
+import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
@@ -91,7 +94,6 @@ public class Admin extends Object {
   static private SpaceProfileInstManager m_SpaceProfileInstManager = new SpaceProfileInstManager();
   static private GroupManager m_GroupManager = new GroupManager();
   static private UserManager m_UserManager = new UserManager();
-  static private UserSetManager m_UserSetManager = new UserSetManager();
   static private DomainDriverManager m_DDManager = new DomainDriverManager();
   static private ProfiledObjectManager m_ProfiledObjectManager = new ProfiledObjectManager();
   static private GroupProfileInstManager m_GroupProfileInstManager = new GroupProfileInstManager();
@@ -112,6 +114,7 @@ public class Admin extends Object {
       "dd/MM/yyyy HH:mm:ss:S");
   // Cache management
   static private AdminCache m_Cache = new AdminCache();
+  // static private TreeCache treeCache = new TreeCache();
   // DB Connections Scheduled Resets
   static private ScheduledDBReset m_DBResetScheduler = null;
   public static final String basketSuffix = " (Restauré)";
@@ -170,6 +173,21 @@ public class Admin extends Object {
       if (m_spaceInstanciator == null) {
         m_spaceInstanciator = new SpaceInstanciateur(getAllComponents());
       }
+
+      // Init tree cache
+      try {
+        SilverTrace.info(MODULE_ADMIN, "admin.startServer",
+            "root.MSG_GEN_PARAM_VALUE", "Start filling tree cache...");
+        List<SpaceInstLight> spaces = m_SpaceInstManager.getAllSpaces(m_DDManager);
+        for (SpaceInstLight space : spaces) {
+          addSpaceInTreeCache(space);
+        }
+        SilverTrace.info(MODULE_ADMIN, "admin.startServer",
+            "root.MSG_GEN_PARAM_VALUE", "Tree cache filled !");
+      } catch (Exception e) {
+        SilverTrace.error("admin", "Constructor", "ERROR_WHEN_INITIALIZING_ADMIN", e);
+      }
+
     }
   }
 
@@ -177,7 +195,11 @@ public class Admin extends Object {
   // Start Server actions
   // -------------------------------------------------------------------------
   public void startServer() throws Exception {
-    m_DDManager.startServer(this, m_threadDelay);
+    try {
+      m_DDManager.startServer(this, m_threadDelay);
+    } catch (Exception e) {
+      SilverTrace.error(MODULE_ADMIN, "Admin.startServer", "ERROR_WHEN_STARTING_DOMAINS", e);
+    }
 
     // Group[] groups = getRootGroupsOfDomain("-1");
     Group[] groups = getSynchronizedGroups();
@@ -193,6 +215,26 @@ public class Admin extends Object {
     groupSynchroScheduler = new SynchroGroupScheduler();
     groupSynchroScheduler.initialize(m_groupSynchroCron, this,
         synchronizedGroupIds);
+  }
+
+  private void addSpaceInTreeCache(SpaceInstLight space) throws NumberFormatException,
+      AdminException {
+    Space spaceInCache = new Space();
+    spaceInCache.setSpace(space);
+
+    // add sorted components to space's cache
+    List<ComponentInstLight> components =
+        m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(space.getShortId()));
+    spaceInCache.setComponents(new HashSet<ComponentInstLight>(components));
+
+    // add sorted subSpaces to space's cache
+    /*
+     * spaceInCache.setSubspaces(new HashSet<SpaceInstLight>(getSubSpacesFromList(
+     * space.getShortId(), spaces)));
+     */
+    spaceInCache.setSubspaces(new HashSet<SpaceInstLight>(getSubSpaces(space.getShortId())));
+
+    TreeCache.addSpace(space.getShortId(), spaceInCache);
   }
 
   // -------------------------------------------------------------------------
@@ -287,6 +329,8 @@ public class Admin extends Object {
       // commit the transactions
       m_DDManager.commit();
       connectionProd.commit();
+
+      addSpaceInTreeCache(getSpaceInstLight(sSpaceInstId));
 
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst",
@@ -403,6 +447,7 @@ public class Admin extends Object {
         m_DDManager.commit();
       }
       m_Cache.opRemoveSpace(spaceInst);
+      TreeCache.removeSpace(sDriverSpaceId);
 
       // desindexation de l'espace
       deleteSpaceIndex(spaceInst);
@@ -642,6 +687,12 @@ public class Admin extends Object {
       m_SpaceInstManager.updateSpaceOrder(m_DDManager, sDriverSpaceId, orderNum);
       m_Cache.opUpdateSpace(m_SpaceInstManager.getSpaceInstById(m_DDManager,
           sDriverSpaceId));
+
+      // Update subspaces sort in TreeCache
+      SpaceInstLight space = TreeCache.getSpaceInstLight(sDriverSpaceId);
+      if (!space.isRoot()) {
+        TreeCache.setSubspaces(space.getFatherId(), getSubSpaces(space.getFatherId()));
+      }
     } catch (Exception e) {
       throw new AdminException("Admin.updateSpaceOrderNum",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACE",
@@ -1034,6 +1085,8 @@ public class Admin extends Object {
       m_DDManager.commit();
 
       m_Cache.opUpdateComponent(componentInst);
+      TreeCache.addComponent(getDriverComponentId(sComponentId),
+          getComponentInstLight(sComponentId));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.restoreComponentFromBasket",
@@ -1170,6 +1223,7 @@ public class Admin extends Object {
       }
       connectionProd.commit();
       m_Cache.opAddComponent(componentInst);
+      TreeCache.addComponent(sDriverComponentId, getComponentInstLight(componentId));
 
       // indexation du composant
       createComponentIndex(componentInst);
@@ -1222,6 +1276,9 @@ public class Admin extends Object {
       // Get the component to delete
       componentInst = getComponentInst(sDriverComponentId, true, null);
 
+      // Get the father id
+      String sFatherClientId = componentInst.getDomainFatherId();
+
       if (!definitive) {
         // delete the profiles instance
         for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
@@ -1234,9 +1291,6 @@ public class Admin extends Object {
       } else {
         connectionProd = openConnection(m_sWaProductionDb, m_sWaProductionUser,
             m_sWaProductionPswd, false);
-
-        // Get the father id
-        String sFatherClientId = componentInst.getDomainFatherId();
 
         // Uninstantiate the components
         String componentName = componentInst.getName();
@@ -1297,6 +1351,7 @@ public class Admin extends Object {
         m_DDManager.commit();
       }
       m_Cache.opRemoveComponent(componentInst);
+      TreeCache.removeComponent(getDriverSpaceId(sFatherClientId), sDriverComponentId);
 
       // desindexation du composant
       deleteComponentIndex(componentInst);
@@ -1574,20 +1629,21 @@ public class Admin extends Object {
           sDriverComponentId);
 
       // Remove links for the old spaceId
-      String currentSpaceId = getDriverSpaceId(oldSpaceId);
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
-          "root.MSG_GEN_PARAM_VALUE", "Remove Link space Father= "
-          + currentSpaceId);
-      m_DDManager.organization.userSet.removeUserSetFromUserSet("I", Integer
-          .parseInt(sDriverComponentId), "S", Integer.parseInt(getDriverSpaceId(currentSpaceId)));
+      // String currentSpaceId = getDriverSpaceId(oldSpaceId);
+      /*
+       * SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
+       * "Remove Link space Father= " + currentSpaceId);
+       * m_DDManager.organization.userSet.removeUserSetFromUserSet("I", Integer
+       * .parseInt(sDriverComponentId), "S", Integer.parseInt(getDriverSpaceId(currentSpaceId)));
+       */
 
       // Add links for the new spaceId
-      currentSpaceId = getDriverSpaceId(spaceId);
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
-          "root.MSG_GEN_PARAM_VALUE", "Add Link space Father= "
-          + currentSpaceId);
-      m_DDManager.organization.userSet.addUserSetInUserSet("I", Integer
-          .parseInt(sDriverComponentId), "S", Integer.parseInt(getDriverSpaceId(currentSpaceId)));
+      /*
+       * currentSpaceId = getDriverSpaceId(spaceId); SilverTrace.info(MODULE_ADMIN,
+       * "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE", "Add Link space Father= " +
+       * currentSpaceId); m_DDManager.organization.userSet.addUserSetInUserSet("I", Integer
+       * .parseInt(sDriverComponentId), "S", Integer.parseInt(getDriverSpaceId(currentSpaceId)));
+       */
 
       // Set new space
       componentInst.setDomainFatherId(getDriverSpaceId(spaceId));
@@ -1621,6 +1677,12 @@ public class Admin extends Object {
       // Remove component from the Cache
       m_Cache.resetSpaceInst();
       m_Cache.resetComponentInst();
+
+      // reset treecache list in old and new spaces
+      TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager
+          .getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
+      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager
+          .getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.moveComponentInst",
@@ -1744,12 +1806,12 @@ public class Admin extends Object {
 
   public String[] getProfilesByObjectAndUserId(int objectId, String objectType,
       String componentId, String userId) throws AdminException {
-    String[] profiles =
-        m_ProfiledObjectManager.getUserProfileNames(
-        m_DDManager, objectId, objectType, Integer.parseInt(getDriverComponentId(componentId)),
-        Integer.parseInt(userId));
 
-    return profiles;
+    List<String> groups = getAllGroupsOfUser(userId);
+
+    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer
+        .parseInt(getDriverComponentId(componentId)),
+        Integer.parseInt(userId), groups);
   }
 
   public boolean isObjectAvailable(String componentId, int objectId,
@@ -1757,8 +1819,7 @@ public class Admin extends Object {
     if (userId == null) {
       return true;
     }
-    return m_ProfiledObjectManager.isObjectAvailable(m_DDManager, Integer.parseInt(userId),
-        objectId, objectType, Integer.parseInt(getDriverComponentId(componentId)));
+    return getProfilesByObjectAndUserId(objectId, objectType, componentId, userId).length > 0;
   }
 
   public String addProfileInst(ProfileInst profileInst) throws AdminException {
@@ -2614,7 +2675,8 @@ public class Admin extends Object {
 
   public String[] getAllSubGroupIdsRecursively(String groupId)
       throws AdminException {
-    return m_GroupManager.getAllSubGroupIdsRecursively(m_DDManager, groupId);
+    List<String> groupIds = m_GroupManager.getAllSubGroupIdsRecursively(groupId);
+    return groupIds.toArray(new String[groupIds.size()]);
   }
 
   /**
@@ -3113,10 +3175,10 @@ public class Admin extends Object {
    * Uninstantiate the space Components
    */
   private void unInstantiateComponents(String userId, String[] asComponentIds,
-      String[] asComponentNames, String sSpaceId, Connection connectionProd)
-      throws AdminException {
-    try {
-      for (int nI = 0; nI < asComponentIds.length; nI++) {
+      String[] asComponentNames, String sSpaceId, Connection connectionProd) {
+
+    for (int nI = 0; nI < asComponentIds.length; nI++) {
+      try {
         SilverTrace.debug("admin", "Admin.instantiateComponents",
             "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId
             + " and component " + asComponentIds[nI]);
@@ -3126,11 +3188,13 @@ public class Admin extends Object {
         m_compoInstanciator.setComponentId(asComponentIds[nI]);
         m_compoInstanciator.setUserId(userId);
         m_compoInstanciator.unInstantiateComponentName(asComponentNames[nI]);
+      } catch (Exception e) {
+        SilverTrace.warn("admin", "Admin.unInstantiateComponents",
+            "admin.EX_ERR_UNINSTANTIATE_COMPONENTS", "Deleting data from component '" +
+            asComponentNames[nI] + "' failed", e);
       }
-    } catch (Exception e) {
-      throw new AdminException("Admin.unInstantiateComponents",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNINSTANTIATE_COMPONENTS", e);
     }
+
   }
 
   // -------------------------------------------------------------------------
@@ -3210,20 +3274,6 @@ public class Admin extends Object {
         "root.MSG_GEN_ENTER_METHOD", "component id: " + sDriverComponentId);
 
     return getComponentInstName(sDriverComponentId) + sDriverComponentId;
-  }
-
-  /**
-   * Converts driver component ids to client component ids
-   */
-  private String[] getClientComponentIds(String[] sDriverComponentIds)
-      throws Exception {
-    String[] asClientComponentIds = new String[sDriverComponentIds.length];
-
-    for (int nI = 0; nI < sDriverComponentIds.length; nI++) {
-      asClientComponentIds[nI] = getClientComponentId(sDriverComponentIds[nI]);
-    }
-
-    return asClientComponentIds;
   }
 
   // -------------------------------------------------------------------------
@@ -3365,7 +3415,11 @@ public class Admin extends Object {
 
   public UserDetail[] getAllUsersOfGroup(String groupId) throws AdminException {
     try {
-      return m_UserManager.getAllUsersOfGroup(m_DDManager, groupId);
+      List<String> groupIds = new ArrayList<String>();
+      groupIds.add(groupId);
+      groupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
+
+      return m_UserManager.getAllUsersOfGroups(groupIds);
     } catch (Exception e) {
       throw new AdminException("Admin.getAllUsersOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "Group Id : '"
@@ -3525,14 +3579,39 @@ public class Admin extends Object {
    * Get the spaces ids allowed for the given user Id
    */
   public String[] getUserSpaceIds(String sUserId) throws AdminException {
-    try {
-      // return m_UserManager.getAllowedSpaceIds(m_DDManager, sUserId);
-      return m_SpaceInstManager.getAllowedSpaceIds(m_DDManager, Integer.parseInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException("Admin.getUserSpaceIds",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SPACE_IDS",
-          "user Id : '" + sUserId + "'", e);
+    // TODO : interest of this method ?
+    return new String[0];
+    /*
+     * try { return m_SpaceInstManager.getAllowedSpaceIds(m_DDManager, Integer.parseInt(sUserId)); }
+     * catch (Exception e) { throw new AdminException("Admin.getUserSpaceIds",
+     * SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SPACE_IDS", "user Id : '" + sUserId
+     * + "'", e); }
+     */
+  }
+
+  private List<String> getAllGroupsOfUser(String userId) throws AdminException {
+    List<String> allGroupsOfUser = new ArrayList<String>();
+    String[] directGroupIds = m_GroupManager.getDirectGroupsOfUser(m_DDManager, userId);
+    for (int g = 0; g < directGroupIds.length; g++) {
+      Group group = m_GroupManager.getGroup(directGroupIds[g], false); // TODO: cacher les groupes
+      if (group != null) {
+        allGroupsOfUser.add(group.getId());
+        while (StringUtil.isDefined(group.getSuperGroupId())) {
+          group = m_GroupManager.getGroup(group.getSuperGroupId(), false);
+          if (group != null) {
+            allGroupsOfUser.add(group.getId());
+          }
+        }
+      }
     }
+    return allGroupsOfUser;
+  }
+
+  private List<String> getAllowedComponentIds(String userId) throws AdminException {
+    // getting all groups of users
+    List<String> allGroupsOfUser = getAllGroupsOfUser(userId);
+
+    return m_ComponentInstManager.getAllowedComponentIds(Integer.parseInt(userId), allGroupsOfUser);
   }
 
   /**
@@ -3540,14 +3619,85 @@ public class Admin extends Object {
    */
   public String[] getUserRootSpaceIds(String sUserId) throws AdminException {
     try {
-      // return m_UserManager.getAllowedRootSpaceIds(m_DDManager, sUserId);
-      return m_SpaceInstManager.getAllowedRootSpaceIds(m_DDManager, Integer.parseInt(sUserId));
+      List<String> result = new ArrayList<String>();
+
+      // getting all components availables
+      List<String> componentIds = getAllowedComponentIds(sUserId);
+
+      // getting all root spaces (sorted)
+      String[] rootSpaceIds = getAllRootSpaceIds();
+
+      // retain only allowed root spaces
+      for (int s = 0; s < rootSpaceIds.length; s++) {
+        String rootSpaceId = rootSpaceIds[s];
+        if (isSpaceContainsOneComponent(componentIds, getDriverSpaceId(rootSpaceId), true)) {
+          result.add(rootSpaceId);
+        }
+      }
+
+      return result.toArray(new String[result.size()]);
+
     } catch (Exception e) {
       throw new AdminException("Admin.getUserRootSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '"
           + sUserId + "'", e);
     }
+  }
+
+  public String[] getUserSubSpaceIds(String sUserId, String spaceId) throws AdminException {
+    try {
+      List<String> result = new ArrayList<String>();
+
+      // getting all components availables
+      List<String> componentIds = getAllowedComponentIds(sUserId);
+
+      // getting all subspaces
+      HashSet<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+      for (SpaceInstLight subspace : subspaces) {
+        if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
+          result.add(subspace.getShortId());
+        }
+      }
+
+      return result.toArray(new String[result.size()]);
+
+    } catch (Exception e) {
+      throw new AdminException("Admin.getUserRootSpaceIds",
+          SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '"
+          + sUserId + "'", e);
+    }
+  }
+
+  private boolean isSpaceContainsOneComponent(List<String> componentIds, String spaceId,
+      boolean checkInSubspaces)
+      throws Exception {
+    boolean find = false;
+
+    List<ComponentInstLight> components =
+        new ArrayList<ComponentInstLight>(TreeCache.getComponents(spaceId));
+
+    // Is there at least one component available ?
+    for (int c = 0; !find && c < components.size(); c++) {
+      find = componentIds.contains(components.get(c).getFullId());
+    }
+    if (find) {
+      return true;
+    } else {
+      if (checkInSubspaces) {
+        // check in subspaces
+        List<SpaceInstLight> subspaces =
+            new ArrayList<SpaceInstLight>(TreeCache.getSubSpaces(spaceId));
+        for (int s = 0; !find && s < subspaces.size(); s++) {
+          find =
+              isSpaceContainsOneComponent(componentIds, subspaces.get(s).getShortId(),
+              checkInSubspaces);
+        }
+      }
+    }
+
+    return find;
   }
 
   /**
@@ -3564,12 +3714,37 @@ public class Admin extends Object {
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", spaceId = "
         + spaceId);
     try {
-      return m_SpaceInstManager.getSubSpacesOfUser(m_DDManager, userId,
-          getDriverSpaceId(spaceId));
+      List<SpaceInstLight> result = new ArrayList<SpaceInstLight>();
+
+      // getting all components availables
+      List<String> componentIds = getAllowedComponentIds(userId);
+
+      // getting all subspaces
+      HashSet<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+      for (SpaceInstLight subspace : subspaces) {
+        if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
+          result.add(subspace);
+        }
+      }
+
+      return result;
     } catch (Exception e) {
       throw new AdminException("Admin.getSubSpacesOfUser",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SUBSPACES",
           "userId = " + userId + ", spaceId = " + spaceId, e);
+    }
+  }
+
+  public List<SpaceInstLight> getSubSpaces(String spaceId)
+      throws AdminException {
+    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = " +
+        spaceId);
+    try {
+      return m_SpaceInstManager.getSubSpaces(getDriverSpaceId(spaceId));
+    } catch (Exception e) {
+      throw new AdminException("Admin.getSubSpaces",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES",
+          "spaceId = " + spaceId, e);
     }
   }
 
@@ -3587,8 +3762,18 @@ public class Admin extends Object {
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", spaceId = "
         + spaceId);
     try {
-      return m_ComponentInstManager.getAvailCompoInSpace(m_DDManager,
-          getDriverSpaceId(spaceId), userId);
+      List<String> allowedComponentIds = getAllowedComponentIds(userId);
+
+      List<ComponentInstLight> allowedComponents = new ArrayList<ComponentInstLight>();
+
+      List<ComponentInstLight> allComponents =
+          TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(spaceId));
+      for (ComponentInstLight component : allComponents) {
+        if (allowedComponentIds.contains(component.getFullId())) {
+          allowedComponents.add(component);
+        }
+      }
+      return allowedComponents;
     } catch (Exception e) {
       throw new AdminException("Admin.getAvailCompoInSpace",
           SilverpeasException.ERROR,
@@ -3655,11 +3840,10 @@ public class Admin extends Object {
    * @author neysseri
    * @throws AdminException
    */
-  public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws AdminException {
+  public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception {
     SilverTrace.info("admin", "Admin.getUserSpaceTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId);
-    String[] rootSpaceIds = m_UserManager.getAllowedRootSpaceIds(m_DDManager,
-        userId);
+    String[] rootSpaceIds = getAllRootSpaceIds(userId);
     String rootSpaceId = null;
     List<SpaceInstLight> treeview = new ArrayList<SpaceInstLight>();
     for (int s = 0; s < rootSpaceIds.length; s++) {
@@ -3677,14 +3861,11 @@ public class Admin extends Object {
     SilverTrace.info("admin", "Admin.getUserSpaceSubTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId
         + ", spaceFatherId = " + spaceFatherId + ", level = " + level);
-    // String[] subSpaceIds =
-    // m_UserManager.getAllowedSpaceIdsByFatherId(m_DDManager, userId,
-    // spaceFatherId);
-    String[] subSpaceIds = m_SpaceInstManager.getAllowedSubSpaceIds(
-        m_DDManager, userId, spaceFatherId);
+
+    String[] subSpaceIds = getAllowedSubSpaceIds(userId, spaceFatherId);
     String subSpaceId = null;
     for (int s = 0; s < subSpaceIds.length; s++) {
-      subSpaceId = (String) subSpaceIds[s];
+      subSpaceId = subSpaceIds[s];
       treeview.add(getSpaceInstLight(subSpaceId, level));
 
       treeview = getUserSpaceSubTreeview(treeview, userId, subSpaceId,
@@ -3694,9 +3875,7 @@ public class Admin extends Object {
   }
 
   public String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) throws AdminException {
-    String[] subSpaceIds =
-        m_SpaceInstManager.getAllowedSubSpaceIds(m_DDManager, userId, spaceFatherId);
-    return subSpaceIds;
+    return getUserSubSpaceIds(userId, spaceFatherId);
   }
 
   private SpaceInstLight getSpaceInstLight(String spaceId)
@@ -3768,8 +3947,10 @@ public class Admin extends Object {
 
     try {
       // Get user manageable space ids from database
-      asManageableSpaceIds = m_GroupManager.getManageableSpaceIds(m_DDManager,
-          sGroupId);
+      List<String> groupIds = new ArrayList<String>();
+      groupIds.add(sGroupId);
+      List<String> manageableSpaceIds = m_SpaceInstManager.getManageableSpaceIds(null, groupIds);
+      asManageableSpaceIds = manageableSpaceIds.toArray(new String[manageableSpaceIds.size()]);
 
       // Inherits manageability rights for space children
       String[] childSpaceIds = null;
@@ -3816,8 +3997,9 @@ public class Admin extends Object {
       asManageableSpaceIds = m_Cache.getManageableSpaceIds(sUserId);
       if (asManageableSpaceIds == null) {
         // Get user manageable space ids from database
-        asManageableSpaceIds = m_UserManager.getManageableSpaceIds(m_DDManager,
-            sUserId);
+
+        List<String> groupIds = getAllGroupsOfUser(sUserId);
+        asManageableSpaceIds = m_UserManager.getManageableSpaceIds(sUserId, groupIds);
 
         // Inherits manageability rights for space children
         String[] childSpaceIds = null;
@@ -3859,7 +4041,19 @@ public class Admin extends Object {
       throws AdminException {
     try {
       // Get user manageable space ids from database
-      return m_UserManager.getManageableSpaceIds(m_DDManager, sUserId);
+      List<String> groupIds = getAllGroupsOfUser(sUserId);
+      String[] asManageableSpaceIds = m_UserManager.getManageableSpaceIds(sUserId, groupIds);
+
+      // retain only root spaces
+      List<String> manageableRootSpaceIds = new ArrayList<String>();
+      for (int s = 0; s < asManageableSpaceIds.length; s++) {
+        SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceIds[s]);
+        if (space.isRoot()) {
+          manageableRootSpaceIds.add(asManageableSpaceIds[s]);
+        }
+      }
+      return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);
+
     } catch (Exception e) {
       throw new AdminException("Admin.getUserManageableSpaceRootIds",
           SilverpeasException.ERROR,
@@ -3875,8 +4069,20 @@ public class Admin extends Object {
       String sParentSpaceId) throws AdminException {
     try {
       // Get user manageable space ids from database
-      return m_UserManager.getManageableSubSpaceIds(m_DDManager, sUserId,
-          getDriverSpaceId(sParentSpaceId));
+      List<String> groupIds = getAllGroupsOfUser(sUserId);
+      String[] asManageableSpaceIds = m_UserManager.getManageableSpaceIds(sUserId, groupIds);
+
+      String parentSpaceId = getDriverSpaceId(sParentSpaceId);
+
+      // retain only sub spaces
+      List<String> manageableRootSpaceIds = new ArrayList<String>();
+      for (int s = 0; s < asManageableSpaceIds.length; s++) {
+        SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceIds[s]);
+        if (parentSpaceId.equals(space.getFatherId())) {
+          manageableRootSpaceIds.add(asManageableSpaceIds[s]);
+        }
+      }
+      return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException("Admin.getManageableSubSpaceIds",
           SilverpeasException.ERROR,
@@ -3887,8 +4093,10 @@ public class Admin extends Object {
 
   public List<String> getUserManageableGroupIds(String sUserId) throws AdminException {
     try {
-      // Get user manageable group ids
-      return m_UserManager.getManageableGroupIds(m_DDManager, sUserId);
+      // get all groups of user
+      List<String> groupIds = getAllGroupsOfUser(sUserId);
+
+      return m_GroupManager.getManageableGroupIds(sUserId, groupIds);
     } catch (Exception e) {
       throw new AdminException("Admin.getUserManageableGroupIds",
           SilverpeasException.ERROR,
@@ -3913,9 +4121,15 @@ public class Admin extends Object {
 
       if (asAvailCompoIds == null) {
         // Get available component ids from database
-        asAvailCompoIds =
-            getClientComponentIds(m_ComponentInstManager.getAvailCompoIdsInSpace(m_DDManager,
-            spaceId, sUserId));
+        List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
+
+        List<String> componentIds = new ArrayList<String>();
+        for (ComponentInstLight component : components) {
+          componentIds.add(component.getFullId());
+        }
+
+        asAvailCompoIds = componentIds.toArray(new String[componentIds.size()]);
+
         // Store available component ids in cache
         m_Cache.putAvailCompoIds(spaceId, sUserId, asAvailCompoIds);
       }
@@ -3933,8 +4147,7 @@ public class Admin extends Object {
   public boolean isComponentAvailable(String componentId, String userId)
       throws AdminException {
     try {
-      return m_ComponentInstManager.isComponentAvailable(m_DDManager, userId,
-          getDriverComponentId(componentId));
+      return getAllowedComponentIds(userId).contains(componentId);
     } catch (Exception e) {
       throw new AdminException("Admin.isComponentAvailable",
           SilverpeasException.ERROR, "admin.EX_ERR_IS_COMPONENT_AVAILABLE",
@@ -3944,7 +4157,9 @@ public class Admin extends Object {
   }
 
   /**
-   * Get the component ids allowed for the given user Id in the given space
+   * Get ids of components allowed to user in given space (not in subspaces)
+   * @return an array of componentId (kmelia12, hyperlink145...)
+   * @throws AdminException
    */
   public String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId)
       throws AdminException {
@@ -3953,10 +4168,16 @@ public class Admin extends Object {
       String spaceId = getDriverSpaceId(sClientSpaceId);
 
       // Get available component ids from database
-      String[] asAvailCompoIds =
-          m_ComponentInstManager.getAvailCompoIdsInSpaceAtRoot(m_DDManager, spaceId, sUserId);
+      // String[] asAvailCompoIds =
+      // m_ComponentInstManager.getAvailCompoIdsInSpaceAtRoot(m_DDManager, spaceId, sUserId);
+      List<String> groupIds = getAllGroupsOfUser(sUserId);
+      List<String> asAvailCompoIds =
+          m_ComponentInstManager.getAllowedComponentIds(Integer.parseInt(sUserId), groupIds,
+          spaceId);
 
-      return getClientComponentIds(asAvailCompoIds);
+      return asAvailCompoIds.toArray(new String[asAvailCompoIds.size()]);
+
+      // return getClientComponentIds(asAvailCompoIds);
     } catch (Exception e) {
       throw new AdminException("Admin.getAvailCompoIds",
           SilverpeasException.ERROR,
@@ -3973,27 +4194,26 @@ public class Admin extends Object {
    * @param componentRootName
    * @return ArrayList of componentIds
    */
-  public ArrayList<String> getAvailCompoIdsAtRoot(String sClientSpaceId,
+  public List<String> getAvailCompoIdsAtRoot(String sClientSpaceId,
       String sUserId, String componentNameRoot) throws AdminException {
-    ArrayList<String> asAvailCompoIds = new ArrayList<String>();
 
     try {
       // Converts client space id to driver space id
       String spaceId = getDriverSpaceId(sClientSpaceId);
 
       // Get available component ids from database
-      String[] alCompoIds =
-          getClientComponentIds(m_ComponentInstManager.getAvailCompoIdsInSpaceAtRoot(m_DDManager,
-          spaceId, sUserId));
-      if (alCompoIds != null) {
-        for (int i = 0; i < alCompoIds.length; i++) {
-          ComponentInstLight compo = getComponentInstLight(alCompoIds[i]);
-          if (compo.getName().startsWith(componentNameRoot)) {
-            asAvailCompoIds.add(compo.getId());
-          }
+      HashSet<ComponentInstLight> components = TreeCache.getComponents(spaceId);
+
+      List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
+      List<String> result = new ArrayList<String>();
+      for (ComponentInstLight component : components) {
+        if (allowedComponentIds.contains(component.getFullId()) &&
+            component.getName().startsWith(componentNameRoot)) {
+          result.add(component.getFullId());
         }
       }
-      return asAvailCompoIds;
+
+      return result;
     } catch (Exception e) {
       throw new AdminException("Admin.getAvailCompoIdsAtRoot",
           SilverpeasException.ERROR,
@@ -4007,10 +4227,9 @@ public class Admin extends Object {
    */
   public String[] getAvailCompoIds(String sUserId) throws AdminException {
     try {
-      // return
-      // getClientComponentIds(m_ComponentInstManager.getAvailCompoIds(m_DDManager,
-      // sUserId));
-      return m_ComponentInstManager.getAvailCompoIds(m_DDManager, sUserId);
+      List<String> componentIds = getAllowedComponentIds(sUserId);
+
+      return componentIds.toArray(new String[componentIds.size()]);
     } catch (Exception e) {
       throw new AdminException("Admin.getAvailCompoIds",
           SilverpeasException.ERROR,
@@ -4025,14 +4244,15 @@ public class Admin extends Object {
   public String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId)
       throws AdminException {
     try {
-      // Converts client space id to driver space id
-      String spaceId = getDriverSpaceId(sClientSpaceId);
-
       // Get available component ids
-      String[] compoIds = m_ComponentInstManager.getAvailCompoIdsInSpace(
-          m_DDManager, spaceId, sUserId);
+      List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
 
-      return compoIds;
+      List<String> componentIds = new ArrayList<String>();
+      for (ComponentInstLight component : components) {
+        componentIds.add(component.getId());
+      }
+
+      return componentIds.toArray(new String[componentIds.size()]);
     } catch (Exception e) {
       throw new AdminException("Admin.getAvailDriverCompoIds",
           SilverpeasException.ERROR,
@@ -4043,8 +4263,18 @@ public class Admin extends Object {
 
   public String[] getComponentIdsByNameAndUserId(String sUserId,
       String sComponentName) throws AdminException {
-    return m_ComponentInstManager.getAvailCompoIds(m_DDManager, sUserId,
-        sComponentName);
+
+    List<String> result = new ArrayList<String>();
+
+    List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
+    for (String allowedComponentId : allowedComponentIds) {
+      ComponentInstLight componentInst = getComponentInstLight(allowedComponentId);
+
+      if (componentInst.getName().equals(sComponentName)) {
+        result.add(componentInst.getFullId());
+      }
+    }
+    return result.toArray(new String[result.size()]);
   }
 
   /**
@@ -4056,7 +4286,18 @@ public class Admin extends Object {
    */
   public List<ComponentInstLight> getAvailComponentInstLights(
       String userId, String componentName) throws AdminException {
-    return m_ComponentInstManager.getAvailComponentInstLights(m_DDManager, userId, componentName);
+
+    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+    List<String> allowedComponentIds = getAllowedComponentIds(userId);
+
+    for (String allowedComponentId : allowedComponentIds) {
+      ComponentInstLight componentInst = getComponentInstLight(allowedComponentId);
+
+      if (componentInst.getName().equalsIgnoreCase(componentName)) {
+        components.add(componentInst);
+      }
+    }
+    return components;
   }
 
   /**
@@ -4067,21 +4308,15 @@ public class Admin extends Object {
     ArrayList<CompoSpace> alCompoSpace = new ArrayList<CompoSpace>();
 
     try {
-      List<ComponentInstLight> availComponents =
-          m_ComponentInstManager.getAvailComponentInstLights(m_DDManager, sUserId, sComponentName);
+      List<ComponentInstLight> components = getAvailComponentInstLights(sUserId, sComponentName);
 
-      SpaceInstLight spaceInst = null;
-      for (int nI = 0; nI < availComponents.size(); nI++) {
-        // Get component instance
-        // ComponentInstLight componentInst = getComponentInstLight((String)
-        // alCompoIds.get(nI));
-        ComponentInstLight componentInst = (ComponentInstLight) availComponents.get(nI);
+      for (ComponentInstLight componentInst : components) {
 
         // Create new instance of CompoSpace
         CompoSpace compoSpace = new CompoSpace();
 
         // Set the component Id
-        compoSpace.setComponentId(componentInst.getId());
+        compoSpace.setComponentId(componentInst.getFullId());
 
         // Set the component label
         if (componentInst.getLabel().length() > 0) {
@@ -4093,7 +4328,7 @@ public class Admin extends Object {
         // Set the space label
         compoSpace.setSpaceId(getClientSpaceId(componentInst.getDomainFatherId()));
 
-        spaceInst = getSpaceInstLightById(componentInst.getDomainFatherId());
+        SpaceInstLight spaceInst = getSpaceInstLightById(componentInst.getDomainFatherId());
         compoSpace.setSpaceLabel(spaceInst.getName());
 
         alCompoSpace.add(compoSpace);
@@ -4126,34 +4361,17 @@ public class Admin extends Object {
   }
 
   /**
-   * Return all the user Ids for the given profile id
-   */
-  public String[] getUserIds(String sProfileId) throws AdminException // !!
-  // private
-  {
-    try {
-      return m_UserManager.getUsersOfProfile(m_DDManager, sProfileId);
-    } catch (Exception e) {
-      throw new AdminException("Admin.getUserIds", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USERS_OF_PROFILE", "profile Id : '" + sProfileId
-          + "'", e);
-    }
-  }
-
-  /**
    * Get all the profiles Id for the given user
    */
-  public String[] getProfileIds(String sUserId) throws AdminException // !!
-  // private
-  {
+  public String[] getProfileIds(String sUserId) throws AdminException {
     try {
       // Get the component instance from cache
       String[] asProfilesIds = m_Cache.getProfileIds(sUserId);
 
       if (asProfilesIds == null) {
         // retrieve value from database
-        asProfilesIds = m_ProfileInstManager.getProfileIdsOfUser(m_DDManager,
-            sUserId);
+        asProfilesIds =
+            m_ProfileInstManager.getProfileIdsOfUser(sUserId, getAllGroupsOfUser(sUserId));
 
         // store values in cache
         if (asProfilesIds != null) {
@@ -4171,9 +4389,7 @@ public class Admin extends Object {
   /**
    * Get all the profiles Id for the given group
    */
-  public String[] getProfileIdsOfGroup(String sGroupId) throws AdminException // !!
-  // private
-  {
+  public String[] getProfileIdsOfGroup(String sGroupId) throws AdminException {
     try {
       // retrieve value from database
       return m_ProfileInstManager.getProfileIdsOfGroup(m_DDManager, sGroupId);
@@ -4181,22 +4397,6 @@ public class Admin extends Object {
       throw new AdminException("Admin.getProfileIdsOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
           "group Id : '" + sGroupId + "'", e);
-    }
-  }
-
-  /**
-   * Get all the manager space profiles Id for the given user
-   */
-  public String[] getSpaceManagerProfileIds(String sUserId)
-      throws AdminException // !! private
-  {
-    try {
-      return m_SpaceProfileInstManager.getSpaceProfileIdsOfUser(m_DDManager,
-          sUserId);
-    } catch (Exception e) {
-      throw new AdminException("Admin.getProfiles", SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_SPACEPROFILES", "user Id : '" + sUserId + "'",
-          e);
     }
   }
 
@@ -4242,11 +4442,24 @@ public class Admin extends Object {
           getDriverSpaceId(sClientSpaceId));
 
       for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
-        if (componentInst.getProfileInst(nI).getName().equals(sProfile)
-            || bAllProfiles) {
-          String sProfileId = componentInst.getProfileInst(nI).getId();
-          String[] asUserIds = getUserIds(sProfileId);
-          addArrayList(alUserIds, asUserIds);
+        ProfileInst profile = componentInst.getProfileInst(nI);
+        if (profile != null) {
+          if (profile.getName().equals(sProfile) || bAllProfiles) {
+            // add direct users
+            alUserIds.addAll(profile.getAllUsers());
+
+            // add users of groups
+            List<String> groupIds = profile.getAllGroups();
+            for (String groupId : groupIds) {
+              List<String> subGroupIds = m_GroupManager.getAllSubGroupIdsRecursively(groupId);
+              if (subGroupIds != null && subGroupIds.size() > 0) {
+                UserDetail[] users = m_UserManager.getAllUsersOfGroups(subGroupIds);
+                for (int u = 0; u < users.length; u++) {
+                  alUserIds.add(users[u].getId());
+                }
+              }
+            }
+          }
         }
       }
 
@@ -4314,10 +4527,19 @@ public class Admin extends Object {
    * For use in userPanel : return the total number of users recursivly contained in a group
    */
   public int getAllSubUsersNumber(String sGroupId) throws AdminException {
-    if ((sGroupId == null) || (sGroupId.length() <= 0)) {
+    if (!StringUtil.isDefined(sGroupId)) {
       return m_UserManager.getUserNumber(m_DDManager);
     } else {
-      return m_UserSetManager.getAllSubUsersNumber(m_DDManager, "G", sGroupId);
+
+      // add users directly in this group
+      int nb = m_GroupManager.getNBUsersDirectlyInGroup(sGroupId);
+
+      // add users in sub groups
+      List<String> groupIds = m_GroupManager.getAllSubGroupIdsRecursively(sGroupId);
+      for (String groupId : groupIds) {
+        nb += m_GroupManager.getNBUsersDirectlyInGroup(groupId);
+      }
+      return nb;
     }
   }
 
@@ -4345,26 +4567,6 @@ public class Admin extends Object {
   // -------------------------------------------------------------------------
   // MISCELLANEOUS
   // -------------------------------------------------------------------------
-  /**
-   * Calculate intersection between both precedents arrays
-   */
-  private String[] intersection(String[] strArray1, String[] strArray2) {
-    boolean bFound = false;
-    ArrayList<String> alIntersection = new ArrayList<String>();
-
-    for (int nI = 0; nI < strArray1.length; nI++) {
-      bFound = false;
-      for (int nJ = 0; nJ < strArray2.length && !bFound; nJ++) {
-        if (strArray1[nI].equals(strArray2[nJ])) {
-          alIntersection.add(strArray1[nI]);
-          bFound = true;
-        }
-      }
-    }
-
-    return (String[]) alIntersection.toArray(new String[0]);
-  }
-
   /**
    * Get the Ids of the administrators
    */
@@ -4469,16 +4671,6 @@ public class Admin extends Object {
     return al;
   }
 
-  private void addArrayList(ArrayList<String> al, String[] as) {
-    if (as == null) {
-      return;
-    }
-
-    for (int nI = 0; nI < as.length; nI++) {
-      al.add(as[nI]);
-    }
-  }
-
   // -------------------------------------------------------------------
   // RE-INDEXATION
   // -------------------------------------------------------------------
@@ -4496,8 +4688,7 @@ public class Admin extends Object {
    */
   public String[] getAllSubSpaceIds(String sSpaceId, String sUserId)
       throws Exception {
-    return intersection(getAllSubSpaceIds(sSpaceId),
-        getClientSpaceIds(getUserSpaceIds(sUserId)));
+    return getClientSpaceIds(getUserSubSpaceIds(sUserId, sSpaceId));
   }
 
   /**
@@ -4523,8 +4714,14 @@ public class Admin extends Object {
    * Return all the componentIds recursively in the subspaces available in webactiv given a space id
    */
   public String[] getAllComponentIdsRecur(String sSpaceId) throws Exception {
-    return getClientComponentIds(m_ComponentInstManager.getAllCompoIdsInSpace(
-        m_DDManager, getDriverSpaceId(sSpaceId)));
+    List<ComponentInstLight> components =
+        TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(sSpaceId));
+
+    List<String> componentIds = new ArrayList<String>();
+    for (ComponentInstLight component : components) {
+      componentIds.add(component.getFullId());
+    }
+    return componentIds.toArray(new String[componentIds.size()]);
   }
 
   /**
@@ -4573,8 +4770,11 @@ public class Admin extends Object {
     ArrayList<String> alCompoIds = new ArrayList<String>();
     SpaceInst spaceInst = getSpaceInstById(sSpaceId);
 
+    getComponentIdsByNameAndUserId(sUserId, componentNameRoot);
+
     // Get components in the root of the space
     if (inCurrentSpace) {
+
       String[] componentIds = getAvailCompoIdsAtRoot(sSpaceId, sUserId);
       if (componentIds != null) {
         for (int nJ = 0; nJ < componentIds.length; nJ++) {
@@ -6029,230 +6229,90 @@ public class Admin extends Object {
   }
 
   // -------------------------------------------------------------------------
-  // RECOVERY TOOLS
-  // -------------------------------------------------------------------------
-  public int recurseRecoverChildrenGroups(String sGroupFatherId)
-      throws AdminException {
-    int linkCount = 0;
-    String[] asChildrenGroupIds = m_GroupManager.getAllSubGroupIds(m_DDManager,
-        sGroupFatherId);
-    for (int nI = 0; nI < asChildrenGroupIds.length; nI++) {
-      linkCount++;
-      m_UserSetManager.addUserSetRelation(m_DDManager, "G", sGroupFatherId,
-          "G", asChildrenGroupIds[nI]);
-      linkCount += recurseRecoverChildrenGroups(asChildrenGroupIds[nI]);
-    }
-
-    return linkCount;
-  }
-
-  public void recoverUserSetTables() throws AdminException {
-    try {
-      String m_sDriverId = null;
-      int userSetCount = 0;
-      int linkCount = 0;
-
-      // Start transaction
-      m_DDManager.startTransaction(false);
-
-      // Delete all existing relation
-      m_UserSetManager.resetAll(m_DDManager);
-
-      // Step 0 : Build single userSets G
-      String[] asGroupIds = getAllGroupIds();
-      for (int nI = 0; nI < asGroupIds.length; nI++) {
-        m_UserSetManager.addUserSet(m_DDManager, "G", asGroupIds[nI]);
-        userSetCount++;
-      }
-
-      // Step 1 : build link G <--> G
-      String[] asRootGroupIds = m_GroupManager.getAllRootGroupIds(m_DDManager);
-      for (int nI = 0; nI < asRootGroupIds.length; nI++) {
-        linkCount += recurseRecoverChildrenGroups(asRootGroupIds[nI]);
-      }
-
-      // Step 2 : build link G <--> U
-      for (int nI = 0; nI < asGroupIds.length; nI++) {
-        Group group = getGroup(asGroupIds[nI]);
-        String[] asUserIds = group.getUserIds();
-        for (int nJ = 0; nJ < asUserIds.length; nJ++) {
-          m_UserSetManager.addUserRelation(m_DDManager, "G", asGroupIds[nI],
-              asUserIds[nJ]);
-          linkCount++;
-        }
-      }
-
-      // Step 3 : build links S <--> S
-      String[] asSpaceIds = getAllSpaceIds();
-
-      // Build single userSets S
-      for (int nI = 0; nI < asSpaceIds.length; nI++) {
-        m_sDriverId = getDriverSpaceId(asSpaceIds[nI]);
-        m_UserSetManager.addUserSet(m_DDManager, "S", m_sDriverId);
-        userSetCount++;
-      }
-
-      for (int nI = 0; nI < asSpaceIds.length; nI++) {
-        SpaceInst m_SpaceInst = getSpaceInstById(asSpaceIds[nI]);
-        if (m_SpaceInst != null && !m_SpaceInst.getDomainFatherId().equals("0")) {
-          m_sDriverId = getDriverSpaceId(m_SpaceInst.getId());
-          m_UserSetManager.addUserSetRelation(m_DDManager, "S", m_SpaceInst.getDomainFatherId(),
-              "S", m_sDriverId);
-          linkCount++;
-        }
-      }
-
-      // Step 4 : build links S <--> M
-      for (int nI = 0; nI < asSpaceIds.length; nI++) {
-        SpaceInst m_SpaceInst = getSpaceInstById(asSpaceIds[nI]);
-        m_sDriverId = getDriverSpaceId(m_SpaceInst.getId());
-
-        // Get all the space profile ids of space
-        String[] asSpaceProfileIds = m_SpaceInstManager.getAllSpaceProfileIds(
-            m_DDManager, m_sDriverId);
-        if (asSpaceProfileIds != null && asSpaceProfileIds.length > 0) {
-          for (int nJ = 0; nJ < asSpaceProfileIds.length; nJ++) {
-            SpaceProfileInst m_SpaceProfileInst = getSpaceProfileInst(asSpaceProfileIds[nJ]);
-            if (m_SpaceProfileInst != null) {
-              m_UserSetManager.addUserSet(m_DDManager, "M", m_SpaceProfileInst.getId());
-              m_UserSetManager.addUserSetRelation(m_DDManager, "S",
-                  m_sDriverId, "M", m_SpaceProfileInst.getId());
-              linkCount++;
-              userSetCount++;
-
-              for (int nL = 0; nL < m_SpaceProfileInst.getNumGroup(); nL++) {
-                String sGroupId = m_SpaceProfileInst.getGroup(nL);
-                m_UserSetManager.addUserSetRelation(m_DDManager, "M",
-                    asSpaceProfileIds[nJ], "G", sGroupId);
-                linkCount++;
-              }
-
-              for (int nM = 0; nM < m_SpaceProfileInst.getNumUser(); nM++) {
-                String sUserId = m_SpaceProfileInst.getUser(nM);
-                m_UserSetManager.addUserRelation(m_DDManager, "M",
-                    asSpaceProfileIds[nJ], sUserId);
-                linkCount++;
-              }
-            }
-          }
-        }
-      }
-
-      // Step 5 : build links S <--> I and I <--> R
-      for (int nI = 0; nI < asSpaceIds.length; nI++) {
-        SpaceInst m_SpaceInst = getSpaceInstById(asSpaceIds[nI]);
-        m_sDriverId = getDriverSpaceId(m_SpaceInst.getId());
-
-        // get all the components
-        ArrayList<ComponentInst> alCompoInst = m_SpaceInst.getAllComponentsInst();
-        for (int nJ = 0; nJ < alCompoInst.size(); nJ++) {
-          ComponentInst m_ComponentInst = alCompoInst.get(nJ);
-          if (m_ComponentInst != null) {
-            String sCompoId =
-                getTableClientComponentIdFromClientComponentId(m_ComponentInst.getId());
-            m_UserSetManager.addUserSet(m_DDManager, "I", sCompoId);
-            m_UserSetManager.addUserSetRelation(m_DDManager, "S", m_sDriverId,
-                "I", sCompoId);
-            linkCount++;
-            userSetCount++;
-
-            // get all profile inst
-            ArrayList<ProfileInst> al_ProfileInst = m_ComponentInst.getAllProfilesInst();
-            for (int nK = 0; nK < al_ProfileInst.size(); nK++) {
-              ProfileInst m_ProfileInst = al_ProfileInst.get(nK);
-              if (m_ProfileInst != null) {
-                String sProfileId = m_ProfileInst.getId();
-                m_UserSetManager.addUserSet(m_DDManager, "R", sProfileId);
-                m_UserSetManager.addUserSetRelation(m_DDManager, "I", sCompoId,
-                    "R", sProfileId);
-                linkCount++;
-                userSetCount++;
-
-                for (int nL = 0; nL < m_ProfileInst.getNumGroup(); nL++) {
-                  String sGroupId = m_ProfileInst.getGroup(nL);
-                  m_UserSetManager.addUserSetRelation(m_DDManager, "R",
-                      sProfileId, "G", sGroupId);
-                  linkCount++;
-                }
-
-                for (int nM = 0; nM < m_ProfileInst.getNumUser(); nM++) {
-                  String sUserId = m_ProfileInst.getUser(nM);
-                  m_UserSetManager.addUserRelation(m_DDManager, "R",
-                      sProfileId, sUserId);
-                  linkCount++;
-                }
-              }
-            }
-
-            // get object profiles
-            List<ProfileInst> objectProfiles = m_ProfiledObjectManager.getProfiles(
-                m_DDManager, Integer.parseInt(sCompoId));
-            List<String> objectIds = new ArrayList<String>();
-            for (int o = 0; o < objectProfiles.size(); o++) {
-              ProfileInst objectProfile = objectProfiles.get(o);
-              if (objectProfile != null) {
-                String objectId = Integer.toString(objectProfile.getObjectId());
-                if (!objectIds.contains(objectId)) {
-                  m_UserSetManager.addUserSet(m_DDManager, "O", Integer.toString(objectProfile
-                      .getObjectId()));
-                  objectIds.add(objectId);
-                  userSetCount++;
-                }
-                m_UserSetManager.addUserSet(m_DDManager, "R", objectProfile.getId());
-                m_UserSetManager.addUserSetRelation(m_DDManager, "O", objectId,
-                    "R", objectProfile.getId());
-                linkCount++;
-                userSetCount++;
-
-                for (int nL = 0; nL < objectProfile.getNumGroup(); nL++) {
-                  String sGroupId = objectProfile.getGroup(nL);
-                  m_UserSetManager.addUserSetRelation(m_DDManager, "R",
-                      objectProfile.getId(), "G", sGroupId);
-                  linkCount++;
-                }
-
-                for (int nM = 0; nM < objectProfile.getNumUser(); nM++) {
-                  String sUserId = objectProfile.getUser(nM);
-                  m_UserSetManager.addUserRelation(m_DDManager, "R",
-                      objectProfile.getId(), sUserId);
-                  linkCount++;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Commit the transaction
-      m_DDManager.commit();
-
-      // Reset the cache
-      SilverTrace.info("admin", "Admin.recoverUserSetTables",
-          "root.MSG_GEN_RETURN_VALUE", "userSets created : " + userSetCount);
-      SilverTrace.info("admin", "Admin.recoverUserSetTables",
-          "root.MSG_GEN_RETURN_VALUE", "links created : " + linkCount);
-    } catch (Exception e) {
-      rollback();
-      throw new AdminException("Admin.recoverUserSetTables",
-          SilverpeasException.ERROR, "admin.EX_ERR_RECOVER_USERSETS", e);
-    } finally {
-      // Reset the cache
-      m_Cache.resetCache();
-    }
-  }
-
-  // -------------------------------------------------------------------------
   // For SelectionPeas
   // -------------------------------------------------------------------------
   public String[] searchUsersIds(String sGroupId, String componentId,
-      String[] profileId, UserDetail modelUser) throws AdminException {
+      String[] profileIds, UserDetail modelUser) throws AdminException {
     try {
-      return m_UserManager.searchUsersIds(m_DDManager, sGroupId,
-          getDriverComponentId(componentId), profileId, modelUser);
+      List<String> userIds = new ArrayList<String>();
+      if (StringUtil.isDefined(sGroupId)) {
+        // search users in group and subgroups
+        UserDetail[] users = getAllUsersOfGroup(sGroupId);
+        for (UserDetail user : users) {
+          userIds.add(user.getId());
+        }
+        if (userIds.size() == 0) {
+          userIds = null;
+        }
+      } else if (profileIds != null && profileIds.length > 0) {
+        // search users in profiles
+        for (int p = 0; p < profileIds.length; p++) {
+          ProfileInst profile =
+              m_ProfileInstManager.getProfileInst(m_DDManager, profileIds[p], null);
+
+          // add users directly attach to profile
+          userIds.addAll(profile.getAllUsers());
+
+          // add users indirectly attach to profile (groups attached to profile)
+          List<String> groupIds = profile.getAllGroups();
+          List<String> allGroupIds = new ArrayList<String>();
+          for (String groupId : groupIds) {
+            allGroupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
+          }
+          userIds.addAll(m_UserManager.getAllUserIdsOfGroups(allGroupIds));
+        }
+        if (userIds.size() == 0) {
+          userIds = null;
+        }
+      } else if (StringUtil.isDefined(componentId)) {
+        // search users in component
+        userIds.addAll(getUserIdsForComponent(componentId));
+        if (userIds.size() == 0) {
+          userIds = null;
+        }
+      } else {
+        // get all users
+        userIds = new ArrayList<String>();
+      }
+
+      if (userIds == null) {
+        return new String[0];
+      } else {
+        return m_UserManager.searchUsersIds(m_DDManager, userIds, modelUser);
+      }
     } catch (Exception e) {
       throw new AdminException("Admin.searchUsersIds",
           SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND", e);
     }
+  }
+
+  private List<String> getUserIdsForComponent(String componentId) throws AdminException {
+    List<String> userIds = new ArrayList<String>();
+
+    ComponentInst component = getComponentInst(componentId);
+    List<ProfileInst> profiles = component.getAllProfilesInst();
+    for (ProfileInst profile : profiles) {
+      userIds.addAll(getUserIdsForComponentProfile(profile));
+    }
+
+    return userIds;
+  }
+
+  private List<String> getUserIdsForComponentProfile(ProfileInst profile) throws AdminException {
+    List<String> userIds = new ArrayList<String>();
+
+    // add users directly attach to profile
+    userIds.addAll(profile.getAllUsers());
+
+    // add users indirectly attach to profile (groups attached to profile)
+    List<String> groupIds = profile.getAllGroups();
+    List<String> allGroupIds = new ArrayList<String>();
+    for (String groupId : groupIds) {
+      allGroupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
+    }
+    userIds.addAll(m_UserManager.getAllUserIdsOfGroups(allGroupIds));
+
+    return userIds;
   }
 
   public String[] searchGroupsIds(boolean isRootGroup, String componentId,

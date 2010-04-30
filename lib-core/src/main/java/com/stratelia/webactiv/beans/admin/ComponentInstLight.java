@@ -248,5 +248,39 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     else
       return getDescription();
   }
+  
+  public String getFullId()
+  {
+    return getName()+getId();
+  }
+
+  public void setName(String name) {
+    m_sName = name;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((m_sId == null) ? 0 : m_sId.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ComponentInstLight other = (ComponentInstLight) obj;
+    if (m_sId == null) {
+      if (other.m_sId != null)
+        return false;
+    } else if (!m_sId.equals(other.m_sId))
+      return false;
+    return true;
+  }
 
 }

@@ -277,21 +277,6 @@ public class UserTable extends Table {
       + " order by lastName";
 
   /**
-   * Returns all the Users of a group and its sub-groups.
-   */
-  public UserRow[] getAllUsersOfGroup(int groupId)
-      throws AdminPersistenceException {
-    return (UserRow[]) getRows(SELECT_ALL_USERS_IN_GROUP, groupId).toArray(
-        new UserRow[0]);
-  }
-
-  static final private String SELECT_ALL_USERS_IN_GROUP = "select "
-      + USER_COLUMNS
-      + " from ST_User,ST_UserSet_User_Rel"
-      + " where id=userId and userSetType='G' and userSetId=? and accessLevel <> 'R'"
-      + " order by lastName";
-
-  /**
    * Returns all the Users having directly a given role.
    */
   public UserRow[] getDirectUsersOfUserRole(int userRoleId)
@@ -320,11 +305,7 @@ public class UserTable extends Table {
       + " order by lastName";
 
   /**
-   * Returns all the User ids having directly a given space role.
-   */
-
-  /**
-   * Returns all the Users havinga given domain id.
+   * Returns all the Users having a given domain id.
    */
   public UserRow[] getAllUserOfDomain(int domainId)
       throws AdminPersistenceException {
@@ -350,33 +331,6 @@ public class UserTable extends Table {
 
   static final private String SELECT_ALL_USER_IDS_IN_DOMAIN =
       "select id from ST_User where domainId=? and accessLevel <> 'R' order by lastName";
-
-  /**
-   * Returns all the Users having recursively a given role.
-   */
-  public UserRow[] getAllUsersOfUserRole(int userRoleId)
-      throws AdminPersistenceException {
-    return (UserRow[]) getRows(SELECT_ALL_USERS_IN_USERROLE, userRoleId)
-        .toArray(new UserRow[0]);
-  }
-
-  static final private String SELECT_ALL_USERS_IN_USERROLE = "select "
-      + USER_COLUMNS
-      + " from ST_User,ST_UserSet_User_Rel"
-      + " where id=userId and userSetType='R' and userSetId=? and accessLevel <> 'R'";
-
-  /**
-   * Returns all the User ids having recursively a given role.
-   */
-  public String[] getAllUserIdsOfUserRole(int userRoleId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_USER_IDS_IN_USERROLE, userRoleId)
-        .toArray(new String[0]);
-  }
-
-  static final private String SELECT_ALL_USER_IDS_IN_USERROLE =
-      "select id from ST_User,ST_UserSet_User_Rel"
-      + " where id=userId and userSetType='R' and userSetId=? and accessLevel <> 'R'";
 
   /**
    * Returns all the Users having directly a given space userRole.
@@ -430,154 +384,19 @@ public class UserTable extends Table {
       "select id from ST_User, ST_GroupUserRole_User_Rel"
       + " where id = userId and groupUserRoleId = ? and accessLevel <> 'R'";
 
-  /**
-   * Returns all the space ids allowed by the given user.
-   */
-  public String[] getAllSpaceIds(int userId) throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_SPACE_IDS, userId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ALL_SPACE_IDS =
-      "select userSetId from ST_UserSet_User_Rel, ST_Space"
-      + " where userSetType='S' and ST_Space.id = userSetId"
-      + " and spaceStatus is null"
-      + " and userId = ?"
-      + " order by ST_Space.orderNum";
-
-  public String[] getRootSpaceIds(int userId) throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ROOT_SPACE_IDS, userId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ROOT_SPACE_IDS = "select S.id "
-      + " from ST_UserSet_User_Rel U, ST_Space S" + " where U.userSetType='S'"
-      + " and S.domainFatherId IS NULL" + " and S.id = U.userSetId"
-      + " and userId = ?" + " and S.spaceStatus is null"
-      + " order by S.orderNum";
-
-  public String[] getSpaceIdsByFatherId(int userId, int fatherId)
+  public String[] searchUsersIds(List<String> userIds, UserRow userModel)
       throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_SPACE_IDS_BY_FATHERID,
-        new int[] { userId, fatherId }).toArray(new String[0]);
-  }
-
-  static final private String SELECT_SPACE_IDS_BY_FATHERID = "select S.id "
-      + " from ST_UserSet_User_Rel U, ST_Space S" + " where U.userSetType='S'"
-      + " and S.id = U.userSetId" + " and userId = ?"
-      + " and S.domainFatherId = ?" + " and S.spaceStatus is null"
-      + " order by S.orderNum";
-
-  /**
-   * Returns all the root space ids allowed by the given user.
-   */
-  public String[] getAllRootSpaceIds(int userId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_ROOTSPACE_IDS, userId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ALL_ROOTSPACE_IDS =
-      "select userSetId from ST_UserSet_User_Rel, ST_Space"
-      + " where userSetType='S' and ST_Space.id = userSetId"
-      + " and userId = ?"
-      + " and ST_Space.domainFatherId is null"
-      + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
-
-  /**
-   * Returns all the space ids manageable by the given user.
-   */
-  public String[] getManageableSubSpaceIds(int userId, int parentSpaceId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_MANAGEABLE_SUB_SPACE_IDS,
-        new int[] { userId, parentSpaceId }).toArray(new String[0]);
-  }
-
-  static final private String SELECT_ALL_MANAGEABLE_SUB_SPACE_IDS =
-      "select distinct ST_SpaceUserRole.spaceId, ST_Space.orderNum from ST_UserSet_User_Rel, ST_SpaceUserRole, ST_Space, ST_UserSet_UserSet_Rel"
-          + " where ST_UserSet_User_Rel.userSetType='M'"
-          + " and ST_SpaceUserRole.id=ST_UserSet_User_Rel.userSetId"
-          + " and ST_SpaceUserRole.spaceId = ST_Space.id"
-          + " and ST_UserSet_User_Rel.userId = ?"
-          + " and ST_UserSet_UserSet_Rel.superSetType = 'S'"
-          + " and ST_UserSet_UserSet_Rel.superSetId = ?"
-          + " and ST_UserSet_UserSet_Rel.subSetType = 'S'"
-          + " and ST_UserSet_UserSet_Rel.subSetId = ST_Space.id"
-          + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
-
-  /**
-   * Returns all the space ids manageable by the given user.
-   */
-  public String[] getManageableSpaceIds(int userId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_MANAGEABLE_SPACE_IDS, userId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_ALL_MANAGEABLE_SPACE_IDS =
-      "select distinct spaceId, ST_Space.orderNum from ST_UserSet_User_Rel, ST_SpaceUserRole, ST_Space"
-          + " where userSetType='M'"
-          + " and ST_SpaceUserRole.id=userSetId"
-          + " and userId = ?"
-          + " and spaceId = ST_Space.id"
-          + " and ST_Space.spaceStatus is null" + " order by ST_Space.orderNum";
-
-  /**
-   * Returns all the group ids manageable by the given user.
-   */
-  public List<String> getManageableGroupIds(int userId)
-      throws AdminPersistenceException {
-    return getIds(SELECT_ALL_MANAGEABLE_GROUP_IDS, userId);
-  }
-
-  static final private String SELECT_ALL_MANAGEABLE_GROUP_IDS =
-      "select distinct ST_Group.id from ST_UserSet_User_Rel, ST_GroupUserRole, ST_Group"
-      + " where userSetType='H'"
-      + " and ST_GroupUserRole.id=userSetId"
-      + " and userId = ?" + " and groupId = ST_Group.id";
-
-  public String[] searchUsersIds(int groupId, int componentId, int[] aRoleId,
-      UserRow userModel) throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
-    StringBuffer theQuery = null;
     Vector<Integer> ids = new Vector<Integer>();
     Vector<String> params = new Vector<String>();
 
     // WARNING !!! Ids must all be set before Params !!!!
 
-    if (groupId >= 0) {
-      theQuery = new StringBuffer(SELECT_SEARCH_USERSID_IN_GROUP);
-      ids.add(new Integer(groupId));
-      theQuery
-          .append(" WHERE ((ST_User.id = userId) AND (ST_UserSet_User_Rel.userSetType = 'G') AND (ST_UserSet_User_Rel.userSetId = ?)");
+    StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERSID);
+    if (userIds != null && userIds.size() > 0) {
+      theQuery.append(" WHERE (ST_User.id IN (" + list2String(userIds) + ") ");
       concatAndOr = true;
-    } else if ((aRoleId != null) && (aRoleId.length > 0)) {
-      theQuery = new StringBuffer(SELECT_SEARCH_USERSID_IN_ROLE);
-      theQuery
-          .append(" WHERE ((ST_User.id = ST_UserSet_User_Rel.userId) AND (ST_UserSet_User_Rel.userSetType = 'R') AND ");
-      if (aRoleId.length > 1) {
-        theQuery.append("(");
-      }
-      for (int i = 0; i < aRoleId.length; i++) {
-        ids.add(new Integer(aRoleId[i]));
-        if (i > 0) {
-          theQuery.append(" OR ");
-        }
-        theQuery.append("(ST_UserSet_User_Rel.userSetId = ?)");
-      }
-      if (aRoleId.length > 1) {
-        theQuery.append(")");
-      }
-      concatAndOr = true;
-    } else if (componentId >= 0) {
-      theQuery = new StringBuffer(SELECT_SEARCH_USERSID_IN_COMPONENT);
-      ids.add(new Integer(componentId));
-      theQuery
-          .append(" WHERE ((ST_User.id = ST_UserSet_User_Rel.userId) AND (ST_UserSet_User_Rel.userSetType = 'I') AND (ST_UserSet_User_Rel.userSetId = ?)");
-      concatAndOr = true;
-    } else {
-      theQuery = new StringBuffer(SELECT_SEARCH_USERSID);
     }
 
     concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id",
@@ -605,6 +424,7 @@ public class UserTable extends Table {
     concatAndOr =
         addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer",
         concatAndOr, andOr);
+    
     if (concatAndOr) {
       theQuery.append(") AND (accessLevel <> 'R')");
     } else {
@@ -620,6 +440,45 @@ public class UserTable extends Table {
     return getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
         new String[0]);
   }
+
+  /*
+   * public String[] searchUsersIds(int groupId, int componentId, int[] aRoleId, UserRow userModel)
+   * throws AdminPersistenceException { boolean concatAndOr = false; String andOr = ") AND (";
+   * StringBuffer theQuery = null; Vector<Integer> ids = new Vector<Integer>(); Vector<String>
+   * params = new Vector<String>(); // WARNING !!! Ids must all be set before Params !!!! if
+   * (groupId >= 0) { theQuery = new StringBuffer(SELECT_SEARCH_USERSID_IN_GROUP); ids.add(new
+   * Integer(groupId)); theQuery.append(
+   * " WHERE ((ST_User.id = userId) AND (ST_UserSet_User_Rel.userSetType = 'G') AND (ST_UserSet_User_Rel.userSetId = ?)"
+   * ); concatAndOr = true; } else if ((aRoleId != null) && (aRoleId.length > 0)) { theQuery = new
+   * StringBuffer(SELECT_SEARCH_USERSID_IN_ROLE); theQuery.append(
+   * " WHERE ((ST_User.id = ST_UserSet_User_Rel.userId) AND (ST_UserSet_User_Rel.userSetType = 'R') AND "
+   * ); if (aRoleId.length > 1) { theQuery.append("("); } for (int i = 0; i < aRoleId.length; i++) {
+   * ids.add(new Integer(aRoleId[i])); if (i > 0) { theQuery.append(" OR "); }
+   * theQuery.append("(ST_UserSet_User_Rel.userSetId = ?)"); } if (aRoleId.length > 1) {
+   * theQuery.append(")"); } concatAndOr = true; } else if (componentId >= 0) { theQuery = new
+   * StringBuffer(SELECT_SEARCH_USERSID_IN_COMPONENT); ids.add(new Integer(componentId)); theQuery
+   * .append(
+   * " WHERE ((ST_User.id = ST_UserSet_User_Rel.userId) AND (ST_UserSet_User_Rel.userSetType = 'I') AND (ST_UserSet_User_Rel.userSetId = ?)"
+   * ); concatAndOr = true; } else { theQuery = new StringBuffer(SELECT_SEARCH_USERSID); }
+   * concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id", concatAndOr, andOr); if
+   * (userModel.domainId >= 0) { // users are not bound to "domaine mixte" concatAndOr =
+   * addIdToQuery(ids, theQuery, userModel.domainId, "ST_User.domainId", concatAndOr, andOr); }
+   * concatAndOr = addParamToQuery(params, theQuery, userModel.specificId, "ST_User.specificId",
+   * concatAndOr, andOr); concatAndOr = addParamToQuery(params, theQuery, userModel.login,
+   * "ST_User.login", concatAndOr, andOr); concatAndOr = addParamToQuery(params, theQuery,
+   * userModel.firstName, "ST_User.firstName", concatAndOr, andOr); concatAndOr =
+   * addParamToQuery(params, theQuery, userModel.lastName, "ST_User.lastName", concatAndOr, andOr);
+   * concatAndOr = addParamToQuery(params, theQuery, userModel.eMail, "ST_User.email", concatAndOr,
+   * andOr); concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel,
+   * "ST_User.accessLevel", concatAndOr, andOr); concatAndOr = addParamToQuery(params, theQuery,
+   * userModel.loginQuestion, "ST_User.loginQuestion", concatAndOr, andOr); concatAndOr =
+   * addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer", concatAndOr,
+   * andOr); if (concatAndOr) { theQuery.append(") AND (accessLevel <> 'R')"); } else {
+   * theQuery.append(" WHERE (accessLevel <> 'R')"); }
+   * theQuery.append(" order by UPPER(ST_User.lastName)"); int[] idsArray = new int[ids.size()]; for
+   * (int i = 0; i < ids.size(); i++) { idsArray[i] = ids.get(i).intValue(); } return
+   * getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray( new String[0]); }
+   */
 
   static final private String SELECT_SEARCH_USERSID =
       "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
@@ -696,19 +555,6 @@ public class UserTable extends Table {
 
   static final private String SELECT_SEARCH_USERS = "select " + USER_COLUMNS
       + ", UPPER(lastName)" + " from ST_User";
-
-  /**
-   * Returns all the Users having recursively a given space user role.
-   */
-  public UserRow[] getAllUsersOfSpaceUserRole(int spaceUserRoleId)
-      throws AdminPersistenceException {
-    return (UserRow[]) getRows(SELECT_ALL_USERS_IN_SPACEUSERROLE,
-        spaceUserRoleId).toArray(new UserRow[0]);
-  }
-
-  static final private String SELECT_ALL_USERS_IN_SPACEUSERROLE = "select "
-      + USER_COLUMNS + " from ST_User,ST_UserSet_User_Rel"
-      + " where id=userId and userSetType='M' and userSetId=?";
 
   /**
    * Returns the users whose fields match those of the given sample space fields.
@@ -852,6 +698,17 @@ public class UserTable extends Table {
   }
 
   static final private String DELETE_USER = "delete from ST_User where id = ?";
+
+  private static String list2String(List<String> ids) {
+    StringBuilder str = new StringBuilder();
+    for (int i = 0; i < ids.size(); i++) {
+      if (i != 0) {
+        str.append(",");
+      }
+      str.append(ids.get(i));
+    }
+    return str.toString();
+  }
 
   /**
    * Fetch the current user row from a resultSet.

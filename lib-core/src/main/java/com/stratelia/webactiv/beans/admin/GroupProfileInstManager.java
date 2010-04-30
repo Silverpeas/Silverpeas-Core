@@ -283,25 +283,6 @@ public class GroupProfileInstManager {
   }
 
   /**
-   * Get all the group profiles Id for the given user
-   */
-  public String[] getGroupProfileIdsOfUser(DomainDriverManager ddManager,
-      String sUserId) throws AdminException {
-    try {
-      ddManager.getOrganizationSchema();
-      return ddManager.organization.groupUserRole
-          .getAllGroupUserRoleIdsOfUser(idAsInt(sUserId));
-    } catch (Exception e) {
-      throw new AdminException(
-          "GroupProfileInstManager.getSpaceProfileIdsOfUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_SPACEPROFILES",
-          "user Id: '" + sUserId + "'", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /**
    * Converts GroupProfileInst to GroupUserRoleRow
    */
   private GroupUserRoleRow makeGroupUserRoleRow(

@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
-import java.util.List;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -127,21 +126,6 @@ public class ComponentInstanceTable extends Table {
         .toArray(new ComponentInstanceRow[0]);
   }
 
-  static final private String SELECT_ALL_COMPO_IDS_IN_SPACE = "SELECT subSetId"
-      + " FROM ST_UserSet_UserSet_Rel, ST_ComponentInstance"
-      + " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = subSetId"
-      + " AND subSetType='I'" + " and componentStatus is null"
-      + " order by orderNum";
-
-  /*
-   * Returns all components in given space (recursively)
-   */
-  public String[] getAllCompoIdsInSpace(int spaceId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_COMPO_IDS_IN_SPACE, spaceId).toArray(
-        new String[0]);
-  }
-
   static final private String SELECT_ALL_SPACE_INSTANCES = "select "
       + INSTANCE_COLUMNS + " from ST_ComponentInstance where spaceId = ?"
       + " and componentStatus is null" + " order by orderNum";
@@ -174,180 +158,6 @@ public class ComponentInstanceTable extends Table {
       + " order by removeTime desc";
 
   /**
-   * Returns available components id for given user in given space
-   */
-  /*
-   * public String[] getAvailCompoIdsInSpace(int spaceId, int userId) throws
-   * AdminPersistenceException { int[] ids = new int[2]; ids[0] = spaceId; ids[1] = userId; return
-   * (String[]) getIds(SELECT_AVAIL_COMPO_IDS_IN_SPACE, ids) .toArray(new String[0]); } static final
-   * private String SELECT_AVAIL_COMPO_IDS_IN_SPACE = "SELECT userSetId" +
-   * " FROM ST_UserSet_UserSet_Rel, ST_UserSet_User_Rel, ST_ComponentInstance" +
-   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId" +
-   * " and componentStatus is null" +
-   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" + " AND userId = ?" +
-   * " order by ST_ComponentInstance.orderNum";
-   */
-
-  /**
-   * Returns available components for given user in given space
-   */
-  public ComponentInstanceRow[] getAvailCompoInSpace(int spaceId, int userId)
-      throws AdminPersistenceException {
-    int[] ids = new int[3];
-    ids[0] = spaceId;
-    ids[1] = userId;
-    ids[2] = spaceId;
-    return (ComponentInstanceRow[]) getRows(SELECT_AVAIL_COMPO_IN_SPACE, ids)
-        .toArray(new ComponentInstanceRow[0]);
-  }
-
-  /*
-   * static final private String SELECT_AVAIL_COMPO_IN_SPACE = "SELECT "+INSTANCE_COLUMNS +
-   * " FROM ST_UserSet_UserSet_Rel, ST_UserSet_User_Rel, ST_ComponentInstance" +
-   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId" +
-   * " and componentStatus is null" +
-   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" + " AND userId = ?" +
-   * " order by ST_ComponentInstance.orderNum";
-   */
-
-  static final private String SELECT_AVAIL_COMPO_IN_SPACE =
-      "SELECT "
-          +
-          INSTANCE_COLUMNS
-          +
-          " FROM ST_UserSet_UserSet_Rel R, ST_UserSet_User_Rel U, ST_ComponentInstance C"
-          +
-          " WHERE C.componentStatus is null"
-          +
-          " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND R.subSetId = U.userSetId AND C.id = U.userSetId AND U.userSetType='I' AND U.userId = ?"
-          +
-          " UNION"
-          +
-          " SELECT "
-          +
-          INSTANCE_COLUMNS
-          +
-          " FROM ST_UserSet_UserSet_Rel R, ST_ComponentInstance C"
-          +
-          " WHERE C.componentStatus is null"
-          +
-          " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND C.isPublic = 1"
-          + " order by orderNum";
-
-  /**
-   * Returns available components for given user in given space
-   */
-  public boolean isComponentAvailable(int userId, int componentId)
-      throws AdminPersistenceException {
-    int[] ids = new int[3];
-    ids[0] = componentId;
-    ids[1] = userId;
-    ids[2] = componentId;
-    return (getIds(IS_COMPONENT_AVAILABLE, ids).size() > 0);
-  }
-
-  static final private String IS_COMPONENT_AVAILABLE = "SELECT userSetId"
-      + " FROM ST_UserSet_User_Rel"
-      + " WHERE userSetId = ? AND userSetType='I'" + " AND userId = ? "
-      + " UNION" + " SELECT C.id" + " FROM ST_ComponentInstance C"
-      + " WHERE C.componentStatus is null" + " AND C.id = ? AND C.isPublic = 1";
-
-  /**
-   * Returns available components for given user in given space
-   */
-  public ComponentInstanceRow[] getAvailComposInSpaceAtRoot(int spaceId,
-      int userId) throws AdminPersistenceException {
-    int[] ids = new int[4];
-    ids[0] = spaceId;
-    ids[1] = spaceId;
-    ids[2] = userId;
-    ids[3] = spaceId;
-    return (ComponentInstanceRow[]) getRows(
-        SELECT_AVAIL_COMPO_IN_SPACE_AT_ROOT, ids).toArray(
-        new ComponentInstanceRow[0]);
-  }
-
-  /*
-   * static final private String SELECT_AVAIL_COMPO_IDS_IN_SPACE_AT_ROOT = "SELECT userSetId" +
-   * " FROM ST_UserSet_UserSet_Rel, ST_UserSet_User_Rel, ST_ComponentInstance" +
-   * " WHERE superSetId = ? AND superSetType='S' AND ST_ComponentInstance.id = userSetId" +
-   * " AND componentStatus is null" +
-   * " AND subSetId = userSetId AND subSetType='I' AND userSetType='I'" + " AND userId = ?" +
-   * " AND ST_ComponentInstance.spaceid = ?" + " order by ST_ComponentInstance.orderNum";
-   */
-
-  static final private String SELECT_AVAIL_COMPO_IN_SPACE_AT_ROOT =
-      "SELECT "
-          +
-          INSTANCE_COLUMNS
-          +
-          " FROM ST_UserSet_UserSet_Rel R, ST_UserSet_User_Rel U, ST_ComponentInstance C"
-          +
-          " WHERE C.componentStatus is null"
-          +
-          " AND C.spaceid = ?"
-          +
-          " AND R.superSetId = ? AND R.superSetType='S' AND R.subSetId = C.id AND R.subSetType='I' AND R.subSetId = U.userSetId AND C.id = U.userSetId AND U.userSetType='I' AND U.userId = ?"
-          + " UNION" + " SELECT " + INSTANCE_COLUMNS
-          + " FROM ST_ComponentInstance C" + " WHERE C.componentStatus is null"
-          + " AND C.spaceid = ?" + " AND C.isPublic = 1" + " order by orderNum";
-
-  /**
-   * Returns available components for given user
-   */
-  @SuppressWarnings("unchecked")
-  public String[] getAvailCompoIds(int userId) throws AdminPersistenceException {
-    List<ComponentInstanceRow> instances =
-        (List<ComponentInstanceRow>) getRows(SELECT_AVAIL_COMPO_IDS, userId);
-    String[] ids = new String[instances.size()];
-    for (int i = 0; i < instances.size(); i++) {
-      ComponentInstanceRow row = instances.get(i);
-      ids[i] = row.componentName + row.id;
-    }
-    return ids;
-  }
-
-  static final private String SELECT_AVAIL_COMPO_IDS = "SELECT "
-      + INSTANCE_COLUMNS
-      + " FROM ST_UserSet_User_Rel U, ST_ComponentInstance C"
-      + " WHERE U.userSetType='I' AND C.id = U.userSetId"
-      + " AND C.componentStatus is null" + " AND U.userId = ?" + " UNION"
-      + " SELECT " + INSTANCE_COLUMNS + " FROM ST_ComponentInstance C"
-      + " WHERE C.componentStatus is null" + " AND C.isPublic = 1";
-
-  @SuppressWarnings("unchecked")
-  public List<ComponentInstanceRow> getAvailableComponents(int userId, String componentName)
-      throws AdminPersistenceException {
-    int[] ids = new int[1];
-    ids[0] = userId;
-    String[] params = new String[2];
-    params[0] = componentName;
-    params[1] = componentName;
-    return (List<ComponentInstanceRow>) getRows(SELECT_AVAIL_COMPO_BY_NAME, ids, params);
-  }
-
-  static final private String SELECT_AVAIL_COMPO_BY_NAME = "SELECT "
-      + INSTANCE_COLUMNS
-      + " FROM ST_UserSet_User_Rel U, ST_ComponentInstance C"
-      + " WHERE U.userSetType='I' AND C.id = userSetId" + " AND U.userId = ?"
-      + " AND C.componentName = ?" + " AND C.componentStatus is null"
-      + " UNION" + " SELECT " + INSTANCE_COLUMNS
-      + " FROM ST_ComponentInstance C" + " WHERE C.componentStatus is null"
-      + " AND C.componentName = ?" + " AND C.isPublic = 1"
-      + " order by orderNum";
-
-  /*
-   * public String[] getAvailableComponentIds(int userId, String componentName) throws
-   * AdminPersistenceException { int[] ids = new int[1]; ids[0] = userId; String[] params = new
-   * String[1]; params[0] = componentName; return (String[]) getIds(SELECT_AVAIL_COMPO_IDS_BY_NAME,
-   * ids, params).toArray(new String[0]); } static final private String
-   * SELECT_AVAIL_COMPO_IDS_BY_NAME = "SELECT U.userSetId" +
-   * " FROM ST_UserSet_User_Rel U, ST_ComponentInstance C" +
-   * " WHERE U.userSetType='I' AND C.id = userSetId" + " AND U.userId = ?" +
-   * " AND C.componentName = ?" + " AND C.componentStatus is null" + " order by C.orderNum";
-   */
-
-  /**
    * Returns the ComponentInstance whose fields match those of the given sample instance fields.
    */
   public ComponentInstanceRow[] getAllMatchingComponentInstances(
@@ -373,9 +183,10 @@ public class ComponentInstanceTable extends Table {
     }
 
     insertRow(INSERT_INSTANCE, instance);
-    organization.userSet.createUserSet("I", instance.id);
-    organization.userSet.addUserSetInUserSet("I", instance.id, "S",
-        instance.spaceId);
+    /*
+     * organization.userSet.createUserSet("I", instance.id);
+     * organization.userSet.addUserSetInUserSet("I", instance.id, "S", instance.spaceId);
+     */
 
     CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_COMPONENT,
         instance.id, null, null);
@@ -584,9 +395,10 @@ public class ComponentInstanceTable extends Table {
     organization.instanceData.removeInstanceData(id);
 
     // delete userset relations
-    organization.userSet.removeUserSetFromUserSet("I", id, "S",
-        instance.spaceId);
-    organization.userSet.removeUserSet("I", id);
+    /*
+     * organization.userSet.removeUserSetFromUserSet("I", id, "S", instance.spaceId);
+     * organization.userSet.removeUserSet("I", id);
+     */
 
     // delete component instance row
     updateRelation(DELETE_INSTANCE, id);
