@@ -69,7 +69,7 @@ function showHideDragDrop(targetURL, message, properties, pathJreInstaller, expa
         addParam(objectDND, "archive", "wjhk.jupload.jar,jakarta-commons-net.jar");
         addParam(objectDND, "code", "wjhk.jupload2.JUploadApplet");
         addParam(objectDND, "name", "Silverpeas Drag And Drop");
-        addParam(objectDND, "codebase","http://localhost:8000/weblib/upload/");
+        addParam(objectDND, "codebase","/weblib/upload/");
       }
       else
       {
@@ -80,7 +80,7 @@ function showHideDragDrop(targetURL, message, properties, pathJreInstaller, expa
         objectDND.setAttribute("width", "100%");
         objectDND.setAttribute("height", "70");
 
-        objectDND.setAttribute("codebase", "http://localhost:8000/weblib/upload/");
+        objectDND.setAttribute("codebase", "/weblib/upload/");
         objectDND.setAttribute("archive", "wjhk.jupload.jar,jakarta-commons-net.jar");
         objectDND.setAttribute("code", "wjhk.jupload2.JUploadApplet");
         objectDND.setAttribute("name", "Silverpeas Drag And Drop");

@@ -105,7 +105,6 @@ public class DragAndDrop extends HttpServlet {
       String fullFileName = null;
       for (FileItem item : items) {
         if (!item.isFormField()) {
-          String fileUploadId = item.getFieldName().substring(4);
           String fileName = item.getName();
           if (fileName != null) {
             fileName = fileName.replace('\\', File.separatorChar);
