@@ -32,8 +32,12 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.templatedesigner.servlets.TemplateDesignerRequestRouter;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.pdcPeas.control.PdcFieldTemplateManager;
 import com.stratelia.silverpeas.pdcPeas.control.PdcUtilizationSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -43,258 +47,294 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new PdcUtilizationSessionController(mainSessionCtrl,
-        componentContext,
-        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
-    // return new PdcUtilizationSessionController();
-  }
+			MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+		return new PdcUtilizationSessionController(mainSessionCtrl,
+				componentContext,
+				"com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
+				"com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+		// return new PdcUtilizationSessionController();
+	}
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for notificationUser, returns
-   * "notificationUser"
-   */
-  public String getSessionControlBeanName() {
-    return "pdcUtilization";
-  }
+	/**
+	 * This method has to be implemented in the component request rooter class. Returns the session
+	 * control bean name to be put in the request object
+	 * ex : for notificationUser, returns "notificationUser"
+	 */
+	public String getSessionControlBeanName() {
+		return "pdcUtilization";
+	}
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
-   */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    String destination = "";
+	/**
+	 * This method has to be implemented by the component request rooter it has to compute a
+	 * destination page
+	 * 
+	 * @param function The entering request function (ex : "Main.jsp")
+	 * @param componentSC The component Session Control, build and initialised.
+	 * @param request The entering request. The request rooter need it to get parameters
+	 * @return The complete destination URL for a forward (ex :
+	 *         "/notificationUser/jsp/notificationUser.jsp?flag=user")
+	 */
+	public String getDestination(String function, ComponentSessionController componentSC,
+			HttpServletRequest request) {
+		String destination = "";
 
-    PdcUtilizationSessionController pdcSC = (PdcUtilizationSessionController) componentSC; // get
-    // the
-    // session
-    // controller
-    // to
-    // inform
-    // the
-    // request
-    try {
+	    // get the session controller to inform the request
+		PdcUtilizationSessionController pdcSC = (PdcUtilizationSessionController) componentSC;
+		PdcFieldTemplateManager pdcFTM = pdcSC.getPdcFieldTemplateManager();
+		
+		try {
 
-      if (function.startsWith("Main")) {
-        // the user is on the main page
+			if (function.startsWith("Main")) {
+				// the user is on the main page
+			  
+			  String componentId = request.getParameter("ComponentId");
+			  if (componentId != null) {
+			    pdcFTM.reset();
+			  }
+			    
+				if (pdcFTM.isEnabled()) {
+					request.setAttribute("field", pdcFTM.getUpdatedFieldTemplate());
+					request.setAttribute("actionForm", pdcFTM.getActionForm());
+					pdcFTM.reset();
+					destination = "/RtemplateDesigner/jsp/BackToFormField";
+				} else {
+					
+					if (componentId != null) {
+						pdcSC.init(componentId);
+					}
+					
+					List list = pdcSC.getUsedAxisList();
 
-        String componentId = request.getParameter("ComponentId");
-        if (componentId != null)
-          pdcSC.init(componentId);
+					// assign attributes into the request
+					request.setAttribute("AxisList", list); // set a sorted list
 
-        List list = pdcSC.getUsedAxisByInstanceId();
+					setBrowseContextInRequest(pdcSC, request);
 
-        // assign attributes into the request
-        request.setAttribute("AxisList", list); // set a sorted list
+					// create the new destination
+					destination = "/pdcPeas/jsp/utilization.jsp";
+				}
 
-        setBrowseContextInRequest(pdcSC, request);
+			} else if (function.startsWith("ChangeViewType")) {
+				// the user changes the view
 
-        // create the new destination
-        destination = "/pdcPeas/jsp/utilization.jsp";
+				// get URL parameters
+				String type = request.getParameter("ViewType");
 
-      } else if (function.startsWith("ChangeViewType")) {
-        // the user changes the view
+				pdcSC.setCurrentView(type);
 
-        // get URL parameters
-        String type = request.getParameter("ViewType");
+				setBrowseContextInRequest(pdcSC, request);
 
-        pdcSC.setCurrentView(type);
+				// create the new destination
+				destination = getDestination("UtilizationViewAxis", componentSC, request);
 
-        setBrowseContextInRequest(pdcSC, request);
+			} else if (function.startsWith("UtilizationViewAxis")) {
+				// the user wants to choose an axis
 
-        // create the new destination
-        destination = getDestination("UtilizationViewAxis", componentSC,
-            request);
+				if ("true".equals(request.getParameter("pdcFieldMode"))) {
+				  initFieldTemplateMode(pdcSC, request);
+				}
 
-      } else if (function.startsWith("UtilizationViewAxis")) {
-        // the user wants to choose an axis
+				List list = pdcSC.getAxis();
 
-        List list = pdcSC.getAxis();
+				request.setAttribute("AxisList", list);
+				request.setAttribute("ViewType", pdcSC.getCurrentView());
 
-        request.setAttribute("AxisList", list);
-        request.setAttribute("ViewType", pdcSC.getCurrentView());
+				setBrowseContextInRequest(pdcSC, request);
 
-        setBrowseContextInRequest(pdcSC, request);
+				destination = "/pdcPeas/jsp/utilizationChoose.jsp";
 
-        destination = "/pdcPeas/jsp/utilizationChoose.jsp";
+			} else if (function.startsWith("UtilizationChooseAxis")) {
+				// the user wants to use an axis
 
-      } else if (function.startsWith("UtilizationChooseAxis")) {
-        // the user wants to use an axis
+				String axisId = request.getParameter("Id");
+				Axis axis = pdcSC.getAxisDetail(axisId);
 
-        String axisId = request.getParameter("Id");
-        Axis axis = pdcSC.getAxisDetail(axisId);
+				// Is this axis already used ?
+				List list = pdcSC.getUsedAxisList();
+				UsedAxis usedAxis = null;
+				Integer isMandatory = null;
+				Integer isVariant = null;
+				for (int i = 0; i < list.size(); i++) {
+					usedAxis = (UsedAxis) list.get(i);
+					if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
+						// The axis is already used. Its parameters are taken.
+						isMandatory = new Integer(usedAxis.getMandatory());
+						isVariant = new Integer(usedAxis.getVariant());
+						break;
+					}
+				}
 
-        // Recherche si cet axe est déjà utilisé
-        List list = pdcSC.getUsedAxisByInstanceId();
-        UsedAxis usedAxis = null;
-        Integer isMandatory = null;
-        Integer isVariant = null;
-        for (int i = 0; i < list.size(); i++) {
-          usedAxis = (UsedAxis) list.get(i);
-          if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
-            // L'axe est déjà utilisé
-            // On récupère ses paramêtres
-            isMandatory = new Integer(usedAxis.getMandatory());
-            isVariant = new Integer(usedAxis.getVariant());
-            break;
-          }
+				request.setAttribute("AxisDetail", axis);
+				request.setAttribute("IsMandatory", isMandatory);
+				request.setAttribute("IsVariant", isVariant);
+
+				setBrowseContextInRequest(pdcSC, request);
+
+				destination = "/pdcPeas/jsp/utilizationAdd.jsp";
+
+			} else if (function.startsWith("UtilizationAddAxis")) {
+				// the user wants to add an axis
+
+				String baseValue = request.getParameter("BaseValue");
+				String mandatoryStr = request.getParameter("Mandatory");
+				String variantStr = request.getParameter("Variant");
+
+				int mandatory = 1;
+				if (mandatoryStr != null && mandatoryStr.equals("0")) {
+					mandatory = 0;
+				}
+
+				int variant = 1;
+				if (variantStr != null && variantStr.equals("0")) {
+					variant = 0;
+				}
+
+				UsedAxis usedAxis = new UsedAxis(-1, "unknown", -1, new Integer(
+						baseValue).intValue(), mandatory, variant);
+
+				int status = pdcSC.addUsedAxis(usedAxis);
+
+				switch (status) {
+  				case 1:
+  					request.setAttribute("UsedAxis", usedAxis);
+  					request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
+  
+  					String axisId = request.getParameter("Id");
+  
+  					// Is this axis already used ?
+  					List list = pdcSC.getUsedAxisList();
+  					Integer isMandatory = null;
+  					Integer isVariant = null;
+  					for (int i = 0; i < list.size(); i++) {
+  						usedAxis = (UsedAxis) list.get(i);
+  						if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
+  							// The axis is already used. Its parameters are taken.
+  							isMandatory = new Integer(usedAxis.getMandatory());
+  							isVariant = new Integer(usedAxis.getVariant());
+  							break;
+  						}
+  					}
+  
+  					request.setAttribute("IsMandatory", isMandatory);
+  					request.setAttribute("IsVariant", isVariant);
+  
+  					setBrowseContextInRequest(pdcSC, request);
+  
+  					destination = "/pdcPeas/jsp/utilizationAdd.jsp";
+  					break;
+  				default:
+  					destination = getDestination("Main", componentSC, request);
+				}
+
+			} else if (function.startsWith("UtilizationEditAxis")) {
+				// the user wants to edit a used axis
+			  
+			  if ("true".equals(request.getParameter("pdcFieldMode"))) {
+			    initFieldTemplateMode(pdcSC, request);
         }
 
-        request.setAttribute("AxisDetail", axis);
-        request.setAttribute("IsMandatory", isMandatory);
-        request.setAttribute("IsVariant", isVariant);
+				String usedAxisId = request.getParameter("Id");
+				UsedAxis usedAxis = pdcSC.getUsedAxis(usedAxisId);
+				Axis axis = pdcSC.getAxisDetail(String.valueOf(usedAxis.getAxisId()));
 
-        setBrowseContextInRequest(pdcSC, request);
+				request.setAttribute("AxisDetail", axis);
+				request.setAttribute("UsedAxis", usedAxis);
 
-        destination = "/pdcPeas/jsp/utilizationAdd.jsp";
+				setBrowseContextInRequest(pdcSC, request);
 
-      } else if (function.startsWith("UtilizationAddAxis")) {
-        // the user wants to add an axis
+				destination = "/pdcPeas/jsp/utilizationEdit.jsp";
 
-        String baseValue = request.getParameter("BaseValue");
-        String mandatoryStr = request.getParameter("Mandatory");
-        String variantStr = request.getParameter("Variant");
+			} else if (function.startsWith("UtilizationUpdateAxis")) {
+				// the user wants to update a used axis
 
-        int mandatory = 1;
-        if (mandatoryStr != null && mandatoryStr.equals("0")) {
-          mandatory = 0;
+				String usedAxisId = request.getParameter("Id");
+				String baseValue = request.getParameter("BaseValue");
+				String mandatoryStr = request.getParameter("Mandatory");
+				String variantStr = request.getParameter("Variant");
+
+				int mandatory = 1;
+				if (mandatoryStr != null && mandatoryStr.equals("0")) {
+					mandatory = 0;
+				}
+
+				int variant = 1;
+				if (variantStr != null && variantStr.equals("0")) {
+					variant = 0;
+				}
+
+				UsedAxis usedAxis = new UsedAxis(
+				  usedAxisId, "unknown", -1, Integer.parseInt(baseValue), mandatory, variant);
+
+				int status = pdcSC.updateUsedAxis(usedAxis);
+
+				switch (status) {
+  				case 1:
+  					request.setAttribute("UsedAxis", usedAxis);
+  					request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
+  					request.setAttribute("ErrorState", "1");
+  					setBrowseContextInRequest(pdcSC, request);
+  					destination = "/pdcPeas/jsp/utilizationEdit.jsp";
+  					break;
+  				case 2:
+  					request.setAttribute("UsedAxis", usedAxis);
+  					request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
+  					request.setAttribute("ModificationNotAllowed", "1");
+  					setBrowseContextInRequest(pdcSC, request);
+  					destination = "/pdcPeas/jsp/utilizationEdit.jsp";
+  					break;
+  				default:
+  					destination = getDestination("Main", componentSC, request);
+				}
+
+			} else if (function.startsWith("UtilizationDeleteAxis")) {
+				// the user wants to delete some used axis
+			  
+			  if ("true".equals(request.getParameter("pdcFieldMode"))) {
+          initFieldTemplateMode(pdcSC, request);
         }
 
-        int variant = 1;
-        if (variantStr != null && variantStr.equals("0")) {
-          variant = 0;
-        }
+				String usedAxisIds = request.getParameter("Ids");
 
-        UsedAxis usedAxis = new UsedAxis(-1, "unknown", -1, new Integer(
-            baseValue).intValue(), mandatory, variant);
+				StringTokenizer st = new StringTokenizer(usedAxisIds, ",");
+				while (st.hasMoreTokens()) {
+					pdcSC.deleteUsedAxis(st.nextToken());
+				}
+				if (pdcFTM.isEnabled()) {
+				  pdcFTM.updateUsedAxisIds();
+				}
 
-        int status = pdcSC.addUsedAxis(usedAxis);
+				destination = getDestination("Main", componentSC, request);
 
-        switch (status) {
-          case 1:
-            request.setAttribute("UsedAxis", usedAxis);
-            request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
+			} else {
+				destination = "/pdcPeas/jsp/" + function;
+			}
+		} catch (Exception exce_all) {
+			request.setAttribute("javax.servlet.jsp.jspException", exce_all);
+			return "/admin/jsp/errorpageMain.jsp";
+		}
 
-            String axisId = request.getParameter("Id");
+		return destination;
+	}
 
-            // Recherche si cet axe est déjà utilisé
-            List list = pdcSC.getUsedAxisByInstanceId();
-            Integer isMandatory = null;
-            Integer isVariant = null;
-            for (int i = 0; i < list.size(); i++) {
-              usedAxis = (UsedAxis) list.get(i);
-              if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
-                // L'axe est déjà utilisé
-                // On récupère ses paramêtres
-                isMandatory = new Integer(usedAxis.getMandatory());
-                isVariant = new Integer(usedAxis.getVariant());
-                break;
-              }
-            }
-
-            request.setAttribute("IsMandatory", isMandatory);
-            request.setAttribute("IsVariant", isVariant);
-
-            setBrowseContextInRequest(pdcSC, request);
-
-            destination = "/pdcPeas/jsp/utilizationAdd.jsp";
-            break;
-          default:
-            destination = getDestination("Main", componentSC, request);
-        }
-
-      } else if (function.startsWith("UtilizationEditAxis")) {
-        // the user wants to edit an used axis
-
-        String usedAxisId = request.getParameter("Id");
-        UsedAxis usedAxis = pdcSC.getUsedAxis(usedAxisId);
-        Axis axis = pdcSC.getAxisDetail(new Integer(usedAxis.getAxisId())
-            .toString());
-
-        request.setAttribute("AxisDetail", axis);
-        request.setAttribute("UsedAxis", usedAxis);
-
-        setBrowseContextInRequest(pdcSC, request);
-
-        destination = "/pdcPeas/jsp/utilizationEdit.jsp";
-
-      } else if (function.startsWith("UtilizationUpdateAxis")) {
-        // the user wants to update an used axis
-
-        String usedAxisId = request.getParameter("Id");
-        String baseValue = request.getParameter("BaseValue");
-        String mandatoryStr = request.getParameter("Mandatory");
-        String variantStr = request.getParameter("Variant");
-
-        int mandatory = 1;
-        if (mandatoryStr != null && mandatoryStr.equals("0")) {
-          mandatory = 0;
-        }
-
-        int variant = 1;
-        if (variantStr != null && variantStr.equals("0")) {
-          variant = 0;
-        }
-
-        UsedAxis usedAxis = new UsedAxis(usedAxisId, "unknown", -1,
-            new Integer(baseValue).intValue(), mandatory, variant);
-
-        int status = pdcSC.updateUsedAxis(usedAxis);
-
-        switch (status) {
-          case 1:
-            request.setAttribute("UsedAxis", usedAxis);
-            request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
-            request.setAttribute("ErrorState", "1");
-            setBrowseContextInRequest(pdcSC, request);
-            destination = "/pdcPeas/jsp/utilizationEdit.jsp";
-            break;
-          case 2:
-            request.setAttribute("UsedAxis", usedAxis);
-            request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
-            request.setAttribute("ModificationNotAllowed", "1");
-            setBrowseContextInRequest(pdcSC, request);
-            destination = "/pdcPeas/jsp/utilizationEdit.jsp";
-            break;
-          default:
-            destination = getDestination("Main", componentSC, request);
-        }
-
-      } else if (function.startsWith("UtilizationDeleteAxis")) {
-        // the user wants to delete some used axis
-
-        String usedAxisIds = request.getParameter("Ids");
-
-        StringTokenizer st = new StringTokenizer(usedAxisIds, ",");
-        for (; st.hasMoreTokens();) {
-          pdcSC.deleteUsedAxis(st.nextToken());
-        }
-
-        destination = getDestination("Main", componentSC, request);
-
-      } else {
-        destination = "/pdcPeas/jsp/" + function;
-      }
-    } catch (Exception exce_all) {
-      request.setAttribute("javax.servlet.jsp.jspException", exce_all);
-      return "/admin/jsp/errorpageMain.jsp";
-    }
-
-    return destination;
-  }
-
-  private void setBrowseContextInRequest(PdcUtilizationSessionController pdcSC,
-      HttpServletRequest request) {
-    request.setAttribute("browseContext", new String[] { pdcSC.getSpaceLabel(),
-        pdcSC.getComponentLabel() });
-  }
+	private void setBrowseContextInRequest(PdcUtilizationSessionController pdcSC,
+	    HttpServletRequest request) {
+		request.setAttribute("browseContext", new String[] {
+			pdcSC.getSpaceLabel(), pdcSC.getComponentLabel() });
+	}
+	
+	/**
+	 * Initializes the PDC field mode.
+	 * 
+	 * @param pdcSC The PDC session controller.
+	 * @param request The HTTP request.
+	 * @throws FormException An exception which occurs if no field can be made from the request.
+	 */
+	private void initFieldTemplateMode(PdcUtilizationSessionController pdcSC,
+	    HttpServletRequest request) throws FormException {
+	  GenericFieldTemplate fieldTemplate = TemplateDesignerRequestRouter.request2Field(request);
+    String fieldTemplateActionForm = request.getParameter("actionForm");
+    pdcSC.init();
+    pdcSC.getPdcFieldTemplateManager().init(fieldTemplate, fieldTemplateActionForm);
+	}
 
 }

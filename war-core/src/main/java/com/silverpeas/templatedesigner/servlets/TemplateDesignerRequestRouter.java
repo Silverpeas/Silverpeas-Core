@@ -76,7 +76,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param componentSC The component Session Control, build and initialized.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -159,6 +159,17 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Displayer", displayer);
 
         destination = root + getDestinationFromDisplayer(displayer);
+      } else if (function.equals("BackToFormField")) {
+        GenericFieldTemplate field = (GenericFieldTemplate) request.getAttribute("field");
+        request.setAttribute("Field", field);
+
+        String actionForm = (String)request.getAttribute("actionForm");
+        request.setAttribute("actionForm", actionForm);
+        
+        request.setAttribute("Languages", templateDesignerSC.getLanguages());
+        request.setAttribute("Displayer", field.getDisplayerName());
+
+        destination = root + getDestinationFromDisplayer(field.getDisplayerName());
       } else if (function.equals("AddField")) {
         GenericFieldTemplate field = request2Field(request);
 
@@ -242,6 +253,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       return "fieldAccessPath.jsp";
     else if (displayer.equals("jdbc"))
       return "fieldJdbc.jsp";
+    else if (displayer.equals("pdc"))
+      return "fieldPdc.jsp";
     else
       return "fieldText.jsp";
   }
@@ -268,7 +281,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     return template;
   }
 
-  private GenericFieldTemplate request2Field(HttpServletRequest request)
+  public static GenericFieldTemplate request2Field(HttpServletRequest request)
       throws FormException {
     String displayer = request.getParameter("Displayer");
     String fieldName = request.getParameter("FieldName");
@@ -297,6 +310,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       fieldType = "accessPath";
     else if (displayer.equals("jdbc"))
       fieldType = "jdbc";
+    else if (displayer.equals("pdc"))
+      fieldType = "pdc";
 
     GenericFieldTemplate field = new GenericFieldTemplate();
     field.setDisplayerName(displayer);
@@ -336,7 +351,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     return field;
   }
 
-  private boolean isDefined(String parameter) {
+  private static boolean isDefined(String parameter) {
     return (parameter != null && parameter.length() > 0 && !parameter
         .equals("null"));
   }

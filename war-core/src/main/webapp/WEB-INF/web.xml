@@ -438,16 +438,18 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
     </init-param>
   </servlet>
   -->
-   <servlet>
-        <servlet-name>AutocompleteServlet</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>TreeMenuAjaxServlet</servlet-name>
-        <servlet-class>com.silverpeas.treeMenu.servlet.TreeMenuAjaxServlet</servlet-class>
-    </servlet>
-
-
+  <servlet>
+    <servlet-name>AutocompleteServlet</servlet-name>
+    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>TreeMenuAjaxServlet</servlet-name>
+    <servlet-class>com.silverpeas.treeMenu.servlet.TreeMenuAjaxServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>PdcAjaxServlet</servlet-name>
+    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcAjaxServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
     <url-pattern>/AuthenticationServlet</url-pattern>
@@ -759,14 +761,18 @@ version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.su
     <url-pattern>/ajaxupload/*</url-pattern>
   </servlet-mapping>
   -->
-   <servlet-mapping>
-        <servlet-name>AutocompleteServlet</servlet-name>
-        <url-pattern>/AutocompleteServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TreeMenuAjaxServlet</servlet-name>
-        <url-pattern>/TreeMenuAjaxServlet</url-pattern>
-    </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AutocompleteServlet</servlet-name>
+    <url-pattern>/AutocompleteServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TreeMenuAjaxServlet</servlet-name>
+    <url-pattern>/TreeMenuAjaxServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>PdcAjaxServlet</servlet-name>
+    <url-pattern>/PdcAjaxServlet</url-pattern>
+  </servlet-mapping>
 
   <jsp-config>
     <taglib>

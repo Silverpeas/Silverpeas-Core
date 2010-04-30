@@ -25,27 +25,72 @@
 --%>
 
 <%@ include file="checkPdc.jsp"%>
-
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
-   out.println(gef.getLookStyleSheet());
+	String infoMessage = (String)request.getAttribute("infoMessage");
 %>
-<script language="JavaScript">
-function refresh() {
-	try
-	{
-		window.opener.document.toComponent.submit();
+<html>
+<head>
+	<title><%=resource.getString("GML.popupTitle")%></title><%
+
+	out.println(gef.getLookStyleSheet());
+%>
+	<script type="text/javascript">
+		function refresh() {
+			try {<%
+
+	if ("true".equals(request.getParameter("pdcFieldMode"))) {
+	  	String fieldName = (String)request.getAttribute("pdcFieldName");
+	  	String positions = (String)request.getAttribute("pdcFieldPositions");
+%>
+				window.opener.updatePositions_<%=fieldName%>("<%=positions%>");<%
+
+	} else {
+%>
+		
+				window.opener.document.toComponent.submit();<%
+
 	}
-	catch(e)
-	{
-		//opening window does not contains toComponent form
+%>
+			} catch (e) {
+				//opening window does not contain toComponent form
+			}<%
+
+	if (infoMessage != null) {
+%>
+	  		window.setTimeout("window.close();", 1500);<%
+
+	} else {
+%>
+	  		window.close();<%
+
 	}
-	window.close();
-}
-</script>
-</HEAD>
-<BODY onLoad=refresh()>
-</BODY>
-</HTML>
+%>
+		}
+	</script>
+</head>
+
+<body onload="refresh()"><%
+
+	if (infoMessage != null) {
+		browseBar.setDomainName(spaceLabel);
+		browseBar.setComponentName(componentLabel);
+	
+	    out.println(window.printBefore());
+	    out.println(frame.printBefore());
+	    out.println(board.printBefore());
+%>
+	<center>
+		<table width="100%" border="0" cellspacing="0" cellpadding="4">
+			<tr>
+				<td><%=infoMessage%></td>
+			</tr>
+		</table>
+	</center><%
+
+		out.println(board.printAfter());
+		out.println(frame.printAfter());
+		out.println(window.printAfter());
+	}
+%>
+</body>
+</html>

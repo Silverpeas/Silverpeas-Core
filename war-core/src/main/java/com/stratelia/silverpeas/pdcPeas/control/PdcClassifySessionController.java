@@ -55,6 +55,9 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   private boolean sendSubscriptions = true;
 
   private ThesaurusManager thesaurus = new ThesaurusManager();
+  
+  // Positions manager in PDC field mode.
+  private PdcFieldPositionsManager pdcFieldPositionsManager = new PdcFieldPositionsManager();
 
   // jargon utilise par l'utilisateur
   private Jargon jargon = null;
@@ -127,34 +130,49 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public List getUsedAxisToClassify() throws PdcException {
-    return getPdcBm().getUsedAxisToClassify(getCurrentComponentId(),
-        getCurrentSilverObjectId());
+    if (pdcFieldPositionsManager.isEnabled()) {
+      return pdcFieldPositionsManager.getUsedAxisList();
+    } else {
+      return getPdcBm().getUsedAxisToClassify(getCurrentComponentId(), getCurrentSilverObjectId());
+    }
   }
 
   public int addPosition(ClassifyPosition position) throws PdcException {
     int result = -1;
-    if (getCurrentSilverObjectId() != -1) {
-      // classical classification = addPosition to one object
-      result = getPdcBm().addPosition(getCurrentSilverObjectId(), position,
-          getCurrentComponentId(), isSendSubscriptions());
-    } else if (getCurrentSilverObjectIds() != null) {
-      String silverObjectId = null;
-      for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
-        silverObjectId = (String) getCurrentSilverObjectIds().get(i);
-        getPdcBm().addPosition(Integer.parseInt(silverObjectId), position,
+    if (pdcFieldPositionsManager.isEnabled()) {
+      pdcFieldPositionsManager.addPosition(position);
+    } else {
+      if (getCurrentSilverObjectId() != -1) {
+        // classical classification = addPosition to one object
+        result = getPdcBm().addPosition(getCurrentSilverObjectId(), position,
             getCurrentComponentId(), isSendSubscriptions());
+      } else if (getCurrentSilverObjectIds() != null) {
+        String silverObjectId = null;
+        for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
+          silverObjectId = (String) getCurrentSilverObjectIds().get(i);
+          getPdcBm().addPosition(Integer.parseInt(silverObjectId), position,
+              getCurrentComponentId(), isSendSubscriptions());
+        }
       }
     }
     return result;
   }
 
   public int updatePosition(ClassifyPosition position) throws PdcException {
-    return getPdcBm().updatePosition(position, getCurrentComponentId(),
+    if (pdcFieldPositionsManager.isEnabled()) {
+      return pdcFieldPositionsManager.updatePosition(position);
+    } else {
+      return getPdcBm().updatePosition(position, getCurrentComponentId(),
         getCurrentSilverObjectId(), isSendSubscriptions());
+    }
   }
 
   public void deletePosition(int positionId) throws PdcException {
-    getPdcBm().deletePosition(positionId, getCurrentComponentId());
+    if (pdcFieldPositionsManager.isEnabled()) {
+      pdcFieldPositionsManager.deletePosition(positionId);
+    } else {
+      getPdcBm().deletePosition(positionId, getCurrentComponentId());
+    }
   }
 
   public void deletePosition(String positionId) throws PdcException {
@@ -162,12 +180,19 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public List getPositions() throws PdcException {
-    return getPdcBm().getPositions(getCurrentSilverObjectId(),
-        getCurrentComponentId());
+    if (pdcFieldPositionsManager.isEnabled()) {
+      return pdcFieldPositionsManager.getPositions();
+    } else {
+      return getPdcBm().getPositions(getCurrentSilverObjectId(), getCurrentComponentId());
+    }
   }
 
   public List getUsedAxis() throws PdcException {
-    return getPdcBm().getUsedAxisByInstanceId(getCurrentComponentId());
+    if (pdcFieldPositionsManager.isEnabled()) {
+      return pdcFieldPositionsManager.getUsedAxisList();
+    } else {
+      return getPdcBm().getUsedAxisByInstanceId(getCurrentComponentId());
+    }
   }
 
   public synchronized boolean getActiveThesaurus() throws PdcException,
@@ -205,6 +230,10 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
 
   public void setSendSubscriptions(boolean sendSubscriptions) {
     this.sendSubscriptions = sendSubscriptions;
+  }
+  
+  public PdcFieldPositionsManager getPdcFieldPositionsManager() {
+    return pdcFieldPositionsManager;
   }
 
 }

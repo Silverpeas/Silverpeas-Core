@@ -950,11 +950,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   /**
-   * Returns all values from an axe.
-   * @param axeId - the id of the selected axe
-   * @return a list of values
+   * @param treeId The id of the selected axis.
+   * @return The list of values of the axis.
    */
-  private List getAxisValues(int treeId) throws PdcException {
+  public List getAxisValues(int treeId) throws PdcException {
     return getAxisValues(treeId, new AxisFilter());
   }
 

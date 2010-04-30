@@ -38,6 +38,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdcPeas.control.PdcClassifySessionController;
+import com.stratelia.silverpeas.pdcPeas.control.PdcFieldPositionsManager;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -61,18 +62,15 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
 
-    PdcClassifySessionController pdcSC = (PdcClassifySessionController) componentSC; // get
-    // the
-    // session
-    // controller
-    // to
-    // inform
-    // the
-    // request
+    // get the session controller to inform the request
+    PdcClassifySessionController pdcSC = (PdcClassifySessionController) componentSC;
+    PdcFieldPositionsManager pdcFPM = pdcSC.getPdcFieldPositionsManager();
+    
     try {
 
       if (function.startsWith("Main")) {
         // the user is on the main page
+        pdcFPM.reset();
 
         String silverObjectId = request.getParameter("SilverObjectId");
         String componentId = request.getParameter("ComponentId");
@@ -169,12 +167,18 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         for (; st.hasMoreTokens();) {
           pdcSC.deletePosition(st.nextToken());
         }
-        String toURL = request.getParameter("ToURL");
-        if (toURL != null && toURL.length() > 0) {
-          request.setAttribute("ToURL", toURL);
-          destination = "/pdcPeas/jsp/redirectToComponent.jsp";
-        } else
-          destination = getDestination("Main", componentSC, request);
+        if (pdcFPM.isEnabled()) {
+          destination = getPdcFieldModeReturnDestination(
+            request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
+        } else {
+          String toURL = request.getParameter("ToURL");
+          if (toURL != null && toURL.length() > 0) {
+            request.setAttribute("ToURL", toURL);
+            destination = "/pdcPeas/jsp/redirectToComponent.jsp";
+          } else {
+            destination = getDestination("Main", componentSC, request);
+          }
+        }
       }
 
       else if (function.startsWith("CreatePosition")) {
@@ -195,7 +199,11 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
             destination = "/pdcPeas/jsp/positionAdd.jsp";
             break;
           default:
-            destination = "/pdcPeas/jsp/reload.jsp";
+            if (pdcFPM.isEnabled()) {
+              destination = getPdcFieldModeReturnDestination(request, pdcFPM, null);
+            } else {
+              destination = "/pdcPeas/jsp/reload.jsp";
+            }
         }
       }
 
@@ -240,7 +248,11 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
             destination = "/pdcPeas/jsp/positionEdit.jsp";
             break;
           default:
-            destination = "/pdcPeas/jsp/reload.jsp";
+            if (pdcFPM.isEnabled()) {
+              destination = getPdcFieldModeReturnDestination(request, pdcFPM, null);
+            } else {
+              destination = "/pdcPeas/jsp/reload.jsp";
+            }
         }
 
       }
@@ -307,6 +319,15 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         destination = getDestination("NewPosition", componentSC, request);
 
       }
+      
+      else if (function.equals("PdcFieldMode")) {
+        String pdcFieldName = request.getParameter("pdcFieldName");
+        String pdcFieldPositions = request.getParameter("pdcFieldPositions");
+        String pdcAxis = request.getParameter("pdcAxis");
+        String action = request.getParameter("action");
+        pdcFPM.init(pdcFieldName, pdcFieldPositions, pdcAxis);
+        destination = getDestination(action, componentSC, request);
+      }
 
       else {
         destination = "/pdcPeas/jsp/" + function;
@@ -317,6 +338,22 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
     }
 
     return destination;
+  }
+  
+  /**
+   * @param request The HTTP request.
+   * @param pdcFPM The PDC field positions manager.
+   * @param message If needed, a message to display on the reload page.
+   * @return The reload page to display to update the positions of a PDC field.
+   */
+  private String getPdcFieldModeReturnDestination(HttpServletRequest request,
+      PdcFieldPositionsManager pdcFPM, String message) {
+    request.setAttribute("pdcFieldName", pdcFPM.getFieldName());
+    request.setAttribute("pdcFieldPositions", pdcFPM.getPositionsToString());
+    if (message != null) {
+      request.setAttribute("infoMessage", message);
+    }
+    return "/pdcPeas/jsp/reload.jsp?pdcFieldMode=true";
   }
 
   private ClassifyPosition buildPosition(String positionId, String valuesFromJsp) {

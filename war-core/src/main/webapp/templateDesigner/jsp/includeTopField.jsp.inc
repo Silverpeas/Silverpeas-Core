@@ -6,7 +6,7 @@
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-<form name="fieldForm" action="<%=actionForm%>" method="POST">
+<form name="fieldForm" action="<%=m_context%>/RtemplateDesigner/jsp/<%=actionForm%>" method="POST">
 <table CELLSPACING="5" WIDTH="100%">
 <tr>
 <td class="txtlibform" width="10"><%=resource.getString("GML.name")%> :</td>

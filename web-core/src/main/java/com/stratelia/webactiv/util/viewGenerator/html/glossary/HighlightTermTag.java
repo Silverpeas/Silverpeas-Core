@@ -31,6 +31,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.silverpeas.glossary.HighlightGlossaryTerms;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -54,9 +55,9 @@ public class HighlightTermTag extends BodyTagSupport {
   public int doAfterBody() throws JspTagException {
     try {
       BodyContent bc = getBodyContent();
-      String highlightedText =
+      String highlightedText = (StringUtil.isDefined(axisId) && !"0".equals(axisId)) ?
           HighlightGlossaryTerms.searchReplace(bc.getString(), className, axisId, onlyFirst,
-              language);
+              language) : bc.getString();
       bc.clearBody();
       getPreviousOut().print(highlightedText);
     } catch (IOException e) {

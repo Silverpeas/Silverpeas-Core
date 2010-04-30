@@ -14,8 +14,16 @@ Map parameters = null;
 if (field != null)
 {
 	name 			= field.getFieldName();
-	nameDisabled 	= "readOnly";
 	actionForm 		= "UpdateField";
+	
+	String actionFormFromPdcUtilization = (String)request.getAttribute("actionForm");
+	if (actionFormFromPdcUtilization != null) {
+		actionForm = actionFormFromPdcUtilization;
+	}
+	
+	if (actionForm.equals("UpdateField")) {
+		nameDisabled 	= "readOnly";
+	}
 	
 	parameters = field.getParameters("fr");
 		
@@ -43,7 +51,7 @@ if (field != null)
 		if (isCorrectForm()) 
 		{
 			document.fieldForm.submit();
-			window.opener.location.href="ViewFields?Scope=0";
+			window.opener.location.href = "<%=m_context%>/RtemplateDesigner/jsp/ViewFields?Scope=0";
 			window.close();
 		}
 		else

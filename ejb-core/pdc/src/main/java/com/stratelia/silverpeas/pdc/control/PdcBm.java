@@ -304,6 +304,12 @@ public interface PdcBm {
    * @see
    */
   public Value getRoot(String axisId) throws PdcException;
+  
+  /**
+   * @param treeId The id of the selected axis.
+   * @return The list of values of the axis.
+   */
+  public List getAxisValues(int treeId) throws PdcException;
 
   /**
    * Method declaration

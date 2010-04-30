@@ -38,37 +38,27 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="javascript">
 	function openWindow(displayer) {
-	    url = "NewField?Displayer="+displayer;
-	    windowName = "fieldWindow";
-		larg = "570";
-		haut = "350";
-		if (displayer == 'radio' || displayer == 'checkbox' || displayer == 'listbox')
-		{
-			haut = "450";
-		} else if (displayer == 'ldap') {
-			haut = "600";
-		} else if (displayer == 'jdbc') {
-			haut = "450";
-		} 
-	    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-	    SP_openWindow(url, windowName, larg, haut, windowParams);
+	    openFieldWindow("NewField?Displayer=" + displayer, displayer);
 	}
 	
 	function editField(fieldName,displayer) {
-	    url = "EditField?FieldName="+fieldName;
-	    windowName = "fieldWindow";
-		larg = "570";
-		haut = "350";
-		if (displayer == 'radio' || displayer == 'checkbox' || displayer == 'listbox')
-		{
-			haut = "450";
+	    openFieldWindow("EditField?FieldName=" + fieldName, displayer);
+	}
+
+	function openFieldWindow(url, displayer) {
+		var width = "570";
+		var height = "350";
+		if (displayer == 'radio' || displayer == 'checkbox' || displayer == 'listbox') {
+			height = "450";
 		} else if (displayer == 'ldap') {
-			haut = "600";
+			height = "600";
 		} else if (displayer == 'jdbc') {
-			haut = "450";
-		} 
-	    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-	    SP_openWindow(url, windowName, larg, haut, windowParams);
+			height = "450";
+		} else if (displayer == 'pdc') {
+			height = "450";
+			width = "700";
+		}
+		SP_openWindow(url, "fieldWindow", width, height, "directories=0, menubar=0, toolbar=0, alwaysRaised");
 	}
 	
 	function move(direction, fieldName) {
@@ -101,6 +91,7 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldUser"), re
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldLdap"), "javascript:openWindow('ldap')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldAccessPath"), "javascript:openWindow('accessPath')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldJdbc"), "javascript:openWindow('jdbc')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldPdc"), "javascript:openWindow('pdc')");
 
 ArrayPane arrayPane = gef.getArrayPane("fieldList", "ViewFields?Scope=0", request, session);
 ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.name"));
