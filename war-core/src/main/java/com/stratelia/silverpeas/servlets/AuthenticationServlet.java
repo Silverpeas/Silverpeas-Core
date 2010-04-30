@@ -79,8 +79,7 @@ public class AuthenticationServlet extends HttpServlet {
     String sServletPath = request.getServletPath();
     String sPathInfo = request.getPathInfo();
     String sRequestURL = request.getRequestURL().toString();
-    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
-        - sURI.length());
+    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - sURI.length());
 
     if (sPathInfo != null) {
       sURI = sURI.substring(0, sURI.lastIndexOf(sPathInfo));
