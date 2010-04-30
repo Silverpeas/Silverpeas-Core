@@ -28,13 +28,13 @@ import java.io.File;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestSearchCompletion extends AbstractTestDao {
 
   @Before
+  @Override
   public void setUp() throws Exception {
     Properties props = new Properties();
     props.load(TestSearchCompletion.class.getClassLoader().getResourceAsStream(
@@ -45,9 +45,6 @@ public class TestSearchCompletion extends AbstractTestDao {
     super.setUp();
   }
 
-  @After
-  public void tearDown() throws Exception {
-  }
 
   @Test
   public final void testGetSuggestions() {

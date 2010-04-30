@@ -68,9 +68,11 @@ public class TestAttachmentDAO extends JndiBasedDBTestCase {
     jndiName = props.getProperty("jndi.name");
     }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @Override
+  protected DatabaseOperation getTearDownOperation() throws Exception {
+    return DatabaseOperation.DELETE_ALL;
   }
+
 
   protected String getLookupName() {
     return jndiName;

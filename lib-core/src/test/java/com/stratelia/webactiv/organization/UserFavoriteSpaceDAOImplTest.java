@@ -44,6 +44,7 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
 
   private String jndiName = "";
 
+  @Override
   protected void setUp() throws Exception {
     Hashtable<String, String> env = new Hashtable<String, String>();
     env.put(Context.INITIAL_CONTEXT_FACTORY,
