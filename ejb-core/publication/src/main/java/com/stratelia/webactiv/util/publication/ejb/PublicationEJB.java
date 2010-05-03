@@ -144,6 +144,10 @@ public class PublicationEJB implements EntityBean {
    * @since 1.0
    */
   public void setDetail(PublicationDetail pubDetail) {
+	  setDetail(pubDetail, false);
+  }
+  
+  public void setDetail(PublicationDetail pubDetail, boolean forceUpdateDate) {
     if (pubDetail.getPK().equals(pk)) {
       String oldName = name;
       String oldDesc = description;
@@ -190,8 +194,18 @@ public class PublicationEJB implements EntityBean {
        * if(pubDetail.getUpdaterId() != null) { updaterId = pubDetail.getCreatorId(); }
        */
       updaterId = pubDetail.getUpdaterId();
-      if (pubDetail.isUpdateDateMustBeSet())
-        updateDate = new Date();
+      if (pubDetail.isUpdateDateMustBeSet()){
+    	  if(forceUpdateDate){
+    		  // In import case, we can force the update date to an old value
+    		  if(pubDetail.getUpdateDate() != null){
+    			  updateDate = pubDetail.getUpdateDate();
+    		  }else{
+    			  updateDate = new Date();
+    		  }
+    	  }else{
+    		  updateDate = new Date();
+    	  }
+      }
       isModified = true;
       if (pubDetail.getValidatorId() != null) {
         validatorId = pubDetail.getValidatorId();

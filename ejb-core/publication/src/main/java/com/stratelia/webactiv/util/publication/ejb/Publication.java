@@ -75,6 +75,8 @@ public interface Publication extends EJBObject {
    */
   public void setDetail(PublicationDetail pubDetail) throws RemoteException,
       SQLException;
+  public void setDetail(PublicationDetail pubDetail, boolean forceUpdateDate)  throws RemoteException,
+      SQLException;
 
   public void removeImage() throws RemoteException;
 

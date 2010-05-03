@@ -89,7 +89,7 @@ public interface PublicationBmBusinessSkeleton {
    * update the publication content.
    */
   public void setDetail(PublicationDetail detaile) throws RemoteException;
-
+  public void setDetail(PublicationDetail detaile, boolean forceUpdateDate) throws RemoteException;
   /**
    * add a new father (designed by "fatherPK") to a publication ("pubPK") The publication will be
    * visible from its new father node.

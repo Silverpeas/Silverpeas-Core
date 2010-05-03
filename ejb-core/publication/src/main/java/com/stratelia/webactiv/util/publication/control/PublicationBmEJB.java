@@ -352,14 +352,18 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
           "publication.DELETING_IMAGE_FAILED", "pubId = " + pubPK.getId(), re);
     }
   }
-
+  
   public void setDetail(PublicationDetail detail) throws RemoteException {
+	  setDetail(detail, false);
+  }
+
+  public void setDetail(PublicationDetail detail, boolean forceUpdateDate) throws RemoteException {
     Publication pub = findPublication(detail.getPK());
 
     try {
       int indexOperation = detail.getIndexOperation();
 
-      pub.setDetail(detail);
+      pub.setDetail(detail, forceUpdateDate);
 
       if (detail.isRemoveTranslation()) {
         // remove wysiwyg content
