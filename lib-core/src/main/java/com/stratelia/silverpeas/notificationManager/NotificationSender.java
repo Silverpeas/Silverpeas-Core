@@ -59,6 +59,9 @@ public class NotificationSender implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 4165938893905145809L;
+  private static ResourceLocator settings =
+      new ResourceLocator(
+      "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
 
   protected NotificationManager m_Manager = null;
 
@@ -105,10 +108,12 @@ public class NotificationSender implements java.io.Serializable {
       NotificationMetaData metaData,
       OrganizationController orgaController) throws NotificationManagerException {
     if (isNotificationManual(metaData)) {
-      for (String language : languages) {
-        String newContent =
-            addReceivers(usersSet, metaData.getContent(language), language, orgaController);
-        metaData.setContent(newContent, language);
+      if (settings.getBoolean("addReceiversInBody", false)) {
+        for (String language : languages) {
+          String newContent =
+              addReceivers(usersSet, metaData.getContent(language), language, orgaController);
+          metaData.setContent(newContent, language);
+        }
       }
       saveNotification(metaData, usersSet);
     }
@@ -189,8 +194,7 @@ public class NotificationSender implements java.io.Serializable {
         "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         language);
     String result = "";
-    String listReceivers = "\n" + m_Multilang.getString("NameOfReceivers");
-    List<String> users = new ArrayList<String>();
+    String listReceivers = "\n\n" + m_Multilang.getString("NameOfReceivers");
     String userName = "";
     boolean first = true;
     Iterator<String> it = usersSet.iterator();
@@ -198,9 +202,7 @@ public class NotificationSender implements java.io.Serializable {
       if (!first) {
         listReceivers = listReceivers + ", ";
       }
-      String userId = it.next();
-      users.add(userId);
-      userName = orgaController.getUserDetail(userId).getDisplayedName();
+      userName = orgaController.getUserDetail(it.next()).getDisplayedName();
       listReceivers = listReceivers + userName;
       first = false;
     }
