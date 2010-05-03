@@ -70,6 +70,8 @@ public interface PdcBm extends EJBObject {
       throws RemoteException;
 
   public AxisHeader getAxisHeader(String axisId) throws RemoteException;
+
+  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException, PdcException;
   
   public int addPosition(int pubId, ClassifyPosition position, String componentId, boolean alertSubscribers) throws RemoteException, PdcException;
 		

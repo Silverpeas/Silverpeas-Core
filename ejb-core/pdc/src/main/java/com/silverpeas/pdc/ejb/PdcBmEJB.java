@@ -119,6 +119,10 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
         "returned valueId = " + value.getValuePK().getId());
     return value;
   }
+
+  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException, PdcException {
+	  return getPdcBm().createDaughterValueWithId(value, value.getFatherId(), axisId);
+  }
   
   public int addPosition(int pubId, ClassifyPosition position, String componentId, boolean alertSubscribers) throws RemoteException, PdcException {
 	  return getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);

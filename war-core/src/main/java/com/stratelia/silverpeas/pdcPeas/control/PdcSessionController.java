@@ -261,11 +261,13 @@ public class PdcSessionController extends AbstractComponentSessionController {
     String currentValueId = getCurrentValue().getPK().getId();
     value.setCreatorId(getUserId());
     value.setCreationDate(formatter.format(new Date()));
-    int daughterId = getPdcBm().createDaughterValue(value, currentValueId,
+    int status = getPdcBm().createDaughterValue(value, currentValueId,
         new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
     refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK()
         .getId()));
-    return daughterId;
+    
+    
+    return status;
   }
 
   public int updateValue(Value value) throws PdcException {

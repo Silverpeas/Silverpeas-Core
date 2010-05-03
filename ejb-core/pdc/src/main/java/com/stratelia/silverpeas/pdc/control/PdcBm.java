@@ -377,11 +377,22 @@ public interface PdcBm {
    * Method declaration
    * @param valueToInsert
    * @param refValue
-   * @return
+   * @return status
    * @throws PdcException
    * @see
    */
   public int createDaughterValue(Value valueToInsert, String refValue,
+	      String treeId) throws PdcException;
+  
+  /**
+   * Method declaration
+   * @param valueToInsert
+   * @param refValue
+   * @return daughterid
+   * @throws PdcException
+   * @see
+   */
+  public String createDaughterValueWithId(Value valueToInsert, String refValue,
       String treeId) throws PdcException;
 
   /**

@@ -1383,6 +1383,38 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
     return status;
   }
+  
+  /**
+   * insert a value which is defined like a daughter value
+   * @param valueToInsert - a Value object
+   * @param refValue - the id of the Value to insert
+   * @return -1 if the name already exists id otherwise
+   */
+  public String createDaughterValueWithId(
+      com.stratelia.silverpeas.pdc.model.Value valueToInsert, String refValue,
+      String treeId) throws PdcException {
+    // get the Connection object
+    Connection con = openConnection(true);
+
+    String daughterId = null;
+    List daughters = getDaughters(con, refValue, treeId);
+
+    if (isValueNameExist(daughters, valueToInsert)) {
+      daughterId = "-1";
+      closeConnection(con);
+    } else {
+      try {
+        daughterId = tree.createSonToNode(con, (TreeNode) valueToInsert, new TreeNodePK(
+            refValue), treeId);
+      } catch (Exception exce_create) {
+        throw new PdcException("PdcBmImpl.createDaughterValueWithId",
+            SilverpeasException.ERROR, "Pdc.CANNOT_CREATE_VALUE", exce_create);
+      } finally {
+        closeConnection(con);
+      }
+    }
+    return daughterId;
+  }
 
   /**
    * Update the selected value
