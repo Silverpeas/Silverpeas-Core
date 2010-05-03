@@ -189,9 +189,9 @@
   </upgrade>
 
   <upgrade version="022">
-       <drop_table>
+       <create_table>
             <file name="postgres\busCore\up022\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_table>
+        </create_table>
   </upgrade>
 
 </contribution>
