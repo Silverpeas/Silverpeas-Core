@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -118,7 +119,11 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
         "returned valueId = " + value.getValuePK().getId());
     return value;
   }
-
+  
+  public int addPosition(int pubId, ClassifyPosition position, String componentId, boolean alertSubscribers) throws RemoteException, PdcException {
+	  return getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);
+  }
+  
   public ArrayList getDaughters(String axisId, String valueId)
       throws RemoteException {
     return (ArrayList) getPdcBm().getDaughters(axisId, valueId);
