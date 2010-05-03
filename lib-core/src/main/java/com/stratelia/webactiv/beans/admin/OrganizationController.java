@@ -896,12 +896,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public boolean isSpaceAvailable(String spaceId, String userId) {
     try {
-      String[] spaceIds = getAllSpaceIds(userId);
-      for (int s = 0; s < spaceIds.length; s++) {
-        if (spaceIds[s].equals(spaceId))
-          return true;
-      }
-      return false;
+      return m_Admin.isSpaceAvailable(userId, spaceId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.isSpaceAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_SPACE_IDS", "user Id: '" + userId

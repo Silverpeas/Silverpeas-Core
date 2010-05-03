@@ -3579,14 +3579,20 @@ public class Admin extends Object {
    * Get the spaces ids allowed for the given user Id
    */
   public String[] getUserSpaceIds(String sUserId) throws AdminException {
-    // TODO : interest of this method ?
-    return new String[0];
-    /*
-     * try { return m_SpaceInstManager.getAllowedSpaceIds(m_DDManager, Integer.parseInt(sUserId)); }
-     * catch (Exception e) { throw new AdminException("Admin.getUserSpaceIds",
-     * SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_ALLOWED_SPACE_IDS", "user Id : '" + sUserId
-     * + "'", e); }
-     */
+    List<String> spaceIds = new ArrayList<String>();
+
+    // getting all components availables
+    List<String> componentIds = getAllowedComponentIds(sUserId);
+    for (String componentId : componentIds) {
+      List<SpaceInstLight> spaces = TreeCache.getComponentPath(getDriverComponentId(componentId));
+      for (SpaceInstLight space : spaces) {
+        if (!spaceIds.contains(space.getFullId())) {
+          spaceIds.add(space.getFullId());
+        }
+      }
+    }
+
+    return spaceIds.toArray(new String[spaceIds.size()]);
   }
 
   private List<String> getAllGroupsOfUser(String userId) throws AdminException {
@@ -3670,9 +3676,19 @@ public class Admin extends Object {
     }
   }
 
+  /**
+   * This method permit to know if given space is allowed to given user.
+   * @return true if user is allowed to access to one component (at least) in given space, false
+   * otherwise.
+   * @throws AdminException
+   */
+  public boolean isSpaceAvailable(String userId, String spaceId) throws AdminException {
+    List<String> componentIds = getAllowedComponentIds(userId);
+    return isSpaceContainsOneComponent(componentIds, getDriverSpaceId(spaceId), true);
+  }
+
   private boolean isSpaceContainsOneComponent(List<String> componentIds, String spaceId,
-      boolean checkInSubspaces)
-      throws Exception {
+      boolean checkInSubspaces) {
     boolean find = false;
 
     List<ComponentInstLight> components =

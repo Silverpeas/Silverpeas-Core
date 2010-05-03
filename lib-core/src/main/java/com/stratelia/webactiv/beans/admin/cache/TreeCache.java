@@ -158,5 +158,29 @@ public class TreeCache {
     }
     return path;
   }
+  
+  public static ComponentInstLight getComponent(String componentId)
+  {
+    ComponentInstLight component = null;
+    for (Space space : map.values())
+    {
+      component = space.getComponent(componentId);
+      if (component != null)
+      {
+        return component;
+      }
+    }
+    return component;
+  }
+  
+  public static List<SpaceInstLight> getComponentPath(String componentId)
+  {
+    ComponentInstLight component = getComponent(componentId);
+    if (component != null)
+    {
+      return getSpacePath(component.getDomainFatherId());
+    }
+    return new ArrayList<SpaceInstLight>();
+  }
 
 }
