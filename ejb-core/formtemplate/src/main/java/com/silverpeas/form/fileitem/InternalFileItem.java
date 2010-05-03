@@ -98,7 +98,7 @@ public class InternalFileItem implements FileItem {
   }
 
   public String getString(String arg0) throws UnsupportedEncodingException {
-    return null;
+    return getString();
   }
 
   public boolean isInMemory() {
