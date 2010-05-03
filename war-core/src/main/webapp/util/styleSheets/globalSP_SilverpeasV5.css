@@ -2148,6 +2148,11 @@ td.browsebar a:hover {
 	position: relative;
 }
 
+#classifieds #categories #ViewAllClassifiedsByCategory {
+	float: left;
+	padding: 5px;
+}
+
 #classifieds #categories #newClassified {
 	float: right;
 	padding: 5px;
