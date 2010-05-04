@@ -1239,13 +1239,11 @@ public class WysiwygController {
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     OrganizationController controller = new OrganizationController();
     // gets all kmelia components
-    CompoSpace[] compoIds = controller.getCompoForUser(userId, "kmelia");
-    for (CompoSpace compoSpace : compoIds) {
+    String[] compoIds = controller.getCompoId("kmelia");
+    for (String compoId : compoIds) {
       // retain only the components considered as a file storage
-      if ("yes".equalsIgnoreCase(controller.getComponentParameterValue(compoSpace.getComponentId(),
-          "publicFiles"))) {
-        ComponentInstLight component =
-            controller.getComponentInstLight(compoSpace.getComponentId());
+      if ("yes".equalsIgnoreCase(controller.getComponentParameterValue(compoId, "publicFiles"))) {
+        ComponentInstLight component = controller.getComponentInstLight(compoId);
         components.add(component);
       }
     }

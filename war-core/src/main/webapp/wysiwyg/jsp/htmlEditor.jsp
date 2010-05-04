@@ -400,7 +400,7 @@ function openStorageFilemanager(){
 
 function insertAttachmentLink(url,img,label){
 	oEditor.Focus();
-	oEditor.InsertHtml('<a href="'+url+'"> <img src="'+img+'" width="20" border="0"> '+label+'</a> ');
+	oEditor.InsertHtml('<a href="'+url+'" target="_blank"> <img src="'+img+'" width="20" border="0" align="absmiddle"> '+label+'</a> ');
 }
 </script>
 
