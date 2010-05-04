@@ -28,6 +28,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
 
   private String jndiName = "";
 
+  @Override
   protected void setUp() throws Exception {
     prepareJndi();
     Hashtable<String, String> env = new Hashtable<String, String>();
