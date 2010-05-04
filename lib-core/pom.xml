@@ -201,6 +201,7 @@
       <artifactId>mockrunner</artifactId>
       <version>0.4.1</version>
       <classifier>j2ee1.4-jdk6</classifier>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.fortuna.ical4j</groupId>
