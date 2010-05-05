@@ -24,6 +24,7 @@
 
 package com.silverpeas.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -108,13 +109,15 @@ public class ConfigurationClassLoader extends ClassLoader {
     InputStream inputStream = super.getResourceAsStream(name);
     if (inputStream == null && name != null) {
       String fileName = baseDir + name;
+      SilverTrace.info("util", "ConfigurationClassLoader.getResourceAsStream",
+          "util.MSG_NO_PROPERTY_FILE", "Looking for file " + fileName);
       File file = new File(fileName);
       if (file.exists()) {
         try {
           inputStream = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
           Logger.getLogger(ConfigurationClassLoader.class.getName()).log(Level.SEVERE, null, ex);
-          inputStream = super.getResourceAsStream(name);
+          return null;
         }
       }
     }
