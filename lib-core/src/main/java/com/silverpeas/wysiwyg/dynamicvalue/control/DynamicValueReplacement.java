@@ -46,9 +46,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class DynamicValueReplacement {
 
   /**
-   * regular expression use to search the following expression #{<key>} in HTML code
+   * regular expression use to search the following expression (%<key>%) in HTML code
    */
-  final static String regex = "#\\{(.*?)\\}";
+  final static String REGEX = "\\(%(.*?)%\\)";
 
   private String updatedString;
 
@@ -139,7 +139,7 @@ public class DynamicValueReplacement {
 
     updatedString = wysiwygText;
     // Compile regular expression
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(REGEX);
     Matcher matcher = pattern.matcher(updatedString);
     // if a key has been found in the HTML code, we try to replace him by his value.
     if (matcher.find()) {
@@ -190,7 +190,8 @@ public class DynamicValueReplacement {
           value.getKey() + "  value :" + value.getValue());
       // escape the first brace in the key string because it's a reserved character in regular
       // expression
-      escapementStr = matcher.group().replaceAll("\\{", "\\\\{");
+      escapementStr = matcher.group().replaceAll("\\(", "\\\\(");
+      escapementStr = escapementStr.replaceAll("\\)", "\\\\)");
       SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
           " result after escaping special characters : " + escapementStr);
       // replace all the occurrences of current key in HTML code

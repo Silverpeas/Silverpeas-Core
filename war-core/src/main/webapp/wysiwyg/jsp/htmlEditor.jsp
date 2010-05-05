@@ -379,7 +379,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		index = document.recupHtml.dynamicValues.selectedIndex;
 		var str = document.recupHtml.dynamicValues.options[index].value;
 		if (index != 0 && str != null){		   
-				oEditor.InsertHtml('#{'+str+'}');
+				oEditor.InsertHtml('(%'+str+'%)');
 		}
 	}
 var storageFileWindow=window;

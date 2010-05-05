@@ -229,7 +229,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         out.println("var str = document.getElementById(\"dynamicValues_" + fieldName +
             "\").options[index].value;");
         out.println("if (index != 0 && str != null){");
-        out.println("oEditor.InsertHtml('#{'+str+'}');");
+        out.println("oEditor.InsertHtml('(%'+str+'%)');");
         out.println("} }");
       }
 

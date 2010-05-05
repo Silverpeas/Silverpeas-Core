@@ -33,7 +33,7 @@ import java.util.Date;
 public class DynamicValue implements Serializable {
 
   /**
-   * key is used in HTML code as follows : "#{<key>}". This key is visible only in HTML editor.
+   * key is used in HTML code as follows : "(%<key>%)". This key is visible only in HTML editor.
    */
   private String key = null;
   /**
@@ -57,7 +57,7 @@ public class DynamicValue implements Serializable {
 
   /**
    * full constructor
-   * @param key the key is used in HTML code as follows : "#{<key>}".
+   * @param key the key is used in HTML code as follows : "(%<key>%)".
    * @param value the value relating to a key this value replace the key when user read the content
    * @param startDate the start date of key validity
    * @param endDate the end date of key validity
