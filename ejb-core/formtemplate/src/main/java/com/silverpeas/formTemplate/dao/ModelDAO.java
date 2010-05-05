@@ -29,57 +29,81 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ModelDAO {
+
   public static void addModel(Connection con, String instanceId, String modelId)
-      throws SQLException, UtilException {
-    // ajout d'un modèle
+      throws SQLException {
+    addModel(con, instanceId, modelId, "0");
+  }
+
+  public static void addModel(Connection con, String instanceId, String modelId, String objectId)
+      throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
-      String query = "insert into st_instance_ModelUsed values (?,?)";
-      // initialisation des paramètres
+      String query = "insert into st_instance_ModelUsed values (?,?,?)";
 
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, modelId);
+      prepStmt.setString(3, objectId);
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
 
   public static void deleteModel(Connection con, String instanceId)
       throws SQLException, UtilException {
+    deleteModel(con, instanceId, "0");
+  }
+
+  public static void deleteModel(Connection con, String instanceId, String objectId)
+      throws SQLException, UtilException {
     // suppression de tous les modèles
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
       String query = "delete from st_instance_ModelUsed where instanceId = ? ";
-      // initialisation des paramètres
+      if (StringUtil.isDefined(objectId)) {
+        query += " and objectId = ? ";
+      }
 
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
+      if (StringUtil.isDefined(objectId)) {
+        prepStmt.setString(2, objectId);
+      }
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
 
-  public static Collection getModelUsed(Connection con, String instanceId)
+  public static Collection<String> getModelUsed(Connection con, String instanceId)
       throws SQLException, UtilException {
-    ArrayList listModel = new ArrayList();
+    return getModelUsed(con, instanceId, "0");
+  }
+
+  public static Collection<String> getModelUsed(Connection con, String instanceId, String objectId)
+      throws SQLException, UtilException {
+    List<String> listModel = new ArrayList<String>();
     String query = "select modelId from st_instance_ModelUsed where instanceId = ?";
+    if (StringUtil.isDefined(objectId)) {
+      query += " and objectId = ? ";
+    }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
+      if (StringUtil.isDefined(objectId)) {
+        prepStmt.setString(2, objectId);
+      }
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         String modelId = rs.getString(1);
