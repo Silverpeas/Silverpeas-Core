@@ -21,22 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * AuthenticationServer.java
- *
- * Created on 6 aout 2001
- */
-
 package com.stratelia.silverpeas.authentication;
-
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class manage the authentication for a given domain
@@ -46,7 +39,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class AuthenticationServer extends Object {
   protected String m_FallbackType;
   protected int m_nbServers;
-  protected Vector m_AutServers;
+  protected List<Authentication> m_AutServers;
   protected boolean m_allowPasswordChange;
 
   public AuthenticationServer(String authServerName) {
@@ -61,10 +54,9 @@ public class AuthenticationServer extends Object {
       propFile = new ResourceLocator("com.stratelia.silverpeas.authentication."
           + authServerName, "");
       m_FallbackType = propFile.getString("fallbackType");
-      m_allowPasswordChange = getBooleanProperty(propFile,
-          "allowPasswordChange", false);
+      m_allowPasswordChange = getBooleanProperty(propFile, "allowPasswordChange", false);
       nbServers = Integer.parseInt(propFile.getString("autServersCount"));
-      m_AutServers = new Vector();
+      m_AutServers = new ArrayList<Authentication>();
       for (i = 0; i < nbServers; i++) {
         serverName = "autServer" + Integer.toString(i);
         if (getBooleanProperty(propFile, serverName + ".enabled", true)) {
@@ -103,7 +95,7 @@ public class AuthenticationServer extends Object {
     }
     i = 0;
     while ((i < m_nbServers) && bNotFound) {
-      autObj = (Authentication) m_AutServers.elementAt(i);
+      autObj = m_AutServers.get(i);
       if (autObj.getEnabled()) {
         try {
           autObj.authenticate(login, passwd, request);
@@ -113,9 +105,10 @@ public class AuthenticationServer extends Object {
           // is about to expire
           // Store information in request and return
           bNotFound = false;
-          if (request != null)
-            request.getSession().setAttribute(
-                Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, new Boolean(true));
+          if (request != null) {
+            request.getSession().
+                setAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, Boolean.TRUE);
+          }
         } catch (AuthenticationPwdNotAvailException ex) {
           SilverTrace.info("authentication",
               "AuthenticationServer.authenticate",
@@ -176,10 +169,10 @@ public class AuthenticationServer extends Object {
     boolean bNotFound = true;
     AuthenticationException lastException = null;
 
-    if (!m_allowPasswordChange)
-      throw new AuthenticationPwdChangeNotAvailException(
-          "AuthenticationServer.changePassword", SilverpeasException.ERROR,
-          "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+    if (!m_allowPasswordChange) {
+      throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.changePassword",
+          SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+    }
 
     if ((login == null) || (login.length() <= 0)) {
       throw new AuthenticationException("AuthenticationServer.changePassword",
@@ -187,7 +180,7 @@ public class AuthenticationServer extends Object {
     }
     i = 0;
     while ((i < m_nbServers) && bNotFound) {
-      autObj = (Authentication) m_AutServers.elementAt(i);
+      autObj = m_AutServers.get(i);
       if (autObj.getEnabled()) {
         try {
           autObj.changePassword(login, oldPassword, newPassword);
@@ -246,20 +239,13 @@ public class AuthenticationServer extends Object {
     }
   }
 
-  protected boolean getBooleanProperty(ResourceLocator resources,
+  protected final boolean getBooleanProperty(ResourceLocator resources,
       String propertyName, boolean defaultValue) {
-    String value;
-    boolean valret = defaultValue;
-
-    value = resources.getString(propertyName);
+    String value = resources.getString(propertyName);
     if (value != null) {
-      if (value.equalsIgnoreCase("true")) {
-        valret = true;
-      } else {
-        valret = false;
-      }
+      return "true".equalsIgnoreCase(value);
     }
-    return valret;
+    return defaultValue;
   }
 
   public boolean isPasswordChangeAllowed() {
@@ -282,7 +268,7 @@ public class AuthenticationServer extends Object {
     AuthenticationException lastException = null;
     int i = 0;
     while ((i < m_nbServers) && bNotFound) {
-      autObj = (Authentication) m_AutServers.elementAt(i);
+      autObj = m_AutServers.get(i);
       if (autObj.getEnabled()) {
         try {
           autObj.resetPassword(login, newPassword);
