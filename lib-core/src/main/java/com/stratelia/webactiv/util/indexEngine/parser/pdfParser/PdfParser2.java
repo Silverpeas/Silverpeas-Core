@@ -30,11 +30,11 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.util.PDFTextStripper;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * the pdfParser parse a pdf file
@@ -52,9 +52,7 @@ public class PdfParser2 implements Parser {
     PDDocument document = null;
     try {
       file = new FileInputStream(path);
-
       document = PDDocument.load(file);
-
       PDFTextStripper extractor = new PDFTextStripper();
       String text = extractor.getText(document);
 
