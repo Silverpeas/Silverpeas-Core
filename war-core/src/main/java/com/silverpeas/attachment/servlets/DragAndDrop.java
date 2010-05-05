@@ -25,6 +25,7 @@
 package com.silverpeas.attachment.servlets;
 
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,7 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -109,6 +109,7 @@ public class DragAndDrop extends HttpServlet {
         "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
 
     try {
+      req.setCharacterEncoding("UTF-8");
       String componentId = req.getParameter("ComponentId");
       SilverTrace.info("attachment", "DragAndDrop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
@@ -122,17 +123,13 @@ public class DragAndDrop extends HttpServlet {
       String indexIt = req.getParameter("IndexIt");
       boolean bIndexIt = "1".equals(indexIt);
 
-      DiskFileUpload dfu = new DiskFileUpload();
-      List items = dfu.parseRequest(req);
-
-      String fullFileName = null;
-      for (int i = 0; i < items.size(); i++) {
-        FileItem item = (FileItem) items.get(i);
+      List<FileItem> items = FileUploadUtil.parseRequest(req);
+      for (FileItem item : items) {
         SilverTrace.info("attachment", "DragAndDrop.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
+            "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
         SilverTrace.info("attachment", "DragAndDrop.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = " + item.getName() + "; " + item.getString("UTF-8"));
+            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; " + item.getString("UTF-8"));
 
         if (!item.isFormField()) {
           // create AttachmentPK with spaceId and componentId
@@ -142,7 +139,7 @@ public class DragAndDrop extends HttpServlet {
           // use AttachmentPK to build the foreign key of customer object.
           AttachmentPK foreignKey = new AttachmentPK(id, "useless", componentId);
 
-          fullFileName = item.getName();
+          String fullFileName = item.getName();
           if (fullFileName != null && runOnUnix) {
             fullFileName = fullFileName.replace('\\', File.separatorChar);
             SilverTrace.info("attachment", "DragAndDrop.doPost",
@@ -157,7 +154,7 @@ public class DragAndDrop extends HttpServlet {
 
           long size = item.getSize();
           SilverTrace.info("attachment", "DragAndDrop.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "item #" + i + " size = " + size);
+              "root.MSG_GEN_PARAM_VALUE", "item size = " + size);
 
           String type = fileName.substring(fileName.lastIndexOf(".") + 1,
               fileName.length());
