@@ -57,6 +57,7 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
  */
 public class DragAndDrop extends HttpServlet {
 
+  @Override
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -76,11 +77,8 @@ public class DragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-    boolean runOnUnix = !FileUtil.isWindows();
-    SilverTrace.info("importExportPeas", "DragAndDrop", "root.MSG_GEN_PARAM_VALUE", "runOnUnix = "
-        + runOnUnix);
-
     try {
+      req.setCharacterEncoding("UTF-8");
       String componentId = req.getParameter("ComponentId");
       SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId);

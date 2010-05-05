@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.attachment.servlets;
 
 import com.silverpeas.util.FileUtil;
@@ -54,8 +53,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  * @author
  */
 public class DragAndDrop extends HttpServlet {
-  HttpSession session;
-  PrintWriter out;
 
   /**
    * Method declaration
@@ -97,117 +94,89 @@ public class DragAndDrop extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("attachment", "DragAndDrop.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
 
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = !FileUtil.isWindows();
     boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
-
-    SilverTrace.info("importExportPeas", "DragAndDrop",
-        "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
-
     try {
       req.setCharacterEncoding("UTF-8");
       String componentId = req.getParameter("ComponentId");
-      SilverTrace.info("attachment", "DragAndDrop.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "componentId = "
+          + componentId);
       String id = req.getParameter("PubId");
-      SilverTrace.info("attachment", "DragAndDrop.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
       String userId = req.getParameter("UserId");
       SilverTrace.info("attachment", "DragAndDrop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
       String context = req.getParameter("Context");
-      String indexIt = req.getParameter("IndexIt");
-      boolean bIndexIt = "1".equals(indexIt);
+      boolean bIndexIt = "1".equals(req.getParameter("IndexIt"));
 
       List<FileItem> items = FileUploadUtil.parseRequest(req);
       for (FileItem item : items) {
-        SilverTrace.info("attachment", "DragAndDrop.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item = "
+        SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
         SilverTrace.info("attachment", "DragAndDrop.doPost",
             "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; " + item.getString("UTF-8"));
 
         if (!item.isFormField()) {
-          // create AttachmentPK with spaceId and componentId
-          AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
+          String fileName = item.getName();
+          if (fileName != null) {
+            fileName = fileName.replace('\\', File.separatorChar);
+            fileName = fileName.replace('/', File.separatorChar);
+            SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+                "file = " + fileName);
 
-          // create foreignKey with spaceId, componentId and id
-          // use AttachmentPK to build the foreign key of customer object.
-          AttachmentPK foreignKey = new AttachmentPK(id, "useless", componentId);
+            long size = item.getSize();
+            SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+                "item size = " + size);
 
-          String fullFileName = item.getName();
-          if (fullFileName != null && runOnUnix) {
-            fullFileName = fullFileName.replace('\\', File.separatorChar);
-            SilverTrace.info("attachment", "DragAndDrop.doPost",
-                "root.MSG_GEN_PARAM_VALUE", "fullFileName on Unix = "
-                + fullFileName);
-          }
+            String type = FileRepositoryManager.getFileExtension(fileName);
+            String physicalName = new Date().getTime() + '.' + type;
+            item.write(
+                new File(AttachmentController.createPath(componentId, context) + physicalName));
+            String mimeType = AttachmentController.getMimeType(fileName);
+            // create AttachmentDetail Object
+            AttachmentDetail attachment = new AttachmentDetail(new AttachmentPK(null, "useless",
+                componentId), physicalName, fileName, null, mimeType, size, context, new Date(),
+                new AttachmentPK(id, "useless", componentId));
+            attachment.setAuthor(userId);
+            AttachmentController.createAttachment(attachment, bIndexIt);
+            // Specific case: 3d file to convert by Actify Publisher
+            if (actifyPublisherEnable) {
+              String extensions = settings.getString("Actify3dFiles");
+              StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
+              // 3d native file ?
+              boolean fileForActify = false;
+              SilverTrace.info("attachment", "DragAndDrop.doPost",
+                  "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="
+                  + tokenizer.countTokens());
+              while (tokenizer.hasMoreTokens() && !fileForActify) {
+                String extension = tokenizer.nextToken();
+                fileForActify = type.equalsIgnoreCase(extension);
+              }
+              if (fileForActify) {
+                String dirDestName = "a_" + componentId + "_" + id;
+                String actifyWorkingPath = settings.getString("ActifyPathSource")
+                    + File.separatorChar + dirDestName;
 
-          String fileName = fullFileName.substring(fullFileName
-              .lastIndexOf(File.separator) + 1, fullFileName.length());
-          SilverTrace.info("attachment", "DragAndDrop.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "file = " + fileName);
-
-          long size = item.getSize();
-          SilverTrace.info("attachment", "DragAndDrop.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "item size = " + size);
-
-          String type = fileName.substring(fileName.lastIndexOf(".") + 1,
-              fileName.length());
-          String physicalName = new Long(new Date().getTime()).toString() + "."
-              + type;
-
-          item.write(new File(AttachmentController.createPath(componentId,
-              context)
-              + physicalName));
-          String mimeType = AttachmentController.getMimeType(fileName);
-
-          // create AttachmentDetail Object
-          AttachmentDetail ad = new AttachmentDetail(atPK, physicalName,
-              fileName, null, mimeType, size, context, new Date(), foreignKey);
-          ad.setAuthor(userId);
-
-          AttachmentController.createAttachment(ad, bIndexIt);
-
-          // Specific case: 3d file to convert by Actify Publisher
-          if (actifyPublisherEnable) {
-            String extensions = settings.getString("Actify3dFiles");
-            StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
-            // 3d native file ?
-            boolean fileForActify = false;
-            SilverTrace.info("attachment", "DragAndDrop.doPost",
-                "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="
-                + tokenizer.countTokens());
-            while (tokenizer.hasMoreTokens() && !fileForActify) {
-              String extension = tokenizer.nextToken();
-              if (type.equalsIgnoreCase(extension))
-                fileForActify = true;
-            }
-            if (fileForActify) {
-              String dirDestName = "a_" + componentId + "_" + id;
-              String actifyWorkingPath = settings.getString("ActifyPathSource")
-                  + File.separator + dirDestName;
-
-              String destPath = FileRepositoryManager.getTemporaryPath()
-                  + actifyWorkingPath;
-              if (!new File(destPath).exists())
-                FileRepositoryManager.createGlobalTempPath(actifyWorkingPath);
-
-              String destFile = FileRepositoryManager.getTemporaryPath()
-                  + actifyWorkingPath + File.separator + fileName;
-              FileRepositoryManager.copyFile(AttachmentController.createPath(
-                  componentId, "Images")
-                  + File.separator + physicalName, destFile);
+                String destPath = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath;
+                if (!new File(destPath).exists()) {
+                  FileRepositoryManager.createGlobalTempPath(actifyWorkingPath);
+                }
+                String destFile = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath
+                    + File.separatorChar + fileName;
+                FileRepositoryManager.copyFile(AttachmentController.createPath(componentId, "Images")
+                    + File.separatorChar + physicalName, destFile);
+              }
             }
           }
         }
       }
     } catch (Exception e) {
       SilverTrace.error("attachment", "DragAndDrop.doPost", "ERREUR", e);
+      res.getOutputStream().println("ERROR");
+      return;
     }
     res.getOutputStream().println("SUCCESS");
   }

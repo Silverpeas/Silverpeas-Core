@@ -85,16 +85,12 @@ public class ImportDragAndDrop extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
-    boolean runOnUnix = !FileUtil.isWindows();
-    SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE", "runOnUnix = "
-        + runOnUnix);
+    SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+    request.setCharacterEncoding("UTF-8");
     if (!FileUploadUtil.isRequestMultipart(request)) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
-
     try {
       String componentId = request.getParameter("ComponentId");
       String topicId = request.getParameter("TopicId");
