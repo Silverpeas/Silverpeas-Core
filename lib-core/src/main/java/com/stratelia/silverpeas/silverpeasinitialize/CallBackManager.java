@@ -62,7 +62,7 @@ public class CallBackManager {
 
   // HashTables
   // ----------
-  protected static List[] subscribers = null;
+  protected static List<CallBack>[] subscribers = null;
 
   static {
     subscribers = new List[ACTION_LAST];
@@ -95,12 +95,12 @@ public class CallBackManager {
 
   // Call functions
   // --------------
-  static public void invoke(int action, int iParam, String sParam,
+  static synchronized public void invoke(int action, int iParam, String sParam,
       Object extraParam) {
-    Iterator it = subscribers[action].iterator();
+    Iterator<CallBack> it = subscribers[action].iterator();
 
     while (it.hasNext()) {
-      ((CallBack) (it.next())).doInvoke(action, iParam, sParam, extraParam);
+      it.next().doInvoke(action, iParam, sParam, extraParam);
     }
   }
 
