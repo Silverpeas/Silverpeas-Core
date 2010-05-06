@@ -114,12 +114,10 @@ public class TreeBuilder {
     // the space displaying
     if (father.getType() == NodeType.SPACE) {
       // gets the sub space
-      String[] spaceIds = controller.getAllSubSpaceIds(father.getKey(), userId);
-      SpaceInstLight space = null;
-      for (String spaceId : spaceIds) {
-        space = controller.getSpaceInstLightById(spaceId);
+      List<SpaceInstLight> subspaces = controller.getSubSpacesContainingComponent(father.getKey(), userId, "kmelia");
+      for (SpaceInstLight space : subspaces) {
         MenuItem item =
-            new MenuItem(space.getName(language), spaceId, space.getLevel(),
+            new MenuItem(space.getName(language), space.getFullId(), space.getLevel(),
             NodeType.SPACE, false, father, null);
         children.add(item);
       }
@@ -203,10 +201,9 @@ public class TreeBuilder {
     // the space
     if (filter.acceptNodeType(NodeType.SPACE)) {
 
-      String[] availableSpaceIds = controller.getAllRootSpaceIds(userId);
-      SpaceInstLight space = null;
-      for (String spaceId : availableSpaceIds) {
-        space = controller.getSpaceInstLightById(spaceId);
+      List<SpaceInstLight> rootSpaces =
+          controller.getRootSpacesContainingComponent(userId, "kmelia");
+      for (SpaceInstLight space : rootSpaces) {
         if (space != null) {
           MenuItem subElement =
               new MenuItem(space.getName(language), space.getFullId(), 0,

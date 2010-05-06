@@ -4317,6 +4317,60 @@ public class Admin extends Object {
   }
 
   /**
+   * This method returns all root spaces which contains at least one allowed component of type
+   * componentName in this space or subspaces.
+   * @param userId
+   * @param componentName the component type (kmelia, gallery...)
+   * @return a list of root spaces
+   * @throws AdminException
+   */
+  public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName)
+      throws AdminException {
+    List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
+    List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
+    for (ComponentInstLight component : components) {
+      List<SpaceInstLight> path =
+          TreeCache.getComponentPath(getDriverComponentId(component.getId()));
+      if (path != null && !path.isEmpty()) {
+        SpaceInstLight root = path.get(0);
+        if (!spaces.contains(root)) {
+          spaces.add(root);
+        }
+      }
+    }
+    return spaces;
+  }
+
+  /**
+   * This method returns all sub spaces which contains at least one allowed component of type
+   * componentName in this space or subspaces.
+   * @param userId
+   * @param componentName the component type (kmelia, gallery...)
+   * @return a list of root spaces
+   * @throws AdminException
+   */
+  public List<SpaceInstLight> getSubSpacesContainingComponent(String spaceId, String userId,
+      String componentName)
+      throws AdminException {
+    List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
+    spaceId = getDriverSpaceId(spaceId);
+    List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
+
+    for (ComponentInstLight component : components) {
+      List<SpaceInstLight> path =
+          TreeCache.getComponentPath(getDriverComponentId(component.getId()));
+      for (SpaceInstLight space : path) {
+        if (space.getFatherId().equals(spaceId)) {
+          if (!spaces.contains(space)) {
+            spaces.add(space);
+          }
+        }
+      }
+    }
+    return spaces;
+  }
+
+  /**
    * Get the tuples (space id, compo id) allowed for the given user and given component name
    */
   public CompoSpace[] getCompoForUser(String sUserId, String sComponentName)

@@ -883,6 +883,31 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
 
+  public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
+    try {
+      return m_Admin.getRootSpacesContainingComponent(userId, componentName);
+    } catch (AdminException e) {
+      SilverTrace.error("admin",
+          "OrganizationController.getRootSpacesContainingComponent",
+          "admin.MSG_ERR_GET_ROOT_SPACES", "userId = " + userId + ", componentName = " +
+          componentName, e);
+      return new ArrayList<SpaceInstLight>();
+    }
+  }
+
+  public List<SpaceInstLight> getSubSpacesContainingComponent(String spaceId, String userId,
+      String componentName) {
+    try {
+      return m_Admin.getSubSpacesContainingComponent(spaceId, userId, componentName);
+    } catch (AdminException e) {
+      SilverTrace.error("admin",
+          "OrganizationController.getSubSpacesContainingComponent",
+          "admin.MSG_ERR_GET_SUB_SPACES", "spaceId = " + spaceId + ", userId = " + userId +
+          ", componentName = " + componentName, e);
+      return new ArrayList<SpaceInstLight>();
+    }
+  }
+
   public boolean isComponentAvailable(String componentId, String userId) {
     try {
       return m_Admin.isComponentAvailable(componentId, userId);
