@@ -31,6 +31,8 @@
 <%@ include file="checkVersion.jsp"%>
 
 <%@page import="com.stratelia.webactiv.util.DateUtil"%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+
 <script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/jquery/ui.core.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/jquery/ui.sortable.js" type="text/javascript"></script>
@@ -151,7 +153,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 		out.println("</ul>");
 		out.println("<ul>");
 			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"+documentId+"')\">"+resources.getString("GML.modify")+"</a></li>");
-			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('"+document.getName()+"',"+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
+			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('"+EncodeHelper.javaStringToJsString(document.getName())+"',"+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
 		out.println("</ul>");
 		if (useFileSharing) 
 		{

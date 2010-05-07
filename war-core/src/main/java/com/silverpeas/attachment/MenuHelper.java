@@ -23,6 +23,7 @@
  */
 package com.silverpeas.attachment;
 
+import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class MenuHelper {
     }
     out.println(
             "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('"
-            + attachment.getLogicalName(language)
+            + EncodeHelper.javaStringToJsString(attachment.getLogicalName(language))
             + "',"
             + attachmentId
             + ")\">"
