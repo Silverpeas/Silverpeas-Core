@@ -26,6 +26,9 @@ package com.stratelia.webactiv.util.contact.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.UserFull;
+
 /**
  * This object contains the description of a contact
  * @author Nicolas Eysseric
@@ -42,6 +45,7 @@ public class ContactDetail implements Serializable {
   private String userId;
   private Date creationDate;
   private String creatorId;
+  private UserFull userFull;
 
   public ContactDetail(ContactPK pk, String firstName, String lastName,
       String email, String phone, String fax, String userId, Date creationDate,
@@ -100,7 +104,13 @@ public class ContactDetail implements Serializable {
   }
 
   public String getPhone() {
-    return phone;
+    if (StringUtil.isDefined(phone)) {
+      return phone;
+    } else if (getUserFull() != null) {
+      return getUserFull().getValue("phone");
+    } else {
+      return null;
+    }
   }
 
   public void setPhone(String phone) {
@@ -108,7 +118,13 @@ public class ContactDetail implements Serializable {
   }
 
   public String getFax() {
-    return fax;
+    if (StringUtil.isDefined(phone)) {
+      return fax;
+    } else if (getUserFull() != null) {
+      return getUserFull().getValue("fax");
+    } else {
+      return null;
+    }
   }
 
   public void setFax(String fax) {
@@ -139,6 +155,14 @@ public class ContactDetail implements Serializable {
     this.creatorId = creatorId;
   }
 
+  public void setUserFull(UserFull userFull) {
+    this.userFull = userFull;
+  }
+
+  public UserFull getUserFull() {
+    return userFull;
+  }
+
   public String toString() {
     String result = "ContactDetail {" + "\n";
     result = result + "  getPK().getId() = " + getPK().getId() + "\n";
@@ -153,6 +177,7 @@ public class ContactDetail implements Serializable {
     result = result + "  getUserId() = " + getUserId() + "\n";
     result = result + "  getCreationDate() = " + getCreationDate() + "\n";
     result = result + "  getCreatorId() = " + getCreatorId() + "\n";
+    result = result + "  getUserFull() = " + getUserFull() + "\n";
     result = result + "}";
     return result;
   }
