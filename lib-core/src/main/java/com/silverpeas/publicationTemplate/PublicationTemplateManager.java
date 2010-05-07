@@ -52,6 +52,7 @@ import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -285,29 +286,35 @@ public class PublicationTemplateManager {
   public static List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
       throws PublicationTemplateException {
     List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    Collection<File> templateNames;
     try {
-      Collection<File> templateNames = FileFolderManager.getAllFile(templateDir);
-      File templateFile = null;
-      Iterator<File> iterator = templateNames.iterator();
-      PublicationTemplate template = null;
-      String fileName = null;
-      while (iterator.hasNext()) {
-        templateFile = iterator.next();
-        fileName = templateFile.getName();
-        template =
-            loadPublicationTemplate(fileName.substring(fileName.lastIndexOf(File.separator) + 1,
-            fileName.length()));
-        if (onlyVisibles) {
-          if (template.isVisible())
-            templates.add(template);
-        } else
-          templates.add(template);
-      }
-    } catch (UtilException e) {
+      templateNames = FileFolderManager.getAllFile(templateDir);
+    } catch (UtilException e1) {
       throw new PublicationTemplateException("PublicationTemplateManager.getPublicationTemplates",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template Dir : " +
-          templateDir, e);
+          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATES", e1);
     }
+    for (File templateFile : templateNames) {
+      String fileName = templateFile.getName();
+      try {
+        String extension = FileRepositoryManager.getFileExtension(fileName);
+        if ("xml".equalsIgnoreCase(extension)) {
+          PublicationTemplate template =
+              loadPublicationTemplate(fileName.substring(fileName.lastIndexOf(File.separator) + 1,
+              fileName.length()));
+          if (onlyVisibles) {
+            if (template.isVisible()) {
+              templates.add(template);
+            }
+          } else {
+            templates.add(template);
+          }
+        }
+      } catch (Exception e) {
+        SilverTrace.error("form", "PublicationTemplateManager.getPublicationTemplates",
+            "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "fileName = " + fileName);
+      }
+    }
+
     return templates;
   }
 
