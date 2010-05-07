@@ -1074,7 +1074,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
 
-    return urlAttachment;
+    return FileServerUtils.getApplicationContext()+urlAttachment;
   }
 
   private String getVersioningUrl(String documentId, String componentId)
@@ -1090,7 +1090,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
         version.getLogicalName(), documentId, version.getPk().getId());
 
-    return urlVersioning;
+    return FileServerUtils.getApplicationContext()+urlVersioning;
   }
 
   /******************************************************************************************************************/
