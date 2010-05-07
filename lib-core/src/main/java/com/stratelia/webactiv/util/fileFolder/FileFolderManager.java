@@ -44,11 +44,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.io.FileUtils;
 
 public class FileFolderManager {
 
@@ -57,20 +58,18 @@ public class FileFolderManager {
    * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
    * Param = chemin du repertoire
    */
-  public static Collection getAllSubFolder(String chemin) throws UtilException {
+  public static Collection<File> getAllSubFolder(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
 
-    ArrayList resultat = new ArrayList();
-    int i = 0;
+    List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
     if (directory.isDirectory()) {
       File[] list = directory.listFiles();
-
-      while (list != null && i < list.length) {
-        if (list[i].isDirectory())
-          resultat.add(list[i]);
-        i++;
+      for (File file : list) {
+        if (file.isDirectory()) {
+          resultat.add(file);
+        }
       }
     }
 
@@ -88,18 +87,16 @@ public class FileFolderManager {
    * les fichiers, pas les repertoires) contenus dans le repertoire passe en parametre Param =
    * chemin du repertoire
    */
-  public static Collection getAllFile(String chemin) throws UtilException {
-    ArrayList resultat = new ArrayList();
-    int i = 0;
+  public static Collection<File> getAllFile(String chemin) throws UtilException {
+    List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
     if (directory.isDirectory()) {
       File[] list = directory.listFiles();
-
-      while (list != null && i < list.length) {
-        if (list[i].isFile())
-          resultat.add(list[i]);
-        i++;
+      for (File file : list) {
+        if (file.isFile()) {
+          resultat.add(file);
+        }
       }
     }
 
@@ -116,19 +113,17 @@ public class FileFolderManager {
    * getAllImages : retourne une Collection d'objets File qui representent les fichiers images (type
    * GIF ou JPEG) contenus dans le repertoire passe en parametre Param = chemin du repertoire
    */
-  public static Collection getAllImages(String chemin) throws UtilException {
+  public static Collection<File> getAllImages(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
 
-    ArrayList resultat = new ArrayList();
-    int i = 0;
+    List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
     if (directory.isDirectory()) {
       File[] list = directory.listFiles();
-
-      while (list != null && i < list.length) {
-        if (list[i].isFile()) {
-          String fichier = list[i].getName();
+      for (File file : list) {
+        if (file.isFile()) {
+          String fichier = file.getName();
           int indexPoint = fichier.lastIndexOf(".");
           String type = fichier.substring(indexPoint + 1);
           if (type.equals("gif") || type.equals("GIF") || type.equals("jpg")
@@ -136,20 +131,16 @@ public class FileFolderManager {
               || type.equals("bmp") || type.equals("BMP") || type.equals("pcd")
               || type.equals("PCD") || type.equals("tga") || type.equals("TGA")
               || type.equals("tif") || type.equals("TIF"))
-            resultat.add(list[i]);
-        } else if (list[i].isDirectory()) {
-          String cheminRep = list[i].getAbsolutePath();
-          Collection fich = getAllImages(cheminRep);
-          Iterator j = fich.iterator();
-          while (j.hasNext()) {
-            resultat.add((File) j.next());
+            resultat.add(file);
+        } else if (file.isDirectory()) {
+          String cheminRep = file.getAbsolutePath();
+          Collection<File> fich = getAllImages(cheminRep);
+          for (File image : fich) {
+            resultat.add(image);
           }
         }
-        i++;
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.getAllImages",
           "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllImages",
@@ -163,38 +154,26 @@ public class FileFolderManager {
    * web contenus dans le repertoire passe en parametre et ses sous repertoires Param = chemin du
    * repertoire du site
    */
-  public static Collection getAllWebPages(String chemin) throws UtilException {
+  public static Collection<File> getAllWebPages(String chemin) throws UtilException {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
 
-    ArrayList resultat = new ArrayList();
-    int i = 0;
+    List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
     if (directory.isDirectory()) {
       File[] list = directory.listFiles();
-
-      while (list != null && i < list.length) {
-        if (list[i].isFile()) {
-          /*
-           * NEWD CBO 22/06/2007 String fichier = list[i].getName(); int indexPoint =
-           * fichier.lastIndexOf("."); String type = fichier.substring(indexPoint + 1); if
-           * (type.equals("htm") || type.equals("HTM") || type.equals("html") ||
-           * type.equals("HTML")) NEWF CBO
-           */
-          resultat.add(list[i]);
-        } else if (list[i].isDirectory()) {
-          String cheminRep = list[i].getAbsolutePath();
-          Collection fich = getAllWebPages(cheminRep);
-          Iterator j = fich.iterator();
-          while (j.hasNext()) {
-            resultat.add((File) j.next());
+      for (File file : list) {
+        if (file.isFile()) {
+          resultat.add(file);
+        } else if (file.isDirectory()) {
+          String cheminRep = file.getAbsolutePath();
+          Collection<File> fich = getAllWebPages(cheminRep);
+          for (File page : fich) {
+            resultat.add(page);
           }
         }
-        i++;
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.getAllWebPages",
           "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllWebPages",
@@ -208,30 +187,25 @@ public class FileFolderManager {
    * HTML) contenus dans le repertoire passe en parametre et seulement dans ce repertoire Param =
    * chemin du repertoire du site
    */
-  public static Collection getAllWebPages2(String chemin) throws Exception {
+  public static Collection<File> getAllWebPages2(String chemin) throws Exception {
     /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
 
-    ArrayList resultat = new ArrayList();
-    int i = 0;
+    List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
     if (directory.isDirectory()) {
       File[] list = directory.listFiles();
-
-      while (list != null && i < list.length) {
-        if (list[i].isFile()) {
-          String fichier = list[i].getName();
+      for (File file : list) {
+        if (file.isFile()) {
+          String fichier = file.getName();
           int indexPoint = fichier.lastIndexOf(".");
           String type = fichier.substring(indexPoint + 1);
           if ("htm".equals(type.toLowerCase())
               || "html".equals(type.toLowerCase()))
-            resultat.add(list[i]);
+            resultat.add(file);
         }
-        i++;
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.getAllWebPages2",
           "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllWebPages2",
