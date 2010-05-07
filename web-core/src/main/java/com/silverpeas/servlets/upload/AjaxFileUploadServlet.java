@@ -28,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -47,6 +46,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class AjaxFileUploadServlet extends HttpServlet {
 
+  private static final long serialVersionUID = -557782586447656336L;
   private static String uploadDir;
 
   @Override
@@ -80,6 +80,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
    * @param response the response
    * @throws IOException
    */
+  @SuppressWarnings("unchecked")
   private void doFileUpload(HttpSession session, HttpServletRequest request,
       HttpServletResponse response) throws IOException {
     try {
@@ -87,12 +88,11 @@ public class AjaxFileUploadServlet extends HttpServlet {
       session.setAttribute("FILE_UPLOAD_STATS", listener.getFileUploadStats());
       FileItemFactory factory = new MonitoringFileItemFactory(listener);
       ServletFileUpload upload = new ServletFileUpload(factory);
-      List items = upload.parseRequest(request);
+      List<FileItem> items = (List<FileItem>)  upload.parseRequest(request);
       boolean hasError = false;
       List<String> paths = new ArrayList<String>(items.size());
       session.setAttribute("FILE_UPLOAD_PATHS", paths);
-      for (Iterator i = items.iterator(); i.hasNext();) {
-        FileItem fileItem = (FileItem) i.next();
+      for (FileItem fileItem : items) {
         if (!fileItem.isFormField() && fileItem.getSize() > 0L) {
           String filename = fileItem.getName();
           if (filename.indexOf('/') >= 0) {
@@ -154,7 +154,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       if (fileUploadStats.getBytesRead() != fileUploadStats.getTotalSize()) {
         response.getWriter().println(
             "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete +
-            "%;\"></div></div>");
+                "%;\"></div></div>");
       } else {
         response
             .getWriter()
@@ -167,7 +167,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       response.getWriter().println("<b>Upload complete.</b>");
       response.getWriter().println(
           "<script type='text/javascript'>window.parent.stop('', " + getUploadedFilePaths(session) +
-          "); stop('', " + getUploadedFilePaths(session) + ");</script>");
+              "); stop('', " + getUploadedFilePaths(session) + ");</script>");
     }
   }
 
@@ -199,6 +199,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
    * Compute a javascript array from the uploaded file paths
    * @param session the HttpSession.
    */
+  @SuppressWarnings("unchecked")
   private String getUploadedFilePaths(HttpSession session) {
     List<String> paths = (List<String>) session.getAttribute("FILE_UPLOAD_PATHS");
     if (paths == null) {
