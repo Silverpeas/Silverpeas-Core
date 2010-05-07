@@ -48,12 +48,13 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.servlets.LogoutServlet;
 
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
@@ -67,34 +68,25 @@ import javax.servlet.http.HttpSession;
  */
 public class SessionManager implements SchedulerEventHandler {
   // Global constants
+
   public static final SimpleDateFormat NOTIFY_DATE_FORMAT = new SimpleDateFormat(
       " HH:mm (dd/MM/yyyy) ");
-
   // Local constants
   private static final String SESSION_MANAGER_JOB_NAME = "SessionManagerScheduler";
-
   // Singleton implementation
   private static SessionManager myInstance = null;
-
   // Max session duration in ms
   private long userSessionTimeout = 600000; // 10mn
-
   private long adminSessionTimeout = 1200000; // 20mn
-
   // Timestamp of execution of the scheduled job in ms
   private long scheduledSessionManagementTimeStamp = 60000; // 1mn
-
   // Client refresh intervall in ms (see Clipboard Session Controller)
   private long maxRefreshInterval = 90000; // 1mn30
-
   // Contains all current sessions
-  private Hashtable userDataSessions = null;
-
+  private Map<String, SessionInfo> userDataSessions = null;
   // Contains the session when notified
-  private Vector userNotificationSessions = null;
-
+  private List<String> userNotificationSessions = null;
   private ResourceLocator m_Multilang = null;
-
   private SilverStatisticsManager myStatisticsManager = null;
 
   /**
@@ -111,8 +103,8 @@ public class SessionManager implements SchedulerEventHandler {
 
     try {
       // init Hashtables
-      userDataSessions = new Hashtable(100);
-      userNotificationSessions = new Vector(100);
+      userDataSessions = new HashMap<String, SessionInfo>(100);
+      userNotificationSessions = new ArrayList<String>(100);
 
       // init maxRefreshInterval : add 60 seconds delay because of network
       // traffic
@@ -131,17 +123,15 @@ public class SessionManager implements SchedulerEventHandler {
           "com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
           language);
 
-      scheduledSessionManagementTimeStamp = Long.parseLong(resources
-          .getString("scheduledSessionManagementTimeStamp"))
+      scheduledSessionManagementTimeStamp = Long.parseLong(resources.getString(
+          "scheduledSessionManagementTimeStamp"))
           * (long) 60 * (long) 1000; // Translate from mn tu ms
-      userSessionTimeout = Long.parseLong(resources
-          .getString("userSessionTimeout"))
+      userSessionTimeout = Long.parseLong(resources.getString("userSessionTimeout"))
           * (long) 60 * (long) 1000; // Translate from mn tu ms
       if (scheduledSessionManagementTimeStamp > userSessionTimeout) {
         scheduledSessionManagementTimeStamp = userSessionTimeout;
       }
-      adminSessionTimeout = Long.parseLong(resources
-          .getString("adminSessionTimeout"))
+      adminSessionTimeout = Long.parseLong(resources.getString("adminSessionTimeout"))
           * (long) 60 * (long) 1000; // Translate from mn tu ms
       if (scheduledSessionManagementTimeStamp > adminSessionTimeout) {
         scheduledSessionManagementTimeStamp = adminSessionTimeout;
@@ -165,14 +155,16 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * SessionManager is a singleton
+   * @return the instance of SessionManager
    */
   public static SessionManager getInstance() {
-    if (myInstance == null) {
-      myInstance = new SessionManager();
-      // Init ONLY when myIntance is not null
-      myInstance.initSessionManager();
+    synchronized (SessionManager.class) {
+      if (myInstance == null) {
+        myInstance = new SessionManager();
+        // Init ONLY when myIntance is not null
+        myInstance.initSessionManager();
+      }
     }
-
     return myInstance;
   }
 
@@ -183,20 +175,16 @@ public class SessionManager implements SchedulerEventHandler {
    * @see ComponentRequestRouter and ClipboardRequestRouter
    */
   public void setLastAccess(HttpSession session) {
-    SessionInfo si = (SessionInfo) userDataSessions.get(session.getId());
-
+    SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
       si.m_DateLastAccess = new Date().getTime();
     } else {
-      SilverTrace
-          .debug(
-              "peasCore",
-              "SessionManager.setLastAccess",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-                  +
-                  session.getId());
+      SilverTrace.debug(
+          "peasCore",
+          "SessionManager.setLastAccess",
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+          + session.getId());
     }
-
     // reset previous notification
     userNotificationSessions.remove(session.getId());
   }
@@ -206,6 +194,7 @@ public class SessionManager implements SchedulerEventHandler {
    * SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or 'EXECUTION_SUCCESSFULL'. The
    * timestamp (every time the job will execute) settings is given by minutes and logically must be
    * less than the session timeout.
+   * @throws SchedulerException
    * @see SimpleScheduler for more infos
    */
   public void initSchedulerTimeStamp() throws SchedulerException {
@@ -220,12 +209,12 @@ public class SessionManager implements SchedulerEventHandler {
 
     // Remove previous scheduled job
     Vector jobList = SimpleScheduler.getJobList(myInstance);
-    if (jobList.size() != 0) {
+    if (!jobList.isEmpty()) {
       SimpleScheduler.removeJob(myInstance, SESSION_MANAGER_JOB_NAME);
     }
 
     // Create new scheduled job
-    Vector startMinutes = new Vector();
+    Vector<Integer> startMinutes = new Vector<Integer>();
     if (60 % minute == 0) {
       startMinutes.add(new Integer(0));
     }
@@ -238,7 +227,9 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * Scheduler Event handler
+   * @param aEvent
    */
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
 
     switch (aEvent.getType()) {
@@ -262,7 +253,8 @@ public class SessionManager implements SchedulerEventHandler {
    * This method stores the users's sessions, initialises time counters and log session's data. The
    * stored session may become invalid (if the user close the browser, this class is not notified).
    * @param session the session to store
-   * @param anIP IP adress of the user's host
+   * @param request 
+   * @param controller
    * @see removeSession
    */
   public synchronized void addSession(HttpSession session,
@@ -271,16 +263,11 @@ public class SessionManager implements SchedulerEventHandler {
     try {
       SilverTrace.debug("peasCore", "SessionManager.addSession", "sessionId="
           + session.getId() + " - userId : " + controller.getUserId());
-
       // Eventually remove the precedent session
-      removeInQueueMessages(controller.getCurrentUserDetail().getId(), session
-          .getId());
+      removeInQueueMessages(controller.getCurrentUserDetail().getId(), session.getId());
       removeSession(session);
-
-      SessionInfo si = new SessionInfo(session, anIP, controller
-          .getCurrentUserDetail());
+      SessionInfo si = new SessionInfo(session, anIP, controller.getCurrentUserDetail());
       userDataSessions.put(si.m_SessionId, si);
-
       // Writing journal
       SilverLog.logConnexion("login", si.m_IP, si.getLog());
     } catch (Exception ex) {
@@ -292,7 +279,7 @@ public class SessionManager implements SchedulerEventHandler {
 
   /**
    * Remove a session and log session's data.
-   * @param aSession the session to remove
+   * @param session
    * @see LogoutServlet
    */
   public void removeSession(HttpSession session) {
@@ -300,18 +287,16 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   public void removeSession(String sessionId) {
-    SessionInfo si = (SessionInfo) userDataSessions.get(sessionId);
+    SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
       removeSession(si);
       si = null;
     } else {
-      SilverTrace
-          .debug(
-              "peasCore",
-              "SessionManager.removeSession",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
-                  +
-                  sessionId + ")");
+      SilverTrace.debug(
+          "peasCore",
+          "SessionManager.removeSession",
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
+          + sessionId + ")");
     }
   }
 
@@ -324,8 +309,7 @@ public class SessionManager implements SchedulerEventHandler {
       // Notify statistics
       Date now = new java.util.Date();
       long duration = now.getTime() - si.m_DateBegin;
-      myStatisticsManager
-          .addStatConnection(si.m_User.getId(), now, 1, duration);
+      myStatisticsManager.addStatConnection(si.m_User.getId(), now, 1, duration);
 
       // Delete in wait server messages corresponding to the session to
       // invalidate
@@ -346,7 +330,7 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   public SessionInfo getUserDataSession(String sessionId) {
-    return (SessionInfo) userDataSessions.get(sessionId);
+    return userDataSessions.get(sessionId);
   }
 
   /**
@@ -359,16 +343,16 @@ public class SessionManager implements SchedulerEventHandler {
       String whereClause;
 
       if (StringUtil.isDefined(sessionId)) {
-        dao = SilverpeasBeanDAOFactory
-            .getDAO("com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean");
+        dao = SilverpeasBeanDAOFactory.getDAO(
+            "com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean");
         whereClause = " USERID=" + userId + " AND SESSIONID='" + sessionId
             + "'";
         dao.removeWhere(pk, whereClause);
       }
 
       // Remove "end of session" messages
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
+      dao = SilverpeasBeanDAOFactory.getDAO(
+          "com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
       whereClause = "userid=" + userId + " AND senderid='-1'";
       dao.removeWhere(pk, whereClause);
       // TODO : Remove bodies as longText
@@ -380,25 +364,23 @@ public class SessionManager implements SchedulerEventHandler {
   }
 
   public void setIsAlived(HttpSession session) {
-    SessionInfo si = (SessionInfo) userDataSessions.get(session.getId());
-
+    SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
       si.m_DateIsAlive = new Date().getTime();
     } else {
-      SilverTrace
-          .debug(
-              "peasCore",
-              "SessionManager.setIsAlived",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-                  +
-                  session.getId());
+      SilverTrace.debug(
+          "peasCore",
+          "SessionManager.setIsAlived",
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+          + session.getId());
     }
   }
 
   /**
    * Gets all the connected users and the duration of their session.
+   * @return
    */
-  public Collection getConnectedUsersList() {
+  public Collection<SessionInfo> getConnectedUsersList() {
     return userDataSessions.values();
   }
 
@@ -407,16 +389,16 @@ public class SessionManager implements SchedulerEventHandler {
    * @author dlesimple
    * @return Collection of SessionInfo
    */
-  public Collection getDistinctConnectedUsersList() {
-    HashMap distinctConnectedUsersList = new HashMap();
-    Iterator sessionsInfos = getConnectedUsersList().iterator();
-    while (sessionsInfos.hasNext()) {
-      SessionInfo si = (SessionInfo) sessionsInfos.next();
+  public Collection<SessionInfo> getDistinctConnectedUsersList() {
+    Map<String, SessionInfo> distinctConnectedUsersList = new HashMap<String, SessionInfo>();
+    Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
+    for (SessionInfo si : sessionsInfos) {
       String userLogin = si.m_User.getLogin();
       // keep users with distinct login
       if (!distinctConnectedUsersList.containsKey(userLogin)
-          && !si.m_User.isAccessGuest())
+          && !si.m_User.isAccessGuest()) {
         distinctConnectedUsersList.put(userLogin, si);
+      }
     }
     return distinctConnectedUsersList.values();
   }
@@ -442,13 +424,10 @@ public class SessionManager implements SchedulerEventHandler {
     try {
       long currentTime = currentDate.getTime();
 
-      SessionInfo[] allSI = (SessionInfo[]) userDataSessions.values().toArray(
-          new SessionInfo[0]);
-      for (int i = 0; i < allSI.length; i++) {
-        SessionInfo si = allSI[i];
+      Collection<SessionInfo> allSI = userDataSessions.values();
+      for (SessionInfo si : allSI) {
         long userSessionTimeoutMillis = (si.m_User.isAccessAdmin()) ? adminSessionTimeout
             : userSessionTimeout;
-
         // Has the session expired (timeout)
         if (currentTime - si.m_DateLastAccess >= userSessionTimeoutMillis) {
           long duration = currentTime - si.m_DateIsAlive;
@@ -497,8 +476,8 @@ public class SessionManager implements SchedulerEventHandler {
     NotificationSender notifSender = new NotificationSender(null);
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, msgTitle, m_Multilang
-        .getString("EndOfSessionNotificationMsgText"));
+        NotificationParameters.NORMAL, msgTitle, m_Multilang.getString(
+        "EndOfSessionNotificationMsgText"));
     notifMetaData.setSender(null);
     notifMetaData.setSessionId(sessionId);
     notifMetaData.addUserRecipient(userId);
@@ -517,18 +496,15 @@ public class SessionManager implements SchedulerEventHandler {
     try {
       // Remove previous scheduled job
       Vector jobList = SimpleScheduler.getJobList(myInstance);
-      if (jobList.size() != 0) {
+      if (!jobList.isEmpty()) {
         SimpleScheduler.removeJob(myInstance, SESSION_MANAGER_JOB_NAME);
       }
     } catch (SchedulerException ex) {
       SilverTrace.error("peasCore", "SessionManager.shutdown",
           "root.EX_NO_MESSAGE", ex);
     }
-
-    SessionInfo[] allSI = (SessionInfo[]) userDataSessions.values().toArray(
-        new SessionInfo[0]);
-    for (int i = 0; i < allSI.length; i++) {
-      SessionInfo si = allSI[i];
+    Collection<SessionInfo> allSI = userDataSessions.values();
+    for (SessionInfo si : allSI) {
       removeSession(si);
     }
 
@@ -542,14 +518,12 @@ public class SessionManager implements SchedulerEventHandler {
   public void closeHttpSession(HttpSession session) {
     SilverTrace.debug("peasCore", "SessionManager.closeHttpSession",
         "sesionId=" + session.getId());
-    SessionInfo si = (SessionInfo) userDataSessions.get(session.getId());
-
+    SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
       removeSession(si);
       si.terminateSession();
     } else {
-      SilverTrace
-          .debug("peasCore", "SessionManager.closeHttpSession",
+      SilverTrace.debug("peasCore", "SessionManager.closeHttpSession",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!!");
     }
   }
