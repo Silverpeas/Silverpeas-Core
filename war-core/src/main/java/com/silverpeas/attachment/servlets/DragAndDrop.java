@@ -132,7 +132,7 @@ public class DragAndDrop extends HttpServlet {
                 "item size = " + size);
 
             String type = FileRepositoryManager.getFileExtension(fileName);
-            String physicalName = new Date().getTime() + '.' + type;
+            String physicalName = new Date().getTime() + "." + type;
             item.write(
                 new File(AttachmentController.createPath(componentId, context) + physicalName));
             String mimeType = AttachmentController.getMimeType(fileName);
