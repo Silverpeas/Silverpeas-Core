@@ -40,6 +40,8 @@ public class QueryParameters implements java.io.Serializable {
   private String creatorId = null;
   private String afterdate = null;
   private String beforedate = null;
+  private String afterupdatedate = null;
+  private String beforeupdatedate = null;
 
   private Hashtable xmlQuery = null;
   private String xmlTitle = null;
@@ -76,6 +78,8 @@ public class QueryParameters implements java.io.Serializable {
     this.creatorId = null;
     this.afterdate = null;
     this.beforedate = null;
+    this.afterupdatedate = null;
+    this.beforeupdatedate = null;
     this.creatorDetail = null;
     this.xmlQuery = null;
   }
@@ -146,6 +150,30 @@ public class QueryParameters implements java.io.Serializable {
     this.beforedate = date2stringDate(beforedate);
   }
 
+  public String getAfterUpdateDate() {
+    return afterupdatedate;
+  }
+
+  public void setAfterUpdateDate(String afterdate) {
+    this.afterupdatedate = afterdate;
+  }
+
+  public void setAfterUpdateDate(Date afterdate) {
+    this.afterupdatedate = date2stringDate(afterdate);
+  }
+
+  public String getBeforeUpdateDate() {
+    return beforeupdatedate;
+  }
+
+  public void setBeforeUpdateDate(String beforedate) {
+    this.beforeupdatedate = beforedate;
+  }
+
+  public void setBeforeUpdateDate(Date beforedate) {
+    this.beforeupdatedate = date2stringDate(beforedate);
+  }
+
   public void addXmlSubQuery(String field, String query) {
     if (xmlQuery == null)
       xmlQuery = new Hashtable();
@@ -175,15 +203,27 @@ public class QueryParameters implements java.io.Serializable {
 
     if (getAfterDate() != null && !getAfterDate().equals(""))
       query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate(),
-          searchingLanguage/* getSQLAfterDate() */));
+          searchingLanguage));
     else
       query.setRequestedCreatedAfter(null);
 
     if (getBeforeDate() != null && !getBeforeDate().equals(""))
       query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate(),
-          searchingLanguage/* getSQLBeforeDate() */));
+          searchingLanguage));
     else
       query.setRequestedCreatedBefore(null);
+
+    if (StringUtil.isDefined(getAfterUpdateDate()))
+      query.setRequestedUpdatedAfter(DateUtil.date2SQLDate(getAfterUpdateDate(),
+          searchingLanguage));
+    else
+      query.setRequestedUpdatedAfter(null);
+
+    if (StringUtil.isDefined(getBeforeUpdateDate()))
+      query.setRequestedUpdatedBefore(DateUtil.date2SQLDate(getBeforeUpdateDate(),
+          searchingLanguage));
+    else
+      query.setRequestedUpdatedBefore(null);
 
     if (xmlQuery != null)
       query.setXmlQuery(xmlQuery);

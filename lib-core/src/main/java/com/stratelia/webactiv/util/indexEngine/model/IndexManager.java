@@ -66,6 +66,8 @@ public class IndexManager {
   public static final String LANG = "lang";
   public static final String CREATIONDATE = "creationDate";
   public static final String CREATIONUSER = "creationUser";
+  public static final String LASTUPDATEDATE = "updateDate";
+  public static final String LASTUPDATEUSER = "updateUser";
   public static final String STARTDATE = "startDate";
   public static final String ENDDATE = "endDate";
   public static final String HEADER = "header";
@@ -82,7 +84,7 @@ public class IndexManager {
   public static final int REMOVE = 1;
   public static final int READD = 2;
 
-  private Hashtable indexWriters = new Hashtable();
+  private Hashtable<String, IndexWriter> indexWriters = new Hashtable<String, IndexWriter>();
 
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
@@ -129,7 +131,6 @@ public class IndexManager {
           + writerPath);
 
       if (writerPath != null) {
-        // IndexWriter writer = (IndexWriter) indexWriters.get(writerPath);
         IndexWriter writer = (IndexWriter) writerEntry.getValue();
 
         if (writer != null) {
@@ -321,7 +322,7 @@ public class IndexManager {
    * @return an IndexWriter or null if the index can't be found or create or read.
    */
   private IndexWriter getIndexWriter(String path, String language) {
-    IndexWriter writer = (IndexWriter) indexWriters.get(path);
+    IndexWriter writer = indexWriters.get(path);
     if (writer == null) {
       try {
         boolean createIndex = false;
@@ -421,6 +422,10 @@ public class IndexManager {
     doc.add(new Field(CREATIONDATE, indexEntry.getCreationDate(),
         Field.Store.YES, Field.Index.UN_TOKENIZED));
     doc.add(new Field(CREATIONUSER, indexEntry.getCreationUser(),
+        Field.Store.YES, Field.Index.UN_TOKENIZED));
+    doc.add(new Field(LASTUPDATEDATE, indexEntry.getLastModificationDate(),
+        Field.Store.YES, Field.Index.UN_TOKENIZED));
+    doc.add(new Field(LASTUPDATEUSER, indexEntry.getLastModificationUser(),
         Field.Store.YES, Field.Index.UN_TOKENIZED));
     doc.add(new Field(STARTDATE, indexEntry.getStartDate(), Field.Store.YES,
         Field.Index.UN_TOKENIZED));

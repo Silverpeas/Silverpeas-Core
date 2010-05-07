@@ -123,41 +123,32 @@ public class PdcSearchRequestRouterHelper {
     // build information for the home jsp for the advancedsearch plain text
     // We get user choices about advanced search and store it in the
     // PdcSearchSessionController
-    String query = (String) request.getParameter("query");
+    String query = request.getParameter("query");
 
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     queryParameters.setKeywords(query);
 
     if (pdcSC.getSearchType() >= PdcSearchSessionController.SEARCH_ADVANCED) {
-      String spaceId = request.getParameter("spaces");
-      String componentId = request.getParameter("componentSearch");
-      String authorSearch = request.getParameter("authorSearch");
-      String afterdate = request.getParameter("afterdate");
-      String beforedate = request.getParameter("beforedate");
-
-      SilverTrace.debug("pdcPeas",
-          "PdcPeasRequestRouterHelper.saveUserChoices()",
-          "root.MSG_GEN_PARAM_VALUE", "authorSearch = " + authorSearch);
-
-      queryParameters.setSpaceId(spaceId);
-      queryParameters.setInstanceId(componentId);
-      queryParameters.setCreatorId(authorSearch);
-      queryParameters.setAfterDate(afterdate);
-      queryParameters.setBeforeDate(beforedate);
+      queryParameters.setSpaceId(request.getParameter("spaces"));
+      queryParameters.setInstanceId(request.getParameter("componentSearch"));
+      queryParameters.setCreatorId(request.getParameter("authorSearch"));
+      queryParameters.setAfterDate(request.getParameter("createafterdate"));
+      queryParameters.setBeforeDate(request.getParameter("createbeforedate"));
+      queryParameters.setAfterUpdateDate(request.getParameter("updateafterdate"));
+      queryParameters.setBeforeUpdateDate(request.getParameter("updatebeforedate"));
     }
 
-    // CBO : ADD
-    String paramNbResToDisplay = (String) request.getParameter("nbRes");
+    String paramNbResToDisplay = request.getParameter("nbRes");
     if (paramNbResToDisplay != null) {
       int nbResToDisplay = new Integer(paramNbResToDisplay).intValue();
       pdcSC.setNbResToDisplay(nbResToDisplay);
     }
-    String paramSortRes = (String) request.getParameter("sortRes");
+    String paramSortRes = request.getParameter("sortRes");
     if (paramSortRes != null) {
       int sortRes = new Integer(paramSortRes).intValue();
       pdcSC.setSortValue(sortRes);
     }
-    String paramSortOrder = (String) request.getParameter("sortOrder");
+    String paramSortOrder = request.getParameter("sortOrder");
     if (paramSortOrder != null) {
       pdcSC.setSortOrder(paramSortOrder);
     }

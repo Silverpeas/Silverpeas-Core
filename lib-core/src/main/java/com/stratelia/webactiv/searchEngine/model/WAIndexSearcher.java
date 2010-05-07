@@ -26,14 +26,11 @@ package com.stratelia.webactiv.searchEngine.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
@@ -41,6 +38,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -77,7 +75,7 @@ public class WAIndexSearcher {
    */
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
-  private QueryParser.Operator defaultOperand = QueryParser.OR_OPERATOR;
+  private QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
   /**
    * indicates the number maximum of results returned by the search
    */
@@ -142,77 +140,55 @@ public class WAIndexSearcher {
     Searcher searcher = getSearcher(query.getSpaceComponentPairSet());
 
     try {
+      TopDocs topDocs = null;
+      BooleanQuery booleanQuery = new BooleanQuery();
+      booleanQuery.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
+      booleanQuery.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
+
       if (query.getXmlQuery() != null) {
-        results = makeList(getXMLHits(query, searcher), query, searcher);
+        booleanQuery.add(getXMLQuery(query, searcher), BooleanClause.Occur.MUST);
       } else {
         if (query.getMultiFieldQuery() != null) {
-          results = makeList(getMultiFieldHits(query, searcher), query, searcher);
+          booleanQuery.add(getMultiFieldQuery(query, searcher), BooleanClause.Occur.MUST);
         } else {
-          if (!StringUtil.isDefined(query.getQuery())) {
-            TopDocs topDocs = null;
-            RangeQuery rangeQuery = null;
+          RangeQuery rangeQuery = query.getRangeQueryOnCreationDate();
+          if (!StringUtil.isDefined(query.getQuery()) && query.isSearchBySpace() &&
+              !query.isPeriodDefined()) {
             // realizes the search on space without keywords indicated by the user
-            if (query.isSearchBySpace() && !query.isPeriodDefined()) {
-              String beginDate = "1900/01/01";
-              String endDate = "2200/01/01";
-              Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
-              Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
+            String beginDate = "1900/01/01";
+            String endDate = "2200/01/01";
+            Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
+            Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
 
-              rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
+            rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
+          }
+          if (rangeQuery != null) {
+            booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
+          }
+          RangeQuery rangeQueryOnLastUpdateDate = query.getRangeQueryOnLastUpdateDate();
+          if (rangeQueryOnLastUpdateDate != null) {
+            booleanQuery.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
+          }
+          TermQuery termQueryOnAuthor = query.getTermQueryOnAuthor();
+          if (termQueryOnAuthor != null) {
+            booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
+          }
+
+          try {
+            Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
+            if (plainTextQuery != null) {
+              booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
             }
-            if (query.isPeriodDefined()) {
-              String beginDate = query.getRequestedCreatedAfter();
-              if (!StringUtil.isDefined(beginDate)) {
-                beginDate = "1977/12/13";
-              }
-              String endDate = query.getRequestedCreatedBefore();
-              if (!StringUtil.isDefined(endDate)) {
-                endDate = "2100/01/01";
-              }
-
-              Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
-              Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
-
-              rangeQuery = new RangeQuery(lowerTerm, upperTerm, true);
-            }
-
-            if (StringUtil.isDefined(query.getRequestedAuthor())) {
-              Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
-              TermQuery authorQuery = new TermQuery(authorTerm);
-              if (rangeQuery == null) {
-                topDocs = searcher.search(authorQuery, maxNumberResult);
-              } else {
-                BooleanQuery booleanQuery = new BooleanQuery();
-                booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
-                booleanQuery.add(authorQuery, BooleanClause.Occur.MUST);
-
-                topDocs = searcher.search(booleanQuery, maxNumberResult);
-              }
-            } else {
-              topDocs = searcher.search(rangeQuery, maxNumberResult);
-            }
-
-            results = makeList(topDocs, query, searcher);
-          } else {
-            List<MatchingIndexEntry> contentMatchingResults =
-                makeList(getHits(query, IndexManager.CONTENT, searcher), query, searcher);
-
-            if (contentMatchingResults.size() > 0) {
-              List<MatchingIndexEntry> headerMatchingResults =
-                  makeList(getHits(query, IndexManager.HEADER, searcher), query, searcher);
-
-              if (headerMatchingResults.size() > 0) {
-                results = merge(headerMatchingResults, primaryFactor,
-                    contentMatchingResults, secondaryFactor);
-              } else {
-                results = contentMatchingResults;
-              }
-            } else {
-              results = new ArrayList<MatchingIndexEntry>(); // empty results list.
-            }
+          } catch (ParseException e) {
+            throw new com.stratelia.webactiv.searchEngine.model.ParseException("WAIndexSearcher", e);
           }
         }
       }
+      SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
+          "Query = " + booleanQuery.toString());
+      topDocs = searcher.search(booleanQuery, maxNumberResult);
+
+      results = makeList(topDocs, query, searcher);
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
@@ -234,86 +210,74 @@ public class WAIndexSearcher {
         .toArray(new MatchingIndexEntry[results.size()]);
   }
 
-  /**
-   * Returns the lucene TopDocs of the query
-   * @param query the search criteria
-   * @param searchField the search field within the index.
-   * @param searcher Searcher object
-   * @return the TopDoc which contain the score and the index of a document
-   * @throws com.stratelia.webactiv.searchEngine.model.ParseException
-   */
-  private TopDocs getHits(QueryDescription query, String searchField,
-      Searcher searcher)
-      throws com.stratelia.webactiv.searchEngine.model.ParseException {
-    TopDocs topDocs = null;
+  private RangeQuery getVisibilityStartQuery() {
+    Term lowerTerm = new Term(IndexManager.STARTDATE, IndexEntry.STARTDATE_DEFAULT);
+    Term upperTerm = new Term(IndexManager.STARTDATE, DateUtil.today2SQLDate());
 
-    try {
-      Analyzer analyzer = indexManager.getAnalyzer(Locale.getDefault()
-          .getLanguage());
-
-      String language = query.getRequestedLanguage();
-
-      Query parsedQuery = null;
-      if (I18NHelper.isI18N && "*".equals(language)) {
-        // search over all languages
-        String[] fields = new String[I18NHelper.getNumberOfLanguages()];
-        String[] queries = new String[I18NHelper.getNumberOfLanguages()];
-
-        int l = 0;
-        Iterator<String> languages = I18NHelper.getLanguages();
-        while (languages.hasNext()) {
-          language = (String) languages.next();
-
-          if (I18NHelper.isDefaultLanguage(language))
-            fields[l] = searchField;
-          else
-            fields[l] = searchField + "_" + language;
-          queries[l] = query.getQuery();
-          l++;
-        }
-
-        parsedQuery = MultiFieldQueryParser.parse(queries, fields, analyzer);
-      } else {
-        // search only specified language
-        if (I18NHelper.isI18N && !"*".equals(language)
-            && !I18NHelper.isDefaultLanguage(language))
-          searchField = searchField + "_" + language;
-
-        QueryParser queryParser = new QueryParser(searchField, analyzer);
-        queryParser.setDefaultOperator(defaultOperand);
-        SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
-            "root.MSG_GEN_PARAM_VALUE", "defaultOperand = " + defaultOperand);
-        parsedQuery = queryParser.parse(query.getQuery());
-        SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
-            "root.MSG_GEN_PARAM_VALUE", "getOperator() = "
-            + queryParser.getDefaultOperator());
-      }
-
-      SilverTrace
-          .info("searchEngine", "WAIndexSearcher.getHits",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-          + parsedQuery.toString());
-      topDocs = searcher.search(parsedQuery, maxNumberResult);
-    } catch (org.apache.lucene.queryParser.ParseException e) {
-      throw new com.stratelia.webactiv.searchEngine.model.ParseException(
-          "WAIndexSearcher", e);
-    } catch (IOException e) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      topDocs = null;
-    } catch (ArrayIndexOutOfBoundsException e) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      topDocs = null;
-    }
-
-    return topDocs;
+    return new RangeQuery(lowerTerm, upperTerm, true);
   }
 
-  private TopDocs getXMLHits(QueryDescription query, Searcher searcher)
+  private RangeQuery getVisibilityEndQuery() {
+    Term lowerTerm = new Term(IndexManager.ENDDATE, DateUtil.today2SQLDate());
+    Term upperTerm = new Term(IndexManager.ENDDATE, IndexEntry.ENDDATE_DEFAULT);
+
+    return new RangeQuery(lowerTerm, upperTerm, true);
+  }
+
+  private Query getPlainTextQuery(QueryDescription query, String searchField) throws ParseException {
+    Analyzer analyzer = indexManager.getAnalyzer(Locale.getDefault().getLanguage());
+
+    if (!StringUtil.isDefined(query.getQuery())) {
+      return null;
+    }
+
+    String language = query.getRequestedLanguage();
+
+    Query parsedQuery = null;
+    if (I18NHelper.isI18N && "*".equals(language)) {
+      // search over all languages
+      String[] fields = new String[I18NHelper.getNumberOfLanguages()];
+      String[] queries = new String[I18NHelper.getNumberOfLanguages()];
+
+      int l = 0;
+      Iterator<String> languages = I18NHelper.getLanguages();
+      while (languages.hasNext()) {
+        language = (String) languages.next();
+
+        if (I18NHelper.isDefaultLanguage(language))
+          fields[l] = searchField;
+        else
+          fields[l] = searchField + "_" + language;
+        queries[l] = query.getQuery();
+        l++;
+      }
+
+      parsedQuery = MultiFieldQueryParser.parse(queries, fields, analyzer);
+    } else {
+      // search only specified language
+      if (I18NHelper.isI18N && !"*".equals(language) && !I18NHelper.isDefaultLanguage(language)) {
+        searchField = searchField + "_" + language;
+      }
+
+      QueryParser queryParser = new QueryParser(searchField, analyzer);
+      queryParser.setDefaultOperator(defaultOperand);
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
+          "root.MSG_GEN_PARAM_VALUE", "defaultOperand = " + defaultOperand);
+      parsedQuery = queryParser.parse(query.getQuery());
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
+          "root.MSG_GEN_PARAM_VALUE", "getOperator() = "
+          + queryParser.getDefaultOperator());
+    }
+
+    SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
+        "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+        + parsedQuery.toString());
+    return parsedQuery;
+  }
+
+  private Query getXMLQuery(QueryDescription query, Searcher searcher)
       throws com.stratelia.webactiv.searchEngine.model.ParseException,
       IOException {
-    TopDocs topDocs = null;
 
     try {
       Hashtable<String, String> xmlQuery = query.getXmlQuery();
@@ -348,23 +312,16 @@ public class WAIndexSearcher {
           "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
           + parsedQuery.toString());
 
-      topDocs = searcher.search(parsedQuery, maxNumberResult);
+      return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new com.stratelia.webactiv.searchEngine.model.ParseException(
           "WAIndexSearcher", e);
-    } catch (IOException e) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.getXMLHits",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      topDocs = null;
     }
-
-    return topDocs;
   }
 
-  private TopDocs getMultiFieldHits(QueryDescription query, Searcher searcher)
+  private Query getMultiFieldQuery(QueryDescription query, Searcher searcher)
       throws com.stratelia.webactiv.searchEngine.model.ParseException,
       IOException {
-    TopDocs topDocs = null;
 
     try {
       List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
@@ -402,17 +359,12 @@ public class WAIndexSearcher {
           "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
           + parsedQuery.toString());
 
-      topDocs = searcher.search(parsedQuery, maxNumberResult);
+      return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new com.stratelia.webactiv.searchEngine.model.ParseException(
           "WAIndexSearcher", e);
-    } catch (IOException e) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.getMultiFieldHits",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
-      topDocs = null;
     }
 
-    return topDocs;
   }
 
   /**
@@ -422,16 +374,6 @@ public class WAIndexSearcher {
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
       Searcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
-    String today = DateUtil.today2SQLDate();
-    String user = query.getSearchingUser();
-    String beforeDate = query.getRequestedCreatedBefore();
-    String afterDate = query.getRequestedCreatedAfter();
-    String requestedAuthor = query.getRequestedAuthor();
-
-    SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-        "root.MSG_GEN_PARAM_VALUE", "beforeDate = " + beforeDate);
-    SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-        "root.MSG_GEN_PARAM_VALUE", "afterDate = " + afterDate);
 
     if (topDocs != null) {
       ScoreDoc scoreDoc = null;
@@ -441,152 +383,36 @@ public class WAIndexSearcher {
         scoreDoc = topDocs.scoreDocs[i];
         Document doc = searcher.doc(scoreDoc.doc);
 
-        String startDate = doc.get(IndexManager.STARTDATE);
-        String endDate = doc.get(IndexManager.ENDDATE);
-        String creationDate = doc.get(IndexManager.CREATIONDATE);
+        indexEntry = new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
 
-        SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-            "root.MSG_GEN_PARAM_VALUE", "startDate = " + startDate);
-        SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-            "root.MSG_GEN_PARAM_VALUE", "endDate = " + endDate);
-        SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-            "root.MSG_GEN_PARAM_VALUE", "creationDate = " + creationDate);
+        Iterator<String> languages = I18NHelper.getLanguages();
+        while (languages.hasNext()) {
+          String language = languages.next();
 
-        boolean testDate = true;
-
-        if ((beforeDate != null) && (afterDate != null)) {
-          if (creationDate.compareTo(afterDate) >= 0) {
-            if (beforeDate.compareTo(creationDate) >= 0)
-              testDate = true;
-            else
-              testDate = false;
+          if (I18NHelper.isDefaultLanguage(language)) {
+            indexEntry.setTitle(doc.get(IndexManager.TITLE), language);
+            indexEntry.setPreview(doc.get(IndexManager.PREVIEW), language);
           } else {
-            testDate = false;
-          }
-          SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-              "root.MSG_GEN_PARAM_VALUE", "testDate = " + testDate);
-
-        }
-        if ((beforeDate == null) && (afterDate != null)) {
-          if (creationDate.compareTo(afterDate) >= 0) {
-            testDate = true;
-          } else {
-            testDate = false;
-          }
-          SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-              "root.MSG_GEN_PARAM_VALUE", "testDate = " + testDate);
-        }
-        if ((beforeDate != null) && (afterDate == null)) {
-
-          if (beforeDate.compareTo(creationDate) >= 0)
-            testDate = true;
-          else
-            testDate = false;
-          SilverTrace.info("searchEngine", "WAIndexSearcher.makeList",
-              "root.MSG_GEN_PARAM_VALUE", "testDate = " + testDate);
-        }
-        String author = doc.get(IndexManager.CREATIONUSER);
-
-        if (startDate == null || startDate.equals("")) {
-          startDate = IndexEntry.STARTDATE_DEFAULT;
-        }
-        if (endDate == null || endDate.equals("")) {
-          endDate = IndexEntry.ENDDATE_DEFAULT;
-        }
-
-        // the document must be published onless the searcher is the author
-        if ((startDate.compareTo(today) <= 0 && today.compareTo(endDate) <= 0)
-            || user.equals(author)) {
-          if (testDate
-              && (requestedAuthor == null || requestedAuthor.equals(author))) {
-            indexEntry = new MatchingIndexEntry(IndexEntryPK.create(doc
-                .get(IndexManager.KEY)));
-
-            Iterator<String> languages = I18NHelper.getLanguages();
-            while (languages.hasNext()) {
-              String language = languages.next();
-
-              if (I18NHelper.isDefaultLanguage(language)) {
-                indexEntry.setTitle(doc.get(IndexManager.TITLE), language);
-                indexEntry.setPreview(doc.get(IndexManager.PREVIEW), language);
-              } else {
-                indexEntry.setTitle(doc
-                    .get(IndexManager.TITLE + "_" + language), language);
-                indexEntry.setPreview(doc.get(IndexManager.PREVIEW + "_"
-                    + language), language);
-              }
-            }
-
-            indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
-            indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
-            indexEntry.setCreationDate(doc.get(IndexManager.CREATIONDATE));
-            indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
-            indexEntry.setThumbnailMimeType(doc
-                .get(IndexManager.THUMBNAIL_MIMETYPE));
-            indexEntry.setThumbnailDirectory(doc
-                .get(IndexManager.THUMBNAIL_DIRECTORY));
-            indexEntry.setStartDate(startDate);
-            indexEntry.setEndDate(endDate);
-            indexEntry.setScore(scoreDoc.score); // TODO check the score.
-            results.add(indexEntry);
+            indexEntry.setTitle(doc.get(IndexManager.TITLE + "_" + language), language);
+            indexEntry.setPreview(doc.get(IndexManager.PREVIEW + "_" + language), language);
           }
         }
+
+        indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
+        indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
+        indexEntry.setCreationDate(doc.get(IndexManager.CREATIONDATE));
+        indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
+        indexEntry.setThumbnailMimeType(doc
+            .get(IndexManager.THUMBNAIL_MIMETYPE));
+        indexEntry.setThumbnailDirectory(doc
+            .get(IndexManager.THUMBNAIL_DIRECTORY));
+        indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
+        indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
+        indexEntry.setScore(scoreDoc.score); // TODO check the score.
+        results.add(indexEntry);
       }
     }
     return results;
-  }
-
-  /**
-   * Merges two MatchingIndexEntry List and re-computes the scores. The new score is :
-   * 
-   * <PRE>
-   * primaryScore * primaryFactor + secondaryScore * secondaryFactor
-   * ---------------------------------------------------------------
-   * primaryFactor + primaryScore
-   * </PRE>
-   * 
-   * If an entry is in the secondary list but not in the primary, his score is left unchanged. If
-   * any, all entries in the primary list but not the secondary are ignored. In practice this case
-   * should not occurs as the secondary is extracted from the CONTENT index which contains all the
-   * HEADER contents from which is extracted the primary list.
-   */
-  private List<MatchingIndexEntry> merge(List<MatchingIndexEntry> primaryList, int primaryFactor,
-      List<MatchingIndexEntry> secondaryList,
-      int secondaryFactor) {
-    List<MatchingIndexEntry> result = new ArrayList<MatchingIndexEntry>();
-
-    float newScore = 0;
-    MatchingIndexEntry primaryEntry = null;
-    MatchingIndexEntry secondaryEntry = null;
-
-    // Create a map key -> entry for the primaryList.
-    Map<IndexEntryPK, MatchingIndexEntry> primaryMap =
-        new HashMap<IndexEntryPK, MatchingIndexEntry>();
-    Iterator<MatchingIndexEntry> i = primaryList.iterator();
-
-    while (i.hasNext()) {
-      primaryEntry = i.next();
-      primaryMap.put(primaryEntry.getPK(), primaryEntry);
-    }
-
-    Iterator<MatchingIndexEntry> j = secondaryList.iterator();
-
-    while (j.hasNext()) {
-      secondaryEntry = j.next();
-
-      primaryEntry = primaryMap.get(secondaryEntry.getPK());
-      if (primaryEntry != null) {
-        newScore = secondaryFactor * secondaryEntry.getScore();
-        newScore += primaryFactor * primaryEntry.getScore();
-        newScore /= (primaryFactor + secondaryFactor);
-        secondaryEntry.setScore(newScore);
-      }
-
-      result.add(secondaryEntry);
-    }
-
-    Collections.sort(result, ScoreComparator.comparator);
-    return result;
   }
 
   /**
@@ -660,18 +486,6 @@ public class WAIndexSearcher {
    * without any indexed documents).
    */
   private Searcher getSearcher(String path) {
-    /*
-     * if (!(new File(path).exists())) { return null; } CachedIndex cached = (CachedIndex)
-     * cache.get(path); try { if (cached == null || cached.timestamp !=
-     * IndexReader.lastModified(path)) { if (cached != null) { cached.reader.close();
-     * SilverTrace.info("searchEngine", "WAIndexSearcher", "searchEngine.INFO_REOPEN_INDEX_FILE",
-     * path); } else { SilverTrace.info("searchEngine", "WAIndexSearcher",
-     * "searchEngine.INFO_OPEN_INDEX_FILE", path); } cached = new CachedIndex(path); cache.put(path,
-     * cached); } } catch (IOException e) { SilverTrace.error("searchEngine", "WAIndexSearcher",
-     * "searchEngine.MSG_CANT_READ_INDEX_FILE", e); return null; } return new
-     * IndexSearcher(cached.reader);
-     */
-
     Searcher searcher = null;
 
     try {

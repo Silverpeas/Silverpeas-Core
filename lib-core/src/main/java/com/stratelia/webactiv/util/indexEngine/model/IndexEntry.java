@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -40,6 +41,36 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 
 public class IndexEntry implements Serializable {
+
+  private static final long serialVersionUID = -4817004188601716658L;
+
+  /**
+   * The primary key is fixed at construction time.
+   */
+  private final IndexEntryPK pk;
+
+  /**
+   * The IndexEntry attributes are null by default. The title should been set in order to display
+   * the entry to the user when the document match his query. The index engine may set with a
+   * default value any of this attributes if null.
+   */
+  private String lang = null;
+  private String creationDate = null;
+  private String creationUser = null;
+  private String lastModificationDate = null;
+  private String lastModificationUser = null;
+  private String startDate = null;
+  private String endDate = null;
+  private boolean indexId = false;
+
+  private String thumbnail = null;
+  private String thumbnailMimeType = null;
+  private String thumbnailDirectory = null;
+
+  private Hashtable<String, String> titles = null;
+  private Hashtable<String, String> previews = null;
+  private Hashtable<String, String> keywordsI18N = null;
+
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
    * constructor can be used by any component which indexes only one kind of entities and then
@@ -337,27 +368,6 @@ public class IndexEntry implements Serializable {
     return getPK().hashCode();
   }
 
-  /**
-   * The primary key is fixed at construction time.
-   */
-  private final IndexEntryPK pk;
-
-  /**
-   * The IndexEntry attributes are null by default. The title should been set in order to display
-   * the entry to the user when the document match his query. The index engine may set with a
-   * default value any of this attributes if null.
-   */
-  private String lang = null;
-  private String creationDate = null;
-  private String creationUser = null;
-  private String startDate = null;
-  private String endDate = null;
-  private boolean indexId = false;
-
-  private String thumbnail = null;
-  private String thumbnailMimeType = null;
-  private String thumbnailDirectory = null;
-
   public String getThumbnail() {
     return thumbnail;
   }
@@ -382,32 +392,28 @@ public class IndexEntry implements Serializable {
     this.thumbnailMimeType = thumbnailMimeType;
   }
 
-  private Hashtable getTitles() {
+  private Hashtable<String, String> getTitles() {
     if (titles == null) {
-      titles = new Hashtable();
+      titles = new Hashtable<String, String>();
     }
     return titles;
   }
 
-  private Hashtable getPreviews() {
+  private Hashtable<String, String> getPreviews() {
     if (previews == null) {
-      previews = new Hashtable();
+      previews = new Hashtable<String, String>();
     }
     return previews;
   }
 
-  private Hashtable getKeywords() {
+  private Hashtable<String, String> getKeywords() {
     if (keywordsI18N == null) {
-      keywordsI18N = new Hashtable();
+      keywordsI18N = new Hashtable<String, String>();
     }
     return keywordsI18N;
   }
 
-  private Hashtable titles = null;
-  private Hashtable previews = null;
-  private Hashtable keywordsI18N = null;
-
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return getTitles().keySet().iterator();
   }
 
@@ -417,5 +423,31 @@ public class IndexEntry implements Serializable {
 
   public void setIndexId(boolean indexId) {
     this.indexId = indexId;
+  }
+
+  public String getLastModificationDate() {
+    if (!StringUtil.isDefined(lastModificationDate)) {
+      return getCreationDate();
+    }
+    return lastModificationDate;
+  }
+
+  public void setLastModificationDate(String lastModificationDate) {
+    this.lastModificationDate = lastModificationDate;
+  }
+
+  public void setLastModificationDate(Date lastModificationDate) {
+    this.lastModificationDate = DateUtil.date2SQLDate(lastModificationDate);
+  }
+
+  public String getLastModificationUser() {
+    if (!StringUtil.isDefined(lastModificationUser)) {
+      return getCreationUser();
+    }
+    return lastModificationUser;
+  }
+
+  public void setLastModificationUser(String lastModificationUser) {
+    this.lastModificationUser = lastModificationUser;
   }
 }

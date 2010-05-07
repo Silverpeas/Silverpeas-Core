@@ -227,25 +227,33 @@ QueryParameters query				= (QueryParameters) request.getAttribute("QueryParamete
 String			spaceSelected		= null;
 String			componentSelected	= null;
 String			keywords			= null;
-String			theAfterDate		= null;
-String			theBeforeDate		= null;
+String			createAfterDate		= null;
+String			createBeforeDate	= null;
+String			updateAfterDate		= null;
+String			updateBeforeDate	= null;
 UserDetail		userDetail			= null;
 if (query != null)
 {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
 	keywords			= query.getKeywords();
-	theAfterDate		= query.getAfterDate();
-	theBeforeDate		= query.getBeforeDate();
+	createAfterDate		= query.getAfterDate();
+	createBeforeDate	= query.getBeforeDate();
+	updateAfterDate		= query.getAfterUpdateDate();
+	updateBeforeDate	= query.getBeforeUpdateDate();
 	userDetail			= query.getCreatorDetail();
 }
 
 if (keywords == null)
 	keywords = "";
-if (theAfterDate == null)
-	theAfterDate = "";
-if (theBeforeDate == null)
-	theBeforeDate = "";
+if (createAfterDate == null)
+  	createAfterDate = "";
+if (createBeforeDate == null)
+  	createBeforeDate = "";
+if (updateAfterDate == null)
+  	updateAfterDate = "";
+if (updateBeforeDate == null)
+  	updateBeforeDate = "";
 
 
 //r�cup�ration des donn�es pour l'espace de recherche
@@ -450,13 +458,12 @@ function addSubscription() {
 	document.AdvancedSearch.submit();
 }
 
-function checkDates() {
-	var errorMsg = "";
-	var errorNb = 0;
+var errorMsg;
+var errorNb;
+function areDatesOK(afterDate, beforeDate)
+{
 	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
-	var afterDate	= document.AdvancedSearch.afterdate.value;
-	var beforeDate	= document.AdvancedSearch.beforedate.value;
-
+	
 	if (!isWhitespace(afterDate))
 	{
 		var yearBegin = extractYear(afterDate, '<%=resource.getLanguage()%>');
@@ -508,7 +515,22 @@ function checkDates() {
 				 }
 		   }
 	 }
-	 switch(errorNb) {
+}
+
+function checkDates() {
+	errorMsg = "";
+	errorNb = 0;
+	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
+	
+	var afterDate	= document.AdvancedSearch.createafterdate.value;
+	var beforeDate	= document.AdvancedSearch.createbeforedate.value;
+	areDatesOK(afterDate, beforeDate);
+
+	afterDate	= document.AdvancedSearch.updateafterdate.value;
+	beforeDate	= document.AdvancedSearch.updatebeforedate.value;
+	areDatesOK(afterDate, beforeDate);
+
+	switch(errorNb) {
 		case 0 :
 			result = true;
 			break;
@@ -517,8 +539,8 @@ function checkDates() {
 			window.alert(errorMsg);
 			result = false;
 			break;
-	 }
-	 return result;
+	}
+	return result;
 }
 
 function editHelp()
@@ -843,20 +865,19 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 			</td>            
         </tr>
         <tr align="center">
-          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.AfterDate")%> :</td>
-          <td align="left"><input type="text" name="afterdate" size="12" value="<%=theAfterDate%>">&nbsp;
-            <a href="javascript:onClick=editDate('afterdate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a>
-            &nbsp;
-            <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
+          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.CreateAfterDate")%></td>
+          <td align="left"><input type="text" name="createafterdate" size="12" value="<%=createAfterDate%>">&nbsp;
+            <a href="javascript:onClick=editDate('createafterdate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a>
+            <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" name="createbeforedate" size="12" value="<%=createBeforeDate%>">&nbsp;
+            <a href="javascript:onClick=editDate('createbeforedate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
         <tr align="center">
-          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.BeforeDate")%> :</td>
-          <td align="left">
-            <input type="text" name="beforedate" size="12" value="<%=theBeforeDate%>">&nbsp;
-            <a href="javascript:onClick=editDate('beforedate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a>
-            &nbsp;
-            <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
+          <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.UpdateAfterDate")%></td>
+          <td align="left"><input type="text" name="updateafterdate" size="12" value="<%=updateAfterDate%>">&nbsp;
+            <a href="javascript:onClick=editDate('updateafterdate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a>
+            <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" name="updatebeforedate" size="12" value="<%=updateBeforeDate%>">&nbsp;
+            <a href="javascript:onClick=editDate('updatebeforedate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
         <tr align="center">

@@ -1597,12 +1597,9 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
             + pubDetail.getAuthor(), language);
       }
 
-      // indexEntry.setTitle(pubDetail.getName());
-      // indexEntry.setKeyWords(pubDetail.getKeywords()+" "+pubDetail.getAuthor());
-      // indexEntry.setPreView(pubDetail.getDescription());
-
       indexEntry.setLang("fr");
-      indexEntry.setCreationDate(pubDetail.getUpdateDate());
+      indexEntry.setCreationDate(pubDetail.getCreationDate());
+      indexEntry.setLastModificationDate(pubDetail.getUpdateDate());
       if (pubDetail.getBeginDate() != null) {
         indexEntry.setStartDate(formatter.format(pubDetail.getBeginDate()));
       }
@@ -1610,6 +1607,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         indexEntry.setEndDate(formatter.format(pubDetail.getEndDate()));
       }
       indexEntry.setCreationUser(pubDetail.getCreatorId());
+      indexEntry.setLastModificationUser(pubDetail.getUpdaterId());
       // index creator's full name
       if (publicationSettings.getString("indexAuthorName").equals("true")) {
         try {

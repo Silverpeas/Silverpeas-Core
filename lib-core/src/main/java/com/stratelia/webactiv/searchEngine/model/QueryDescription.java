@@ -34,11 +34,17 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
+
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.CharReplacer;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 
 /**
@@ -48,6 +54,38 @@ public class QueryDescription implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The searched components' instance is built empty. To be searched any space or component must be
+   * explicitly added with the addSpaceComponent() method. This Set is a set of SpaceComponentPair.
+   */
+  private Set<SpaceComponentPair> spaceComponentPairSet = new HashSet<SpaceComponentPair>();
+
+  /**
+   * The query defaults to the empty query. This is an error to set the query to null : a query is
+   * needed to perform the search.
+   */
+  private String query = "";
+
+  /**
+   * The searchingUser defaults to the empty query. This is an error to set the user to null : a
+   * search is done for a given user.
+   */
+  private String searchingUser = "";
+
+  /**
+   * The others criteria default to null. When the requestedAuthor is null, documents of any author
+   * are returned (even if the author is unknown). When the requested Date range is null, all
+   * documents are returned even if the creation dates are unknown.
+   */
+  private String requestedLang = null;
+  private String requestedAuthor = null;
+  private String requestedCreatedBefore = null;
+  private String requestedCreatedAfter = null;
+  private String requestedUpdatedBefore = null;
+  private String requestedUpdatedAfter = null;
+  private Hashtable<String, String> xmlQuery = null;
+  private String xmlTitle = null;
+  private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
 
   /**
@@ -302,39 +340,10 @@ public class QueryDescription implements Serializable {
 
   public boolean isPeriodDefined() {
     return StringUtil.isDefined(requestedCreatedAfter) ||
-        StringUtil.isDefined(requestedCreatedBefore);
+        StringUtil.isDefined(requestedCreatedBefore) ||
+        StringUtil.isDefined(requestedUpdatedAfter) ||
+        StringUtil.isDefined(requestedUpdatedBefore);
   }
-
-  /**
-   * The searched components' instance is built empty. To be searched any space or component must be
-   * explicitly added with the addSpaceComponent() method. This Set is a set of SpaceComponentPair.
-   */
-  private Set<SpaceComponentPair> spaceComponentPairSet = new HashSet<SpaceComponentPair>();
-
-  /**
-   * The query defaults to the empty query. This is an error to set the query to null : a query is
-   * needed to perform the search.
-   */
-  private String query = "";
-
-  /**
-   * The searchingUser defaults to the empty query. This is an error to set the user to null : a
-   * search is done for a given user.
-   */
-  private String searchingUser = "";
-
-  /**
-   * The others criterium default to null. When the requestedAuthor is null, documents of any author
-   * are returned (even if the author is unknown). When the requested Date range is null, all
-   * documents are returned even if the creation dates are unknown.
-   */
-  private String requestedLang = null;
-  private String requestedAuthor = null;
-  private String requestedCreatedBefore = null;
-  private String requestedCreatedAfter = null;
-  private Hashtable<String, String> xmlQuery = null;
-  private String xmlTitle = null;
-  private List<FieldDescription> multiFieldQuery = null;
 
   /**
    * @return the searchBySpace
@@ -348,6 +357,71 @@ public class QueryDescription implements Serializable {
    */
   public void setSearchBySpace(boolean isSearchBySpace) {
     this.searchBySpace = isSearchBySpace;
+  }
+
+  public String getRequestedUpdatedBefore() {
+    return requestedUpdatedBefore;
+  }
+
+  public void setRequestedUpdatedBefore(String requestedUpdatedBefore) {
+    this.requestedUpdatedBefore = requestedUpdatedBefore;
+  }
+
+  public String getRequestedUpdatedAfter() {
+    return requestedUpdatedAfter;
+  }
+
+  public void setRequestedUpdatedAfter(String requestedUpdatedAfter) {
+    this.requestedUpdatedAfter = requestedUpdatedAfter;
+  }
+
+  public RangeQuery getRangeQueryOnCreationDate() {
+    String beginDate = getRequestedCreatedAfter();
+    String endDate = getRequestedCreatedBefore();
+    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
+      return null;
+    }
+
+    if (!StringUtil.isDefined(beginDate)) {
+      beginDate = IndexEntry.STARTDATE_DEFAULT;
+    }
+
+    if (!StringUtil.isDefined(endDate)) {
+      endDate = IndexEntry.ENDDATE_DEFAULT;
+    }
+
+    Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
+    Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
+
+    return new RangeQuery(lowerTerm, upperTerm, true);
+  }
+
+  public RangeQuery getRangeQueryOnLastUpdateDate() {
+    String beginDate = getRequestedUpdatedAfter();
+    String endDate = getRequestedUpdatedBefore();
+    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
+      return null;
+    }
+
+    if (!StringUtil.isDefined(beginDate)) {
+      beginDate = IndexEntry.STARTDATE_DEFAULT;
+    }
+    if (!StringUtil.isDefined(endDate)) {
+      endDate = IndexEntry.ENDDATE_DEFAULT;
+    }
+
+    Term lowerTerm = new Term(IndexManager.LASTUPDATEDATE, beginDate);
+    Term upperTerm = new Term(IndexManager.LASTUPDATEDATE, endDate);
+
+    return new RangeQuery(lowerTerm, upperTerm, true);
+  }
+
+  public TermQuery getTermQueryOnAuthor() {
+    if (!StringUtil.isDefined(getRequestedAuthor())) {
+      return null;
+    }
+    Term authorTerm = new Term(IndexManager.CREATIONUSER, getRequestedAuthor());
+    return new TermQuery(authorTerm);
   }
 
 }
