@@ -51,7 +51,7 @@ function loadNodeData(node, fnLoadComplete)  {
                 
                 argument: {
                     "node": node,
-                    "fnLoadComplete": fnLoadComplete,
+                    "fnLoadComplete": fnLoadComplete
                 },
                 
                 //timeout -- if more than 7 seconds go by, we'll abort
