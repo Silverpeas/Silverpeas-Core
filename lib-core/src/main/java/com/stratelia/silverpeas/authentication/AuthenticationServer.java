@@ -58,7 +58,7 @@ public class AuthenticationServer extends Object {
       nbServers = Integer.parseInt(propFile.getString("autServersCount"));
       m_AutServers = new ArrayList<Authentication>();
       for (i = 0; i < nbServers; i++) {
-        serverName = "autServer" + Integer.toString(i);
+        serverName = "autServer" + i;
         if (getBooleanProperty(propFile, serverName + ".enabled", true)) {
           try {
             autObj = (Authentication) Class.forName(
@@ -122,7 +122,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.authenticate",
                 "authentication.EX_AUTHENTICATION_HOST_ERROR", "ServerNbr="
-                + Integer.toString(i) + ";User=" + login, ex);
+                + i + ";User=" + login, ex);
             lastException = ex;
           }
         } catch (AuthenticationBadCredentialException ex) {
@@ -133,7 +133,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.authenticate",
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "ServerNbr="
-                + Integer.toString(i) + ";User=" + login, ex);
+                + i + ";User=" + login, ex);
             lastException = ex;
           }
         } catch (AuthenticationException ex) {
@@ -143,7 +143,7 @@ public class AuthenticationServer extends Object {
             SilverTrace.info("authentication",
                 "AuthenticationServer.authenticate",
                 "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
-                "ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
+                "ServerNbr=" + i + ";User=" + login, ex);
             lastException = ex;
           }
         }
