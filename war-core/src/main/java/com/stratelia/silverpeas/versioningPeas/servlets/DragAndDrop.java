@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
-import com.silverpeas.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
