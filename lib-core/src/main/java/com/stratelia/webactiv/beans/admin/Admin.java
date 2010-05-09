@@ -3864,7 +3864,7 @@ public class Admin extends Object {
     List<SpaceInstLight> treeview = new ArrayList<SpaceInstLight>();
     for (int s = 0; s < rootSpaceIds.length; s++) {
       rootSpaceId = rootSpaceIds[s];
-      treeview.add(getSpaceInstLight(rootSpaceId, 0));
+      treeview.add(getSpaceInstLight(getDriverSpaceId(rootSpaceId), 0));
 
       treeview = getUserSpaceSubTreeview(treeview, userId, rootSpaceId, 1);
     }
