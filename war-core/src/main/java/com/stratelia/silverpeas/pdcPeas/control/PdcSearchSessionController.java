@@ -34,6 +34,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -441,12 +442,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   // CBO : ADD
-  public List getSortedResultsToDisplay(int sortValue, String sortOrder)
+  public List<GlobalSilverResult> getSortedResultsToDisplay(int sortValue, String sortOrder)
       throws Exception {
-    List sortedResultsToDisplay = new ArrayList();
+    List<GlobalSilverResult> sortedResultsToDisplay = new ArrayList<GlobalSilverResult>();
 
     // Tous les résultats
-    List results = null;
+    List<GlobalSilverResult> results = null;
     if (getSearchScope() == SEARCH_PDC) {
       results = globalSilverContents2GlobalSilverResults(getResults());
     } else {
@@ -456,7 +457,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (results != null && getSelectedSilverContents() != null) {
       GlobalSilverResult result = null;
       for (int i = 0; i < results.size(); i++) {
-        result = (GlobalSilverResult) results.get(i);
+        result = results.get(i);
         if (getSelectedSilverContents().contains(result)) {
           result.setSelected(true);
         } else {
@@ -465,16 +466,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
 
-    // Tri de tous les résultats
-    GlobalSilverResult[] arrayGlobalSilverResult = (GlobalSilverResult[]) results
-        .toArray(new GlobalSilverResult[0]);
-
     // Comparateurs
-    Comparator cPertAsc = new Comparator() {
+    Comparator<GlobalSilverResult> cPertAsc = new Comparator<GlobalSilverResult>() {
 
-      public int compare(Object o1, Object o2) {
-        Float float1 = new Float(((GlobalSilverResult) o1).getRawScore());
-        Float float2 = new Float(((GlobalSilverResult) o2).getRawScore());
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        Float float1 = new Float(o1.getRawScore());
+        Float float2 = new Float(o2.getRawScore());
 
         if (float1 != null && float2 != null) {
           return float1.compareTo(float2);
@@ -488,29 +485,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
-    Comparator cPertDesc = new Comparator() {
+    Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
 
-      public int compare(Object o1, Object o2) {
-        Float float1 = new Float(((GlobalSilverResult) o1).getRawScore());
-        Float float2 = new Float(((GlobalSilverResult) o2).getRawScore());
-
-        if (float1 != null && float2 != null) {
-          return float2.compareTo(float1);
-        } else {
-          return 0;
-        }
-      }
-
-      public boolean equals(Object o) {
-        return false;
-      }
-    };
-
-    Comparator cTitreAsc = new Comparator() {
-
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getName(getLanguage());
-        String string2 = ((GlobalSilverResult) o2).getName(getLanguage());
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        String string1 = o1.getName(getLanguage());
+        String string2 = o2.getName(getLanguage());
 
         if (string1 != null && string2 != null) {
           return string1.compareToIgnoreCase(string2);
@@ -524,29 +503,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
-    Comparator cTitreDesc = new Comparator() {
+    Comparator<GlobalSilverResult> cAuteurAsc = new Comparator<GlobalSilverResult>() {
 
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getName(getLanguage());
-        String string2 = ((GlobalSilverResult) o2).getName(getLanguage());
-
-        if (string1 != null && string2 != null) {
-          return string2.compareToIgnoreCase(string1);
-        } else {
-          return 0;
-        }
-      }
-
-      public boolean equals(Object o) {
-        return false;
-      }
-    };
-
-    Comparator cAuteurAsc = new Comparator() {
-
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getCreatorName();
-        String string2 = ((GlobalSilverResult) o2).getCreatorName();
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        String string1 = o1.getCreatorName();
+        String string2 = o2.getCreatorName();
 
         if (string1 != null && string2 != null) {
           return string1.compareToIgnoreCase(string2);
@@ -560,29 +521,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
-    Comparator cAuteurDesc = new Comparator() {
+    Comparator<GlobalSilverResult> cDateAsc = new Comparator<GlobalSilverResult>() {
 
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getCreatorName();
-        String string2 = ((GlobalSilverResult) o2).getCreatorName();
-
-        if (string1 != null && string2 != null) {
-          return string2.compareToIgnoreCase(string1);
-        } else {
-          return 0;
-        }
-      }
-
-      public boolean equals(Object o) {
-        return false;
-      }
-    };
-
-    Comparator cDateAsc = new Comparator() {
-
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getDate();
-        String string2 = ((GlobalSilverResult) o2).getDate();
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        String string1 = o1.getCreationDate();
+        String string2 = o2.getCreationDate();
 
         if (string1 != null && string2 != null) {
           return string1.compareTo(string2);
@@ -596,14 +539,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
-    Comparator cDateDesc = new Comparator() {
+    Comparator<GlobalSilverResult> cUpdateDateAsc = new Comparator<GlobalSilverResult>() {
 
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getDate();
-        String string2 = ((GlobalSilverResult) o2).getDate();
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        String string1 = o1.getDate();
+        String string2 = o2.getDate();
 
         if (string1 != null && string2 != null) {
-          return string2.compareTo(string1);
+          return string1.compareTo(string2);
         } else {
           return 0;
         }
@@ -614,11 +557,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
-    Comparator cEmplAsc = new Comparator() {
+    Comparator<GlobalSilverResult> cEmplAsc = new Comparator<GlobalSilverResult>() {
 
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getLocation();
-        String string2 = ((GlobalSilverResult) o2).getLocation();
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        String string1 = o1.getLocation();
+        String string2 = o2.getLocation();
 
         if (string1 != null && string2 != null) {
           return string1.compareToIgnoreCase(string2);
@@ -632,73 +575,51 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
-    Comparator cEmplDesc = new Comparator() {
-
-      public int compare(Object o1, Object o2) {
-        String string1 = ((GlobalSilverResult) o1).getLocation();
-        String string2 = ((GlobalSilverResult) o2).getLocation();
-
-        if (string1 != null && string2 != null) {
-          return string2.compareToIgnoreCase(string1);
-        } else {
-          return 0;
-        }
-      }
-
-      public boolean equals(Object o) {
-        return false;
-      }
-    };
-
-    if (sortValue == 1
-        && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {// Pertinence
-      // ASC
-      Arrays.sort(arrayGlobalSilverResult, cPertAsc);
-    } else if (sortValue == 1
-        && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {// Pertinence
-      // DESC
-      Arrays.sort(arrayGlobalSilverResult, cPertDesc);
-    } else if (sortValue == 2
-        && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {// Titre
-      // ASC
-      Arrays.sort(arrayGlobalSilverResult, cTitreAsc);
-    } else if (sortValue == 2
-        && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {// Titre
-      // DESC
-      Arrays.sort(arrayGlobalSilverResult, cTitreDesc);
-    } else if (sortValue == 3
-        && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {// Auteur
-      // ASC
-      Arrays.sort(arrayGlobalSilverResult, cAuteurAsc);
-    } else if (sortValue == 3
-        && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {// Auteur
-      // DESC
-      Arrays.sort(arrayGlobalSilverResult, cAuteurDesc);
-    } else if (sortValue == 4
-        && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {// Date
-      // ASC
-      Arrays.sort(arrayGlobalSilverResult, cDateAsc);
-    } else if (sortValue == 4
-        && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {// Date
-      // DESC
-      Arrays.sort(arrayGlobalSilverResult, cDateDesc);
-    } else if (sortValue == 5
-        && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {// Emplacement
-      // ASC
-      Arrays.sort(arrayGlobalSilverResult, cEmplAsc);
-    } else if (sortValue == 5
-        && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {// Emplacement
-      // DESC
-      Arrays.sort(arrayGlobalSilverResult, cEmplDesc);
+    if (sortValue == 1 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Pertinence ASC
+      Collections.sort(results, cPertAsc);
+    } else if (sortValue == 1 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Pertinence DESC
+      Collections.sort(results, cPertAsc);
+      Collections.reverse(results);
+    } else if (sortValue == 2 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Titre ASC
+      Collections.sort(results, cTitreAsc);
+    } else if (sortValue == 2 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Titre DESC
+      Collections.sort(results, cTitreAsc);
+      Collections.reverse(results);
+    } else if (sortValue == 3 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Auteur ASC
+      Collections.sort(results, cAuteurAsc);
+    } else if (sortValue == 3 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Auteur DESC
+      Collections.sort(results, cAuteurAsc);
+      Collections.reverse(results);
+    } else if (sortValue == 4 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Date ASC
+      Collections.sort(results, cDateAsc);
+    } else if (sortValue == 4 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Date DESC
+      Collections.sort(results, cDateAsc);
+      Collections.reverse(results);
+    } else if (sortValue == 5 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Date ASC
+      Collections.sort(results, cUpdateDateAsc);
+    } else if (sortValue == 5 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Date DESC
+      Collections.sort(results, cUpdateDateAsc);
+      Collections.reverse(results);
+    } else if (sortValue == 6 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Emplacement ASC
+      Collections.sort(results, cEmplAsc);
+    } else if (sortValue == 6 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Emplacement DESC
+      Collections.sort(results, cEmplAsc);
+      Collections.reverse(results);
     }
 
-    // retransforme en List
-    List sortedResults = new ArrayList();
-    for (int i = 0; i < arrayGlobalSilverResult.length; i++) {
-      sortedResults.add(arrayGlobalSilverResult[i]);
-    }
-
-    sortedResultsToDisplay = sortedResults.subList(
+    sortedResultsToDisplay = results.subList(
         getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
 
     if (getSearchScope() != SEARCH_PDC) {
@@ -1074,7 +995,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
 
-    return FileServerUtils.getApplicationContext()+urlAttachment;
+    return FileServerUtils.getApplicationContext() + urlAttachment;
   }
 
   private String getVersioningUrl(String documentId, String componentId)
@@ -1090,7 +1011,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
         version.getLogicalName(), documentId, version.getPk().getId());
 
-    return FileServerUtils.getApplicationContext()+urlVersioning;
+    return FileServerUtils.getApplicationContext() + urlVersioning;
   }
 
   /******************************************************************************************************************/
@@ -1824,7 +1745,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  
   private boolean isSearchable(String componentId) {
     if (componentId.startsWith("silverCrawler")
         || componentId.startsWith("gallery")

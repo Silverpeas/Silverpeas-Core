@@ -87,7 +87,8 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
 
   public GlobalSilverContent(MatchingIndexEntry mie) {
     init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie
-        .getComponent(), mie.getCreationDate(), null, mie.getCreationUser());
+        .getComponent(), mie.getLastModificationDate(), null, mie.getCreationUser());
+    setCreationDate(mie.getCreationDate());
 
     Iterator<String> languages = mie.getLanguages();
     while (languages.hasNext()) {
