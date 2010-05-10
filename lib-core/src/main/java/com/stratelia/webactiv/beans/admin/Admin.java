@@ -4287,7 +4287,7 @@ public class Admin extends Object {
       ComponentInstLight componentInst = getComponentInstLight(allowedComponentId);
 
       if (componentInst.getName().equals(sComponentName)) {
-        result.add(componentInst.getFullId());
+        result.add(componentInst.getId());
       }
     }
     return result.toArray(new String[result.size()]);
