@@ -34,6 +34,8 @@ import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class QueryParameters implements java.io.Serializable {
+  // class version identifier
+  private static final long serialVersionUID = -5191736720955151540L;
   private String keywords = null;
   private String spaceId = null;
   private String instanceId = null;
@@ -43,7 +45,7 @@ public class QueryParameters implements java.io.Serializable {
   private String afterupdatedate = null;
   private String beforeupdatedate = null;
 
-  private Hashtable xmlQuery = null;
+  private Hashtable<String, String> xmlQuery = null;
   private String xmlTitle = null;
 
   // attributes below are used only to display info in the search page
@@ -176,12 +178,12 @@ public class QueryParameters implements java.io.Serializable {
 
   public void addXmlSubQuery(String field, String query) {
     if (xmlQuery == null)
-      xmlQuery = new Hashtable();
+      xmlQuery = new Hashtable<String, String>();
 
     xmlQuery.put(field, query);
   }
 
-  public Hashtable getXmlQuery() {
+  public Hashtable<String, String> getXmlQuery() {
     return xmlQuery;
   }
 

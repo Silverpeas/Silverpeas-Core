@@ -94,7 +94,7 @@ public interface PdcUtilizationBm {
    * @return a List of UsedAxis
    * @throws PdcException
    */
-  public List getUsedAxisByInstanceId(String instanceId) throws PdcException;
+  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
   /**
    * Returns the distinct axis used by a given Job'Peas instance
@@ -102,13 +102,13 @@ public interface PdcUtilizationBm {
    * @return a List of AxisHeader
    * @throws PdcException
    */
-  public List getAxisHeaderUsedByInstanceId(String instanceId)
+  public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId)
       throws PdcException;
 
-  public List getAxisHeaderUsedByInstanceIds(List instanceIds)
+  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
       throws PdcException;
 
-  public List getAxisHeaderUsedByInstanceIds(List instanceIds, AxisFilter filter)
+  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds, AxisFilter filter)
       throws PdcException;
 
   /**
@@ -144,7 +144,7 @@ public interface PdcUtilizationBm {
    * @throws PdcException
    * @see
    */
-  public void deleteUsedAxis(Collection usedAxisIds) throws PdcException;
+  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
 
   /**
    * Delete used axis based on a particular axis

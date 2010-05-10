@@ -377,23 +377,23 @@ public class TreeBmImpl implements TreeBm {
     TreeCache.unvalidateTree(treeId);
   }
 
-  public List getTree(Connection con, String treeId)
+  public List<TreeNode> getTree(Connection con, String treeId)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getTree()",
         "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
     return getTree(con, treeId, new AxisFilter());
   }
 
-  public List getTree(Connection con, String treeId, AxisFilter filter)
+  public List<TreeNode> getTree(Connection con, String treeId, AxisFilter filter)
       throws TreeManagerException {
-    ArrayList sortedList = null;
+    ArrayList<TreeNode> sortedList = null;
     if (filter.size() == 0) {
       sortedList = TreeCache.getTree(treeId);
     }
 
     if (sortedList == null) {
       TreeNode root = null;
-      sortedList = new ArrayList();
+      sortedList = new ArrayList<TreeNode>();
       root = getRoot(con, treeId);
       if (root != null) {
         SilverTrace.info("treeManager", "TreeManagerBmImpl.getTree()",
@@ -459,7 +459,7 @@ public class TreeBmImpl implements TreeBm {
     }
   }
 
-  public List getSubTree(Connection con, TreeNodePK rootPK, String treeId)
+  public List<TreeNode> getSubTree(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getSubTree()",
         "root.MSG_GEN_PARAM_VALUE", "rootPK = " + rootPK.toString()
@@ -470,7 +470,7 @@ public class TreeBmImpl implements TreeBm {
 
     // 1 - On parcours la liste list
     // pour chaque élément on le place correctement dans la liste ordonnée
-    ArrayList sortedList = new ArrayList();
+    ArrayList<TreeNode> sortedList = new ArrayList<TreeNode>();
     if (list != null && list.size() > 0) {
       // Premier élément de la liste est l'élément racine
       // root = (TreeNode) list.get(0);
@@ -669,12 +669,12 @@ public class TreeBmImpl implements TreeBm {
     return chaine;
   }
 
-  public List getNodesByName(Connection con, String nodeName)
+  public List<TreeNode> getNodesByName(Connection con, String nodeName)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getNodesByName()",
         "root.MSG_GEN_PARAM_VALUE", "nodeName = " + nodeName);
     List nodes = null;
-    List result = null;
+    List<TreeNode> result = null;
     try {
       String whereClause = "name = '" + encode(nodeName) + "'";
       nodes = (List) getDAO().findByWhereClause(con, new TreeNodePK("useless"),
@@ -907,7 +907,7 @@ public class TreeBmImpl implements TreeBm {
     return pk.getId();
   }
 
-  public List getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
+  public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getSonsToNode()",
         "root.MSG_GEN_PARAM_VALUE", "treeNodePK = " + treeNodePK.toString()
@@ -915,7 +915,7 @@ public class TreeBmImpl implements TreeBm {
     String whereClause = "treeId = " + treeId + " and fatherId = "
         + treeNodePK.getId();
     Collection sons = null;
-    List result = null;
+    List<TreeNode> result = null;
     try {
       sons = getDAO().findByWhereClause(con, treeNodePK, whereClause);
       result = persistence2TreeNode(con, sons);
@@ -923,7 +923,7 @@ public class TreeBmImpl implements TreeBm {
       throw new TreeManagerException("TreeBmImpl.getSonsToNode()",
           SilverpeasException.ERROR, "treeManager.GETTING_SONS_FAILED", pe);
     }
-    return (List) result;
+    return result;
   }
 
   public void deleteNode(Connection con, TreeNodePK nodePK, String treeId)
@@ -979,13 +979,13 @@ public class TreeBmImpl implements TreeBm {
     return treeDao;
   }
 
-  public List getFullPath(Connection con, TreeNodePK nodePK, String treeId)
+  public List<TreeNode> getFullPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getFullPath()",
         "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString()
         + ", treeId = " + treeId);
     String path = getPath(con, nodePK, treeId);
-    ArrayList list = new ArrayList();
+    ArrayList<TreeNode> list = new ArrayList<TreeNode>();
     try {
       // récupère la valeur de la colonne path de la table SB_Tree_Tree
       // if (path.length() > 1){
@@ -1010,9 +1010,9 @@ public class TreeBmImpl implements TreeBm {
     return list;
   }
 
-  private List persistence2TreeNode(Connection con, Collection silverpeasBeans)
+  private List<TreeNode> persistence2TreeNode(Connection con, Collection silverpeasBeans)
       throws TreeManagerException {
-    List nodes = new ArrayList();
+    List<TreeNode> nodes = new ArrayList<TreeNode>();
     if (silverpeasBeans != null) {
       Iterator it = silverpeasBeans.iterator();
       while (it.hasNext()) {

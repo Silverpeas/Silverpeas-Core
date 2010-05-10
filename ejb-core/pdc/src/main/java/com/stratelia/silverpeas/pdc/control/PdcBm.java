@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -178,7 +179,7 @@ public interface PdcBm {
    * *********************************************************
    */
 
-  public List getAxisByType(String type) throws PdcException;
+  public List<AxisHeader> getAxisByType(String type) throws PdcException;
 
   /**
    * Method declaration
@@ -186,7 +187,7 @@ public interface PdcBm {
    * @throws PdcException
    * @see
    */
-  public List getAxis() throws PdcException;
+  public List<AxisHeader> getAxis() throws PdcException;
 
   /**
    * Method declaration
@@ -272,7 +273,7 @@ public interface PdcBm {
    * @throws PdcException
    * @see
    */
-  public List getAxisValuesByName(String valueName) throws PdcException;
+  public List<Value> getAxisValuesByName(String valueName) throws PdcException;
 
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
@@ -282,7 +283,7 @@ public interface PdcBm {
    * @throws PdcException
    * @see
    */
-  public List getDaughterValues(String axisId, String valueId)
+  public List<String> getDaughterValues(String axisId, String valueId)
       throws PdcException;
 
   /**
@@ -293,7 +294,7 @@ public interface PdcBm {
    * @throws PdcException
    * @see
    */
-  public List getFilteredAxisValues(String rootId, AxisFilter filter)
+  public List<Value> getFilteredAxisValues(String rootId, AxisFilter filter)
       throws PdcException;
 
   /**
@@ -309,7 +310,7 @@ public interface PdcBm {
    * @param treeId The id of the selected axis.
    * @return The list of values of the axis.
    */
-  public List getAxisValues(int treeId) throws PdcException;
+  public List<Value> getAxisValues(int treeId) throws PdcException;
 
   /**
    * Method declaration
@@ -382,8 +383,8 @@ public interface PdcBm {
    * @see
    */
   public int createDaughterValue(Value valueToInsert, String refValue,
-	      String treeId) throws PdcException;
-  
+      String treeId) throws PdcException;
+
   /**
    * Method declaration
    * @param valueToInsert
@@ -512,29 +513,29 @@ public interface PdcBm {
   public boolean isClassifyingMandatory(String componentId) throws PdcException;
 
   /** Search methods */
-  public List getPertinentAxis(SearchContext searchContext, String axisType)
+  public List<SearchAxis> getPertinentAxis(SearchContext searchContext, String axisType)
       throws PdcException;
 
-  public List getPertinentAxisByInstanceId(SearchContext searchContext,
+  public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext,
       String axisType, String instanceId) throws PdcException;
 
-  public List getPertinentAxisByInstanceId(SearchContext searchContext,
+  public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext,
       String axisType, String instanceId, AxisFilter filter)
       throws PdcException;
 
-  public List getPertinentAxisByInstanceIds(SearchContext searchContext,
-      String axisType, List instanceIds) throws PdcException;
+  public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
+      String axisType, List<String> instanceIds) throws PdcException;
 
-  public List getPertinentAxisByInstanceIds(SearchContext searchContext,
-      String axisType, List instanceIds, AxisFilter filter) throws PdcException;
+  public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
+      String axisType, List<String> instanceIds, AxisFilter filter) throws PdcException;
 
   // public List getFirstLevelAxisValues(SearchContext searchContext, String
   // axisId) throws PdcException;
 
-  public List getFirstLevelAxisValuesByInstanceId(SearchContext searchContext,
+  public List<Value> getFirstLevelAxisValuesByInstanceId(SearchContext searchContext,
       String axisId, String instanceId) throws PdcException;
 
-  public List getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
+  public List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
       String axisId, List instanceIds) throws PdcException;
 
   // recherche globale
@@ -542,19 +543,19 @@ public interface PdcBm {
   // axisId, String valueId) throws PdcException;
 
   // recherche à l'intérieur d'une instance
-  public List getPertinentDaughterValuesByInstanceId(
+  public List<Value> getPertinentDaughterValuesByInstanceId(
       SearchContext searchContext, String axisId, String valueId,
       String instanceId) throws PdcException;
 
-  public List getPertinentDaughterValuesByInstanceId(
+  public List<Value> getPertinentDaughterValuesByInstanceId(
       SearchContext searchContext, String axisId, String valueId,
       String instanceId, AxisFilter filter) throws PdcException;
 
-  public List getPertinentDaughterValuesByInstanceIds(
+  public List<Value> getPertinentDaughterValuesByInstanceIds(
       SearchContext searchContext, String axisId, String valueId,
       List instanceIds) throws PdcException;
 
-  public List getPertinentDaughterValuesByInstanceIds(
+  public List<Value> getPertinentDaughterValuesByInstanceIds(
       SearchContext searchContext, String axisId, String valueId,
       List instanceIds, AxisFilter filter) throws PdcException;
 
@@ -580,9 +581,9 @@ public interface PdcBm {
       boolean recursiveSearch, boolean visibilitySensitive)
       throws ContainerManagerException;
 
-  public List getDaughters(String refValue, String treeId);
+  public List<Value> getDaughters(String refValue, String treeId);
 
-  public List getSubAxisValues(String axisId, String valueId);
+  public List<Value> getSubAxisValues(String axisId, String valueId);
 
   public void indexAllAxis() throws PdcException;
 

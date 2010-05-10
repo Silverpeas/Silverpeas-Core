@@ -32,17 +32,17 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @author Nicolas EYSSERIC
  */
 public class SearchContext implements ContainerPositionInterface, java.io.Serializable {
-  private ArrayList criterias = new ArrayList();
+  private ArrayList<SearchCriteria> criterias = new ArrayList<SearchCriteria>();
   private String userId = null; // user who search
 
   public SearchContext() {
   }
 
-  public SearchContext(ArrayList criterias) {
+  public SearchContext(ArrayList<SearchCriteria> criterias) {
     this.criterias = criterias;
   }
 
-  public ArrayList getCriterias() {
+  public ArrayList<SearchCriteria> getCriterias() {
     return criterias;
   }
 
@@ -50,7 +50,7 @@ public class SearchContext implements ContainerPositionInterface, java.io.Serial
     SilverTrace.info("Pdc", "SearchContext.addCriteria()",
         "root.MSG_GEN_PARAM_VALUE", "criteria = " + criteria.toString());
     if (criterias == null) {
-      criterias = new ArrayList();
+      criterias = new ArrayList<SearchCriteria>();
     }
 
     // recherche de l'existance d'un critère sur l'axe
@@ -68,7 +68,7 @@ public class SearchContext implements ContainerPositionInterface, java.io.Serial
   public void clearCriterias() {
     SilverTrace.info("Pdc", "SearchContext.clearCriterias()",
         "root.MSG_GEN_PARAM_VALUE");
-    criterias = new ArrayList();
+    criterias = new ArrayList<SearchCriteria>();
   }
 
   public void removeCriteria(SearchCriteria criteria) {

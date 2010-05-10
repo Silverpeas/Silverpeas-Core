@@ -32,12 +32,16 @@ import com.stratelia.silverpeas.classifyEngine.PertinentAxis;
  * @author Nicolas EYSSERIC
  */
 public class SearchAxis extends PertinentAxis implements java.io.Serializable {
+  
+  //Class version identifier
+  private static final long serialVersionUID = 8332783057658294005L;
+
   // private String axisName = null;
   private int axisRootId = -1;
 
   private AxisHeader axis = null;
 
-  private List values = null;
+  private List<Value> values = null;
 
   public SearchAxis(int axisId, int nbObjects) {
     super();
@@ -72,14 +76,14 @@ public class SearchAxis extends PertinentAxis implements java.io.Serializable {
   /**
    * @return a List of SearchValue
    */
-  public List getValues() {
+  public List<Value> getValues() {
     return values;
   }
 
   /**
    * @param list
    */
-  public void setValues(List list) {
+  public void setValues(List<Value> list) {
     values = list;
   }
 

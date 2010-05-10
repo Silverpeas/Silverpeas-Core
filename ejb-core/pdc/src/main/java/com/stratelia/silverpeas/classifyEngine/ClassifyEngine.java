@@ -63,7 +63,7 @@ public class ClassifyEngine extends Object {
   static private int[] m_anRegisteredAxis = null;
 
   // GetSinglePertinentAxis Cache
-  static private Hashtable m_hSinglePertinentAxis = new Hashtable(0);
+  static private Hashtable<String, PertinentAxis> m_hSinglePertinentAxis = new Hashtable<String, PertinentAxis>(0);
 
   // the date format used in database to represent a date
   static private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
@@ -151,10 +151,10 @@ public class ClassifyEngine extends Object {
   /*
    * Unregister an axis Return the list of the deleted positionsIds
    */
-  public List unregisterAxis(Connection connection, int nLogicalAxisId)
+  public List<Integer> unregisterAxis(Connection connection, int nLogicalAxisId)
       throws ClassifyEngineException {
     PreparedStatement prepStmt = null;
-    List alDeletedPositionIds = null;
+    List<Integer> alDeletedPositionIds = null;
 
     // Check the minimum required
     int nAxis = this.getPhysicalAxisId(nLogicalAxisId);
@@ -298,7 +298,7 @@ public class ClassifyEngine extends Object {
   public int isPositionAlreadyExists(int nSilverObjectId, Position position)
       throws ClassifyEngineException {
     // Convert the Axis Ids
-    List alValues = position.getValues();
+    List<Value> alValues = position.getValues();
     for (int nI = 0; nI < alValues.size(); nI++) {
       Value value = (Value) alValues.get(nI);
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
@@ -357,7 +357,7 @@ public class ClassifyEngine extends Object {
     this.checkParameters(nSilverObjectId, position);
 
     // Convert the Axis Ids
-    List alValues = position.getValues();
+    List<Value> alValues = position.getValues();
     for (int nI = 0; nI < alValues.size(); nI++) {
       Value value = (Value) alValues.get(nI);
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
@@ -417,7 +417,7 @@ public class ClassifyEngine extends Object {
     this.checkParameters(nSilverObjectId, position);
 
     // Convert the Axis Ids
-    List alValues = position.getValues();
+    List<Value> alValues = position.getValues();
     for (int nI = 0; nI < alValues.size(); nI++) {
       Value value = (Value) alValues.get(nI);
       value.setAxisId(this.getPhysicalAxisId(value.getAxisId()));
@@ -553,7 +553,7 @@ public class ClassifyEngine extends Object {
     this.checkPosition(newPosition);
 
     // Convert the Axis Ids
-    List alValues = newPosition.getValues();
+    List<Value> alValues = newPosition.getValues();
     for (int nI = 0; nI < alValues.size(); nI++) {
       Value value = (Value) alValues.get(nI);
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
@@ -604,7 +604,7 @@ public class ClassifyEngine extends Object {
    * connection is null, then we have to open a connection and close it add by SAN
    */
   public void updateSilverObjectPositions(Connection connection,
-      List classifyValues, int nSilverObjectId) throws ClassifyEngineException {
+      List<Value> classifyValues, int nSilverObjectId) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     Value value = null;
@@ -794,7 +794,7 @@ public class ClassifyEngine extends Object {
   /*
    * Find all the Positions corresponding to the given SilverObjectId
    */
-  public List findPositionsBySilverOjectId(int nSilverObjectId)
+  public List<Position> findPositionsBySilverOjectId(int nSilverObjectId)
       throws ClassifyEngineException {
     Connection connection = null;
 
@@ -818,12 +818,12 @@ public class ClassifyEngine extends Object {
       resSet = prepStmt.executeQuery();
 
       // Fetch the results and convert them in Positions
-      ArrayList alResults = new ArrayList();
+      ArrayList<Position> alResults = new ArrayList<Position>();
       while (resSet.next()) {
         Position position = new Position();
         position.setPositionId(resSet.getInt(1));
 
-        ArrayList alValues = new ArrayList();
+        ArrayList<Value> alValues = new ArrayList<Value>();
         for (int nI = 0; nI < nbMaxAxis; nI++) {
           Value value = new Value();
           value.setAxisId(this.getLogicalAxisId(nI));
@@ -885,7 +885,7 @@ public class ClassifyEngine extends Object {
 
   // Remove all the positions with all the values at null
   // Return the deleted positionIds
-  private List removeEmptyPositions(Connection connection)
+  private List<Integer> removeEmptyPositions(Connection connection)
       throws ClassifyEngineException {
     // -----------------------------
     // Get the removed positionIds
@@ -894,7 +894,7 @@ public class ClassifyEngine extends Object {
     // build the statement to get the empty positions
     String sSQLStatement = SQLStatement
         .buildGetEmptyPositionsStatement(nbMaxAxis);
-    ArrayList alDeletedPositionIds = new ArrayList();
+    ArrayList<Integer> alDeletedPositionIds = new ArrayList<Integer>();
     // Execute the query
     SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
         "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
@@ -946,8 +946,8 @@ public class ClassifyEngine extends Object {
   /*
    * Replace the old value with the new value for all positions
    */
-  public void replaceValuesOnAxis(Connection connection, List oldValue,
-      List newValue) throws ClassifyEngineException {
+  public void replaceValuesOnAxis(Connection connection, List<Value> oldValue,
+      List<Value> newValue) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     // For all the given values
@@ -1035,7 +1035,7 @@ public class ClassifyEngine extends Object {
     this.checkPosition(position);
   }
 
-  private void checkCriterias(List alCriterias) throws ClassifyEngineException {
+  private void checkCriterias(List<Criteria> alCriterias) throws ClassifyEngineException {
     // Check if the given array of criterias is valid
     if (alCriterias == null)
       throw new ClassifyEngineException("ClassifyEngine.checkCriterias",
@@ -1057,7 +1057,7 @@ public class ClassifyEngine extends Object {
    * Return a List of PertinentAxis corresponding to the given criterias for the given AxisIds The
    * return list is ordered like the given one considering the AxisId
    */
-  public List getPertinentAxis(List alGivenCriterias, List alAxisIds)
+  public List<PertinentAxis> getPertinentAxis(List alGivenCriterias, List<Integer> alAxisIds)
       throws ClassifyEngineException {
     Connection connection = null;
 
@@ -1065,7 +1065,7 @@ public class ClassifyEngine extends Object {
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    ArrayList alCriterias = new ArrayList();
+    ArrayList<Criteria> alCriterias = new ArrayList<Criteria>();
     for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
       Criteria criteria = (Criteria) alGivenCriterias.get(nI);
       alCriterias.add(new Criteria(
@@ -1079,9 +1079,9 @@ public class ClassifyEngine extends Object {
       String today = formatter.format(new java.util.Date());
 
       // Call the search On axis one by one
-      ArrayList alPertinentAxis = new ArrayList();
+      ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
       for (int nI = 0; nI < alAxisIds.size(); nI++) {
-        int nAxisId = this.getPhysicalAxisId(((Integer) alAxisIds.get(nI))
+        int nAxisId = this.getPhysicalAxisId((alAxisIds.get(nI))
             .intValue());
         alPertinentAxis.add(this.getSinglePertinentAxis(connection,
             alCriterias, nAxisId, today));
@@ -1140,7 +1140,7 @@ public class ClassifyEngine extends Object {
    * Return a List of PertinentAxis corresponding to the given criterias for the given AxisIds and
    * given Join Statement The return list is ordered like the given one considering the AxisId
    */
-  public List getPertinentAxisByJoin(List alGivenCriterias, List alAxisIds,
+  public List<PertinentAxis> getPertinentAxisByJoin(List alGivenCriterias, List<Integer> alAxisIds,
       JoinStatement joinStatementAllPositions) throws ClassifyEngineException {
     Connection connection = null;
 
@@ -1162,7 +1162,7 @@ public class ClassifyEngine extends Object {
       String today = formatter.format(new java.util.Date());
 
       // Call the search On axis one by one
-      ArrayList alPertinentAxis = new ArrayList();
+      ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
       for (int nI = 0; nI < alAxisIds.size(); nI++) {
         int nAxisId = this.getPhysicalAxisId(((Integer) alAxisIds.get(nI))
             .intValue());
@@ -1289,7 +1289,7 @@ public class ClassifyEngine extends Object {
    * Return a List of PertinentValues corresponding to the givenAxisId The return list is ordered
    * like the given one considering the AxisId
    */
-  public List getPertinentValues(List alGivenCriterias, int nLogicalAxisId)
+  public List<PertinentValue> getPertinentValues(List alGivenCriterias, int nLogicalAxisId)
       throws ClassifyEngineException {
     SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentValues",
         "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
@@ -1326,7 +1326,7 @@ public class ClassifyEngine extends Object {
       resSet = prepStmt.executeQuery();
 
       // Fetch the results
-      ArrayList alPertinentValues = new ArrayList();
+      ArrayList<PertinentValue> alPertinentValues = new ArrayList<PertinentValue>();
       while (resSet.next()) {
         PertinentValue pValue = new PertinentValue();
         pValue.setAxisId(nLogicalAxisId);
@@ -1358,7 +1358,7 @@ public class ClassifyEngine extends Object {
    * Return a List of PertinentValues corresponding to the givenAxisId The return list is ordered
    * like the given one considering the AxisId
    */
-  public List getPertinentValuesByJoin(List alGivenCriterias,
+  public List<PertinentValue> getPertinentValuesByJoin(List alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
       throws ClassifyEngineException {
     SilverTrace.info("classifyEngine",
@@ -1402,7 +1402,7 @@ public class ClassifyEngine extends Object {
           "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
       // Fetch the results
-      ArrayList alPertinentValues = new ArrayList();
+      ArrayList<PertinentValue> alPertinentValues = new ArrayList<PertinentValue>();
       while (resSet.next()) {
         PertinentValue pValue = new PertinentValue();
         pValue.setAxisId(nLogicalAxisId);
@@ -1434,7 +1434,7 @@ public class ClassifyEngine extends Object {
    * Return a List of ObjectValuePair corresponding to the givenAxisId The return list is ordered
    * like the given one considering the AxisId
    */
-  public List getObjectValuePairsByJoin(List alGivenCriterias,
+  public List<ObjectValuePair> getObjectValuePairsByJoin(List alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
       throws ClassifyEngineException {
     SilverTrace.info("classifyEngine",
@@ -1478,7 +1478,7 @@ public class ClassifyEngine extends Object {
           "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
       // Fetch the results
-      List objectValuePairs = new ArrayList();
+      List<ObjectValuePair> objectValuePairs = new ArrayList<ObjectValuePair>();
       while (resSet.next()) {
         ObjectValuePair ovp = new ObjectValuePair(resSet.getInt(1), resSet
             .getString(2), resSet.getString(3));

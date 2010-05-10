@@ -30,6 +30,11 @@ import com.stratelia.silverpeas.classifyEngine.Criteria;
  */
 public class SearchCriteria extends Criteria implements java.io.Serializable {
 
+  /**
+   * Class version identifier
+   */
+  private static final long serialVersionUID = 6933474490149573303L;
+
   protected SearchCriteria() {
     super();
   }

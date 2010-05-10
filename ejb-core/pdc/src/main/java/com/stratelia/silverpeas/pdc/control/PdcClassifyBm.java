@@ -27,7 +27,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.stratelia.silverpeas.classifyEngine.ObjectValuePair;
 import com.stratelia.silverpeas.classifyEngine.PertinentAxis;
+import com.stratelia.silverpeas.classifyEngine.PertinentValue;
+import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -66,7 +69,7 @@ public interface PdcClassifyBm {
    */
   public int updatePosition(ClassifyPosition position) throws PdcException;
 
-  public int updatePositions(List classifyValues, int silverObjectId)
+  public int updatePositions(List<Value> classifyValues, int silverObjectId)
       throws PdcException;
 
   /**
@@ -101,7 +104,7 @@ public interface PdcClassifyBm {
       ArrayList oldPath, ArrayList newPath) throws PdcException;
 
   /** Remove all the positions of the given content */
-  public List removePosition(Connection connection, int nSilverContentId)
+  public List<Integer> removePosition(Connection connection, int nSilverContentId)
       throws PdcException;
 
   /** Find all the SilverContentId with the given position */
@@ -125,15 +128,15 @@ public interface PdcClassifyBm {
   public List getObjectsByInstance(String instanceId) throws PdcException;
 
   // Recherche globale
-  public List getPertinentAxis(SearchContext searchContext, List axisIds)
+  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List axisIds)
       throws PdcException;
 
   // Recherche globale
-  public List getPertinentValues(SearchContext searchContext, int axisId)
+  public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId)
       throws PdcException;
 
   // recherche à l'intérieur d'une instance
-  public List getPertinentAxis(SearchContext searchContext, List axisIds,
+  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds,
       JoinStatement joinStatementAllPositions) throws PdcException;
 
   // recherche à l'intérieur d'une instance
@@ -142,14 +145,14 @@ public interface PdcClassifyBm {
       throws PdcException;
 
   // recherche à l'intérieur d'une instance
-  public List getPertinentValues(SearchContext searchContext, int axisId,
+  public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId,
       JoinStatement joinStatementAllPositions) throws PdcException;
 
   /*
    * recherche tous les objets classés sur l'axe axisId selon le searchContext et le JoinStatement
    * @return une List de ObjectValuePair
    */
-  public List getObjectValuePairs(SearchContext searchContext, int axisId,
+  public List<ObjectValuePair> getObjectValuePairs(SearchContext searchContext, int axisId,
       JoinStatement joinStatementAllPositions) throws PdcException;
 
 }

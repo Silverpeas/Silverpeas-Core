@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.UsedAxisPK;
@@ -153,8 +154,8 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Returns a list of used axis sorted.
    * @return a list sorted or null otherwise
    */
-  public List getUsedAxisByInstanceId(String instanceId) throws PdcException {
-    List usedAxis = null;
+  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
+    List<UsedAxis> usedAxis = null;
     Connection con = openConnection();
 
     try {
@@ -173,21 +174,21 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Returns a list of axis header sorted.
    * @return a list sorted or null otherwise
    */
-  public List getAxisHeaderUsedByInstanceId(String instanceId)
+  public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId)
       throws PdcException {
-    List instanceIds = (List) new ArrayList();
+    List<String> instanceIds = new ArrayList<String>();
     instanceIds.add(instanceId);
     return getAxisHeaderUsedByInstanceIds(instanceIds);
   }
 
-  public List getAxisHeaderUsedByInstanceIds(List instanceIds)
+  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds)
       throws PdcException {
     return getAxisHeaderUsedByInstanceIds(instanceIds, new AxisFilter());
   }
 
-  public List getAxisHeaderUsedByInstanceIds(List instanceIds, AxisFilter filter)
+  public List<AxisHeader> getAxisHeaderUsedByInstanceIds(List<String> instanceIds, AxisFilter filter)
       throws PdcException {
-    List axisHeaders = null;
+    List<AxisHeader> axisHeaders = null;
     Connection con = openConnection();
 
     try {
@@ -207,9 +208,9 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Returns the usedAxis based on a defined axis
    * @param axisId - the id of the axis
    */
-  private List getUsedAxisByAxisId(Connection con, int axisId)
+  private List<UsedAxis> getUsedAxisByAxisId(Connection con, int axisId)
       throws PdcException {
-    List usedAxis = null;
+    List<UsedAxis> usedAxis = null;
 
     try {
       usedAxis = (List) dao.findByWhereClause(con, new UsedAxisPK("useless"),
@@ -304,14 +305,14 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * @throws PdcException
    * @see
    */
-  public void deleteUsedAxis(Collection usedAxisIds) throws PdcException {
+  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
     try {
-      Iterator it = usedAxisIds.iterator();
+      Iterator<String> it = usedAxisIds.iterator();
       String usedAxisId = "";
       String whereClause = " 0 = 1 ";
 
       while (it.hasNext()) {
-        usedAxisId = (String) it.next();
+        usedAxisId = it.next();
         whereClause += " or " + usedAxisId;
       }
       dao.removeWhere(new UsedAxisPK("useless"), whereClause);
@@ -401,7 +402,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     SilverTrace.info("Pdc", "PdcBmImpl.updateOrDeleteBaseValue",
         "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
 
-    List usedAxisList = getUsedAxisByAxisId(con, axisId);
+    List<UsedAxis> usedAxisList = getUsedAxisByAxisId(con, axisId);
     // pour chaque instance, on vérifie que la modification est possible
     String instanceId = null;
     UsedAxis usedAxis = null;

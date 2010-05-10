@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.pdc.control;
 
 import java.sql.*;
 import java.util.*;
+
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.silvertrace.*;
@@ -129,7 +130,7 @@ public class PdcUtilizationDAO {
    * @throws SQLException
    * @see
    */
-  public static List getUsedAxisByInstanceId(Connection con, String instanceId)
+  public static List<UsedAxis> getUsedAxisByInstanceId(Connection con, String instanceId)
       throws SQLException {
     String selectStatement =
         "select U.id, U.instanceId, U.axisId, U.baseValue, U.mandatory, U.variant, A.Name, A.AxisType, A.RootId, T.name "
@@ -142,7 +143,7 @@ public class PdcUtilizationDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList usedAxis = new ArrayList();
+    List<UsedAxis> usedAxis = new ArrayList<UsedAxis>();
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
@@ -409,17 +410,17 @@ public class PdcUtilizationDAO {
     }
   }
 
-  public static List getAxisUsedByInstanceId(Connection con, List instanceIds)
+  public static List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds)
       throws SQLException {
     return getAxisUsedByInstanceId(con, instanceIds, new AxisFilter());
   }
 
-  public static List getAxisUsedByInstanceId(Connection con, List instanceIds,
+  public static List<AxisHeader> getAxisUsedByInstanceId(Connection con, List<String> instanceIds,
       AxisFilter filter) throws SQLException {
     SilverTrace.info("Pdc", "PdcBmImpl.getAxisUsedByInstanceId",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
 
-    ArrayList axisUsed = new ArrayList();
+    List<AxisHeader> axisUsed = new ArrayList<AxisHeader>();
 
     if (instanceIds != null && instanceIds.size() == 0) {
       return axisUsed;

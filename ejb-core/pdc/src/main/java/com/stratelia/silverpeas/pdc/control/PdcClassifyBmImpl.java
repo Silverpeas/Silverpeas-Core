@@ -28,8 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
+import com.stratelia.silverpeas.classifyEngine.ObjectValuePair;
 import com.stratelia.silverpeas.classifyEngine.PertinentAxis;
+import com.stratelia.silverpeas.classifyEngine.PertinentValue;
 import com.stratelia.silverpeas.classifyEngine.Position;
+import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -112,7 +115,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   }
 
   // add by SAN
-  public int updatePositions(List classifyValues, int silverObjectId)
+  public int updatePositions(List<Value> classifyValues, int silverObjectId)
       throws PdcException {
     try {
       classifyEngine.updateSilverObjectPositions(null, classifyValues,
@@ -152,16 +155,16 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     }
   }
 
-  public List getPositions(int silverObjectId, String sComponentId)
+  public List<Position> getPositions(int silverObjectId, String sComponentId)
       throws PdcException {
-    List positions = null;
+    List<Position> positions = null;
 
     try {
       // Get all the positions for the given silverObjectId
       positions = classifyEngine.findPositionsBySilverOjectId(silverObjectId);
 
       // Extract the positiondIds
-      ArrayList alPositionIds = new ArrayList();
+      ArrayList<Integer> alPositionIds = new ArrayList<Integer>();
       for (int nI = 0; positions != null && nI < positions.size(); nI++) {
         int nPositionId = ((Position) positions.get(nI)).getPositionId();
         alPositionIds.add(new Integer(nPositionId));
@@ -172,7 +175,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
           .filterPositionsByComponentId(alPositionIds, sComponentId);
 
       // Rebuild the positions
-      List alFinalPositions = new ArrayList();
+      List<Position> alFinalPositions = new ArrayList<Position>();
       for (int nI = 0; nI < positions.size(); nI++) {
         int nPositionId = ((Position) positions.get(nI)).getPositionId();
         for (int nJ = 0; alFilteredPositionIds != null
@@ -191,7 +194,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   public JoinStatement getPositionsJoinStatement(String sComponentId)
       throws PdcException {
-    ArrayList alComponentId = new ArrayList();
+    ArrayList<String> alComponentId = new ArrayList<String>();
     alComponentId.add(sComponentId);
     return getPositionsJoinStatement(alComponentId);
   }
@@ -238,19 +241,19 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    */
   public void createValuesAndReplace(Connection con, String axisId,
       ArrayList oldPath, ArrayList newPath) throws PdcException {
-    ArrayList oldValues = new ArrayList();
-    ArrayList newValues = new ArrayList();
+    ArrayList<Value> oldValues = new ArrayList<Value>();
+    ArrayList<Value> newValues = new ArrayList<Value>();
     String path = "";
-    com.stratelia.silverpeas.classifyEngine.Value oldValue = null;
-    com.stratelia.silverpeas.classifyEngine.Value newValue = null;
+    Value oldValue = null;
+    Value newValue = null;
     // set the axisId of Value Objects
     int id = new Integer(axisId).intValue();
     // oldValue.setAxisId(id);
     // newValue.setAxisId(id);
     // build old values and new values object
     for (int i = 0; i < oldPath.size(); i++) {
-      oldValue = new com.stratelia.silverpeas.classifyEngine.Value();
-      newValue = new com.stratelia.silverpeas.classifyEngine.Value();
+      oldValue = new Value();
+      newValue = new Value();
       // get oldpath
       path = (String) oldPath.get(i);
       oldValue.setAxisId(id);
@@ -265,8 +268,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       newValues.add(newValue);
     }
     try {
-      classifyEngine.replaceValuesOnAxis(con, (List) oldValues,
-          (List) newValues);
+      classifyEngine.replaceValuesOnAxis(con, oldValues, newValues);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.createValuesAndReplace",
           SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITIONS", e);
@@ -348,7 +350,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     return hasOnePosition;
   }
 
-  public List getPertinentAxis(SearchContext searchContext, List axisIds)
+  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List axisIds)
       throws PdcException {
     try {
       return classifyEngine.getPertinentAxis(searchContext.getCriterias(),
@@ -359,18 +361,18 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     }
   }
 
-  public List getPertinentValues(SearchContext searchContext, int axisId)
+  public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId)
       throws PdcException {
     try {
       return classifyEngine.getPertinentValues(searchContext.getCriterias(),
           axisId);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
+      throw new PdcException("PdcClassifyBmImpl.getPertinentValues",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
     }
   }
 
-  public List getPertinentAxis(SearchContext searchContext, List axisIds,
+  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds,
       JoinStatement joinStatementAllPositions) throws PdcException {
     try {
       return classifyEngine.getPertinentAxisByJoin(
@@ -394,7 +396,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     }
   }
 
-  public List getPertinentValues(SearchContext searchContext, int axisId,
+  public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId,
       JoinStatement joinStatementAllPositions) throws PdcException {
     try {
       return classifyEngine.getPertinentValuesByJoin(searchContext
@@ -405,7 +407,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     }
   }
 
-  public List getObjectValuePairs(SearchContext searchContext, int axisId,
+  public List<ObjectValuePair> getObjectValuePairs(SearchContext searchContext, int axisId,
       JoinStatement joinStatementAllPositions) throws PdcException {
     try {
       return classifyEngine.getObjectValuePairsByJoin(searchContext
@@ -421,15 +423,15 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   // -------------------------------------------------------------------------------------
 
   /** Remove all the positions of the given content */
-  public List removePosition(Connection connection, int nSilverContentId)
+  public List<Integer> removePosition(Connection connection, int nSilverContentId)
       throws PdcException {
     try {
       // Get all the positions of the removed object
-      List alPositions = classifyEngine
+      List<Position> alPositions = classifyEngine
           .findPositionsBySilverOjectId(nSilverContentId);
 
       // Create the liste with only the positionId
-      List alPositionIds = new ArrayList();
+      List<Integer> alPositionIds = new ArrayList<Integer>();
       for (int nI = 0; alPositions != null && nI < alPositions.size(); nI++)
         alPositionIds.add(new Integer(((Position) alPositions.get(nI))
             .getPositionId()));
