@@ -672,6 +672,8 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	out.println(board.printAfter());
   	out.println("</div>");
 
+  	// Adding facet search group
+  	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));
 	String filteredUserId = (String) request.getAttribute("FilteredUserId");
 	String filteredComponentId = (String) request.getAttribute("FilteredComponentId");
 	
@@ -694,6 +696,8 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
   	        AuthorVO author = (AuthorVO) authors.get(cpt);
   	        String authorName = author.getName();
   	        String authorId = author.getId();
+  	        String displayAuthor = (authorName != null && authorName.length() > facetResultLength)? authorName.substring(0,facetResultLength) + "...":authorName;
+  	        displayAuthor += "&nbsp;(" + author.getNbElt() + ")";
   	        String lastClass = "";
   	        if (cpt == authors.size() - 1) {
   	          lastClass = "last";
@@ -706,7 +710,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
        	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
 			<fmt:param value="<%=authorName%>"/>
 		  </fmt:message>
-  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + author.getNbElt() + ")"%></a></li>
+  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
   	        <%   	          
   	        } else {
   	          jsAction = "filterResult('" + authorId + "', 'author')";
@@ -714,7 +718,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
        	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
 			<fmt:param value="<%=authorName%>"/>
 		  </fmt:message>
-  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + author.getNbElt() + ")"%></a></li>
+  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
   	        <%   	          
   	        }
   	       
@@ -736,30 +740,31 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
       	  <%
   	      for(int cpt=0; cpt < components.size(); cpt++){
   	        ComponentVO comp = (ComponentVO) components.get(cpt);
-  	        String authorName = comp.getName();
-  	        String authorId = comp.getId();
+  	        String compName = comp.getName();
+  	        String compId = comp.getId();
+  	        String displayComp = (compName != null && compName.length() > facetResultLength)? compName.substring(0,facetResultLength) + "...":compName;
+  	        displayComp += "&nbsp;(" + comp.getNbElt() + ")";
   	        String lastClass = "";
   	        if (cpt == components.size() - 1) {
   	          lastClass = "last";
   	        }
-  	        String toolTip = "Cliquer pour filtrer '" + authorName + "' des résultats.";
   	        String jsAction = "";
-  	        if (authorId.equalsIgnoreCase(filteredComponentId)) {
+  	        if (compId.equalsIgnoreCase(filteredComponentId)) {
   	          lastClass += " selected";
   	          jsAction = "clearFilter('component')";
     	        %>
            	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
-    			<fmt:param value="<%=authorName%>"/>
+    			<fmt:param value="<%=compName%>"/>
     		  </fmt:message>
-      	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + comp.getNbElt() + ")"%></a></li>
+      	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayComp%></a></li>
       	        <%   	          
   	        } else {
-  	          jsAction = "filterResult('" + authorId + "', 'component')";
+  	          jsAction = "filterResult('" + compId + "', 'component')";
   	    	    %>
   	       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
-  				<fmt:param value="<%=authorName%>"/>
+  				<fmt:param value="<%=compName%>"/>
   			  </fmt:message>
-  	  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + comp.getNbElt() + ")"%></a></li>
+  	  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayComp%></a></li>
   	  	        <%   	          
   	        }
   	      }
