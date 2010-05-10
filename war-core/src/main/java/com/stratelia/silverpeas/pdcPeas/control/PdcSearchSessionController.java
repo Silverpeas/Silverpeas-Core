@@ -79,6 +79,10 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
+import com.stratelia.silverpeas.pdcPeas.vo.AuthorVO;
+import com.stratelia.silverpeas.pdcPeas.vo.ComponentVO;
+import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
+import com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -86,7 +90,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
@@ -126,8 +129,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
   private List globalResult = new ArrayList(); // used by global search
-  private List indexEntries = new ArrayList();
-  private List pdcResult = new ArrayList(); // used by pdc search via the
+  private List<MatchingIndexEntry> indexEntries = new ArrayList<MatchingIndexEntry>();
+  private List<GlobalSilverContent> pdcResult = new ArrayList<GlobalSilverContent>(); // used by pdc
+                                                                                      // search via
+                                                                                      // the
+  private List<GlobalSilverResult> globalSR = new ArrayList<GlobalSilverResult>();
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 1;
   private int nbItemsPerPage = -1;
@@ -203,13 +209,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * PDC search methods (via DomainsBar) /
    ******************************************************************************************************************/
-  public void setPDCResults(List globalSilverContents) {
+  public void setPDCResults(List<GlobalSilverContent> globalSilverContents) {
     indexOfFirstItemToDisplay = 0;
     this.pdcResult.clear(); // on vide la liste avant de rajouter
     this.pdcResult.addAll(globalSilverContents);
   }
 
-  public List getPDCResults() {
+  public List<GlobalSilverContent> getPDCResults() {
     return this.pdcResult;
   }
 
@@ -263,8 +269,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return displayParamChoices;
   }
 
-  public List getListChoiceNbResToDisplay() {
-    List choiceNbResToDisplay = new ArrayList();
+  public List<String> getListChoiceNbResToDisplay() {
+    List<String> choiceNbResToDisplay = new ArrayList<String>();
     StringTokenizer st = new StringTokenizer(getSettings().getString("ChoiceNbResToDisplay"), ",");
     while (st.hasMoreTokens()) {
       String choice = st.nextToken();
@@ -437,12 +443,82 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return componentSecurity;
   }
 
-  public List getResultsToDisplay() throws Exception {
-    return getSortedResultsToDisplay(getSortValue(), getSortOrder());
+  public List<GlobalSilverResult> getResultsToDisplay() throws Exception {
+    return getSortedResultsToDisplay(getSortValue(), getSortOrder(), null);
+  }
+
+  /**
+   * Build the list of result group filter from current global search result
+   * @return new ResultGroupFilter object which contains all data to filter result
+   * @throws Exception
+   */
+  public ResultGroupFilter getResultGroupFilter() {
+    // Return object declaration
+    ResultGroupFilter res = new ResultGroupFilter();
+
+    // Retrieve current list of results
+    List<GlobalSilverResult> results = getGlobalSR();
+
+    Map<String, AuthorVO> authorsMap = new HashMap<String, AuthorVO>();
+    Map<String, ComponentVO> componentsMap = new HashMap<String, ComponentVO>();
+
+    if (results != null && getSelectedSilverContents() != null) {
+      GlobalSilverResult result = null;
+      // Retrieve the black list component (we don't need to filter data on it)
+      List<String> blackList =
+          Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "")
+              .split(",\\s*"));
+
+      // Loop or each result
+      for (int i = 0; i < results.size(); i++) {
+        result = (GlobalSilverResult) results.get(i);
+        String authorName = result.getCreatorName();
+        String authorId = result.getUserId();
+        AuthorVO curAuthor = new AuthorVO(authorName, authorId);
+        String instanceId = result.getInstanceId();
+        String location = result.getLocation();
+        String type = result.getType();
+
+        if (!authorsMap.containsKey(authorId)) {
+          authorsMap.put(authorId, curAuthor);
+        } else {
+          authorsMap.get(authorId).setNbElt(authorsMap.get(authorId).getNbElt() + 1);
+        }
+        if (!blackList.contains(type) && StringUtil.isDefined(location)) {
+          if (!componentsMap.containsKey(instanceId)) {
+            componentsMap.put(instanceId, new ComponentVO(location.substring(location
+                .lastIndexOf('/') + 1), instanceId));
+          } else {
+            componentsMap.get(instanceId).setNbElt(componentsMap.get(instanceId).getNbElt() + 1);
+          }
+        }
+      }
+    }
+    List<AuthorVO> authors = new ArrayList<AuthorVO>(authorsMap.values());
+    Collections.sort(authors, new Comparator<AuthorVO>() {
+      @Override
+      public int compare(AuthorVO o1, AuthorVO o2) {
+        return o2.getNbElt() - o1.getNbElt();
+      }
+    });
+
+    List<ComponentVO> components = new ArrayList<ComponentVO>(componentsMap.values());
+    Collections.sort(components, new Comparator<ComponentVO>() {
+      @Override
+      public int compare(ComponentVO o1, ComponentVO o2) {
+        return o2.getNbElt() - o1.getNbElt();
+      }
+    });
+
+    // Fill result filter with current result values
+    res.setAuthors(authors);
+    res.setComponents(components);
+    return res;
   }
 
   // CBO : ADD
-  public List<GlobalSilverResult> getSortedResultsToDisplay(int sortValue, String sortOrder)
+  public List<GlobalSilverResult> getSortedResultsToDisplay(int sortValue, String sortOrder,
+      ResultFilterVO filter)
       throws Exception {
     List<GlobalSilverResult> sortedResultsToDisplay = new ArrayList<GlobalSilverResult>();
 
@@ -466,6 +542,40 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
 
+    // Sort global silver result
+    sortGlobalSilverResult(sortValue, sortOrder, results);
+
+    // Check if we need to filter or not result
+    List<GlobalSilverResult> sortedResults = new ArrayList<GlobalSilverResult>();
+    if (filter != null) {
+      // Check Author filter
+      sortedResultsToDisplay = filterResult(filter, results, sortedResults);
+    } else {
+      for (GlobalSilverResult globalSilverResult : results) {
+        sortedResults.add(globalSilverResult);
+      }
+      // Put the full result list in session
+      setGlobalSR(sortedResults);
+
+      sortedResultsToDisplay = sortedResults.subList(
+          getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
+    }
+
+    if (getSearchScope() != SEARCH_PDC) {
+      setExtraInfoToResultsToDisplay(sortedResultsToDisplay);
+    }
+
+    return sortedResultsToDisplay;
+  }
+
+  /**
+   * Return a list of global silver result which are sorted by sortValue in sortOrder order
+   * @param sortValue the sort value
+   * @param sortOrder the sort order
+   * @param results the list to be sorted
+   */
+  private void sortGlobalSilverResult(int sortValue, String sortOrder,
+      List<GlobalSilverResult> results) {
     // Comparateurs
     Comparator<GlobalSilverResult> cPertAsc = new Comparator<GlobalSilverResult>() {
 
@@ -618,14 +728,59 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       Collections.sort(results, cEmplAsc);
       Collections.reverse(results);
     }
+  }
 
-    sortedResultsToDisplay = results.subList(
-        getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
-
-    if (getSearchScope() != SEARCH_PDC) {
-      setExtraInfoToResultsToDisplay(sortedResultsToDisplay);
+  /**
+   * This method filter current array of global silver result with filter parameters
+   * @param filter
+   * @param listGSR
+   * @param sortedResults
+   * @return list of GlobalSilverResult to display
+   */
+  private List<GlobalSilverResult> filterResult(ResultFilterVO filter,
+      List<GlobalSilverResult> listGSR, List<GlobalSilverResult> sortedResults) {
+    List<GlobalSilverResult> sortedResultsToDisplay;
+    String authorFilter = filter.getAuthorId();
+    boolean filterAuthor = false;
+    if (StringUtil.isDefined(authorFilter)) {
+      filterAuthor = true;
     }
 
+    // Check Component filter
+    String componentFilter = filter.getComponentId();
+    boolean filterComponent = false;
+    if (StringUtil.isDefined(componentFilter)) {
+      filterComponent = true;
+    }
+    List<String> blackList =
+        Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "").split(
+            ",\\s*"));
+
+    for (GlobalSilverResult gsResult : listGSR) {
+      if (!blackList.contains(gsResult.getType())) {
+        if (filterAuthor && gsResult.getUserId().equals(authorFilter)
+            && filterComponent && gsResult.getInstanceId().equals(componentFilter)) {
+          sortedResults.add(gsResult);
+        } else if (filterAuthor && gsResult.getUserId().equals(authorFilter)
+            && !filterComponent) {
+          sortedResults.add(gsResult);
+        } else if (!filterAuthor
+            && filterComponent && gsResult.getInstanceId().equals(componentFilter)) {
+          sortedResults.add(gsResult);
+        }
+      }
+    }
+
+    // Put the full result list in session
+    setGlobalSR(sortedResults);
+
+    // Retrieve last index to display
+    int end = getIndexOfFirstResultToDisplay() + getNbResToDisplay();
+    if (end > sortedResults.size() - 1) {
+      end = sortedResults.size();
+    }
+    sortedResultsToDisplay = sortedResults.subList(
+        getIndexOfFirstResultToDisplay(), end);
     return sortedResultsToDisplay;
   }
 
@@ -779,6 +934,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
+  public int getTotalFilteredResults() {
+    return getGlobalSR().size();
+  }
+
   private int getLastIndexToDisplay() {
     // CBO : UPDATE
     // int end = getIndexOfFirstResultToDisplay()+getNbResultsPerPage();
@@ -928,7 +1087,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     for (int i = 0; i < globalSilverContents.size(); i++) {
       gsc = globalSilverContents.get(i);
       gsr = new GlobalSilverResult(gsc);
-      encodedURL = URLEncoder.encode(gsc.getURL());
+      encodedURL = URLEncoder.encode(gsc.getURL(), "UTF-8");
       gsr.setTitleLink("javaScript:submitContent('" + encodedURL + "','"
           + gsc.getInstanceId() + "')");
       String userId = gsc.getUserId();
@@ -1079,32 +1238,32 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return this.isSecondaryShowed;
   }
 
-  public List getAllAxis() throws PdcException {
+  public List<AxisHeader> getAllAxis() throws PdcException {
     return getPdcBm().getAxis();
   }
 
-  public List getPrimaryAxis() throws PdcException {
+  public List<AxisHeader> getPrimaryAxis() throws PdcException {
     return getPdcBm().getAxisByType("P");
   }
 
-  public List getAxis(String viewType) throws PdcException {
+  public List<SearchAxis> getAxis(String viewType) throws PdcException {
     return getAxis(viewType, new AxisFilter());
   }
 
-  public List getAxis(String viewType, AxisFilter filter) throws PdcException {
+  public List<SearchAxis> getAxis(String viewType, AxisFilter filter) throws PdcException {
     if (componentList == null || componentList.size() == 0) {
       if (StringUtil.isDefined(getCurrentComponentId())) {
         return getPdcBm().getPertinentAxisByInstanceId(searchContext, viewType,
             getCurrentComponentId());
       }
-      return new ArrayList();
+      return new ArrayList<SearchAxis>();
     } else {
       if (isShowOnlyPertinentAxisAndValues()) {
         return getPdcBm().getPertinentAxisByInstanceIds(searchContext,
             viewType, componentList);
       } else {
         // we get all axis (pertinent or not) from a type P or S
-        List axis = getPdcBm().getAxisByType(viewType);
+        List<AxisHeader> axis = getPdcBm().getAxisByType(viewType);
         // we have to transform all axis (AxisHeader) into SearchAxis to make
         // the display into jsp transparent
         return transformAxisHeadersIntoSearchAxis(axis);
@@ -1112,8 +1271,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  private List transformAxisHeadersIntoSearchAxis(List axis) {
-    ArrayList transformedAxis = new ArrayList();
+  private List<SearchAxis> transformAxisHeadersIntoSearchAxis(List<AxisHeader> axis) {
+    ArrayList<SearchAxis> transformedAxis = new ArrayList<SearchAxis>();
     AxisHeader ah;
     SearchAxis sa;
     try {
@@ -1132,18 +1291,18 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return transformedAxis;
   }
 
-  public List getDaughterValues(String axisId, String valueId)
+  public List<Value> getDaughterValues(String axisId, String valueId)
       throws PdcException {
     return getDaughterValues(axisId, valueId, new AxisFilter());
   }
 
-  public List getDaughterValues(String axisId, String valueId, AxisFilter filter)
+  public List<Value> getDaughterValues(String axisId, String valueId, AxisFilter filter)
       throws PdcException {
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getDaughterValues()",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", valueId = "
         + valueId);
-    List values = null;
+    List<Value> values = null;
     if (componentList == null || componentList.size() == 0) {
       values = getPdcBm().getPertinentDaughterValuesByInstanceId(searchContext,
           axisId, valueId, getCurrentComponentId());
@@ -1161,19 +1320,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return values;
   }
 
-  private List setNBNumbersToOne(List values) {
+  private List<Value> setNBNumbersToOne(List<Value> values) {
     for (int i = 0; i < values.size(); i++) {
-      com.stratelia.silverpeas.pdc.model.Value value = (Value) values.get(i);
+      Value value = values.get(i);
       value.setNbObjects(1);
     }
     return values;
   }
 
-  public List getFirstLevelAxisValues(String axisId) throws PdcException {
+  public List<Value> getFirstLevelAxisValues(String axisId) throws PdcException {
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getFirstLevelAxisValues()",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId);
-    List result = null;
+    List<Value> result = null;
     if (componentList == null || componentList.size() == 0) {
       result = getPdcBm().getFirstLevelAxisValuesByInstanceId(searchContext,
           axisId, getCurrentComponentId());
@@ -1429,10 +1588,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String[] getStopWords() {
     if (KEYWORDS == null) {
       try {
-        List wordList = new ArrayList();
+        List<String> wordList = new ArrayList<String>();
         ResourceLocator resource = new ResourceLocator(
             "com.stratelia.webactiv.util.indexEngine.StopWords", getLanguage());
-        Enumeration stopWord = resource.getKeys();
+        Enumeration<String> stopWord = resource.getKeys();
         while (stopWord.hasMoreElements()) {
           wordList.add(stopWord.nextElement());
         }
@@ -1512,24 +1671,24 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       allAxis = getUsedAxisHeaderByInstanceId(instanceId);
     }
 
-    List axises = (List) new ArrayList();
+    List<Value> axises = new ArrayList<Value>();
 
     for (int i = 0; i < allAxis.size(); i++) {
       AxisHeader sa = (AxisHeader) allAxis.get(i);
       String rootId = String.valueOf(sa.getRootId());
-      List daughters = getPdcBm().getFilteredAxisValues(rootId, filter);
+      List<Value> daughters = getPdcBm().getFilteredAxisValues(rootId, filter);
       axises.addAll(daughters);
     }
     return axises;
   }
 
-  public List getUsedAxisHeaderByInstanceId(String instanceId)
+  public List<AxisHeader> getUsedAxisHeaderByInstanceId(String instanceId)
       throws PdcException {
     List usedAxisList = getPdcBm().getUsedAxisByInstanceId(instanceId);
     AxisHeader axisHeader = null;
     UsedAxis usedAxis = null;
     String axisId = null;
-    List allAxis = new ArrayList();
+    List<AxisHeader> allAxis = new ArrayList<AxisHeader>();
     // get all AxisHeader corresponding to usedAxis for this instance
     for (int i = 0; i < usedAxisList.size(); i++) {
       usedAxis = (UsedAxis) usedAxisList.get(i);
@@ -2133,7 +2292,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * @return
    */
-  public List getIndexEntries() {
+  public List<MatchingIndexEntry> getIndexEntries() {
     return indexEntries;
   }
 
@@ -2224,4 +2383,18 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return spellingwords;
   }
 
+  /**
+   * @return the list of current global silver result
+   */
+  public List<GlobalSilverResult> getGlobalSR() {
+    return globalSR;
+  }
+
+  /**
+   * Set the list of current global silver result
+   * @param globalSR : the current list of result
+   */
+  public void setGlobalSR(List<GlobalSilverResult> globalSR) {
+    this.globalSR = globalSR;
+  }
 }

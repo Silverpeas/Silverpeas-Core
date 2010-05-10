@@ -71,6 +71,7 @@ import com.stratelia.silverpeas.pdcPeas.control.GoogleTabsUtil;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
+import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -476,13 +477,17 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.equals("Pagination")) {
-
+        // Initialize searchFilter
+        ResultFilterVO filter = initSearchFilter(request);
         processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
 
         String index = (String) request.getParameter("Index");
         pdcSC.setIndexOfFirstResultToDisplay(index);
-
-        setDefaultDataToNavigation(request, pdcSC);
+        if (filter != null) {
+          setDefaultFilteredDataToNavigation(request, pdcSC, filter);
+        } else {
+          setDefaultDataToNavigation(request, pdcSC);
+        }
         destination = getDestinationForResults(pdcSC);
       } else if (function.startsWith("AdvancedSearch")) {
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
@@ -579,14 +584,20 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             && !pdcSC.getResultPage().equals("pdaResult.jsp")) {
           PdcSearchRequestRouterHelper.processItemsPagination(function, pdcSC, request);
         } else {
-          setDefaultDataToNavigation(request, pdcSC);
+          ResultFilterVO filter = initSearchFilter(request);
+          if (filter != null) {
+            setDefaultFilteredDataToNavigation(request, pdcSC, filter);
+          } else {
+            setDefaultDataToNavigation(request, pdcSC);
+          }
         }
 
         // destination = "/pdcPeas/jsp/globalResult.jsp";
         destination = getDestinationForResults(pdcSC);
       } else if (function.equals("LastResults")) {
+        
         setDefaultDataToNavigation(request, pdcSC);
-
+        
         destination = "/pdcPeas/jsp/globalResult.jsp";
       } else if (function.equals("XMLSearchViewTemplate")) {
         String templateFileName = request.getParameter("xmlSearchSelectedForm");
@@ -807,9 +818,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         // Specific search which handle FULLTEXT and PDC search
 
         // Retrieve all request parameters
-        String query = request.getParameter("query");        
-        
-        // TODO implements keywords search instead of full text search 
+        String query = request.getParameter("query");
+
+        // TODO implements keywords search instead of full text search
         String mode = request.getParameter("mode");
         if ("clear".equals(mode)) {
           clearUserChoices(pdcSC);
@@ -844,7 +855,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           // Initialize search context
           String[] arrayAxis = listAxis.split(",\\s*");
           for (String curAxis : arrayAxis) {
-            pdcSC.getSearchContext().addCriteria(new SearchCriteria(Integer.parseInt(curAxis.substring("Axis".length(), curAxis.indexOf("="))), curAxis.substring(curAxis.indexOf("=") + 1)));
+            pdcSC.getSearchContext().addCriteria(
+                new SearchCriteria(Integer.parseInt(curAxis.substring("Axis".length(), curAxis
+                    .indexOf("="))), curAxis.substring(curAxis.indexOf("=") + 1)));
           }
         }
 
@@ -928,7 +941,18 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         // destination = "/pdcPeas/jsp/globalResult.jsp";
         destination = getDestinationForResults(pdcSC);
-        
+
+      } else if (function.startsWith("FilterSearchResult")) {// This function allow group filtering
+                                                             // result on globalResult page
+        // Retrieve filter parameter
+        ResultFilterVO filter = initSearchFilter(request);
+
+        if (filter != null) {
+          setDefaultFilteredDataToNavigation(request, pdcSC, filter);
+        } else {
+          setDefaultDataToNavigation(request, pdcSC);
+        }
+        destination = getDestinationForResults(pdcSC);
       } else {
         destination = "/pdcPeas/jsp/" + function;
       }
@@ -940,6 +964,29 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  /**
+   * Initialize search result filter object from request
+   * @param request the HTTPServletRequest
+   * @return a new ResultFilterVO which contains data information
+   */
+  private ResultFilterVO initSearchFilter(HttpServletRequest request) {
+    String userId = request.getParameter("authorFilter");
+    String instanceId = request.getParameter("componentFilter");
+    ResultFilterVO filter = null;
+
+    // Check filter values
+    if (StringUtil.isDefined(userId) || StringUtil.isDefined(instanceId)) {
+      filter = new ResultFilterVO();
+      if (StringUtil.isDefined(userId)) {
+        filter.setAuthorId(userId);
+      }
+      if (StringUtil.isDefined(instanceId)) {
+        filter.setComponentId(instanceId);
+      }
+    }
+    return filter;
   }
 
   private List<FileItem> getRequestItems(HttpServletRequest request) throws UtilException {
@@ -958,7 +1005,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
   }
 
   private boolean isDefined(String param) {
-    return param != null && !"".equals(param) && !"null".equals(param);
+    return StringUtil.isDefined(param);
   }
 
   private List<WAAttributeValuePair> getItemPks(List<GlobalSilverResult> listGR) {
@@ -1268,9 +1315,54 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     request.setAttribute("RefreshEnabled", new Boolean(pdcSC.isRefreshEnabled()));
 
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC
-        .getSortOrder()));
+        .getSortOrder(), null));
+
+    request.setAttribute("ResultGroup", pdcSC.getResultGroupFilter());
 
     request.setAttribute("NbTotalResults", new Integer(pdcSC.getTotalResults()));
+    request.setAttribute("XmlSearchVisible", new Boolean(pdcSC.isXmlSearchVisible()));
+    request.setAttribute("PertinenceVisible", new Boolean(pdcSC.isPertinenceVisible()));
+
+    request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
+    request.setAttribute("ChoiceNbResToDisplay", pdcSC.getListChoiceNbResToDisplay());
+    request.setAttribute("NbResToDisplay", new Integer(pdcSC.getNbResToDisplay()));
+    request.setAttribute("SortValue", new Integer(pdcSC.getSortValue()));
+    request.setAttribute("SortOrder", pdcSC.getSortOrder());
+    request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
+
+    // spelling words
+    request.setAttribute("spellingWords", pdcSC.getSpellingwords());
+  }
+
+  /**
+   * Cette méthode permet de mettre dans la request et dans le sessionController les données utiles
+   * à la navigation avec des données filtrées. permettra de naviguer à l'aide des boutons précédent
+   * et suivant
+   * @param request - HttpServletRequest pour donner l'information à la globalResult.jsp
+   * @param pdcSC - les infos stockées dans l'objet PdcSearchSessionController
+   */
+  private void setDefaultFilteredDataToNavigation(HttpServletRequest request,
+      PdcSearchSessionController pdcSC, ResultFilterVO filter) throws Exception {
+
+    pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
+
+    request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
+
+    request.setAttribute("IndexOfFirstResult", new Integer(pdcSC.getIndexOfFirstResultToDisplay()));
+    request.setAttribute("ExportEnabled", new Boolean(pdcSC.isExportEnabled()));
+    request.setAttribute("RefreshEnabled", new Boolean(pdcSC.isRefreshEnabled()));
+
+    request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC
+        .getSortOrder(), filter));
+
+    // Add filtered data
+    request.setAttribute("FilteredUserId", filter.getAuthorId());
+    request.setAttribute("FilteredComponentId", filter.getComponentId());
+
+    // Add result group filter data
+    request.setAttribute("ResultGroup", pdcSC.getResultGroupFilter());
+
+    request.setAttribute("NbTotalResults", new Integer(pdcSC.getTotalFilteredResults()));
     request.setAttribute("XmlSearchVisible", new Boolean(pdcSC.isXmlSearchVisible()));
     request.setAttribute("PertinenceVisible", new Boolean(pdcSC.isPertinenceVisible()));
 

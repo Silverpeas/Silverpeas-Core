@@ -29,6 +29,14 @@
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
+<%@page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
+
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle"/>
 
 <%!
 String displayPertinence(float score, String fullStarSrc, String emptyStarSrc)
@@ -78,7 +86,7 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 		out.println(" "+resource.getString("pdcPeas.ForYourQuery")+query);
 	out.println("</td>");
 	out.println("</tr>");
-	out.println("<tr><td>&nbsp;</td></tr>");
+	//out.println("<tr><td>&nbsp;</td></tr>");
 }
 %>
 
@@ -101,6 +109,8 @@ List	webTabs			= (List) request.getAttribute("WebTabs");
 // spelling words
 String [] spellingWords = (String []) request.getAttribute("spellingWords");
 
+// List of Group result filter (new function added by EBO)
+ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
 
 boolean isXmlSearchVisible = false;
 if (xmlSearch != null)
@@ -325,6 +335,31 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
+	// This javascript method submit form in order to filter existing result
+	function filterResult(value, type) {
+		document.AdvancedSearch.action = "FilterSearchResult";
+		if (type == 'author') {
+			$("#userFilterId").val(value);
+		} else {
+			$("#componentFilterId").val(value);
+		}
+		displayStaticMessage();
+    	setTimeout("document.AdvancedSearch.submit();", 500);
+	}
+
+	// clearFilter
+	function clearFilter(type) {
+		document.AdvancedSearch.action = "FilterSearchResult";
+		if (type == 'author') {
+			$("#userFilterId").val("");
+		} else {
+			$("#componentFilterId").val("");
+		}
+		displayStaticMessage();
+    	setTimeout("document.AdvancedSearch.submit();", 500);
+	}
+	
+
 	//CBO : ADD
 	function changeResDisplay() {
 		document.AdvancedSearch.action = "AdvancedSearch";
@@ -401,9 +436,8 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);	
 	
 	out.println("<div id=\"globalResultTab\">" + tabs.print() + "</div>");
-	
+	out.println("<div id=\"globalResultFrame\">");
     out.println(frame.printBefore());
-    
     out.println("<div id=\"globalResultForm\">");
     out.println(board.printBefore());
 
@@ -428,7 +462,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 %>
 		<table id="globalResultParamDisplay" border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr align="center">
-          <td valign="middle" align="left" class="txtlibform" width="30%" id="globalResultParamDisplayLabel"><%=resource.getString("pdcPeas.NbResultSearch")%></td>
+          <td id="globalResultParamDisplayLabel"><%=resource.getString("pdcPeas.NbResultSearch")%></td>
           <td align="left" valign="selectNS" id="globalResultParamDisplayOptions"><select name="nbRes" size="1" onChange="javascript:changeResDisplay()">
             <%
 				String selected = "";
@@ -448,7 +482,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 				}
              %>
           </select>
-		  <span class="txtlibform">&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
+		  <span>&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
 		  <select name="sortRes" size="1" onChange="javascript:changeResDisplay()">
             <%		
 				for (int i=1; i<=5; i++) {
@@ -488,7 +522,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 
 	out.println(board.printAfter());
 	out.println("</div>");
-    out.println("<br>");
+    //out.println("<br>");
     out.println("<div id=\"globalResultList\">");
 	out.println(board.printBefore());
 
@@ -516,7 +550,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 			</tr>
 		</table>
 <%  }
-		out.println("<table border=\"0\"  id=\"globalResultListDetails\">");
+		out.println("<table border=\"0\" id=\"globalResultListDetails\" cellspacing=\"0\" cellpadding=\"0\">");
 		GlobalSilverResult	gsr			= null;
 						
 		for(int nI=0; resultsOnThisPage != null && nI < resultsOnThisPage.size(); nI++){
@@ -539,10 +573,10 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 				sCreationDate	= null;
 			}
 			
-			out.println("<tr class=\"" + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
+			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
 			
 			if (showPertinence)
-				out.println("<td valign=\"top\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"</td>");
+				out.println("<td valign=\"top\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
 			
 			if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
 				if (gsr.isExportable())
@@ -611,7 +645,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 			
 			out.println("</td>");
 			out.println("</tr>");
-			out.println("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>");
+			//out.println("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>");
 		}	
 		out.println("</table>");
 
@@ -637,6 +671,118 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	}
 	out.println(board.printAfter());
   	out.println("</div>");
+
+	String filteredUserId = (String) request.getAttribute("FilteredUserId");
+	String filteredComponentId = (String) request.getAttribute("FilteredComponentId");
+	
+  	if (resultGroup != null) {
+    	%>
+	  <input type="hidden" name="authorFilter" id="userFilterId" value="<%=filteredUserId%>"/>
+	  <input type="hidden" name="componentFilter" id="componentFilterId" value="<%=filteredComponentId%>"/>
+
+      <div id="globalResultGroupDivId">
+      	<div id="facetSearchDivId">
+      	<%
+      	List authors = resultGroup.getAuthors();
+      	if (authors != null) {
+      	  %>
+      	  <div id="searchGroupTitle"><span class="author"><%=resource.getString("GML.author")%></span></div>
+   		  <div id="searchGroupValues"> 
+   			<ul>
+      	  <%
+  	      for(int cpt=0; cpt < authors.size(); cpt++){
+  	        AuthorVO author = (AuthorVO) authors.get(cpt);
+  	        String authorName = author.getName();
+  	        String authorId = author.getId();
+  	        String lastClass = "";
+  	        if (cpt == authors.size() - 1) {
+  	          lastClass = "last";
+  	        }
+  	        String jsAction = "";
+  	        if (authorId.equalsIgnoreCase(filteredUserId)) {
+  	          lastClass += " selected";
+  	          jsAction = "clearFilter('author')";
+  	        %>
+       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
+			<fmt:param value="<%=authorName%>"/>
+		  </fmt:message>
+  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + author.getNbElt() + ")"%></a></li>
+  	        <%   	          
+  	        } else {
+  	          jsAction = "filterResult('" + authorId + "', 'author')";
+    	    %>
+       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
+			<fmt:param value="<%=authorName%>"/>
+		  </fmt:message>
+  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + author.getNbElt() + ")"%></a></li>
+  	        <%   	          
+  	        }
+  	       
+  	      }
+      	  %>
+      		</ul>
+      	  </div>
+      	  <%
+      	}
+      	%>
+
+      	<%
+      	List components = resultGroup.getComponents();
+      	if (components != null) {
+      	  %>
+      	  <div id="searchGroupTitle"><span class="component"><%=resource.getString("GML.jobPeas")%></span></div>
+   		  <div id="searchGroupValues">
+   			<ul>
+      	  <%
+  	      for(int cpt=0; cpt < components.size(); cpt++){
+  	        ComponentVO comp = (ComponentVO) components.get(cpt);
+  	        String authorName = comp.getName();
+  	        String authorId = comp.getId();
+  	        String lastClass = "";
+  	        if (cpt == components.size() - 1) {
+  	          lastClass = "last";
+  	        }
+  	        String toolTip = "Cliquer pour filtrer '" + authorName + "' des résultats.";
+  	        String jsAction = "";
+  	        if (authorId.equalsIgnoreCase(filteredComponentId)) {
+  	          lastClass += " selected";
+  	          jsAction = "clearFilter('component')";
+    	        %>
+           	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.disable">
+    			<fmt:param value="<%=authorName%>"/>
+    		  </fmt:message>
+      	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + comp.getNbElt() + ")"%></a></li>
+      	        <%   	          
+  	        } else {
+  	          jsAction = "filterResult('" + authorId + "', 'component')";
+  	    	    %>
+  	       	  <fmt:message var="tooltip" key="pdcPeas.group.tooltip.enable">
+  				<fmt:param value="<%=authorName%>"/>
+  			  </fmt:message>
+  	  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=authorName + "&nbsp;(" + comp.getNbElt() + ")"%></a></li>
+  	  	        <%   	          
+  	        }
+  	      }
+      	  %>
+      		</ul>
+      	  </div>
+      	  <%
+      	}
+      	%>
+      	<%-- 
+      	  <div id="searchGroupTitle"><span class="file">Type de fichier</span></div>
+   		  <div id="searchGroupValues">
+   			<ul>
+  	  				<li><a href="#">pdf</a></li>
+  	  				<li><a href="#">xls</a></li>
+      		</ul>
+      	  </div>
+        --%>
+        </div>
+      </div>
+    	<% 
+    }
+  	
     out.println("<br>");
     out.println("<div id=\"globalResultHelp\">");
 	out.println(board.printBefore());
@@ -669,8 +815,12 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	out.println(board.printAfter());
 	out.println("</div>");
 	out.println(frame.printAfter());
+	out.println("</div>");
 	out.println(window.printAfter());
 %>
+
+
+
 	<input type="hidden" name="selectedIds">
 	<input type="hidden" name="notSelectedIds">
 	<input type="hidden" name="Index">
