@@ -401,6 +401,8 @@ public class WAIndexSearcher {
         indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
         indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
         indexEntry.setCreationDate(doc.get(IndexManager.CREATIONDATE));
+        indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
+        indexEntry.setLastModificationDate(doc.get(IndexManager.LASTUPDATEDATE));
         indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
         indexEntry.setThumbnailMimeType(doc
             .get(IndexManager.THUMBNAIL_MIMETYPE));

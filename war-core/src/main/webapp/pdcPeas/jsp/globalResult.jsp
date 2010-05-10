@@ -60,7 +60,7 @@ String displayPertinence(float score, String fullStarSrc, String emptyStarSrc)
 			stars.append("").append(fullStarSrc);
 		}
 		stars.append("").append(emptyStarSrc);
-	} else if (score > 0.8 && score <= 1) {
+	} else if (score > 0.8) {
 		for (int l = 0; l < 5; l++) {
 			stars.append("").append(fullStarSrc);
 		}
@@ -92,7 +92,6 @@ Boolean refreshEnabled	= (Boolean) request.getAttribute("RefreshEnabled");
 Boolean	xmlSearch		= (Boolean) request.getAttribute("XmlSearchVisible");
 boolean	showPertinence	= ((Boolean) request.getAttribute("PertinenceVisible")).booleanValue();
 
-//CBO : ADD
 String 	displayParamChoices = (String) request.getAttribute("DisplayParamChoices"); // All || Req || Res
 List choiceNbResToDisplay = (List) request.getAttribute("ChoiceNbResToDisplay");
 Integer nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
@@ -522,7 +521,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 						
 		for(int nI=0; resultsOnThisPage != null && nI < resultsOnThisPage.size(); nI++){
 			gsr				= (GlobalSilverResult) resultsOnThisPage.get(nI);
-			sName			= Encode.javaStringToHtmlString(gsr.getName(language));
+			sName			= EncodeHelper.javaStringToHtmlString(gsr.getName(language));
 			sDescription	= gsr.getDescription(language);
 			if (sDescription != null && sDescription.length() > 400)
 				sDescription = sDescription.substring(0, 400)+"...";
@@ -531,7 +530,11 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 			sLocation		= gsr.getLocation();
 			sCreatorName	= gsr.getCreatorName();
 			try	{
-				sCreationDate	= resource.getOutputDate(gsr.getDate());
+			  	if (sortValue.intValue() == 4) {
+			  	  	sCreationDate = resource.getOutputDate(gsr.getCreationDate());
+			  	} else {
+					sCreationDate = resource.getOutputDate(gsr.getDate());
+			  	}
 			} catch (Exception e) {
 				sCreationDate	= null;
 			}
@@ -598,7 +601,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 				out.print(" ("+sCreationDate + ")");
 							
 			if (sDescription != null && sDescription.length()>0)
-				out.println("<BR><i>"+Encode.javaStringToHtmlString(sDescription)+"</i>");
+				out.println("<BR><i>"+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i>");
 					
 			if (sLocation != null && sLocation.length()>0)
 				out.println("<BR>"+Encode.javaStringToHtmlString(sLocation));
