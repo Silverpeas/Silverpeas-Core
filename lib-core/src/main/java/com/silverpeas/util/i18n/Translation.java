@@ -28,6 +28,7 @@ import java.io.Serializable;
 
 public class Translation implements Serializable {
 
+  private static final long serialVersionUID = -3879515108587719162L;
   private int id = -1;
   private String objectId = null;
   private String language = "fr";

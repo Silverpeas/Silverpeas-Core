@@ -43,7 +43,7 @@ public class SilverCryptFactoryAsymetric {
   private SilverCryptFactoryAsymetric() {
   }
 
-  private Map keyMap = new HashMap();
+  private Map<String, SilverCryptKeysAsymetric> keyMap = new HashMap<String, SilverCryptKeysAsymetric>();
 
   public static SilverCryptFactoryAsymetric getInstance() {
     if (factory == null)
@@ -77,8 +77,6 @@ public class SilverCryptFactoryAsymetric {
       byte[] pkcs7envelopedData = envData.getEncoded();
 
       return pkcs7envelopedData;
-
-      // return String.valueOf(pkcs7envelopedData);
 
     } catch (CryptageException e) {
       throw e;
@@ -142,7 +140,7 @@ public class SilverCryptFactoryAsymetric {
   private SilverCryptKeysAsymetric getKeys(String filename)
       throws CryptageException {// récupération du trousseau de clé!
     if (this.keyMap.containsKey(filename)) {
-      return (SilverCryptKeysAsymetric) this.keyMap.get(filename);
+      return this.keyMap.get(filename);
     } else {
       throw new CryptageException("SilverCryptFactory.addKeys",
           SilverpeasException.ERROR, "util.KEY_NOT_FOUND");

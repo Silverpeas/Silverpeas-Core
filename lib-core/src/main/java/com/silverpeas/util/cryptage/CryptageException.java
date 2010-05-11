@@ -27,6 +27,9 @@ package com.silverpeas.util.cryptage;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class CryptageException extends SilverpeasException {
+  
+  private static final long serialVersionUID = -390725088083708882L;
+
   public CryptageException(String callingClass, int errorLevel, String message,
       Exception nested) {
     super(callingClass, errorLevel, message, nested);

@@ -34,6 +34,7 @@ import com.silverpeas.util.StringUtil;
 
 public abstract class AbstractI18NBean implements I18NBean, Serializable {
 
+  private static final long serialVersionUID = 756146888448232764L;
   private String language = null;
   private String translationId = null;
   private Hashtable<String, Translation> translations = new Hashtable<String, Translation>();

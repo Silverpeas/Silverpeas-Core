@@ -36,6 +36,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class ForeignPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 1551181996404764039L;
+
   public ForeignPK(String id) {
     super(id);
   }

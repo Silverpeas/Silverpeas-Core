@@ -24,7 +24,6 @@
 
 package com.silverpeas.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -33,18 +32,19 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 public class FileUtil implements MimeTypes {
 
@@ -150,7 +150,6 @@ public class FileUtil implements MimeTypes {
    */
   public static void writeFile(File file, Reader data) throws IOException {
     FileWriter out = null;
-    BufferedReader in = null;
     try {
       out = new FileWriter(file);
       IOUtils.copy(data, out);

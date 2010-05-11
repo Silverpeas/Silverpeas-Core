@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class AbstractRestServlet extends HttpServlet {
 
+  private static final long serialVersionUID = -8272551004360184500L;
+
   /**
    * The path element in the request used to call the servlet.This method might be overriden for
    * each instance - otherwise it returns the initialization parameter "request_path".

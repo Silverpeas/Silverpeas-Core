@@ -64,21 +64,22 @@ public class SilverCryptKeysAsymetric {
 
     // RECUPERATION DU COUPLE CLE PRIVEE/PUBLIQUE ET DU CERTIFICAT PUBLIQUE
     try {
-      Enumeration en = ks.aliases();
-      String ALIAS = "";
-      Vector vectaliases = new Vector();
+      Enumeration<String> en = ks.aliases();
+      String alias = "";
+      Vector<String> vectaliases = new Vector<String>();
 
-      while (en.hasMoreElements())
+      while (en.hasMoreElements()) {
         vectaliases.add(en.nextElement());
+      }
       String[] aliases = (String[]) (vectaliases.toArray(new String[0]));
       for (int i = 0; i < aliases.length; i++)
         if (ks.isKeyEntry(aliases[i])) {
-          ALIAS = aliases[i];
+          alias = aliases[i];
           break;
         }
-      privatekey = (PrivateKey) ks.getKey(ALIAS, password);
-      cert = (X509Certificate) ks.getCertificate(ALIAS);
-      publickey = ks.getCertificate(ALIAS).getPublicKey();
+      privatekey = (PrivateKey) ks.getKey(alias, password);
+      cert = (X509Certificate) ks.getCertificate(alias);
+      publickey = ks.getCertificate(alias).getPublicKey();
     } catch (Exception e) {
       e.printStackTrace();
       return;

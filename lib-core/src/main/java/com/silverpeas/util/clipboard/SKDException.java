@@ -31,27 +31,13 @@
 
 package com.silverpeas.util.clipboard;
 
-/*
- * CVS Informations
- * 
- * $Id: SKDException.java,v 1.1.1.1 2002/08/06 14:47:46 nchaix Exp $
- * 
- * $Log: SKDException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:46  nchaix
- * no message
- *
- * Revision 1.2  2002/01/04 14:03:48  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class SKDException extends ClipboardException {
+
+  private static final long serialVersionUID = -3001137137162651068L;
 
   /**
    * -------------------------------------------------------------------------- constructor

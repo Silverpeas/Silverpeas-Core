@@ -57,6 +57,7 @@ public class ZipManager {
    * @throws FileNotFoundException
    * @throws IOException
    */
+  @SuppressWarnings("unchecked")
   public static long compressPathToZip(String filename, String outfilename)
       throws FileNotFoundException, IOException {
     ZipArchiveOutputStream zos = null;
@@ -123,6 +124,7 @@ public class ZipManager {
    * @param dest the destination directory.
    * @throws UtilException
    */
+  @SuppressWarnings("unchecked")
   public static void extract(File source, File dest) throws UtilException {
     if (source == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
@@ -172,6 +174,7 @@ public class ZipManager {
    * @param archive the archive whose content is analyzed.
    * @return the number of files (not directories) inside the archive.
    */
+  @SuppressWarnings("unchecked")
   public static int getNbFiles(File archive) {
     ZipFile zipFile = null;
     int nbFiles = 0;

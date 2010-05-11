@@ -112,7 +112,7 @@ public class CSVReader extends SilverpeasSettings {
   public Variant[][] parseStream(InputStream is) throws UtilTrappedException {
     BufferedReader rb = null;
     String theLine = null;
-    ArrayList valret = new ArrayList();
+    ArrayList<Variant[]> valret = new ArrayList<Variant[]>();
     int lineNumber = 1;
     StringBuffer listErrors = new StringBuffer("");
 
@@ -309,7 +309,7 @@ public class CSVReader extends SilverpeasSettings {
   protected String[] parseArrayValue(String arrayValue) {
     int start, end;
     String theValue;
-    ArrayList ar = new ArrayList();
+    ArrayList<String> ar = new ArrayList<String>();
     boolean haveToContinue = true;
 
     start = 0;

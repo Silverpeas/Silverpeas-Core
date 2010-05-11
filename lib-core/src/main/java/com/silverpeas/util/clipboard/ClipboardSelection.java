@@ -39,11 +39,13 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
  * @author
  */
 public abstract class ClipboardSelection implements Serializable, ClipboardOwner, Transferable {
+  
+  private static final long serialVersionUID = 7296607705319157979L;
   static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index",
       "Silverpeas index");
   static public DataFlavor SilverpeasKeyDataFlavor = new DataFlavor(
       "silverpeas/keydata", "Silverpeas keydata");
-  protected ArrayList supportedFlavorsList = new ArrayList();
+  protected ArrayList<DataFlavor> supportedFlavorsList = new ArrayList<DataFlavor>();
   protected boolean selected = true;
   private boolean isCutted = false;
 
@@ -76,7 +78,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
       int index = 0;
 
       while (!parFlavor
-          .equals((DataFlavor) (supportedFlavorsList.get(index++))))
+          .equals(supportedFlavorsList.get(index++)))
         ;
     } catch (IndexOutOfBoundsException e) {
       supported = false;

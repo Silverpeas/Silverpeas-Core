@@ -33,27 +33,13 @@ package com.silverpeas.util.clipboard;
 
 import com.stratelia.webactiv.util.exception.*;
 
-/*
- * CVS Informations
- * 
- * $Id: ClipboardException.java,v 1.1.1.1 2002/08/06 14:47:46 nchaix Exp $
- * 
- * $Log: ClipboardException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:46  nchaix
- * no message
- *
- * Revision 1.1  2002/01/04 14:03:48  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class ClipboardException extends SilverpeasException {
+
+  private static final long serialVersionUID = 8029410339708408226L;
 
   /**
    * -------------------------------------------------------------------------- constructor

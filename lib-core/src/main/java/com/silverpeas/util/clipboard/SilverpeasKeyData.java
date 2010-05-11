@@ -37,6 +37,7 @@ import java.util.Properties;
  */
 public class SilverpeasKeyData implements Serializable {
 
+  private static final long serialVersionUID = 6975015837634530711L;
   final static String kTitleKEY = "TITLE";
   final static String kAuthorKEY = "AUTHOR";
   final static String kDescKEY = "DESC";

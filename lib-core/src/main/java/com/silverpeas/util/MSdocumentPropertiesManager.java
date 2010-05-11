@@ -34,7 +34,6 @@ import org.apache.poi.hpsf.PropertySet;
 import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -42,10 +41,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MSdocumentPropertiesManager {
-  // Constructeurs
-  /**
-   * Unique constructeur de la classe
-   */
+
   public MSdocumentPropertiesManager() {
   }
 
