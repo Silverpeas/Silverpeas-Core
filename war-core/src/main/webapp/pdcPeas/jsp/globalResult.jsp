@@ -444,7 +444,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 %>
 		<table id="globalResultQuery" border="0" cellspacing="0" cellpadding="5" width="100%">
         <tr align="center">
-          <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("pdcPeas.SearchFind")%></td>
+          <td id="globalResultQueryLabel"><%=resource.getString("pdcPeas.SearchFind")%></td>
           <td align="left" valign="middle">
           	<table border="0" cellspacing="0" cellpadding="0"><tr valign="middle">
           		<td valign="middle"><input id="query" type="text" name="query" size="60" value="<%=keywords%>"><input type="hidden" name="mode"></td>
@@ -671,8 +671,41 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	}
 	out.println(board.printAfter());
   	out.println("</div>");
+ 	
+    out.println("<div id=\"globalResultHelp\">");
+	out.println(board.printBefore());
+    %>
+		<table width="100%" border="0"><tr><td valign="top" width="30%">
+		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
+		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
+		<%=resource.getString("pdcPeas.helpCol1Content2")%><br>
+		<%=resource.getString("pdcPeas.helpCol1Content3")%><br>
+		</td>
+		<td>&nbsp;</td>
+		<td valign="top" width="30%">
+		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
+		<%=resource.getString("pdcPeas.helpCol2Content1")%><br>
+		<%=resource.getString("pdcPeas.helpCol2Content2")%><br>
+		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
+		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
+		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>
+		</td>
+		<td>&nbsp;</td>
+		<td valign="top" width="30%">
+		<%=resource.getString("pdcPeas.helpCol3Header")%><br><br>
+		<%=resource.getString("pdcPeas.helpCol3Content1")%><br>
+		<%=resource.getString("pdcPeas.helpCol3Content2")%><br>
+		<%=resource.getString("pdcPeas.helpCol3Content3")%><br>
+		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
+		</td>
+		</tr></table>
+	<%
+	out.println(board.printAfter());
+	out.println("</div>");
+	out.println(frame.printAfter());
+	out.println("</div>");
 
-  	// Adding facet search group
+	// Adding facet search group
   	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));
 	String filteredUserId = (String) request.getAttribute("FilteredUserId");
 	String filteredComponentId = (String) request.getAttribute("FilteredComponentId");
@@ -787,40 +820,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
       </div>
     	<% 
     }
-  	
-    out.println("<br>");
-    out.println("<div id=\"globalResultHelp\">");
-	out.println(board.printBefore());
-    %>
-		<table width="100%" border="0"><tr><td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content3")%><br>
-		</td>
-		<td>&nbsp;</td>
-		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol2Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>
-		</td>
-		<td>&nbsp;</td>
-		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol3Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol3Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
-		</td>
-		</tr></table>
-	<%
-	out.println(board.printAfter());
-	out.println("</div>");
-	out.println(frame.printAfter());
-	out.println("</div>");
+
 	out.println(window.printAfter());
 %>
 

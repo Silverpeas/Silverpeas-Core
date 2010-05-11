@@ -2245,20 +2245,52 @@ td.browsebar a:hover {
 	float:left;
 }
 
+#globalResultList {
+	padding-top: 10px;
+}
+
+#globalResultHelp {
+	padding-top: 10px;
+}
+
+#globalResultQueryLabel {
+	font-size: 8pt;
+	font-weight: bold;
+	color: #111111;
+	vertical-align: top;
+	text-align: left;
+	width: 30%;
+}
+
+#globalResultParamDisplayLabel {
+	font-size: 8pt;
+	font-weight: bold;
+	color: #111111;
+	vertical-align: top;
+	text-align: left;
+	width: 30%;
+}
+
+#globalResultParamDisplayOptions {
+	font-size: 8pt;
+	font-weight: bold;
+	color: #111111;
+	vertical-align: top;
+}
+
 #globalResultGroupDivId {
 	margin:0;
 	font-size:12px;
-	position:absolute;
-	right:20px;
-	top:80px;
-	width:15%;
+	float:right;
+	padding-top:10px;
+	padding-right: 5px;
+	width:19%
 }
 
 #facetSearchDivId {
 	position:relative;
 	float:right;
-	border:1pt;
-	border-style: solid;
+	border: 1px solid #CCCCCC;
 	width:100%;
 	height:auto;
 }
@@ -2269,48 +2301,50 @@ td.browsebar a:hover {
 	height:16px;
 	line-height:16px;
 	white-space: nowrap;
+	text-align: center;
+	background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+	background-repeat: repeat-x;
 }
 
 #searchGroupTitle span.author {
-	background:url("/silverpeas/util/icons/user-icon_16px.gif") no-repeat scroll left top transparent;
-	color:#707070;
+	background:url("/silverpeas/util/icons/user.gif") no-repeat scroll left top transparent;
+	color: #FFFFFF;
 	display:block;
 	font-weight:bold;
 	height:16px;
 	line-height:16px;
-	padding-left:20px;
 	white-space:nowrap;
 }
 
 #searchGroupTitle span.file {
 	background:url("/silverpeas/util/icons/file-icon.gif") no-repeat scroll left top transparent;
-	color:#707070;
+	color: #FFFFFF;
 	display:block;
 	font-weight:bold;
 	height:16px;
 	line-height:16px;
-	padding-left:20px;
 	white-space:nowrap;
 }
 
 #searchGroupTitle span.component {
 	background:url("/silverpeas/util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
-	color:#707070;
+	color: #FFFFFF;
 	display:block;
 	font-weight:bold;
 	height:16px;
 	line-height:16px;
-	padding-left:20px;
 	white-space:nowrap;
 }
 
 
 #searchGroupValues {
-	padding-left: 2em;
+	text-align: left;
+	padding-bottom: 7px;
+	padding-top: 7px;
 }
 
 #searchGroupValues ul {
-	padding-left: 10px;
+	padding-left: 0px;
 	margin:0;
 }
 
