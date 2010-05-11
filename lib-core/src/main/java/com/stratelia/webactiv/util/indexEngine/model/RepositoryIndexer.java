@@ -116,10 +116,10 @@ public class RepositoryIndexer {
     File[] dirs = dir.listFiles(DirectorySPFilter.getInstance());
     File[] files = dir.listFiles(FileSPFilter.getInstance());
 
-    List dirList = Arrays.asList(dirs);
+    List<File> dirList = Arrays.asList(dirs);
     Collections.sort(dirList, FilenameComparator.comparator);
 
-    List fileList = Arrays.asList(files);
+    List<File> fileList = Arrays.asList(files);
     Collections.sort(fileList, FilenameComparator.comparator);
 
     File currentFile = null;

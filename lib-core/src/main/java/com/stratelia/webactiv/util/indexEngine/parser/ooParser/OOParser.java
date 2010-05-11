@@ -168,11 +168,11 @@ public class OOParser implements Parser {
     return parsingResult.toString();
   }
 
-  private List getFilesToIndex(String file) {
+  private List<String> getFilesToIndex(String file) {
     String dest = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR
         + File.separator + tempFolder;
     unzip(file, dest);
-    List ls = new ArrayList();
+    List<String> ls = new ArrayList<String>();
     ls.add(0, dest + File.separator + contentFile);
     ls.add(1, dest + File.separator + metaFile);
     return ls;
@@ -181,7 +181,7 @@ public class OOParser implements Parser {
   private List unzip(String zip, String destination) {
     SilverTrace.debug("indexEngine", "OOParser.unzip()()",
         "root.MSG_PARAM_VALUE", "zip = " + zip + " destination=" + destination);
-    List destLs = new ArrayList();
+    List<String> destLs = new ArrayList<String>();
     Enumeration entries;
     ZipFile zipFile;
     File dest = new File(destination);

@@ -50,21 +50,6 @@ public class ExcelParser extends PipedParser {
   /**
    * outPutContent read the text content of a pdf file and store it in out to be ready to be indexed
    */
-  /*
-   * public void outPutContent(Writer out, String path, String encoding) throws IOException { try {
-   * Workbook w = Workbook.getWorkbook(new File(path)); out.write("<html><BODY>"); for (int sheet =
-   * 0; sheet < w.getNumberOfSheets(); sheet++) { Sheet s = w.getSheet(sheet);
-   * out.write("<H1>"+s.getName()+"</H1><TABLE border=1 cellspacing=1>"); Cell[] row = null; for
-   * (int i = 0 ; i < s.getRows() ; i++) { row = s.getRow(i); // Find the last non-blank entry in
-   * the row int nonblank = 0; for (int j = row.length - 1; j >= 0 ; j--) { if (row[j].getType() !=
-   * CellType.EMPTY) { nonblank = j; break; } }
-   * out.write("<TR><TD>&nbsp;"+row[0].getContents()+"&nbsp;"); for (int j = 1; j <= nonblank; j++)
-   * { out.write("</TD>"); out.write("<TD>&nbsp;"+row[j].getContents()+"&nbsp;"); }
-   * out.write("</TD></TR>\n"); } out.write("</TABLE>\n"); } out.write("</BODY></html>"); } catch
-   * (Throwable t) { SilverTrace.error("indexEngine","Excelparser",
-   * "indexEngine.MSG_IO_ERROR_WHILE_PARSING",t); } }
-   */
-
   public void outPutContent(Writer out, String path, String encoding)
       throws IOException {
     POIFSFileSystem fs = null;
@@ -84,14 +69,14 @@ public class ExcelParser extends PipedParser {
 
         sheet = workbook.getSheetAt(nbSheet);
 
-        Iterator rows = sheet.rowIterator();
+        Iterator<HSSFRow> rows = sheet.rowIterator();
         HSSFRow row = null;
         while (rows.hasNext()) {
-          row = (HSSFRow) rows.next();
-          Iterator cells = row.cellIterator();
+          row = rows.next();
+          Iterator<HSSFCell> cells = row.cellIterator();
           HSSFCell cell = null;
           while (cells.hasNext()) {
-            cell = (HSSFCell) cells.next();
+            cell = cells.next();
             if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
               out.write(cell.getStringCellValue());
               out.write(' ');

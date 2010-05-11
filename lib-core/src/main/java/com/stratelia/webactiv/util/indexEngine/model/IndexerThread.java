@@ -151,7 +151,7 @@ public class IndexerThread extends Thread {
    * }
    * </PRE>
    */
-  static private final List requestList = new ArrayList();
+  static private final List<Request> requestList = new ArrayList<Request>();
 
   /**
    * All the requests are processed by a single background thread. This thread is built and started

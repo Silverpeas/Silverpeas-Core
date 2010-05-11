@@ -40,6 +40,8 @@ import com.stratelia.webactiv.util.indexEngine.DateFormatter;
  * </UL>
  */
 public class FieldDescription implements Serializable {
+  
+  private static final long serialVersionUID = -475049855423827178L;
   public FieldDescription(String fieldName, String content, String lang) {
     this.content = content;
     this.lang = I18NHelper.checkLanguage(lang);

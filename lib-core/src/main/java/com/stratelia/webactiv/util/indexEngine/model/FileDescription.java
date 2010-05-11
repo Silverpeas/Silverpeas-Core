@@ -40,6 +40,8 @@ import com.silverpeas.util.i18n.I18NHelper;
  * The java.io.InputStreamReader javadoc page provides a link to a list of java-known encodings.
  */
 public final class FileDescription implements Serializable {
+
+  private static final long serialVersionUID = 6095740867318623417L;
   /**
    * Set the new FileDescription with the given path, encoding, format and language. The path should
    * not be null;

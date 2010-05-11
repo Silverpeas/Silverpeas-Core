@@ -36,6 +36,8 @@ import com.silverpeas.util.i18n.I18NHelper;
  * </UL>
  */
 public class TextDescription implements Serializable {
+
+  private static final long serialVersionUID = -6937724257200011564L;
   public TextDescription(String content, String lang) {
     this.content = content;
 

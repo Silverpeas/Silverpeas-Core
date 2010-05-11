@@ -37,6 +37,8 @@ import com.stratelia.webactiv.util.indexEngine.DateFormatter;
  * extra-content is indexed but not stored in the index.
  */
 public class FullIndexEntry extends IndexEntry implements Serializable {
+  
+  private static final long serialVersionUID = -4955524385769457730L;
   /**
    * The constructor only set the key part of the IndexEntry.
    * @deprecated - parameter space is no more used
@@ -115,39 +117,39 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   /**
    * Return the List of all the added texts. The returned List is a list of String.
    */
-  public List getTextContentList() {
+  public List<TextDescription> getTextContentList() {
     return getTextList();
   }
 
   /**
    * Return the List of all the added files. The returned List is a list of FileDescription.
    */
-  public List getFileContentList() {
+  public List<FileDescription> getFileContentList() {
     return getFileList();
   }
 
   /**
    * @deprecated use getFields() instead
    */
-  public List getXmlFields() {
+  public List<FieldDescription> getXmlFields() {
     return getFields();
   }
 
-  private List getTextList() {
+  private List<TextDescription> getTextList() {
     if (textList == null)
-      textList = new ArrayList();
+      textList = new ArrayList<TextDescription>();
     return textList;
   }
 
-  private List getFileList() {
+  private List<FileDescription> getFileList() {
     if (fileList == null)
-      fileList = new ArrayList();
+      fileList = new ArrayList<FileDescription>();
     return fileList;
   }
 
-  public List getFields() {
+  public List<FieldDescription> getFields() {
     if (fields == null)
-      fields = new ArrayList();
+      fields = new ArrayList<FieldDescription>();
     return fields;
   }
 
@@ -155,7 +157,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
    * All the added texts and files are collected in two lists to be later retrieved by the index
    * engine. textList is a list of String. fileList is a list of FileDescription.
    */
-  private List textList = null;
-  private List fileList = null;
-  private List fields = null;
+  private List<TextDescription> textList = null;
+  private List<FileDescription> fileList = null;
+  private List<FieldDescription> fields = null;
 }

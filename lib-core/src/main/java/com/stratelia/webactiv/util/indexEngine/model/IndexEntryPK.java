@@ -43,6 +43,9 @@ import java.util.StringTokenizer;
  * </UL>
  */
 public final class IndexEntryPK implements Serializable {
+
+  private static final long serialVersionUID = 339617003068469338L;
+
   /**
    * The constructor set in a row all the parts of the key.
    * @deprecated - parameter space is no more used

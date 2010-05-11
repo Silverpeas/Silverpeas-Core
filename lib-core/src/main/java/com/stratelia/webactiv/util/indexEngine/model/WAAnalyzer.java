@@ -102,14 +102,13 @@ public final class WAAnalyzer extends Analyzer {
    */
   private WAAnalyzer(String language) {
     stopWords = getStopWords(language);
-    charReplacer = getCharReplacer(language);
   }
 
   /**
    * Returns an array of words which are not usually usefull for searching.
    */
   private String[] getStopWords(String language) {
-    List wordList = new ArrayList();
+    List<String> wordList = new ArrayList<String>();
 
     try {
       if (language == null || language.equals("")) {
@@ -119,7 +118,7 @@ public final class WAAnalyzer extends Analyzer {
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.util.indexEngine.StopWords", language);
 
-      Enumeration stopWord = resource.getKeys();
+      Enumeration<String> stopWord = resource.getKeys();
 
       while (stopWord.hasMoreElements()) {
         wordList.add(stopWord.nextElement());
@@ -149,10 +148,10 @@ public final class WAAnalyzer extends Analyzer {
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.util.indexEngine.SpecialChars", language);
 
-      Enumeration replacements = resource.getKeys();
+      Enumeration<String> replacements = resource.getKeys();
 
       while (replacements.hasMoreElements()) {
-        String oldChars = (String) replacements.nextElement();
+        String oldChars = replacements.nextElement();
         String newChars = resource.getString(oldChars);
 
         replacer.setReplacement(oldChars, newChars);
@@ -170,18 +169,10 @@ public final class WAAnalyzer extends Analyzer {
     }
   }
 
-  /**
-     * 
-     */
-  static private final Map languageMap = new HashMap();
+  static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
 
   /**
    * The words which are usually not usefull for searching.
    */
   private String[] stopWords = null;
-
-  /**
-   * The CharReplacer which will substitues special chars with more usual ones.
-   */
-  private CharReplacer charReplacer = null;
 }

@@ -52,7 +52,7 @@ public final class ParserManager {
   /**
    * Returns the set of all the known file formats. The returned set is a Set of String.
    */
-  static public Set getFormatNames() {
+  static public Set<String> getFormatNames() {
     return parserMap.keySet();
   }
 
@@ -60,7 +60,7 @@ public final class ParserManager {
    * Get the parser for a given file format.
    */
   static public Parser getParser(String format) {
-    Parser parser = (Parser) parserMap.get(format);
+    Parser parser = parserMap.get(format);
 
     if (parser == null) {
       SilverTrace.debug("indexEngine", "ParserManager",
@@ -74,20 +74,20 @@ public final class ParserManager {
    * Set all the parsers declared in Parsers.properties file.
    */
   static private void init() {
-    Enumeration FormatNames = null;
+    Enumeration<String> formatNames = null;
 
     try {
       ResourceLocator MyResource = new ResourceLocator(
           "com.stratelia.webactiv.util.indexEngine.Parser", "");
 
-      FormatNames = MyResource.getKeys();
-      while (FormatNames.hasMoreElements()) {
+      formatNames = MyResource.getKeys();
+      while (formatNames.hasMoreElements()) {
         String name = "";
         String newCall = "";
         String className = "";
 
         try {
-          name = (String) FormatNames.nextElement();
+          name = formatNames.nextElement();
           newCall = MyResource.getString(name);
           if ("ignored".equals(newCall) || "".equals(newCall)) {
             continue; // we skip ignored mime type
@@ -138,7 +138,7 @@ public final class ParserManager {
     if (lPar == -1 || rPar == -1 || lPar + 1 >= rPar)
       return new Object[0];
 
-    List args = new ArrayList();
+    List<String> args = new ArrayList<String>();
     String argsString = newCall.substring(lPar + 1, rPar);
     StringTokenizer st = new StringTokenizer(argsString, ",", false);
     while (st.hasMoreTokens()) {
@@ -171,7 +171,7 @@ public final class ParserManager {
    * Parser).
    */
 
-  static private final Map parserMap;
+  static private final Map<String, Parser> parserMap;
 
   /**
    * At class initialization time, the parser's map is built and initialized from the
@@ -179,7 +179,7 @@ public final class ParserManager {
    */
 
   static {
-    parserMap = new HashMap();
+    parserMap = new HashMap<String, Parser>();
     init();
   }
 }
