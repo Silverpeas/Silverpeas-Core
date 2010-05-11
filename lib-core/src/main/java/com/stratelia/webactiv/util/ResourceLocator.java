@@ -46,6 +46,7 @@ import com.stratelia.silverpeas.util.ResourceBundleWrapper;
 
 public class ResourceLocator implements Serializable {
 
+  private static final long serialVersionUID = -2389291572691404932L;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
   final static String m_DefaultExtension = ".properties";

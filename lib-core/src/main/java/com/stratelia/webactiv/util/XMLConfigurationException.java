@@ -35,6 +35,8 @@ package com.stratelia.webactiv.util;
  * @version
  */
 public class XMLConfigurationException extends Exception {
+
+  private static final long serialVersionUID = -7508137322565599580L;
   public final static int KEY_NOT_FOUND = 1;
   public final static int INVALID_VALUE = 2;
   public int m_Code = 0;

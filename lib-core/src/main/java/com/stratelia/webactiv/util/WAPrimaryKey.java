@@ -34,6 +34,8 @@ import java.io.Serializable;
  */
 public abstract class WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -2456912022917180222L;
+
   /**
    * The row id in the table defined by getTableName()
    * @see #getTableName()

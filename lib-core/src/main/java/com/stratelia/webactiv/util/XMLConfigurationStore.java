@@ -30,7 +30,6 @@
 
 package com.stratelia.webactiv.util;
 
-//import com.sun.xml.tree.XmlDocument;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

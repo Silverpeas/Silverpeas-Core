@@ -38,7 +38,7 @@ public abstract class SchemaPool {
    * The unique SchemaPool built to serve all the requests.
    */
   private int connectionLot = 0;
-  private final List pool = new ArrayList();
+  private final List<Schema> pool = new ArrayList<Schema>();
 
   abstract protected Schema newSchema(int connectionLot) throws UtilException;
 
