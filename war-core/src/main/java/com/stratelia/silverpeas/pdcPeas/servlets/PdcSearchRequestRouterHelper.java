@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,6 +41,7 @@ import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
+import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -413,7 +415,7 @@ public class PdcSearchRequestRouterHelper {
     if (index != null && index.length() > 0)
       pdcSC.setIndexOfFirstItemToDisplay(index);
 
-    request.setAttribute("ResultList", pdcSC.getPDCResults());
+    // request.setAttribute("ResultList", pdcSC.getPDCResults());
     request.setAttribute("NbItemsPerPage", new Integer(pdcSC
         .getNbItemsPerPage()));
     request.setAttribute("FirstItemIndex", new Integer(pdcSC
@@ -437,16 +439,20 @@ public class PdcSearchRequestRouterHelper {
    */
   public static void markResultAsRead(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
-    String resultId = request.getParameter("id");
-    if (StringUtils.isNotEmpty(resultId)) {
-      List currentEntries = pdcSC.getIndexEntries();
-      if (currentEntries != null && !currentEntries.isEmpty()) {
-        for (Object entry : currentEntries) {
-          if (resultId.endsWith(((MatchingIndexEntry) entry).getPK().toString()))
-            ((MatchingIndexEntry) entry).setHasRead(true);
+    String sId = request.getParameter("id");
+    if (StringUtils.isNotEmpty(sId)) {
+      try {
+        int resultId = Integer.parseInt(sId);
+        List<GlobalSilverResult> results = pdcSC.getGlobalSR();
+        for (GlobalSilverResult result : results) {
+          if (result.getResultId() == resultId) {
+            result.setHasRead(true);
+          }
         }
+      } catch (Exception e) {
+        SilverTrace.error("pdcPeas", "PdcSearchRequestRouterHelper.markResultAsRead",
+            "pdcPeas.ERROR_WHEN_MARKING_RESULT", "resultId = " + sId);
       }
-
     }
 
   }

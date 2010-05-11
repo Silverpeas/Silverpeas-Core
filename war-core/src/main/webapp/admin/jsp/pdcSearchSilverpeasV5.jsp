@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ include file="../../pdcPeas/jsp/checkAdvancedSearch.jsp"%>
 <%!
 
@@ -153,6 +154,7 @@ if (searchContext != null && searchContext.getCriterias().size() > 0){
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
 
+
 <html>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
@@ -215,7 +217,8 @@ function init()
   <input type="hidden" name="ValueId"/>
   <input type="hidden" name="Ids"/>
   <input type="hidden" name="mode"/>
-  <input type="hidden" name="ResultPage" value="searchDocuments.jsp"/>
+  <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_OnlyPDC %>"/>
+  <input type="hidden" name="ResultPage" value=""/>
   <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
   <input type="hidden" name="spaces" value="<%=parameters.getSpaceId()%>"/>
   <input type="hidden" name="componentSearch" value="<%=parameters.getInstanceId()%>"/>

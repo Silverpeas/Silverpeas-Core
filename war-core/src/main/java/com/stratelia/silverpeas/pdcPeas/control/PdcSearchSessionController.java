@@ -127,21 +127,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<String> componentList = null;
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
-  private List globalResult = new ArrayList(); // used by global search
-  private List<MatchingIndexEntry> indexEntries = new ArrayList<MatchingIndexEntry>();
-  private List<GlobalSilverContent> pdcResult = new ArrayList<GlobalSilverContent>(); // used by pdc
-  // search via
-  // the
   private List<GlobalSilverResult> globalSR = new ArrayList<GlobalSilverResult>();
-  // pagination de la liste des résultats (PDC via DomainsBar)
+  private List<GlobalSilverResult> filteredSR = new ArrayList<GlobalSilverResult>();
   private int indexOfFirstItemToDisplay = 1;
   private int nbItemsPerPage = -1;
   private Value currentValue = null;
   // pagination de la liste des resultats (search Engine)
   private int indexOfFirstResultToDisplay = 0;
-  // CBO : REMOVE
-  // private int nbResultsPerPage = 10;
-  // CBO : ADD
   private String displayParamChoices = null; // All || Res || Req
   private int nbResToDisplay = -1;
   private int sortValue = -1; // 1 || 2 || 3 || 4 || 5
@@ -166,6 +158,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private DataRecord xmlData = null;
   private int searchScope = SEARCH_FULLTEXT;
   private ComponentSecurity componentSecurity = null;
+
+  private int currentResultsDisplay = SHOWRESULTS_ALL;
+  public static final int SHOWRESULTS_ALL = 0;
+  public static final int SHOWRESULTS_OnlyPDC = 1;
+
   // spelling word
   private String[] spellingwords = null;
 
@@ -206,17 +203,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /******************************************************************************************************************/
   /**
    * PDC search methods (via DomainsBar) /
-   *****************************************************************************************************************
-   * @param globalSilverContents
-   */
-  public void setPDCResults(List<GlobalSilverContent> globalSilverContents) {
+   * @throws Exception
+   ******************************************************************************************************************/
+  public void setPDCResults(List<GlobalSilverContent> globalSilverContents) throws Exception {
     indexOfFirstItemToDisplay = 0;
-    this.pdcResult.clear(); // on vide la liste avant de rajouter
-    this.pdcResult.addAll(globalSilverContents);
-  }
-
-  public List<GlobalSilverContent> getPDCResults() {
-    return this.pdcResult;
+    processResultsToDisplay(globalSilverContents);
   }
 
   public int getNbItemsPerPage() {
@@ -240,19 +231,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    ******************************************************************************************************************/
   public void setResults(List globalSilverResults) {
     indexOfFirstResultToDisplay = 0;
-    this.globalResult.clear(); // on vide la liste avant de rajouter
-    this.globalResult.addAll(globalSilverResults);
     setLastResults(globalSilverResults);
   }
 
-  public List getResults() {
-    return this.globalResult;
-  }
-
-  // CBO : REMOVE
-  /*
-   * public int getNbResultsPerPage() { return this.nbResultsPerPage; }
-   */
   public int getIndexOfFirstResultToDisplay() {
     return indexOfFirstResultToDisplay;
   }
@@ -454,16 +435,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     ResultGroupFilter res = new ResultGroupFilter();
 
     // Retrieve current list of results
-    List<GlobalSilverResult> results = getGlobalSR();
+    List<GlobalSilverResult> results = getFilteredSR();
 
     Map<String, AuthorVO> authorsMap = new HashMap<String, AuthorVO>();
     Map<String, ComponentVO> componentsMap = new HashMap<String, ComponentVO>();
 
-    if (results != null && getSelectedSilverContents() != null) {
+    if (results != null) {
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList =
-          Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "").split(
-          ",\\s*"));
+          Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "")
+          .split(",\\s*"));
 
       // Loop or each result
       for (GlobalSilverResult result : results) {
@@ -513,19 +494,35 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return res;
   }
 
-  // CBO : ADD
+  public List<GlobalSilverResult> processResultsToDisplay(MatchingIndexEntry[] indexEntries)
+      throws Exception {
+    // Tous les résultats
+    List<GlobalSilverResult> results =
+        matchingIndexEntries2GlobalSilverResults(filterMatchingIndexEntries(indexEntries));
+    setGlobalSR(results);
+    return results;
+  }
+
+  public List<GlobalSilverResult> processResultsToDisplay(List<GlobalSilverContent> silverContents)
+      throws Exception {
+    // Tous les résultats
+    List<GlobalSilverResult> results = globalSilverContents2GlobalSilverResults(silverContents);
+    setGlobalSR(results);
+
+    // case of PDC results : pertinence sort is not applicable
+    // sort by updateDate desc
+    setSortValue(5);
+    setSortOrder(SORT_ORDER_DESC);
+    return results;
+  }
+
   public List<GlobalSilverResult> getSortedResultsToDisplay(int sortValue, String sortOrder,
       ResultFilterVO filter)
       throws Exception {
     List<GlobalSilverResult> sortedResultsToDisplay = new ArrayList<GlobalSilverResult>();
 
     // Tous les résultats
-    List<GlobalSilverResult> results = null;
-    if (getSearchScope() == SEARCH_PDC) {
-      results = (List<GlobalSilverResult>) globalSilverContents2GlobalSilverResults(getResults());
-    } else {
-      results = matchingIndexEntries2GlobalSilverResults(getIndexEntries());
-    }
+    List<GlobalSilverResult> results = getGlobalSR();
 
     if (results != null && getSelectedSilverContents() != null) {
       GlobalSilverResult result = null;
@@ -558,10 +555,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
     }
 
-    if (getSearchScope() != SEARCH_PDC) {
-      setExtraInfoToResultsToDisplay(sortedResultsToDisplay);
-    }
-
     return sortedResultsToDisplay;
   }
 
@@ -586,10 +579,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           return 0;
         }
       }
-
-      public boolean equals(Object o) {
-        return false;
-      }
     };
 
     Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
@@ -603,10 +592,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else {
           return 0;
         }
-      }
-
-      public boolean equals(Object o) {
-        return false;
       }
     };
 
@@ -622,10 +607,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           return 0;
         }
       }
-
-      public boolean equals(Object o) {
-        return false;
-      }
     };
 
     Comparator<GlobalSilverResult> cDateAsc = new Comparator<GlobalSilverResult>() {
@@ -639,10 +620,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else {
           return 0;
         }
-      }
-
-      public boolean equals(Object o) {
-        return false;
       }
     };
 
@@ -658,10 +635,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           return 0;
         }
       }
-
-      public boolean equals(Object o) {
-        return false;
-      }
     };
 
     Comparator<GlobalSilverResult> cEmplAsc = new Comparator<GlobalSilverResult>() {
@@ -675,10 +648,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else {
           return 0;
         }
-      }
-
-      public boolean equals(Object o) {
-        return false;
       }
     };
 
@@ -749,9 +718,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (StringUtil.isDefined(componentFilter)) {
       filterComponent = true;
     }
-    List<String> blackList =
-        Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "").split(
-        ",\\s*"));
+
+    String sBlackList = getSettings().getString("searchengine.facet.component.blacklist", "");
+    List<String> blackList = new ArrayList<String>();
+    if (StringUtil.isDefined(sBlackList)) {
+      blackList = Arrays.asList(sBlackList.split(",\\s*"));
+    }
 
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
@@ -769,7 +741,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     // Put the full result list in session
-    setGlobalSR(sortedResults);
+    setFilteredSR(sortedResults);
 
     // Retrieve last index to display
     int end = getIndexOfFirstResultToDisplay() + getNbResToDisplay();
@@ -798,14 +770,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     MatchingIndexEntry indexEntry = null;
     for (int r = 0; r < results.size(); r++) {
       result = results.get(r);
+      result.setResultId(r);
       indexEntry = result.getIndexEntry();
-
-      resultType = indexEntry.getObjectType();
-      componentId = indexEntry.getComponent();
+      if (indexEntry != null) {
+        resultType = indexEntry.getObjectType();
+        if (!StringUtil.isDefined(resultType)) {
+          resultType = "";
+        }
+      }
+      componentId = result.getInstanceId();
       downloadLink = null;
       // create the url part to activate the mark as read functionality
       if (isEnableMarkAsRead) {
-        markAsReadJS = "markAsRead('" + indexEntry.getPK().toString() + "'); ";
+        markAsReadJS = "markAsRead('" + r + "'); "; // TODO
       }
       if (resultType.equals("Versioning")) {
         // Added to be compliant with old indexing method
@@ -894,8 +871,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       } else if (resultType.equals("Component")) {
         // retour sur le composant
         componentId = indexEntry.getObjectId();
-        // underLink = m_sContext + URLManager.getURL("useless", componentId) +
-        // "Main";
         underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
             componentId);
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
@@ -904,8 +879,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         titleLink = getUrl(m_sContext, componentId, null, indexEntry.getPageAndParams());
       } else {
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
-            + "');document.location.href='" + getUrl(m_sContext, indexEntry)
-            + "';";
+            + "');";
+        if (indexEntry != null) {
+          titleLink += "document.location.href='" + getUrl(m_sContext, indexEntry) + "';";
+        } else {
+          titleLink +=
+              "document.location.href='" +
+              getUrl(m_sContext, componentId, "useless", result.getURL()) + "';";
+        }
       }
 
       result.setTitleLink(titleLink);
@@ -920,20 +901,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public int getTotalResults() {
-    if (getSearchScope() == SEARCH_PDC) {
-      return getResults().size();
-    } else {
-      return getIndexEntries().size();
+    if (!getFilteredSR().isEmpty()) {
+      return getFilteredSR().size();
     }
-  }
-
-  public int getTotalFilteredResults() {
     return getGlobalSR().size();
   }
 
+  public int getTotalFilteredResults() {
+    return getFilteredSR().size();
+  }
+
   private int getLastIndexToDisplay() {
-    // CBO : UPDATE
-    // int end = getIndexOfFirstResultToDisplay()+getNbResultsPerPage();
     int end = getIndexOfFirstResultToDisplay() + getNbResToDisplay();
 
     if (end > getTotalResults() - 1) {
@@ -1073,13 +1051,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
     GlobalSilverContent gsc = null;
     GlobalSilverResult gsr = null;
-    String encodedURL = null;
+    // String encodedURL = null;
     for (int i = 0; i < globalSilverContents.size(); i++) {
       gsc = globalSilverContents.get(i);
       gsr = new GlobalSilverResult(gsc);
-      encodedURL = URLEncoder.encode(gsc.getURL(), "UTF-8");
-      gsr.setTitleLink("javaScript:submitContent('" + encodedURL + "','"
-          + gsc.getInstanceId() + "')");
+      // encodedURL = URLEncoder.encode(gsc.getURL(), "UTF-8");
+      // gsr.setTitleLink("javaScript:submitContent('" + encodedURL + "','"
+      // + gsc.getInstanceId() + "')");
       String userId = gsc.getUserId();
       gsr.setCreatorName(getCompleteUserName(userId));
 
@@ -2191,16 +2169,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param results - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres d'entrée
    */
-  private List filterMatchingIndexEntries(
+  private List<MatchingIndexEntry> filterMatchingIndexEntries(
       MatchingIndexEntry[] matchingIndexEntries) {
     if (matchingIndexEntries == null || matchingIndexEntries.length == 0) {
-      return new ArrayList();
+      return new ArrayList<MatchingIndexEntry>();
     }
 
     String title = "";
     String componentId = null;
 
-    ArrayList results = new ArrayList();
+    List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
 
     MatchingIndexEntry result = null;
 
@@ -2257,20 +2235,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public void setSearchScope(int i) {
     setIndexOfFirstResultToDisplay("0");
     searchScope = i;
-  }
-
-  /**
-   * @return
-   */
-  public List<MatchingIndexEntry> getIndexEntries() {
-    return indexEntries;
-  }
-
-  /**
-   * @param entries
-   */
-  public void setIndexEntries(MatchingIndexEntry[] indexEntries) {
-    this.indexEntries = filterMatchingIndexEntries(indexEntries);
   }
 
   public boolean isRefreshEnabled() {
@@ -2365,6 +2329,39 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param globalSR : the current list of result
    */
   public void setGlobalSR(List<GlobalSilverResult> globalSR) {
+    setExtraInfoToResultsToDisplay(globalSR);
     this.globalSR = globalSR;
+    clearFilteredSR();
+  }
+
+  public void setFilteredSR(List<GlobalSilverResult> filteredSR) {
+    this.filteredSR = filteredSR;
+  }
+
+  public List<GlobalSilverResult> getFilteredSR() {
+    if (filteredSR.isEmpty()) {
+      // filtered list has not been processed yet
+      return globalSR;
+    }
+    return filteredSR;
+  }
+
+  public void clearFilteredSR() {
+    filteredSR.clear();
+  }
+
+  public int getCurrentResultsDisplay() {
+    return currentResultsDisplay;
+  }
+
+  public void setCurrentResultsDisplay(String param) {
+    if (!StringUtil.isDefined(param)) {
+      param = "0";
+    }
+    setCurrentResultsDisplay(Integer.parseInt(param));
+  }
+
+  public void setCurrentResultsDisplay(int currentResultsDisplay) {
+    this.currentResultsDisplay = currentResultsDisplay;
   }
 }

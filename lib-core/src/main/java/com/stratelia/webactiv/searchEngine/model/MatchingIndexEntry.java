@@ -34,10 +34,6 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
  */
 public class MatchingIndexEntry extends IndexEntry implements Serializable {
-  /**
-   * marks an entry as read
-   */
-  private boolean hasRead = false;
 
   /**
    * The constructor set only the key part of the entry.
@@ -82,21 +78,6 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
     String id = URLEncoder.encode(getObjectId());
 
     return "documentId%3d" + id;
-  }
-
-  /**
-   * indicates if a entry has been read
-   * @return the hasRead
-   */
-  public boolean isHasRead() {
-    return hasRead;
-  }
-
-  /**
-   * @param hasRead the hasRead to set
-   */
-  public void setHasRead(boolean hasRead) {
-    this.hasRead = hasRead;
   }
 
   /**

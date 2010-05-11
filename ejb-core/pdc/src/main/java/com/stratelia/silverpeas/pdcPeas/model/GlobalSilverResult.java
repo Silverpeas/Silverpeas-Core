@@ -47,6 +47,9 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
 
+  private boolean hasRead = false; // marks a result as redden
+  private int resultId = 0;
+
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
         gsc.getInstanceId(), gsc.getDate(), gsc.getUserId());
@@ -153,6 +156,29 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   public void setSelected(boolean selected) {
     this.selected = selected;
+  }
+
+  /**
+   * indicates if a entry has been read
+   * @return the hasRead
+   */
+  public boolean isHasRead() {
+    return hasRead;
+  }
+
+  /**
+   * @param hasRead the hasRead to set
+   */
+  public void setHasRead(boolean hasRead) {
+    this.hasRead = hasRead;
+  }
+
+  public int getResultId() {
+    return resultId;
+  }
+
+  public void setResultId(int resultId) {
+    this.resultId = resultId;
   }
 
   public boolean equals(Object other) {
