@@ -23,8 +23,14 @@
  */
 package com.silverpeas.form.fieldDisplayer;
 
+import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -36,20 +42,16 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ImageUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
@@ -97,18 +99,24 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println(
           "		var " + fieldName + "Value = document.getElementById('" + fieldName +
-          Field.FILE_PARAM_NAME_SUFFIX + "').value;");
+              Field.FILE_PARAM_NAME_SUFFIX + "').value;");
       out.println("		if (" + fieldName + "Value=='' || " + fieldName +
           "Value.substring(0,7)==\"remove_\") {");
       out.println("			errorMsg+=\"  - '" +
           EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " + Util.
-          getString("GML.MustBeFilled", language) + "\\n \";");
+              getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("			errorNb++;");
       out.println("		}");
       out.println("	}");
     }
 
     Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+  }
+
+  @Override
+  public void display(PrintWriter out, Field field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
+    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
   }
 
   /**
@@ -118,24 +126,19 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
-   * @param out 
-   * @param field 
-   * @param template 
+   * @param out
+   * @param field
+   * @param template
    * @param pagesContext
    * @throws FormException
    */
-  @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pagesContext) throws FormException {
-    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
-  }
-  
+
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.
-        getFieldName() + ", value = " + field.getValue() + ", fieldType = " +
-        field.getTypeName());
+            getFieldName() + ", value = " + field.getValue() + ", fieldType = " +
+            field.getTypeName());
 
     String mandatoryImg = Util.getIcon("mandatoryField");
 
@@ -162,17 +165,41 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       if (attachment != null) {
         Map parameters = template.getParameters(pagesContext.getLanguage());
         String height =
-            (parameters.containsKey("height") ? " height=" + (String) parameters.get("height") : "");
+            (parameters.containsKey("height") ? (String) parameters.get("height") : "");
         String width =
-            (parameters.containsKey("width") ? " width=" + (String) parameters.get("width") : "");
+            (parameters.containsKey("width") ? (String) parameters.get("width") : "");
+
+        String paramHeight = "";
+        String paramWidth = "";
+        if (StringUtil.isDefined(width) && StringUtil.isDefined(height)) {
+          // les 2 paramètres sont renseignés : forcer la taille
+          paramWidth = " width=" + width;
+          paramHeight = " height=" + height;
+        } else {
+          // un des 2 seulement est renseigné, calculer le second 
+          if (StringUtil.isDefined(width)) {
+            String[] paramSize =
+                ImageUtil.getWidthAndHeightByWidth(getImagePath(componentId, attachment
+                    .getPhysicalName()), Integer.parseInt(width));
+            paramWidth = " width=" + paramSize[0];
+            paramHeight = " height=" + paramSize[1];
+          }
+          if (StringUtil.isDefined(height)) {
+            String[] paramSize =
+                ImageUtil.getWidthAndHeightByHeight(getImagePath(componentId, attachment
+                    .getPhysicalName()), Integer.parseInt(height));
+            paramWidth = " width=" + paramSize[0];
+            paramHeight = " height=" + paramSize[1];
+          }
+        }
 
         out.print("<IMG alt=\"\" src=\"");
-       out.print(webContext);
-       out.print(attachment.getAttachmentURL());
-       out.print("\"");
-       out.print(height);
-       out.print(width);
-       out.print(">");
+        out.print(webContext);
+        out.print(attachment.getAttachmentURL());
+        out.print("\"");
+        out.print(paramHeight);
+        out.print(paramWidth);
+        out.print(">");
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       out.print("<INPUT type=\"file\" size=\"50\" id=\"");
@@ -182,7 +209,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       out.print("\">");
       html +=
           "<INPUT type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
-          "\" value=\"" + attachmentId + "\">";
+              "\" value=\"" + attachmentId + "\">";
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
@@ -191,17 +218,17 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         html += "&nbsp;<span id=\"div" + fieldName + "\">";
         html +=
             "<IMG alt=\"\" align=\"absmiddle\" src=\"" + attachment.getAttachmentIcon() +
-            "\" width=20>&nbsp;";
+                "\" width=20>&nbsp;";
         html +=
             "<A href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-            attachment.getLogicalName() + "</A>";
+                attachment.getLogicalName() + "</A>";
 
         html +=
             "&nbsp;<a href=\"#\" onclick=\"javascript:"
-            + "document.getElementById('div" + fieldName + "').style.display='none';"
-            + "document." + pagesContext.getFormName() + "." + fieldName +
-            Field.FILE_PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId + "';"
-            + "\">";
+                + "document.getElementById('div" + fieldName + "').style.display='none';"
+                + "document." + pagesContext.getFormName() + "." + fieldName +
+                Field.FILE_PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId + "';"
+                + "\">";
         html += "<img src=\""
             + deleteImg
             + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
@@ -312,15 +339,13 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
 
         logicalName =
             logicalName
-            .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+                .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
         type = FileRepositoryManager.getFileExtension(logicalName);
         mimeType = item.getContentType();
 
         physicalName = new Long(new Date().getTime()).toString() + "." + type;
 
-        String path =
-            AttachmentController.createPath(componentId, ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
-        dir = new File(path + physicalName);
+        dir = getImagePath(componentId, physicalName);
         size = item.getSize();
         item.write(dir);
 
@@ -330,8 +355,8 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         if (size > 0) {
           AttachmentDetail ad =
               createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-              size,
-              ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
+                  size,
+                  ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
           ad = AttachmentController.createAttachment(ad, true);
           attachmentId = ad.getPK().getId();
         } else {
@@ -344,6 +369,12 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       }
     }
     return attachmentId;
+  }
+
+  private File getImagePath(String componentId, String physicalName) {
+    String path =
+        AttachmentController.createPath(componentId, ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
+    return new File(path + physicalName);
   }
 
   private AttachmentDetail createAttachmentDetail(String objectId, String componentId,
@@ -362,7 +393,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
     // create AttachmentDetail Object
     AttachmentDetail ad =
         new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, context,
-        new Date(), foreignKey);
+            new Date(), foreignKey);
     ad.setAuthor(userId);
 
     return ad;
