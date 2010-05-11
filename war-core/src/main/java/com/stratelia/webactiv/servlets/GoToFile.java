@@ -39,11 +39,12 @@ public class GoToFile extends GoTo {
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
-          HttpServletResponse res) throws Exception {
+      HttpServletResponse res) throws Exception {
     boolean isLoggedIn = isUserLogin(req);
 
     // Check first if attachment exists
-    AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(objectId));
+    AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
+        objectId));
     if (attachment == null) {
       return null;
     }
@@ -60,25 +61,25 @@ public class GoToFile extends GoTo {
         if (componentId.startsWith("kmelia")) {
           try {
             ComponentSecurity security = (ComponentSecurity) Class.forName(
-                    "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
+                "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
             isAccessAuthorized = security.isAccessAuthorized(componentId,
-                    getUserId(req), foreignId);
+                getUserId(req), foreignId);
           } catch (Exception e) {
             SilverTrace.error("peasUtil", "GoToFile.doPost",
-                    "root.EX_CLASS_NOT_INITIALIZED",
-                    "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
+                "root.EX_CLASS_NOT_INITIALIZED",
+                "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
             return null;
           }
         }
 
         if (isAccessAuthorized) {
-          res.sendRedirect(req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort() + '/'+ req.getContextPath() + attachment.getAttachmentURL());
+          res.sendRedirect(req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
+              + '/' + req.getContextPath() + attachment.getAttachmentURL());
+          return null;
         }
       }
-
     }
-
     return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="
-            + foreignId;
+        + foreignId;
   }
 }

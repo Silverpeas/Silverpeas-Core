@@ -356,12 +356,10 @@
 
                   while (itAttachment.hasNext()) {
                     attachmentDetail = (AttachmentDetail) (itAttachment.next());
-                    String urlAttachment = attachmentDetail.getAttachmentURL(contentLanguage);
+                    String urlAttachment = request.getContextPath() + attachmentDetail.getAttachmentURL(contentLanguage);
                     String onlineURL = attachmentDetail.getOnlineURL(contentLanguage);
                     String logicalName = attachmentDetail.getLogicalName(contentLanguage);
                     String attachmentId = attachmentDetail.getPK().getId();
-
-                    //String urlAttachment_zip 	= attachmentDetail.getAttachmentURL()+"&zip="+zip+"&fileName="+attachmentDetail.getLogicalName();
 %>
             <tr id="attachment_<%=attachmentDetail.getPK().getId()%>">
               <td class="odd" align="center">

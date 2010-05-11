@@ -69,6 +69,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -276,8 +277,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         if (!pubAlreadyExist) {
           NodePositionType node_Type = (NodePositionType) itListNode_Type.next();
           try {
-            NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate
-                .getPK());
+            NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()),
+                pubDetailToCreate.getPK());
             pubId = createPublicationIntoTopic(pubDet_temp, topicPK, userDetail);
             pubDet_temp.getPK().setId(pubId);
           } catch (Exception e) {
@@ -290,8 +291,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
             // On ajoute la publication créée aux autres topics
             NodePositionType node_Type = (NodePositionType) itListNode_Type.next();
             try {
-              NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate
-                  .getPK());
+              NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.
+                  getPK());
               PublicationPK pubPK = new PublicationPK(pubId, pubDetailToCreate.getPK());
               if (pubAlreadyExist) {
                 // Vérification dans le cas d une publication déjà existante de sa présence dans
@@ -325,15 +326,24 @@ public abstract class GEDImportExport extends ComponentImportExport {
     return getCurrentComponentId().startsWith("kmax");
   }
 
+  public void createPublicationContent(UnitReport unitReport, int pubId,
+      PublicationContentType pubContent, String userId) throws ImportExportException {
+    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.
+        getApplicationContext());
+  }
+
   /**
    * Méthode de création du contenu d une publication importée
+   * @param unitReport
    * @param pubId - id de la publication pour laquelle on importe un contenu
    * @param pubContent - object de mapping castor contenant les informations d importation du
    * contenu
+   * @param userId
    * @throws ImportExportException
    */
   public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId) throws ImportExportException {
+      PublicationContentType pubContent, String userId, String webContext) throws
+      ImportExportException {
 
     DBModelContentType dbModelType = pubContent.getDBModelContentType();
     WysiwygContentType wysiwygType = pubContent.getWysiwygContentType();
@@ -344,7 +354,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         createDBModelContent(unitReport, dbModelType, Integer.toString(pubId));
       } else if (wysiwygType != null) {
         // Contenu Wysiwyg
-        createWysiwygContent(unitReport, pubId, wysiwygType, userId);
+        createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext);
       } else if (xmlModel != null) {
         createXMLModelContent(unitReport, xmlModel, Integer.toString(pubId), userId);
       }
@@ -376,8 +386,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
           + xmlFormShortName, xmlFormShortName + ".xml");
     }
 
-    PublicationTemplate pub = PublicationTemplateManager
-        .getPublicationTemplate(getCurrentComponentId() + ":" + xmlModel.getName());
+    PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(getCurrentComponentId()
+        + ":" + xmlModel.getName());
 
     RecordSet set = pub.getRecordSet();
     // Form form = pub.getUpdateForm();
@@ -575,7 +585,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Wysiwyg
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId,
-      WysiwygContentType wysiwygType, String userId) throws UtilException, WysiwygException,
+      WysiwygContentType wysiwygType, String userId, String webContext) throws UtilException, WysiwygException,
       ImportExportException {
 
     String wysiwygFileName = WysiwygController.getWysiwygFileName(Integer.toString(pubId));
@@ -599,12 +609,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
 
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), Integer
-        .toString(pubId))) {
+    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), Integer.toString(pubId))) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
-        WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(), Integer
-            .toString(pubId));
+        WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(), Integer.
+            toString(pubId));
       } catch (WysiwygException ex) {/* TODO: gerer l exception */
 
       }
@@ -615,7 +624,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     // Création du fichier de contenu wysiwyg sur les serveur
     String imagesContext = WysiwygController.getImagesFileName(Integer.toString(pubId));
     String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId, f.getParent(),
-        wysiwygText, imagesContext);
+        wysiwygText, imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
     WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, "useless",
@@ -630,12 +639,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return - le contenu wysiwyg mis à jour
    */
   private String replaceWysiwygImagesPathForImport(UnitReport unitReport, int pubId,
-      String wysiwygImportedPath, String wysiwygText, String imageContext)
+      String wysiwygImportedPath, String wysiwygText, String imageContext, String webContext)
       throws ImportExportException {
 
     int finPath = 0;
     int debutPath = 0;
-    StringBuffer newWysiwygText = new StringBuffer();
+    StringBuilder newWysiwygText = new StringBuilder();
 
     if (wysiwygText.indexOf("img src=\"", finPath) == -1) {
       newWysiwygText.append(wysiwygText);
@@ -653,7 +662,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
           if (!f.isAbsolute()) {
             // si le wysiwyg est issu d une export, les liens image ne comporte que leur nom(donc
             // pour l import, l utilisateur doit placer
-            // les images wysiwyg dans le meme dossier que le wysiwyg OU eremplacer leur chemin par
+            // les images wysiwyg dans le meme dossier que le wysiwyg OU remplacer leur chemin par
             // l absolu
             attDetail.setPhysicalName(wysiwygImportedPath + File.separator
                 + attDetail.getPhysicalName());
@@ -671,7 +680,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             }
             // On additionne la taille des fichiers importés au niveau du rapport
             ImportReportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
-            newWysiwygText.append(attDetail.getAttachmentURL());
+            newWysiwygText.append(webContext + attDetail.getAttachmentURL());
           } catch (Exception e) {
             SilverTrace.error("importExport",
                 "GEDImportExport.replaceWysiwygImagesPathForImport()",
@@ -1039,8 +1048,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       InfoDetail infoDetail = pubComplete.getInfoDetail();
       PublicationContentType pubContent = null;
       if (infoDetail != null
-          &&
-          (infoDetail.getInfoImageList().size() != 0 || infoDetail.getInfoTextList().size() != 0)) {
+          && (infoDetail.getInfoImageList().size() != 0 || infoDetail.getInfoTextList().size() != 0)) {
         // la publication a un contenu de type DBModel
         pubContent = new PublicationContentType();
         DBModelContentType dbModel = new DBModelContentType();

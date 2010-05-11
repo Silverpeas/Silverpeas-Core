@@ -43,6 +43,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.File;
 import java.util.ArrayList;
@@ -117,10 +118,20 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
+   * @param out 
+   * @param field 
+   * @param template 
+   * @param pagesContext
+   * @throws FormException
    */
   @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
+    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
+  }
+  
+  public void display(PrintWriter out, Field field, FieldTemplate template,
+      PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.
         getFieldName() + ", value = " + field.getValue() + ", fieldType = " +
@@ -155,13 +166,20 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         String width =
             (parameters.containsKey("width") ? " width=" + (String) parameters.get("width") : "");
 
-        html = "<IMG alt=\"\" src=\"" + attachment.getAttachmentURL() + "\"" + height + width + ">";
-        // html +=
-        // "<A href=\""+attachment.getAttachmentURL()+"\" target=\"_blank\">"+attachment.getLogicalName()+"</A>";
+        out.print("<IMG alt=\"\" src=\"");
+       out.print(webContext);
+       out.print(attachment.getAttachmentURL());
+       out.print("\"");
+       out.print(height);
+       out.print(width);
+       out.print(">");
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-      html +=
-          "<INPUT type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\">";
+      out.print("<INPUT type=\"file\" size=\"50\" id=\"");
+      out.print(fieldName);
+      out.print("\" name=\"");
+      out.print(fieldName);
+      out.print("\">");
       html +=
           "<INPUT type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
           "\" value=\"" + attachmentId + "\">";
@@ -175,7 +193,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
             "<IMG alt=\"\" align=\"absmiddle\" src=\"" + attachment.getAttachmentIcon() +
             "\" width=20>&nbsp;";
         html +=
-            "<A href=\"" + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            "<A href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
             attachment.getLogicalName() + "</A>";
 
         html +=

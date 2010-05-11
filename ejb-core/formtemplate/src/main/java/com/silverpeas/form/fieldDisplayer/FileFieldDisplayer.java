@@ -56,6 +56,7 @@ import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.File;
 import java.rmi.RemoteException;
@@ -132,9 +133,21 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
+   * @param out 
+   * @param field 
+   * @param pagesContext
+   * @param template
+   * @throws FormException
    */
+  @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
+    display(out, field, template, pagesContext, FileServerUtils.getApplicationContext());
+  }
+
+  
+  public void display(PrintWriter out, Field field, FieldTemplate template,
+      PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
             ", fieldType = " + field.getTypeName());
@@ -165,7 +178,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
       if (attachment != null) {
         html = "<IMG alt=\"\" src=\"" + attachment.getAttachmentIcon() + "\" width=20>&nbsp;";
         html +=
-            "<A href=\"" + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            "<A href=\"" + webContext +  attachment.getAttachmentURL() + "\" target=\"_blank\">" +
                 attachment.getLogicalName() + "</A>";
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
@@ -184,7 +197,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
             "<IMG alt=\"\" align=\"absmiddle\" src=\"" + attachment.getAttachmentIcon() +
                 "\" width=20>&nbsp;";
         html +=
-            "<A href=\"" + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            "<A href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
                 attachment.getLogicalName() + "</A>";
 
         html +=

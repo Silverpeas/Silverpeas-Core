@@ -21,31 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.io.IOException;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.net.URLEncoder;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.interestCenter.model.InterestCenter;
@@ -111,6 +88,28 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.net.URLEncoder;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -131,8 +130,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List globalResult = new ArrayList(); // used by global search
   private List<MatchingIndexEntry> indexEntries = new ArrayList<MatchingIndexEntry>();
   private List<GlobalSilverContent> pdcResult = new ArrayList<GlobalSilverContent>(); // used by pdc
-                                                                                      // search via
-                                                                                      // the
+  // search via
+  // the
   private List<GlobalSilverResult> globalSR = new ArrayList<GlobalSilverResult>();
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 1;
@@ -167,7 +166,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private DataRecord xmlData = null;
   private int searchScope = SEARCH_FULLTEXT;
   private ComponentSecurity componentSecurity = null;
-
   // spelling word
   private String[] spellingwords = null;
 
@@ -208,7 +206,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /******************************************************************************************************************/
   /**
    * PDC search methods (via DomainsBar) /
-   ******************************************************************************************************************/
+   *****************************************************************************************************************
+   * @param globalSilverContents
+   */
   public void setPDCResults(List<GlobalSilverContent> globalSilverContents) {
     indexOfFirstItemToDisplay = 0;
     this.pdcResult.clear(); // on vide la liste avant de rajouter
@@ -281,8 +281,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public int getNbResToDisplay() {
     if (nbResToDisplay == -1) {
-      nbResToDisplay = new Integer(((String) getListChoiceNbResToDisplay().get(
-          0))).intValue();
+      nbResToDisplay = Integer.parseInt(getListChoiceNbResToDisplay().get(0));
     }
     return nbResToDisplay;
   }
@@ -341,8 +340,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       getSearchEngineBm().setSpellingWords(null);
       spellingwords = null;
       if (getQueryParameters() != null
-          && (getQueryParameters().isDefined() || getQueryParameters()
-          .getXmlQuery() != null)) {
+          && (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null)) {
         query = getQueryParameters().getQueryDescription(
             getUserId(), "*");
 
@@ -450,7 +448,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Build the list of result group filter from current global search result
    * @return new ResultGroupFilter object which contains all data to filter result
-   * @throws Exception
    */
   public ResultGroupFilter getResultGroupFilter() {
     // Return object declaration
@@ -463,15 +460,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     Map<String, ComponentVO> componentsMap = new HashMap<String, ComponentVO>();
 
     if (results != null && getSelectedSilverContents() != null) {
-      GlobalSilverResult result = null;
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList =
-          Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "")
-              .split(",\\s*"));
+          Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "").split(
+          ",\\s*"));
 
       // Loop or each result
-      for (int i = 0; i < results.size(); i++) {
-        result = (GlobalSilverResult) results.get(i);
+      for (GlobalSilverResult result : results) {
         String authorName = result.getCreatorName();
         String authorId = result.getUserId();
         AuthorVO curAuthor = new AuthorVO(authorName, authorId);
@@ -486,8 +481,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
         if (!blackList.contains(type) && StringUtil.isDefined(location)) {
           if (!componentsMap.containsKey(instanceId)) {
-            componentsMap.put(instanceId, new ComponentVO(location.substring(location
-                .lastIndexOf('/') + 1), instanceId));
+            componentsMap.put(instanceId, new ComponentVO(location.substring(location.lastIndexOf(
+                '/') + 1), instanceId));
           } else {
             componentsMap.get(instanceId).setNbElt(componentsMap.get(instanceId).getNbElt() + 1);
           }
@@ -496,6 +491,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     List<AuthorVO> authors = new ArrayList<AuthorVO>(authorsMap.values());
     Collections.sort(authors, new Comparator<AuthorVO>() {
+
       @Override
       public int compare(AuthorVO o1, AuthorVO o2) {
         return o2.getNbElt() - o1.getNbElt();
@@ -504,6 +500,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     List<ComponentVO> components = new ArrayList<ComponentVO>(componentsMap.values());
     Collections.sort(components, new Comparator<ComponentVO>() {
+
       @Override
       public int compare(ComponentVO o1, ComponentVO o2) {
         return o2.getNbElt() - o1.getNbElt();
@@ -525,7 +522,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // Tous les résultats
     List<GlobalSilverResult> results = null;
     if (getSearchScope() == SEARCH_PDC) {
-      results = globalSilverContents2GlobalSilverResults(getResults());
+      results = (List<GlobalSilverResult>) globalSilverContents2GlobalSilverResults(getResults());
     } else {
       results = matchingIndexEntries2GlobalSilverResults(getIndexEntries());
     }
@@ -754,7 +751,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     List<String> blackList =
         Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "").split(
-            ",\\s*"));
+        ",\\s*"));
 
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
@@ -790,8 +787,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String resultType = "";
     String underLink = "";
     String componentId = null;
-    String m_sContext = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_sContext = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        "ApplicationURL");
 
     // activate the mark as read functionality on results list
     String markAsReadJS = "";
@@ -818,11 +815,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (resultType.startsWith("Attachment")) {
         if (!componentId.startsWith("webPages")) {
           try {
-            downloadLink = getAttachmentUrl(indexEntry);
+            downloadLink = m_sContext + getAttachmentUrl(indexEntry.getObjectType(), indexEntry.
+                getComponent());
           } catch (Exception e) {
-            SilverTrace
-                .error(
-                "pdcPeas",
+            SilverTrace.error("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
                 "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
           }
@@ -838,8 +834,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               + EncodeHelper.javaStringToJsString(underLink)
               + "&FileOpened=1';";
         } else {
-          ComponentInstLight componentInst = getOrganizationController()
-              .getComponentInstLight(componentId);
+          ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+              componentId);
           if (componentInst != null) {
             String title = componentInst.getLabel(getLanguage());
             result.setTitle(title);
@@ -868,9 +864,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             + EncodeHelper.javaStringToJsString(underLink) + "&FileOpened=1';";
       } else if (resultType.equals("LinkedFile")) {
         // open the linked file inside a popup window
-        downloadLink = FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry
-            .getObjectId(), AttachmentController.getMimeType(indexEntry
-            .getTitle()));
+        downloadLink = FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(), AttachmentController.
+            getMimeType(indexEntry.getTitle()));
         // window opener is reloaded on the main page of the component
         underLink = m_sContext + URLManager.getURL("useless", componentId)
             + "Main";
@@ -884,8 +879,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // window.opener is not reloaded.
         // the glossary is opened in popup mode.
         String objectId = indexEntry.getObjectId();
-        String treeId = objectId.substring(objectId.indexOf("_") + 1, objectId
-            .length());
+        String treeId = objectId.substring(objectId.indexOf("_") + 1, objectId.length());
         String valueId = objectId.substring(0, objectId.indexOf("_"));
         String uniqueId = treeId + "_" + valueId;
         SilverTrace.warn("pdcPeas", "PdcSearchRequestRouter.buildResultList()",
@@ -907,8 +901,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
             + "');document.location.href='" + underLink + "';";
       } else if (componentId.startsWith("user@")) {
-        titleLink = getUrl(m_sContext, componentId, null, indexEntry
-            .getPageAndParams());
+        titleLink = getUrl(m_sContext, componentId, null, indexEntry.getPageAndParams());
       } else {
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
             + "');document.location.href='" + getUrl(m_sContext, indexEntry)
@@ -957,8 +950,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   private List<GlobalSilverResult> matchingIndexEntries2GlobalSilverResults(
       List<MatchingIndexEntry> matchingIndexEntries) throws Exception {
-    SilverTrace
-        .info(
+    SilverTrace.info(
         "pdcPeas",
         "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -986,8 +978,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
       GlobalSilverResult gsr = new GlobalSilverResult(result);
 
-      SilverTrace
-          .info(
+      SilverTrace.info(
           "pdcPeas",
           "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
           "root.MSG_GEN_PARAM_VALUE", "title= " + title);
@@ -995,8 +986,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
       // RESULT PAGE
       if (title.endsWith("wysiwyg.txt")
-          && (componentId.startsWith("kmelia") || componentId
-          .startsWith("kmax"))) {
+          && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
         continue;
       }
 
@@ -1052,8 +1042,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         place = places.get(componentId);
 
         if (place == null) {
-          ComponentInstLight componentInst = getOrganizationController()
-              .getComponentInstLight(componentId);
+          ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+              componentId);
           if (componentInst != null) {
             place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
                 + componentInst.getLabel(getLanguage());
@@ -1077,7 +1067,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private List<GlobalSilverResult> globalSilverContents2GlobalSilverResults(
       List<GlobalSilverContent> globalSilverContents) throws Exception {
-    if (globalSilverContents == null || globalSilverContents.size() == 0) {
+    if (globalSilverContents == null || globalSilverContents.isEmpty()) {
       return new ArrayList<GlobalSilverResult>();
     }
     List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
@@ -1110,12 +1100,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return "";
   }
 
-  private String getAttachmentUrl(MatchingIndexEntry indexEntry)
-      throws Exception {
-    return getAttachmentUrl(indexEntry.getObjectType(), indexEntry
-        .getComponent());
-  }
-
   private String getAttachmentUrl(String objectType, String componentId)
       throws Exception {
     String id = objectType.substring(10); // object type is Attachment1245 or
@@ -1128,8 +1112,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     AttachmentPK attachmentPK = new AttachmentPK(id, "useless", componentId);
-    AttachmentDetail attachmentDetail = AttachmentController
-        .searchAttachmentByPK(attachmentPK);
+    AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPK);
 
     String urlAttachment = attachmentDetail.getAttachmentURL(language);
 
@@ -1163,8 +1146,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId
         + ", componentId = " + componentId);
 
-    DocumentVersion version = versioningUtil
-        .getLastPublicVersion(new DocumentPK(
+    DocumentVersion version = versioningUtil.getLastPublicVersion(new DocumentPK(
         new Integer(documentId).intValue(), "useless", componentId));
 
     String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
@@ -1281,8 +1263,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         sa = new SearchAxis(Integer.parseInt(ah.getPK().getId()), 0);
         // sa.setAxisName(ah.getName());
         sa.setAxis(ah);
-        sa.setAxisRootId(Integer.parseInt(getPdcBm()
-            .getRoot(ah.getPK().getId()).getValuePK().getId()));
+        sa.setAxisRootId(Integer.parseInt(
+            getPdcBm().getRoot(ah.getPK().getId()).getValuePK().getId()));
         sa.setNbObjects(1);
         transformedAxis.add(sa);
       }
@@ -1407,7 +1389,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public ContentPeas getContentPeas() {
     return contentPeasPDC;
   }
-
   /******************************************************************************************************************/
   /**
    * searchAndSelect methods /
@@ -1451,7 +1432,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return instanceIds;
   }
-
   /******************************************************************************************************************/
   /**
    * Thesaurus methods /
@@ -1604,7 +1584,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return KEYWORDS;
   }
-
   /******************************************************************************************************************/
   /**
    * Glossary methods /
@@ -1788,7 +1767,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           "pdcPeas.EX_LOAD_IC", e);
     }
   }
-
   /******************************************************************************************************************/
   /**
    * PDC Subscriptions methods /
@@ -1808,8 +1786,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * UserPanel methods /
    ******************************************************************************************************************/
   public String initUserPanel() throws RemoteException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        "ApplicationURL");
     String hostSpaceName = getString("pdcPeas.SearchPage");
     String hostUrl = m_context + "/RpdcSearch/jsp/FromUserPanel";
 
@@ -1852,8 +1830,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else {
       if (component == null) {
         // Restriction sur un espace. La recherche doit avoir lieu
-        String[] asAvailCompoForCurUser = getOrganizationController()
-            .getAvailCompoIds(space, getUserId());
+        String[] asAvailCompoForCurUser = getOrganizationController().getAvailCompoIds(space,
+            getUserId());
         for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
           if (isSearchable(asAvailCompoForCurUser[nI])) {
             componentList.add(asAvailCompoForCurUser[nI]);
@@ -1889,8 +1867,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else {
       if (components == null) {
         // Restriction sur un espace. La recherche doit avoir lieu
-        String[] asAvailCompoForCurUser = getOrganizationController()
-            .getAvailCompoIds(space, getUserId());
+        String[] asAvailCompoForCurUser = getOrganizationController().getAvailCompoIds(space,
+            getUserId());
         for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
           if (isSearchable(asAvailCompoForCurUser[nI])) {
             componentList.add(asAvailCompoForCurUser[nI]);
@@ -1908,9 +1886,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (componentId.startsWith("silverCrawler")
         || componentId.startsWith("gallery")
         || componentId.startsWith("kmelia")) {
-      boolean isPrivateSearch = "yes"
-          .equalsIgnoreCase(getOrganizationController()
-          .getComponentParameterValue(componentId, "privateSearch"));
+      boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganizationController().
+          getComponentParameterValue(componentId, "privateSearch"));
       if (isPrivateSearch) {
         return false;
       } else {
@@ -1932,8 +1909,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // add each shared domains
     for (int nI = 0; nI < spaceIds.length; nI++) {
       String spaceId = spaceIds[nI];
-      SpaceInstLight spaceInst = getOrganizationController()
-          .getSpaceInstLightById(spaceId);
+      SpaceInstLight spaceInst = getOrganizationController().getSpaceInstLightById(spaceId);
       if (spaceInst != null && spaceInst.getFatherId().equals("0")) {
         allowed.add(spaceInst);
 
@@ -1958,11 +1934,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List getAllowedComponents(String space) {
     List allowedList = new ArrayList();
     if (space != null) {
-      String[] asAvailCompoForCurUser = getOrganizationController()
-          .getAvailCompoIds(space, getUserId());
+      String[] asAvailCompoForCurUser = getOrganizationController().getAvailCompoIds(space,
+          getUserId());
       for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
-        ComponentInstLight componentInst = getOrganizationController()
-            .getComponentInstLight(asAvailCompoForCurUser[nI]);
+        ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+            asAvailCompoForCurUser[nI]);
 
         if (componentInst != null) {
           allowedList.add(componentInst);
@@ -1976,8 +1952,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Returns the label of the given domain/space
    */
   public String getSpaceLabel(String spaceId) {
-    SpaceInstLight spaceInst = getOrganizationController()
-        .getSpaceInstLightById(spaceId);
+    SpaceInstLight spaceInst = getOrganizationController().getSpaceInstLightById(spaceId);
     if (spaceInst != null) {
       return spaceInst.getName(getLanguage());
     } else {
@@ -2011,7 +1986,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return componentId;
     }
   }
-
   /*********************************************************************************************/
   /** AskOnce methods **/
   /*********************************************************************************************/
@@ -2092,14 +2066,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public String getUrl(String urlBase, String componentId, String params,
       String pageAndParams) {
     if (isNewComposant(componentId)) {
-      ComponentInstLight componentInst = getOrganizationController()
-          .getComponentInstLight(componentId);
+      ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+          componentId);
       return urlBase
           + URLManager.getNewComponentURL(componentInst.getDomainFatherId(),
           componentId)
           + params
-          + URLManager
-          .getEndURL(componentInst.getDomainFatherId(), componentId);
+          + URLManager.getEndURL(componentInst.getDomainFatherId(), componentId);
     } else {
       return urlBase + URLManager.getURL(null, componentId) + pageAndParams;
     }
@@ -2139,7 +2112,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return validSequence;
   }
-
   /*********************************************************************************************/
   /** Business objects primitives **/
   /*********************************************************************************************/
@@ -2147,7 +2119,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private SearchEngineBm searchEngine = null; // To retrieve items using
 
   // searchEngine
-
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
       pdcBm = (PdcBm) new PdcBmImpl();
@@ -2158,8 +2129,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private SearchEngineBm getSearchEngineBm() throws PdcException {
     if (searchEngine == null) {
       try {
-        SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
+        SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.SEARCHBM_EJBHOME,
             SearchEngineBmHome.class);
         searchEngine = home.create();
       } catch (Exception e) {
@@ -2255,8 +2226,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
       // RESULT PAGE
       if (title.endsWith("wysiwyg.txt")
-          && (componentId.startsWith("kmelia") || componentId
-          .startsWith("kmax"))) {
+          && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
         continue;
       }
 
@@ -2323,8 +2293,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       throws PdcPeasRuntimeException {
     PublicationTemplateImpl template = null;
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager
-          .loadPublicationTemplate(fileName);
+      template = (PublicationTemplateImpl) PublicationTemplateManager.loadPublicationTemplate(
+          fileName);
       this.xmlTemplate = template;
     } catch (PublicationTemplateException e) {
       throw new PdcPeasRuntimeException(
