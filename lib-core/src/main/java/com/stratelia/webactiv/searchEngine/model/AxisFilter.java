@@ -39,7 +39,7 @@ public class AxisFilter {
   public static final String NAME = "NAME";
   public static final String DESCRIPTION = "DESCRIPTION";
 
-  private List filter = (List) new ArrayList(1);
+  private List<AxisFilterNode> filter = new ArrayList<AxisFilterNode>(1);
   private int index = -1;
 
   public AxisFilter() {
@@ -64,7 +64,7 @@ public class AxisFilter {
   public AxisFilterNode getFirstCondition() {
     if (filter.size() > 0) {
       index = 0;
-      return (AxisFilterNode) filter.get(0);
+      return filter.get(0);
     } else {
       return null;
     }
@@ -72,7 +72,7 @@ public class AxisFilter {
 
   public AxisFilterNode getNextCondition() {
     if (++index < filter.size()) {
-      return (AxisFilterNode) filter.get(index);
+      return filter.get(index);
     } else {
       return null;
     }

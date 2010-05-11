@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  */
 public class MatchingIndexEntry extends IndexEntry implements Serializable {
 
+  private static final long serialVersionUID = 5931254295396221458L;
+
   /**
    * The constructor set only the key part of the entry.
    */

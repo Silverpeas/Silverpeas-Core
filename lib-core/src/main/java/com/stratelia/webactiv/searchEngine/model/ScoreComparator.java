@@ -29,17 +29,14 @@ import java.util.Comparator;
 /**
  * Comparator used to sort the results set.
  */
-public class ScoreComparator implements Comparator {
+public class ScoreComparator implements Comparator<MatchingIndexEntry> {
   static public ScoreComparator comparator = new ScoreComparator();
 
   /**
    * A matching index entry is greater another if his score is higher. This result is reversed as we
    * want a descending sort.
    */
-  public int compare(Object o1, Object o2) {
-    MatchingIndexEntry r1 = (MatchingIndexEntry) o1;
-    MatchingIndexEntry r2 = (MatchingIndexEntry) o2;
-
+  public int compare(MatchingIndexEntry r1, MatchingIndexEntry r2) {
     if (r1.getScore() < r2.getScore()) {
       return 1;
     } else if (r1.getScore() == r2.getScore()) {
