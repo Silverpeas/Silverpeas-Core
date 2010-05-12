@@ -49,6 +49,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   private boolean hasRead = false; // marks a result as redden
   private int resultId = 0;
+  private int hits = -1;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
@@ -179,6 +180,14 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   public void setResultId(int resultId) {
     this.resultId = resultId;
+  }
+
+  public void setHits(int hits) {
+    this.hits = hits;
+  }
+
+  public int getHits() {
+    return hits;
   }
 
   public boolean equals(Object other) {

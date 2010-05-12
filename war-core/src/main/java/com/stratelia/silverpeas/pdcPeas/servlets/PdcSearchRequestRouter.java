@@ -502,7 +502,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         if (StringUtil.isDefined(paramSortOrder)) {
           pdcSC.setSortOrder(paramSortOrder);
         }
-        
+
         ResultFilterVO filter = initSearchFilter(request, pdcSC);
         setDefaultDataToNavigation(request, pdcSC, filter);
 
@@ -986,7 +986,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
    * @param pdcSC the pdcSearchSessionController
    * @return a new ResultFilterVO which contains data information
    */
-  private ResultFilterVO initSearchFilter(HttpServletRequest request, PdcSearchSessionController pdcSC) {
+  private ResultFilterVO initSearchFilter(HttpServletRequest request,
+      PdcSearchSessionController pdcSC) {
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
     ResultFilterVO filter = null;

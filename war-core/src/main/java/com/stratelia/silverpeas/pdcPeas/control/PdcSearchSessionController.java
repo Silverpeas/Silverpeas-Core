@@ -23,6 +23,27 @@
  */
 package com.stratelia.silverpeas.pdcPeas.control;
 
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.interestCenter.model.InterestCenter;
@@ -35,6 +56,7 @@ import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
@@ -88,28 +110,9 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.io.IOException;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.net.URLEncoder;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
+import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -242,7 +245,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.indexOfFirstResultToDisplay = new Integer(index).intValue();
   }
 
-  // CBO : Add
   public String getDisplayParamChoices() {
     if (displayParamChoices == null) {
       displayParamChoices = getSettings().getString("DisplayParamChoices", "All");
@@ -293,7 +295,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     this.sortValue = sortValue;
   }
 
-  // CBO : FIN ADD
   public void setQueryParameters(QueryParameters query) {
     this.queryParameters = query;
   }
@@ -649,6 +650,20 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     };
 
+    Comparator<GlobalSilverResult> cPopularityAsc = new Comparator<GlobalSilverResult>() {
+
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        Integer pop1 = Integer.valueOf(o1.getHits());
+        Integer pop2 = Integer.valueOf(o2.getHits());
+
+        if (pop1 != null && pop2 != null) {
+          return pop1.compareTo(pop2);
+        } else {
+          return 0;
+        }
+      }
+    };
+
     if (sortValue == 1 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
       // Pertinence ASC
       Collections.sort(results, cPertAsc);
@@ -691,6 +706,56 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // Emplacement DESC
       Collections.sort(results, cEmplAsc);
       Collections.reverse(results);
+    } else if (sortValue == 7 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
+      // Popularity ASC
+      setPopularityToResults();
+      Collections.sort(results, cPopularityAsc);
+    } else if (sortValue == 7 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
+      // Popularity DESC
+      setPopularityToResults();
+      Collections.sort(results, cPopularityAsc);
+      Collections.reverse(results);
+    }
+  }
+
+  private void setPopularityToResults() {
+    List<GlobalSilverResult> results = getGlobalSR();
+    StatisticBm statisticBm = getStatisticBm();
+    ForeignPK pk = new ForeignPK("unknown");
+    for (GlobalSilverResult result : results) {
+      if (isPopularityCompliant(result)) {
+        pk.setComponentName(result.getInstanceId());
+        pk.setId(result.getId());
+        try {
+          int nbAccess = statisticBm.getCount(pk, 1, "Publication");
+          result.setHits(nbAccess);
+        } catch (RemoteException e) {
+          SilverTrace.error("pdcPeas", "PdcSearchSessionController.setPopularityToResults()",
+              "root.EX_CANT_GET_REMOTE_OBJECT", "pk = " + pk.toString(), e);
+        }
+      }
+    }
+  }
+
+  private boolean isPopularityCompliant(GlobalSilverResult gsr) {
+    if ((gsr.getInstanceId().startsWith("kmelia") || gsr.getInstanceId().startsWith("kmax") || gsr
+        .getInstanceId().startsWith("toolbox")) &&
+        (gsr.getType().equals("Publication") || gsr.getURL().indexOf("Publication") != -1)) {
+      return true;
+    }
+    return false;
+  }
+
+  public StatisticBm getStatisticBm() {
+    try {
+      StatisticBmHome statisticHome =
+          (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+          StatisticBmHome.class);
+      StatisticBm statisticBm = statisticHome.create();
+      return statisticBm;
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -718,7 +783,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     List<String> blackList = getFacetBlackList();
-    
+
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
         if (filterAuthor && gsResult.getUserId().equals(authorFilter)
@@ -749,9 +814,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     sortedResultsToDisplay = sortedResults.subList(start, end);
     return sortedResultsToDisplay;
   }
-  
-  private List<String> getFacetBlackList()
-  {
+
+  private List<String> getFacetBlackList() {
     String sBlackList = getSettings().getString("searchengine.facet.component.blacklist", "");
     List<String> blackList = new ArrayList<String>();
     if (StringUtil.isDefined(sBlackList)) {
@@ -848,7 +912,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             + EncodeHelper.javaStringToJsString(underLink) + "&FileOpened=1';";
       } else if (resultType.equals("LinkedFile")) {
         // open the linked file inside a popup window
-        downloadLink = FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(), AttachmentController.
+        downloadLink =
+            FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
+            AttachmentController.
             getMimeType(indexEntry.getTitle()));
         // window opener is reloaded on the main page of the component
         underLink = m_sContext + URLManager.getURL("useless", componentId)
@@ -1374,6 +1440,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public ContentPeas getContentPeas() {
     return contentPeasPDC;
   }
+
   /******************************************************************************************************************/
   /**
    * searchAndSelect methods /
@@ -1417,6 +1484,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return instanceIds;
   }
+
   /******************************************************************************************************************/
   /**
    * Thesaurus methods /
@@ -1569,6 +1637,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return KEYWORDS;
   }
+
   /******************************************************************************************************************/
   /**
    * Glossary methods /
@@ -1752,6 +1821,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           "pdcPeas.EX_LOAD_IC", e);
     }
   }
+
   /******************************************************************************************************************/
   /**
    * PDC Subscriptions methods /
@@ -1971,6 +2041,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return componentId;
     }
   }
+
   /*********************************************************************************************/
   /** AskOnce methods **/
   /*********************************************************************************************/
@@ -2097,6 +2168,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return validSequence;
   }
+
   /*********************************************************************************************/
   /** Business objects primitives **/
   /*********************************************************************************************/

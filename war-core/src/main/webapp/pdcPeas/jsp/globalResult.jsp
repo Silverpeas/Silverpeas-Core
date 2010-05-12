@@ -503,7 +503,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		  <span>&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
 		  <select name="sortRes" size="1" onChange="javascript:changeResDisplay()">
             <%		
-				for (int i=1; i<=5; i++) {
+				for (int i=1; i<=7; i++) {
 					selected = "";
 					if(sortValue.intValue() == i) {
 						selected = "selected";
@@ -652,7 +652,11 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 							
 			if (sDescription != null && sDescription.length()>0)
 				out.println("<BR><i>"+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i>");
-					
+			
+			if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
+			  	out.println("<br/><span class=\"popularity\">"+resource.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits()))+"</span>");
+			}
+			
 			if (sLocation != null && sLocation.length()>0)
 				out.println("<BR>"+Encode.javaStringToHtmlString(sLocation));
 			out.println("<td>");

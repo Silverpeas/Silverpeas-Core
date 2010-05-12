@@ -672,7 +672,6 @@ out.println(window.printBefore());
   <input type="hidden" name="requestName">
   <input type="hidden" name="mode">
   <input type="hidden" name="AxisValueCouples">
-  <!-- CBO : ADD -->
   <input type="hidden" name="sortOrder" value=<%=sortOrder%>>
 
   <% if (isNewPDCSubscription) { %>
@@ -733,7 +732,6 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
         </table>
 
 	<%
-	//CBO : ADD
 	if ("All".equals(displayParamChoices) || "Req".equals(displayParamChoices)) 
 	{
 	%>
@@ -762,7 +760,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 		  <span class="txtlibform">&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
 		  <select name="sortRes" size="1">
 			<%		
-				for (int i=1; i<=5; i++) {
+				for (int i=1; i<=7; i++) {
 					selected = "";
 					if(sortValue.intValue() == i) {
 						selected = "selected";
@@ -790,7 +788,6 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 		</table>
 	<%
 	}
-	//CBO : FIN ADD
 		
 	out.println(board.printAfter());
 	if (searchType >= 1) 
