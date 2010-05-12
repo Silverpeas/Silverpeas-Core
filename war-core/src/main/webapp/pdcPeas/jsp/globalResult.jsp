@@ -182,6 +182,9 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		#globalResultHelp {
 			display: none;
 		}
+		#globalResultParamDisplayOptions #sort1 {
+			display: none;
+		}
 	</style>
 <% } %>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
@@ -326,7 +329,6 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		largeur = "700";
 		hauteur = "500";
 		SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
-		
 	}
 	
 	function doPagination(index)
@@ -373,16 +375,14 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 	
-
-	//CBO : ADD
 	function changeResDisplay() {
-		document.AdvancedSearch.action = "AdvancedSearch";
+		document.AdvancedSearch.action = "SortResults";
 		document.AdvancedSearch.submit();
 	}
 
 	function setSortOrder(order){
 		document.AdvancedSearch.sortOrder.value = order;
-		document.AdvancedSearch.action = "AdvancedSearch";
+		document.AdvancedSearch.action = "SortResults";
 		document.AdvancedSearch.submit();
 	}
        //used for keywords autocompletion
@@ -470,7 +470,6 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
         </table>
  
 <%
-	//CBO : ADD
 	if ("All".equals(displayParamChoices) || "Res".equals(displayParamChoices)) 
 	{
 %>
@@ -504,7 +503,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 					if(sortValue.intValue() == i) {
 						selected = "selected";
 					}
-					out.println("<option value=\""+i+"\""+selected+">"+resource.getString("pdcPeas.SortValueSearch."+i)+"</option>");
+					out.println("<option id=\"sort"+i+"\" value=\""+i+"\""+selected+">"+resource.getString("pdcPeas.SortValueSearch."+i)+"</option>");
 				}
              %>
           </select>
@@ -532,11 +531,9 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		</table>
 <%
 	}
-	//CBO : FIN ADD
 
 	out.println(board.printAfter());
 	out.println("</div>");
-    //out.println("<br>");
     out.println("<div id=\"globalResultList\">");
 	out.println(board.printBefore());
 
@@ -659,7 +656,6 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 			
 			out.println("</td>");
 			out.println("</tr>");
-			//out.println("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>");
 		}	
 		out.println("</table>");
 
@@ -728,13 +724,14 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
     	%>
 	  <input type="hidden" name="authorFilter" id="userFilterId" value="<%=filteredUserId%>"/>
 	  <input type="hidden" name="componentFilter" id="componentFilterId" value="<%=filteredComponentId%>"/>
-
+	  
       <div id="globalResultGroupDivId">
       	<div id="facetSearchDivId">
       	<%
       	List authors = resultGroup.getAuthors();
       	if (authors != null) {
       	  %>
+      	  <div id="facetAuthor">
       	  <div id="searchGroupTitle"><span class="author"><%=resource.getString("GML.author")%></span></div>
    		  <div id="searchGroupValues"> 
    			<ul>
@@ -773,6 +770,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
       	  %>
       		</ul>
       	  </div>
+      	  </div>
       	  <%
       	}
       	%>
@@ -781,6 +779,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
       	List components = resultGroup.getComponents();
       	if (components != null) {
       	  %>
+      	  <div id="facetInstance">
       	  <div id="searchGroupTitle"><span class="component"><%=resource.getString("GML.jobPeas")%></span></div>
    		  <div id="searchGroupValues">
    			<ul>
@@ -817,6 +816,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
   	      }
       	  %>
       		</ul>
+      	  </div>
       	  </div>
       	  <%
       	}

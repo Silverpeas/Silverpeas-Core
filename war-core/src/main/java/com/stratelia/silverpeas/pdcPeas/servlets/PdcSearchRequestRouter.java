@@ -481,8 +481,29 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         ResultFilterVO filter = initSearchFilter(request);
         processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
 
-        String index = (String) request.getParameter("Index");
+        String index = request.getParameter("Index");
         pdcSC.setIndexOfFirstResultToDisplay(index);
+        setDefaultDataToNavigation(request, pdcSC, filter);
+
+        destination = getDestinationForResults(pdcSC);
+      } else if ("SortResults".equals(function)) {
+
+        String paramNbResToDisplay = request.getParameter("nbRes");
+        if (StringUtil.isDefined(paramNbResToDisplay)) {
+          int nbResToDisplay = Integer.parseInt(paramNbResToDisplay);
+          pdcSC.setNbResToDisplay(nbResToDisplay);
+        }
+        String paramSortRes = request.getParameter("sortRes");
+        if (StringUtil.isDefined(paramSortRes)) {
+          int sortRes = Integer.parseInt(paramSortRes);
+          pdcSC.setSortValue(sortRes);
+        }
+        String paramSortOrder = request.getParameter("sortOrder");
+        if (StringUtil.isDefined(paramSortOrder)) {
+          pdcSC.setSortOrder(paramSortOrder);
+        }
+        
+        ResultFilterVO filter = initSearchFilter(request);
         setDefaultDataToNavigation(request, pdcSC, filter);
 
         destination = getDestinationForResults(pdcSC);
@@ -1575,6 +1596,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     pdcSC.clearQueryParameters();
     pdcSC.removeAllCriterias();
     pdcSC.setSelectionActivated(false);
+    pdcSC.setSortOrder(PdcSearchSessionController.SORT_ORDER_DESC);
+    pdcSC.setSortValue(1);
   }
 
   /**

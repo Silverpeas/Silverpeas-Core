@@ -442,9 +442,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     if (results != null) {
       // Retrieve the black list component (we don't need to filter data on it)
-      List<String> blackList =
-          Arrays.asList(getSettings().getString("searchengine.facet.component.blacklist", "")
-          .split(",\\s*"));
+      List<String> blackList = getFacetBlackList();
 
       // Loop or each result
       for (GlobalSilverResult result : results) {
@@ -719,12 +717,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       filterComponent = true;
     }
 
-    String sBlackList = getSettings().getString("searchengine.facet.component.blacklist", "");
-    List<String> blackList = new ArrayList<String>();
-    if (StringUtil.isDefined(sBlackList)) {
-      blackList = Arrays.asList(sBlackList.split(",\\s*"));
-    }
-
+    List<String> blackList = getFacetBlackList();
+    
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
         if (filterAuthor && gsResult.getUserId().equals(authorFilter)
@@ -751,6 +745,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     sortedResultsToDisplay = sortedResults.subList(
         getIndexOfFirstResultToDisplay(), end);
     return sortedResultsToDisplay;
+  }
+  
+  private List<String> getFacetBlackList()
+  {
+    String sBlackList = getSettings().getString("searchengine.facet.component.blacklist", "");
+    List<String> blackList = new ArrayList<String>();
+    if (StringUtil.isDefined(sBlackList)) {
+      blackList = Arrays.asList(sBlackList.split(",\\s*"));
+    }
+    return blackList;
   }
 
   private void setExtraInfoToResultsToDisplay(List<GlobalSilverResult> results) {
