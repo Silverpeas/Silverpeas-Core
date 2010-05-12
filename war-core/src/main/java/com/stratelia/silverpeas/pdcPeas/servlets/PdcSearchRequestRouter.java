@@ -478,7 +478,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         destination = getDestinationDuringSearch(pdcSC, request);
       } else if (function.equals("Pagination")) {
         // Initialize searchFilter
-        ResultFilterVO filter = initSearchFilter(request);
+        ResultFilterVO filter = initSearchFilter(request, pdcSC);
         processPDCSelectionActions("ValidateSelectedObjects", pdcSC, request);
 
         String index = request.getParameter("Index");
@@ -503,7 +503,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           pdcSC.setSortOrder(paramSortOrder);
         }
         
-        ResultFilterVO filter = initSearchFilter(request);
+        ResultFilterVO filter = initSearchFilter(request, pdcSC);
         setDefaultDataToNavigation(request, pdcSC, filter);
 
         destination = getDestinationForResults(pdcSC);
@@ -606,7 +606,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             && !pdcSC.getResultPage().equals("pdaResult.jsp")) {
           PdcSearchRequestRouterHelper.processItemsPagination(function, pdcSC, request);
         } else {
-          ResultFilterVO filter = initSearchFilter(request);
+          ResultFilterVO filter = initSearchFilter(request, pdcSC);
           setDefaultDataToNavigation(request, pdcSC, filter);
         }
 
@@ -963,7 +963,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("FilterSearchResult")) {// This function allow group filtering
         // result on globalResult page
         // Retrieve filter parameter
-        ResultFilterVO filter = initSearchFilter(request);
+        ResultFilterVO filter = initSearchFilter(request, pdcSC);
         setDefaultDataToNavigation(request, pdcSC, filter);
 
         destination = getDestinationForResults(pdcSC);
@@ -983,9 +983,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
   /**
    * Initialize search result filter object from request
    * @param request the HTTPServletRequest
+   * @param pdcSC the pdcSearchSessionController
    * @return a new ResultFilterVO which contains data information
    */
-  private ResultFilterVO initSearchFilter(HttpServletRequest request) {
+  private ResultFilterVO initSearchFilter(HttpServletRequest request, PdcSearchSessionController pdcSC) {
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
     ResultFilterVO filter = null;
@@ -998,6 +999,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       }
       if (StringUtil.isDefined(instanceId)) {
         filter.setComponentId(instanceId);
+      }
+      String changerFilter = request.getParameter("changeFilter");
+      if (StringUtil.isDefined(changerFilter)) {
+        pdcSC.setIndexOfFirstResultToDisplay("0");
       }
     }
     return filter;

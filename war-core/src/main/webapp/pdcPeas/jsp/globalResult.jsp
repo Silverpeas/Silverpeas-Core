@@ -362,6 +362,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		} else {
 			$("#componentFilterId").val(value);
 		}
+		$("#changeFilterId").val("change");
 		displayStaticMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
@@ -374,6 +375,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		} else {
 			$("#componentFilterId").val("");
 		}
+		$("#changeFilterId").val("change");
 		displayStaticMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
@@ -725,6 +727,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 	
   	if (resultGroup != null) {
     	%>
+	  <input type="hidden" name="changeFilter" id="changeFilterId" value="" />
 	  <input type="hidden" name="authorFilter" id="userFilterId" value="<%=filteredUserId%>"/>
 	  <input type="hidden" name="componentFilter" id="componentFilterId" value="<%=filteredComponentId%>"/>
 	  

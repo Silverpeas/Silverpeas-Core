@@ -738,12 +738,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     setFilteredSR(sortedResults);
 
     // Retrieve last index to display
-    int end = getIndexOfFirstResultToDisplay() + getNbResToDisplay();
+    int start = getIndexOfFirstResultToDisplay();
+    if (start > sortedResults.size()) {
+      start = 0;
+    }
+    int end = start + getNbResToDisplay();
     if (end > sortedResults.size() - 1) {
       end = sortedResults.size();
     }
-    sortedResultsToDisplay = sortedResults.subList(
-        getIndexOfFirstResultToDisplay(), end);
+    sortedResultsToDisplay = sortedResults.subList(start, end);
     return sortedResultsToDisplay;
   }
   
