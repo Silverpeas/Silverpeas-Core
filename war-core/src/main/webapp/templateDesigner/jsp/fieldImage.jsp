@@ -34,5 +34,26 @@
 </script>
 </head>
 <body>
+<%
+	String maxWidth = "";
+	String maxHeight = "";
+	
+	if (field != null)
+	{
+		if (parameters.containsKey("width")) {
+		  maxWidth = (String) parameters.get("width");
+		}
+		
+		if (parameters.containsKey("height")) {
+		  maxHeight = (String) parameters.get("height");
+		}
+	}
+%>
 <%@ include file="includeTopField.jsp.inc" %>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.image.maxWidth")%> :</td><td><input type="text" name="Param_width" value="<%=maxWidth%>" size="5" maxLength="4"/></td>
+</tr>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.image.maxHeight")%> :</td><td><input type="text" name="Param_height" value="<%=maxHeight%>" size="5" maxLength="4"/></td>
+</tr>
 <%@ include file="includeBottomField.jsp.inc" %>

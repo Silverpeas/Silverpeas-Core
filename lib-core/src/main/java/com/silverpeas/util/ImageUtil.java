@@ -28,6 +28,8 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 public class ImageUtil {
 
   public static String[] getWidthAndHeightByWidth(File image,
@@ -57,6 +59,7 @@ public class ImageUtil {
       result[0] = sWidth.substring(0, sWidth.indexOf("."));
       result[1] = sHeight.substring(0, sHeight.indexOf("."));
     } catch (Exception e) {
+      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
       result[0] = "";
       result[1] = "";
     }
@@ -90,6 +93,7 @@ public class ImageUtil {
       result[0] = sWidth.substring(0, sWidth.indexOf("."));
       result[1] = sHeight.substring(0, sHeight.indexOf("."));
     } catch (Exception e) {
+      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
       result[0] = "";
       result[1] = "";
     }
