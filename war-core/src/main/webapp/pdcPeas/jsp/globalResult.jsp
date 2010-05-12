@@ -28,8 +28,9 @@
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@ include file="checkAdvancedSearch.jsp"%>
+<%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
+<%@ include file="checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -160,9 +161,9 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletion.minChars", "3"));
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
+
+int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue(); 
 %>
-
-
 
 <html>
 <HEAD>
@@ -170,6 +171,19 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 <%
    out.println(gef.getLookStyleSheet());
 %>
+<% if (resultsDisplayMode == PdcSearchSessionController.SHOWRESULTS_OnlyPDC) { %>
+	<style>
+		#globalResultTab {
+			display: none;
+		}
+		#globalResultQuery {
+			display: none;
+		}
+		#globalResultHelp {
+			display: none;
+		}
+	</style>
+<% } %>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
@@ -616,7 +630,7 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 			else {
 			  	String cssClass="textePetitBold";
 			  	String cssClassDisableVisited="";
-			  	if(gsr.getIndexEntry().isHasRead()){
+			  	if(gsr.isHasRead()){
 			  	  cssClass="markedkAsRead";
 			  	  cssClassDisableVisited ="markedkAsReadDisableVisited";
 			  	}
@@ -831,8 +845,8 @@ boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 	<input type="hidden" name="Index">
 	<input type="hidden" name="contentURL">
 	<input type="hidden" name="componentId">
-	<!-- CBO : ADD -->
 	<input type="hidden" name="sortOrder" value="<%=sortOrder%>">
+	<input type="hidden" name="ShowResults" value="<%=resultsDisplayMode%>"/>
 </form>
 <%@ include file="modalMessage.jsp.inc" %>
 </body>
