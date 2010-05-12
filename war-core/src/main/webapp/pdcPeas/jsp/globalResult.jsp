@@ -185,6 +185,9 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 		#globalResultParamDisplayOptions #sort1 {
 			display: none;
 		}
+		.pertinence {
+			display: none;
+		}
 	</style>
 <% } %>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
@@ -587,7 +590,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
 			
 			if (showPertinence)
-				out.println("<td valign=\"top\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
+				out.println("<td valign=\"top\" class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
 			
 			if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
 				if (gsr.isExportable())
