@@ -34,6 +34,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class CommentPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 3246647638847423692L;
+
   /**
    * Constructor declaration
    * @param id

@@ -186,14 +186,14 @@ public class CommentDAO {
     return cmt;
   }
 
-  public static ArrayList getMostCommentedAllPublications(Connection con)
+  public static List<CommentInfo> getMostCommentedAllPublications(Connection con)
       throws SQLException {
     String select_query = "select count(commentId) as nb_comment, foreignId, instanceId from "
         + COMMENT_TABLENAME
         + " group by foreignId, instanceId order by nb_comment desc;";
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
-    ArrayList listPublisCommentsCount = new ArrayList();
+    List<CommentInfo> listPublisCommentsCount = new ArrayList<CommentInfo>();
 
     try {
       prep_stmt = con.prepareStatement(select_query);
@@ -241,7 +241,7 @@ public class CommentDAO {
     return commentsCount;
   }
 
-  public static Vector getAllComments(Connection con, WAPrimaryKey foreign_pk)
+  public static Vector<Comment> getAllComments(Connection con, WAPrimaryKey foreign_pk)
       throws SQLException {
     String select_query =
         "select commentId, commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
@@ -256,7 +256,7 @@ public class CommentDAO {
     ResultSet rs = null;
     prep_stmt = con.prepareStatement(select_query);
 
-    Vector comments = new Vector(INITIAL_CAPACITY);
+    Vector<Comment> comments = new Vector<Comment>(INITIAL_CAPACITY);
 
     try {
       rs = prep_stmt.executeQuery();
@@ -292,11 +292,6 @@ public class CommentDAO {
     } finally {
       DBUtil.close(prep_stmt);
     }
-  }
-
-  public List getMostCommented() {
-
-    return null;
   }
 
 }

@@ -28,9 +28,12 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.comment.model.Comment;
@@ -46,11 +49,9 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 public class CommentBmEJB implements SessionBean {
+
+  private static final long serialVersionUID = -4880326368611108874L;
 
   private Connection openConnection() {
     try {
@@ -135,7 +136,7 @@ public class CommentBmEJB implements SessionBean {
     }
   }
 
-  public Collection getMostCommentedAllPublications() throws RemoteException {
+  public Collection<CommentInfo> getMostCommentedAllPublications() throws RemoteException {
     Connection con = openConnection();
     try {
       return CommentDAO.getMostCommentedAllPublications(con);
@@ -146,15 +147,13 @@ public class CommentBmEJB implements SessionBean {
     }
   }
 
-  public Collection getMostCommented(Collection pks, int commentsCount)
+  public Collection<CommentInfo> getMostCommented(Collection<CommentPK> pks, int commentsCount)
       throws RemoteException {
-    ArrayList comments = new ArrayList();
+    List<CommentInfo> comments = new ArrayList<CommentInfo>();
     Connection con = openConnection();
     if (pks != null && !pks.isEmpty()) {
       try {
-        Iterator iter = pks.iterator();
-        while (iter.hasNext()) {
-          CommentPK commentPk = (CommentPK) iter.next();
+        for (CommentPK commentPk : pks) {
           comments.add(new CommentInfo(CommentDAO.getCommentsCount(con,
               commentPk), commentPk.getInstanceId(), commentPk.getId()));
         }
@@ -186,9 +185,9 @@ public class CommentBmEJB implements SessionBean {
     return publicationCommentsCount;
   }
 
-  public Vector getAllComments(WAPrimaryKey foreign_pk) throws RemoteException {
+  public Vector<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException {
     Connection con = openConnection();
-    Vector vRet;
+    Vector<Comment> vRet;
     try {
       vRet = CommentDAO.getAllComments(con, foreign_pk);
       if (vRet == null) {
@@ -213,20 +212,18 @@ public class CommentBmEJB implements SessionBean {
    * @return
    * @throws RemoteException
    */
-  public Vector getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
+  public Vector<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
       throws RemoteException {
     Connection con = openConnection();
-    Vector vRet;
-    Vector vReturn = new Vector();
-    Comment comment;
+    Vector<Comment> vRet;
+    Vector<Comment> vReturn = new Vector<Comment>();
     try {
       vRet = CommentDAO.getAllComments(con, foreign_pk);
       if (vRet == null) {
         throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
             SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED");
       } else {
-        for (Enumeration e = vRet.elements(); e.hasMoreElements();) {
-          comment = (Comment) e.nextElement();
+        for (Comment comment : vRet) {
           comment.setOwner(getUserName(comment));
           vReturn.addElement(comment);
         }

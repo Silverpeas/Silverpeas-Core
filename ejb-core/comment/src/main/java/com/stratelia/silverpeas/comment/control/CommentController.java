@@ -24,7 +24,6 @@
 package com.stratelia.silverpeas.comment.control;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.ejb.RemoveException;
@@ -96,10 +95,8 @@ public class CommentController {
 
   public static void deleteCommentsByForeignPK(WAPrimaryKey pk)
       throws RemoteException {
-    Vector comments = getCommentBm().getAllComments(pk);
-    Comment comment = null;
-    for (int c = 0; c < comments.size(); c++) {
-      comment = (Comment) comments.get(c);
+    Vector<Comment> comments = getCommentBm().getAllComments(pk);
+    for (Comment comment : comments) {
       getCommentBm().deleteComment(comment.getCommentPK());
       deleteIndex(comment);
     }
@@ -133,50 +130,36 @@ public class CommentController {
     return newComment;
   }
 
-  public static Vector getAllComments(WAPrimaryKey foreign_pk)
+  public static Vector<Comment> getAllComments(WAPrimaryKey foreign_pk)
       throws RemoteException {
-    Vector vComments = null;
-    Comment comment;
-    vComments = getCommentBm().getAllComments(foreign_pk);
-    Vector vReturn = new Vector(vComments.size());
-    for (Enumeration e = vComments.elements(); e.hasMoreElements();) {
-      comment = (Comment) e.nextElement();
+    Vector<Comment> vComments = getCommentBm().getAllComments(foreign_pk);
+    for (Comment comment : vComments) {
       comment.setOwner(getUserName(comment));
-      vReturn.addElement(comment);
     }
-    return vReturn;
+    return vComments;
   }
 
-  public static Vector getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
+  public static Vector<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
       throws RemoteException {
-    Vector vComments = null;
-    Comment comment;
-    vComments = getCommentBm().getAllComments(foreign_pk);
-    Vector vReturn = new Vector(vComments.size());
-    for (Enumeration e = vComments.elements(); e.hasMoreElements();) {
-      comment = (Comment) e.nextElement();
+    Vector<Comment> vComments = getCommentBm().getAllComments(foreign_pk);
+    for (Comment comment : vComments) {
       comment.setOwner(getUserName(comment));
-      vReturn.addElement(comment);
     }
-    return vReturn;
+    return vComments;
   }
 
   public static void indexCommentsByForeignKey(WAPrimaryKey foreignKey)
       throws RemoteException {
-    Comment comment = null;
-    Vector vComments = getCommentBm().getAllComments(foreignKey);
-    for (Enumeration e = vComments.elements(); e.hasMoreElements();) {
-      comment = (Comment) e.nextElement();
+    Vector<Comment> vComments = getCommentBm().getAllComments(foreignKey);
+    for (Comment comment : vComments) {
       createIndex(comment);
     }
   }
 
   public static void unindexCommentsByForeignKey(WAPrimaryKey foreignKey)
       throws RemoteException {
-    Comment comment = null;
-    Vector vComments = getCommentBm().getAllComments(foreignKey);
-    for (Enumeration e = vComments.elements(); e.hasMoreElements();) {
-      comment = (Comment) e.nextElement();
+    Vector<Comment> vComments = getCommentBm().getAllComments(foreignKey);
+    for (Comment comment : vComments) {
       deleteIndex(comment);
     }
   }

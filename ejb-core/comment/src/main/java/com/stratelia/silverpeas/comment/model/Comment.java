@@ -32,6 +32,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class Comment implements java.io.Serializable {
 
+  private static final long serialVersionUID = 3738544756345055840L;
   private CommentPK pk;
   private WAPrimaryKey foreign_key;
   private int owner_id;

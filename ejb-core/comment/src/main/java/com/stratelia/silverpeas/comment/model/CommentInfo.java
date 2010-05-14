@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 public class CommentInfo implements Serializable {
 
+  private static final long serialVersionUID = 4433090666272026427L;
   private int commentCount;
   private String componentId;
   private String elementId;

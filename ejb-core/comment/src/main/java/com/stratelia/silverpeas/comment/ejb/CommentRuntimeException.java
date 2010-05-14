@@ -34,53 +34,13 @@ package com.stratelia.silverpeas.comment.ejb;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: CommentRuntimeException.java,v 1.1.1.1 2002/08/06 14:47:46 nchaix Exp $
- *
- * $Log: CommentRuntimeException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:46  nchaix
- * no message
- *
- * Revision 1.1.2.2  2002/07/30 08:54:35  pbialevich
- * working version
- *
- * Revision 1.1.2.1  2002/07/29 07:46:43  pbialevich
- * draft
- *
- * Revision 1.1.2.1  2002/07/26 12:02:15  pbialevich
- * draft
- *
- * Revision 1.2  2002/07/17 16:15:44  nchaix
- * Merge branche EPAM_130602
- *
- * Revision 1.1.2.1  2002/07/02 14:04:08  pbialevich
- * First version
- *
- * Revision 1.5  2002/01/21 18:00:31  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.4  2002/01/21 17:55:19  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.3  2002/01/08 10:28:13  groccia
- * no message
- *
- * Revision 1.2  2001/12/31 15:43:32  groccia
- * stabilisation
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class CommentRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = 433280761200988666L;
 
   /**
    * method of interface FromModule

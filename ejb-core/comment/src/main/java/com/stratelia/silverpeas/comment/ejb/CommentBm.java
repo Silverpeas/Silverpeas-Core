@@ -42,14 +42,14 @@ public interface CommentBm extends javax.ejb.EJBObject {
 
   public int getCommentsCount(WAPrimaryKey foreign_pk) throws RemoteException;
 
-  public Vector getAllComments(WAPrimaryKey foreign_pk) throws RemoteException;
+  public Vector<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException;
 
-  public Vector getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
+  public Vector<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
       throws RemoteException;
 
-  public Collection getMostCommentedAllPublications() throws RemoteException;
+  public Collection<CommentInfo> getMostCommentedAllPublications() throws RemoteException;
 
-  public Collection getMostCommented(Collection pks, int notationsCount)
+  public Collection<CommentInfo> getMostCommented(Collection<CommentPK> pks, int notationsCount)
       throws RemoteException;
 
   public void deleteAllComments(ForeignPK foreign_pk) throws RemoteException;

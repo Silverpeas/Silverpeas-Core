@@ -25,13 +25,10 @@ package com.stratelia.silverpeas.comment.model;
 
 import java.util.Comparator;
 
-public class CommentInfoComparator implements Comparator {
+public class CommentInfoComparator implements Comparator<CommentInfo> {
 
-  public int compare(Object o1, Object o2) {
-    // TODO Auto-generated method stub
-    CommentInfo commentInfo1 = (CommentInfo) o1;
-    CommentInfo commentInfo2 = (CommentInfo) o2;
-    return commentInfo2.getCommentCount() - commentInfo1.getCommentCount();
+  public int compare(CommentInfo o1, CommentInfo o2) {
+    return o2.getCommentCount() - o1.getCommentCount();
   }
 
 }
