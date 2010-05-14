@@ -42,7 +42,6 @@
     <module>formtemplate</module>
     <module>publication</module>
     <module>statistic</module>
-    <module>readingcontrol</module>
     <module>comment</module>
     <module>pdc</module>
     <module>mylinks</module>

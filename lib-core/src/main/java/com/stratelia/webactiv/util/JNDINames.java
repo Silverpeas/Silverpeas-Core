@@ -46,7 +46,6 @@ public class JNDINames extends SilverpeasSettings {
   public static String FAVORITBM_EJBHOME = "ejb/FavoritBm";
   public static String SUBSCRIBEBM_EJBHOME = "ejb/SubscribeBm";
   public static String STATISTICBM_EJBHOME = "ejb/StatisticBm";
-  public static String READINGCONTROLBM_EJBHOME = "ejb/ReadingControlBm";
   public static String NEWSBM_EJBHOME = "ejb/NewsBm";
   public static String QUICKINFOBM_EJBHOME = "ejb/QuickInfoBm";
   public static String ALMANACHBM_EJBHOME = "ejb/AlmanachBm";
@@ -200,8 +199,6 @@ public class JNDINames extends SilverpeasSettings {
         "ejb/SubscribeBm");
     STATISTICBM_EJBHOME = readString(rs, "STATISTICBM_EJBHOME",
         "ejb/StatisticBm");
-    READINGCONTROLBM_EJBHOME = readString(rs, "READINGCONTROLBM_EJBHOME",
-        "ejb/ReadingControlBm");
     NEWSBM_EJBHOME = readString(rs, "NEWSBM_EJBHOME", "ejb/NewsBm");
     QUICKINFOBM_EJBHOME = readString(rs, "QUICKINFOBM_EJBHOME",
         "ejb/QuickInfoBm");
