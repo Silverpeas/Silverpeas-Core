@@ -55,22 +55,30 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 public class PublicationDAO {
   // if beginDate is null, it will be replace in database with it
 
-  private static String nullBeginDate = new String("0000/00/00");
+  private static final String nullBeginDate = "0000/00/00";
   // if endDate is null, it will be replace in database with it
-  private static String nullEndDate = new String("9999/99/99");
+  private static final String nullEndDate = "9999/99/99";
   // if beginHour is null, it will be replace in database with it
-  private static String nullBeginHour = new String("00:00");
+  private static final String nullBeginHour = "00:00";
   // if endDate is null, it will be replace in database with it
-  private static String nullEndHour = new String("23:59");
+  private static final String nullEndHour = "23:59";
   // this object caches last publications availables
   // used only for kmelia
   // keys : componentId
   // values : Collection of PublicationDetail
   private static Hashtable<String, Collection<PublicationDetail>> lastPublis =
       new Hashtable<String, Collection<PublicationDetail>>();
-  private static String publicationTableName = "SB_Publication_Publi";
-  private static String publicationFatherTableName = "SB_Publication_PubliFather";
-  private static String nodeTableName = "SB_Node_Node";
+  private static final String publicationTableName = "SB_Publication_Publi";
+  private static final String publicationFatherTableName = "SB_Publication_PubliFather";
+  private static final String nodeTableName = "SB_Node_Node";
+
+   private static final String UPDATE_PUBLICATION = "UPDATE SB_Publication_Publi SET infoId = ?, " +
+       "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, " +
+       "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, " +
+       "pubStatus = ?, pubImage = ?, pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, " +
+       "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, " +
+       "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? " +
+       "WHERE pubId = ? ";
 
   /**
    * This class must not be instanciated
@@ -96,8 +104,6 @@ public class PublicationDAO {
     if (listLastPublisCache != null && listLastPublisCache.size() > 0) {
       // removing not visible publications from the cache
       ArrayList<PublicationDetail> listLastPublisCacheMAJ = new ArrayList<PublicationDetail>();
-      Iterator<PublicationDetail> i = listLastPublisCache.iterator();
-      PublicationDetail pubDetail = null;
       java.util.Date date = new java.util.Date();
       Calendar cDateHeureNow = Calendar.getInstance();
       cDateHeureNow.setTime(date);
@@ -122,8 +128,7 @@ public class PublicationDAO {
       String sEndHour = null;
       int beginHour = 0;
       int endHour = 0;
-      while (i.hasNext()) {
-        pubDetail = (PublicationDetail) i.next();
+      for (PublicationDetail pubDetail : listLastPublisCache) {
         if (pubDetail.getBeginDate() != null) {
           cDateBegin.setTime(pubDetail.getBeginDate());
         } else {
@@ -196,7 +201,7 @@ public class PublicationDAO {
       selectStatement.append(" and ( F.nodeId = ").append(nodeId);
 
       while (iterator.hasNext()) {
-        nodePK = (NodePK) iterator.next();
+        nodePK = iterator.next();
         nodeId = nodePK.getId();
         selectStatement.append(" or F.nodeId = ").append(nodeId);
       }
@@ -1298,9 +1303,8 @@ public class PublicationDAO {
   public static Collection<PublicationDetail> selectByBeginDateDescAndStatus(Connection con,
       PublicationPK pubPK, String status) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
-    selectStatement.append("select * from ").append(pubPK.getTableName());
-    selectStatement.append(" where pubStatus like '").append(status).append(
-        "' ");
+    selectStatement.append("select * from SB_Publication_Publi where pubStatus like '");
+    selectStatement.append(status).append("' ");
     selectStatement.append(" and instanceId = ? ");
     selectStatement.append(" and (");
     selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
@@ -1441,8 +1445,7 @@ public class PublicationDAO {
   public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuffer selectStatement = new StringBuffer(128);
-    selectStatement.append("select * from ").append(pubPK.getTableName());
-    selectStatement.append(" where instanceId = ? ");
+    selectStatement.append("select * from SB_Publication_Publi where instanceId = ? ");
     selectStatement.append(" and (");
     selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
     selectStatement.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
@@ -1777,17 +1780,9 @@ public class PublicationDAO {
   public static void storeRow(Connection con, PublicationDetail detail)
       throws SQLException {
     int rowCount = 0;
-
-    StringBuffer updateQuery = new StringBuffer(128);
-    updateQuery.append("update ").append(detail.getPK().getTableName());
-    updateQuery
-        .append(
-        " set infoId = ? , pubName = ? , pubDescription = ? , pubCreationDate = ? , pubBeginDate = ? , pubEndDate = ? , pubCreatorId = ? , pubImportance = ? , pubVersion = ? , pubKeywords = ? , pubContent = ? , pubStatus = ? , pubImage = ? , pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ? , pubAuthor = ? , pubTargetValidatorId = ? , pubCloneId = ? , pubCloneStatus = ? , lang = ? ");
-    updateQuery.append(" where pubId = ? ");
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(updateQuery.toString());
+      prepStmt = con.prepareStatement(UPDATE_PUBLICATION);
       prepStmt.setString(1, detail.getInfoId());
       SilverTrace.info("publication", "PublicationDAO.storeRow()",
           "root.MSG_GEN_PARAM_VALUE", "InfoId = " + detail.getInfoId());
@@ -1856,18 +1851,14 @@ public class PublicationDAO {
       } else {
         prepStmt.setInt(24, Integer.parseInt(detail.getCloneId()));
       }
-
       prepStmt.setString(25, detail.getCloneStatus());
-
       prepStmt.setString(26, detail.getLanguage());
-
-      prepStmt.setInt(27, new Integer(detail.getPK().getId()).intValue());
+      prepStmt.setInt(27, Integer.parseInt(detail.getPK().getId()));
 
       rowCount = prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
     }
-
     invalidateLastPublis(detail.getPK().getComponentName());
 
     if (rowCount == 0) {
@@ -1912,7 +1903,6 @@ public class PublicationDAO {
     PublicationDetail pub = null;
     String selectStatement = QueryStringFactory.getSelectByNameAndNodeId();
     PreparedStatement prepStmt = null;
-
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, name);
