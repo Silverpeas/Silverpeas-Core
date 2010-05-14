@@ -4386,7 +4386,7 @@ public class Admin extends Object {
         CompoSpace compoSpace = new CompoSpace();
 
         // Set the component Id
-        compoSpace.setComponentId(componentInst.getFullId());
+        compoSpace.setComponentId(componentInst.getId());
 
         // Set the component label
         if (componentInst.getLabel().length() > 0) {
