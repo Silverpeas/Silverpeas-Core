@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -46,7 +47,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
-  private List currentSilverObjectIds = null;
+  private List<String> currentSilverObjectIds = null;
   private String currentComponentId = null;
   private String currentComponentLabel = null;
   private String currentComponentName = null;
@@ -89,11 +90,11 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
 
   public void addCurrentSilverObjectId(String silverObjectId) {
     if (currentSilverObjectIds == null)
-      currentSilverObjectIds = new ArrayList();
+      currentSilverObjectIds = new ArrayList<String>();
     currentSilverObjectIds.add(silverObjectId);
   }
 
-  public List getCurrentSilverObjectIds() throws PdcException {
+  public List<String> getCurrentSilverObjectIds() throws PdcException {
     return currentSilverObjectIds;
   }
 
@@ -129,7 +130,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     return currentComponentName;
   }
 
-  public List getUsedAxisToClassify() throws PdcException {
+  public List<UsedAxis> getUsedAxisToClassify() throws PdcException {
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.getUsedAxisList();
     } else {
@@ -179,7 +180,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     deletePosition(new Integer(positionId).intValue());
   }
 
-  public List getPositions() throws PdcException {
+  public List<ClassifyPosition> getPositions() throws PdcException {
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.getPositions();
     } else {
@@ -187,7 +188,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     }
   }
 
-  public List getUsedAxis() throws PdcException {
+  public List<UsedAxis> getUsedAxis() throws PdcException {
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.getUsedAxisList();
     } else {

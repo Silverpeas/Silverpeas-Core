@@ -44,6 +44,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -53,6 +54,7 @@ import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPeas;
 import com.stratelia.silverpeas.containerManager.ContainerWorkspace;
+import com.stratelia.silverpeas.containerManager.URLIcone;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -533,7 +535,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             pdcSC.setSearchType(Integer.parseInt(searchType));
         }
 
-        pdcSC.setSelectedSilverContents(new ArrayList());
+        pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
 
         // This is the main function of global search
         boolean pdcUsedDuringSearch = false;
@@ -859,7 +861,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
         }
 
-        pdcSC.setSelectedSilverContents(new ArrayList());
+        pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
 
         // Use pdc search only if user has selected an axis value
         boolean pdcUsedDuringSearch = false;
@@ -1083,7 +1085,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       }
 
       // get All Models
-      List templates = PublicationTemplateManager.getSearchablePublicationTemplates();
+      List<PublicationTemplate> templates = PublicationTemplateManager.getSearchablePublicationTemplates();
       request.setAttribute("XMLForms", templates);
 
       PagesContext context =
@@ -1228,7 +1230,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     }
 
     // Get the content URLIcones
-    List auContentURLIcones = null;
+    List<URLIcone> auContentURLIcones = null;
     if (!bOnlyContainer)
       auContentURLIcones =
           contentManager.getContentURLIcones(contentPeasPDC.getType(), asUserContentRoles);
@@ -1253,7 +1255,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     List<List> pathCriteria = new ArrayList<List>();
     if (c.size() > 0) {
       for (int i = 0; i < c.size(); i++) {
-        SearchCriteria sc = (SearchCriteria) c.get(i);
+        SearchCriteria sc = c.get(i);
 
         int searchAxisId = sc.getAxisId();
         String searchValue = PdcSearchRequestRouterHelper.getLastValueOf(sc.getValue());

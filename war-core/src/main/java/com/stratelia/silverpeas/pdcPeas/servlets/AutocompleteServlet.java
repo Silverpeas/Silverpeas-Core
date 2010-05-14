@@ -43,6 +43,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class AutocompleteServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 4312057984251158000L;
+
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request servlet request

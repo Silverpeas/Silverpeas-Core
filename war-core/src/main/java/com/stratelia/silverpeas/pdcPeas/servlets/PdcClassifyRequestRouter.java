@@ -47,6 +47,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 
 public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = -7647574714509474585L;
+
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcClassifySessionController(mainSessionCtrl, componentContext,
@@ -65,7 +67,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
     // get the session controller to inform the request
     PdcClassifySessionController pdcSC = (PdcClassifySessionController) componentSC;
     PdcFieldPositionsManager pdcFPM = pdcSC.getPdcFieldPositionsManager();
-    
+
     try {
 
       if (function.startsWith("Main")) {
@@ -81,7 +83,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         if (componentId != null)
           pdcSC.setCurrentComponentId(componentId);
 
-        List positions = pdcSC.getPositions();
+        List<ClassifyPosition> positions = pdcSC.getPositions();
 
         request.setAttribute("Positions", positions);
 
@@ -100,10 +102,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
       else if (function.startsWith("NewPosition")) {
         // the user wants to add a position to the object
-
-        List usedAxis = pdcSC.getUsedAxisToClassify();
-
-        request.setAttribute("UsedAxis", usedAxis);
+        request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
 
         setBrowseContextInRequest(pdcSC, request);
 
@@ -131,20 +130,17 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
         int positionId = new Integer(request.getParameter("Id")).intValue();
 
-        List usedAxis = pdcSC.getUsedAxisToClassify();
-        request.setAttribute("UsedAxis", usedAxis);
+        request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
 
-        List positions = pdcSC.getPositions();
+        List<ClassifyPosition> positions = pdcSC.getPositions();
 
         // Extract position from list
-        ClassifyPosition position = null;
-        for (int i = 0; i < positions.size(); i++) {
-          position = (ClassifyPosition) positions.get(i);
-          if (position.getPositionId() == positionId)
+        for (ClassifyPosition position : positions) {
+          if (position.getPositionId() == positionId) {
+            request.setAttribute("Position", position);
             break;
+          }
         }
-
-        request.setAttribute("Position", position);
 
         setBrowseContextInRequest(pdcSC, request);
 
@@ -169,7 +165,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         }
         if (pdcFPM.isEnabled()) {
           destination = getPdcFieldModeReturnDestination(
-            request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
+              request, pdcFPM, pdcSC.getString("pdcPeas.deletedPosition"));
         } else {
           String toURL = request.getParameter("ToURL");
           if (toURL != null && toURL.length() > 0) {
@@ -192,8 +188,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
           case 1:
             request.setAttribute("Position", position);
             request.setAttribute("ErrorVariant", "1");
-            List usedAxis = pdcSC.getUsedAxis();
-            request.setAttribute("UsedAxis", usedAxis);
+            request.setAttribute("UsedAxis", pdcSC.getUsedAxis());
             setBrowseContextInRequest(pdcSC, request);
             request.setAttribute("ListValues", new ArrayList());
             destination = "/pdcPeas/jsp/positionAdd.jsp";
@@ -210,11 +205,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
       else if (function.startsWith("ReloadPosition")) {
 
         String selectedValues = request.getParameter("Values");
-        Collection listPosition = buildListPosition(selectedValues);
-        request.setAttribute("ListValues", listPosition);
-
-        List usedAxis = pdcSC.getUsedAxisToClassify();
-        request.setAttribute("UsedAxis", usedAxis);
+        request.setAttribute("ListValues", buildListPosition(selectedValues));
+        request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
         setBrowseContextInRequest(pdcSC, request);
 
         Jargon jargon = pdcSC.getJargon();
@@ -241,8 +233,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
           case 1:
             request.setAttribute("Position", position);
             request.setAttribute("ErrorVariant", "1");
-            List usedAxis = pdcSC.getUsedAxis();
-            request.setAttribute("UsedAxis", usedAxis);
+            request.setAttribute("UsedAxis", pdcSC.getUsedAxis());
             setBrowseContextInRequest(pdcSC, request);
             request.setAttribute("ListValues", new ArrayList());
             destination = "/pdcPeas/jsp/positionEdit.jsp";
@@ -261,15 +252,14 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
         int positionId = new Integer(request.getParameter("Id")).intValue();
 
-        List usedAxis = pdcSC.getUsedAxisToClassify();
-        request.setAttribute("UsedAxis", usedAxis);
+        request.setAttribute("UsedAxis", pdcSC.getUsedAxisToClassify());
 
-        List positions = pdcSC.getPositions();
+        List<ClassifyPosition> positions = pdcSC.getPositions();
 
         // Extract position from list
         ClassifyPosition position = null;
         for (int i = 0; i < positions.size(); i++) {
-          position = (ClassifyPosition) positions.get(i);
+          position = positions.get(i);
           if (position.getPositionId() == positionId)
             break;
         }
@@ -279,8 +269,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
         setBrowseContextInRequest(pdcSC, request);
 
         String selectedValues = request.getParameter("Values");
-        Collection listPosition = buildListPosition(selectedValues);
-        request.setAttribute("ListValues", listPosition);
+        request.setAttribute("ListValues", buildListPosition(selectedValues));
 
         Jargon jargon = pdcSC.getJargon();
         request.setAttribute("Jargon", jargon);
@@ -293,7 +282,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
       else if (function.equals("ToAddPositions")) {
         String objectIds = request.getParameter("ObjectIds"); // silverObjectIds
-        List lObjectIds = (List) request.getAttribute("ObjectIds");
+        List<String> lObjectIds = (List<String>) request.getAttribute("ObjectIds");
 
         String componentId = request.getParameter("ComponentId");
         if (!StringUtil.isDefined(componentId))
@@ -311,15 +300,15 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
           while (st.hasMoreTokens())
             pdcSC.addCurrentSilverObjectId(st.nextToken());
         } else if (lObjectIds != null) {
-          Iterator it = lObjectIds.iterator();
+          Iterator<String> it = lObjectIds.iterator();
           while (it.hasNext())
-            pdcSC.addCurrentSilverObjectId((String) it.next());
+            pdcSC.addCurrentSilverObjectId(it.next());
         }
 
         destination = getDestination("NewPosition", componentSC, request);
 
       }
-      
+
       else if (function.equals("PdcFieldMode")) {
         String pdcFieldName = request.getParameter("pdcFieldName");
         String pdcFieldPositions = request.getParameter("pdcFieldPositions");
@@ -339,7 +328,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
     return destination;
   }
-  
+
   /**
    * @param request The HTTP request.
    * @param pdcFPM The PDC field positions manager.
@@ -364,7 +353,7 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
     String axisId = "";
     String valuePath = "";
     ClassifyValue value = null;
-    ArrayList values = new ArrayList();
+    List<ClassifyValue> values = new ArrayList<ClassifyValue>();
     for (; st.hasMoreTokens();) {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {
@@ -378,19 +367,19 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter {
 
     int id = -1;
     if (positionId != null)
-      id = new Integer(positionId).intValue();
+      id = Integer.parseInt(positionId);
     ClassifyPosition position = new ClassifyPosition(values);
     position.setPositionId(id);
     return position;
   }
 
-  private Collection buildListPosition(String valuesFromJsp) {
+  private Collection<String> buildListPosition(String valuesFromJsp) {
     // valuesFromJsp looks like 12|/0/1/2/,14|/15/34/
     // [axisId|valuePath+valueId]*
 
     StringTokenizer st = new StringTokenizer(valuesFromJsp, ",");
     String valueInfo = "";
-    ArrayList values = new ArrayList();
+    List<String> values = new ArrayList<String>();
 
     for (; st.hasMoreTokens();) {
       valueInfo = st.nextToken();

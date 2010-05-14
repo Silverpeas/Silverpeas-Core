@@ -96,8 +96,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
     return thBm;
   }
 
-  public ArrayList getComponentList() {
-    ArrayList componentList = new ArrayList();
+  public ArrayList<String> getComponentList() {
+    ArrayList<String> componentList = new ArrayList<String>();
     String[] allowedComponentIds = getUserAvailComponentIds();
     for (int i = 0; i < allowedComponentIds.length; i++) {
       componentList.add(allowedComponentIds[i]);
@@ -150,15 +150,15 @@ public class PdcSessionController extends AbstractComponentSessionController {
     return getPdcBm().getNbMaxAxis();
   }
 
-  public List getPrimaryAxis() throws PdcException {
+  public List<AxisHeader> getPrimaryAxis() throws PdcException {
     return getPdcBm().getAxisByType("P");
   }
 
-  public List getSecondaryAxis() throws PdcException {
+  public List<AxisHeader> getSecondaryAxis() throws PdcException {
     return getPdcBm().getAxisByType("S");
   }
 
-  public List getAxis() throws PdcException {
+  public List<AxisHeader> getAxis() throws PdcException {
     return getPdcBm().getAxisByType(getCurrentView());
   }
 
@@ -265,8 +265,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
         new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
     refreshCurrentAxis(getAxisDetail(getCurrentAxis().getAxisHeader().getPK()
         .getId()));
-    
-    
+
     return status;
   }
 
@@ -284,8 +283,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
     try {
       long treeId = getCurrentAxis().getAxisHeader().getRootId();
       // recupere les valueId des fils de valueId
-      ArrayList values = (ArrayList) getPdcBm().getDaughterValues(
-          new Long(treeId).toString(), valueId);
+      List<String> values = getPdcBm().getDaughterValues(Long.toString(treeId), valueId);
       // ajoute le valueId
       values.add(valueId);
 
@@ -324,7 +322,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       if (daughterValueName == null) {
         long treeId = getCurrentAxis().getAxisHeader().getRootId();
 
-        ArrayList values = new ArrayList();
+        List<String> values = new ArrayList<String>();
         values.add(valueId);
         getThBm().deleteSynonymsTerms(con, treeId, values);
 
@@ -350,7 +348,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
    */
   public List getFullPath(String valueId) throws PdcException {
     return getPdcBm().getFullPath(valueId,
-        new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
+        Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
   }
 
   private void refreshCurrentValueAndCurrentAxis(Value value, Axis axis)
@@ -455,19 +453,19 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     // On récupère la liste des utilisateurs et groupes ayant droits
     List managers = getManagers();
-    List users = (List) managers.get(0);
-    List groups = (List) managers.get(1);
+    List<UserDetail> users = (List<UserDetail>) managers.get(0);
+    List<Group> groups = (List<Group>) managers.get(1);
     String[] selectedUsers = new String[users.size()];
     String[] selectedGroups = new String[groups.size()];
 
     int i = 0;
     while (i < users.size()) {
-      selectedUsers[i] = ((UserDetail) users.get(i)).getId();
+      selectedUsers[i] = users.get(i).getId();
       i++;
     }
     i = 0;
     while (i < groups.size()) {
-      selectedGroups[i] = ((Group) groups.get(i)).getId();
+      selectedGroups[i] = groups.get(i).getId();
       i++;
     }
     sel.setSelectedElements(selectedUsers);
@@ -481,8 +479,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
    * @throws SQLException
    */
   public void updateManager() throws PdcException, SQLException {
-    ArrayList usersId = new ArrayList();
-    ArrayList groupsId = new ArrayList();
+    List<String> usersId = new ArrayList<String>();
+    ArrayList<String> groupsId = new ArrayList<String>();
 
     for (int i = 0; i < getSelection().getSelectedElements().length; i++) {
       usersId.add(getSelection().getSelectedElements()[i]);
@@ -496,13 +494,13 @@ public class PdcSessionController extends AbstractComponentSessionController {
   public Value getValue(String axisId, String valueId) throws PdcException {
     Value value = null;
 
-    List values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
+    List<Value> values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
         new SearchContext(), axisId, valueId, getComponentList());
     if (values != null) {
-      Iterator i = values.iterator();
+      Iterator<Value> i = values.iterator();
       Value theValue = null;
       while (i.hasNext()) {
-        theValue = (Value) i.next();
+        theValue = i.next();
         if (theValue.getPK().getId().equals(valueId)) {
           value = theValue;
           value.setAxisId(Integer.parseInt(axisId));
@@ -529,8 +527,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
     List managers = pdcBm.getManagers(getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
 
-    List usersId = (List) managers.get(0);
-    List groupsId = (List) managers.get(1);
+    List<String> usersId = (List<String>) managers.get(0);
+    List<String> groupsId = (List<String>) managers.get(1);
     usersAndGroups.add(userIds2Users(usersId));
     usersAndGroups.add(groupIds2Groups(groupsId));
     return usersAndGroups;
@@ -548,8 +546,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     List managers = pdcBm.getManagers(axisId, valueId);
 
-    List usersId = (List) managers.get(0);
-    List groupsId = (List) managers.get(1);
+    List<String> usersId = (List<String>) managers.get(0);
+    List<String> groupsId = (List<String>) managers.get(1);
     usersAndGroups.add(userIds2Users(usersId));
     usersAndGroups.add(groupIds2Groups(groupsId));
     return usersAndGroups;
@@ -567,8 +565,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     List managers = pdcBm.getInheritedManagers(value);
 
-    List usersId = (List) managers.get(0);
-    List groupsId = (List) managers.get(1);
+    List<String> usersId = (List) managers.get(0);
+    List<String> groupsId = (List) managers.get(1);
     usersAndGroups.add(userIds2Users(usersId));
     usersAndGroups.add(groupIds2Groups(groupsId));
     return usersAndGroups;
@@ -580,22 +578,22 @@ public class PdcSessionController extends AbstractComponentSessionController {
    * @throws PdcException , SQLException
    */
 
-  public List getRights() throws PdcException, SQLException {
+  public List<String> getRights() throws PdcException, SQLException {
     String valueId = "";
     String currentUserId = getUserId();
-    List rights = new ArrayList();
+    List<String> rights = new ArrayList<String>();
     Value value = new Value();
-    List axisValues = getCurrentAxis().getValues();
+    List<Value> axisValues = getCurrentAxis().getValues();
     List usersAndGroups = new ArrayList();
     for (int i = 0; i < axisValues.size(); i++) {
-      value = (Value) axisValues.get(i);
+      value = axisValues.get(i);
       valueId = value.getPK().getId();
       usersAndGroups = getManagers(getCurrentAxis().getAxisHeader().getPK()
           .getId(), valueId);
-      List users = (List) usersAndGroups.get(0);
-      List groups = (List) usersAndGroups.get(1);
+      List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
+      List<Group> groups = (List<Group>) usersAndGroups.get(1);
       for (int j = 0; j < groups.size(); j++) {
-        Group groupe = (Group) groups.get(j);
+        Group groupe = groups.get(j);
         for (int k = 0; k < groupe.getUserIds().length; k++) {
           if (groupe.getUserIds()[k].equals(currentUserId)) {
             rights.add(valueId);
@@ -603,7 +601,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
         }
       }
       for (int j = 0; j < users.size(); j++) {
-        UserDetail user = (UserDetail) users.get(j);
+        UserDetail user = users.get(j);
         if (user.getId().equals(currentUserId)) {
           rights.add(valueId);
         }
@@ -639,17 +637,17 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     List usersAndGroups = getManagers(axisId, valueId);
 
-    List users = (List) usersAndGroups.get(0);
+    List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
     for (int j = 0; !userAllowed && j < users.size(); j++) {
-      UserDetail user = (UserDetail) users.get(j);
+      UserDetail user = users.get(j);
       if (user.getId().equals(getUserId()))
         return true;
     }
 
     if (!userAllowed) {
-      List groups = (List) usersAndGroups.get(1);
+      List<Group> groups = (List<Group>) usersAndGroups.get(1);
       for (int j = 0; !userAllowed && j < groups.size(); j++) {
-        Group groupe = (Group) groups.get(j);
+        Group groupe = groups.get(j);
         for (int k = 0; !userAllowed && k < groupe.getUserIds().length; k++) {
           if (groupe.getUserIds()[k].equals(getUserId()))
             return true;
@@ -664,17 +662,17 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     List usersAndGroups = getInheritedManagers(getCurrentValue());
 
-    List users = (List) usersAndGroups.get(0);
+    List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
     for (int j = 0; !userAllowed && j < users.size(); j++) {
-      UserDetail user = (UserDetail) users.get(j);
+      UserDetail user = users.get(j);
       if (user.getId().equals(getUserId()))
         return true;
     }
 
     if (!userAllowed) {
-      List groups = (List) usersAndGroups.get(1);
+      List<Group> groups = (List<Group>) usersAndGroups.get(1);
       for (int j = 0; !userAllowed && j < groups.size(); j++) {
-        Group groupe = (Group) groups.get(j);
+        Group groupe = groups.get(j);
         for (int k = 0; !userAllowed && k < groupe.getUserIds().length; k++) {
           if (groupe.getUserIds()[k].equals(getUserId()))
             return true;
@@ -684,14 +682,14 @@ public class PdcSessionController extends AbstractComponentSessionController {
     return false;
   }
 
-  public List getAxisManageables() throws PdcException, SQLException {
-    List axisManageables = new ArrayList();
+  public List<String> getAxisManageables() throws PdcException, SQLException {
+    List<String> axisManageables = new ArrayList<String>();
 
-    List axisList = getAxis();
+    List<AxisHeader> axisList = getAxis();
 
     AxisHeader axis = null;
     for (int a = 0; a < axisList.size(); a++) {
-      axis = (AxisHeader) axisList.get(a);
+      axis = axisList.get(a);
 
       if (isAxisManager(axis.getPK().getId())) {
         axisManageables.add(axis.getPK().getId());
@@ -739,12 +737,12 @@ public class PdcSessionController extends AbstractComponentSessionController {
     return m_AdminCtrl;
   }
 
-  public List groupIds2Groups(List groupIds) {
-    List res = new ArrayList();
+  public List<Group> groupIds2Groups(List<String> groupIds) {
+    List<Group> res = new ArrayList<Group>();
     Group theGroup = null;
 
     for (int nI = 0; groupIds != null && nI < groupIds.size(); nI++) {
-      theGroup = getAdmin().getGroupById((String) groupIds.get(nI));
+      theGroup = getAdmin().getGroupById(groupIds.get(nI));
       if (theGroup != null)
         res.add(theGroup);
     }
@@ -752,12 +750,12 @@ public class PdcSessionController extends AbstractComponentSessionController {
     return res;
   }
 
-  public List userIds2Users(List userIds) {
-    List res = new ArrayList();
+  public List<UserDetail> userIds2Users(List<String> userIds) {
+    List<UserDetail> res = new ArrayList<UserDetail>();
     UserDetail user = null;
 
     for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
-      user = getUserDetail((String) userIds.get(nI));
+      user = getUserDetail(userIds.get(nI));
       if (user != null)
         res.add(user);
     }

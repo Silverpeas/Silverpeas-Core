@@ -44,9 +44,13 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class PdcRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -1233766141114104308L;
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -106,7 +110,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         SilverTrace.info("Pdc", "PdcRequestRouter.Main",
             "root.MSG_GEN_PARAM_VALUE", "creationAllowed = " + creationAllowed);
-        List list = pdcSC.getAxis();
+        List<AxisHeader> list = pdcSC.getAxis();
         // assign attributes into the request
         request.setAttribute("AxisList", list); // set a sorted list
         request.setAttribute("CreationAllowed", creationAllowed);
@@ -214,8 +218,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         String viewType = pdcSC.getCurrentView(); // get the type of the current
         // axe
-        List primaryAxis = pdcSC.getPrimaryAxis();
-        List secondaryAxis = pdcSC.getSecondaryAxis();
+        List<AxisHeader> primaryAxis = pdcSC.getPrimaryAxis();
+        List<AxisHeader> secondaryAxis = pdcSC.getSecondaryAxis();
         // search the right AxisHeader
         AxisHeader axisHeader = null;
         if (viewType.equals("P")) {
@@ -491,7 +495,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         if (!newFatherId.equals(currentValue.getFatherId())) {
           // get values to newFatherId
-          List newSisters = getDaughterValues(pdcSC.getCurrentAxis(), pdcSC
+          List<Value> newSisters = getDaughterValues(pdcSC.getCurrentAxis(), pdcSC
               .getAxisValue(newFatherId, false));
 
           request.setAttribute("Sisters", newSisters);
@@ -738,20 +742,18 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("Value", currentValue);
         request.setAttribute("Axis", pdcSC.getCurrentAxis().getAxisHeader());
-        // request.setAttribute("Path",
-        // pdcSC.getFullPath(currentValue.getPK().getId()));
 
         // on passe en paramètre les droits directs
-        List users = (List) pdcSC.getManagers().get(0);
-        List groups = (List) pdcSC.getManagers().get(1);
+        List<UserDetail> users = (List<UserDetail>) pdcSC.getManagers().get(0);
+        List<Group> groups = (List<Group>) pdcSC.getManagers().get(1);
         request.setAttribute("Users", users);
         request.setAttribute("Groups", groups);
 
         if (currentValue != null) {
           // on passe en paramètre les droits hérités
           List inheritedManagers = pdcSC.getInheritedManagers(currentValue);
-          List usersInherited = (List) inheritedManagers.get(0);
-          List groupsInherited = (List) inheritedManagers.get(1);
+          List<UserDetail> usersInherited = (List<UserDetail>) inheritedManagers.get(0);
+          List<Group> groupsInherited = (List<Group>) inheritedManagers.get(1);
           request.setAttribute("UsersInherited", usersInherited);
           request.setAttribute("GroupsInherited", groupsInherited);
         } else {
@@ -791,14 +793,12 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         destination = "/pdcPeas/jsp/addPdc_test.jsp";
 
       } else if (function.startsWith("vsicAddList")) {
-        List list = pdcSC.getAxis();
-
         // assign attributes into the request
         String values = (String) request.getParameter("Values");
         if (values != null)
           pdcSC.setValuesToPdcAddAPosteriori(values);
 
-        request.setAttribute("AxisList", list); // set a sorted list
+        request.setAttribute("AxisList", pdcSC.getAxis()); // set a sorted list
         request.setAttribute("ViewType", pdcSC.getCurrentView()); // the type of
         // the axe
 
@@ -861,12 +861,12 @@ public class PdcRequestRouter extends ComponentRequestRouter {
    * @param axis - A primary or secondary list of axes
    * @return the whished AxisHeader or null
    */
-  private AxisHeader extractAxisHeader(String axeId, List axis) {
+  private AxisHeader extractAxisHeader(String axeId, List<AxisHeader> axis) {
     AxisHeader axisHeader = null;
-    Iterator it = axis.iterator();
+    Iterator<AxisHeader> it = axis.iterator();
 
     while (it.hasNext()) {
-      axisHeader = (AxisHeader) it.next();
+      axisHeader = it.next();
       if (axisHeader.getPK().getId().equals(axeId)) {
         return axisHeader;
       }
@@ -881,22 +881,22 @@ public class PdcRequestRouter extends ComponentRequestRouter {
    * @param value - a value of the axe
    * @return the list of sisters
    */
-  private List getSisterValues(Axis axis, Value value) {
-    List values = axis.getValues();
+  private List<Value> getSisterValues(Axis axis, Value value) {
+    List<Value> values = axis.getValues();
     String motherId = value.getMotherId();
     String valueId = value.getPK().getId();
-    ArrayList sisterValues = new ArrayList();
+    List<Value> sisterValues = new ArrayList<Value>();
     Value daughterValue = null; // values which are under the current axe
     // read the list of daughter values to determine the sister value
-    Iterator it = values.iterator();
+    Iterator<Value> it = values.iterator();
     while (it.hasNext()) {
-      daughterValue = (Value) it.next();
+      daughterValue = it.next();
       if (daughterValue.getMotherId().equals(motherId)
           && !(daughterValue.getPK().getId()).equals(valueId)) {
         sisterValues.add(daughterValue);
       }
     }
-    return (List) sisterValues;
+    return sisterValues;
   }
 
   /**
@@ -905,21 +905,21 @@ public class PdcRequestRouter extends ComponentRequestRouter {
    * @param mother - a value of the axe
    * @return the list of daughters
    */
-  private List getDaughterValues(Axis axis, Value mother) {
-    List values = axis.getValues();
+  private List<Value> getDaughterValues(Axis axis, Value mother) {
+    List<Value> values = axis.getValues();
     String motherId = mother.getPK().getId();
 
-    ArrayList daughterValues = new ArrayList();
+    List<Value> daughterValues = new ArrayList<Value>();
     Value value = null; // values which are under the current axe
     // read the list of daughter values to determine the sister value
-    Iterator it = values.iterator();
+    Iterator<Value> it = values.iterator();
     while (it.hasNext()) {
-      value = (Value) it.next();
+      value = it.next();
       if (value.getMotherId().equals(motherId)) {
         daughterValues.add(value);
       }
     }
-    return (List) daughterValues;
+    return daughterValues;
   }
 
   /**

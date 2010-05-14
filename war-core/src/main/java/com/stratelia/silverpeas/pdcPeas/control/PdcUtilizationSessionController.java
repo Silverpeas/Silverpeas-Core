@@ -32,6 +32,7 @@ import java.util.List;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.Axis;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -121,15 +122,15 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
     return pdcFieldTemplateManager;
   }
 
-	public List getPrimaryAxis() throws PdcException {
+	public List<AxisHeader> getPrimaryAxis() throws PdcException {
 		return getPdcBm().getAxisByType("P");
 	}
 
-	public List getSecondaryAxis() throws PdcException {
+	public List<AxisHeader> getSecondaryAxis() throws PdcException {
 		return getPdcBm().getAxisByType("S");
 	}
 
-	public List getAxis() throws PdcException {
+	public List<AxisHeader> getAxis() throws PdcException {
 		return getPdcBm().getAxisByType(getCurrentView());
 	}
 
@@ -147,7 +148,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
 	  }
 	}
 
-	public List getUsedAxisList() throws PdcException {
+	public List<UsedAxis> getUsedAxisList() throws PdcException {
 	  if (pdcFieldTemplateManager.isEnabled()) {
 	    return pdcFieldTemplateManager.getUsedAxisList();
 	  } else {

@@ -40,6 +40,8 @@ import com.silverpeas.form.fieldDisplayer.PdcFieldDisplayer;
  */
 public class PdcAjaxServlet extends HttpServlet {
   
+  private static final long serialVersionUID = 2363812622945071639L;
+
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * 

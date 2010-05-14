@@ -46,13 +46,14 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 
 public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 6411411783121021831L;
+
   public ComponentSessionController createComponentSessionController(
 			MainSessionController mainSessionCtrl, ComponentContext componentContext) {
 		return new PdcUtilizationSessionController(mainSessionCtrl,
 				componentContext,
 				"com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
 				"com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
-		// return new PdcUtilizationSessionController();
 	}
 
 	/**
@@ -102,11 +103,9 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 					if (componentId != null) {
 						pdcSC.init(componentId);
 					}
-					
-					List list = pdcSC.getUsedAxisList();
 
 					// assign attributes into the request
-					request.setAttribute("AxisList", list); // set a sorted list
+					request.setAttribute("AxisList", pdcSC.getUsedAxisList()); // set a sorted list
 
 					setBrowseContextInRequest(pdcSC, request);
 
@@ -134,9 +133,7 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 				  initFieldTemplateMode(pdcSC, request);
 				}
 
-				List list = pdcSC.getAxis();
-
-				request.setAttribute("AxisList", list);
+				request.setAttribute("AxisList", pdcSC.getAxis());
 				request.setAttribute("ViewType", pdcSC.getCurrentView());
 
 				setBrowseContextInRequest(pdcSC, request);
@@ -150,16 +147,16 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
 				Axis axis = pdcSC.getAxisDetail(axisId);
 
 				// Is this axis already used ?
-				List list = pdcSC.getUsedAxisList();
+				List<UsedAxis> list = pdcSC.getUsedAxisList();
 				UsedAxis usedAxis = null;
 				Integer isMandatory = null;
 				Integer isVariant = null;
 				for (int i = 0; i < list.size(); i++) {
-					usedAxis = (UsedAxis) list.get(i);
-					if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
+					usedAxis = list.get(i);
+					if (usedAxis.getAxisId() == Integer.parseInt(axisId)) {
 						// The axis is already used. Its parameters are taken.
-						isMandatory = new Integer(usedAxis.getMandatory());
-						isVariant = new Integer(usedAxis.getVariant());
+						isMandatory = Integer.valueOf(usedAxis.getMandatory());
+						isVariant = Integer.valueOf(usedAxis.getVariant());
 						break;
 					}
 				}
@@ -202,15 +199,15 @@ public class PdcUtilizationRequestRouter extends ComponentRequestRouter {
   					String axisId = request.getParameter("Id");
   
   					// Is this axis already used ?
-  					List list = pdcSC.getUsedAxisList();
+  					List<UsedAxis> list = pdcSC.getUsedAxisList();
   					Integer isMandatory = null;
   					Integer isVariant = null;
   					for (int i = 0; i < list.size(); i++) {
-  						usedAxis = (UsedAxis) list.get(i);
-  						if (usedAxis.getAxisId() == new Integer(axisId).intValue()) {
+  						usedAxis = list.get(i);
+  						if (usedAxis.getAxisId() == Integer.parseInt(axisId)) {
   							// The axis is already used. Its parameters are taken.
-  							isMandatory = new Integer(usedAxis.getMandatory());
-  							isVariant = new Integer(usedAxis.getVariant());
+  							isMandatory = Integer.valueOf(usedAxis.getMandatory());
+  							isVariant = Integer.valueOf(usedAxis.getVariant());
   							break;
   						}
   					}
