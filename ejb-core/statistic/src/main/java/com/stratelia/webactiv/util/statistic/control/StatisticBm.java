@@ -34,7 +34,6 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
-import com.stratelia.webactiv.util.statistic.model.HistoryNodePublicationActorDetail;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 
@@ -62,18 +61,6 @@ public interface StatisticBm extends EJBObject {
    */
   public void addStat(String userId, ForeignPK foreignPK, int action,
       String objectType) throws RemoteException;
-
-  /**
-   * Method declaration
-   * @param pub
-   * @deprecated : utiliser la fonction getHistoryByAction(ForeignPK foreignPK)
-   * @return
-   * @throws RemoteException
-   * @see
-   */
-  public Collection<HistoryNodePublicationActorDetail> getReadingHistoryByPublication(
-      PublicationPK pub)
-      throws RemoteException;
 
   /**
    * Method declaration

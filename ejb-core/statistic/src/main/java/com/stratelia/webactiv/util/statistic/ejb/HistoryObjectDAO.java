@@ -275,38 +275,6 @@ public class HistoryObjectDAO {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param tableName
-   * @param foreignPK
-   * @deprecated : fonction pour récupérer les publications
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  public static Collection<HistoryNodePublicationActorDetail> getHistoryDetailByPublication(
-      Connection con,
-      String tableName, ForeignPK foreignPK) throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
-        "root.MSG_GEN_ENTER_METHOD");
-    String space = foreignPK.getSpace();
-    String componentName = foreignPK.getComponentName();
-    String selectStatement = "select dateStat, userId, '-1', objectId "
-        + "from " + tableName + " where objectId=" + foreignPK.getId()
-        + " and componentId='" + foreignPK.getInstanceId() + "'";
-
-    Statement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);
-      return getHistoryPublicationDetails(rs, space, componentName);
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-  }
-
   public static int getCount(Connection con, Collection<ForeignPK> foreignPKs, int action,
       String tableName, String objectType) throws SQLException {
     int nb = 0;

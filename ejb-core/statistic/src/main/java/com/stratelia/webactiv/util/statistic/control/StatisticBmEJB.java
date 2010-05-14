@@ -51,7 +51,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.ejb.HistoryNodePublicationActorDAO;
 import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
-import com.stratelia.webactiv.util.statistic.model.HistoryNodePublicationActorDetail;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
@@ -69,7 +68,7 @@ public class StatisticBmEJB implements SessionBean {
   private String dbName = JNDINames.STATISTIC_DATASOURCE;
 
   private final int ACTION_ACCESS = 1;
-  private final int ACTION_DOWNLOAD = 2;
+  //private final int ACTION_DOWNLOAD = 2;
 
   /**
    * Constructor declaration
@@ -183,43 +182,6 @@ public class StatisticBmEJB implements SessionBean {
           "StatisticBmEJB().addObjectToHistory()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE",
           e);
-    } finally {
-      freeConnection(con);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param pubPK
-   * @return
-   * @see
-   */
-  public Collection<HistoryNodePublicationActorDetail> getReadingHistoryByPublication(
-      PublicationPK pubPK) {
-    SilverTrace.info("statistic",
-        "StatisticBmEJB.getReadingHistoryByPublication",
-        "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      con = getConnection();
-      // Collection result =
-      // HistoryNodePublicationActorDAO.getHistoryDetailByPublication(con,
-      // historyRootTableName, pubPK);
-      // ne plus récupérer dans la table historyRootTableName, mais
-      // récupérer
-      // dans la nouvelle historyTableName
-      ForeignPK foreignPK = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
-      Collection<HistoryNodePublicationActorDetail> result =
-          HistoryObjectDAO.getHistoryDetailByPublication(con,
-          historyTableName, foreignPK);
-
-      return result;
-    } catch (Exception e) {
-      throw new StatisticRuntimeException(
-          "StatisticBmEJB().getReadingHistoryByPublication()",
-          SilverpeasRuntimeException.ERROR,
-          "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
     } finally {
       freeConnection(con);
     }
