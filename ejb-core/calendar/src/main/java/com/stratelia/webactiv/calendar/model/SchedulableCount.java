@@ -25,6 +25,7 @@ package com.stratelia.webactiv.calendar.model;
 
 public class SchedulableCount implements java.io.Serializable {
 
+  private static final long serialVersionUID = -389893594889514676L;
   private int count;
   private String day;
 

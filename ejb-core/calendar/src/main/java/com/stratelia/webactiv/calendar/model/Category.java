@@ -25,6 +25,7 @@ package com.stratelia.webactiv.calendar.model;
 
 public class Category implements java.io.Serializable {
 
+  private static final long serialVersionUID = -2296176258257502373L;
   private String id;
   private String name;
 

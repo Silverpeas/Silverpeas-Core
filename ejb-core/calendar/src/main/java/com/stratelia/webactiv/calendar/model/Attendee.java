@@ -25,6 +25,7 @@ package com.stratelia.webactiv.calendar.model;
 
 public class Attendee implements java.io.Serializable {
 
+  private static final long serialVersionUID = -8257900491648268601L;
   private String userId = null;
   private ParticipationStatus participationStatus = null;
 

@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 public class Classification implements Serializable {
 
+  private static final long serialVersionUID = 8420742110510656934L;
   final public static String PRIVATE = "private";
   final public static String PUBLIC = "public";
   final public static String CONFIDENTIAL = "confidential";

@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -49,26 +50,26 @@ public class AttendeeDAO {
     return result;
   }
 
-  public static Collection getJournalAttendees(Connection con, String journalId)
+  public static Collection<Attendee> getJournalAttendees(Connection con, String journalId)
       throws SQLException {
     return getAttendees(con, journalId, AttendeeDAO.JOURNALCOLUMNNAMES,
         AttendeeDAO.JOURNALTABLENAME, AttendeeDAO.JOURNALIDNAME);
   }
 
-  public static Collection getToDoAttendees(Connection con, String todoId)
+  public static Collection<Attendee> getToDoAttendees(Connection con, String todoId)
       throws SQLException {
     return getAttendees(con, todoId, AttendeeDAO.TODOCOLUMNNAMES,
         AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
   }
 
-  public static Collection getAttendees(Connection con, String id,
+  public static Collection<Attendee> getAttendees(Connection con, String id,
       String columns, String table, String idLabel) throws SQLException {
     String selectStatement = "select " + columns + " from " + table + " "
         + "where " + idLabel + " = " + id;
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList list = new ArrayList();
+    List<Attendee> list = new ArrayList<Attendee>();
     try {
       prepStmt = con.prepareStatement(selectStatement);
       // prepStmt.setInt(1, new Integer(id).intValue());

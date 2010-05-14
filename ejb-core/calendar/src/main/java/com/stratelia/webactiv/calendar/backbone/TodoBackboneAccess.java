@@ -24,8 +24,6 @@
 package com.stratelia.webactiv.calendar.backbone;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -106,10 +104,9 @@ public class TodoBackboneAccess {
           "root.MSG_GEN_ENTER_METHOD", "id=" + id);
 
       if (todo.getAttendees() != null) {
-        Vector selectedUsers = new Vector();
+        Vector<String> selectedUsers = new Vector<String>();
 
-        for (Iterator i = todo.getAttendees().iterator(); i.hasNext();) {
-          Attendee attendee = (Attendee) i.next();
+        for (Attendee attendee : todo.getAttendees()) {
           getCalendarBm().addToDoAttendee(id, attendee);
           if (notifyAttendees
               && (!todo.getDelegatorId().equals(attendee.getUserId()))) {
@@ -142,8 +139,7 @@ public class TodoBackboneAccess {
       if (todo.getAttendees() != null) {
         String[] userIds = new String[todo.getAttendees().size()];
         int posit = 0;
-        for (Iterator i = todo.getAttendees().iterator(); i.hasNext();) {
-          Attendee attendee = (Attendee) i.next();
+        for (Attendee attendee : todo.getAttendees()) {
           userIds[posit++] = attendee.getUserId();
         }
         getCalendarBm().setToDoAttendees(header.getId(), userIds);
@@ -162,12 +158,8 @@ public class TodoBackboneAccess {
       ToDoHeader header = getCalendarBm().getToDoHeader(id);
       TodoDetail detail = todoHeaderToDetail(header);
 
-      List list = (List) getCalendarBm().getToDoAttendees(id);
-      Iterator it = list.iterator();
-      Vector vector = new Vector();
-      while (it.hasNext()) {
-        vector.add(it.next());
-      }
+      Collection<Attendee> list = getCalendarBm().getToDoAttendees(id);
+      Vector<Attendee> vector = new Vector<Attendee>(list);
       detail.setAttendees(vector);
       return detail;
     } catch (Exception e) {
@@ -178,7 +170,7 @@ public class TodoBackboneAccess {
     }
   }
 
-  public Vector getEntriesFromExternal(String spaceId, String componentId,
+  public Vector<TodoDetail> getEntriesFromExternal(String spaceId, String componentId,
       String externalId) {
     SilverTrace
         .info(
@@ -187,20 +179,14 @@ public class TodoBackboneAccess {
             "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId
                 + ", componentId=" + componentId + ", externalId=" + externalId);
     try {
-      Collection headers = getCalendarBm().getExternalTodos(spaceId,
+      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId,
           componentId, externalId);
-      Vector result = new Vector();
-      for (Iterator i = headers.iterator(); i.hasNext();) {
-        ToDoHeader header = (ToDoHeader) i.next();
+      Vector<TodoDetail> result = new Vector<TodoDetail>();
+      for (ToDoHeader header : headers) {
         TodoDetail detail = todoHeaderToDetail(header);
 
-        List list = (List) getCalendarBm().getToDoAttendees(detail.getId());
-        Iterator it = list.iterator();
-        Vector vector = new Vector();
-        while (it.hasNext()) {
-          vector.add(it.next());
-        }
-        detail.setAttendees(vector);
+        Collection<Attendee> list = getCalendarBm().getToDoAttendees(detail.getId());
+        detail.setAttendees(new Vector<Attendee>(list));
         result.add(detail);
       }
       return result;
@@ -235,10 +221,9 @@ public class TodoBackboneAccess {
             "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId
                 + ", componentId=" + componentId + ", externalId=" + externalId);
     try {
-      Collection headers = getCalendarBm().getExternalTodos(spaceId,
+      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId,
           componentId, externalId);
-      for (Iterator i = headers.iterator(); i.hasNext();) {
-        ToDoHeader header = (ToDoHeader) i.next();
+      for (ToDoHeader header : headers) {
         getCalendarBm().removeToDo(header.getId());
       }
     } catch (Exception e) {
@@ -262,11 +247,9 @@ public class TodoBackboneAccess {
       Attendee attendee = new Attendee();
       attendee.setUserId(userId);
 
-      Collection headers = getCalendarBm().getExternalTodos("useless",
+      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos("useless",
           componentId, externalId);
-      for (Iterator i = headers.iterator(); i.hasNext();) {
-        ToDoHeader header = (ToDoHeader) i.next();
-
+      for (ToDoHeader header : headers) {
         if (header != null) {
           getCalendarBm().removeToDoAttendee(header.getId(), attendee);
         }

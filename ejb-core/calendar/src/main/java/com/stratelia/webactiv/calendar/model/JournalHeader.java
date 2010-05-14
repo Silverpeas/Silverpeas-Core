@@ -24,6 +24,9 @@
 package com.stratelia.webactiv.calendar.model;
 
 public class JournalHeader extends Schedulable implements Cloneable {
+
+  private static final long serialVersionUID = 6712231674470680038L;
+
   public JournalHeader(String name, String organizerId) {
     super(name, organizerId);
   }

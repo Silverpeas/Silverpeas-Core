@@ -27,15 +27,18 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Vector;
 
+import com.stratelia.webactiv.calendar.model.Attendee;
+
 public class TodoDetail implements Serializable {
 
+  private static final long serialVersionUID = 8827343178019140503L;
   public static final int PERCENT_UNDEFINED = -1;
   public static final float DURATION_UNDEFINED = -1;
 
   private String id = null;
   private String name = null;
   private String delegatorId = null;
-  private Vector attendees = null;
+  private Vector<Attendee> attendees = null;
   private String description = null;
   private Date startDate = null;
   private Date endDate = null;
@@ -77,7 +80,7 @@ public class TodoDetail implements Serializable {
    * @param attendees a list of Attendee objects
    */
 
-  public void setAttendees(Vector attendees) {
+  public void setAttendees(Vector<Attendee> attendees) {
     this.attendees = attendees;
   }
 
@@ -85,7 +88,7 @@ public class TodoDetail implements Serializable {
    * @return a list of Attendee objects
    */
 
-  public Vector getAttendees() {
+  public Vector<Attendee> getAttendees() {
     return attendees;
   }
 

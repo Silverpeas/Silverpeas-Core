@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
@@ -147,7 +148,7 @@ public class ToDoDAO {
     }
   }
 
-  public static Collection getNotCompletedToDoHeadersForUser(Connection con,
+  public static Collection<ToDoHeader> getNotCompletedToDoHeadersForUser(Connection con,
       String userId) throws SQLException, CalendarException {
     String selectStatement = "select distinct " + ToDoDAO.TODOCOLUMNNAMES
         + ", lower(name) " + " from CalendarToDo, CalendarToDoAttendee "
@@ -157,12 +158,12 @@ public class ToDoDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<ToDoHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, userId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ToDoHeader>();
       while (rs.next()) {
         ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
         list.add(toDo);
@@ -173,24 +174,21 @@ public class ToDoDAO {
     }
   }
 
-  public static Collection getOrganizerToDoHeaders(Connection con,
+  public static Collection<ToDoHeader> getOrganizerToDoHeaders(Connection con,
       String organizerId) throws SQLException, CalendarException {
     String selectStatement = "select " + ToDoDAO.TODOCOLUMNNAMES
         + ", lower(name) " + " from CalendarToDo "
-        + " WHERE (delegatorId = ?) " + " and (completedDay IS NULL)" +
-            // " and (percentCompleted <> 100) "+
-        // " and (CalendarToDo.id = CalendarToDoAttendee.todoId) " +
-        // " order by priority, endDay, endHour";
-        " order by lower(name)";
+        + " WHERE (delegatorId = ?) " + " and (completedDay IS NULL)"
+        + " order by lower(name)";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<ToDoHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, organizerId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ToDoHeader>();
       while (rs.next()) {
         ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
         list.add(toDo);
@@ -201,7 +199,7 @@ public class ToDoDAO {
     }
   }
 
-  public static Collection getClosedToDoHeaders(Connection con,
+  public static Collection<ToDoHeader> getClosedToDoHeaders(Connection con,
       String organizerId) throws SQLException, CalendarException {
     String selectStatement = "select distinct " + ToDoDAO.TODOCOLUMNNAMES
         + ", lower(name) " + " from CalendarToDo, CalendarToDoAttendee "
@@ -216,13 +214,13 @@ public class ToDoDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<ToDoHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, organizerId);
       prepStmt.setString(2, organizerId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ToDoHeader>();
       while (rs.next()) {
         ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
         list.add(toDo);
@@ -233,7 +231,7 @@ public class ToDoDAO {
     }
   }
 
-  public static Collection getToDoHeadersByExternalId(Connection con,
+  public static Collection<ToDoHeader> getToDoHeadersByExternalId(Connection con,
       String spaceId, String componentId, String externalId)
       throws SQLException, CalendarException {
     String selectStatement = "select distinct " + ToDoDAO.TODOCOLUMNNAMES
@@ -243,14 +241,14 @@ public class ToDoDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<ToDoHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, externalId);
       prepStmt.setString(2, componentId);
 
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ToDoHeader>();
       while (rs.next()) {
         ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
         list.add(toDo);
@@ -261,19 +259,18 @@ public class ToDoDAO {
     }
   }
 
-  public static Collection getToDoHeadersByInstanceId(Connection con,
+  public static Collection<ToDoHeader> getToDoHeadersByInstanceId(Connection con,
       String componentId) throws SQLException, CalendarException {
     String selectStatement = "select " + ToDoDAO.TODOCOLUMNNAMES
         + ", lower(name) " + " from CalendarToDo " + " WHERE componentId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<ToDoHeader> list = new ArrayList<ToDoHeader>();
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, componentId);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      rs = prepStmt.executeQuery();      
       while (rs.next()) {
         ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
         list.add(toDo);

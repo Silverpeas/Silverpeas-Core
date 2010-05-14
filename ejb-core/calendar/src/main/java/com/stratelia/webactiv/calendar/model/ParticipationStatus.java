@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 public class ParticipationStatus implements Serializable {
 
+  private static final long serialVersionUID = -6706542842606711494L;
   final public static String TENTATIVE = "tentative";
   final public static String ACCEPTED = "accepted";
   final public static String DECLINED = "declined";

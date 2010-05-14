@@ -139,7 +139,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection getTentativeJournalHeadersForUser(Connection con,
+  public static Collection<JournalHeader> getTentativeJournalHeadersForUser(Connection con,
       String userId) throws SQLException, java.text.ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -170,7 +170,7 @@ public class JournalDAO {
     return prepStmt;
   }
 
-  private static Collection getJournalHeadersForUser(Connection con,
+  private static Collection<JournalHeader> getJournalHeadersForUser(Connection con,
       String day, String userId, String categoryId, String participation,
       String comparator) throws SQLException, java.text.ParseException {
     StringBuffer selectStatement = new StringBuffer();
@@ -217,17 +217,16 @@ public class JournalDAO {
           .append("' and endDay >= '").append(day).append("')) ");
     }
 
-    // selectStatement += " order by startDay, startHour";
     selectStatement.append(" order by 7 , 8 "); // Modif PHiL -> Interbase
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<JournalHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement.toString());
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<JournalHeader>();
       while (rs.next()) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);
@@ -238,21 +237,21 @@ public class JournalDAO {
     return list;
   }
 
-  public static Collection getDayJournalHeadersForUser(Connection con,
+  public static Collection<JournalHeader> getDayJournalHeadersForUser(Connection con,
       String day, String userId, String categoryId, String participation)
       throws SQLException, java.text.ParseException {
     return getJournalHeadersForUser(con, day, userId, categoryId,
         participation, "=");
   }
 
-  public static Collection getNextJournalHeadersForUser(Connection con,
+  public static Collection<JournalHeader> getNextJournalHeadersForUser(Connection con,
       String day, String userId, String categoryId, String participation)
       throws SQLException, java.text.ParseException {
     return getJournalHeadersForUser(con, day, userId, categoryId,
         participation, ">=");
   }
 
-  public static Collection countMonthJournalsForUser(Connection con,
+  public static Collection<SchedulableCount> countMonthJournalsForUser(Connection con,
       String month, String userId, String categoryId, String participation)
       throws SQLException {
     StringBuffer selectStatement = new StringBuffer(200);
@@ -294,7 +293,7 @@ public class JournalDAO {
       }
       selectStatement.append("group by ?");
     }
-    ArrayList list = new ArrayList();
+    List<SchedulableCount> list = new ArrayList<SchedulableCount>();
     int number;
     String date = "";
 
@@ -334,7 +333,7 @@ public class JournalDAO {
     return list;
   }
 
-  public static Collection getPeriodJournalHeadersForUser(Connection con,
+  public static Collection<JournalHeader> getPeriodJournalHeadersForUser(Connection con,
       String begin, String end, String userId, String categoryId,
       String participation) throws SQLException, java.text.ParseException {
 
@@ -393,11 +392,11 @@ public class JournalDAO {
     selectStatement.append(" order by 7 , 8 ");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList list = null;
+    List<JournalHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement.toString());
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<JournalHeader>();
       while (rs.next()) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);
@@ -459,7 +458,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection getOutlookJournalHeadersForUser(Connection con,
+  public static Collection<JournalHeader> getOutlookJournalHeadersForUser(Connection con,
       String userId) throws SQLException, CalendarException,
       java.text.ParseException {
 
@@ -470,12 +469,12 @@ public class JournalDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    Collection list = null;
+    Collection<JournalHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, userId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<JournalHeader>();
       while (rs.next()) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);
@@ -487,7 +486,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection getOutlookJournalHeadersForUserAfterDate(
+  public static Collection<JournalHeader> getOutlookJournalHeadersForUserAfterDate(
       Connection con, String userId, java.util.Date startDate)
       throws SQLException, CalendarException, java.text.ParseException {
 
@@ -499,13 +498,13 @@ public class JournalDAO {
     ResultSet rs = null;
 
     SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-    Collection list = null;
+    Collection<JournalHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, userId);
       prepStmt.setString(2, format.format(startDate));
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<JournalHeader>();
       while (rs.next()) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);
@@ -517,7 +516,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection getJournalHeadersForUserAfterDate(Connection con,
+  public static Collection<JournalHeader> getJournalHeadersForUserAfterDate(Connection con,
       String userId, java.util.Date startDate, int nbReturned)
       throws SQLException, CalendarException, java.text.ParseException {
 
@@ -529,7 +528,7 @@ public class JournalDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     String startDateString = DateUtil.date2SQLDate(startDate);
-    Collection list = null;
+    Collection<JournalHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, userId);
@@ -537,7 +536,7 @@ public class JournalDAO {
       prepStmt.setString(3, startDateString);
       prepStmt.setString(4, startDateString);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<JournalHeader>();
       while (rs.next() && nbReturned != 0) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);

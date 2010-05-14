@@ -27,6 +27,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class CalendarRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = -5706968069226233839L;
+
   /**
    * method of interface FromModule
    */

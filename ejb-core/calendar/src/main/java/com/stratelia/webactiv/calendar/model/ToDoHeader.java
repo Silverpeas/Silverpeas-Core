@@ -26,6 +26,8 @@ package com.stratelia.webactiv.calendar.model;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class ToDoHeader extends Schedulable implements Cloneable {
+  
+  private static final long serialVersionUID = -8938831646589260261L;
   public static final int PERCENT_UNDEFINED = -1;
   public static final int DURATION_UNDEFINED = -1;
 

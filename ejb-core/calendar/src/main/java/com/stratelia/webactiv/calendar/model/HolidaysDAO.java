@@ -122,9 +122,9 @@ public class HolidaysDAO {
     }
   }
 
-  public static List getHolidayDates(Connection con, String userId)
+  public static List<String> getHolidayDates(Connection con, String userId)
       throws SQLException {
-    List holidayDates = new ArrayList();
+    List<String> holidayDates = new ArrayList<String>();
     StringBuffer query = new StringBuffer(128);
     query.append("select * ");
     query.append("from ").append(AGENDA_HOLIDAYS_TABLENAME);
@@ -142,8 +142,6 @@ public class HolidaysDAO {
       stmt.setInt(1, new Integer(userId).intValue());
       rs = stmt.executeQuery();
       while (rs.next()) {
-        // holidayDates.add(dbDate2Date(rs.getString("holidayDate"),
-        // "holidayDate"));
         holidayDates.add(rs.getString("holidayDate"));
       }
     } finally {
@@ -152,9 +150,9 @@ public class HolidaysDAO {
     return holidayDates;
   }
 
-  public static List getHolidayDates(Connection con, String userId,
+  public static List<String> getHolidayDates(Connection con, String userId,
       Date beginDate, Date endDate) throws SQLException {
-    List holidayDates = new ArrayList();
+    List<String> holidayDates = new ArrayList<String>();
     StringBuffer query = new StringBuffer(128);
     query.append("select * ");
     query.append("from ").append(AGENDA_HOLIDAYS_TABLENAME);
@@ -177,8 +175,6 @@ public class HolidaysDAO {
       stmt.setString(3, DateUtil.date2SQLDate(endDate));
       rs = stmt.executeQuery();
       while (rs.next()) {
-        // holidayDates.add(dbDate2Date(rs.getString("holidayDate"),
-        // "holidayDate"));
         holidayDates.add(rs.getString("holidayDate"));
       }
     } finally {

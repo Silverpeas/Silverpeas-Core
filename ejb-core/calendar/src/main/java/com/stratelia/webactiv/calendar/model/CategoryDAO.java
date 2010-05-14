@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -37,9 +38,6 @@ public class CategoryDAO {
 
   public static final String CATEGORYCOLUMNNAMES =
       "CalendarCategory.categoryId, CalendarCategory.name";
-
-  // public static final String CATEGORYJOURNALASSOCOLUMNNAMES =
-  // "journalId, categoryId";
 
   public static Category getCategoryFromResultSet(ResultSet rs)
       throws SQLException {
@@ -49,7 +47,7 @@ public class CategoryDAO {
     return result;
   }
 
-  public static Collection getJournalCategories(Connection con, String journalId)
+  public static Collection<Category> getJournalCategories(Connection con, String journalId)
       throws SQLException {
     String selectStatement =
         "select "
@@ -59,12 +57,12 @@ public class CategoryDAO {
             " where journalId = ? and CalendarCategory.categoryId = CalendarJournalCategory.categoryId";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList list = null;
+    List<Category> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(journalId).intValue());
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<Category>();
       while (rs.next()) {
         Category category = getCategoryFromResultSet(rs);
         list.add(category);
@@ -97,17 +95,17 @@ public class CategoryDAO {
     }
   }
 
-  public static Collection getAllCategories(Connection con) throws SQLException {
+  public static Collection<Category> getAllCategories(Connection con) throws SQLException {
     String selectStatement = "select " + CategoryDAO.CATEGORYCOLUMNNAMES
         + " from CalendarCategory ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    ArrayList list = null;
+    List<Category> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<Category>();
       while (rs.next()) {
         Category category = getCategoryFromResultSet(rs);
         list.add(category);

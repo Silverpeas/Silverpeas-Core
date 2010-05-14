@@ -28,7 +28,10 @@ import java.io.Serializable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
 
-public class Priority implements Serializable, Comparable {
+public class Priority implements Serializable, Comparable<Priority> {
+
+  private static final long serialVersionUID = -5520032042704711631L;
+
   public static int[] getAllPriorities() {
     int[] result = { 0, 1, 2, 3 };
     return result;
@@ -87,26 +90,19 @@ public class Priority implements Serializable, Comparable {
 
   }
 
-  /*
-   * public void setValue(int newval) { if(newval > MAXIMUM_PRIORITY) { throw new
-   * EJBException("The priority has to be greater than or equals to 0."); } else if(newval <
-   * MINIMUM_PRIORITY) { throw new EJBException("The priority has to be lower than or equals to 9");
-   * } else { priority = newval; } }
-   */
   public int getValue() {
     return priority;
   }
 
-  public int compareTo(final java.lang.Object other) {
+  public int compareTo(Priority other) {
     if (other == null)
       return 1;
     if (!(other instanceof Priority))
       return 0;
-    Priority tmp = (Priority) other;
-    if ((getValue() == 0) && (tmp.getValue() != 0))
+    if ((getValue() == 0) && (other.getValue() != 0))
       return -1;
-    if ((getValue() != 0) && (tmp.getValue() == 0))
+    if ((getValue() != 0) && (other.getValue() == 0))
       return 1;
-    return tmp.getValue() - getValue();
+    return other.getValue() - getValue();
   }
 }

@@ -32,6 +32,7 @@ import java.util.Date;
  */
 public class HolidayDetail implements Serializable {
 
+  private static final long serialVersionUID = -5675003822977235849L;
   private Date holidayDate = null;
   private String userId = null;
 

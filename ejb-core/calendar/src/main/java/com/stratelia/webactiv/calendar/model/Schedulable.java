@@ -23,9 +23,12 @@
  */
 package com.stratelia.webactiv.calendar.model;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public abstract class Schedulable implements java.io.Serializable {
+  
+  private static final long serialVersionUID = -4783278450365830294L;
   private String id = null;
   private String name = null;
   private String delegatorId = null;
@@ -178,13 +181,9 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setEndDay(String date) throws java.text.ParseException {
-    if (date == null) {
+    if (!StringUtil.isDefined(date)) {
       endDate = null;
       return;
-    }
-    if (date.length() == 0) {
-      endDate = null;
-      return; // this is also a normal case
     }
     dateFormat.parse(date);
     this.endDate = date;
