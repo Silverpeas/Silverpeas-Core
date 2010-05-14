@@ -144,10 +144,7 @@
 		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 		String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
 		String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
-		String language = versioningSC.getLanguage();
-		String pathInstallerJre = GeneralPropertiesManager.getGeneralResourceLocator().getString("pathInstallerJre");
-	  	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
-	    	pathInstallerJre = m_sAbsolute + pathInstallerJre;
+		String language = versioningSC.getLanguage();		
 	  	String indexIt = "0";
 	  	if (versioningSC.isIndexable())
 	  		indexIt = "1";
@@ -155,7 +152,7 @@
 		String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
 		String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
 		%>
-		showHideDragDrop('<%=publicURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningPublic_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/raduploadSingle.properties','<%=workURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop('<%=publicURL%>','<%=httpServerBase + m_context%>/upload/VersioningPublic_<%=language%>.html','<%=workURL%>','<%=httpServerBase + m_context%>/upload/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	}
 
 	function uploadCompleted(s)

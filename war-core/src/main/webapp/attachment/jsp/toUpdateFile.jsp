@@ -60,7 +60,7 @@
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/i18n.js"></script>
-    <script type="text/javascript" src="<%=m_Context%>/attachment/jsp/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="<%=m_Context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" language='Javascript'>
       var attachmentMandatory = false;
 

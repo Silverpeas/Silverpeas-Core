@@ -28,7 +28,7 @@
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
-<script src="<%=m_Context%>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script src="<%=m_Context%>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
 <script src="<%=m_Context%>/util/javaScript/jquery/ui.core.js" type="text/javascript"></script>
 <script src="<%=m_Context%>/util/javaScript/jquery/ui.sortable.js" type="text/javascript"></script>
@@ -40,6 +40,7 @@
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
 
 <script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
 
 <script type="text/javascript" src="<%=m_Context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/yui/container/container_core-min.js"></script>
@@ -329,7 +330,7 @@
 %>
 <% if (contextualMenuEnabled && dragAndDropEnable) {%>
 <tr><td align="right">
-    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanationShort_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
+    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanationShort_<%=language%>.html','0','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
   </td>
   <% }%>

@@ -41,11 +41,6 @@
               "com.stratelia.webactiv.util.attachment.Attachment", "");
       ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
-      String pathInstallerJre = generalSettings.getString("pathInstallerJre");
-      if (pathInstallerJre != null && !pathInstallerJre.startsWith("http")) {
-        pathInstallerJre = m_sAbsolute + pathInstallerJre;
-      }
-
       ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
       String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
       String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length() - 3);
@@ -97,7 +92,7 @@
       
       String dNdVisible = request.getParameter("DNDVisible");
 
-      //r�cup�ration des fichiers attach�s � un �v�nement
+      //recuperation des fichiers attaches a un evenement
       //create foreignKey with componentId and customer id
       //use AttachmentPK to build the foreign key of customer object.
       AttachmentPK foreignKey = new AttachmentPK(id, componentId);
@@ -111,12 +106,14 @@
 
 <link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
 
-<script type="text/javascript" src="<%=m_Context%>/attachment/jsp/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
-<script language='Javascript'>
+<script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
+<script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
+<script type="text/javascript"  language='Javascript'>
   function checkoutOfficeFile(attachmentId)
   {
     document.attachmentForm.action = "<%=m_Context%>/attachment/jsp/checkOut.jsp";
@@ -290,7 +287,6 @@
           }
 
 </script>
-<script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
 <CENTER>
   <%
         if ("1".equals(checkOutStatus)) {
@@ -308,7 +304,7 @@
     <% if (dragAndDropEnable) {%>
     <tr>
       <td align="right">
-        <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase%>/weblib/dragAnddrop/explanation_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','<%=pathInstallerJre%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
+        <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanation_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
         <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
       </td>
     </tr>

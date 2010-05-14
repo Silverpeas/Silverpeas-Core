@@ -101,14 +101,11 @@ function showDnD()
 	String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
 	String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
 	String language = versioningSC.getLanguage();
-	String pathInstallerJre = GeneralPropertiesManager.getGeneralResourceLocator().getString("pathInstallerJre");
-  	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
-    	pathInstallerJre = m_sAbsolute + pathInstallerJre;
 	String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+userId+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt;
 	String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
 	String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
 	%>
-	showHideDragDrop('<%=publicURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningPublic_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','<%=workURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+	showHideDragDrop('<%=publicURL%>','<%=httpServerBase + m_context%>/upload/VersioningPublic_<%=language%>.html','<%=workURL%>','<%=httpServerBase + m_context%>/upload/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 
 function uploadCompleted(s)
@@ -123,6 +120,7 @@ function ShareAttachment(id)
 }
 </script>
 <script type="text/javascript" src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js"></script>
+<script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 <CENTER>
 <% if (dragAndDropEnable) { %>
 	<table width="98%" border="0" id="DropZone">

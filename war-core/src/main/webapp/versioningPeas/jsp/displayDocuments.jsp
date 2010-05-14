@@ -33,7 +33,7 @@
 <%@page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 
-<script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script src="<%=m_context%>/util/javaScript/jquery/ui.core.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/jquery/ui.sortable.js" type="text/javascript"></script>
 <script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
@@ -51,6 +51,7 @@
 
 <link rel="stylesheet" type="text/css" href="<%=m_context %>/util/yui/menu/assets/menu.css"/>
 <script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
+<script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 
 <style type="text/css">
 <!--
@@ -502,14 +503,11 @@ function showDnD()
 	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 	String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
 	String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
-	String pathInstallerJre = GeneralPropertiesManager.getGeneralResourceLocator().getString("pathInstallerJre");
-  	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
-    	pathInstallerJre = m_sAbsolute + pathInstallerJre;
 	String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+versioningSC.getUserId()+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt;
 	String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
 	String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
 	%>
-	showHideDragDrop('<%=publicURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningPublic_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/radupload.properties','<%=workURL%>','<%=httpServerBase%>/weblib/dragAnddrop/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+	showHideDragDrop('<%=publicURL%>','<%=httpServerBase + m_context%>/upload/VersioningPublic_<%=language%>.html','<%=workURL%>','<%=httpServerBase + m_context%>/upload/VersioningWork_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 // Create the tooltips only on document load
 $(document).ready(function() 
