@@ -32,6 +32,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
  */
 public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Serializable {
 
+  private static final long serialVersionUID = 4467724185924160419L;
+
   /**
    * The name of the axe
    */

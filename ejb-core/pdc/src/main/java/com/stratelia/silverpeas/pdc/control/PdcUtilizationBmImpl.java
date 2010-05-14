@@ -45,72 +45,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/*
- * CVS Informations
- *
- * $Id: PdcUtilizationBmImpl.java,v 1.7 2008/09/01 07:36:57 neysseri Exp $
- *
- * $Id: PdcUtilizationBmImpl.java,v 1.7 2008/09/01 07:36:57 neysseri Exp $
- *
- * $Log: PdcUtilizationBmImpl.java,v $
- * Revision 1.7  2008/09/01 07:36:57  neysseri
- * no message
- *
- * Revision 1.6.12.1  2008/08/08 12:45:48  neysseri
- * no message
- *
- * Revision 1.6  2004/07/23 16:11:04  neysseri
- * PDC - Recherche : Optimisation de l'exploration d'un axe
- *
- * Revision 1.5  2004/06/22 15:19:25  neysseri
- * nettoyage eclipse
- *
- * Revision 1.4  2003/05/15 19:30:32  neysseri
- * no message
- *
- * Revision 1.3  2002/10/28 16:09:19  neysseri
- * Branch "InterestCenters" merging
- *
- *
- * Revision 1.2  2002/10/17 13:33:21  neysseri
- * Glossary report from VSIC to KMedition
- *
- * Revision 1.1.1.1  2002/08/06 14:47:52  nchaix
- * no message
- *
- * Revision 1.11  2002/04/04 13:10:06  santonio
- * Tient compte de la recherche global (PDC + Classique)
- * Généralisation de certaines méthodes
- *
- * Revision 1.10  2002/03/05 12:51:30  neysseri
- * no message
- *
- * Revision 1.9  2002/03/01 16:31:28  neysseri
- * no message
- *
- * Revision 1.8  2002/03/01 15:54:08  santonio
- * no message
- *
- * Revision 1.7  2002/02/28 16:06:28  neysseri
- * no message
- *
- * Revision 1.6  2002/02/27 16:42:05  neysseri
- * gestion des transactions
- *
- * Revision 1.5  2002/02/27 14:53:26  santonio
- * no message
- *
- * Revision 1.4  2002/02/22 12:01:21  santonio
- * no message
- *
- * Revision 1.3  2002/02/21 18:33:07  santonio
- * no message
- *
- * Revision 1.2  2002/02/19 17:16:44  neysseri
- * jindent + javadoc
- *
- */
-
 /**
  * Class declaration
  * @author
@@ -208,19 +142,16 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
    * Returns the usedAxis based on a defined axis
    * @param axisId - the id of the axis
    */
+  @SuppressWarnings("unchecked")
   private List<UsedAxis> getUsedAxisByAxisId(Connection con, int axisId)
       throws PdcException {
-    List<UsedAxis> usedAxis = null;
-
     try {
-      usedAxis = (List) dao.findByWhereClause(con, new UsedAxisPK("useless"),
+      return (List) dao.findByWhereClause(con, new UsedAxisPK("useless"),
           "axisId = " + axisId);
     } catch (Exception e) {
       throw new PdcException("PdcUtilizationBmImpl.getUsedAxisByAxisId",
           SilverpeasException.ERROR, "Pdc.CANNOT_FIND_USED_AXIS", e);
     }
-
-    return usedAxis;
   }
 
   /**

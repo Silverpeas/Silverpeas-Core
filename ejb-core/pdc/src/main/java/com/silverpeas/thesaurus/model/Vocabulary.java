@@ -32,6 +32,7 @@ import java.lang.Comparable;
 
 public class Vocabulary extends SilverpeasBean implements Comparable {
 
+  private static final long serialVersionUID = -5979441125808657400L;
   private String name;
   private String description;
 

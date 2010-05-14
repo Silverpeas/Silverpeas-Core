@@ -24,6 +24,8 @@
 package com.stratelia.silverpeas.classifyEngine;
 
 public class PertinentAxis extends Object implements java.io.Serializable {
+  
+  private static final long serialVersionUID = -7770062847586756429L;
   private int nAxisId = -1;
   private int nbObjects = 0;
   private String sRootValue = "";

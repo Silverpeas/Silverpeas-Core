@@ -34,78 +34,6 @@ import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.searchEngine.model.AxisFilterNode;
 import com.stratelia.webactiv.util.DBUtil;
 
-/*
- * CVS Informations
- *
- * $Id: PdcUtilizationDAO.java,v 1.7 2003/11/25 08:27:17 cbonin Exp $
- *
- * $Id: PdcUtilizationDAO.java,v 1.7 2003/11/25 08:27:17 cbonin Exp $
- *
- * $Log: PdcUtilizationDAO.java,v $
- * Revision 1.7  2003/11/25 08:27:17  cbonin
- * no message
- *
- * Revision 1.6  2003/11/24 09:43:29  cbonin
- * no message
- *
- * Revision 1.5  2003/01/09 16:04:26  neysseri
- * no message
- *
- * Revision 1.4  2002/10/28 16:09:19  neysseri
- * Branch "InterestCenters" merging
- *
- *
- * Revision 1.3  2002/10/17 15:07:24  neysseri
- * Glossary report from VSIC to KMedition
- *
- * Revision 1.2  2002/10/17 13:33:21  neysseri
- * Glossary report from VSIC to KMedition
- *
- * Revision 1.16  2002/05/21 12:04:04  nchaix
- * oublie de system.out
- *
- * Revision 1.15  2002/05/17 15:09:54  nchaix
- * Merge de la branche bug001 sur la branche principale
- *
- * Revision 1.14.4.1  2002/05/17 12:16:39  pbialevich
- * Bug with administrator's search impoossibility fixed
- *
- * Revision 1.14  2002/04/04 13:10:06  santonio
- * Tient compte de la recherche global (PDC + Classique)
- * Généralisation de certaines méthodes
- *
- * Revision 1.13  2002/03/05 12:51:30  neysseri
- * no message
- *
- * Revision 1.12  2002/03/01 16:31:28  neysseri
- * no message
- *
- * Revision 1.11  2002/02/28 16:06:28  neysseri
- * no message
- *
- * Revision 1.10  2002/02/27 14:53:26  santonio
- * no message
- *
- * Revision 1.9  2002/02/22 17:13:17  neysseri
- * no message
- *
- * Revision 1.8  2002/02/22 12:06:13  santonio
- * no message
- *
- * Revision 1.6  2002/02/22 09:36:26  santonio
- * no message
- *
- * Revision 1.5  2002/02/21 18:41:28  santonio
- * no message
- *
- * Revision 1.4  2002/02/21 18:33:07  santonio
- * no message
- *
- * Revision 1.3  2002/02/19 17:16:44  neysseri
- * jindent + javadoc
- *
- */
-
 /**
  * Class declaration
  * @author
@@ -300,13 +228,13 @@ public class PdcUtilizationDAO {
   public static boolean isAlreadyAdded(Connection con, String instanceId,
       int usedAxisId, int axisId, int baseValue, String treeId)
       throws SQLException {
-    Vector forbiddenValues = new Vector(); // il s'agit du vecteur contenant
+    Vector<String> forbiddenValues = new Vector<String>(); // il s'agit du vecteur contenant
     // toutes les valeurs interdites
     boolean isAdded = false;
 
     // Récupération dans un 1er temps de toutes les valeurs de base
     // qui sont contenues dans l'axe -axisId- du composant -instanceId-
-    Vector allBaseValues = getAllBaseValues(con, usedAxisId, instanceId, axisId);
+    Vector<Integer> allBaseValues = getAllBaseValues(con, usedAxisId, instanceId, axisId);
 
     isAdded = allBaseValues.contains(new Integer(baseValue));
     if (isAdded)
@@ -328,8 +256,8 @@ public class PdcUtilizationDAO {
 
       // On cherche d'abord le chemin complet de chaque valeur de base
       String whereClause = " where treeId = " + treeId + " and (1=0 ";
-      for (Enumeration e = allBaseValues.elements(); e.hasMoreElements();) {
-        whereClause += " or id = " + ((Integer) e.nextElement()).toString();
+      for (Enumeration<Integer> e = allBaseValues.elements(); e.hasMoreElements();) {
+        whereClause += " or id = " + e.nextElement().toString();
       }
       String selectQuery = " select path, id from " + TreeTable + " "
           + whereClause + ")";
@@ -544,7 +472,7 @@ public class PdcUtilizationDAO {
    * @param axisId - the id of the axis
    * @return a vector containing all base values
    */
-  private static Vector getAllBaseValues(Connection con, int usedAxisId,
+  private static Vector<Integer> getAllBaseValues(Connection con, int usedAxisId,
       String instanceId, int axisId) throws SQLException {
 
     String selectQuery = "select baseValue from " + PdcUtilizationTable
@@ -555,7 +483,7 @@ public class PdcUtilizationDAO {
         + PdcUtilizationTable + " where instanceId = " + instanceId
         + " and axisId = " + axisId + " and id <> " + usedAxisId);
 
-    Vector allBaseValues = new Vector();
+    Vector<Integer> allBaseValues = new Vector<Integer>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -573,7 +501,7 @@ public class PdcUtilizationDAO {
             "root.MSG_GEN_PARAM_VALUE", "another baseValue which is "
             + baseValue + " for instanceId = " + instanceId
             + " and axisId = " + axisId);
-        allBaseValues.add(new Integer(baseValue)); // get and stock the result
+        allBaseValues.add(Integer.valueOf(baseValue)); // get and stock the result
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -589,8 +517,8 @@ public class PdcUtilizationDAO {
    * @param whereClause - the string of the SQL WHERE clause
    * @return the forbiddenValues updated
    */
-  private static Vector getAllDaughterValues(Connection con,
-      Vector forbiddenValues, String whereClause) throws SQLException {
+  private static Vector<String> getAllDaughterValues(Connection con,
+      Vector<String> forbiddenValues, String whereClause) throws SQLException {
     String selectQuery = "select id from " + TreeTable + " " + whereClause;
     SilverTrace.info("Pdc", "PdcBmImpl.getAllDaughterValues",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
@@ -602,7 +530,7 @@ public class PdcUtilizationDAO {
       rs = stmt.executeQuery(selectQuery);
 
       while (rs.next()) {
-        forbiddenValues.add(new Integer(rs.getInt(1)).toString()); // on met ces
+        forbiddenValues.add(Integer.toString(rs.getInt(1))); // on met ces
         // valeurs
         // dans le
         // vecteur

@@ -29,6 +29,8 @@ package com.stratelia.silverpeas.treeManager.model;
 import com.silverpeas.util.i18n.Translation;
 
 public class TreeNodeI18N extends Translation implements java.io.Serializable {
+  
+  private static final long serialVersionUID = 7977604222849839444L;
   private String name;
   private String description;
 

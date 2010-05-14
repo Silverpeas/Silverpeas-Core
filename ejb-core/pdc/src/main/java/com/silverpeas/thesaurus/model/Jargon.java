@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class Jargon extends SilverpeasBean {
 
+  private static final long serialVersionUID = 2926231339303196258L;
   private int type; // 0=User, 1=Group
   private long idVoca;
   private String idUser;

@@ -26,6 +26,8 @@ package com.stratelia.silverpeas.classifyEngine;
 import com.stratelia.webactiv.util.exception.*;
 
 public class Value extends Object implements java.io.Serializable {
+  
+  private static final long serialVersionUID = 6903903413201603630L;
   private int nAxisId = -1;
   private int physicalAxisId = -1;
   private String sValue = null;

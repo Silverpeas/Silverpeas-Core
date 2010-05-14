@@ -31,52 +31,14 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-/*
- * CVS Informations
- * 
- * $Id: TreeNode.java,v 1.3 2007/12/03 13:23:56 neysseri Exp $
- * 
- * $Log: TreeNode.java,v $
- * Revision 1.3  2007/12/03 13:23:56  neysseri
- * no message
- *
- * Revision 1.2.6.1  2007/10/29 10:02:36  sfariello
- * i18n du PdC
- *
- * Revision 1.2  2005/04/14 18:14:04  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.7  2002/02/27 19:58:51  neysseri
- * no message
- *
- * Revision 1.6  2002/02/13 11:48:25  neysseri
- * Ajout des methodes setName() et setDescription() indispensables pour le SilverpeasBean
- *
- * Revision 1.5  2002/02/12 18:19:51  neysseri
- * ajout de la methode _getConnectionType
- *
- * Revision 1.4  2002/02/12 10:33:21  neysseri
- * no message
- *
- * Revision 1.3  2002/02/11 18:12:06  neysseri
- * no message
- *
- * Revision 1.2  2002/02/11 10:23:22  neysseri
- * Ajout de l'attribut 'order'
- *
- * Revision 1.1  2002/02/08 14:28:22  neysseri
- * no message
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class TreeNode extends AbstractI18NBean implements java.io.Serializable {
+  
+  private static final long serialVersionUID = 4644891370102942728L;
+
   private WAPrimaryKey pk;
 
   private String treeId;

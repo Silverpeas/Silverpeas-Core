@@ -31,6 +31,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class ValuePK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 2507337218364427387L;
+
   /**
    * Constructor which set only the id
    */

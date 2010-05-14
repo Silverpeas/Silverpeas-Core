@@ -57,11 +57,11 @@ public class AxisHeaderI18NDAO {
   /*
 	 * 
 	 */
-  public List getTranslations(Connection con, int axisId)
+  public List<AxisHeaderI18N> getTranslations(Connection con, int axisId)
       throws PersistenceException, SQLException {
     String selectQuery = "select * from " + PdcAxisI18NTable
         + " where AxisId = ?";
-    Vector allTranslations = new Vector();
+    Vector<AxisHeaderI18N> allTranslations = new Vector<AxisHeaderI18N>();
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

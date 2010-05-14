@@ -33,6 +33,7 @@ import java.lang.Comparable;
 
 public class Synonym extends SilverpeasBean implements Comparable {
 
+  private static final long serialVersionUID = -8487966625309884721L;
   private long idVoca;
   private long idTree;
   private long idTerm;

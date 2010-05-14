@@ -27,24 +27,6 @@
 package com.stratelia.silverpeas.treeManager.model;
 
 import java.util.List;
-import java.util.ArrayList;
-
-/*
- * CVS Informations
- * 
- * $Id: Tree.java,v 1.1.1.1 2002/08/06 14:47:53 nchaix Exp $
- * 
- * $Log: Tree.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.2  2002/02/12 11:40:29  neysseri
- * no message
- *
- * Revision 1.1  2002/02/08 14:28:22  neysseri
- * no message
- *
- */
 
 /**
  * Class declaration
@@ -52,14 +34,15 @@ import java.util.ArrayList;
  */
 public class Tree implements java.io.Serializable {
 
-  private List tree = null;
+  private static final long serialVersionUID = 2045507298400203693L;
+  private List<TreeNode> tree = null;
 
   /**
    * Constructor declaration
    * @param treeNodes
    * @see
    */
-  public Tree(List treeNodes) {
+  public Tree(List<TreeNode> treeNodes) {
     tree = treeNodes;
   }
 
@@ -68,8 +51,8 @@ public class Tree implements java.io.Serializable {
    * @return
    * @see
    */
-  public List getTree() {
-    return (this.tree);
+  public List<TreeNode> getTree() {
+    return tree;
   }
 
   /**
@@ -77,7 +60,7 @@ public class Tree implements java.io.Serializable {
    * @param treeNodes
    * @see
    */
-  public void setTree(List treeNodes) {
+  public void setTree(List<TreeNode> treeNodes) {
     this.tree = treeNodes;
   }
 
@@ -88,14 +71,14 @@ public class Tree implements java.io.Serializable {
    */
   public int getDepth() {
     if (getTree() != null && getTree().size() > 0) {
-      ArrayList tree = (ArrayList) getTree();
+      List<TreeNode> tree = getTree();
       int maxLevel = 0;
       int rootLevel = 0;
       int level = 0;
       TreeNode node = null;
 
       for (int i = 0; i < tree.size(); i++) {
-        node = (TreeNode) tree.get(0);
+        node = tree.get(0);
         level = node.getLevelNumber();
         if (i == 0) {
           rootLevel = level;
@@ -116,7 +99,7 @@ public class Tree implements java.io.Serializable {
    */
   public TreeNode getRoot() {
     if (getTree() != null && getTree().size() > 0) {
-      return (TreeNode) getTree().get(0);
+      return getTree().get(0);
     }
     return null;
   }

@@ -29,25 +29,13 @@ package com.stratelia.silverpeas.treeManager.model;
 import java.io.Serializable;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-/*
- * CVS Informations
- * 
- * $Id: TreeNodePK.java,v 1.1.1.1 2002/08/06 14:47:53 nchaix Exp $
- * 
- * $Log: TreeNodePK.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.1  2002/02/08 14:28:22  neysseri
- * no message
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class TreeNodePK extends WAPrimaryKey implements Serializable {
+
+  private static final long serialVersionUID = -2135967099552497544L;
 
   /**
    * Constructor declaration

@@ -31,6 +31,8 @@ import com.stratelia.webactiv.util.exception.*;
  */
 public class PdcException extends SilverpeasException implements java.io.Serializable {
 
+  private static final long serialVersionUID = -7924319201141630785L;
+
   /**
    * Constructor declaration
    * @param callingClass

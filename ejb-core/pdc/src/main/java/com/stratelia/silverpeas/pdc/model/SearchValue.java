@@ -29,6 +29,8 @@ import com.stratelia.silverpeas.classifyEngine.*;
  * @author Nicolas EYSSERIC
  */
 public class SearchValue extends PertinentValue implements java.io.Serializable {
+  
+  private static final long serialVersionUID = 1830538403851623250L;
   private String valueName = null;
 
   public SearchValue(int axisId, int nbObjects, String value) {

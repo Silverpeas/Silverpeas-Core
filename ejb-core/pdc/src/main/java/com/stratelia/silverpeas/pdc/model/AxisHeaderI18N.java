@@ -31,6 +31,7 @@ import com.silverpeas.util.i18n.Translation;
  */
 public class AxisHeaderI18N extends Translation implements java.io.Serializable {
 
+  private static final long serialVersionUID = -1418233065462620219L;
   private String name = null;
   private String description = null;
 

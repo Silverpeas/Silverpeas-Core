@@ -32,6 +32,8 @@ import com.stratelia.silverpeas.containerManager.*;
  * This is the data structure that the content JSP is going to use (built by the container router)
  */
 public class ContainerContextImpl implements ContainerContext, java.io.Serializable {
+
+  private static final long serialVersionUID = 8684263472892754224L;
   private int nContainerInstanceId = -1; // The instance of the container on
   // which the content is going to use
   private String sReturnURL = null; // URL to get back on the container

@@ -33,6 +33,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class AxisHeader extends AbstractI18NBean implements java.io.Serializable {
 
+  private static final long serialVersionUID = 5523411511012194843L;
+
   private WAPrimaryKey pk;
 
   /**

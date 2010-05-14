@@ -205,7 +205,7 @@ public class TreeDAO {
   public static void updatePath(Connection con, String oldFather, String treeId)
       throws SQLException {
     // get in the first time all pathes of the son nodes of the oldFather
-    ArrayList pathes = getPathes(con, oldFather, treeId);
+    List<String> pathes = getPathes(con, oldFather, treeId);
 
     String oldPath = "";
     String newPath = "";
@@ -214,7 +214,7 @@ public class TreeDAO {
     int lenOfPattern = pattern.length(); // length of the pattern
     // we update pathes if old pathes exist
     while (!pathes.isEmpty()) {
-      oldPath = (String) pathes.remove(0);
+      oldPath = pathes.remove(0);
       pattern_idx = oldPath.indexOf(pattern); // != -1
       newPath = oldPath.substring(0, pattern_idx)
           + oldPath.substring(pattern_idx + lenOfPattern);
@@ -252,13 +252,13 @@ public class TreeDAO {
    * @param oldFather - the deleted node
    * @return a list of String
    */
-  private static ArrayList getPathes(Connection con, String oldFather,
+  private static List<String> getPathes(Connection con, String oldFather,
       String treeId) throws SQLException {
     String selectQuery = " select path from " + TreeTable + " where treeId = "
         + treeId + " and path like '%/" + oldFather + "/%'";
     Statement stmt = null;
     ResultSet rs = null;
-    ArrayList pathes = new ArrayList();
+    List<String> pathes = new ArrayList<String>();
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery);

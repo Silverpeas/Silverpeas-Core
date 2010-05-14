@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class UsedAxisPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -3990612976554334619L;
+
   /**
    * Constructor which set only the id
    */

@@ -53,14 +53,11 @@ public class TreeI18NDAO {
 
   }
 
-  /*
-	 * 
-	 */
-  public List getTranslations(Connection con, String treeId, String nodeId)
+  public List<TreeNodeI18N> getTranslations(Connection con, String treeId, String nodeId)
       throws SQLException {
     String selectQuery = "select * from " + treeI18NTable
         + " where treeId = ? and nodeId = ?";
-    Vector allTranslations = new Vector();
+    Vector<TreeNodeI18N> allTranslations = new Vector<TreeNodeI18N>();
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

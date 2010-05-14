@@ -26,25 +26,26 @@
 
 package com.stratelia.silverpeas.treeManager.control;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+
+import com.stratelia.silverpeas.treeManager.model.TreeNode;
 
 public class TreeCache {
-  private static Hashtable allTrees = new Hashtable();
+  private static Hashtable<String, List<TreeNode>> allTrees = new Hashtable<String, List<TreeNode>>();
 
   public TreeCache() {
   }
 
-  public static ArrayList getTree(String treeId) {
-    ArrayList tree = (ArrayList) allTrees.get(treeId);
-    return tree;
+  public static List<TreeNode> getTree(String treeId) {
+    return allTrees.get(treeId);
   }
 
   public static synchronized void unvalidateTree(String treeId) {
     allTrees.remove(treeId);
   }
 
-  public static synchronized void cacheTree(String treeId, ArrayList tree) {
+  public static synchronized void cacheTree(String treeId, List<TreeNode> tree) {
     allTrees.put(treeId, tree);
   }
 }

@@ -27,6 +27,7 @@ import com.stratelia.webactiv.persistence.*;
 
 public class CompleteUsedAxis extends SilverpeasBean implements java.io.Serializable {
 
+  private static final long serialVersionUID = -4374704275756625743L;
   private Axis axis = null;
   private UsedAxis usedAxis = null;
 
