@@ -56,13 +56,5 @@
 	</method>
 	<trans-attribute>Supports</trans-attribute>
     </container-transaction>
-    <container-transaction>
-      <method>
-	<ejb-name>ejb/NotationBm</ejb-name>
-	<method-intf>Remote</method-intf>
-	<method-name>createNotation</method-name>
-      </method>
-      <trans-attribute>Required</trans-attribute>
-    </container-transaction>
   </assembly-descriptor>
 </ejb-jar>

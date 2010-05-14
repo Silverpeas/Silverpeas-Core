@@ -32,6 +32,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class NotationPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -635994271608460859L;
   private int type;
   private String userId;
 

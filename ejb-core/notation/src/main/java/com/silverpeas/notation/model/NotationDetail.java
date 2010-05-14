@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 public class NotationDetail implements Serializable {
 
+  private static final long serialVersionUID = 8011171380838785082L;
   private String instanceId;
   private String elementId;
   private int elementType;

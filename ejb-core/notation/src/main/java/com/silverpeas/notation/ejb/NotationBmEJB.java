@@ -28,7 +28,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
@@ -45,6 +45,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class NotationBmEJB implements SessionBean {
+
+  private static final long serialVersionUID = 4906158721388935209L;
 
   public void updateNotation(NotationPK pk, int note) throws RemoteException {
     Connection con = openConnection();
@@ -78,7 +80,7 @@ public class NotationBmEJB implements SessionBean {
 
   public NotationDetail getNotation(NotationPK pk) throws RemoteException {
     NotationDetail notationDetail = new NotationDetail(pk);
-    Collection notations = null;
+    Collection<Notation> notations = null;
     Connection con = openConnection();
     try {
       notations = NotationDAO.getNotations(con, pk);
@@ -95,11 +97,8 @@ public class NotationBmEJB implements SessionBean {
     int userNote = 0;
     if (notations != null && !notations.isEmpty()) {
       notesCount = notations.size();
-      Iterator iter = notations.iterator();
-      Notation notation;
       float sum = 0;
-      while (iter.hasNext()) {
-        notation = (Notation) iter.next();
+      for (Notation notation : notations) {
         if (userId != null && userId.equals(notation.getAuthor())) {
           userNote = notation.getNote();
         }
@@ -139,10 +138,10 @@ public class NotationBmEJB implements SessionBean {
     }
   }
 
-  public Collection getBestNotations(NotationPK pk, int notationsCount)
+  public Collection<NotationDetail> getBestNotations(NotationPK pk, int notationsCount)
       throws RemoteException {
     Connection con = openConnection();
-    Collection notationPKs = null;
+    Collection<NotationPK> notationPKs = null;
     try {
       notationPKs = NotationDAO.getNotationPKs(con, pk);
     } catch (Exception e) {
@@ -155,13 +154,12 @@ public class NotationBmEJB implements SessionBean {
     return getBestNotations(notationPKs, notationsCount);
   }
 
-  public Collection getBestNotations(Collection pks, int notationsCount)
+  public Collection<NotationDetail> getBestNotations(Collection<NotationPK> pks, int notationsCount)
       throws RemoteException {
-    ArrayList notations = new ArrayList();
+    List<NotationDetail> notations = new ArrayList<NotationDetail>();
     if (pks != null && !pks.isEmpty()) {
-      Iterator iter = pks.iterator();
-      while (iter.hasNext()) {
-        notations.add(getNotation((NotationPK) iter.next()));
+      for (NotationPK pk : pks) {
+        notations.add(getNotation(pk));
       }
       Collections.sort(notations, new NotationDetailComparator());
       if (notations.size() > notationsCount) {

@@ -29,8 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import com.silverpeas.notation.model.NotationPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -131,7 +131,7 @@ public class NotationDAO {
     }
   }
 
-  public static Collection getNotations(Connection con, NotationPK pk)
+  public static Collection<Notation> getNotations(Connection con, NotationPK pk)
       throws SQLException {
     PreparedStatement prepStmt = con.prepareStatement(QUERY_GET_NOTATIONS);
     prepStmt.setString(1, pk.getInstanceId());
@@ -139,7 +139,7 @@ public class NotationDAO {
     prepStmt.setInt(3, pk.getType());
     ResultSet rs = null;
 
-    ArrayList notations = new ArrayList(INITIAL_CAPACITY);
+    List<Notation> notations = new ArrayList<Notation>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -187,7 +187,7 @@ public class NotationDAO {
     }
   }
 
-  public static Collection getNotationPKs(Connection con, NotationPK pk)
+  public static Collection<NotationPK> getNotationPKs(Connection con, NotationPK pk)
       throws SQLException {
     String instanceId = pk.getInstanceId();
     int externalType = pk.getType();
@@ -207,7 +207,7 @@ public class NotationDAO {
       prepStmt.setInt(index++, externalType);
     }
 
-    ArrayList notationPKs = new ArrayList(INITIAL_CAPACITY);
+    List<NotationPK> notationPKs = new ArrayList<NotationPK>(INITIAL_CAPACITY);
     ResultSet rs = null;
     try {
       rs = prepStmt.executeQuery();

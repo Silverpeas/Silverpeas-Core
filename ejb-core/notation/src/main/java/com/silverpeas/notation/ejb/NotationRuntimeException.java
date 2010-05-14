@@ -27,6 +27,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class NotationRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 2282109565545438425L;
+
   public String getModule() {
     return "notation";
   }

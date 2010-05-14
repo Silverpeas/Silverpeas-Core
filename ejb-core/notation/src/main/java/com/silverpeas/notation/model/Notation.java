@@ -25,10 +25,9 @@ package com.silverpeas.notation.model;
 
 import java.io.Serializable;
 
-/**
- * 
- */
 public class Notation implements Serializable {
+
+  private static final long serialVersionUID = -3192241064665407800L;
 
   public static final int ID_UNDEFINED = -1;
 

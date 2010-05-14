@@ -43,10 +43,10 @@ public interface NotationBm extends EJBObject {
 
   public boolean hasUserNotation(NotationPK pk) throws RemoteException;
 
-  public Collection getBestNotations(NotationPK pk, int notationsCount)
+  public Collection<NotationDetail> getBestNotations(NotationPK pk, int notationsCount)
       throws RemoteException;
 
-  public Collection getBestNotations(Collection pks, int notationsCount)
+  public Collection<NotationDetail> getBestNotations(Collection<NotationPK> pks, int notationsCount)
       throws RemoteException;
 
 }
