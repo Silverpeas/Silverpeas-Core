@@ -27,6 +27,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class TagCloudRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = -1257445104199066209L;
+
   public String getModule() {
     return "tagCloud";
   }

@@ -25,11 +25,9 @@ package com.silverpeas.tagcloud.model;
 
 import java.io.Serializable;
 
-/**
- * 
- */
 public class TagCloud implements Serializable {
 
+  private static final long serialVersionUID = -4006964363195304072L;
   /**
    * Elements types which can contains tagclouds.
    */

@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -111,7 +112,7 @@ public class TagCloudDAO {
    * @return The list of tagclouds corresponding to the instance id.
    * @throws SQLException
    */
-  public static Collection getInstanceTagClouds(Connection con,
+  public static Collection<TagCloud> getInstanceTagClouds(Connection con,
       String instanceId) throws SQLException {
     String query = new StringBuffer(100).append("SELECT ").append(ALL_COLUMNS)
         .append(" FROM ").append(TABLE_NAME).append(" WHERE ").append(
@@ -122,7 +123,7 @@ public class TagCloudDAO {
     prepStmt.setString(1, instanceId);
     ResultSet rs = null;
 
-    ArrayList tagClouds = new ArrayList(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -140,7 +141,7 @@ public class TagCloudDAO {
    * @return The list of tagclouds corresponding to the element id.
    * @throws SQLException
    */
-  public static Collection getElementTagClouds(Connection con, TagCloudPK pk)
+  public static Collection<TagCloud> getElementTagClouds(Connection con, TagCloudPK pk)
       throws SQLException {
     String query = new StringBuffer(100).append("SELECT ").append(ALL_COLUMNS)
         .append(" FROM ").append(TABLE_NAME).append(" WHERE ").append(
@@ -155,7 +156,7 @@ public class TagCloudDAO {
     prepStmt.setInt(3, pk.getType());
     ResultSet rs = null;
 
-    ArrayList tagClouds = new ArrayList(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -175,7 +176,7 @@ public class TagCloudDAO {
    * @return The list of tagclouds corresponding to the tag and the instance id given as parameters.
    * @throws SQLException
    */
-  public static Collection getTagCloudsByTags(Connection con, String tags,
+  public static Collection<TagCloud> getTagCloudsByTags(Connection con, String tags,
       String instanceId, int type) throws SQLException {
     StringTokenizer st = new StringTokenizer(tags);
     int tagCount = st.countTokens();
@@ -205,7 +206,7 @@ public class TagCloudDAO {
       prepStmt.setString(index++, instanceId);
     }
 
-    ArrayList tagClouds = new ArrayList(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     ResultSet rs = null;
     try {
       rs = prepStmt.executeQuery();
@@ -225,7 +226,7 @@ public class TagCloudDAO {
    * @return The list of tagclouds corresponding to the ids given as parameters.
    * @throws SQLException
    */
-  public static Collection getTagCloudsByElement(Connection con,
+  public static Collection<TagCloud> getTagCloudsByElement(Connection con,
       String instanceId, String externalId, int type) throws SQLException {
     StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
         ALL_COLUMNS).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
@@ -240,7 +241,7 @@ public class TagCloudDAO {
     prepStmt.setInt(3, type);
     ResultSet rs = null;
 
-    ArrayList tagClouds = new ArrayList(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {

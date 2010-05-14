@@ -32,6 +32,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class TagCloudPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 1238115183281503737L;
   private int type;
 
   public TagCloudPK(String id) {

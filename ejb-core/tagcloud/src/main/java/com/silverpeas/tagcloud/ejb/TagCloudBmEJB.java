@@ -48,6 +48,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class TagCloudBmEJB implements SessionBean {
 
+  private static final long serialVersionUID = 1117565429121769510L;
+
   private Connection openConnection() {
     try {
       return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
@@ -107,7 +109,7 @@ public class TagCloudBmEJB implements SessionBean {
    * @return The list of tagclouds corresponding to the instance.
    * @throws RemoteException
    */
-  public Collection getInstanceTagClouds(String instanceId)
+  public Collection<TagCloud> getInstanceTagClouds(String instanceId)
       throws RemoteException {
     return getInstanceTagClouds(instanceId, -1);
   }
@@ -118,27 +120,27 @@ public class TagCloudBmEJB implements SessionBean {
    * @return The list of tagclouds corresponding to the instance.
    * @throws RemoteException
    */
-  public Collection getInstanceTagClouds(String instanceId, int maxCount)
+  public Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount)
       throws RemoteException {
     Connection con = openConnection();
     try {
-      Collection tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
-      List tagList = new ArrayList();
+      Collection<TagCloud> tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
+      List<TagCloud> tagList = new ArrayList<TagCloud>();
       if (tagClouds.size() > 0) {
-        Iterator iter = tagClouds.iterator();
-        tagList.add((TagCloud) iter.next());
+        Iterator<TagCloud> iter = tagClouds.iterator();
+        tagList.add(iter.next());
         TagCloud iterTagCloud;
         String iterTag;
         TagCloud currentTagCloud;
         int i;
         boolean tagExists;
         while (iter.hasNext()) {
-          iterTagCloud = (TagCloud) iter.next();
+          iterTagCloud = iter.next();
           iterTag = iterTagCloud.getTag();
           i = 0;
           tagExists = false;
           while (i < tagList.size() && !tagExists) {
-            currentTagCloud = (TagCloud) tagList.get(i);
+            currentTagCloud = tagList.get(i);
             if (currentTagCloud.getTag().equals(iterTag)) {
               tagExists = true;
               currentTagCloud.incrementCount();
@@ -171,7 +173,7 @@ public class TagCloudBmEJB implements SessionBean {
    * @return The list of tagclouds corresponding to the element.
    * @throws RemoteException
    */
-  public Collection getElementTagClouds(TagCloudPK pk) throws RemoteException {
+  public Collection<TagCloud> getElementTagClouds(TagCloudPK pk) throws RemoteException {
     Connection con = openConnection();
     try {
       return TagCloudDAO.getElementTagClouds(con, pk);
@@ -191,7 +193,7 @@ public class TagCloudBmEJB implements SessionBean {
    * parameters.
    * @throws RemoteException
    */
-  public Collection getTagCloudsByTags(String tags, String instanceId, int type)
+  public Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type)
       throws RemoteException {
     Connection con = openConnection();
     try {
@@ -211,7 +213,7 @@ public class TagCloudBmEJB implements SessionBean {
    * @return The list of tagclouds corresponding to the ids given as parameters.
    * @throws RemoteException
    */
-  public Collection getTagCloudsByElement(String instanceId, String externalId,
+  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
       int type) throws RemoteException {
     Connection con = openConnection();
     try {

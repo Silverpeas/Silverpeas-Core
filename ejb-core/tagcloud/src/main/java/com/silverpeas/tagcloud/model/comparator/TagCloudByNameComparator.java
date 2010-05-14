@@ -27,10 +27,10 @@ import java.util.Comparator;
 
 import com.silverpeas.tagcloud.model.TagCloud;
 
-public class TagCloudByNameComparator implements Comparator {
+public class TagCloudByNameComparator implements Comparator<TagCloud> {
 
-  public int compare(Object o1, Object o2) {
-    return ((TagCloud) o1).getTag().compareTo(((TagCloud) o2).getTag());
+  public int compare(TagCloud o1, TagCloud o2) {
+    return o1.getTag().compareTo(o2.getTag());
   }
 
 }
