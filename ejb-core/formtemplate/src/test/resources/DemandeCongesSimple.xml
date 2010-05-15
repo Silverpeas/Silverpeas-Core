@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -25,12 +25,12 @@
 
 -->
 
-<!-- PROCÉDURE : DEMANDE DE CONGES SIMPLIFIEE -->
+<!-- PROCï¿½DURE : DEMANDE DE CONGES SIMPLIFIEE -->
 <processModel name="DemandeCongesSimple"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				  xsi:noNamespaceSchemaLocation="processModel.xsd">
 
-	<label>Demande de congés simplifiée</label>
+	<label>Demande de congï¿½s simplifiï¿½e</label>
 
 	<!-- DESCRIPTION DES ROLES -->
 	<roles>
@@ -56,12 +56,12 @@
 	<!-- DEFINITION DU DOSSIER -->
 	<dataFolder>
 		<item name="nature">
-			<label>Type de congés</label>
+			<label>Type de congï¿½s</label>
 			<type>text</type>
-			<param name="keys" value="Congés payés##RTT##Congés sans solde##Récupération##Autre"/>
+			<param name="keys" value="Congï¿½s payï¿½s##RTT##Congï¿½s sans solde##Rï¿½cupï¿½ration##Autre"/>
 		</item>
 		<item name="natureAutre">
-			<label>Autre type de congés</label>
+			<label>Autre type de congï¿½s</label>
 			<type>text</type>
 		</item>
 		<item name="duree">
@@ -69,7 +69,7 @@
 			<type>text</type>
 		</item>
 		<item name="dateDebut">
-			<label>Date de début</label>
+			<label>Date de dï¿½but</label>
 			<type>date</type>
 		</item>
 		<item name="dateFin">
@@ -77,15 +77,15 @@
 			<type>date</type>
 		</item>
 		<item name="debutJourneeOuDemi">
-			<label>Début (Journée/Matinée/Après-midi)</label>
+			<label>Dï¿½but (Journï¿½e/Matinï¿½e/Aprï¿½s-midi)</label>
 			<type>text</type>
-			<param name="keys" value="Journée##Matinée##Après-midi"/>
+			<param name="keys" value="Journï¿½e##Matinï¿½e##Aprï¿½s-midi"/>
 			<param name="cols" value="3"/>
 		</item>
 		<item name="finJourneeOuDemi">
-			<label>Fin (Journée/Matinée/Après-midi)</label>
+			<label>Fin (Journï¿½e/Matinï¿½e/Aprï¿½s-midi)</label>
 			<type>text</type>
-			<param name="keys" value="Journée##Matinée##Après-midi"/>
+			<param name="keys" value="Journï¿½e##Matinï¿½e##Aprï¿½s-midi"/>
 			<param name="cols" value="3"/>
 		</item>
 		<item name="motifRefus">
@@ -100,7 +100,7 @@
 
 	<!-- PRESENTATION DES PROCEDURES EN COURS-->
 	<presentation>
-		<title role="Employe">Congés du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})</title>
+		<title role="Employe">Congï¿½s du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})</title>
 		<title role="Responsable">Demande de ${action.Creation.actor}</title>
 		<title role="supervisor">Demande de ${action.Creation.actor}</title>
 		<columns>
@@ -116,7 +116,7 @@
 		</participant>
 	</participants>
 
-	<!-- DESCRIPTION DES ÉTATS -->
+	<!-- DESCRIPTION DES ï¿½TATS -->
 	<states>
 		<state name="AttenteValidation">
 			<label>En attente d'acceptation par responsable</label>
@@ -133,7 +133,7 @@
 		</state>
 
 		<state name="Acceptee">
-			<label>Acceptée</label>
+			<label>Acceptï¿½e</label>
 			<workingUsers role="Employe">
 				<relatedUser participant="Demandeur"/>
 			</workingUsers>
@@ -148,7 +148,7 @@
 		</state>
 
 		<state name="Refusee">
-			<label>Refusée</label>
+			<label>Refusï¿½e</label>
 			<workingUsers role="Employe">
 				<relatedUser participant="Demandeur"/>
 			</workingUsers>
@@ -166,15 +166,15 @@
 	<!-- DESCRIPTION DES ACTIONS -->
 	<actions>
 		<action name="Creation" form="creation" kind="create">
-			<label>Création</label>
-			<description>Création d'une nouvelle demande.</description>
+			<label>Crï¿½ation</label>
+			<description>Crï¿½ation d'une nouvelle demande.</description>
 			<allowedUsers>
 				<userInRole name="Employe"/>
 			</allowedUsers>
 			<consequences>
 				<consequence>
 					<set state="AttenteValidation"/>
-					<notify message="Merci de valider les congés de ${action.Creation.actor} du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})">
+					<notify message="Merci de valider les congï¿½s de ${action.Creation.actor} du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})">
 						<relatedUser participant="Demandeur" relation="responsable"/>
 					</notify>
 				</consequence>
@@ -189,7 +189,7 @@
 			<consequences>
 				<consequence>
 					<set state="Acceptee"/>
-					<notify message="Merci de valider les congés de ${action.Creation.actor} du ${folder.dateDebut} au ${folder.dateFin}">
+					<notify message="Merci de valider les congï¿½s de ${action.Creation.actor} du ${folder.dateDebut} au ${folder.dateFin}">
 						<relatedUser participant="Demandeur"/>
 					</notify>
 				</consequence>
@@ -204,7 +204,7 @@
 			<consequences>
 				<consequence>
 					<set state="Refusee"/>
-					<notify message="Votre demande de congés du ${folder.dateDebut} au ${folder.dateFin} a été refusée pour le motif suivant : ${folder.motifRefus}">
+					<notify message="Votre demande de congï¿½s du ${folder.dateDebut} au ${folder.dateFin} a ï¿½tï¿½ refusï¿½e pour le motif suivant : ${folder.motifRefus}">
 						<relatedUser participant="Demandeur"/>
 					</notify>
 				</consequence>
@@ -215,7 +215,7 @@
 	<!-- DEFINITION DES FORMULAIRES -->
 	<forms>
 		<form name="presentationForm">
-			<title>Demande de congés</title>
+			<title>Demande de congï¿½s</title>
 		   <input value="${action.Creation.actor}" displayerName="simpletext">
 			   <label>Demandeur</label>
 			</input>
@@ -230,10 +230,10 @@
 			<input item="finJourneeOuDemi" displayerName="radio"/>
 			<input item="duree" displayerName="simpletext"/>	   
 		   <input value="${action.Accepter.date}" displayerName="simpletext">
-			   <label>Congés acceptés le</label>
+			   <label>Congï¿½s acceptï¿½s le</label>
 			</input>
 			<input value="${action.Refuser.date}" displayerName="simpletext">
-			   <label>Congés refusés le</label>
+			   <label>Congï¿½s refusï¿½s le</label>
 			</input>
 		   <input item="motifRefus" displayerName="simpletext"/>
 		</form>
@@ -241,9 +241,9 @@
 		<form name="printForm" HTMLFileName="/weblib/processManager/DemandeConges/DemandeConges.html">
 		</form>
 
-		<!-- Formulaire de création -->
+		<!-- Formulaire de crï¿½ation -->
 		<form name="creation">
-			<title>Demande de congés</title>
+			<title>Demande de congï¿½s</title>
 			<input item="nature" displayerName="listbox" mandatory="true"/>
 			<input item="natureAutre"/>
 			<input item="dateDebut" mandatory="true"/>

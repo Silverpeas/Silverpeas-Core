@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.ejb;
 
 import java.util.*;
@@ -71,8 +72,10 @@ public interface PdcBm extends EJBObject {
 
   public AxisHeader getAxisHeader(String axisId) throws RemoteException;
 
-  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException, PdcException;
-  
-  public int addPosition(int pubId, ClassifyPosition position, String componentId, boolean alertSubscribers) throws RemoteException, PdcException;
-		
+  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException,
+      PdcException;
+
+  public int addPosition(int pubId, ClassifyPosition position, String componentId,
+      boolean alertSubscribers) throws RemoteException, PdcException;
+
 }

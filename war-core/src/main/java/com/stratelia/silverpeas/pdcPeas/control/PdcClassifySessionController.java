@@ -56,7 +56,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   private boolean sendSubscriptions = true;
 
   private ThesaurusManager thesaurus = new ThesaurusManager();
-  
+
   // Positions manager in PDC field mode.
   private PdcFieldPositionsManager pdcFieldPositionsManager = new PdcFieldPositionsManager();
 
@@ -164,7 +164,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
       return pdcFieldPositionsManager.updatePosition(position);
     } else {
       return getPdcBm().updatePosition(position, getCurrentComponentId(),
-        getCurrentSilverObjectId(), isSendSubscriptions());
+          getCurrentSilverObjectId(), isSendSubscriptions());
     }
   }
 
@@ -232,7 +232,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   public void setSendSubscriptions(boolean sendSubscriptions) {
     this.sendSubscriptions = sendSubscriptions;
   }
-  
+
   public PdcFieldPositionsManager getPdcFieldPositionsManager() {
     return pdcFieldPositionsManager;
   }

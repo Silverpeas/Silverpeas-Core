@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -36,7 +36,6 @@ import com.stratelia.silverpeas.pdc.model.UsedAxisPK;
 
 /**
  * Manages the axis and values from PDC to define a PDC field.
- * 
  * @author ahedin
  */
 public class PdcFieldTemplateManager {
@@ -49,30 +48,29 @@ public class PdcFieldTemplateManager {
   private GenericFieldTemplate fieldTemplate;
   // The axis used to define the PDC field.
   private ArrayList<UsedAxis> usedAxisList;
-  
+
   public PdcFieldTemplateManager() {
     reset();
   }
-  
+
   public boolean isEnabled() {
     return enabled;
   }
-  
+
   public String getActionForm() {
     return actionForm;
   }
-  
+
   public GenericFieldTemplate getFieldTemplate() {
     return fieldTemplate;
   }
-  
+
   public ArrayList<UsedAxis> getUsedAxisList() {
     return usedAxisList;
   }
-  
+
   /**
    * Initializes and enables the manager.
-   * 
    * @param fieldTemplate The field template.
    * @param actionForm The current action on the field (creation or update).
    */
@@ -82,7 +80,7 @@ public class PdcFieldTemplateManager {
     this.fieldTemplate = fieldTemplate;
     loadUsedAxisList();
   }
-  
+
   /**
    * Resets and disables the manager.
    */
@@ -92,7 +90,7 @@ public class PdcFieldTemplateManager {
     fieldTemplate = null;
     usedAxisList = null;
   }
-  
+
   /**
    * @return A field template updated with the used axis data.
    */
@@ -102,7 +100,7 @@ public class PdcFieldTemplateManager {
     fieldTemplate.getParametersObj().add(parameter);
     return fieldTemplate;
   }
-  
+
   /**
    * @param usedAxisId The searched axis' id.
    * @return The axis corresponding to the id given as parameter.
@@ -117,17 +115,16 @@ public class PdcFieldTemplateManager {
     }
     return null;
   }
-  
+
   /**
    * Adds the axis given as parameter to the used axis list.
-   * 
    * @param usedAxis The axis to add to the list.
    */
   public void addUsedAxis(UsedAxis usedAxis) {
     usedAxis.setPK(new UsedAxisPK(usedAxisList.size()));
     usedAxisList.add(usedAxis);
   }
-  
+
   /**
    * Updates the axis given as parameter into the used axis list.
    * @param usedAxis The axis to update into the list.
@@ -146,10 +143,9 @@ public class PdcFieldTemplateManager {
       i++;
     }
   }
-  
+
   /**
    * Delete the axis correponding to the id given as parameter from the used axis list.
-   * 
    * @param usedAxisId The is of the axis to delete.
    */
   public void deleteUsedAxis(String usedAxisId) {
@@ -166,7 +162,7 @@ public class PdcFieldTemplateManager {
       }
     }
   }
-  
+
   /**
    * Updates the id of every axis from the used axis list.
    */
@@ -175,7 +171,7 @@ public class PdcFieldTemplateManager {
       usedAxisList.get(i).getPK().setId(String.valueOf(i));
     }
   }
-  
+
   /**
    * Loads the used axis list by using the field template. The pattern taken from the template looks
    * like : axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
@@ -184,10 +180,10 @@ public class PdcFieldTemplateManager {
     String pdcAxis = fieldTemplate.getParameter("pdcAxis", "fr");
     usedAxisList = buildUsedAxisList(pdcAxis);
   }
-  
+
   /**
    * @param pdcAxis The description of used axis which are needed, following the pattern :
-   *        axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
+   * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
    * @return The list of used axis corresponding to the description given as parameter.
    */
   private static ArrayList<UsedAxis> buildUsedAxisList(String pdcAxis) {
@@ -208,7 +204,7 @@ public class PdcFieldTemplateManager {
           mandatory = axisData[2];
           variant = axisData[3];
           UsedAxis usedAxis = new UsedAxis(usedAxisId, "unknown", Integer.parseInt(axisId),
-            Integer.parseInt(baseValue), Integer.parseInt(mandatory), Integer.parseInt(variant));
+              Integer.parseInt(baseValue), Integer.parseInt(mandatory), Integer.parseInt(variant));
           axisList.add(usedAxis);
           usedAxisId++;
         }
@@ -216,10 +212,10 @@ public class PdcFieldTemplateManager {
     }
     return axisList;
   }
-  
+
   /**
    * @return A pattern corresponding to the used axis list, which looks like :
-   *         axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
+   * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
    */
   private String getUsedAxisListToString() {
     StringBuffer result = new StringBuffer();
@@ -231,12 +227,12 @@ public class PdcFieldTemplateManager {
         }
         usedAxis = usedAxisList.get(i);
         result.append(usedAxis.getAxisId()).append(",")
-          .append(usedAxis.getBaseValue()).append(",")
-          .append(usedAxis.getMandatory()).append(",")
-          .append(usedAxis.getVariant());
+            .append(usedAxis.getBaseValue()).append(",")
+            .append(usedAxis.getMandatory()).append(",")
+            .append(usedAxis.getVariant());
       }
     }
     return result.toString();
   }
-  
+
 }

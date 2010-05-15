@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 import org.apache.pdfbox.pdmodel.PDDocument;

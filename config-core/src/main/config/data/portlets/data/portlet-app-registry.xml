@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -24,6 +24,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+
 <PortletAppRegistry version="1.0">
   <PortletApp name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet">
     <Properties>
@@ -36,7 +37,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes Tâches"/>
+        <String name="fr" value="Mes Tï¿½ches"/>
         <String name="en" value="My Todos"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -85,7 +86,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Dernières publications"/>
+        <String name="fr" value="Derniï¿½res publications"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="LastPublicationsPortlet"/>
@@ -110,7 +111,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes prochains événements"/>
+        <String name="fr" value="Mes prochains ï¿½vï¿½nements"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="NextEventsPortlet"/>
@@ -160,7 +161,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes requêtes préférées"/>
+        <String name="fr" value="Mes requï¿½tes prï¿½fï¿½rï¿½es"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="FavoriteQueriesPortlet"/>
@@ -206,7 +207,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Actualités"/>
+        <String name="fr" value="Actualitï¿½s"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="QuickInfosPortlet"/>
@@ -252,7 +253,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes fichiers réservés"/>
+        <String name="fr" value="Mes fichiers rï¿½servï¿½s"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="MyCheckOutFiles"/>

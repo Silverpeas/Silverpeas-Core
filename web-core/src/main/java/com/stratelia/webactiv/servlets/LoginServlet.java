@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.servlets;
 
 import java.io.IOException;
@@ -44,7 +45,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class LoginServlet extends HttpServlet {
-
 
   private static final long serialVersionUID = 8524810441906567361L;
   private String m_sContext = "";
@@ -105,7 +105,7 @@ public class LoginServlet extends HttpServlet {
           .getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
       controller
           .setAllowPasswordChange(((allowPasswordChange != null) && (allowPasswordChange
-              .equals("yes"))) ? true : false);
+          .equals("yes"))) ? true : false);
 
       // Notify user about password expiration if needed
       Boolean alertUserAboutPwdExpiration = (Boolean) session
@@ -114,7 +114,7 @@ public class LoginServlet extends HttpServlet {
           && (alertUserAboutPwdExpiration.booleanValue()))
         alertUserAboutPwdExpiration(controller.getUserId(), controller
             .getOrganizationController().getAdministratorUserIds(
-                controller.getUserId())[0], controller.getFavoriteLanguage());
+            controller.getUserId())[0], controller.getFavoriteLanguage());
 
     } catch (Exception e) {
       SilverTrace.error("peasCore", "LoginServlet.doPost()",
@@ -187,8 +187,8 @@ public class LoginServlet extends HttpServlet {
       NotificationSender sender = new NotificationSender(null);
       NotificationMetaData notifMetaData = new NotificationMetaData(
           NotificationParameters.NORMAL, messages
-              .getString("passwordExpirationAlert"), messages
-              .getString("passwordExpirationMessage"));
+          .getString("passwordExpirationAlert"), messages
+          .getString("passwordExpirationMessage"));
       notifMetaData.setSender(fromUserId);
       notifMetaData.addUserRecipient(userId);
       sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,
@@ -196,7 +196,7 @@ public class LoginServlet extends HttpServlet {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
           "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = "
-              + userId, e);
+          + userId, e);
     }
   }
 

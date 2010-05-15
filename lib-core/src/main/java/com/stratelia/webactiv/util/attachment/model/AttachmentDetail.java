@@ -727,7 +727,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
       if ((attGr == GROUP_FILE) || (attGr == GROUP_DIR)) {
         String theContext =
             FileRepositoryManager.getRelativePath(FileRepositoryManager
-                .getAttachmentContext(context));
+            .getAttachmentContext(context));
         int nodeId = 0;
         if (fatherId == null) {
           nodeId = new Integer(fatherId).intValue();

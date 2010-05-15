@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -144,9 +144,9 @@ public class PublicationEJB implements EntityBean {
    * @since 1.0
    */
   public void setDetail(PublicationDetail pubDetail) {
-	  setDetail(pubDetail, false);
+    setDetail(pubDetail, false);
   }
-  
+
   public void setDetail(PublicationDetail pubDetail, boolean forceUpdateDate) {
     if (pubDetail.getPK().equals(pk)) {
       String oldName = name;
@@ -194,17 +194,17 @@ public class PublicationEJB implements EntityBean {
        * if(pubDetail.getUpdaterId() != null) { updaterId = pubDetail.getCreatorId(); }
        */
       updaterId = pubDetail.getUpdaterId();
-      if (pubDetail.isUpdateDateMustBeSet()){
-    	  if(forceUpdateDate){
-    		  // In import case, we can force the update date to an old value
-    		  if(pubDetail.getUpdateDate() != null){
-    			  updateDate = pubDetail.getUpdateDate();
-    		  }else{
-    			  updateDate = new Date();
-    		  }
-    	  }else{
-    		  updateDate = new Date();
-    	  }
+      if (pubDetail.isUpdateDateMustBeSet()) {
+        if (forceUpdateDate) {
+          // In import case, we can force the update date to an old value
+          if (pubDetail.getUpdateDate() != null) {
+            updateDate = pubDetail.getUpdateDate();
+          } else {
+            updateDate = new Date();
+          }
+        } else {
+          updateDate = new Date();
+        }
       }
       isModified = true;
       if (pubDetail.getValidatorId() != null) {

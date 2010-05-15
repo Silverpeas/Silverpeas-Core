@@ -1,23 +1,27 @@
-/*
+/**
  * Copyright (C) 2000 - 2009 Silverpeas
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- * 
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * Created on 25 janv. 2005
  */
@@ -386,8 +390,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
           + xmlFormShortName, xmlFormShortName + ".xml");
     }
 
-    PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(getCurrentComponentId()
-        + ":" + xmlModel.getName());
+    PublicationTemplate pub =
+        PublicationTemplateManager.getPublicationTemplate(getCurrentComponentId()
+            + ":" + xmlModel.getName());
 
     RecordSet set = pub.getRecordSet();
     // Form form = pub.getUpdateForm();
@@ -585,7 +590,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Wysiwyg
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId,
-      WysiwygContentType wysiwygType, String userId, String webContext) throws UtilException, WysiwygException,
+      WysiwygContentType wysiwygType, String userId, String webContext) throws UtilException,
+      WysiwygException,
       ImportExportException {
 
     String wysiwygFileName = WysiwygController.getWysiwygFileName(Integer.toString(pubId));
@@ -609,7 +615,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
 
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), Integer.toString(pubId))) {
+    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), Integer
+        .toString(pubId))) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
         WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(), Integer.
@@ -1048,7 +1055,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       InfoDetail infoDetail = pubComplete.getInfoDetail();
       PublicationContentType pubContent = null;
       if (infoDetail != null
-          && (infoDetail.getInfoImageList().size() != 0 || infoDetail.getInfoTextList().size() != 0)) {
+          &&
+          (infoDetail.getInfoImageList().size() != 0 || infoDetail.getInfoTextList().size() != 0)) {
         // la publication a un contenu de type DBModel
         pubContent = new PublicationContentType();
         DBModelContentType dbModel = new DBModelContentType();

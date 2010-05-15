@@ -101,7 +101,7 @@ public class UserManager extends Object {
       DBUtil.close(con);
     }
   }
-  
+
   /**
    * Get the user ids that are in the group or one of his sub-groups
    */
@@ -395,7 +395,7 @@ public class UserManager extends Object {
           || (modelUser.getDomainId().length() <= 0)) {
         model.domainId = -2;
       }
-      
+
       // Get users of domain from Silverpeas database
       return ddManager.organization.user.searchUsersIds(userIds, model);
     } catch (Exception e) {
@@ -406,43 +406,20 @@ public class UserManager extends Object {
     }
   }
 
-  /*public String[] searchUsersIds(DomainDriverManager ddManager, String groupId,
-      String componentId, String[] aProfileId, UserDetail modelUser)
-      throws AdminException {
-    String[] uids = null;
-    UserRow model;
-    int[] aRoleId = null;
-
-    try {
-      // Get users from Silverpeas
-      ddManager.getOrganizationSchema();
-
-      model = userDetail2UserRow(modelUser);
-      if ((modelUser.getId() == null) || (modelUser.getId().length() <= 0)) {
-        model.id = -2;
-      }
-      if ((modelUser.getDomainId() == null)
-          || (modelUser.getDomainId().length() <= 0)) {
-        model.domainId = -2;
-      }
-      if (aProfileId != null) {
-        aRoleId = new int[aProfileId.length];
-        for (int i = 0; i < aProfileId.length; i++) {
-          aRoleId[i] = idAsInt(aProfileId[i]);
-        }
-      }
-      // Get users of domain from Silverpeas database
-      uids = ddManager.organization.user.searchUsersIds(idAsInt(groupId),
-          idAsInt(componentId), aRoleId, model);
-
-      return uids;
-    } catch (Exception e) {
-      throw new AdminException("UserManager.searchUsersIdsInGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN", e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
-    }
-  }*/
+  /*
+   * public String[] searchUsersIds(DomainDriverManager ddManager, String groupId, String
+   * componentId, String[] aProfileId, UserDetail modelUser) throws AdminException { String[] uids =
+   * null; UserRow model; int[] aRoleId = null; try { // Get users from Silverpeas
+   * ddManager.getOrganizationSchema(); model = userDetail2UserRow(modelUser); if
+   * ((modelUser.getId() == null) || (modelUser.getId().length() <= 0)) { model.id = -2; } if
+   * ((modelUser.getDomainId() == null) || (modelUser.getDomainId().length() <= 0)) { model.domainId
+   * = -2; } if (aProfileId != null) { aRoleId = new int[aProfileId.length]; for (int i = 0; i <
+   * aProfileId.length; i++) { aRoleId[i] = idAsInt(aProfileId[i]); } } // Get users of domain from
+   * Silverpeas database uids = ddManager.organization.user.searchUsersIds(idAsInt(groupId),
+   * idAsInt(componentId), aRoleId, model); return uids; } catch (Exception e) { throw new
+   * AdminException("UserManager.searchUsersIdsInGroup", SilverpeasException.ERROR,
+   * "admin.EX_ERR_GET_USERS_OF_DOMAIN", e); } finally { ddManager.releaseOrganizationSchema(); } }
+   */
 
   /**
    * Add the given user in Silverpeas and specific domain

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -314,7 +314,8 @@ public class GraphicElementFactory extends Object {
 
     code.append("<!-- CSS for Menu -->");
     code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-    code.append(getSettings().getString("YUIMenuCss", contextPath + "/util/yui/menu/assets/menu.css"));
+    code.append(getSettings().getString("YUIMenuCss",
+        contextPath + "/util/yui/menu/assets/menu.css"));
     code.append("\">");
     code.append("<!-- Page-specific styles -->");
     code.append("<style type=\"text/css\">");
@@ -728,8 +729,9 @@ public class GraphicElementFactory extends Object {
       int firstItemIndex) {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination = null;
-    if(paginationClassName == null) {
-      paginationClassName = "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
+    if (paginationClassName == null) {
+      paginationClassName =
+          "com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP";
     }
     try {
       pagination = (Pagination) Class.forName(paginationClassName).newInstance();

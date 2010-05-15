@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.servlets.upload;
 
 import java.io.File;
@@ -88,7 +89,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       session.setAttribute("FILE_UPLOAD_STATS", listener.getFileUploadStats());
       FileItemFactory factory = new MonitoringFileItemFactory(listener);
       ServletFileUpload upload = new ServletFileUpload(factory);
-      List<FileItem> items = (List<FileItem>)  upload.parseRequest(request);
+      List<FileItem> items = (List<FileItem>) upload.parseRequest(request);
       boolean hasError = false;
       List<String> paths = new ArrayList<String>(items.size());
       session.setAttribute("FILE_UPLOAD_PATHS", paths);
@@ -154,7 +155,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       if (fileUploadStats.getBytesRead() != fileUploadStats.getTotalSize()) {
         response.getWriter().println(
             "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete +
-                "%;\"></div></div>");
+            "%;\"></div></div>");
       } else {
         response
             .getWriter()
@@ -167,7 +168,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       response.getWriter().println("<b>Upload complete.</b>");
       response.getWriter().println(
           "<script type='text/javascript'>window.parent.stop('', " + getUploadedFilePaths(session) +
-              "); stop('', " + getUploadedFilePaths(session) + ");</script>");
+          "); stop('', " + getUploadedFilePaths(session) + ");</script>");
     }
   }
 

@@ -163,9 +163,9 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         GenericFieldTemplate field = (GenericFieldTemplate) request.getAttribute("field");
         request.setAttribute("Field", field);
 
-        String actionForm = (String)request.getAttribute("actionForm");
+        String actionForm = (String) request.getAttribute("actionForm");
         request.setAttribute("actionForm", actionForm);
-        
+
         request.setAttribute("Languages", templateDesignerSC.getLanguages());
         request.setAttribute("Displayer", field.getDisplayerName());
 

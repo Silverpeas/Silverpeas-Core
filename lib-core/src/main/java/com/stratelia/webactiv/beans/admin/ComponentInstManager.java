@@ -602,17 +602,16 @@ public class ComponentInstManager {
       ddManager.releaseOrganizationSchema();
     }
   }
- 
-  public String[] getComponentIdsInSpace(int spaceId) throws AdminException
-  {
+
+  public String[] getComponentIdsInSpace(int spaceId) throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-      
-      //getting all componentIds available for user
+
+      // getting all componentIds available for user
       List<String> componentIds = ComponentDAO.getComponentIdsInSpace(con, spaceId);
       return componentIds.toArray(new String[componentIds.size()]);
-      
+
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
@@ -620,16 +619,15 @@ public class ComponentInstManager {
       DBUtil.close(con);
     }
   }
-  
-  public List<ComponentInstLight> getComponentsInSpace(int spaceId) throws AdminException
-  {
+
+  public List<ComponentInstLight> getComponentsInSpace(int spaceId) throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-      
-      //getting all components in given space
+
+      // getting all components in given space
       return ComponentDAO.getComponentsInSpace(con, spaceId);
-      
+
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.getComponentIdsInSpace",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_COMPONENTIDS", e);
@@ -637,26 +635,23 @@ public class ComponentInstManager {
       DBUtil.close(con);
     }
   }
-  
-  public List<String> getAllowedComponentIds(int userId, List<String> groupIds) throws AdminException
-  {
+
+  public List<String> getAllowedComponentIds(int userId, List<String> groupIds)
+      throws AdminException {
     return getAllowedComponentIds(userId, groupIds, null);
   }
-  
-  public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId) throws AdminException
-  {
+
+  public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId)
+      throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-      
-      if (StringUtil.isDefined(spaceId))
-      {
-        //getting componentIds available for user in given space (not subspaces)
+
+      if (StringUtil.isDefined(spaceId)) {
+        // getting componentIds available for user in given space (not subspaces)
         return ComponentDAO.getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId);
-      }
-      else
-      {
-        //getting all componentIds available for user
+      } else {
+        // getting all componentIds available for user
         return ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId);
       }
 

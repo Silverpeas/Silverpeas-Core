@@ -1085,7 +1085,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       }
 
       // get All Models
-      List<PublicationTemplate> templates = PublicationTemplateManager.getSearchablePublicationTemplates();
+      List<PublicationTemplate> templates =
+          PublicationTemplateManager.getSearchablePublicationTemplates();
       request.setAttribute("XMLForms", templates);
 
       PagesContext context =

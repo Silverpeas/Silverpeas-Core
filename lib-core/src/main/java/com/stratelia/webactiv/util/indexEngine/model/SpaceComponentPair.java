@@ -32,6 +32,7 @@ import java.io.Serializable;
 public final class SpaceComponentPair implements Serializable {
 
   private static final long serialVersionUID = 7721088829719133520L;
+
   /**
    * The constructor set the pair which is immutable.
    */

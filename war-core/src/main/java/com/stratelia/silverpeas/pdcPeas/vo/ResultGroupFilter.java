@@ -29,7 +29,7 @@ public class ResultGroupFilter {
   private List<AuthorVO> authors = null;
   private List<ComponentVO> components = null;
   private List<String> year = null;
-  
+
   /**
    * Default constructor
    */

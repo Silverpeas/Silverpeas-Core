@@ -316,7 +316,7 @@ public class SpaceInstManager {
       if (spaceInst.isRoot()) {
         spaceLevel = 0;
       } else {
-        spaceLevel = getSpaceLevel(space.domainFatherId)+1;
+        spaceLevel = getSpaceLevel(space.domainFatherId) + 1;
       }
       spaceInst.setLevel(spaceLevel);
       spaceInst.setName(space.name);

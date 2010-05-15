@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,10 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+
 package com.silverpeas.util;
 
 import java.io.File;
@@ -47,7 +45,8 @@ public class PathTestUtil {
       TESTS_PROPS.load(PathTestUtil.class.getClassLoader().getResourceAsStream(
           "maven.properties"));
       BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/', SEPARATOR);
-      TARGET_DIR = System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar;
+      TARGET_DIR =
+          System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar;
     } catch (IOException ex) {
       Logger.getLogger(PathTestUtil.class.getName())
           .log(Level.SEVERE, null, ex);

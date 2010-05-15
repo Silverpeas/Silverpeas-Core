@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,13 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.calendar.model;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public abstract class Schedulable implements java.io.Serializable {
-  
+
   private static final long serialVersionUID = -4783278450365830294L;
   private String id = null;
   private String name = null;
@@ -43,7 +44,7 @@ public abstract class Schedulable implements java.io.Serializable {
 
   protected static final java.text.SimpleDateFormat completeFormat =
       new java.text.SimpleDateFormat(
-          "yyyy/MM/dd HH:mm");
+      "yyyy/MM/dd HH:mm");
   protected static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
       "yyyy/MM/dd");
   protected static final java.text.SimpleDateFormat hourFormat = new java.text.SimpleDateFormat(

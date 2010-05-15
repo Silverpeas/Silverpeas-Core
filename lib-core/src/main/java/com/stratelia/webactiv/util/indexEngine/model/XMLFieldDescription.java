@@ -35,7 +35,7 @@ import java.io.Serializable;
  * </UL>
  */
 public final class XMLFieldDescription extends TextDescription implements Serializable {
-  
+
   private static final long serialVersionUID = 274226461331759503L;
 
   public XMLFieldDescription(String fieldName, String content, String lang) {

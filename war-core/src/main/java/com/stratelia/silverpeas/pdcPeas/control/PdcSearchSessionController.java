@@ -475,8 +475,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       @Override
       public int compare(AuthorVO o1, AuthorVO o2) {
         return o2.getNbElt() - o1.getNbElt();
-      }
-    });
+        }
+            });
 
     List<ComponentVO> components = new ArrayList<ComponentVO>(componentsMap.values());
     Collections.sort(components, new Comparator<ComponentVO>() {
@@ -484,8 +484,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       @Override
       public int compare(ComponentVO o1, ComponentVO o2) {
         return o2.getNbElt() - o1.getNbElt();
-      }
-    });
+        }
+            });
 
     // Fill result filter with current result values
     res.setAuthors(authors);

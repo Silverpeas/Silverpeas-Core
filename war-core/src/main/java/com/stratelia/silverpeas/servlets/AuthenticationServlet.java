@@ -29,8 +29,6 @@
  */
 package com.stratelia.silverpeas.servlets;
 
-
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;

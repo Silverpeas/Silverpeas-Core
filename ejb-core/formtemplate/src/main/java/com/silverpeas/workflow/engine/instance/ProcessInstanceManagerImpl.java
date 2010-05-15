@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 // TODO : reporter dans CVS (done)
 package com.silverpeas.workflow.engine.instance;
 
@@ -65,7 +66,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
   private static String COLUMNS =
       " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
-  
+
   /**
    * @return the DB connection
    */
@@ -135,7 +136,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       String role) throws WorkflowException {
     return getProcessInstances(peasId, user, role, null);
   }
-  
+
   public ProcessInstance[] getProcessInstances(String peasId, User user,
       String role, String[] userRoles) throws WorkflowException {
     Connection con = null;
@@ -155,40 +156,43 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
       } else {
-        selectQuery.append("select ").append(COLUMNS).append(" from SB_Workflow_ProcessInstance I ");
+        selectQuery.append("select ").append(COLUMNS)
+            .append(" from SB_Workflow_ProcessInstance I ");
         selectQuery.append("where I.modelId = ? ");
         selectQuery.append("and exists (");
-        selectQuery.append(
+        selectQuery
+            .append(
             "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and (");
         selectQuery.append("intUser.userId = ? ");
-        if ( (userRoles != null) && (userRoles.length>0) ) {
+        if ((userRoles != null) && (userRoles.length > 0)) {
           selectQuery.append(" or intUser.usersRole in (");
           boolean first = true;
           for (String userRole : userRoles) {
             if (!first) {
-              selectQuery.append(", ");            
+              selectQuery.append(", ");
             }
             selectQuery.append("'").append(userRole).append("'");
             first = false;
           }
-          selectQuery.append(")"); 
+          selectQuery.append(")");
         }
         selectQuery.append(") and intUser.role = ? ");
         selectQuery.append("union ");
-        selectQuery.append(
+        selectQuery
+            .append(
             "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and (");
         selectQuery.append("wkUser.userId = ? ");
-        if ( (userRoles != null) && (userRoles.length>0) ) {
+        if ((userRoles != null) && (userRoles.length > 0)) {
           selectQuery.append(" or wkUser.usersRole in (");
           boolean first = true;
           for (String userRole : userRoles) {
             if (!first) {
-              selectQuery.append(", ");            
+              selectQuery.append(", ");
             }
             selectQuery.append("'").append(userRole).append("'");
             first = false;
           }
-          selectQuery.append(")"); 
+          selectQuery.append(")");
         }
 
         selectQuery.append(") and wkUser.role = ? ");
@@ -217,7 +221,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       }
 
       // getHistory
-      prepStmt = con.prepareStatement("select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc");
+      prepStmt =
+          con
+              .prepareStatement("select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc");
 
       for (int i = 0; i < instances.size(); i++) {
         instance = (ProcessInstanceImpl) instances.get(i);
@@ -244,7 +250,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
       // getActiveStates
       Vector states = null;
-      prepStmt = con.prepareStatement("select * from SB_Workflow_ActiveState where instanceId = ? order by id asc");
+      prepStmt =
+          con
+              .prepareStatement("select * from SB_Workflow_ActiveState where instanceId = ? order by id asc");
 
       for (int i = 0; i < instances.size(); i++) {
         instance = (ProcessInstanceImpl) instances.get(i);

@@ -189,15 +189,14 @@ public class SpaceUserRoleTable extends Table {
 
     insertRow(INSERT_SPACEUSERROLE, spaceUserRole);
 
-    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
-      organization.userSet.createUserSet("M", spaceUserRole.id);
-      organization.userSet.addUserSetInUserSet("M", spaceUserRole.id, "S",
-          spaceUserRole.spaceId);
-    } else {
-      organization.userSet.createUserSet("X", spaceUserRole.id);
-      organization.userSet.addUserSetInUserSet("X", spaceUserRole.id, "S",
-          spaceUserRole.spaceId);
-    }*/
+    /*
+     * if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
+     * organization.userSet.createUserSet("M", spaceUserRole.id);
+     * organization.userSet.addUserSetInUserSet("M", spaceUserRole.id, "S", spaceUserRole.spaceId);
+     * } else { organization.userSet.createUserSet("X", spaceUserRole.id);
+     * organization.userSet.addUserSetInUserSet("X", spaceUserRole.id, "S", spaceUserRole.spaceId);
+     * }
+     */
   }
 
   static final private String INSERT_SPACEUSERROLE = "insert into"
@@ -261,10 +260,11 @@ public class SpaceUserRoleTable extends Table {
       removeGroupFromSpaceUserRole(groups[i].id, id);
     }
 
-    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager"))
-      organization.userSet.removeUserSet("M", id);
-    else
-      organization.userSet.removeUserSet("X", id);*/
+    /*
+     * if (spaceUserRole.roleName.equalsIgnoreCase("manager"))
+     * organization.userSet.removeUserSet("M", id); else organization.userSet.removeUserSet("X",
+     * id);
+     */
 
     updateRelation(DELETE_SPACEUSERROLE, id);
   }
@@ -316,11 +316,11 @@ public class SpaceUserRoleTable extends Table {
     int[] params = new int[] { spaceUserRoleId, userId };
     updateRelation(INSERT_A_SPACEUSERROLE_USER_REL, params);
 
-    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
-      organization.userSet.addUserInUserSet(userId, "M", spaceUserRoleId);
-    } else {
-      organization.userSet.addUserInUserSet(userId, "X", spaceUserRoleId);
-    }*/
+    /*
+     * if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
+     * organization.userSet.addUserInUserSet(userId, "M", spaceUserRoleId); } else {
+     * organization.userSet.addUserInUserSet(userId, "X", spaceUserRoleId); }
+     */
   }
 
   static final private String INSERT_A_SPACEUSERROLE_USER_REL =
@@ -395,13 +395,11 @@ public class SpaceUserRoleTable extends Table {
     int[] params = new int[] { spaceUserRoleId, groupId };
     updateRelation(INSERT_A_SPACEUSERROLE_GROUP_REL, params);
 
-    /*if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
-      organization.userSet.addUserSetInUserSet("G", groupId, "M",
-          spaceUserRoleId);
-    } else {
-      organization.userSet.addUserSetInUserSet("G", groupId, "X",
-          spaceUserRoleId);
-    }*/
+    /*
+     * if (spaceUserRole.roleName.equalsIgnoreCase("manager")) {
+     * organization.userSet.addUserSetInUserSet("G", groupId, "M", spaceUserRoleId); } else {
+     * organization.userSet.addUserSetInUserSet("G", groupId, "X", spaceUserRoleId); }
+     */
   }
 
   static final private String INSERT_A_SPACEUSERROLE_GROUP_REL =

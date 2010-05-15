@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.api;
 
 import com.silverpeas.workflow.api.instance.ProcessInstance;
@@ -49,8 +50,7 @@ public interface ProcessInstanceManager {
    * @param peasId id of processManager instance
    * @param user user for who the process instance list is
    * @param role role name of the user for who the process instance list is (useful when user has
-   * @param userRoles all role names that user has for this component instance
-   * different roles)
+   * @param userRoles all role names that user has for this component instance different roles)
    * @return an array of ProcessInstance objects
    */
   public ProcessInstance[] getProcessInstances(String peasId, User user,

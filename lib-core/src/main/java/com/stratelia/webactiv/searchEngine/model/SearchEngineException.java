@@ -30,7 +30,7 @@ import com.stratelia.webactiv.util.exception.*;
  * Thrown by the searchEngine
  */
 public class SearchEngineException extends SilverpeasException {
-  
+
   private static final long serialVersionUID = 5535107407790086662L;
 
   /**

@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -24,8 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+
 <Templates imagesBasePath="/weblib/customWysiwyg/img/">
-	<Template title="Modèle 1" image="model1.gif">
+	<Template title="Modï¿½le 1" image="model1.gif">
 		<Description>2 colonnes de texte</Description>
 		<Html>
 			<![CDATA[
@@ -42,7 +43,7 @@
 		</Html>
 	</Template>
 
-	<Template title="Modèle 2" image="model2.gif">
+	<Template title="Modï¿½le 2" image="model2.gif">
 		<Description>2 colonnes de texte et un bandeau</Description>
 		<Html>
 			<![CDATA[
@@ -63,7 +64,7 @@
 	</Template>
 
 
-	<Template title="Modèle 3" image="model3.gif">
+	<Template title="Modï¿½le 3" image="model3.gif">
 		<Description>3 colonnes de texte</Description>
 		<Html>
 			<![CDATA[
@@ -81,7 +82,7 @@
 		</Html>
 	</Template>
 
-	<Template title="Modèle 4" image="model4.gif">
+	<Template title="Modï¿½le 4" image="model4.gif">
 		<Description>2 colonnes de texte et 1 colonne image</Description>
 		<Html>
 			<![CDATA[
@@ -99,7 +100,7 @@
 		</Html>
 	</Template>
 
-	<Template title="Modèle 5" image="model5.gif">
+	<Template title="Modï¿½le 5" image="model5.gif">
 		<Description>2 colonnes de texte et Habillage</Description>
 		<Html>
 			<![CDATA[
@@ -122,7 +123,7 @@
 		</Html>
 	</Template>
 
-	<Template title="Modèle 6" image="model6.gif">
+	<Template title="Modï¿½le 6" image="model6.gif">
 		<Description>2 colonnes de texte et Habillage (Rubrique Patient)</Description>
 		<Html>
 			<![CDATA[
@@ -153,7 +154,7 @@
 	</Template>
 
 
-	<Template title="Modèle Service 2" image="service.gif">
+	<Template title="Modï¿½le Service 2" image="service.gif">
 		<Description>Pathologies, nombre de lits, trombinoscope</Description>
 		<Html>
 			<![CDATA[
@@ -162,7 +163,7 @@
         	      <td class="dottedline_rouge"><table width="100%" border="0" cellspacing="0" cellpadding="0">
         	        <tr>
         	          <td width="13" height="37"><img src="/weblib/customWysiwyg/img/service/gab_2_fondTitreG.jpg" width="13" height="37" /></td>
-        	          <td class="gab2_fondTitre">Chirurgie orthopédique et traumatologique - PAVILLON T</td>
+        	          <td class="gab2_fondTitre">Chirurgie orthopï¿½dique et traumatologique - PAVILLON T</td>
         	          <td width="13" height="37"><img src="/weblib/customWysiwyg/img/service/gab_2_fondTitreD.jpg" width="13" height="37" /></td>
         	          <td width="120">&nbsp;</td>
       	            </tr>
@@ -177,19 +178,19 @@
         	            <tr>
         	              <td>
         	              	<ul class="tab">
-														<li class="puce_fondbleu"><a href="#">Prothèse totale de hanche</a></li>
-														<li class="puce_fondbleu"><a href="#">Prothèse totale de genou</a></li>
-														<li class="puce_fondbleu"><a href="#">Arthrose du membre inférieur</a></li>
-														<li class="puce_fondbleu"><a href="#">Maladies inflammatoires du membre inférieur</a></li>
+														<li class="puce_fondbleu"><a href="#">Prothï¿½se totale de hanche</a></li>
+														<li class="puce_fondbleu"><a href="#">Prothï¿½se totale de genou</a></li>
+														<li class="puce_fondbleu"><a href="#">Arthrose du membre infï¿½rieur</a></li>
+														<li class="puce_fondbleu"><a href="#">Maladies inflammatoires du membre infï¿½rieur</a></li>
 											    </ul>
 											  </td>
         	              <td>&nbsp;</td>
         	              <td>
         	              	<ul class="tab">
-														<li class="puce_fondbleu"><a href="#">Prothèse totale de hanche</a></li>
-														<li class="puce_fondbleu"><a href="#">Prothèse totale de genou</a></li>
-														<li class="puce_fondbleu"><a href="#">Arthrose du membre inférieur</a></li>
-														<li class="puce_fondbleu"><a href="#">Maladies inflammatoires du membre inférieur</a></li>
+														<li class="puce_fondbleu"><a href="#">Prothï¿½se totale de hanche</a></li>
+														<li class="puce_fondbleu"><a href="#">Prothï¿½se totale de genou</a></li>
+														<li class="puce_fondbleu"><a href="#">Arthrose du membre infï¿½rieur</a></li>
+														<li class="puce_fondbleu"><a href="#">Maladies inflammatoires du membre infï¿½rieur</a></li>
 											    </ul>
 											  </td>
       	              </tr>
@@ -214,8 +215,8 @@
       	              </tr>
         	            <tr>
         	              <td>
-        	              	<li class="puce_flecheBleu"><a href="#" class="puce_flecheBleu">Arthrose du membre inférieur</a></li>
-									        <li class="puce_flecheBleu"><a href="#" class="puce_flecheBleu">Maladies inflammatoires du membre inférieur</a></li>
+        	              	<li class="puce_flecheBleu"><a href="#" class="puce_flecheBleu">Arthrose du membre infï¿½rieur</a></li>
+									        <li class="puce_flecheBleu"><a href="#" class="puce_flecheBleu">Maladies inflammatoires du membre infï¿½rieur</a></li>
 									      </td>
       	              </tr>
       	            </table>
@@ -234,8 +235,8 @@
 													<img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" />
 													<span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
 													<strong class="gris">Chef de service</strong><br />
-													Secrétariat : 04 72 11 76 32<br />
-													Télécopie : 04 72 11 76 37<br />
+													Secrï¿½tariat : 04 72 11 76 32<br />
+													Tï¿½lï¿½copie : 04 72 11 76 37<br />
 													<a href="#">jean-paul.carret@chu-lyon.fr</a>
 												</div>
 		                </td>
@@ -244,8 +245,8 @@
 												<img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" />
 												<span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
 												<strong class="gris">Chef de service</strong><br />
-												Secrétariat : 04 72 11 76 32<br />
-												Télécopie : 04 72 11 76 37<br />
+												Secrï¿½tariat : 04 72 11 76 32<br />
+												Tï¿½lï¿½copie : 04 72 11 76 37<br />
 												<a href="#">jean-paul.carret@chu-lyon.fr</a>
 			                </div>
 			              </td>
@@ -254,8 +255,8 @@
 												<img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" />
 												<span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
 												<strong class="gris">Chef de service</strong><br />
-												Secrétariat : 04 72 11 76 32<br />
-												Télécopie : 04 72 11 76 37<br />
+												Secrï¿½tariat : 04 72 11 76 32<br />
+												Tï¿½lï¿½copie : 04 72 11 76 37<br />
 												<a href="#">jean-paul.carret@chu-lyon.fr</a>
 		                	</div>
 		                </td>
@@ -263,8 +264,8 @@
         	        <tr>
         	          <td class="gab2_fondPhoto"><div class="intervenant"> <img src="/weblib/customWysiwyg/img/service/img_intervenant.jpg" alt="intervenant" /> <span class="titre_intervenant">Professeur Jean-Paul Carre</span><br />
         	            <strong class="gris">Chef de service</strong><br />
-        	            Secrétariat : 04 72 11 76 32<br />
-        	            Télécopie : 04 72 11 76 37<br />
+        	            Secrï¿½tariat : 04 72 11 76 32<br />
+        	            Tï¿½lï¿½copie : 04 72 11 76 37<br />
 										  <a href="#">jean-paul.carret@chu-lyon.fr</a> </div></td>
         	          <td>&nbsp;</td>
         	          <td>&nbsp;</td>

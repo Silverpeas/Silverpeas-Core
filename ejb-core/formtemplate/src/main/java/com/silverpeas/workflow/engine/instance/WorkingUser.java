@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.engine.instance;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class WorkingUser extends AbstractReferrableObject {
    * @field-name usersRole
    */
   private String usersRole = null;
-  
+
   /**
    * @field-name state
    */
@@ -160,7 +161,7 @@ public class WorkingUser extends AbstractReferrableObject {
   public void setUsersRole(String usersRole) {
     this.usersRole = usersRole;
   }
-  
+
   /**
    * Get the instance for which user is affected
    * @return instance
@@ -203,24 +204,25 @@ public class WorkingUser extends AbstractReferrableObject {
   public Collection<Actor> toActors() throws WorkflowException {
     State state = processInstance.getProcessModel().getState(this.state);
     Collection<Actor> actors = new ArrayList<Actor>();
-    
+
     // first add user by id
     if (this.getUserId() != null) {
-	    User user = WorkflowHub.getUserManager().getUser(this.getUserId());
-	    actors.add( new ActorImpl(user, role, state) );
+      User user = WorkflowHub.getUserManager().getUser(this.getUserId());
+      actors.add(new ActorImpl(user, role, state));
     }
-    
+
     // then add users by role
     if (this.usersRole != null) {
-      User[] users = WorkflowHub.getUserManager().getUsersInRole(usersRole, processInstance.getModelId());
+      User[] users =
+          WorkflowHub.getUserManager().getUsersInRole(usersRole, processInstance.getModelId());
       for (User anUser : users) {
-        actors.add( new ActorImpl(anUser, role, state) );
+        actors.add(new ActorImpl(anUser, role, state));
       }
     }
-    
+
     return actors;
   }
-  
+
   /**
    * Get User information from an array of workingUsers
    * @param workingUsers an array of WorkingUser objects
@@ -242,6 +244,7 @@ public class WorkingUser extends AbstractReferrableObject {
    * @return The unique key.
    */
   public String getKey() {
-    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this.getUsersRole());
+    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this
+        .getUsersRole());
   }
 }

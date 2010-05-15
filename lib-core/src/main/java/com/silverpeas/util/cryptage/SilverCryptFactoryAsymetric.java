@@ -43,7 +43,8 @@ public class SilverCryptFactoryAsymetric {
   private SilverCryptFactoryAsymetric() {
   }
 
-  private Map<String, SilverCryptKeysAsymetric> keyMap = new HashMap<String, SilverCryptKeysAsymetric>();
+  private Map<String, SilverCryptKeysAsymetric> keyMap =
+      new HashMap<String, SilverCryptKeysAsymetric>();
 
   public static SilverCryptFactoryAsymetric getInstance() {
     if (factory == null)

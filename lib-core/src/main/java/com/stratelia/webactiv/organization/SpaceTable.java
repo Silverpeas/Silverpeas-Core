@@ -234,7 +234,7 @@ public class SpaceTable extends Table {
     }
 
     insertRow(INSERT_SPACE, space);
-    
+
     CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_SPACE, space.id,
         null, null);
   }
@@ -400,7 +400,7 @@ public class SpaceTable extends Table {
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACE");
     }
 
-    //organization.userSet.removeUserSet("S", id);
+    // organization.userSet.removeUserSet("S", id);
     updateRelation(DELETE_SPACE, id);
   }
 

@@ -141,12 +141,12 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           resources.getString("languages"), ",");
       SilverTrace.debug("personalizationPeas",
           "PersonalizationSessionController.getAllLanguages()", "langues = "
-              + resources.getString("languages").toString());
+          + resources.getString("languages").toString());
       while (st.hasMoreTokens()) {
         String langue = st.nextToken();
         SilverTrace.debug("personalizationPeas",
             "PersonalizationSessionController.getAllLanguages()", "langue = "
-                + langue);
+            + langue);
         allLanguages.add(langue);
       }
     } catch (Exception e) {
@@ -447,7 +447,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "PersonalizationSessionController.getNotificationAddress()",
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESS", "Id="
-              + aNotificationAddressId, e);
+          + aNotificationAddressId, e);
     }
   }
 
@@ -487,7 +487,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "PersonalizationSessionController.getNotifPreference()",
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCE", "Id="
-              + aPreferenceId, e);
+          + aPreferenceId, e);
     }
   }
 
@@ -543,8 +543,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_SET_NOTIFICATION_ADDRESS",
           "aNotifAddressId=" + aNotifAddressId + "|aNotifName=" + aNotifName
-              + "|aChannelId=" + aChannelId + "|aAddress=" + aAddress
-              + "|aUsage=" + aUsage, e);
+          + "|aChannelId=" + aChannelId + "|aAddress=" + aAddress
+          + "|aUsage=" + aUsage, e);
     }
   }
 
@@ -642,7 +642,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "PersonalizationSessionController.setDefaultAddress()",
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", "aNotifAddressId="
-              + aNotifAddressId, e);
+          + aNotifAddressId, e);
     }
   }
 
@@ -667,7 +667,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_ADD_NOTIFICATION_PREFERENCE",
           "componentId=" + componentId + "|priorityId=" + priorityId
-              + "|notificationId=" + notificationId, e);
+          + "|notificationId=" + notificationId, e);
     }
   }
 
@@ -730,11 +730,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
         public int compare(Properties o1, Properties o2) {
           return o1.getProperty("fullName").compareTo(o2.getProperty("fullName"));
-        }
+          }
 
         public boolean equals(Object o) {
           return false;
-        }
+          }
 
       });
       sortedComponentList = new ArrayList<Properties>(componentList.length);
@@ -810,15 +810,15 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator<Properties>() {
-        public int compare(Properties o1, Properties o2) {
+          public int compare(Properties o1, Properties o2) {
           return o1.getProperty("name").toUpperCase()
               .compareTo(o2.getProperty("name").toUpperCase());
-        }
+          }
 
         public boolean equals(Object o) {
           return false;
-        }
-      });
+          }
+                });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
@@ -866,8 +866,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     SilverTrace.info("personalizationPeas",
         "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName="
-            + userLastName + " userFirstName=" + userFirstName + " userEMail="
-            + userEMail + " userAccessLevel=" + userAccessLevel);
+        + userLastName + " userFirstName=" + userFirstName + " userEMail="
+        + userEMail + " userAccessLevel=" + userAccessLevel);
 
     theModifiedUser = m_AdminCtrl.getUserFull(idUser);
     if (theModifiedUser == null)
@@ -909,7 +909,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         throw new PeasCoreException(
             "PersonalizationPeasSessionController.modifyUser()",
             SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-                + idUser);
+            + idUser);
       }
     } else {
       if (newPassword != null && newPassword.length() != 0) {
@@ -955,10 +955,10 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       }
     } catch (NotificationManagerException e) {
       throw new PeasCoreException(
-              "PersonalizationSessionController.setDefaultAddress()",
-              SilverpeasException.ERROR,
-              "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", "aNotifAddressId="
-                  + notifAddressId, e);
+          "PersonalizationSessionController.setDefaultAddress()",
+          SilverpeasException.ERROR,
+          "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", "aNotifAddressId="
+          + notifAddressId, e);
     }
   }
 }

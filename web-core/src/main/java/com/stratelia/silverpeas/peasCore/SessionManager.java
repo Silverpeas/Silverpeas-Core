@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.util.FileUtil;
@@ -179,11 +180,13 @@ public class SessionManager implements SchedulerEventHandler {
     if (si != null) {
       si.m_DateLastAccess = new Date().getTime();
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.setLastAccess",
-          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-          + session.getId());
+      SilverTrace
+          .debug(
+              "peasCore",
+              "SessionManager.setLastAccess",
+              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+                  +
+                  session.getId());
     }
     // reset previous notification
     userNotificationSessions.remove(session.getId());
@@ -253,7 +256,7 @@ public class SessionManager implements SchedulerEventHandler {
    * This method stores the users's sessions, initialises time counters and log session's data. The
    * stored session may become invalid (if the user close the browser, this class is not notified).
    * @param session the session to store
-   * @param request 
+   * @param request
    * @param controller
    * @see removeSession
    */
@@ -292,11 +295,13 @@ public class SessionManager implements SchedulerEventHandler {
       removeSession(si);
       si = null;
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.removeSession",
-          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
-          + sessionId + ")");
+      SilverTrace
+          .debug(
+              "peasCore",
+              "SessionManager.removeSession",
+              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
+                  +
+                  sessionId + ")");
     }
   }
 
@@ -368,11 +373,13 @@ public class SessionManager implements SchedulerEventHandler {
     if (si != null) {
       si.m_DateIsAlive = new Date().getTime();
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.setIsAlived",
-          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-          + session.getId());
+      SilverTrace
+          .debug(
+              "peasCore",
+              "SessionManager.setIsAlived",
+              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+                  +
+                  session.getId());
     }
   }
 

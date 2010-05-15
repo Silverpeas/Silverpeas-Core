@@ -248,10 +248,9 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     else
       return getDescription();
   }
-  
-  public String getFullId()
-  {
-    return getName()+getId();
+
+  public String getFullId() {
+    return getName() + getId();
   }
 
   public void setName(String name) {

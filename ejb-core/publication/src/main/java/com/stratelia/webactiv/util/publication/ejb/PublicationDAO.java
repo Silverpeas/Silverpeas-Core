@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.publication.ejb;
 
 import java.sql.Connection;
@@ -72,13 +73,19 @@ public class PublicationDAO {
   private static final String publicationFatherTableName = "SB_Publication_PubliFather";
   private static final String nodeTableName = "SB_Node_Node";
 
-   private static final String UPDATE_PUBLICATION = "UPDATE SB_Publication_Publi SET infoId = ?, " +
-       "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, " +
-       "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, " +
-       "pubStatus = ?, pubImage = ?, pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, " +
-       "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, " +
-       "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? " +
-       "WHERE pubId = ? ";
+  private static final String UPDATE_PUBLICATION =
+      "UPDATE SB_Publication_Publi SET infoId = ?, "
+          +
+          "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, "
+          +
+          "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, "
+          +
+          "pubStatus = ?, pubImage = ?, pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
+          +
+          "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
+          +
+          "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? " +
+          "WHERE pubId = ? ";
 
   /**
    * This class must not be instanciated

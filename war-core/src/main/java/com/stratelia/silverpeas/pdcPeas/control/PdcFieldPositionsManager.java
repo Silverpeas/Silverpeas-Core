@@ -33,11 +33,10 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 
 /**
  * Manages the positions of a PDC field.
- * 
  * @author ahedin
  */
 public class PdcFieldPositionsManager {
-  
+
   // If true, indicates that the controller which refers to this manager is in PDC field mode.
   private boolean enabled;
   // Positions of the field.
@@ -48,37 +47,36 @@ public class PdcFieldPositionsManager {
   private String fieldName;
   // PDC field displayer.
   private PdcFieldDisplayer displayer;
-  
+
   /**
    * Constructor
    */
   public PdcFieldPositionsManager() {
     reset();
   }
-  
+
   public boolean isEnabled() {
     return enabled;
   }
-  
+
   public String getFieldName() {
     return fieldName;
   }
-  
+
   public ArrayList<ClassifyPosition> getPositions() {
     return positions;
   }
-  
+
   public ArrayList<UsedAxis> getUsedAxisList() {
     return usedAxisList;
   }
-  
+
   /**
    * Initializes and enables the manager.
-   * 
    * @param fieldName The field name.
    * @param pattern The description of positions, following the pattern :
-   *        axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1...
-   *        where axisIdi_j and valueIdi_j correspond to the value #j of the position #i.
+   * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
+   * valueIdi_j correspond to the value #j of the position #i.
    * @param axis
    */
   public void init(String fieldName, String pattern, String axis) {
@@ -99,10 +97,9 @@ public class PdcFieldPositionsManager {
     positions = null;
     usedAxisList = null;
   }
-  
+
   /**
    * Add the position to the positions list.
-   * 
    * @param position The new position to add.
    */
   public void addPosition(ClassifyPosition position) {
@@ -110,10 +107,9 @@ public class PdcFieldPositionsManager {
     positions.add(position);
     refreshPositions();
   }
-  
+
   /**
    * Update the position.
-   * 
    * @param position The position to update.
    * @return the status of the update.
    */
@@ -132,10 +128,9 @@ public class PdcFieldPositionsManager {
     refreshPositions();
     return -1;
   }
-  
+
   /**
    * Deletes the position which id corresponds to the one given as parameter.
-   * 
    * @param positionId The id of the position to delete.
    */
   public void deletePosition(int positionId) {
@@ -159,18 +154,18 @@ public class PdcFieldPositionsManager {
     }
     refreshPositions();
   }
-  
+
   /**
    * Calls the PDC field displayer to update and complete the description of positions.
    */
   private void refreshPositions() {
     positions = displayer.getPositions(getPositionsToString());
   }
-  
+
   /**
    * @return A pattern describing the positions :
-   *         axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1...
-   *         where axisIdi_j and valueIdi_j correspond to the value #j of the position #i.
+   * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
+   * valueIdi_j correspond to the value #j of the position #i.
    */
   public String getPositionsToString() {
     StringBuffer result = new StringBuffer();
@@ -191,7 +186,7 @@ public class PdcFieldPositionsManager {
           }
           classifyValue = classifyValues.get(j);
           result.append(classifyValue.getAxisId()).append(",");
-          
+
           valuesPath = classifyValue.getValue();
           if (valuesPath != null && valuesPath.length() > 0) {
             values = valuesPath.split("/");
@@ -202,5 +197,5 @@ public class PdcFieldPositionsManager {
     }
     return result.toString();
   }
-  
+
 }

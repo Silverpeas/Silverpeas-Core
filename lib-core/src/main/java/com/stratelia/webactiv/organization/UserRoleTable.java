@@ -216,15 +216,13 @@ public class UserRoleTable extends Table {
     }
 
     insertRow(INSERT_USERROLE, userRole);
-    /*organization.userSet.createUserSet(UserSetRow.RIGHTS, userRole.id);
-    if (userRole.objectId != -1) {
-      organization.userSet
-          .createUserSet(userRole.objectType, userRole.objectId);
-      organization.userSet.addUserSetInUserSet(UserSetRow.RIGHTS, userRole.id,
-          userRole.objectType, userRole.objectId);
-    } else
-      organization.userSet.addUserSetInUserSet(UserSetRow.RIGHTS, userRole.id,
-          ObjectType.INSTANCE, userRole.instanceId);*/
+    /*
+     * organization.userSet.createUserSet(UserSetRow.RIGHTS, userRole.id); if (userRole.objectId !=
+     * -1) { organization.userSet .createUserSet(userRole.objectType, userRole.objectId);
+     * organization.userSet.addUserSetInUserSet(UserSetRow.RIGHTS, userRole.id, userRole.objectType,
+     * userRole.objectId); } else organization.userSet.addUserSetInUserSet(UserSetRow.RIGHTS,
+     * userRole.id, ObjectType.INSTANCE, userRole.instanceId);
+     */
   }
 
   static final private String INSERT_USERROLE = "insert into"
@@ -294,7 +292,7 @@ public class UserRoleTable extends Table {
       removeGroupFromUserRole(groups[i].id, id);
     }
 
-    //organization.userSet.removeUserSet(UserSetRow.RIGHTS, id);
+    // organization.userSet.removeUserSet(UserSetRow.RIGHTS, id);
     updateRelation(DELETE_USERROLE, id);
   }
 
@@ -342,8 +340,9 @@ public class UserRoleTable extends Table {
 
     int[] params = new int[] { userRoleId, userId };
     updateRelation(INSERT_A_USERROLE_USER_REL, params);
-    /*organization.userSet
-        .addUserInUserSet(userId, UserSetRow.RIGHTS, userRoleId);*/
+    /*
+     * organization.userSet .addUserInUserSet(userId, UserSetRow.RIGHTS, userRoleId);
+     */
   }
 
   static final private String INSERT_A_USERROLE_USER_REL =
@@ -417,8 +416,10 @@ public class UserRoleTable extends Table {
     int[] params = new int[] { userRoleId, groupId };
     updateRelation(INSERT_A_USERROLE_GROUP_REL, params);
 
-    /*organization.userSet.addUserSetInUserSet(ObjectType.GROUP, groupId,
-        UserSetRow.RIGHTS, userRoleId);*/
+    /*
+     * organization.userSet.addUserSetInUserSet(ObjectType.GROUP, groupId, UserSetRow.RIGHTS,
+     * userRoleId);
+     */
   }
 
   static final private String INSERT_A_USERROLE_GROUP_REL =

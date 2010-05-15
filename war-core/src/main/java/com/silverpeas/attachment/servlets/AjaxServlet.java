@@ -120,7 +120,7 @@ public class AjaxServlet extends HttpServlet {
     boolean update = Boolean.parseBoolean(req.getParameter("update_attachment"));
     boolean force =
         Boolean.parseBoolean(req.getParameter("force_release")) && getMainSessionController(
-            req).getCurrentUserDetail().isAccessAdmin();
+        req).getCurrentUserDetail().isAccessAdmin();
     try {
       if (!AttachmentController.checkinFile(idAttachment, false, update, force, fileLanguage)) {
         return "locked";

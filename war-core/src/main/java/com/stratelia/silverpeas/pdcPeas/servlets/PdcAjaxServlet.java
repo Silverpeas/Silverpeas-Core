@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import java.io.IOException;
@@ -35,48 +36,46 @@ import com.silverpeas.form.fieldDisplayer.PdcFieldDisplayer;
 
 /**
  * Servlet used in Ajax mode to update the positions of a PDC field.
- * 
  * @author ahedin
  */
 public class PdcAjaxServlet extends HttpServlet {
-  
+
   private static final long serialVersionUID = 2363812622945071639L;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-   * 
    * @param request The HTPP request.
    * @param response The HTTP response.
    * @throws ServletException if a servlet-specific error occurs.
    * @throws IOException if an I/O error occurs.
    */
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-  throws ServletException, IOException {
+      throws ServletException, IOException {
     String fieldName = request.getParameter("fieldName");
     String positions = request.getParameter("positions");
     String language = request.getParameter("language");
     response.setContentType("text/html;charset=UTF-8");
     PrintWriter out = response.getWriter();
-    
+
     PdcFieldDisplayer displayer = new PdcFieldDisplayer();
     String content = displayer.getPositionsDivContent(fieldName, positions, language);
-    
+
     try {
       out.println(content);
     } finally {
       out.close();
     }
   }
-  
+
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
-  throws ServletException, IOException {
+      throws ServletException, IOException {
     processRequest(request, response);
   }
-  
+
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
-  throws ServletException, IOException {
+      throws ServletException, IOException {
     processRequest(request, response);
   }
 

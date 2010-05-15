@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.treeMenu.process;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
@@ -114,7 +115,8 @@ public class TreeBuilder {
     // the space displaying
     if (father.getType() == NodeType.SPACE) {
       // gets the sub space
-      List<SpaceInstLight> subspaces = controller.getSubSpacesContainingComponent(father.getKey(), userId, "kmelia");
+      List<SpaceInstLight> subspaces =
+          controller.getSubSpacesContainingComponent(father.getKey(), userId, "kmelia");
       for (SpaceInstLight space : subspaces) {
         MenuItem item =
             new MenuItem(space.getName(language), space.getFullId(), space.getLevel(),

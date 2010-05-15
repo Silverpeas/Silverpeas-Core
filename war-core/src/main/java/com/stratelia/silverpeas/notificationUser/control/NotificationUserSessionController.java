@@ -188,9 +188,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
     SilverTrace
         .debug("notificationUser",
-            "NotificationUsersessionController.sendMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-                + priorityId);
+        "NotificationUsersessionController.sendMessage()",
+        "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
+        + priorityId);
 
     if ((notificationId != null) && (notificationId.length() > 0)) {
       notifTypeId = Integer.parseInt(notificationId);
@@ -244,15 +244,15 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator() {
-        public int compare(Object o1, Object o2) {
+          public int compare(Object o1, Object o2) {
           return (((Properties) o1).getProperty("name")).toUpperCase()
               .compareTo(((Properties) o2).getProperty("name").toUpperCase());
-        }
+          }
 
         public boolean equals(Object o) {
           return false;
-        }
-      });
+          }
+                });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);

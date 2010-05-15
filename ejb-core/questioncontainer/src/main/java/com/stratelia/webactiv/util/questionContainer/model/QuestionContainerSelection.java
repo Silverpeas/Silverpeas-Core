@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -47,9 +47,9 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     try {
       QuestionContainerDetailFlavor =
           new DataFlavor(
-              Class
-                  .forName("com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"),
-              "QuestionContainer");
+          Class
+          .forName("com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"),
+          "QuestionContainer");
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
@@ -95,7 +95,7 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     QuestionContainerPK questionContainerPK = m_questionContainer.getHeader().getPK();
     indexEntry =
         new IndexEntry(questionContainerPK.getComponentName(), "QuestionContainer",
-            questionContainerPK.getId());
+        questionContainerPK.getId());
     indexEntry.setTitle(m_questionContainer.getHeader().getName());
     return indexEntry;
   }

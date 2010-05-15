@@ -424,7 +424,7 @@ public class UserTable extends Table {
     concatAndOr =
         addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer",
         concatAndOr, andOr);
-    
+
     if (concatAndOr) {
       theQuery.append(") AND (accessLevel <> 'R')");
     } else {

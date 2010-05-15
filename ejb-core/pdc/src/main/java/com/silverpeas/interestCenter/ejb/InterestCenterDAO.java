@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 // TODO : reporter dans CVS (done)
 /*
  * Aliaksei_Budnikau
@@ -53,8 +54,8 @@ public class InterestCenterDAO {
   /** getICByUserID sql query constant */
   public final static String GET_IC_BY_USERID_QUERY =
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-          + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
-          + ICENTER_TABLE_NAME + " a WHERE a.ownerId = ? ";
+      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
+      + ICENTER_TABLE_NAME + " a WHERE a.ownerId = ? ";
 
   /**
    * @return a list of <code>InterestCenter</code>s by user id provided
@@ -92,8 +93,8 @@ public class InterestCenterDAO {
   /** getICByPK sql query constant */
   public final static String GET_IC_BY_PK_QUERY =
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-          + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
-          + ICENTER_TABLE_NAME + " a WHERE a.id = ? ";
+      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM "
+      + ICENTER_TABLE_NAME + " a WHERE a.id = ? ";
 
   /**
    * @param icPK <code>InterestCenter</code> id

@@ -28,7 +28,7 @@ package com.stratelia.webactiv.searchEngine.model;
  * Thrown when a search query is ill formed.
  */
 public class ParseException extends SearchEngineException {
-  
+
   private static final long serialVersionUID = 8010106221494935623L;
 
   /**

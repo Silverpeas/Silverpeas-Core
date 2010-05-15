@@ -99,10 +99,12 @@ public class DragAndDrop extends HttpServlet {
     try {
       req.setCharacterEncoding("UTF-8");
       String componentId = req.getParameter("ComponentId");
-      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "componentId = "
-          + componentId);
+      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "componentId = "
+              + componentId);
       String id = req.getParameter("PubId");
-      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+      SilverTrace
+          .info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
       String userId = req.getParameter("UserId");
       SilverTrace.info("attachment", "DragAndDrop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
@@ -113,8 +115,10 @@ public class DragAndDrop extends HttpServlet {
       for (FileItem item : items) {
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
-        SilverTrace.info("attachment", "DragAndDrop.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; " + item.getString("UTF-8"));
+        SilverTrace
+            .info("attachment", "DragAndDrop.doPost",
+                "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; " +
+                item.getString("UTF-8"));
 
         if (!item.isFormField()) {
           String fileName = item.getName();
@@ -163,8 +167,10 @@ public class DragAndDrop extends HttpServlet {
                 }
                 String destFile = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath
                     + File.separatorChar + fileName;
-                FileRepositoryManager.copyFile(AttachmentController.createPath(componentId, "Images")
-                    + File.separatorChar + physicalName, destFile);
+                FileRepositoryManager.copyFile(AttachmentController.createPath(componentId,
+                    "Images")
+                    +
+                    File.separatorChar + physicalName, destFile);
               }
             }
           }

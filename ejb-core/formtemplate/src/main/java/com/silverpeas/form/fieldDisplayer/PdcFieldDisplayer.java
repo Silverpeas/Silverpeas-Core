@@ -70,94 +70,96 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Displayer class of a PDC field.
- * 
  * @author ahedin
  * @see PdcField
  */
 public class PdcFieldDisplayer extends AbstractFieldDisplayer {
-  
+
   // Multilang resource path
-  private static String MULTILANG_RESOURCE_PATH = "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle";
+  private static String MULTILANG_RESOURCE_PATH =
+      "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle";
   // Icons resource path
-  private static String ICONS_RESOURCE_PATH = "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons";
-  
+  private static String ICONS_RESOURCE_PATH =
+      "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons";
+
   // Bean to access PDC axis data
   private PdcBm pdcBm = null;
-  
+
   @Override
-	public void display(PrintWriter out, Field field, FieldTemplate template,
-			PagesContext pagesContext) throws FormException {
-	  String language = pagesContext.getLanguage();
-	  String fieldName = template.getFieldName();
+  public void display(PrintWriter out, Field field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
+    String language = pagesContext.getLanguage();
+    String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
-    
+
     if (!field.getTypeName().equals(PdcField.TYPE)) {
       SilverTrace.info("form", "PdcFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-        PdcField.TYPE);
+          PdcField.TYPE);
     }
-    
+
     String axis = parameters.get("pdcAxis");
     String value = field.getValue(language);
     boolean readOnly = (template.isHidden() || template.isDisabled() || template.isReadOnly()
-      || !"pdc".equals(template.getDisplayerName()));
+        || !"pdc".equals(template.getDisplayerName()));
     boolean mandatory = (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-      && !template.isHidden() && pagesContext.useMandatory());
-    
-    out.println(getPositionsHtml(fieldName, value, axis, language, readOnly, mandatory));
-	}
+        && !template.isHidden() && pagesContext.useMandatory());
 
-	@Override
-	public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-	throws IOException {
-		if (!template.getTypeName().equals(PdcField.TYPE)) {
+    out.println(getPositionsHtml(fieldName, value, axis, language, readOnly, mandatory));
+  }
+
+  @Override
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
+      throws IOException {
+    if (!template.getTypeName().equals(PdcField.TYPE)) {
       SilverTrace.info("form", "PdcFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-        PdcField.TYPE);
+          PdcField.TYPE);
     }
-		
+
     if (template.isMandatory() && pagesContext.useMandatory()) {
       String language = pagesContext.getLanguage();
-      out.println(" if (document.getElementById(\"" + template.getFieldName() + "\").value == \"\") {");
+      out.println(" if (document.getElementById(\"" + template.getFieldName() +
+          "\").value == \"\") {");
       out.println("   errorMsg += \"  - '" + template.getLabel(language) + "' "
-        + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("   errorNb++;");
       out.println(" }");
     }
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
-	}
+  }
 
-	@Override
-	public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
-		return 1;
-	}
+  @Override
+  public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
+    return 1;
+  }
 
-	@Override
-	public boolean isDisplayedMandatory() {
-		return true;
-	}
+  @Override
+  public boolean isDisplayedMandatory() {
+    return true;
+  }
 
-	@Override
-	public List<String> update(String value, Field field, FieldTemplate template,
-			PagesContext pagesContext) throws FormException {
-		if (!field.getTypeName().equals(PdcField.TYPE)) {
-			throw new FormException(
-				"PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", PdcField.TYPE);
-		}
-		if (field.acceptValue(value, pagesContext.getLanguage())) {
-			field.setValue(value, pagesContext.getLanguage());
-		} else {
-			throw new FormException(
-				"PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", PdcField.TYPE);
-		}
-		return new ArrayList<String>();
-	}
-	
-	/**
-	 * @param value The description of used axis which are needed, following the pattern :
-	 *        axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
-	 * @return The list of used axis corresponding to the description given as parameter.
-	 */
-	public ArrayList<UsedAxis> getUsedAxisList(String value) {
+  @Override
+  public List<String> update(String value, Field field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
+    if (!field.getTypeName().equals(PdcField.TYPE)) {
+      throw new FormException(
+          "PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE", PdcField.TYPE);
+    }
+    if (field.acceptValue(value, pagesContext.getLanguage())) {
+      field.setValue(value, pagesContext.getLanguage());
+    } else {
+      throw new FormException(
+          "PdcFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", PdcField.TYPE);
+    }
+    return new ArrayList<String>();
+  }
+
+  /**
+   * @param value The description of used axis which are needed, following the pattern :
+   * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
+   * @return The list of used axis corresponding to the description given as parameter.
+   */
+  public ArrayList<UsedAxis> getUsedAxisList(String value) {
     ArrayList<UsedAxis> usedAxisList = new ArrayList<UsedAxis>();
     StringTokenizer st = new StringTokenizer(value, ".");
     String[] axisData;
@@ -182,14 +184,14 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
           usedAxis.setMandatory(Integer.parseInt(mandatory));
           usedAxis.setVariant(Integer.parseInt(variant));
           usedAxis.setBaseValue(Integer.parseInt(baseValueId));
-          
+
           usedAxis._setAxisHeader(axisHeader);
           usedAxis._setAxisName(axisHeader.getName());
           usedAxis._setAxisType(axisHeader.getAxisType());
           usedAxis._setAxisValues(getAxisValues(Integer.parseInt(axisId)));
           Value baseValue = getAxisValue(baseValueId, axisId);
           usedAxis._setBaseValueName(baseValue.getName());
-          
+
           usedAxisList.add(usedAxis);
           usedAxisId++;
         }
@@ -197,61 +199,61 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     }
     return usedAxisList;
   }
-	
-	/**
-	 * @param axisId The axis id.
-	 * @return The header of the axis which id is given as parameter.
-	 */
-	private AxisHeader getAxisHeader(String axisId) {
-	  Axis axis = getAxisDetail(axisId);
-	  if (axis != null) {
-	    return axis.getAxisHeader();
-	  }
+
+  /**
+   * @param axisId The axis id.
+   * @return The header of the axis which id is given as parameter.
+   */
+  private AxisHeader getAxisHeader(String axisId) {
+    Axis axis = getAxisDetail(axisId);
+    if (axis != null) {
+      return axis.getAxisHeader();
+    }
     return null;
-	}
-	
-	/**
-	 * @param value The description of used axis which are needed, following the pattern :
-   *        axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
-	 * @param language The language to use to display axis content.
-	 * @return The HTML content corresponding to the description and language given as parameters.
-	 */
+  }
+
+  /**
+   * @param value The description of used axis which are needed, following the pattern :
+   * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
+   * @param language The language to use to display axis content.
+   * @return The HTML content corresponding to the description and language given as parameters.
+   */
   public String getAxisHtml(String value, String language) {
     ElementContainer result = new ElementContainer();
-    
+
     Table table = new Table();
     table.setClass("tableArrayPane");
     table.setWidth("100%");
     table.setBorder(0);
     table.setCellPadding(2);
     table.setCellSpacing(2);
-    
+
     // Header
     TR headerLine = new TR();
     ResourceLocator resource = GeneralPropertiesManager.getGeneralMultilang(language);
     ResourcesWrapper pdcResource = new ResourcesWrapper(
-      new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
-      new ResourceLocator(ICONS_RESOURCE_PATH, language),
-      language);
+        new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
+        new ResourceLocator(ICONS_RESOURCE_PATH, language),
+        language);
     String[] headerLabelsData = {
-      "GML.type", "GML.name", "pdcPeas.baseValue", "GML.requiredField", "pdcPeas.variant"};
+        "GML.type", "GML.name", "pdcPeas.baseValue", "GML.requiredField", "pdcPeas.variant" };
     String headerLabelKey;
     for (int i = 0; i < headerLabelsData.length; i++) {
       headerLabelKey = headerLabelsData[i];
       TD headerCell = new TD();
       headerCell.setClass("ArrayColumn");
       headerCell.addElement(headerLabelKey.startsWith("pdc")
-        ? pdcResource.getString(headerLabelKey) : resource.getString(headerLabelKey));
+          ? pdcResource.getString(headerLabelKey) : resource.getString(headerLabelKey));
       headerLine.addElement(headerCell);
     }
-    
+
     // Operation column.
     TD headerOperationCell = new TD();
     headerOperationCell.setClass("ArrayColumn");
     headerOperationCell.addElement(pdcResource.getString("pdcPeas.axisOperation"));
     headerLine.addElement(headerOperationCell);
     table.addElement(headerLine);
-    
+
     // Axis data.
     int usedAxisCount = 0;
     if (value != null && value.length() > 0) {
@@ -274,9 +276,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
           usedAxisBaseValue = usedAxis._getBaseValueName();
           usedAxisMandatory = usedAxis.getMandatory();
           usedAxisVariant = usedAxis.getVariant();
-          
+
           TR axisLine = new TR();
-          
+
           // Axis type.
           TD axisTypeCell = new TD();
           axisTypeCell.setClass("ArrayCell");
@@ -291,10 +293,10 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
             axisTypeImg.setAlt(pdcResource.getString("pdcPeas.secondaryAxis"));
             axisTypeImg.setTitle(pdcResource.getString("pdcPeas.secondaryAxis"));
           }
-          
+
           axisTypeCell.addElement(axisTypeImg);
           axisLine.addElement(axisTypeCell);
-          
+
           // Axis name.
           TD axisNameCell = new TD();
           axisNameCell.setClass("ArrayCell");
@@ -305,7 +307,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
           axisEditLink.addElement(usedAxisName);
           axisNameCell.addElement(axisEditLink);
           axisLine.addElement(axisNameCell);
-          
+
           // Base value.
           TD baseValueCell = new TD();
           baseValueCell.setClass("ArrayCell");
@@ -327,7 +329,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
             mandatoryCell.addElement("&nbsp;");
           }
           axisLine.addElement(mandatoryCell);
-          
+
           // Variant.
           TD variantCell = new TD();
           variantCell.setClass("ArrayCell");
@@ -342,7 +344,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
             variantCell.addElement("&nbsp;");
           }
           axisLine.addElement(variantCell);
-          
+
           // Operation column.
           TD operationCell = new TD();
           operationCell.setClass("ArrayCell");
@@ -353,7 +355,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
           operationInput.setValue(usedAxisId);
           operationCell.addElement(operationInput);
           axisLine.addElement(operationCell);
-          
+
           table.addElement(axisLine);
         }
       }
@@ -366,19 +368,19 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       emptyLine.addElement(emptyCell);
       table.addElement(emptyLine);
     }
-    
+
     Table globalTable = new Table();
     globalTable.setWidth("100%");
     globalTable.setBorder(0);
     globalTable.setCellPadding(0);
     globalTable.setCellSpacing(0);
     TR globalLine = new TR();
-    
+
     TD globalCell1 = new TD();
     globalCell1.setWidth("100%");
     globalCell1.addElement(table);
     globalLine.addElement(globalCell1);
-    
+
     TD globalCell2 = new TD();
     globalCell2.setVAlign(AlignType.top);
     IMG mandatoryImg = new IMG();
@@ -391,27 +393,27 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     mandatoryImg.setStyle("position: relative; margin: 5px");
     globalCell2.addElement(mandatoryImg);
     globalLine.addElement(globalCell2);
-    
+
     globalTable.addElement(globalLine);
     result.addElement(globalTable);
-    
+
     Input axisCountInput = new Input();
     axisCountInput.setName("axisCount");
     axisCountInput.setID("axisCount");
     axisCountInput.setType(Input.hidden);
     axisCountInput.setValue(usedAxisCount);
     result.addElement(axisCountInput);
-    
+
     return result.toString();
   }
-  
+
   /**
    * @param fieldName The name of the PDC field.
    * @param pattern The description of required positions, following the pattern :
-   *        axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1...
-   *        where axisIdi_j and valueIdi_j correspond to the value #j of the position #i.
+   * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
+   * valueIdi_j correspond to the value #j of the position #i.
    * @param axis The description of used axis which are needed, following the pattern :
-   *        axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
+   * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
    * @param language The language to use to display positions content.
    * @param readOnly The display mode.
    * @param mandatory Indicates whether a value is required for the PDC field.
@@ -423,13 +425,13 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       pattern = "";
     }
     ElementContainer result = new ElementContainer();
-    
+
     ResourceLocator resource = GeneralPropertiesManager.getGeneralMultilang(language);
     ResourcesWrapper pdcResource = new ResourcesWrapper(
         new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
         new ResourceLocator(ICONS_RESOURCE_PATH, language),
         language);
-    
+
     Table table = new Table();
     table.setWidth("100%");
     table.setBorder(0);
@@ -448,9 +450,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     Style style = new Style();
     style.addElement("#pdcPositions_" + fieldName + " ul li a {margin-left: 5px;}");
     positionsCell.addElement(style);
-    
+
     positionsLine.addElement(positionsCell);
-    
+
     if (!readOnly) {
       TD addPositionCell = new TD();
       addPositionCell.setVAlign(AlignType.top);
@@ -464,7 +466,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       addPositionCell.addElement(addPositionLink);
       positionsLine.addElement(addPositionCell);
     }
-    
+
     if (mandatory) {
       TD mandatoryCell = new TD();
       mandatoryCell.setVAlign(pattern.length() > 0 ? AlignType.bottom : AlignType.middle);
@@ -478,26 +480,25 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       mandatoryCell.addElement(mandatoryImg);
       positionsLine.addElement(mandatoryCell);
     }
-    
-    table.addElement(positionsLine);    
+
+    table.addElement(positionsLine);
     result.addElement(table);
-    
+
     if (!readOnly) {
       result.addElement(getPositionsScript(fieldName, axis, language, pdcResource));
     }
-    
+
     return result.toString();
   }
-  
+
   /**
-   * 
    * @param fieldName The name of the PDC field.
    * @param axis The description of used axis which are needed, following the pattern :
-   *        axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
+   * axisId1,baseValueId1,mandatory1,variant1.axisId2,baseValueId2,mandatory2,variant2...
    * @param language The language to use to display positions scripts.
    * @param pdcResource The labels resources.
    * @return The javascript content describing the actions required to manage the positions of the
-   *         PDC field.
+   * PDC field.
    */
   private Script getPositionsScript(String fieldName, String axis, String language,
       ResourcesWrapper pdcResource) {
@@ -506,68 +507,67 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     script.addElement(
         "function addPositions_" + fieldName + "() {"
         + "openPositionsWindow_" + fieldName + "(\"NewPosition\", null);"
-      + "}"
-      + "function editPositions_" + fieldName + "(id) {"
-        + "openPositionsWindow_" + fieldName + "(\"EditPosition\", \"Id=\" + id);"
-      + "}"
-      + "function deletePositions_" + fieldName + "(id) {"
-        + "if (confirm(\"" + pdcResource.getString("pdcPeas.confirmDeletePosition") + "\")) {"
-          + "openPositionsWindow_" + fieldName + "(\"DeletePosition\", \"Ids=\" + id);"
         + "}"
-      + "}"
-      + "function openPositionsWindow_" + fieldName + "(action, params) {"
+        + "function editPositions_" + fieldName + "(id) {"
+        + "openPositionsWindow_" + fieldName + "(\"EditPosition\", \"Id=\" + id);"
+        + "}"
+        + "function deletePositions_" + fieldName + "(id) {"
+        + "if (confirm(\"" + pdcResource.getString("pdcPeas.confirmDeletePosition") + "\")) {"
+        + "openPositionsWindow_" + fieldName + "(\"DeletePosition\", \"Ids=\" + id);"
+        + "}"
+        + "}"
+        + "function openPositionsWindow_" + fieldName + "(action, params) {"
         + "var context = window.location.pathname;"
         + "context = context.substring(0, context.indexOf(\"/\", 1));"
         + "var url = context + \"/RpdcClassify/jsp/PdcFieldMode"
-          + "?pdcFieldName=" + fieldName
-          + "&pdcFieldPositions=\" + document.getElementById(\"" + fieldName + "\").value + \""
-          + "&pdcAxis=" + axis
-          + "&action=\" + action;"
+        + "?pdcFieldName=" + fieldName
+        + "&pdcFieldPositions=\" + document.getElementById(\"" + fieldName + "\").value + \""
+        + "&pdcAxis=" + axis
+        + "&action=\" + action;"
         + "if (params != null && params != \"\") {"
-          + "url += \"&\" + params;"
+        + "url += \"&\" + params;"
         + "}"
         + "SP_openWindow(url, action, 600, 400, \"\");"
-      + "}"
-      + "function updatePositions_" + fieldName + "(positions) {"
+        + "}"
+        + "function updatePositions_" + fieldName + "(positions) {"
         + "var context = window.location.pathname;"
         + "context = context.substring(0, context.indexOf(\"/\", 1));"
         + "var url = context + \"/PdcAjaxServlet"
-          + "?fieldName=" + fieldName
-          + "&positions=\" + positions + \""
-          + "&language=" + language + "\";"
+        + "?fieldName=" + fieldName
+        + "&positions=\" + positions + \""
+        + "&language=" + language + "\";"
         + "$('#pdcPositions_" + fieldName + "').load(url);"
-      + "}");
+        + "}");
     return script;
   }
-  
+
   /**
-   * 
    * @param fieldName The name of the PDC field.
    * @param pattern The description of required positions, following the pattern :
-   *        axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1...
-   *        where axisIdi_j and valueIdi_j correspond to the value #j of the position #i.
+   * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
+   * valueIdi_j correspond to the value #j of the position #i.
    * @param language The language to use to display the positions content.
    * @return The HTML content of the positions block defined for the PDC field.
    */
   public String getPositionsDivContent(String fieldName, String pattern, String language) {
     ResourcesWrapper pdcResource = new ResourcesWrapper(
-      new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
-      new ResourceLocator(ICONS_RESOURCE_PATH, language),
-      language);
+        new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
+        new ResourceLocator(ICONS_RESOURCE_PATH, language),
+        language);
     return getPositionsDivContent(fieldName, pattern, false, pdcResource).toString();
   }
-  
+
   /**
-   * 
    * @param fieldName The name of the PDC field.
    * @param pattern The description of required positions, following the pattern :
-   *        axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1...
-   *        where axisIdi_j and valueIdi_j correspond to the value #j of the position #i.
+   * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
+   * valueIdi_j correspond to the value #j of the position #i.
    * @param readOnly The display mode.
    * @param pdcResource The labels resources.
    * @return The HTML content of the positions block defined for the PDC field.
    */
-  private ElementContainer getPositionsDivContent(String fieldName, String pattern, boolean readOnly,
+  private ElementContainer getPositionsDivContent(String fieldName, String pattern,
+      boolean readOnly,
       ResourcesWrapper pdcResource) {
     ElementContainer positionsDiv = new ElementContainer();
     ArrayList<ClassifyPosition> positions = getPositions(pattern);
@@ -586,7 +586,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
         position = positions.get(i);
         LI positionLi = new LI();
         positionLi.addElement(pdcResource.getString("pdcPeas.position") + (i + 1));
-        
+
         if (!readOnly) {
           A editPositionLink = new A();
           editPositionLink.setHref("javascript:editPositions_" + fieldName + "(" + i + ")");
@@ -596,7 +596,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
           editPositionImg.setTitle(pdcResource.getString("pdcPeas.editPosition"));
           editPositionLink.addElement(editPositionImg);
           positionLi.addElement(editPositionLink);
-          
+
           A deletePositionLink = new A();
           deletePositionLink.setHref("javascript:deletePositions_" + fieldName + "(" + i + ")");
           IMG deletePositionImg = new IMG();
@@ -606,7 +606,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
           deletePositionLink.addElement(deletePositionImg);
           positionLi.addElement(deletePositionLink);
         }
-        
+
         UL valuesUl = new UL();
         List<ClassifyValue> classifyValues = position.getValues();
         for (int j = 0; j < classifyValues.size(); j++) {
@@ -620,7 +620,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       }
       positionsDiv.addElement(positionsUl);
     }
-    
+
     if (!readOnly) {
       Input positionsInput = new Input();
       positionsInput.setID(fieldName);
@@ -629,12 +629,11 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       positionsInput.setType(Input.hidden);
       positionsDiv.addElement(positionsInput);
     }
-    
+
     return positionsDiv;
   }
-  
+
   /**
-   * 
    * @param value The position value.
    * @param language The language to use to display the path of the position value.
    * @return The path corresponding to the position value and the language given as parameters.
@@ -651,11 +650,11 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     }
     return path.toString();
   }
-  
+
   /**
    * @param pattern The description of required positions, following the pattern :
-   *        axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1...
-   *        where axisIdi_j and valueIdi_j correspond to the value #j of the position #i.
+   * axisId1_1,valueId1_1;axisId1_2,valueId1_2.axisId2_1,valueId2_1... where axisIdi_j and
+   * valueIdi_j correspond to the value #j of the position #i.
    * @return The list of positions corresponding to the description given as parameter.
    */
   public ArrayList<ClassifyPosition> getPositions(String pattern) {
@@ -710,7 +709,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     }
     return positions;
   }
-  
+
   /**
    * @return The bean allowing to access to PDC axis data.
    */
@@ -720,7 +719,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     }
     return pdcBm;
   }
-  
+
   /**
    * @param axisId The axis id.
    * @return The detail of the axis which id is given as parameter.
@@ -730,11 +729,11 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       return getPdcBm().getAxisDetail(axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getAxisDetail", "form.EX_CANT_GET_AXIS_DETAIL",
-        axisId);
+          axisId);
     }
     return null;
   }
-  
+
   /**
    * @param valueId The value id.
    * @param axisId The axis id.
@@ -746,11 +745,11 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       value = getPdcBm().getAxisValue(valueId, axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getAxisValue", "form.EX_CANT_GET_AXIS_VALUE",
-        "(" + valueId + " ; " + axisId + ")");
+          "(" + valueId + " ; " + axisId + ")");
     }
     return value;
   }
-  
+
   /**
    * @param axisId The axis id.
    * @return The list of values contained by the axis corresponding to the id given as parameter.
@@ -761,16 +760,16 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       values = getPdcBm().getAxisValues(axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getAxisValues", "form.EX_CANT_GET_AXIS_VALUES",
-        String.valueOf(axisId));
+          String.valueOf(axisId));
     }
     return values;
   }
-  
+
   /**
    * @param valueId The value id.
    * @param axisId The axis id.
    * @return The list of nodes which describe the path of the axis value corresponding to the ids
-   *         given as parameters.
+   * given as parameters.
    */
   private List<TreeNode> getFullPath(String valueId, String axisId) {
     List<TreeNode> nodes = null;
@@ -778,7 +777,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       nodes = getPdcBm().getFullPath(valueId, axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getFullPath", "form.EX_CANT_GET_FULL_PATH",
-        "(" + valueId + " ; " + axisId + ")");
+          "(" + valueId + " ; " + axisId + ")");
     }
     return nodes;
   }

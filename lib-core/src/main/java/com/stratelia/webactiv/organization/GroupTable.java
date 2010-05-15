@@ -670,7 +670,7 @@ public class GroupTable extends Table {
         + group.name + " dans la base", null);
 
     // remove the empty group.
-    //organization.userSet.removeUserSet("G", id);
+    // organization.userSet.removeUserSet("G", id);
     SynchroReport.debug("GroupTable.removeGroup()", "Suppression de "
         + group.name + " (ID=" + id + "), requête : " + DELETE_GROUP, null);
     updateRelation(DELETE_GROUP, id);

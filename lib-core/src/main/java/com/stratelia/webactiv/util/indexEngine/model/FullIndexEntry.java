@@ -37,8 +37,9 @@ import com.stratelia.webactiv.util.indexEngine.DateFormatter;
  * extra-content is indexed but not stored in the index.
  */
 public class FullIndexEntry extends IndexEntry implements Serializable {
-  
+
   private static final long serialVersionUID = -4955524385769457730L;
+
   /**
    * The constructor only set the key part of the IndexEntry.
    * @deprecated - parameter space is no more used

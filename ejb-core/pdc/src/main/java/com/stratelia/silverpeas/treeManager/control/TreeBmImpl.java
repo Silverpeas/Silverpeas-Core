@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.treeManager.control;
 
 import java.sql.Connection;
@@ -60,8 +61,9 @@ public class TreeBmImpl implements TreeBm {
     String whereClause = "treeId = " + treeId + " and levelNumber = 0";
     TreeNode root = null;
     try {
-      List<TreeNodePersistence> roots = (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK("useless"),
-          whereClause);
+      List<TreeNodePersistence> roots =
+          (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK("useless"),
+              whereClause);
       if (roots.size() > 0) {
         SilverTrace.info("treeManager", "TreeManagerBmImpl.getRoot()",
             "root.MSG_GEN_PARAM_VALUE", "roots.size() = " + roots.size());
@@ -638,7 +640,8 @@ public class TreeBmImpl implements TreeBm {
     TreeNode node = null;
     try {
       String whereClause = "treeId = " + treeId + " and id = " + nodePK.getId();
-      List<TreeNodePersistence> nodes = (List<TreeNodePersistence>) getDAO().findByWhereClause(con, nodePK, whereClause);
+      List<TreeNodePersistence> nodes =
+          (List<TreeNodePersistence>) getDAO().findByWhereClause(con, nodePK, whereClause);
       if (nodes.size() > 0) {
         TreeNodePersistence tnp = nodes.get(0);
         node = new TreeNode(tnp);
@@ -672,12 +675,13 @@ public class TreeBmImpl implements TreeBm {
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getNodesByName()",
         "root.MSG_GEN_PARAM_VALUE", "nodeName = " + nodeName);
-    List<TreeNodePersistence>nodes = null;
+    List<TreeNodePersistence> nodes = null;
     List<TreeNode> result = null;
     try {
       String whereClause = "name = '" + encode(nodeName) + "'";
-      nodes = (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK("useless"),
-          whereClause);
+      nodes =
+          (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK("useless"),
+              whereClause);
       result = persistence2TreeNode(con, nodes);
     } catch (PersistenceException pe) {
       throw new TreeManagerException("TreeBmImpl.getNodesByName()",
@@ -1009,7 +1013,8 @@ public class TreeBmImpl implements TreeBm {
     return list;
   }
 
-  private List<TreeNode> persistence2TreeNode(Connection con, Collection<TreeNodePersistence> silverpeasBeans)
+  private List<TreeNode> persistence2TreeNode(Connection con,
+      Collection<TreeNodePersistence> silverpeasBeans)
       throws TreeManagerException {
     List<TreeNode> nodes = new ArrayList<TreeNode>();
     if (silverpeasBeans != null) {

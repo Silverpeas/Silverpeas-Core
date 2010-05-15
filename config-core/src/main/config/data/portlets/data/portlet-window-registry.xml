@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -24,10 +24,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+
 <PortletWindowRegistry version="1.0">
      <PortletWindow lang="JAVA" name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" remote="false">
           <Properties>
-               <String name="title" value="Dernières publications"/>
+               <String name="title" value="Derniï¿½res publications"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|LastPublicationsPortlet"/>
@@ -36,7 +37,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes requêtes favorites"/>
+               <String name="title" value="Mes requï¿½tes favorites"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|FavoriteQueriesPortlet"/>
@@ -45,7 +46,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes prochains évènements"/>
+               <String name="title" value="Mes prochains ï¿½vï¿½nements"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|NextEventsPortlet"/>
@@ -54,7 +55,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes tâches"/>
+               <String name="title" value="Mes tï¿½ches"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|MyTodosPortlet"/>
@@ -81,7 +82,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes liens préférés"/>
+               <String name="title" value="Mes liens prï¿½fï¿½rï¿½s"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyBookmarksPortlet"/>
@@ -90,7 +91,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" remote="false">
           <Properties>
-               <String name="title" value="Mes fichiers réservés"/>
+               <String name="title" value="Mes fichiers rï¿½servï¿½s"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyCheckOutFiles"/>
@@ -99,7 +100,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" remote="false">
           <Properties>
-               <String name="title" value="Actualités"/>
+               <String name="title" value="Actualitï¿½s"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|QuickInfosPortlet"/>

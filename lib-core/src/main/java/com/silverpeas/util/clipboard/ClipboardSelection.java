@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
  * @author
  */
 public abstract class ClipboardSelection implements Serializable, ClipboardOwner, Transferable {
-  
+
   private static final long serialVersionUID = 7296607705319157979L;
   static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index",
       "Silverpeas index");

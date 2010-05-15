@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.treeMenu.process;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_COMPONENT_ID;
@@ -62,18 +63,17 @@ public class TreeHandler {
   public static String ProcessMenu(HttpServletRequest request, String menuType)
       throws RemoteException {
     HttpSession session = request.getSession(true);
-  
 
-      MainSessionController mainSessionCtrl =
-          (MainSessionController) session.getAttribute("SilverSessionController");
-      OrganizationController controller = mainSessionCtrl.getOrganizationController();
-      String userId = mainSessionCtrl.getUserId();
-      String language = mainSessionCtrl.getFavoriteLanguage();
+    MainSessionController mainSessionCtrl =
+        (MainSessionController) session.getAttribute("SilverSessionController");
+    OrganizationController controller = mainSessionCtrl.getOrganizationController();
+    String userId = mainSessionCtrl.getUserId();
+    String language = mainSessionCtrl.getFavoriteLanguage();
     MenuItem items =
         TreeBuilder.buildLevelMenu(TreeFilterFactory.getTreeFilter(menuType),
-            getMenuItemFather(request), userId,
-          language, controller);
-      
+        getMenuItemFather(request), userId,
+        language, controller);
+
     // transform the children to json
     return TreeMenuJason.getListAsJSONArray(items.getChildren()).toString();
   }
@@ -87,7 +87,6 @@ public class TreeHandler {
   private static MenuItem getMenuItemFather(HttpServletRequest request) {
     // gets key from request
     String key = request.getParameter(REQUEST_KEY_ITEM_MENU_ID);
-
 
     // building of the father of menu items to display
     MenuItem father = null;

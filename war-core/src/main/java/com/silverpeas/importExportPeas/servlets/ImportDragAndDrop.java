@@ -135,7 +135,9 @@ public class ImportDragAndDrop extends HttpServlet {
             fileName = fileName.replace('/', File.separatorChar);
             if (fileName.indexOf(File.separatorChar) >= 0) {
               fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
-              parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.lastIndexOf(File.separatorChar));
+              parentPath =
+                  parentPath + File.separatorChar +
+                      fileName.substring(0, fileName.lastIndexOf(File.separatorChar));
             }
             SilverTrace.info("importExportPeas", "Drop.doPost",
                 "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);

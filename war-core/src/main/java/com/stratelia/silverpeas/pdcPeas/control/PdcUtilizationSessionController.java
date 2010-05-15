@@ -43,147 +43,147 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
-	
-	private String currentView = "P";
-	private Axis currentAxis = null;
-	private PdcBm pdcBm = null;
 
-	private String componentId = null;
-	private String currentComponentLabel = null;
-	private String currentSpaceLabel = null;
+  private String currentView = "P";
+  private Axis currentAxis = null;
+  private PdcBm pdcBm = null;
 
-	// PDC field manager.
-	private PdcFieldTemplateManager pdcFieldTemplateManager = new PdcFieldTemplateManager();
+  private String componentId = null;
+  private String currentComponentLabel = null;
+  private String currentSpaceLabel = null;
 
-	public PdcUtilizationSessionController(MainSessionController mainSessionCtrl,
-			ComponentContext componentContext, String multilangBundle, String iconBundle) {
-		super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
-	}
+  // PDC field manager.
+  private PdcFieldTemplateManager pdcFieldTemplateManager = new PdcFieldTemplateManager();
 
-	public void init(String componentId) {
-	  pdcFieldTemplateManager.reset();
-		if (componentId != null) {
-			if (this.componentId == null) {
-				this.componentId = componentId;
-			} else {
-				if (!this.componentId.equals(componentId)) {
-					currentView = "P";
-					currentAxis = null;
-					this.componentId = componentId;
-				}
-			}
-			OrganizationController orga = getOrganizationController();
-			ComponentInst componentInst = orga.getComponentInst(componentId);
-			currentComponentLabel = componentInst.getLabel();
-			String currentSpaceId = componentInst.getDomainFatherId();
-			SpaceInst spaceInst = orga.getSpaceInstById(currentSpaceId);
-			currentSpaceLabel = spaceInst.getName();
-		}
-	}
-	
-	public void init() {
+  public PdcUtilizationSessionController(MainSessionController mainSessionCtrl,
+      ComponentContext componentContext, String multilangBundle, String iconBundle) {
+    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
+  }
+
+  public void init(String componentId) {
+    pdcFieldTemplateManager.reset();
+    if (componentId != null) {
+      if (this.componentId == null) {
+        this.componentId = componentId;
+      } else {
+        if (!this.componentId.equals(componentId)) {
+          currentView = "P";
+          currentAxis = null;
+          this.componentId = componentId;
+        }
+      }
+      OrganizationController orga = getOrganizationController();
+      ComponentInst componentInst = orga.getComponentInst(componentId);
+      currentComponentLabel = componentInst.getLabel();
+      String currentSpaceId = componentInst.getDomainFatherId();
+      SpaceInst spaceInst = orga.getSpaceInstById(currentSpaceId);
+      currentSpaceLabel = spaceInst.getName();
+    }
+  }
+
+  public void init() {
     componentId = null;
     currentView = "P";
     currentAxis = null;
   }
-	
-	private PdcBm getPdcBm() {
-		if (pdcBm == null) {
-			pdcBm = (PdcBm) new PdcBmImpl();
-		}
-		return pdcBm;
-	}
 
-	public String getComponentLabel() {
-		return this.currentComponentLabel;
-	}
+  private PdcBm getPdcBm() {
+    if (pdcBm == null) {
+      pdcBm = (PdcBm) new PdcBmImpl();
+    }
+    return pdcBm;
+  }
 
-	public String getSpaceLabel() {
-		return this.currentSpaceLabel;
-	}
+  public String getComponentLabel() {
+    return this.currentComponentLabel;
+  }
 
-	public void setCurrentView(String view) throws PdcException {
-		currentView = view;
-	}
+  public String getSpaceLabel() {
+    return this.currentSpaceLabel;
+  }
 
-	public String getCurrentView() throws PdcException {
-		return currentView;
-	}
+  public void setCurrentView(String view) throws PdcException {
+    currentView = view;
+  }
 
-	private void setCurrentAxis(Axis axis) throws PdcException {
-		currentAxis = axis;
-	}
+  public String getCurrentView() throws PdcException {
+    return currentView;
+  }
 
-	public Axis getCurrentAxis() throws PdcException {
-		return currentAxis;
-	}
-	
-	public PdcFieldTemplateManager getPdcFieldTemplateManager() {
+  private void setCurrentAxis(Axis axis) throws PdcException {
+    currentAxis = axis;
+  }
+
+  public Axis getCurrentAxis() throws PdcException {
+    return currentAxis;
+  }
+
+  public PdcFieldTemplateManager getPdcFieldTemplateManager() {
     return pdcFieldTemplateManager;
   }
 
-	public List<AxisHeader> getPrimaryAxis() throws PdcException {
-		return getPdcBm().getAxisByType("P");
-	}
+  public List<AxisHeader> getPrimaryAxis() throws PdcException {
+    return getPdcBm().getAxisByType("P");
+  }
 
-	public List<AxisHeader> getSecondaryAxis() throws PdcException {
-		return getPdcBm().getAxisByType("S");
-	}
+  public List<AxisHeader> getSecondaryAxis() throws PdcException {
+    return getPdcBm().getAxisByType("S");
+  }
 
-	public List<AxisHeader> getAxis() throws PdcException {
-		return getPdcBm().getAxisByType(getCurrentView());
-	}
+  public List<AxisHeader> getAxis() throws PdcException {
+    return getPdcBm().getAxisByType(getCurrentView());
+  }
 
-	public Axis getAxisDetail(String axisId) throws PdcException {
-		Axis axis = getPdcBm().getAxisDetail(axisId);
-		setCurrentAxis(axis);
-		return axis;
-	}
+  public Axis getAxisDetail(String axisId) throws PdcException {
+    Axis axis = getPdcBm().getAxisDetail(axisId);
+    setCurrentAxis(axis);
+    return axis;
+  }
 
-	public UsedAxis getUsedAxis(String usedAxisId) throws PdcException {
-	  if (pdcFieldTemplateManager.isEnabled()) {
-	    return pdcFieldTemplateManager.getUsedAxis(usedAxisId);
-	  } else {
-	    return getPdcBm().getUsedAxis(usedAxisId);
-	  }
-	}
+  public UsedAxis getUsedAxis(String usedAxisId) throws PdcException {
+    if (pdcFieldTemplateManager.isEnabled()) {
+      return pdcFieldTemplateManager.getUsedAxis(usedAxisId);
+    } else {
+      return getPdcBm().getUsedAxis(usedAxisId);
+    }
+  }
 
-	public List<UsedAxis> getUsedAxisList() throws PdcException {
-	  if (pdcFieldTemplateManager.isEnabled()) {
-	    return pdcFieldTemplateManager.getUsedAxisList();
-	  } else {
-	    return getPdcBm().getUsedAxisByInstanceId(componentId);
-	  }
-	}
+  public List<UsedAxis> getUsedAxisList() throws PdcException {
+    if (pdcFieldTemplateManager.isEnabled()) {
+      return pdcFieldTemplateManager.getUsedAxisList();
+    } else {
+      return getPdcBm().getUsedAxisByInstanceId(componentId);
+    }
+  }
 
-	public int addUsedAxis(UsedAxis usedAxis) throws PdcException {
-	  usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
-	  if (pdcFieldTemplateManager.isEnabled()) {
-	    pdcFieldTemplateManager.addUsedAxis(usedAxis);
-	    return 0;
-	  } else {
-  		usedAxis.setInstanceId(componentId);
-  		return getPdcBm().addUsedAxis(usedAxis);
-	  }
-	}
+  public int addUsedAxis(UsedAxis usedAxis) throws PdcException {
+    usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
+    if (pdcFieldTemplateManager.isEnabled()) {
+      pdcFieldTemplateManager.addUsedAxis(usedAxis);
+      return 0;
+    } else {
+      usedAxis.setInstanceId(componentId);
+      return getPdcBm().addUsedAxis(usedAxis);
+    }
+  }
 
-	public int updateUsedAxis(UsedAxis usedAxis) throws PdcException {
-	  if (pdcFieldTemplateManager.isEnabled()) {
-	    pdcFieldTemplateManager.updateUsedAxis(usedAxis);
-	    return 0;
-	  } else {
-  		usedAxis.setInstanceId(componentId);
-  		usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
-  		return getPdcBm().updateUsedAxis(usedAxis);
-	  }
-	}
-	
-	public void deleteUsedAxis(String usedAxisId) throws PdcException {
-	  if (pdcFieldTemplateManager.isEnabled()) {
-	    pdcFieldTemplateManager.deleteUsedAxis(usedAxisId);
-	  } else {
-	    getPdcBm().deleteUsedAxis(usedAxisId);
-	  }
-	}
-	
+  public int updateUsedAxis(UsedAxis usedAxis) throws PdcException {
+    if (pdcFieldTemplateManager.isEnabled()) {
+      pdcFieldTemplateManager.updateUsedAxis(usedAxis);
+      return 0;
+    } else {
+      usedAxis.setInstanceId(componentId);
+      usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
+      return getPdcBm().updateUsedAxis(usedAxis);
+    }
+  }
+
+  public void deleteUsedAxis(String usedAxisId) throws PdcException {
+    if (pdcFieldTemplateManager.isEnabled()) {
+      pdcFieldTemplateManager.deleteUsedAxis(usedAxisId);
+    } else {
+      getPdcBm().deleteUsedAxis(usedAxisId);
+    }
+  }
+
 }

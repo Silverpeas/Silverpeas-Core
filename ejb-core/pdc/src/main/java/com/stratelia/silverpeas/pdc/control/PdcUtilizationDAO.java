@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 // TODO : reporter dans CVS (done)
 package com.stratelia.silverpeas.pdc.control;
 
@@ -356,8 +357,8 @@ public class PdcUtilizationDAO {
 
     String selectStatement =
         "select distinct(A.id), A.RootId, A.Name, A.AxisType, A.AxisOrder, A.description "
-            + "from SB_Pdc_Utilization U, SB_Pdc_Axis A "
-            + "where U.axisId = A.id ";
+        + "from SB_Pdc_Utilization U, SB_Pdc_Axis A "
+        + "where U.axisId = A.id ";
 
     // la liste instanceIds n'est jamais nulle
     if (instanceIds.size() > 0) {

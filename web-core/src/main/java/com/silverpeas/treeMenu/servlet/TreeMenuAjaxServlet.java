@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -23,7 +23,6 @@
  */
 
 package com.silverpeas.treeMenu.servlet;
-
 
 import static com.silverpeas.treeMenu.model.MenuConstants.DEFAULT_MENU_TYPE;
 import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_MENU_TYPE;
