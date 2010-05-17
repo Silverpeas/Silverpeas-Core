@@ -84,5 +84,5 @@ public interface TaskManager {
   /**
    * Notify user that an action has been done
    */
-  public void notifyUser(Task task, User sender, User user, String text);
+  public void notifyActor(Task task, User sender, User user, String text) throws WorkflowException;
 }

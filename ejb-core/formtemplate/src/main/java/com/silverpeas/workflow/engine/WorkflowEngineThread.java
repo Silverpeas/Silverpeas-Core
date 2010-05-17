@@ -38,7 +38,6 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.workflow.api.ProcessInstanceManager;
 import com.silverpeas.workflow.api.TaskManager;
-import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.GenericEvent;
@@ -1026,7 +1025,7 @@ class WorkflowTools {
         }
 
         User sender = (forcedUser == null) ? event.getUser() : forcedUser;
-        taskManager.notifyUser(tasks[i], sender, actors[i].getUser(), message);
+        taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message);
       }
     } catch (Exception e) {
       // change the action status of the step
@@ -1140,9 +1139,7 @@ class WorkflowTools {
     // Assign tasks to these working users
     Task[] tasks = taskManager.createTasks(actors, instance);
     for (int i = 0; i < tasks.length; i++) {
-      if (tasks[i].getUser() != null) {
-        taskManager.assignTask(tasks[i]);
-      }
+      taskManager.assignTask(tasks[i]);
     }
 
     // Declare these working users in instance
@@ -1180,9 +1177,7 @@ class WorkflowTools {
     // Unassign tasks to these working users
     Task[] tasks = taskManager.createTasks(actors, instance);
     for (int i = 0; i < tasks.length; i++) {
-      if (tasks[i].getUser() != null) {
-        taskManager.unAssignTask(tasks[i]);
-      }
+      taskManager.unAssignTask(tasks[i]);
     }
 
     // removes interested users and working users for resolved state

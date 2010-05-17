@@ -24,7 +24,9 @@
 
 package com.silverpeas.workflow.engine.task;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -73,8 +75,15 @@ public class TaskManagerImpl extends AbstractTaskManager {
     todo.setName("activite : "
         + task.getState().getLabel(task.getUserRoleName(), "fr"));
 
-    Vector attendees = new Vector();
-    attendees.add(new Attendee(task.getUser().getUserId()));
+    Vector<Attendee> attendees = new Vector<Attendee>();
+    if (task.getUser() != null) {
+      attendees.add(new Attendee(task.getUser().getUserId()));
+    } else {
+      List<User> usersInRole = task.getProcessInstance().getUsersInRole(task.getUserRoleName());
+      for (User userInRole : usersInRole) {
+        attendees.add(new Attendee(userInRole.getUserId()));
+      }
+    }
     todo.setAttendees(attendees);
 
     todo.setDelegatorId(task.getUser().getUserId());
@@ -99,8 +108,20 @@ public class TaskManagerImpl extends AbstractTaskManager {
     }
 
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeEntriesFromExternal(compoInst.getDomainFatherId(),
-        componentId, getExternalId(task));
+
+    if (task.getUser() != null) {
+      todoBBA.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
+          getExternalId(task));
+    } else {
+      String role = task.getUserRoleName();
+      List<User> usersInRole = task.getProcessInstance().getUsersInRole(role);
+      for (User userInRole : usersInRole) {
+        TaskImpl taskImpl =
+            new TaskImpl(userInRole, role, task.getProcessInstance(), task.getState());
+        todoBBA.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
+            getExternalId(taskImpl));
+      }
+    }
   }
 
   /**
@@ -139,10 +160,20 @@ public class TaskManagerImpl extends AbstractTaskManager {
 
   /**
    * Notify user that an action has been done
+   * @throws WorkflowException
    */
-  public void notifyUser(Task task, User sender, User user, String text) {
+  public void notifyActor(Task task, User sender, User user, String text) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
-    String userId = user.getUserId();
+    List<String> userIds = new ArrayList<String>();
+    if (user != null) {
+      userIds.add(user.getUserId());
+    } else {
+      String role = task.getUserRoleName();
+      List<User> usersInRole = task.getProcessInstance().getUsersInRole(role);
+      for (User userInRole : usersInRole) {
+        userIds.add(userInRole.getUserId());
+      }
+    }
 
     NotificationSender notifSender = (NotificationSender) notificationSenders
         .get(componentId);
@@ -151,32 +182,35 @@ public class TaskManagerImpl extends AbstractTaskManager {
       notificationSenders.put(componentId, notifSender);
     }
 
-    try {
-      String title = task.getProcessInstance().getTitle(task.getUserRoleName(),
-          "");
-
-      DataRecord data = task.getProcessInstance().getAllDataRecord(
-          task.getUserRoleName(), "");
-      text = DataRecordUtil.applySubstitution(text, data, "");
-
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, title, text);
-      if (sender != null)
-        notifMetaData.setSender(sender.getUserId());
-      else
-        notifMetaData.setSender(userId);
-      notifMetaData.addUserRecipient(userId);
-      String link = "/RprocessManager/" + componentId
-          + "/searchResult?Type=ProcessInstance&Id="
-          + task.getProcessInstance().getInstanceId();
-      notifMetaData.setLink(link);
-      notifSender.notifyUser(notifMetaData);
-    } catch (WorkflowException e) {
-      SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
-          "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
-          "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
+    for (String userId : userIds)
+    {
+      try {
+        String title = task.getProcessInstance().getTitle(task.getUserRoleName(),
+            "");
+  
+        DataRecord data = task.getProcessInstance().getAllDataRecord(
+            task.getUserRoleName(), "");
+        text = DataRecordUtil.applySubstitution(text, data, "");
+  
+        NotificationMetaData notifMetaData = new NotificationMetaData(
+            NotificationParameters.NORMAL, title, text);
+        if (sender != null)
+          notifMetaData.setSender(sender.getUserId());
+        else
+          notifMetaData.setSender(userId);
+        notifMetaData.addUserRecipient(userId);
+        String link = "/RprocessManager/" + componentId
+            + "/searchResult?Type=ProcessInstance&Id="
+            + task.getProcessInstance().getInstanceId();
+        notifMetaData.setLink(link);
+        notifSender.notifyUser(notifMetaData);
+      } catch (WorkflowException e) {
+        SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
+            "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
+      } catch (NotificationManagerException e) {
+        SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
+            "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
+      }
     }
   }
 

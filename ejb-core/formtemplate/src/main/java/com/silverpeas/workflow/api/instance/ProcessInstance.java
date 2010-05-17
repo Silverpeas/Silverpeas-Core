@@ -206,6 +206,15 @@ public interface ProcessInstance {
    * @param user the unlocking user
    */
   public void unLock(State state, User user) throws WorkflowException;
+  
+  
+  /**
+   * Gets concrete users affected to given role at runtime
+   * @param role the name of the role
+   * @return users affected to given role
+   * @throws WorkflowException
+   */
+  public List<User> getUsersInRole(String role) throws WorkflowException;
 
   /**
    * Computes tuples role/user (stored in an Actor object) from a QualifiedUsers object

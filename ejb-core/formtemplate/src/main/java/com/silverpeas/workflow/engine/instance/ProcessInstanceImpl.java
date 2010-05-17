@@ -25,6 +25,7 @@
 package com.silverpeas.workflow.engine.instance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -1428,6 +1429,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public void setTimeoutStatusCastor(int timeoutStatus) {
     this.timeoutStatus = (timeoutStatus == 1);
   }
+  
+  public List<User> getUsersInRole(String role) throws WorkflowException
+  {
+    UserManager userManager = WorkflowHub.getUserManager();
+    User[] usersInRole = userManager.getUsersInRole(role, modelId);
+    return Arrays.asList(usersInRole);
+  }
 
   /**
    * Computes tuples role/user/state (stored in an Actor object) from a QualifiedUsers object
@@ -1437,7 +1445,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public Actor[] getActors(QualifiedUsers qualifiedUsers, State state)
       throws WorkflowException {
-    Vector actors = new Vector();
+    Vector<Actor> actors = new Vector<Actor>();
     UserManager userManager = WorkflowHub.getUserManager();
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
@@ -1447,12 +1455,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     // Process first "user in Role"
     for (int i = 0; i < userInRoles.length; i++) {
-      // User[] users = userManager.getUsersInRole(userInRoles[i].getRoleName(),
-      // modelId);
-      // for (int j = 0; users != null && j < users.length; j++) {
-      // actors
-      // .add(new ActorImpl(users[j], userInRoles[i].getRoleName(), state));
-      // }
       actors.add(new ActorImpl(null, userInRoles[i].getRoleName(), state));
     }
 
