@@ -209,7 +209,7 @@ out.println(gef.getLookStyleSheet());
 
     function getFooterPage()
     {
-        return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&ResultPage=searchDocuments.jsp&";
+        return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     }
 
     /**

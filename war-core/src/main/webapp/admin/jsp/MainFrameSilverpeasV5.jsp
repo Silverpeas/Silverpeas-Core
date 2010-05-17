@@ -195,7 +195,7 @@ setTimeout("init()",100);
 	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
 	<frame src="<%=m_sContext%>/Ragenda/jsp/importCalendar" name="importFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
 	<% if (helper.displayPDCFrame()) { %>
-		<frame src="<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&ResultPage=searchDocuments.jsp" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="0">
+		<frame src="<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="0">
 	<% } %>
 </frameset><noframes></noframes>
 </html>
