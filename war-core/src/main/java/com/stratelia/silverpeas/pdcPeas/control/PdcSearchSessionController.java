@@ -863,7 +863,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (resultType.startsWith("Attachment")) {
         if (!componentId.startsWith("webPages")) {
           try {
-            downloadLink = m_sContext + getAttachmentUrl(indexEntry.getObjectType(), indexEntry.
+            downloadLink = getAttachmentUrl(indexEntry.getObjectType(), indexEntry.
                 getComponent());
           } catch (Exception e) {
             SilverTrace.error("pdcPeas",
