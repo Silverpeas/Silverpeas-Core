@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.servlets;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,17 +31,19 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 
 public class GoToVersion extends GoToDocument {
+
   private static final long serialVersionUID = 1L;
 
+  @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
     // Check first if document exists
     VersioningUtil versioningUtil = new VersioningUtil();
     DocumentVersion version =
         versioningUtil.getDocumentVersion(new DocumentVersionPK(Integer.parseInt(objectId)));
-    if (version == null)
+    if (version == null) {
       return null;
-
+    }
     return redirectToFile(version, req, res);
   }
 }

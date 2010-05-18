@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.servlets;
 
 import java.net.URLEncoder;
@@ -45,19 +44,16 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  */
 public class GoToTopic extends GoTo {
 
+  @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     String componentId = req.getParameter("ComponentId");
-
     NodePK pk = new NodePK(objectId, componentId);
     NodeDetail node = getNodeBm().getHeader(pk);
-
     SilverTrace.info("peasUtil", "GoToTopic.doPost",
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
-
     String gotoURL = URLManager.getURL(null, componentId) + node.getURL();
-
-    return "goto=" + URLEncoder.encode(gotoURL);
+    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 
   public NodeBm getNodeBm() {

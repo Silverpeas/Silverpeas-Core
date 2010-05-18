@@ -40,42 +40,34 @@ public class GoToFile extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    boolean isLoggedIn = isUserLogin(req);
-
     // Check first if attachment exists
     AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
         objectId));
     if (attachment == null) {
       return null;
     }
-
     String componentId = attachment.getInstanceId();
     String foreignId = attachment.getForeignKey().getId();
 
-    if (isLoggedIn) {
-      boolean isAccessAuthorized = false;
-      // L'utilisateur est déjà loggué
-      if (isUserAllowed(req, componentId)) {
-        // L'utilisateur a-t-il le droit de consulter le fichier/la publication
-        isAccessAuthorized = true;
-        if (componentId.startsWith("kmelia")) {
-          try {
-            ComponentSecurity security = (ComponentSecurity) Class.forName(
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
-            isAccessAuthorized = security.isAccessAuthorized(componentId,
-                getUserId(req), foreignId);
-          } catch (Exception e) {
-            SilverTrace.error("peasUtil", "GoToFile.doPost",
-                "root.EX_CLASS_NOT_INITIALIZED",
-                "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
-            return null;
-          }
+    if ( isUserLogin(req) && isUserAllowed(req, componentId)) {
+      // L'utilisateur a-t-il le droit de consulter le fichier/la publication
+      boolean isAccessAuthorized = true;
+      if (componentId.startsWith("kmelia")) {
+        try {
+          ComponentSecurity security = (ComponentSecurity) Class.forName(
+              "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
+          isAccessAuthorized = security.isAccessAuthorized(componentId,
+              getUserId(req), foreignId);
+        } catch (Exception e) {
+          SilverTrace.error("peasUtil", "GoToFile.doPost",
+              "root.EX_CLASS_NOT_INITIALIZED",
+              "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
+          return null;
         }
-
-        if (isAccessAuthorized) {
-          return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
-              + '/' + req.getContextPath() + attachment.getAttachmentURL();
-        }
+      }
+      if (isAccessAuthorized) {
+        return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
+            + '/' + req.getContextPath() + attachment.getAttachmentURL();
       }
     }
     return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="

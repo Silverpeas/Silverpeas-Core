@@ -58,7 +58,7 @@ public class GoToPublication extends GoTo {
 
     String gotoURL = URLManager.getURL(null, componentId) + pub.getURL();
 
-    return "goto=" + URLEncoder.encode(gotoURL);
+    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 
   private PublicationBm getPublicationBm() {

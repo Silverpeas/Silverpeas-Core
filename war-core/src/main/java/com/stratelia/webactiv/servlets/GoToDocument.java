@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.servlets;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +44,9 @@ public class GoToDocument extends GoTo {
     VersioningUtil versioningUtil = new VersioningUtil();
     DocumentVersion version =
         versioningUtil.getLastPublicVersion(new DocumentPK(Integer.parseInt(objectId)));
-    if (version == null)
+    if (version == null) {
       return null;
+    }
 
     return redirectToFile(version, req, res);
   }
@@ -69,8 +69,7 @@ public class GoToDocument extends GoTo {
         if (componentId.startsWith("kmelia")) {
           try {
             ComponentSecurity security =
-                (ComponentSecurity) Class.forName("com.stratelia.webactiv.kmelia.KmeliaSecurity")
-                .newInstance();
+                (ComponentSecurity) Class.forName("com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
             isAccessAuthorized =
                 security.isAccessAuthorized(componentId, getUserId(req), foreignId);
           } catch (Exception e) {
@@ -81,13 +80,13 @@ public class GoToDocument extends GoTo {
         }
 
         if (isAccessAuthorized) {
-          res.sendRedirect(new VersioningUtil().getDocumentVersionURL(componentId, version
-              .getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId()));
+          return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
+              + '/' + req.getContextPath() + new VersioningUtil().getDocumentVersionURL(componentId,
+              version.getLogicalName(), version.getDocumentPK().getId(), version.getPk().getId());
         }
       }
     }
-
-    return "ComponentId=" + componentId + "&AttachmentId=" + version.getPk().getId() +
-        "&Mapping=Version&ForeignId=" + foreignId;
+    return "ComponentId=" + componentId + "&AttachmentId=" + version.getPk().getId()
+        + "&Mapping=Version&ForeignId=" + foreignId;
   }
 }
