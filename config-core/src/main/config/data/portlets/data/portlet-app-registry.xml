@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -37,7 +37,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes T�ches"/>
+        <String name="fr" value="Mes Tâches"/>
         <String name="en" value="My Todos"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -86,7 +86,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Derni�res publications"/>
+        <String name="fr" value="Dernières publications"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="LastPublicationsPortlet"/>
@@ -111,7 +111,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes prochains �v�nements"/>
+        <String name="fr" value="Mes prochains événements"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="NextEventsPortlet"/>
@@ -161,7 +161,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes requ�tes pr�f�r�es"/>
+        <String name="fr" value="Mes requêtes préférées"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="FavoriteQueriesPortlet"/>
@@ -207,7 +207,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Actualit�s"/>
+        <String name="fr" value="Actualités"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="QuickInfosPortlet"/>
@@ -253,7 +253,7 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes fichiers r�serv�s"/>
+        <String name="fr" value="Mes fichiers réservés"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="MyCheckOutFiles"/>

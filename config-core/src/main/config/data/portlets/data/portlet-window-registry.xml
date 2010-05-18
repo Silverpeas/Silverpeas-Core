@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <PortletWindowRegistry version="1.0">
      <PortletWindow lang="JAVA" name="silverpeas.LastPublicationsPortlet" portletName="silverpeas.LastPublicationsPortlet" remote="false">
           <Properties>
-               <String name="title" value="Derni�res publications"/>
+               <String name="title" value="Dernières publications"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|LastPublicationsPortlet"/>
@@ -37,7 +37,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.FavoriteQueriesPortlet" portletName="silverpeas.FavoriteQueriesPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes requ�tes favorites"/>
+               <String name="title" value="Mes requêtes favorites"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|FavoriteQueriesPortlet"/>
@@ -46,7 +46,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.NextEventsPortlet" portletName="silverpeas.NextEventsPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes prochains �v�nements"/>
+               <String name="title" value="Mes prochains événements"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|NextEventsPortlet"/>
@@ -55,7 +55,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes t�ches"/>
+               <String name="title" value="Mes tâches"/>
                <String name="visible" value="true"/>
                <String name="width" value="thick"/>
                <String name="entityIDPrefix" value="silverpeas|MyTodosPortlet"/>
@@ -82,7 +82,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes liens pr�f�r�s"/>
+               <String name="title" value="Mes liens préférés"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyBookmarksPortlet"/>
@@ -91,7 +91,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyCheckOutFiles" portletName="silverpeas.MyCheckOutFiles" remote="false">
           <Properties>
-               <String name="title" value="Mes fichiers r�serv�s"/>
+               <String name="title" value="Mes fichiers réservés"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyCheckOutFiles"/>
@@ -100,7 +100,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.QuickInfosPortlet" portletName="silverpeas.QuickInfosPortlet" remote="false">
           <Properties>
-               <String name="title" value="Actualit�s"/>
+               <String name="title" value="Actualités"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|QuickInfosPortlet"/>
