@@ -92,7 +92,10 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext)
    addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%message%')");
   addParam(objectDND, "ftpCreateDirectoryStructure", "true");
   addParam(objectDND, "maxFileSize", max_upload);
-
+  addParam(objectDND, "bgcolor_r", "245");
+  addParam(objectDND, "bgcolor_g", "245");
+  addParam(objectDND, "bgcolor_b", "245");
+  
   divDND.appendChild(objectDND);
 
   if (ie)
