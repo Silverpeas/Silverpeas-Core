@@ -73,10 +73,8 @@ public class GoToFile extends GoTo {
         }
 
         if (isAccessAuthorized) {
-          res.sendRedirect(req.getScheme() + "://" + req.getServerName() + ':' +
-              req.getServerPort()
-              + '/' + req.getContextPath() + attachment.getAttachmentURL());
-          return null;
+          return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
+              + '/' + req.getContextPath() + attachment.getAttachmentURL();
         }
       }
     }

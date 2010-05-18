@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.peasUtil;
 
 import java.io.IOException;
@@ -40,14 +39,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public abstract class GoTo extends HttpServlet {
-  HttpSession session;
-  PrintWriter out;
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "GoTo.doPost", "root.MSG_GEN_ENTER_METHOD");
@@ -58,15 +57,18 @@ public abstract class GoTo extends HttpServlet {
           "id = " + id);
 
       String redirect = getDestination(id, req, res);
-      if (redirect == null || "".equals(redirect))
+      if (redirect == null || "".equals(redirect)) {
         objectNotFound(req, res);
-      else {
+      } else {
         if (res.isCommitted()) {
           // La réponse a déjà été envoyée
-        } else
-          res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
-              .getString("ApplicationURL")
-              + "/autoRedirect.jsp?" + redirect);
+        } else {
+          if (redirect == null || !redirect.startsWith("http")) {
+            redirect = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
+                + "/autoRedirect.jsp?" + redirect;
+          }
+          res.sendRedirect(redirect);
+        }
       }
     } catch (AccessForbiddenException afe) {
       accessForbidden(req, res);
@@ -81,25 +83,25 @@ public abstract class GoTo extends HttpServlet {
   private void objectNotFound(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
     boolean isLoggedIn = isUserLogin(req);
-    if (!isLoggedIn)
+    if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
-    else
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("ApplicationURL")
+    } else {
+      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
           + "/admin/jsp/documentNotFound.jsp");
+    }
   }
 
   private void accessForbidden(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
-    res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL")
+    res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
         + "/admin/jsp/accessForbidden.jsp");
   }
 
   public String getObjectId(HttpServletRequest request) {
     String pathInfo = request.getPathInfo();
-    if (pathInfo != null)
+    if (pathInfo != null) {
       return pathInfo.substring(1);
+    }
     return null;
   }
 
@@ -109,26 +111,20 @@ public abstract class GoTo extends HttpServlet {
 
   // check if the user is allowed to access the required component
   public boolean isUserAllowed(HttpServletRequest req, String componentId) {
-
     MainSessionController mainSessionCtrl = getMainSessionController(req);
-
     boolean isAllowed = false;
-
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      return mainSessionCtrl.getOrganizationController().isComponentAvailable(
-          componentId, mainSessionCtrl.getUserId());
+      return mainSessionCtrl.getOrganizationController().isComponentAvailable(componentId,
+          mainSessionCtrl.getUserId());
     }
-
     return isAllowed;
   }
 
   private MainSessionController getMainSessionController(HttpServletRequest req) {
     HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-
+    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
     return mainSessionCtrl;
   }
 
@@ -144,7 +140,7 @@ public abstract class GoTo extends HttpServlet {
     OutputStream out2 = null;
     int read;
 
-    StringBuffer message = new StringBuffer(255);
+    StringBuilder message = new StringBuilder(255);
     message.append("<HTML>");
     message.append("<BODY>");
     message.append("</BODY>");
