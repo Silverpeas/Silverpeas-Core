@@ -29,10 +29,12 @@
 	<st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
 
 	<st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
-	<uniqueid maxid="1" tablename="st_user"/>
+	<st_user id="2" domainid="0" specificid="2" lastname="SimpleUser" login="SimpleUser" accesslevel="U" />
+	<uniqueid maxid="2" tablename="st_user"/>
 
 	<domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"/>
-	<uniqueid maxid="1" tablename="domainsp_user"/>
+	<domainsp_user id="2" lastname="SimpleUser" login="SimpleUser"/>
+	<uniqueid maxid="2" tablename="domainsp_user"/>
 
 	<st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
 	<uniqueid maxid="1" tablename="st_group"/>

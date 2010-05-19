@@ -238,6 +238,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
   public void testSpaceManager() throws AdminException {
     AdminController ac = getAdminController();
     
+    //set user1 as space manager
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
     profile.setName("Manager");
@@ -245,9 +246,22 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     String profileId = ac.addSpaceProfileInst(profile, "1");
     assertEquals("1", profileId);
     
+    //set user2 as simple reader on space
+    profile = new SpaceProfileInst();
+    profile.setSpaceFatherId("WA2");
+    profile.setName("reader");
+    profile.addUser("2");
+    profileId = ac.addSpaceProfileInst(profile, "1");
+    assertEquals("2", profileId);
+    
+    //test if user1 is manager of at least one space
     Admin admin = new Admin();
     String[] managerIds = admin.getUserManageableSpaceIds("1");
     assertEquals(1, managerIds.length);
+    
+    //test if user2 cannot manage spaces
+    managerIds = admin.getUserManageableSpaceIds("2");
+    assertEquals(0, managerIds.length);
   }
 
   @Override

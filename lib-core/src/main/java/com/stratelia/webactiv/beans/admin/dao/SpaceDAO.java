@@ -116,6 +116,7 @@ public class SpaceDAO {
   static final private String queryGetManageableSpaceIdsByUser = "select st_spaceuserrole.spaceid"
       + " from st_spaceuserrole_user_rel, st_spaceuserrole "
       + " where st_spaceuserrole_user_rel.spaceuserroleid=st_spaceuserrole.id"
+      + " and st_spaceuserrole.rolename='Manager'"
       + " and st_spaceuserrole_user_rel.userid=?";
 
   private static List<String> getManageableSpaceIdsByUser(Connection con, String userId)
@@ -149,6 +150,7 @@ public class SpaceDAO {
       String query = "select st_spaceuserrole.spaceid"
           + " from st_spaceuserrole_group_rel, st_spaceuserrole "
           + " where st_spaceuserrole_group_rel.spaceuserroleid=st_spaceuserrole.id"
+          + " and st_spaceuserrole.rolename='Manager'"
           + " and st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
 
       List<String> manageableSpaceIds = new ArrayList<String>();
