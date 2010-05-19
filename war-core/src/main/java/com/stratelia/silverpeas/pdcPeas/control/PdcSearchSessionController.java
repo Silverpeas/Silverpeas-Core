@@ -738,9 +738,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private boolean isPopularityCompliant(GlobalSilverResult gsr) {
-    if ((gsr.getInstanceId().startsWith("kmelia") || gsr.getInstanceId().startsWith("kmax") || gsr
-        .getInstanceId().startsWith("toolbox")) &&
-        (gsr.getType().equals("Publication") || gsr.getURL().indexOf("Publication") != -1)) {
+    if (gsr != null && (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith("kmelia") || gsr.getInstanceId().startsWith("kmax") || gsr
+        .getInstanceId().startsWith("toolbox"))) &&
+        ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.getURL().indexOf("Publication") != -1))) {
       return true;
     }
     return false;
