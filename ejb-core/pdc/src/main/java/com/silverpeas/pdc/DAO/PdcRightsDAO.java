@@ -37,9 +37,9 @@ import com.stratelia.webactiv.util.DBUtil;
  */
 public class PdcRightsDAO {
 
-  public static ArrayList getUserIds(Connection con, String axisId,
+  public static ArrayList<String> getUserIds(Connection con, String axisId,
       String valueId) throws SQLException {
-    ArrayList listUsersIds = new ArrayList();
+    ArrayList<String> listUsersIds = new ArrayList<String>();
     String query = "select userId from sb_pdc_user_rights where valueid = ? and axisId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -106,9 +106,9 @@ public class PdcRightsDAO {
     }
   }
 
-  public static ArrayList getGroupIds(Connection con, String axisId,
+  public static ArrayList<String> getGroupIds(Connection con, String axisId,
       String valueId) throws SQLException {
-    ArrayList listGroupsIds = new ArrayList();
+    ArrayList<String> listGroupsIds = new ArrayList<String>();
     String query = "select groupid from sb_pdc_group_rights where valueid = ? and axisId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

@@ -100,7 +100,7 @@ public class PdcImportExport {
     List validPositions = new ArrayList();
 
     // récupération des axes utilisés par le composant
-    List usedAxis = getPdcBm().getUsedAxisByInstanceId(componentId);
+    List<UsedAxis> usedAxis = getPdcBm().getUsedAxisByInstanceId(componentId);
 
     if (usedAxis != null && usedAxis.size() > 0) {
       if (positions != null) {

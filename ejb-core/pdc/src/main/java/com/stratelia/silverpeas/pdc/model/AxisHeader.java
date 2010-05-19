@@ -34,6 +34,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class AxisHeader extends AbstractI18NBean implements java.io.Serializable {
 
+  // Class version identifier
   private static final long serialVersionUID = 5523411511012194843L;
 
   private WAPrimaryKey pk;
@@ -291,10 +292,11 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
         + ", description = " + getDescription() + ")";
   }
 
-  public boolean equals(Object other) {
-    if (!(other instanceof AxisHeader))
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof AxisHeader))
       return false;
-    return (getPK().getId().equals(((AxisHeader) other).getPK().getId()));
+    return (getPK().getId().equals(((AxisHeader) obj).getPK().getId()));
   }
 
 }

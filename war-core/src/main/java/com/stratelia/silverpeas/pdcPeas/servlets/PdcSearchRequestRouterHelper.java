@@ -328,13 +328,13 @@ public class PdcSearchRequestRouterHelper {
     boolean isExistInSecondaryAxis = false;
     SearchAxis sa = null;
 
-    ArrayList c = searchContext.getCriterias();
+    ArrayList<SearchCriteria> c = searchContext.getCriterias();
     Axis axis = null;
     int searchAxisId;
     String searchValue = "";
     String treeId = "";
     SearchCriteria sc = null;
-    ArrayList pathCriteria = new ArrayList();
+    ArrayList<List<Value>> pathCriteria = new ArrayList<List<Value>>();
     if (c.size() > 0) {
       for (int i = 0; i < c.size(); i++) {
         sc = (SearchCriteria) c.get(i);
@@ -373,7 +373,7 @@ public class PdcSearchRequestRouterHelper {
           // on creait un axis
           axis = pdcSC.getAxisDetail(new Integer(searchAxisId).toString());
           treeId = new Integer(axis.getAxisHeader().getRootId()).toString();
-          List fullPath = pdcSC.getFullPath(searchValue, treeId);
+          List<Value> fullPath = pdcSC.getFullPath(searchValue, treeId);
           pathCriteria.add(fullPath);
         }
       }

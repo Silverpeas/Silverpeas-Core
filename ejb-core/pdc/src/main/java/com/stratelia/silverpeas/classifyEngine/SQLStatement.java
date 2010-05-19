@@ -236,7 +236,7 @@ class SQLStatement extends Object {
     return sSQLStatement;
   }
 
-  public String buildSilverContentIdsByPositionIdsStatement(List alPositionIds) {
+  public String buildSilverContentIdsByPositionIdsStatement(List<Integer> alPositionIds) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     sSQLStatement.append("SELECT ").append(m_sSilverObjectIdColumn).append(
         " FROM ").append(m_sClassifyTable);

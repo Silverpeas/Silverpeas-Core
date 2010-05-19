@@ -74,7 +74,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   public ArrayList findGlobalSilverContents(
       ContainerPositionInterface containerPosition, List componentIds,
       boolean recursiveSearch, boolean visibilitySensitive) {
-    ArrayList silverContentIds = new ArrayList();
+    ArrayList<Integer> silverContentIds = new ArrayList<Integer>();
     try {
       // get the silverContentids classified in the context
       silverContentIds.addAll(getPdcBm()
@@ -200,15 +200,15 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return axis;
   }
 
-  private List getSilverContentsByIds(List silverContentIds) {
+  private List getSilverContentsByIds(List<Integer> silverContentIds) {
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
         "root.MSG_GEN_PARAM_VALUE", "silverContentIds = " + silverContentIds);
 
     // recherche des componentId a partir de silverContentId
     ContentPeas contentP = null;
     String instanceId = "";
-    List alSilverContents = (List) new ArrayList();
-    List alInstanceIds = (List) new ArrayList();
+    List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
+    List<String> alInstanceIds = new ArrayList<String>();
 
     try {
       // on récupère la liste de instance contenant tous les documents
@@ -226,8 +226,8 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     // en
     // retirer les SilverContentIds
     // propre à chaque instanceId.
-    List allSilverContentIds = (List) new ArrayList();
-    List newAlSilverContentIds = (List) new ArrayList();
+    List<Integer> allSilverContentIds = new ArrayList<Integer>();
+    List<Integer> newAlSilverContentIds = new ArrayList<Integer>();
 
     for (int j = 0; j < alInstanceIds.size(); j++) {
       instanceId = (String) alInstanceIds.get(j);
@@ -295,9 +295,9 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
   /*
    * @return a List of GlobalSilverContent
    */
-  private List transformSilverContentsToGlobalSilverContents(
+  private List<GlobalSilverContent> transformSilverContentsToGlobalSilverContents(
       List silverContentTempo) {
-    ArrayList silverContents = new ArrayList();
+    ArrayList<GlobalSilverContent> silverContents = new ArrayList<GlobalSilverContent>();
     GlobalSilverContent gsc = null;
     SilverContentInterface sci = null;
     for (int i = 0; i < silverContentTempo.size(); i++) {

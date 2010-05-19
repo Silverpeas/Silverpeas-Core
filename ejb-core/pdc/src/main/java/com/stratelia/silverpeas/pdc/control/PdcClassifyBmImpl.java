@@ -200,7 +200,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     return getPositionsJoinStatement(alComponentId);
   }
 
-  public JoinStatement getPositionsJoinStatement(List alComponentId)
+  public JoinStatement getPositionsJoinStatement(List<String> alComponentId)
       throws PdcException {
     try {
       // Get the join statement for all positions for the given componentId
@@ -241,7 +241,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    * @param newPath - a list of path
    */
   public void createValuesAndReplace(Connection con, String axisId,
-      ArrayList oldPath, ArrayList newPath) throws PdcException {
+      List<String> oldPath, List<String> newPath) throws PdcException {
     ArrayList<Value> oldValues = new ArrayList<Value>();
     ArrayList<Value> newValues = new ArrayList<Value>();
     String path = "";
@@ -276,15 +276,14 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     }
   }
 
-  public List getObjectsByInstance(String instanceId) throws PdcException {
+  public List<Integer> getObjectsByInstance(String instanceId) throws PdcException {
     // récupère la liste des silverobjectId depuis le container manager
     // qui provienne de l'instanceId
-    ArrayList objectIdList = new ArrayList();
+    List<Integer> objectIdList = new ArrayList<Integer>();
     try {
-      List alPositionIds = containerManager.filterPositionsByComponentId(null,
+      List<Integer> alPositionIds = containerManager.filterPositionsByComponentId(null,
           instanceId);
-      objectIdList = (ArrayList) classifyEngine
-          .getSilverContentIdsByPositionIds(alPositionIds);
+      objectIdList = classifyEngine.getSilverContentIdsByPositionIds(alPositionIds);
     } catch (Exception e) {
       SilverTrace.info("ClassifyEngine",
           "PdcClassifyBmImpl.hasAlreadyPositions",
@@ -299,7 +298,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
    * @param usedAxis - the UsedAxis object
    * @return true if for one UsedAxis, a position exists, false otherwise
    */
-  public boolean hasAlreadyPositions(List objectIdList, UsedAxis usedAxis)
+  public boolean hasAlreadyPositions(List<Integer> objectIdList, UsedAxis usedAxis)
       throws PdcException {
     String newBaseValue = "/"
         + (new Integer(usedAxis.getBaseValue())).toString() + "/";
@@ -351,7 +350,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     return hasOnePosition;
   }
 
-  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List axisIds)
+  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds)
       throws PdcException {
     try {
       return classifyEngine.getPertinentAxis(searchContext.getCriterias(),
@@ -448,22 +447,22 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   }
 
   /** Find all the SilverContentId with the given position */
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate) throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId,
         authorId, afterDate, beforeDate, true, true);
   }
 
   /** Find all the SilverContentId with the given position */
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
     try {
       // Change the position in criteria
       SearchContext searchContext = (SearchContext) containerPosition;
-      ArrayList alCriterias = (ArrayList) searchContext.getCriterias();
+      List alCriterias = searchContext.getCriterias();
       // Call the classifyEngine to get the objects
       return classifyEngine.findSilverOjectByCriterias(alCriterias,
           containerManager.getFilterPositionsByComponentIdStatement(null,
@@ -476,8 +475,8 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     }
   }
 
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId)
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId)
       throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId,
         null, null, null);

@@ -25,12 +25,12 @@
 package com.stratelia.silverpeas.pdc.control;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.stratelia.silverpeas.classifyEngine.ObjectValuePair;
 import com.stratelia.silverpeas.classifyEngine.PertinentAxis;
 import com.stratelia.silverpeas.classifyEngine.PertinentValue;
+import com.stratelia.silverpeas.classifyEngine.Position;
 import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -88,13 +88,13 @@ public interface PdcClassifyBm {
    * @return a Position List
    * @throws PdcException
    */
-  public List getPositions(int silverObjectId, String sComponentId)
+  public List<Position> getPositions(int silverObjectId, String sComponentId)
       throws PdcException;
 
   public JoinStatement getPositionsJoinStatement(String sComponentId)
       throws PdcException;
 
-  public JoinStatement getPositionsJoinStatement(List alComponentId)
+  public JoinStatement getPositionsJoinStatement(List<String> alComponentId)
       throws PdcException;
 
   public void registerAxis(Connection con, int axisId) throws PdcException;
@@ -102,34 +102,34 @@ public interface PdcClassifyBm {
   public void unregisterAxis(Connection con, int axisId) throws PdcException;
 
   public void createValuesAndReplace(Connection con, String axisId,
-      ArrayList oldPath, ArrayList newPath) throws PdcException;
+      List<String> oldPath, List<String> newPath) throws PdcException;
 
   /** Remove all the positions of the given content */
   public List<Integer> removePosition(Connection connection, int nSilverContentId)
       throws PdcException;
 
   /** Find all the SilverContentId with the given position */
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate) throws PdcException;
 
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive) throws PdcException;
 
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId)
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId)
       throws PdcException;
 
-  public boolean hasAlreadyPositions(List objectIdList, UsedAxis usedAxis)
+  public boolean hasAlreadyPositions(List<Integer> objectIdList, UsedAxis usedAxis)
       throws PdcException;
 
   /** Returns a list of object for one instance */
-  public List getObjectsByInstance(String instanceId) throws PdcException;
+  public List<Integer> getObjectsByInstance(String instanceId) throws PdcException;
 
   // Recherche globale
-  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List axisIds)
+  public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds)
       throws PdcException;
 
   // Recherche globale

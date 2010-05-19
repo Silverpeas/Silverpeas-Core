@@ -258,7 +258,7 @@ public class PdcUtilizationDAO {
       // On cherche d'abord le chemin complet de chaque valeur de base
       String whereClause = " where treeId = " + treeId + " and (1=0 ";
       for (Enumeration<Integer> e = allBaseValues.elements(); e.hasMoreElements();) {
-        whereClause += " or id = " + e.nextElement().toString();
+        whereClause += " or id = " + (e.nextElement()).toString();
       }
       String selectQuery = " select path, id from " + TreeTable + " "
           + whereClause + ")";

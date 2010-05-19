@@ -524,11 +524,11 @@ public class PdcSessionController extends AbstractComponentSessionController {
     if (getCurrentValue() != null)
       valueId = getCurrentValue().getPK().getId();
 
-    List managers = pdcBm.getManagers(getCurrentAxis().getAxisHeader().getPK()
+    List<List<String>> managers = pdcBm.getManagers(getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
 
-    List<String> usersId = (List<String>) managers.get(0);
-    List<String> groupsId = (List<String>) managers.get(1);
+    List<String> usersId = managers.get(0);
+    List<String> groupsId = managers.get(1);
     usersAndGroups.add(userIds2Users(usersId));
     usersAndGroups.add(groupIds2Groups(groupsId));
     return usersAndGroups;
@@ -544,10 +544,10 @@ public class PdcSessionController extends AbstractComponentSessionController {
       SQLException {
     List usersAndGroups = new ArrayList();
 
-    List managers = pdcBm.getManagers(axisId, valueId);
+    List<List<String>> managers = pdcBm.getManagers(axisId, valueId);
 
-    List<String> usersId = (List<String>) managers.get(0);
-    List<String> groupsId = (List<String>) managers.get(1);
+    List<String> usersId = managers.get(0);
+    List<String> groupsId = managers.get(1);
     usersAndGroups.add(userIds2Users(usersId));
     usersAndGroups.add(groupIds2Groups(groupsId));
     return usersAndGroups;

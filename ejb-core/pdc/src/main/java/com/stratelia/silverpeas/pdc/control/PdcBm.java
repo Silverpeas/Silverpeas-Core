@@ -341,7 +341,7 @@ public interface PdcBm {
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
-  public List getManagers(String axisId, String valueId) throws PdcException;
+  public List<List<String>> getManagers(String axisId, String valueId) throws PdcException;
 
   public boolean isUserManager(String userId) throws PdcException;
 
@@ -351,7 +351,7 @@ public interface PdcBm {
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
-  public List getInheritedManagers(Value value) throws PdcException;
+  public List<List<String>> getInheritedManagers(Value value) throws PdcException;
 
   /**
    * met à jour les droits sur la valeur
@@ -359,7 +359,7 @@ public interface PdcBm {
    * @return
    * @throws PdcException
    */
-  public void setManagers(List userIds, List groupIds, String axisId,
+  public void setManagers(List<String> userIds, List<String> groupIds, String axisId,
       String valueId) throws PdcException;
 
   /**
@@ -450,7 +450,7 @@ public interface PdcBm {
    * @throws PdcException
    * @see
    */
-  public List getUsedAxisByInstanceId(String instanceId) throws PdcException;
+  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
   /**
    * Method declaration
@@ -484,9 +484,9 @@ public interface PdcBm {
    * @throws PdcException
    * @see
    */
-  public void deleteUsedAxis(Collection usedAxisIds) throws PdcException;
+  public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
 
-  public List getUsedAxisToClassify(String instanceId, int silverObjectId)
+  public List<UsedAxis> getUsedAxisToClassify(String instanceId, int silverObjectId)
       throws PdcException;
 
   public int addPosition(int silverObjectId, ClassifyPosition position,
@@ -507,7 +507,7 @@ public interface PdcBm {
   public void copyPositions(int fromObjectId, String fromInstanceId,
       int toObjectId, String toInstanceId) throws PdcException;
 
-  public List getPositions(int silverObjectId, String sComponentId)
+  public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
       throws PdcException;
 
   public boolean isClassifyingMandatory(String componentId) throws PdcException;
@@ -536,7 +536,7 @@ public interface PdcBm {
       String axisId, String instanceId) throws PdcException;
 
   public List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
-      String axisId, List instanceIds) throws PdcException;
+      String axisId, List<String> instanceIds) throws PdcException;
 
   // recherche globale
   // public List getPertinentDaughterValues(SearchContext searchContext, String
@@ -553,31 +553,31 @@ public interface PdcBm {
 
   public List<Value> getPertinentDaughterValuesByInstanceIds(
       SearchContext searchContext, String axisId, String valueId,
-      List instanceIds) throws PdcException;
+      List<String> instanceIds) throws PdcException;
 
   public List<Value> getPertinentDaughterValuesByInstanceIds(
       SearchContext searchContext, String axisId, String valueId,
-      List instanceIds, AxisFilter filter) throws PdcException;
+      List<String> instanceIds, AxisFilter filter) throws PdcException;
 
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate)
       throws ContainerManagerException;
 
   /** Find all the SilverContentId with the given position */
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive)
       throws ContainerManagerException;
 
   /** Find all the SilverContentId with the given position */
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId)
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId)
       throws ContainerManagerException;
 
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       boolean recursiveSearch, boolean visibilitySensitive)
       throws ContainerManagerException;
 

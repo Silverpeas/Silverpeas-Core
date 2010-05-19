@@ -657,7 +657,7 @@ public class ClassifyEngine extends Object {
     }
   }
 
-  public List findSilverOjectByCriterias(List alGivenCriterias,
+  public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
       JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
       String afterDate, String beforeDate) throws ClassifyEngineException {
     return findSilverOjectByCriterias(alGivenCriterias, joinStatementContainer,
@@ -667,18 +667,18 @@ public class ClassifyEngine extends Object {
   /*
    * Find all the SilverObjectId corresponding to the given criterias and the given Join Statement
    */
-  public List findSilverOjectByCriterias(List alGivenCriterias,
+  public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
       JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
       String afterDate, String beforeDate, boolean recursiveSearch,
       boolean visibilitySensitive) throws ClassifyEngineException {
     Connection connection = null;
-    ArrayList alObjectIds = new ArrayList();
+    List<Integer> alObjectIds = new ArrayList<Integer>();
 
     // Check the minimum required
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    ArrayList alCriterias = new ArrayList();
+    List<Criteria> alCriterias = new ArrayList<Criteria>();
     for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
       Criteria criteria = (Criteria) alGivenCriterias.get(nI);
       alCriterias.add(new Criteria(
@@ -723,7 +723,7 @@ public class ClassifyEngine extends Object {
 
       // Fetch the results
       while (resSet.next())
-        alObjectIds.add(new Integer(resSet.getInt(1)));
+        alObjectIds.add(Integer.valueOf(resSet.getInt(1)));
 
       return alObjectIds;
     } catch (Exception e) {
@@ -747,10 +747,10 @@ public class ClassifyEngine extends Object {
   /*
    * get the SilverContentIds corresponding to the given PositionIds
    */
-  public List getSilverContentIdsByPositionIds(List alPositionids)
+  public List<Integer> getSilverContentIdsByPositionIds(List<Integer> alPositionids)
       throws ClassifyEngineException {
     if (alPositionids == null || alPositionids.size() == 0)
-      return new ArrayList();
+      return new ArrayList<Integer>();
 
     Connection connection = null;
     PreparedStatement prepStmt = null;
@@ -770,7 +770,7 @@ public class ClassifyEngine extends Object {
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       // Fetch the results and convert them in Positions
-      ArrayList alSilverContentIds = new ArrayList();
+      ArrayList<Integer> alSilverContentIds = new ArrayList<Integer>();
       while (resSet.next())
         alSilverContentIds.add(new Integer(resSet.getInt(1)));
 
@@ -1218,7 +1218,7 @@ public class ClassifyEngine extends Object {
         this.checkCriterias(alCriterias);
 
         // Convert the Axis Ids
-        ArrayList alComputedCriterias = new ArrayList();
+        ArrayList<Criteria> alComputedCriterias = new ArrayList<Criteria>();
         for (int nI = 0; nI < alCriterias.size(); nI++) {
           Criteria criteria = (Criteria) alCriterias.get(nI);
           alComputedCriterias.add(new Criteria(this.getPhysicalAxisId(criteria
@@ -1302,7 +1302,7 @@ public class ClassifyEngine extends Object {
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    ArrayList alCriterias = new ArrayList();
+    ArrayList<Criteria> alCriterias = new ArrayList<Criteria>();
     for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
       Criteria criteria = (Criteria) alGivenCriterias.get(nI);
       alCriterias.add(new Criteria(
