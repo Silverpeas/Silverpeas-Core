@@ -454,10 +454,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String location = result.getLocation();
         String type = result.getType();
 
-        if (!authorsMap.containsKey(authorId)) {
-          authorsMap.put(authorId, curAuthor);
-        } else {
-          authorsMap.get(authorId).setNbElt(authorsMap.get(authorId).getNbElt() + 1);
+        if (StringUtil.isDefined(authorId)) {
+          if (!authorsMap.containsKey(authorId)) {
+            authorsMap.put(authorId, curAuthor);
+          } else {
+            authorsMap.get(authorId).setNbElt(authorsMap.get(authorId).getNbElt() + 1);
+          }
         }
         if (!blackList.contains(type) && StringUtil.isDefined(location)) {
           if (!componentsMap.containsKey(instanceId)) {
@@ -475,8 +477,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       @Override
       public int compare(AuthorVO o1, AuthorVO o2) {
         return o2.getNbElt() - o1.getNbElt();
-        }
-            });
+      }
+    });
 
     List<ComponentVO> components = new ArrayList<ComponentVO>(componentsMap.values());
     Collections.sort(components, new Comparator<ComponentVO>() {
@@ -484,8 +486,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       @Override
       public int compare(ComponentVO o1, ComponentVO o2) {
         return o2.getNbElt() - o1.getNbElt();
-        }
-            });
+      }
+    });
 
     // Fill result filter with current result values
     res.setAuthors(authors);
@@ -738,9 +740,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private boolean isPopularityCompliant(GlobalSilverResult gsr) {
-    if (gsr != null && (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith("kmelia") || gsr.getInstanceId().startsWith("kmax") || gsr
-        .getInstanceId().startsWith("toolbox"))) &&
-        ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.getURL().indexOf("Publication") != -1))) {
+    if (gsr != null &&
+        (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith("kmelia") ||
+            gsr.getInstanceId().startsWith("kmax") || gsr
+            .getInstanceId().startsWith("toolbox"))) &&
+        ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.getURL()
+            .indexOf("Publication") != -1))) {
       return true;
     }
     return false;
