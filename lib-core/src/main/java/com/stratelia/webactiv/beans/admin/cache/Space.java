@@ -24,7 +24,8 @@
 
 package com.stratelia.webactiv.beans.admin.cache;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -32,8 +33,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 public class Space {
 
   SpaceInstLight space;
-  HashSet<ComponentInstLight> components = new HashSet<ComponentInstLight>();
-  HashSet<SpaceInstLight> subspaces = new HashSet<SpaceInstLight>();
+  List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+  List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>();
 
   public SpaceInstLight getSpace() {
     return space;
@@ -43,19 +44,19 @@ public class Space {
     this.space = space;
   }
 
-  public HashSet<ComponentInstLight> getComponents() {
+  public List<ComponentInstLight> getComponents() {
     return components;
   }
 
-  public void setComponents(HashSet<ComponentInstLight> components) {
+  public void setComponents(List<ComponentInstLight> components) {
     this.components = components;
   }
 
-  public HashSet<SpaceInstLight> getSubspaces() {
+  public List<SpaceInstLight> getSubspaces() {
     return subspaces;
   }
 
-  public void setSubspaces(HashSet<SpaceInstLight> subspaces) {
+  public void setSubspaces(List<SpaceInstLight> subspaces) {
     this.subspaces = subspaces;
   }
 

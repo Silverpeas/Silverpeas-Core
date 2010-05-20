@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -226,14 +225,14 @@ public class Admin extends Object {
     // add sorted components to space's cache
     List<ComponentInstLight> components =
         m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(space.getShortId()));
-    spaceInCache.setComponents(new HashSet<ComponentInstLight>(components));
+    spaceInCache.setComponents(components);
 
     // add sorted subSpaces to space's cache
     /*
      * spaceInCache.setSubspaces(new HashSet<SpaceInstLight>(getSubSpacesFromList(
      * space.getShortId(), spaces)));
      */
-    spaceInCache.setSubspaces(new HashSet<SpaceInstLight>(getSubSpaces(space.getShortId())));
+    spaceInCache.setSubspaces(getSubSpaces(space.getShortId()));
 
     TreeCache.addSpace(space.getShortId(), spaceInCache);
   }
@@ -684,8 +683,16 @@ public class Admin extends Object {
           "root.MSG_GEN_ENTER_METHOD", "Space id: '" + sSpaceId
           + "' New Order num: " + Integer.toString(orderNum));
       String sDriverSpaceId = getDriverSpaceId(sSpaceId);
+
+      // Open the connections with auto-commit to false
+      m_DDManager.startTransaction(false);
+
       // Update the space in tables
       m_SpaceInstManager.updateSpaceOrder(m_DDManager, sDriverSpaceId, orderNum);
+
+      // commit the transactions
+      m_DDManager.commit();
+
       m_Cache.opUpdateSpace(m_SpaceInstManager.getSpaceInstById(m_DDManager,
           sDriverSpaceId));
 
@@ -695,6 +702,7 @@ public class Admin extends Object {
         TreeCache.setSubspaces(space.getFatherId(), getSubSpaces(space.getFatherId()));
       }
     } catch (Exception e) {
+      rollback();
       throw new AdminException("Admin.updateSpaceOrderNum",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACE",
           "space Id : '" + sSpaceId + "'", e);
@@ -1387,12 +1395,20 @@ public class Admin extends Object {
           "root.MSG_GEN_ENTER_METHOD", "Component id: '" + sComponentId
           + "' New Order num: " + Integer.toString(orderNum));
       String sDriverComponentId = getDriverComponentId(sComponentId);
+
+      // Open the connections with auto-commit to false
+      m_DDManager.startTransaction(false);
+
       // Update the Component in tables
       m_ComponentInstManager.updateComponentOrder(m_DDManager,
           sDriverComponentId, orderNum);
+
+      m_DDManager.commit();
+
       m_Cache.opUpdateComponent(m_ComponentInstManager.getComponentInst(
           m_DDManager, sDriverComponentId, null));
     } catch (Exception e) {
+      rollback();
       throw new AdminException("Admin.updateComponentOrderNum",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
           "Component Id : '" + sComponentId + "'", e);
@@ -3662,7 +3678,7 @@ public class Admin extends Object {
       List<String> componentIds = getAllowedComponentIds(sUserId);
 
       // getting all subspaces
-      HashSet<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+      List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
       for (SpaceInstLight subspace : subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
           result.add(subspace.getShortId());
@@ -3739,7 +3755,7 @@ public class Admin extends Object {
       List<String> componentIds = getAllowedComponentIds(userId);
 
       // getting all subspaces
-      HashSet<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+      List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
       for (SpaceInstLight subspace : subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
           result.add(subspace);
@@ -4221,7 +4237,7 @@ public class Admin extends Object {
       String spaceId = getDriverSpaceId(sClientSpaceId);
 
       // Get available component ids from database
-      HashSet<ComponentInstLight> components = TreeCache.getComponents(spaceId);
+      List<ComponentInstLight> components = TreeCache.getComponents(spaceId);
 
       List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
       List<String> result = new ArrayList<String>();

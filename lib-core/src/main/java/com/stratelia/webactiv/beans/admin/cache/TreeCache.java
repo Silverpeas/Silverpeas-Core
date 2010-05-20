@@ -26,7 +26,6 @@ package com.stratelia.webactiv.beans.admin.cache;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -67,21 +66,21 @@ public class TreeCache {
     }
   }
 
-  public static HashSet<ComponentInstLight> getComponents(String spaceId) {
+  public static List<ComponentInstLight> getComponents(String spaceId) {
     Space space = map.get(spaceId);
     if (space != null) {
       return space.getComponents();
     } else {
-      return new HashSet<ComponentInstLight>();
+      return new ArrayList<ComponentInstLight>();
     }
   }
 
-  public static HashSet<SpaceInstLight> getSubSpaces(String spaceId) {
+  public static List<SpaceInstLight> getSubSpaces(String spaceId) {
     Space space = map.get(spaceId);
     if (space != null) {
       return space.getSubspaces();
     } else {
-      return new HashSet<SpaceInstLight>();
+      return new ArrayList<SpaceInstLight>();
     }
   }
 
@@ -92,7 +91,7 @@ public class TreeCache {
     if (space != null) {
       contains = space.containsComponent(componentId);
       if (!contains) {
-        HashSet<SpaceInstLight> subspaces = space.getSubspaces();
+        List<SpaceInstLight> subspaces = space.getSubspaces();
         for (SpaceInstLight subspace : subspaces) {
           contains = isSpaceContainsComponent(subspace.getShortId(), componentId);
           if (contains) {
