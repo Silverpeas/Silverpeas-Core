@@ -44,6 +44,7 @@ import java.util.Vector;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
 import com.stratelia.silverpeas.domains.silverpeasdriver.DomainSPSchemaPool;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
@@ -5102,6 +5103,9 @@ public class Admin extends Object {
     Domain theDomain;
     String timeStampField = null;
 
+    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
+    Collection<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
+
     try {
       synchroDomain = m_DDManager.getDomainDriver(Integer.parseInt(domainId));
       if (!synchroDomain.isSynchroInProcess()) {
@@ -5150,8 +5154,8 @@ public class Admin extends Object {
                   distantUDs[nI].setDomainId(spUserDetail.getDomainId());
                   if (distantUDs[nI].equals(spUserDetail) == false) {
                     m_UserManager.updateUser(m_DDManager, distantUDs[nI]);
-                    m_Cache.opUpdateUser(m_UserManager.getUserDetail(
-                        m_DDManager, silverpeasId));
+                    m_Cache.opUpdateUser(m_UserManager.getUserDetail(m_DDManager, silverpeasId));
+                    listUsersUpdate.add(distantUDs[nI]);
                   }
                 } catch (AdminException ex) // The user's synchro failed ->
                 // Ignore him
@@ -5241,8 +5245,8 @@ public class Admin extends Object {
                         "root.MSG_GEN_PARAM_VALUE",
                         "%%%%DIFFSYNCHRO%%%%>Delete User : "
                         + silverpeasUDs[nI]);
-                    m_UserManager.deleteUser(m_DDManager, silverpeasUDs[nI],
-                        true);
+                    m_UserManager.deleteUser(m_DDManager, silverpeasUDs[nI], true);
+                    listUsersRemove.add(distantUDs[nI]);
                   } catch (AdminException aeDel) {
                     SilverTrace.error("admin", "admin.difSynchro",
                         "root.MSG_GEN_PARAM_VALUE",
@@ -5260,6 +5264,9 @@ public class Admin extends Object {
             // ----------------------------------------------------
             theDomain.setTheTimeStamp(toTimeStamp);
             m_DDManager.updateDomain(theDomain);
+
+            // traitement spécifique des users selon l'interface implémentée
+            processSpecificSynchronization(domainId, null, listUsersUpdate, listUsersRemove);
           }
         }
       } else {
@@ -5503,8 +5510,10 @@ public class Admin extends Object {
     String[] oldGroupsId;
     int i;
 
-    SilverTrace.info("admin", "admin.synchronizeUser",
-        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
+
+    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD", "userId=" +
+        userId);
     try {
       // Start transaction
       m_DDManager.startTransaction(false);
@@ -5520,6 +5529,9 @@ public class Admin extends Object {
         m_UserManager.updateUser(m_DDManager, ud);
         m_Cache.opUpdateUser(m_UserManager.getUserDetail(m_DDManager, userId));
       }
+      // Synchro manuelle : Ajoute ou Met à jour l'utilisateur
+      listUsersUpdate.add(ud);
+
       // Synchronize the user's groups
       incGroupsSpecificId = synchroDomain.getUserMemberGroupIds(theUserDetail.getSpecificId());
       incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
@@ -5547,6 +5559,10 @@ public class Admin extends Object {
         m_GroupManager.addUserInGroup(m_DDManager, userId, incGroupsId.elementAt(i));
         m_Cache.opAddUserInGroup(userId, incGroupsId.elementAt(i));
       }
+
+      // traitement spécifique des users selon l'interface implémentée
+      processSpecificSynchronization(theUserDetail.getDomainId(), null, listUsersUpdate, null);
+
       // Commit the transaction
       m_DDManager.commit();
 
@@ -5573,8 +5589,7 @@ public class Admin extends Object {
 
     ud.setDomainId(domainId);
     userId = addUser(ud, true);
-    // Synchronizes the user to add it to the groups and recursivaly add the
-    // groups
+    // Synchronizes the user to add it to the groups and recursivaly add the groups
     synchronizeUser(userId, recurs);
     return userId;
   }
@@ -5592,8 +5607,7 @@ public class Admin extends Object {
 
     ud.setDomainId(domainId);
     userId = addUser(ud, true);
-    // Synchronizes the user to add it to the groups and recursivaly add the
-    // groups
+    // Synchronizes the user to add it to the groups and recursivaly add the groups
     synchronizeUser(userId, recurs);
     return userId;
   }
@@ -5627,6 +5641,12 @@ public class Admin extends Object {
         m_DDManager.getDomainDriver(Integer.parseInt(theUserDetail.getDomainId()));
     synchroDomain.removeUser(theUserDetail.getSpecificId());
     deleteUser(userId, true);
+    List<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
+    listUsersRemove.add(theUserDetail);
+
+    // traitement spécifique des users selon l'interface implémentée
+    processSpecificSynchronization(theUserDetail.getDomainId(), null, null, listUsersRemove);
+
     return userId;
   }
 
@@ -5727,11 +5747,13 @@ public class Admin extends Object {
     String silverpeasId = null;
     String sReport = "User synchronization : \n";
     int iNbUsersAdded, iNbUsersMaj, iNbUsersDeleted;
-
     iNbUsersAdded = iNbUsersMaj = iNbUsersDeleted = 0;
 
-    SynchroReport.warn("admin.synchronizeUsers",
-        "SYNCHRONISATION UTILISATEURS :", null);
+    Collection<UserDetail> listUsersCreate = new ArrayList<UserDetail>();
+    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
+    Collection<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
+
+    SynchroReport.warn("admin.synchronizeUsers", "SYNCHRONISATION UTILISATEURS :", null);
     try {
       // Clear conversion table
       userIds.clear();
@@ -5778,6 +5800,7 @@ public class Admin extends Object {
                 "root.MSG_GEN_PARAM_VALUE",
                 "%%%%FULLSYNCHRO%%%%>Update User : " + distantUDs[nI].getId());
             silverpeasId = m_UserManager.updateUser(m_DDManager, distantUDs[nI]);
+            listUsersUpdate.add(distantUDs[nI]);
             iNbUsersMaj++;
             SynchroReport.warn("admin.synchronizeUsers", "maj utilisateur "
                 + distantUDs[nI].getFirstName() + " "
@@ -5812,6 +5835,7 @@ public class Admin extends Object {
               SilverTrace.info("admin", "admin.synchronizeUsers",
                   "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add User : "
                   + silverpeasId);
+              listUsersCreate.add(distantUDs[nI]);
               sReport += "adding user " + distantUDs[nI].getFirstName() + " "
                   + distantUDs[nI].getLastName() + "(id:" + silverpeasId
                   + " / specificId:" + specificId + ")\n";
@@ -5857,6 +5881,7 @@ public class Admin extends Object {
                 "root.MSG_GEN_PARAM_VALUE",
                 "%%%%FULLSYNCHRO%%%%>Delete User : " + silverpeasUDs[nI]);
             m_UserManager.deleteUser(m_DDManager, silverpeasUDs[nI], true);
+            listUsersRemove.add(silverpeasUDs[nI]);
             iNbUsersDeleted++;
             sReport += "deleting user " + silverpeasUDs[nI].getFirstName()
                 + " " + silverpeasUDs[nI].getLastName() + "(id:" + specificId
@@ -5880,6 +5905,9 @@ public class Admin extends Object {
 
       distantUDs = null;
       silverpeasUDs = null;
+
+      // traitement spécifique des users selon l'interface implémentée
+      processSpecificSynchronization(domainId, listUsersCreate, listUsersUpdate, listUsersRemove);
 
       sReport += "User synchronization terminated\n";
       SynchroReport.info("admin.synchronizeUsers",
@@ -5908,8 +5936,10 @@ public class Admin extends Object {
     String silverpeasId = null;
     String sReport = "User synchronization : \n";
     int iNbUsersAdded, iNbUsersMaj, iNbUsersDeleted;
-
     iNbUsersAdded = iNbUsersMaj = iNbUsersDeleted = 0;
+
+    Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
+    Collection<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
 
     SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
         "SYNCHRONISATION UTILISATEURS :", null);
@@ -5961,6 +5991,7 @@ public class Admin extends Object {
                 "root.MSG_GEN_PARAM_VALUE",
                 "%%%%FULLSYNCHRO%%%%>Update User : " + userLDAP.getId());
             silverpeasId = m_UserManager.updateUser(m_DDManager, userLDAP);
+            listUsersUpdate.add(userLDAP);
             iNbUsersMaj++;
             SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
                 "maj utilisateur " + userLDAP.getDisplayedName() + " (id:"
@@ -5983,6 +6014,7 @@ public class Admin extends Object {
                 "root.MSG_GEN_PARAM_VALUE",
                 "%%%%FULLSYNCHRO%%%%>Delete User : " + silverpeasUDs[nI]);
             m_UserManager.deleteUser(m_DDManager, userSP, true);
+            listUsersRemove.add(userSP);
             iNbUsersDeleted++;
             sReport += "deleting user " + userSP.getDisplayedName() + "(id:"
                 + specificId + ")\n";
@@ -6004,6 +6036,9 @@ public class Admin extends Object {
       distantUDs = null;
       silverpeasUDs = null;
 
+      // traitement spécifique des users selon l'interface implémentée
+      processSpecificSynchronization(domainId, null, listUsersUpdate, listUsersRemove);
+
       sReport += "User synchronization terminated\n";
       SynchroReport.info("admin.synchronizeOnlyExistingUsers",
           "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : "
@@ -6018,6 +6053,36 @@ public class Admin extends Object {
       throw new AdminException("admin.synchronizeOnlyExistingUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
           "domain id : '" + domainId + "'\nReport:" + sReport, e);
+    }
+  }
+
+  private void processSpecificSynchronization(String domainId, Collection<UserDetail> usersAdded,
+      Collection<UserDetail> usersUpdated, Collection<UserDetail> usersRemoved) throws Exception {
+    Domain theDomain = m_DDManager.getDomain(domainId);
+    String propDomainFileName = theDomain.getPropFileName();
+    ResourceLocator propDomainLdap = new ResourceLocator(propDomainFileName, "");
+    String nomClasseSynchro = propDomainLdap.getString("synchro.Class");
+    if (StringUtil.isDefined(nomClasseSynchro)) {
+      if (usersAdded == null) {
+        usersAdded = new ArrayList<UserDetail>();
+      }
+      if (usersUpdated == null) {
+        usersUpdated = new ArrayList<UserDetail>();
+      }
+      if (usersRemoved == null) {
+        usersRemoved = new ArrayList<UserDetail>();
+      }
+      LDAPSynchroUserItf synchroUser = null;
+      try {
+        synchroUser = (LDAPSynchroUserItf) Class.forName(nomClasseSynchro).newInstance();
+        if (synchroUser != null) {
+          synchroUser.processUsers(usersAdded, usersUpdated, usersRemoved);
+        }
+      } catch (Exception e) {
+        SilverTrace.warn("admin", "admin.synchronizeOnlyExistingUsers",
+            "root.MSG_GEN_PARAM_VALUE", "Pb Loading class traitement Users ! ");
+        synchroUser = null;
+      }
     }
   }
 
