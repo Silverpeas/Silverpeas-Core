@@ -225,13 +225,17 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     //test inheritance
     assertEquals(true, ac.isComponentAvailable("almanach2", "1"));
     
+    //test if subspace is available
+    /*String[] subSpaceIds = ac.getAllSubSpaceIds("WA1", "1");
+    assertEquals(1, subSpaceIds.length);*/
+    
     //remove user from space profile
     profile = ac.getSpaceProfileInst(profileId);
     profile.removeAllUsers();
     ac.updateSpaceProfileInst(profile, "1");
     
     //test inheritance
-    assertEquals(false, ac.isComponentAvailable("almanach2", "1"));    
+    assertEquals(false, ac.isComponentAvailable("almanach2", "1"));
   }
 
   @Test

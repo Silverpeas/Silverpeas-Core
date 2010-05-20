@@ -79,11 +79,13 @@ public class ComponentDAO {
       throws SQLException {
 
     ComponentInstLight i = new ComponentInstLight();
+    
+    String name = rs.getString(4);
 
-    i.setId(Integer.toString(rs.getInt(1)));
+    i.setId(name + Integer.toString(rs.getInt(1)));
     i.setDomainFatherId(Integer.toString(rs.getInt(2)));
     i.setLabel(rs.getString(3));
-    i.setName(rs.getString(4));
+    i.setName(name);
 
     return i;
   }

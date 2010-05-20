@@ -105,9 +105,9 @@ public class TreeCache {
     return contains;
   }
 
-  public static void addComponent(String componentId, ComponentInstLight component) {
+  public static void addComponent(String componentId, ComponentInstLight component, String spaceId) {
     // add component in spaces list
-    Space space = map.get(component.getDomainFatherId());
+    Space space = map.get(spaceId);
     if (space != null) {
       space.addComponent(component);
     }

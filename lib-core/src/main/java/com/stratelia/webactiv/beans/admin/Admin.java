@@ -1086,8 +1086,9 @@ public class Admin extends Object {
       m_DDManager.commit();
 
       m_Cache.opUpdateComponent(componentInst);
-      TreeCache.addComponent(getDriverComponentId(sComponentId),
-          getComponentInstLight(sComponentId));
+      ComponentInstLight component = getComponentInstLight(sComponentId);
+      TreeCache.addComponent(getDriverComponentId(sComponentId), component,
+          getDriverSpaceId(component.getDomainFatherId()));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.restoreComponentFromBasket",
@@ -1224,7 +1225,8 @@ public class Admin extends Object {
       }
       connectionProd.commit();
       m_Cache.opAddComponent(componentInst);
-      TreeCache.addComponent(sDriverComponentId, getComponentInstLight(componentId));
+      TreeCache.addComponent(sDriverComponentId, getComponentInstLight(componentId),
+          getDriverSpaceId(spaceInstFather.getId()));
 
       // indexation du composant
       createComponentIndex(componentInst);
@@ -3697,7 +3699,7 @@ public class Admin extends Object {
 
     // Is there at least one component available ?
     for (int c = 0; !find && c < components.size(); c++) {
-      find = componentIds.contains(components.get(c).getFullId());
+      find = componentIds.contains(components.get(c).getId());
     }
     if (find) {
       return true;
@@ -3786,7 +3788,7 @@ public class Admin extends Object {
       List<ComponentInstLight> allComponents =
           TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(spaceId));
       for (ComponentInstLight component : allComponents) {
-        if (allowedComponentIds.contains(component.getFullId())) {
+        if (allowedComponentIds.contains(component.getId())) {
           allowedComponents.add(component);
         }
       }
@@ -4142,7 +4144,7 @@ public class Admin extends Object {
 
         List<String> componentIds = new ArrayList<String>();
         for (ComponentInstLight component : components) {
-          componentIds.add(component.getFullId());
+          componentIds.add(component.getId());
         }
 
         asAvailCompoIds = componentIds.toArray(new String[componentIds.size()]);
@@ -4224,9 +4226,9 @@ public class Admin extends Object {
       List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
       List<String> result = new ArrayList<String>();
       for (ComponentInstLight component : components) {
-        if (allowedComponentIds.contains(component.getFullId()) &&
+        if (allowedComponentIds.contains(component.getId()) &&
             component.getName().startsWith(componentNameRoot)) {
-          result.add(component.getFullId());
+          result.add(component.getId());
         }
       }
 
@@ -4790,7 +4792,7 @@ public class Admin extends Object {
 
     List<String> componentIds = new ArrayList<String>();
     for (ComponentInstLight component : components) {
-      componentIds.add(component.getFullId());
+      componentIds.add(component.getId());
     }
     return componentIds.toArray(new String[componentIds.size()]);
   }
