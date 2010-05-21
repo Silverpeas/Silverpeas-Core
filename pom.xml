@@ -30,7 +30,7 @@
   
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.2-SNAPSHOT</version>
+  <version>5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
 
