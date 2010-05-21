@@ -61,7 +61,7 @@ pageTracker._trackPageview();
     <breadcrumbs><item name="Silverpeas" href="http://www.silverpeas.com"/></breadcrumbs>
     <menu name="Overview" collapse="false">
       <item name="Introduction" href="index.html"/>
-      <item name="Roadmap" href="http://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1"/>
+      <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1"/>
       <item name="Changelog" href="changelog.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
