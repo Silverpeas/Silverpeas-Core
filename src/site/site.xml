@@ -61,10 +61,12 @@ pageTracker._trackPageview();
     <breadcrumbs><item name="Silverpeas" href="http://www.silverpeas.com"/></breadcrumbs>
     <menu name="Overview" collapse="false">
       <item name="Introduction" href="index.html"/>
+      <item name="Roadmap" href="http://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1"/>
+      <item name="Changelog" href="changelog.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
     </menu>
-    <menu name="CAS" collapse="false">
+    <menu name="CAS" collapse="true">
       <item name="Introduction" href="cas/SSO-CAS.html" collapse="false"/>
       <item name="Certificates Configuration" href="cas/certificates.html" collapse="false" />
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="false" />

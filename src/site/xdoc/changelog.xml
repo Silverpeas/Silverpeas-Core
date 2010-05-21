@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document>
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Roadmap</title>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Release 5.1">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/162">Bug #162
+            </a>: the navigation in the results of search engine doesn't work
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/216">Bug #216
+            </a>: Printing a folder instance doesn't work
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/253">Bug #253
+            </a>: Caractère spécial ' de word dans notificiations
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/259">Bug #259
+            </a>: Ergonomie : on ne voit plus si un thème est caché ou visible coté Web
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/283">Bug #283
+            </a>: Glisser/déposer : Problème avec noms de fichier accentués
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/290">Bug #290
+            </a>: Problem with Search Engine : did you mean link doesn't work
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/295">Bug #295
+            </a>: Caractères
+spéciaux copier/coller de Word dans les Notifications
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/309">Bug #309
+            </a>: Administration :
+Suppression d'éléments dans la corbeille impossible
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/318">Bug #318
+            </a>:
+formTemplate/Workflow : affectation à un rôle et non à la liste des
+personnes de ce rôle
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/324">Bug #324
+            </a>: pb ouverture
+fichiers Powerpoint sous Office 2007
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/325">Bug #325
+            </a>: Anomalie dans le
+moteur de recherche en mode avancé
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/327">Bug #327
+            </a>: Colonne vide non
+modifiable
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/330">Bug #330
+            </a>: Le parser PDF
+sort une erreur sur certains fichiers PDF: les fichiers ne sont donc pas
+ indexés
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/332">Bug #332
+            </a>: Notifications
+abusives
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/333">Bug #333
+            </a>: Page d'erreur
+lors de l'accès à un Wiki
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/338">Bug #338
+            </a>: Page d'erreur
+lors de l'ajout d'une image
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/339">Bug #339
+            </a>: Anomalie lors
+d'une mauvaise configuration du formulaire XML de la galerie
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/364">Bug #364
+            </a>: Permettre de
+forcer la date de création lors d'un import
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/366">Bug #366
+            </a>: formulaire:
+getString(String) d'InternalFileItem renvoit "null"
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/371">Bug #371
+            </a>: Impossible
+d'attacher un fichier
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/372">Bug #372
+            </a>: Anomalie sur la
+fonctionnalité de demande d'images
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/374">Bug #374
+            </a>: Incompatibilité
+du format des mots clefs dynamique du wysiwyg
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/375">Bug #375
+            </a>: Process manager
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/381">Bug #381
+            </a>: Erreur lors de
+l'accès à la recherche par formulaire
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/399">Bug #399
+            </a>: Permalien en
+erreur pour les pièces jointes
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/400">Bug #400
+            </a>: Accès au
+backoffice à tort
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/404">Bug #404
+            </a>: Composant
+inaccessible
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/406">Bug #406
+            </a>: Ordre des espaces
+ non respecté
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/8">Feature #8
+            </a>: Simplify Spring
+ Configuration
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/58">Feature #58
+            </a>: Définir les
+modèles XML au niveau des thèmes
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/228">Feature #228
+            </a>: Evolution de
+la fonctionnalité " voir aussi " : sélection multi theme tracker
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/231">Feature #231
+            </a>: banque de
+fichier
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/249">Feature #249
+            </a>: Modération à
+priori des messages
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/280">Feature #280
+            </a>: Ajout
+mécanisme de validation des ressources
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/285">Feature #285
+            </a>: accès aux
+définitions présentes dans le lexique depuis les publications
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/293">Feature #293
+            </a>: Envoi de
+notifications sur modifications
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/294">Feature #294
+            </a>: Notifications
+ : Historique des envois
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/296">Feature #296
+            </a>: Notifications
+ : Gestion multicanaux
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/297">Feature #297
+            </a>: Versioning :
+dernière version publique uniquement accessible
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/298">Feature #298
+            </a>: Enrichir
+l'extension SendInKmelia au contenu de la publication
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/299">Feature #299
+            </a>: Colonnes
+paramétrables dans le tableau des contacts
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/300">Feature #300
+            </a>: Recherche PDC
+ : critères de tri
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/301">Feature #301
+            </a>: Moteur de
+recherche : Ajout d'un critère Date de modification
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/302">Feature #302
+            </a>: Tri des
+publications
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/303">Feature #303
+            </a>: Notifications
+ : Insérer les destinataires dans le corps du message
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/306">Feature #306
+            </a>: Générer un
+PDF de l'année
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/308">Feature #308
+            </a>: Modifier
+l'implémentation de la lecture des droits
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/310">Feature #310
+            </a>: Afficher
+rapidement toutes les annonces d'une catégorie
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/311">Feature #311
+            </a>: Templates XML
+ : Limiter la taille d'affichage des images
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/312">Feature #312
+            </a>: Résultats
+visibles sans participation
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/313">Feature #313
+            </a>: Rattacher les
+ commentaires aux participants
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/320">Feature #320
+            </a>: Filtrage par
+facettes
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/322">Feature #322
+            </a>: Utiliser
+JUpload pour le drag And drop
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/341">Feature #341
+            </a>: Champ de type
+ PDC
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/365">Feature #365
+            </a>: Permettre de
+forcer la date de création lors d'un import
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/367">Feature #367
+            </a>: Permettre de
+récupèrer l'id lors de la création d'une valeur sur le PDC
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/368">Feature #368
+            </a>: Permettre la
+création d'une position dans le plan de classement via l'ejb pdc
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/369">Feature #369
+            </a>: Récupèrer
+l'id de publication à partir d'un champ xml
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/376">Feature #376
+            </a>:
+Activation/Désactivation de l'opération imprimer
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/387">Feature #387
+            </a>: Nouveau
+critère de tri : Popularité
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/402">Feature #402
+            </a>:
+Synchronisation spécifique des utilisateurs
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/180">Support #180
+            </a>: xom et JBoss 5
+          </li>
+        </ul>
+      </fieldset>
+      </section>
+      <section name="Release 5.0.2">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/380">Bug #380</a>: Authentification CAS
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/382">Bug #382</a>: Logout CAS
+          </li>
+        </ul>
+      </fieldset>
+      </section>
+      <section name="Release 5.0.2">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/323">Bug #323</a>: Edition wysiwyg
+          </li>
+        </ul>
+      </fieldset>
+    </section>
+  </body>
+</document>

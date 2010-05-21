@@ -66,18 +66,9 @@
     </section>
     <section name="Configuration">
       <subsection name="Configuring the JDBC Driver">
-        <p>Silverpeas default configuration is using Postgresql, but if you plan to use Microsoft SQL Server or Oracle you need a special step to
-        add the JDBC driver to Silverpeas. Edit the file <i>%SILVERPEAS_HOME%/bin/pom.xml</i> and add the following code according to your database :</p>
-        <ul>
-          <li>MsSQL :
-          <source><![CDATA[
-<dependencies>
-  <dependency>
-    <groupId>net.sourceforge.jtds</groupId>
-    <artifactId>jtds</artifactId>
-  </dependency>
-</dependencies>]]></source>
-          </li>
+        <p>Silverpeas default configuration is using Postgresql, but if you plan to use Oracle you need a special step to
+        add the JDBC driver to Silverpeas. Edit the file <i>%SILVERPEAS_HOME%\bin\pom.xml</i> and add the following code :</p>
+        <ul>         
           <li>Oracle : 
           <source><![CDATA[
 <dependencies>
@@ -89,6 +80,9 @@
 </dependencies>]]></source>
           </li>
         </ul>
+        <p>Now, you need to install the Oracle JDBC driver in your local repository with the following command :</p>
+        <source><![CDATA[
+mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -DgeneratePom=true -Dfile=/path/to/jar]]></source>
         </subsection>
       <subsection name="Configuring Silverpeas">
         <p>Now, you have to edit your configuration file : <i>%SILVERPEAS_HOME%\setup\settings\CustomerSettings.xml</i>

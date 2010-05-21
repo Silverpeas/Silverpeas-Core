@@ -51,6 +51,8 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
           <a href="http://maven.apache.org">their website</a> or
           <a href="http://www.sonatype.com/books/maven-book/reference/">download the ebook</a>
         </p>
+        <p>If you are behind a <b>proxy</b> don't forget to configure it correctly for Maven following <a href="http://maven.apache.org/guides/mini/guide-proxies.html">these directions</a>.
+        </p>
       </subsection>
       <subsection name="Postgresql">
         <p>Silverpeas can use any JDBC compliant RDBMS, however the Open source solution is pre-configured to run on PostgreSQL 8.x.
@@ -74,7 +76,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </subsection>
       </subsection>
     </section>
-    <Section name="Installation">
+    <section name="Installation">
       <subsection name="Installing JBoss">
         <p>Currently we provide a packaged and pre-configured version of JBoss 4.0.3 for Windows. <br/>
         Please download it from :</p>
@@ -85,16 +87,26 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         <p>You have to set-up the environment variable <code>%JBOSS_HOME%</code> for the directory in which you have unzipped the jboss403.zip</p>
       </subsection>
       <subsection name="Preparing Silverpeas">
-        <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download it from </p>
+        <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download </p>
+<fieldset>
+        <legend>Stable release</legend>
           <ul>
-          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_version}.zip"><img src="images/windows_logo_24X24.png"/> here for Windows</a></li>
-          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_version}.tar.gz"><img src="images/linux_logo_24X24.png"/> here for Linux</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}.zip"><img src="images/windows_logo_24X24.png"/> the last stable version for Windows</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_stable_version}.tar.gz"><img src="images/linux_logo_24X24.png"/> the last stable version  for Linux</a></li>
         </ul>
+</fieldset>
+<fieldset>
+        <legend>Development release</legend>
+        <ul>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_version}.zip"><img src="images/windows_logo_24X24.png"/> the current development version for Windows</a></li>
+          <li><a href="http://repository.silverpeas.org/files/silverpeas-${installer_version}.tar.gz"><img src="images/linux_logo_24X24.png"/> the current development version for Linux</a></li>
+        </ul>
+</fieldset>
         <p>1. Unzip/decompress the contents into a <code>silverpeas</code> directory,</p>
         <p>2. Define an environment variable <code>%SILVERPEAS_HOME%</code> that points to this directory.</p>
         <p>For example:<br/>
-        Unzip the <b>silverpeas-${installer_version}.zip</b> file into <i>C:\Java\silverpeas</i>.<br/>
-        The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:\Java\silverpeas</i>.
+        Unzip the <b>silverpeas-${installer_stable_version}.zip</b> file into <i>C:\Java</i>.<br/>
+        The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:\Java\silverpeas-${installer_stable_version}</i>.
         </p>
         <p>3. Next, configure your installation by editing the files:<br/>
         <ul>
@@ -123,6 +135,6 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
           and using the account: <strong>SilverAdmin/SilverAdmin</strong>.
         </p>
       </subsection>
-    </Section>
+    </section>
   </body>
 </document>
