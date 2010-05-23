@@ -28,7 +28,7 @@
 <!DOCTYPE WAComponent [
    <!ELEMENT WAComponent (name, description, instanceClassNamee, tableList )>
    <!ELEMENT name (#PCDATA)>
-   <!ELEMENT description, (#PCDATA)>
+   <!ELEMENT description (#PCDATA)>
    <!ELEMENT instanceClassName (#PCDATA)>
    <!ELEMENT tableList ((tabletpl+))>
    <!ELEMENT tabletpl (#PCDATA)>
