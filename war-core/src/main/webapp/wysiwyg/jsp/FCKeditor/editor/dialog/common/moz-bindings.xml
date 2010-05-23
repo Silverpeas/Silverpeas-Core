@@ -29,10 +29,13 @@
 	<binding id="numericfield">
 		<implementation>
 			<constructor>
+<![CDATA[
 				this.keypress = CheckIsDigit ;
+]]>
 			</constructor>
 			<method name="CheckIsDigit">
 				<body>
+<![CDATA[
 					var iCode = keyCode ;
 
 					var bAccepted =
@@ -44,6 +47,7 @@
 						) ;
 
 					return bAccepted ;
+]]>
 			   </body>
 			</method>
 		</implementation>
