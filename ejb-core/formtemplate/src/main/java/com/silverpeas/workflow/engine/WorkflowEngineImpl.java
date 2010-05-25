@@ -38,6 +38,7 @@ import com.silverpeas.workflow.api.event.GenericEvent;
 import com.silverpeas.workflow.api.event.QuestionEvent;
 import com.silverpeas.workflow.api.event.ResponseEvent;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
+import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.instance.Actor;
 import com.silverpeas.workflow.api.instance.UpdatableHistoryStep;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
@@ -48,6 +49,7 @@ import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
+import com.silverpeas.workflow.engine.model.StateImpl;
 
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
@@ -66,7 +68,16 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    * @param event the task event that has been done.
    */
   public void process(TaskDoneEvent event) throws WorkflowException {
-    boolean creationEvent = false;
+	  process(event, false);
+  }
+  
+  /**
+   * A task has been done and sent to the workflow Enginewhich has to process it.
+   * @param event the task event that has been done.
+   */
+  public void process(TaskDoneEvent event, boolean ignoreControls) throws WorkflowException {
+
+	boolean creationEvent = false;
     ProcessModel model = event.getProcessModel();
     Database db = null;
     UpdatableProcessInstance instance = null;
@@ -74,6 +85,84 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     // Tests if action is creation
     Action action = model.getAction(event.getActionName());
     if (action != null && action.getKind().equals("create")) {
+      if (!event.isResumingAction()) {
+        UpdatableProcessInstanceManager instanceManager =
+            (UpdatableProcessInstanceManager) WorkflowHub
+            .getProcessInstanceManager();
+        instance = (UpdatableProcessInstance) instanceManager
+            .createProcessInstance(model.getModelId());
+        event.setProcessInstance(instance);
+      }
+      else {
+        instance = (UpdatableProcessInstance) event.getProcessInstance();
+      }
+      creationEvent = true;
+    } else {
+      instance = (UpdatableProcessInstance) event.getProcessInstance();
+    }
+
+    if (!ignoreControls) {
+	    try {
+	      // Get database connection
+	      db = WorkflowJDOManager.getDatabase();
+	
+	      // begin transaction
+	      db.begin();
+	
+	      // Re-load process instance
+	      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+	          instance.getInstanceId());
+	
+	      // Do workflow stuff
+	      try {
+	        // Over-locks the process instance by admin
+	        this.manageLocks((GenericEvent) event, instance);
+	
+	        // Tests if user is declared as a working user
+	        if (!creationEvent)
+	          this.manageRights((GenericEvent) event, instance);
+	
+	        // Tests if user is declared as the working user for this state
+	        if (!creationEvent)
+	          this.checkUserLock((GenericEvent) event, instance);
+	
+	        // Checks the datas associated to the event
+	        /* xoxox a faire en concordance avec les specs du form manager */
+	
+	      } catch (WorkflowException we) {
+	        db.rollback();
+	        throw new WorkflowException("WorkflowEngineImpl.process",
+	            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
+	      }
+	
+	      // commit
+	      db.commit();
+	    } catch (PersistenceException pe) {
+	      throw new WorkflowException("WorkflowEngineImpl.process",
+	          "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
+	    } finally {
+	      WorkflowJDOManager.closeDatabase(db);
+	    }
+    }
+    
+    // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
+    WorkflowEngineThread.addTaskDoneRequest(event);
+  }
+
+  /**
+   * A task has been saved and sent to the workflow Enginewhich has to process it.
+   * @param event the task event that has been saved.
+   */
+  public void process(TaskSavedEvent event) throws WorkflowException {
+
+  boolean creationEvent = false;
+    ProcessModel model = event.getProcessModel();
+    Database db = null;
+    UpdatableProcessInstance instance = null;
+
+    // Tests if action is creation
+    Action action = model.getAction(event.getActionName());
+    if (event.isFirstTimeSaved() && action != null && action.getKind().equals("create")) {
       UpdatableProcessInstanceManager instanceManager =
           (UpdatableProcessInstanceManager) WorkflowHub
           .getProcessInstanceManager();
@@ -104,6 +193,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         // Tests if user is declared as a working user
         if (!creationEvent)
           this.manageRights((GenericEvent) event, instance);
+        else
+          instance.lock(new StateImpl(""), event.getUser());
 
         // Tests if user is declared as the working user for this state
         if (!creationEvent)
@@ -126,11 +217,11 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     } finally {
       WorkflowJDOManager.closeDatabase(db);
     }
-
+    
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
-    WorkflowEngineThread.addTaskDoneRequest(event);
+    WorkflowEngineThread.addTaskSavedRequest(event);
   }
-
+  
   /**
    * A question has been sent to a previous participant
    * @param event the question event containing all necessary information
@@ -363,6 +454,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     boolean validUser = false;
 
     resolvedState = event.getResolvedState();
+    if (resolvedState == null) {
+      resolvedState = new StateImpl("");
+    }
     actor = event.getUser();
     wkUsers = instance.getWorkingUsers(resolvedState.getName(), event
         .getUserRoleName());
@@ -388,6 +482,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     User actor;
 
     resolvedState = event.getResolvedState();
+    if (resolvedState == null) {
+      resolvedState = new StateImpl("");
+    }
     lockingUser = instance.getLockingUser(resolvedState.getName());
     actor = event.getUser();
 

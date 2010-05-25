@@ -86,9 +86,11 @@ public class TaskManagerImpl extends AbstractTaskManager {
     }
     todo.setAttendees(attendees);
 
-    todo.setDelegatorId(task.getUser().getUserId());
-    todo.setExternalId(getExternalId(task));
-
+    if (task.getUser() != null) {
+      todo.setDelegatorId(task.getUser().getUserId());
+      todo.setExternalId(getExternalId(task));
+    }
+    
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
     todoBBA.addEntry(todo);
   }

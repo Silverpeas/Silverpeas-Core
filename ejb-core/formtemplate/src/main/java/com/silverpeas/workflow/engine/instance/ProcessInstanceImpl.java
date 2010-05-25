@@ -963,6 +963,29 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   }
 
   /**
+   * Get step saved by given user id.
+   * @throws WorkflowException 
+   */
+  public HistoryStep getSavedStep(String userId) throws WorkflowException {
+    Date actionDate = null;
+    HistoryStep savedStep = null;
+    HistoryStep step = null;
+
+    for (int i = 0; i < historySteps.size(); i++) {
+      step = (HistoryStep) historySteps.get(i);
+
+      // if step matches the searched action, tests if the step is most recent
+      if ( (step.getActionStatus()==3) && (step.getUser().getUserId().equals(userId)) ) {
+        savedStep = step;
+        break;
+      }
+    }
+
+    return savedStep;    
+  }
+
+  
+  /**
    * Get the most recent step where an action has been performed on the given state. If no action
    * has been performed on this state, return the step that activate this state.
    */
@@ -1192,7 +1215,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
-      if (wkUser.getState().equals(state) && wkUser.getRole().equals(role))
+      if (wkUser.getState().equals(state) && wkUser.getRoles().contains(role))
         actors.addAll(wkUser.toActors());
     }
 
@@ -1213,7 +1236,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       boolean usersRoleMatch =
           (wkUser.getUsersRole() != null) && (wkUser.getUsersRole().equals(roleName));
       boolean wkUserMatch = userMatch || usersRoleMatch;
-      if (wkUserMatch && wkUser.getRole().equals(roleName))
+      if ( wkUserMatch && wkUser.getRoles().contains(roleName) )
         stateNames.add(wkUser.getState());
     }
 
@@ -1284,7 +1307,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param user the current locking user
    */
   public void unLock(State state, User user) throws WorkflowException {
-    this.unLock(state.getName(), user);
+   if(state == null) {
+     this.unLock("", user);
+   }
+   else {
+     this.unLock(state.getName(), user);
+   }
   }
 
   /**

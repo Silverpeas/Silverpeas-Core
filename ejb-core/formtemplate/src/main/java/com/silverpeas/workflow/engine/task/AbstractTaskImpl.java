@@ -29,12 +29,14 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.QuestionEvent;
 import com.silverpeas.workflow.api.event.ResponseEvent;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
+import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.event.QuestionEventImpl;
 import com.silverpeas.workflow.engine.event.ResponseEventImpl;
 import com.silverpeas.workflow.engine.event.TaskDoneEventImpl;
+import com.silverpeas.workflow.engine.event.TaskSavedEventImpl;
 
 /**
  * AbstractTaskImpl implements methods shared by TaskImpl ans CreateTaskImpl.
@@ -78,6 +80,13 @@ public abstract class AbstractTaskImpl implements Task {
     return (TaskDoneEvent) new TaskDoneEventImpl(this, actionName, data);
   }
 
+  /**
+   * Builds a TaskSavedEvent from this Task.
+   */
+  public TaskSavedEvent buildTaskSavedEvent(String actionName, DataRecord data) {
+    return (TaskSavedEvent) new TaskSavedEventImpl(this, actionName, data);
+  }
+  
   /**
    * Builds a QuestionEvent from this Task.
    */

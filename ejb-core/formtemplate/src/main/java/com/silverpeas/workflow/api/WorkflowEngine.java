@@ -30,6 +30,7 @@ import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
 import com.silverpeas.workflow.api.event.QuestionEvent;
 import com.silverpeas.workflow.api.event.ResponseEvent;
+import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.WorkflowException;
 
 /**
@@ -39,9 +40,22 @@ public interface WorkflowEngine {
   /**
    * A task has been done and sent to the workflow Enginewhich has to process it.
    * @param event the task event that has been done.
+   * @param ignoreControls if true, ignore controls about locks and permissions.
+   */
+  public void process(TaskDoneEvent event, boolean ignoreControls) throws WorkflowException;
+
+  /**
+   * A task has been done and sent to the workflow Enginewhich has to process it.
+   * @param event the task event that has been done.
    */
   public void process(TaskDoneEvent event) throws WorkflowException;
 
+  /**
+   * A task has been saved and sent to the workflow Enginewhich has to process it.
+   * @param event the task event that has been saved.
+   */
+  public void process(TaskSavedEvent event) throws WorkflowException;
+  
   /**
    * A question has been sent to a previous participant
    * @param event the question event containing all necessary information

@@ -51,6 +51,10 @@ public class TaskImpl extends AbstractTaskImpl {
     this.backSteps = null;
   }
 
+  public void setProcessInstance(ProcessInstance processInstance) {
+    this.processInstance = processInstance;
+  }
+
   /**
    * Builds a TaskImpl.
    */

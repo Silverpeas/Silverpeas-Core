@@ -28,6 +28,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.workflow.api.event.QuestionEvent;
 import com.silverpeas.workflow.api.event.ResponseEvent;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
+import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
@@ -104,6 +105,12 @@ public interface Task {
   public TaskDoneEvent buildTaskDoneEvent(String actionName, DataRecord data);
 
   /**
+   * When this Task is saved, builds a TaskSavedEvent giving the choosed action name and the filled
+   * form.
+   */
+  public TaskSavedEvent buildTaskSavedEvent(String actionName, DataRecord data);
+  
+  /**
    * When this Question is asked for a task, builds a QuestionEvent giving the choosed step that
    * must give the answer.
    */
@@ -114,4 +121,9 @@ public interface Task {
    * must give the answer.
    */
   public ResponseEvent buildResponseEvent(String questionId, DataRecord data);
+
+  /**
+   * Set process instance associated with task
+   */
+  public void setProcessInstance(ProcessInstance currentProcessInstance);
 }

@@ -28,10 +28,10 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
- * A TaskDoneEvent object is the description of a done activity. Those descriptions are sent to the
- * workflow engine by the workflow tools when the user has done a task in a process instance.
+ * A TaskSavedEvent object is the description of an activity that is not finished but saved to be continued later. Those descriptions are sent to the
+ * workflow engine by the workflow tools when the user has save a task in a process instance.
  */
-public interface TaskDoneEvent extends GenericEvent {
+public interface TaskSavedEvent extends GenericEvent {
   /**
    * Returns the process model (peas).
    */
@@ -41,14 +41,15 @@ public interface TaskDoneEvent extends GenericEvent {
    * Set the process instance.
    */
   public void setProcessInstance(ProcessInstance instance);
-
+  
   /**
-   * Set a flag to indicate if action comes from a resumed action.
+   * Is first time saved ?
    */
-  public void setResumingAction(boolean isResumingInstance);
-
+  public boolean isFirstTimeSaved();
+  
   /**
-   * Get the flag to indicate if action comes from a resumed action.
+   * Set information to know if it is the first time the current task is saved.
    */
-  public boolean isResumingAction();
+  public void setFirstTimeSaved(boolean firstTimeSaved);
+  
 }

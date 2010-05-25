@@ -25,7 +25,9 @@
 package com.silverpeas.workflow.engine.instance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.Actor;
@@ -122,6 +124,14 @@ public class WorkingUser extends AbstractReferrableObject {
     return role;
   }
 
+  /**
+   * Get state role for which user is affected
+   * @return state role
+   */
+  public List<String> getRoles() {
+    return Arrays.asList( role.split(":") );
+  }
+  
   /**
    * Set state role for which user is affected
    * @param state state role
@@ -247,4 +257,5 @@ public class WorkingUser extends AbstractReferrableObject {
     return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this
         .getUsersRole());
   }
+
 }

@@ -34,6 +34,7 @@ import java.util.Vector;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 
+import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.workflow.api.ProcessInstanceManager;
@@ -44,6 +45,7 @@ import com.silverpeas.workflow.api.event.GenericEvent;
 import com.silverpeas.workflow.api.event.QuestionEvent;
 import com.silverpeas.workflow.api.event.ResponseEvent;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
+import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
 import com.silverpeas.workflow.api.instance.Actor;
 import com.silverpeas.workflow.api.instance.HistoryStep;
@@ -63,6 +65,7 @@ import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
+import com.silverpeas.workflow.engine.model.StateImpl;
 import com.silverpeas.workflow.external.ExternalAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -100,6 +103,19 @@ public class WorkflowEngineThread extends Thread {
     }
   }
 
+  /**
+   * Add a request 'TaskSavedEvent'
+   */
+  public static void addTaskSavedRequest(TaskSavedEvent event) {
+    synchronized (requestList) {
+      TaskSavedRequest request = new TaskSavedRequest(event);
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
+      requestList.add(request);
+      requestList.notify();
+    }
+  }
+  
   /**
    * Add a request 'QuestionEvent'
    */
@@ -227,6 +243,7 @@ public class WorkflowEngineThread extends Thread {
    */
   private WorkflowEngineThread() {
   }
+
 }
 
 /**
@@ -280,40 +297,45 @@ class TaskDoneRequest implements Request {
       instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
           instance.getInstanceId());
 
-      // first create the history step
-      try {
-        step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-        step.setUserId(event.getUser().getUserId());
-        step.setAction(event.getActionName());
-        step.setActionDate(event.getActionDate());
-        step.setUserRoleName(event.getUserRoleName());
-        if (event.getResolvedState() != null)
-          step.setResolvedState(event.getResolvedState().getName());
-        step.setActionStatus(0); // To be processed
-
-        // add the new step to the processInstance
-        instance.addHistoryStep(step);
-      } catch (WorkflowException we) {
-        db.rollback();
-        WorkflowHub.getErrorManager().saveError(instance, event, null, we);
-
-        // begin transaction
-        db.begin();
-
-        // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
-
-        // set errorStatus to true
-        instance.setErrorStatus(true);
-
-        // begin transaction
-        db.commit();
-
-        throw new WorkflowException("WorkflowEngineThread.process",
-            "EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+      // if task has previously been saved as draft, step already exists
+      if (event.isResumingAction()) {
+        step = (UpdatableHistoryStep) instance.getSavedStep(event.getUser().getUserId());
       }
-
+      else {
+        // first create the history step
+        try {
+          step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+          step.setUserId(event.getUser().getUserId());
+          step.setAction(event.getActionName());
+          step.setActionDate(event.getActionDate());
+          step.setUserRoleName(event.getUserRoleName());
+          if (event.getResolvedState() != null)
+            step.setResolvedState(event.getResolvedState().getName());
+          step.setActionStatus(0); // To be processed
+  
+          // add the new step to the processInstance
+          instance.addHistoryStep(step);
+        } catch (WorkflowException we) {
+          db.rollback();
+          WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+  
+          // begin transaction
+          db.begin();
+  
+          // Re-load process instance
+          instance = (UpdatableProcessInstance) db.load(
+              ProcessInstanceImpl.class, instance.getInstanceId());
+  
+          // set errorStatus to true
+          instance.setErrorStatus(true);
+  
+          // begin transaction
+          db.commit();
+  
+          throw new WorkflowException("WorkflowEngineThread.process",
+              "EX_ERR_PROCESS_ADD_TASKDONE_REQUEST", we);
+        }
+      }
       // commit
       db.commit();
 
@@ -388,9 +410,7 @@ class TaskDoneRequest implements Request {
     // instance to that step
 
     // Remove user from locking users
-    if (event.getResolvedState() != null) {
-      instance.unLock(event.getResolvedState(), event.getUser());
-    }
+    instance.unLock(event.getResolvedState(), event.getUser());
 
     if (WorkflowTools.processAction(instance, event, step, true))
       return true;
@@ -404,6 +424,167 @@ class TaskDoneRequest implements Request {
   private final TaskDoneEvent event;
 }
 
+//--
+/**
+ * A TaskSaved indicates the workflow engine that a task has been saved
+ */
+class TaskSavedRequest implements Request {
+
+  /**
+   * Constructor declaration
+   */
+  public TaskSavedRequest(TaskSavedEvent event) {
+    this.event = event;
+  }
+
+  /**
+   * Method declaration
+   */
+  public void process() throws WorkflowException {
+    SilverTrace.info("workflowEngine", "workflowEngineThread",
+        "workflowEngine.INFO_PROCESS_ADD_TASKSAVED_REQUEST", event.toString());
+
+    // Get the process instance
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
+        .getProcessInstance();
+    ProcessInstanceManager instanceManager = WorkflowHub
+        .getProcessInstanceManager();
+    Database db = null;
+    UpdatableHistoryStep step = null;
+
+    try {
+      // Get database connection
+      db = WorkflowJDOManager.getDatabase();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // first time saved : history step must be created 
+      if (event.isFirstTimeSaved()) {
+        try {
+          step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+          step.setUserId(event.getUser().getUserId());
+          step.setAction(event.getActionName());
+          step.setActionDate(event.getActionDate());
+          step.setUserRoleName(event.getUserRoleName());
+          if (event.getResolvedState() != null)
+            step.setResolvedState(event.getResolvedState().getName());
+          step.setActionStatus(0); // To be processed
+  
+          // add the new step to the processInstance
+          instance.addHistoryStep(step);
+        } catch (WorkflowException we) {
+          db.rollback();
+          WorkflowHub.getErrorManager().saveError(instance, event, null, we);
+  
+          // begin transaction
+          db.begin();
+  
+          // Re-load process instance
+          instance = (UpdatableProcessInstance) db.load(
+              ProcessInstanceImpl.class, instance.getInstanceId());
+  
+          // set errorStatus to true
+          instance.setErrorStatus(true);
+  
+          // begin transaction
+          db.commit();
+  
+          throw new WorkflowException("WorkflowEngineThread.process",
+              "EX_ERR_PROCESS_ADD_TASKSAVED_REQUEST", we);
+        }
+      }
+      else {
+        // reload historystep that has been already created
+        step = (UpdatableHistoryStep) instance.getSavedStep(event.getUser().getUserId());
+      }
+
+      // commit
+      db.commit();
+
+      // begin transaction
+      db.begin();
+
+      // Re-load process instance
+      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
+          instance.getInstanceId());
+
+      // Do workflow stuff
+      try {
+        processEvent(instance, step.getId(), event.getResolvedState());
+      } catch (WorkflowException we) {
+        db.rollback();
+        WorkflowHub.getErrorManager().saveError(instance, event,
+            (HistoryStep) step, we);
+
+        // begin transaction
+        db.begin();
+
+        // Re-load process instance
+        instance = (UpdatableProcessInstance) db.load(
+            ProcessInstanceImpl.class, instance.getInstanceId());
+
+        // set errorStatus to true
+        instance.setErrorStatus(true);
+
+        // begin transaction
+        db.commit();
+
+        throw new WorkflowException("WorkflowEngineThread.process",
+            "workflowEngine.EX_ERR_PROCESS_ADD_TASKSAVED_REQUEST", we);
+      }
+
+      // commit
+      db.commit();
+    } catch (PersistenceException pe) {
+      WorkflowHub.getErrorManager().saveError(instance, event,
+          (HistoryStep) step, pe);
+      throw new WorkflowException("WorkflowEngineThread.process",
+          "workflowEngine.EX_ERR_PROCESS_ADD_TASKSAVED_REQUEST", pe);
+    } finally {
+      WorkflowJDOManager.closeDatabase(db);
+    }
+  }
+
+  /**
+   * Method declaration
+   */
+  private boolean processEvent(UpdatableProcessInstance instance, String stepId, State state)
+      throws WorkflowException {
+    // Get the process instance and process model associated to this event
+    event.getProcessModel();
+    WorkflowHub.getProcessInstanceManager();
+
+    UpdatableHistoryStep step = (UpdatableHistoryStep) instance
+        .getHistoryStep(stepId);
+    instance.updateHistoryStep(step); // only to set the current step of
+    // instance to that step
+
+    // Saving data of step and process instance
+    if (event.getDataRecord() != null) {
+      instance.saveActionRecord(step, event.getDataRecord());
+    }
+
+    // Add current user as working user
+    state = (state != null) ? state : new StateImpl("");
+    instance.addWorkingUser(step.getUser(), state, step.getUserRoleName());
+    
+    // unlock process instance
+    instance.unLock();
+
+    step.setActionStatus(3); // Saved
+    
+    return false;
+  }
+
+  private final TaskSavedEvent event;
+}
+
+//--
 /**
  * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent
  * actor/activity

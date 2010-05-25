@@ -97,7 +97,7 @@ public interface ProcessInstance {
    * @param resolvedState the resolved state
    * @return this user as a Participant object
    */
-  public Participant getParticipant(String action) throws WorkflowException;
+  public Participant getParticipant(String resolvedState) throws WorkflowException;
 
   /**
    * @return DataRecord
@@ -181,6 +181,7 @@ public interface ProcessInstance {
    */
   public boolean isLockedByAdmin();
 
+  
   /**
    * Get the error status of this instance
    * @return true if this instance is in error
@@ -231,6 +232,12 @@ public interface ProcessInstance {
    * @return true if resolution of active state involves a cancel of actions
    */
   public boolean isStateInBackStatus(String stateName);
+
+  /**
+   * Get step saved by given user id.
+   * @throws WorkflowException 
+   */
+  public HistoryStep getSavedStep(String userId) throws WorkflowException;
 
   /**
    * Recent the most recent step where the named action has been performed.

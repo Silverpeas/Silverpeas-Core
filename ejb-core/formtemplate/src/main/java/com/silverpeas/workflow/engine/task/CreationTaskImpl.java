@@ -38,6 +38,7 @@ import com.silverpeas.workflow.api.user.User;
  */
 public class CreationTaskImpl extends AbstractTaskImpl {
   String[] actionNames = null;
+  ProcessInstance processInstance = null;
 
   /**
    * Builds a CreationTaskImpl.
@@ -49,11 +50,12 @@ public class CreationTaskImpl extends AbstractTaskImpl {
     actionNames = new String[] { creation.getName() };
   }
 
-  /**
-   * At this time there is no instance !
-   */
   public ProcessInstance getProcessInstance() {
-    return null;
+    return processInstance;
+  }
+
+  public void setProcessInstance(ProcessInstance processInstance) {
+    this.processInstance = processInstance;
   }
 
   /**

@@ -27,6 +27,7 @@ package com.silverpeas.workflow.engine.event;
 import java.util.Date;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
+import com.silverpeas.workflow.api.event.TaskSavedEvent;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.model.ProcessModel;
@@ -34,14 +35,14 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.form.DataRecord;
 
 /**
- * A TaskDoneEvent object is the description of a done activity. Those descriptions are sent to the
- * workflow engine by the workflow tools when the user has done a task in a process instance.
+ * A TaskSavedEvent object is the description of an activity that is not finished but saved to be continued later. Those descriptions are sent to the
+ * workflow engine by the workflow tools when the user has save a task in a process instance.
  */
-public class TaskDoneEventImpl implements TaskDoneEvent {
+public class TaskSavedEventImpl implements TaskSavedEvent {
   /**
-   * A TaskDoneEventImpl is built from a resolved task, a choosen action and a filled form.
+   * A TaskSavedEvent is built from a resolved task, a choosen action and a filled form.
    */
-  public TaskDoneEventImpl(Task resolvedTask, String actionName, DataRecord data) {
+  public TaskSavedEventImpl(Task resolvedTask, String actionName, DataRecord data) {
     this.user = resolvedTask.getUser();
     this.processModel = resolvedTask.getProcessModel();
     this.processInstance = resolvedTask.getProcessInstance();
@@ -50,6 +51,17 @@ public class TaskDoneEventImpl implements TaskDoneEvent {
     this.actionDate = new Date();
     this.userRoleName = resolvedTask.getUserRoleName();
     this.data = data;
+    this.firstTimeSaved = false;
+  }
+  
+  @Override
+  public boolean isFirstTimeSaved() {
+    return firstTimeSaved;
+  }
+
+  @Override
+  public void setFirstTimeSaved(boolean firstTimeSaved) {
+    this.firstTimeSaved = firstTimeSaved;
   }
 
   /**
@@ -115,17 +127,6 @@ public class TaskDoneEventImpl implements TaskDoneEvent {
     return userRoleName;
   }
 
-  @Override
-  public void setResumingAction(boolean isResumingInstance) {
-    this.isResumingAction = isResumingInstance;
-  }
-  
-  
-  @Override
-  public boolean isResumingAction() {
-    return this.isResumingAction;
-  }
-
   /**
    * Internal states.
    */
@@ -137,6 +138,6 @@ public class TaskDoneEventImpl implements TaskDoneEvent {
   private String actionName = null;
   private String userRoleName = null;
   private DataRecord data = null;
-  private boolean isResumingAction = false;
-}
+  private boolean firstTimeSaved;
 
+}

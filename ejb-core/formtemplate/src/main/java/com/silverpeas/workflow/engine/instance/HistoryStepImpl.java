@@ -279,6 +279,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
    * <li>0 : To Be Processed
    * <li>1 : Processed
    * <li>2 : Affectations Done
+   * <li>3 : Saved (to be continued)
    * </ul>
    * @param actionStatus action status
    */
