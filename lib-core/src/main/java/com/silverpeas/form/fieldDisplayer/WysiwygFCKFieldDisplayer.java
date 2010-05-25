@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import au.id.jericho.lib.html.Source;
 
@@ -141,6 +142,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
     String code = "";
 
     String fieldName = template.getFieldName();
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "WysiwygFCKFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
@@ -196,13 +199,23 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
 
       out.println("<TR>");
 
+      // looks for size parameters
+      int editorWitdh = 500;
+      int editorHeight = 300;
+      if (parameters.containsKey("width")) {
+    	  editorWitdh = Integer.parseInt(parameters.get("width"));
+      }
+      if (parameters.containsKey("height")) {
+    	  editorHeight = Integer.parseInt(parameters.get("height"));
+      }
+      
       out.println("<TD valign=top>");
       out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\">" + code +
           "</textarea>");
       out.println("<script language=\"JavaScript\">");
       out.println("var oFCKeditor = new FCKeditor('" + fieldName + "');");
-      out.println("oFCKeditor.Width = \"500\";");
-      out.println("oFCKeditor.Height = \"300\";");
+      out.println("oFCKeditor.Width = \""+ editorWitdh +"\";");
+      out.println("oFCKeditor.Height = \""+ editorHeight +"\";");
       out.println("oFCKeditor.BasePath = \"" + Util.getPath() + "/wysiwyg/jsp/FCKeditor/\" ;");
       out.println("oFCKeditor.DisplayErrors = true;");
       out
