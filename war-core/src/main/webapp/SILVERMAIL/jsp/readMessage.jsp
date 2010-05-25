@@ -63,7 +63,7 @@ SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessag
 
   function goTo()
   {
-	window.opener.top.location = "<%=Encode.javaStringToHtmlString(msg.getUrl())%>";
+	window.opener.top.location = "<%=msg.getUrl()%>";
 	window.close();
   }
 
