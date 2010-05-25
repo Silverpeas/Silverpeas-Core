@@ -60,6 +60,7 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   private int createdBy = -1;
   private int updatedBy = -1;
   private int removedBy = -1;
+  private int orderNum = -1;
 
   private String creatorName = null;
   private String updaterName = null;
@@ -259,6 +260,14 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     int result = 1;
     result = prime * result + ((m_sId == null) ? 0 : m_sId.hashCode());
     return result;
+  }
+
+  public void setOrderNum(int orderNum) {
+    this.orderNum = orderNum;
+  }
+
+  public int getOrderNum() {
+    return orderNum;
   }
 
   @Override

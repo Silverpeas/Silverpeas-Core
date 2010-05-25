@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class ComponentDAO {
       throws SQLException {
 
     ComponentInstLight i = new ComponentInstLight();
-    
+
     String name = rs.getString(4);
 
     i.setId(name + Integer.toString(rs.getInt(1)));
@@ -225,24 +226,34 @@ public class ComponentDAO {
 
   public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
       int userId, String spaceId) throws SQLException {
-    Set<String> componentIds = new HashSet<String>();
-    componentIds.addAll(getPublicComponentIdsInSpace(con, spaceId));
+    // get available components
+    Set<ComponentInstLight> componentsSet = new HashSet<ComponentInstLight>();
+    componentsSet.addAll(getPublicComponentsInSpace(con, spaceId));
     if (groupIds != null && groupIds.size() > 0) {
-      componentIds.addAll(getAvailableComponentIdsInSpace(con, groupIds, spaceId));
+      componentsSet.addAll(getAvailableComponentsInSpace(con, groupIds, spaceId));
     }
-    componentIds.addAll(getAvailableComponentIdsInSpace(con, userId, spaceId));
-    return new ArrayList<String>(componentIds);
+    componentsSet.addAll(getAvailableComponentsInSpace(con, userId, spaceId));
+
+    // sort components according to ordernum
+    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>(componentsSet);
+    Collections.sort(components, new ComponentInstLightSorter());
+    List<String> componentIds = new ArrayList<String>();
+    for (ComponentInstLight component : components) {
+      componentIds.add(component.getId());
+    }
+    return componentIds;
   }
 
-  private static List<String> getAvailableComponentIdsInSpace(Connection con,
+  private static List<ComponentInstLight> getAvailableComponentsInSpace(Connection con,
       List<String> groupIds, String spaceId)
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> ids = new ArrayList<String>();
+      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
 
-      String queryAvailableComponentIdsInSpace = "select distinct(c.id), c.componentName"
+      String queryAvailableComponentIdsInSpace =
+          "select distinct(c.id), c.componentName, c.ordernum"
           + " from st_componentinstance c, st_userrole r, st_userrole_group_rel gr"
           + " where c.id=r.instanceId"
           + " and c.componentstatus is null"
@@ -256,17 +267,20 @@ public class ComponentDAO {
       rs = stmt.executeQuery(queryAvailableComponentIdsInSpace);
 
       while (rs.next()) {
-        ids.add(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        ComponentInstLight component = new ComponentInstLight();
+        component.setId(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        component.setOrderNum(rs.getInt(3));
+        components.add(component);
       }
 
-      return ids;
+      return components;
     } finally {
       DBUtil.close(rs, stmt);
     }
   }
 
   private final static String queryAvailableComponentIdsInSpace =
-      " select distinct(c.id), c.componentName"
+      " select distinct(c.id), c.componentName, c.ordernum"
       + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
       + " where c.spaceId = ? "
       + " and c.id=r.instanceId"
@@ -275,13 +289,13 @@ public class ComponentDAO {
       + " and r.objectId is null"
       + " and ur.userId = ? ";
 
-  private static List<String> getAvailableComponentIdsInSpace(Connection con, int userId,
+  private static List<ComponentInstLight> getAvailableComponentsInSpace(Connection con, int userId,
       String spaceId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> ids = new ArrayList<String>();
+      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
 
       stmt = con.prepareStatement(queryAvailableComponentIdsInSpace);
       stmt.setInt(1, Integer.parseInt(spaceId));
@@ -290,27 +304,31 @@ public class ComponentDAO {
       rs = stmt.executeQuery();
 
       while (rs.next()) {
-        ids.add(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        ComponentInstLight component = new ComponentInstLight();
+        component.setId(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        component.setOrderNum(rs.getInt(3));
+        components.add(component);
       }
 
-      return ids;
+      return components;
     } finally {
       DBUtil.close(rs, stmt);
     }
   }
 
-  private final static String queryPublicComponentIdsInSpace = " select c.id, c.componentName"
+  private final static String queryPublicComponentIdsInSpace =
+      " select c.id, c.componentName, c.ordernum"
       + " from st_componentinstance c"
       + " where c.ispublic=1"
       + " and c.spaceId = ?"
       + " and c.componentstatus is null";
 
-  private static List<String> getPublicComponentIdsInSpace(Connection con, String spaceId)
+  private static List<ComponentInstLight> getPublicComponentsInSpace(Connection con, String spaceId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> ids = new ArrayList<String>();
+      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
 
       stmt = con.prepareStatement(queryPublicComponentIdsInSpace);
       stmt.setInt(1, Integer.parseInt(spaceId));
@@ -318,10 +336,13 @@ public class ComponentDAO {
       rs = stmt.executeQuery();
 
       while (rs.next()) {
-        ids.add(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        ComponentInstLight component = new ComponentInstLight();
+        component.setId(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        component.setOrderNum(rs.getInt(3));
+        components.add(component);
       }
 
-      return ids;
+      return components;
     } finally {
       DBUtil.close(rs, stmt);
     }
