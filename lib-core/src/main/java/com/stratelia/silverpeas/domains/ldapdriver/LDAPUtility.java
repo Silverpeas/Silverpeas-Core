@@ -21,12 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
@@ -44,43 +41,23 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
  * @author tleroi
  */
+public class LDAPUtility {
 
-public class LDAPUtility extends Object {
   public final static int MAX_NB_RETRY_CONNECT = 10;
   public final static int MAX_NB_RETRY_TIMELIMIT = 5;
-  public final static int STRING_REPLACE_FROM = 0;
-  public final static int STRING_REPLACE_TO = 1;
   public final static String BASEDN_SEPARATOR = ";;";
-
-  static Hashtable connectInfos = new Hashtable();
+  
+  final static Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
   static int connexionsLastId = 0;
-
-  static int stringReplaceSize = 0;
-  static String[][] stringReplace = null;
-
-  static {
-    ResourceLocator rs = new ResourceLocator(
-        "com.stratelia.silverpeas.domains.allLDAP", "");
-    String res;
-
-    // Char replacement settings for DN
-    // --------------------------------
-    res = rs.getString("stringReplace.Number", "0");
-    stringReplaceSize = Integer.parseInt(res);
-    stringReplace = new String[stringReplaceSize][2];
-    for (int i = 0; i < stringReplaceSize; i++) {
-      stringReplace[i][STRING_REPLACE_FROM] = rs.getString("stringReplace_"
-          + Integer.toString(i + 1) + ".From", "");
-      stringReplace[i][STRING_REPLACE_TO] = rs.getString("stringReplace_"
-          + Integer.toString(i + 1) + ".To", "");
-    }
-  }
-
   /**
    * Method declaration
    * @param driverSettings
@@ -180,8 +157,7 @@ public class LDAPUtility extends Object {
   static private void InternalOpenConnection(String connectionId)
       throws AdminException {
     LDAPConnection valret = null;
-    LDAPSettings driverSettings = ((LDAPConnectInfos) connectInfos
-        .get(connectionId)).driverSettings;
+    LDAPSettings driverSettings = ((LDAPConnectInfos) connectInfos.get(connectionId)).driverSettings;
 
     try {
       if (driverSettings.isLDAPSecured()) {
@@ -189,10 +165,8 @@ public class LDAPUtility extends Object {
       } else {
         valret = new LDAPConnection();
       }
-      valret
-          .connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
-      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings
-          .getLDAPAccessLoginDN(), driverSettings.getLDAPAccessPasswd());
+      valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
+      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), driverSettings.getLDAPAccessPasswd());
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       ((LDAPConnectInfos) connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -367,14 +341,14 @@ public class LDAPUtility extends Object {
             for (int i = 0; i < asBytes.length; i++) {
               asString = Integer.toHexString(asBytes[i]);
               if (asString.length() > 3) {
-                theStr.append("\\\\" + asString.substring(6));
+                theStr.append("\\\\").append(asString.substring(6));
               } else {
                 if (asString.length() == 0) {
-                  theStr.append("\\\\" + "00");
+                  theStr.append("\\\\").append("00");
                 } else if (asString.length() == 1) {
-                  theStr.append("\\\\" + "0" + asString);
+                  theStr.append("\\\\0").append(asString);
                 } else {
-                  theStr.append("\\\\" + asString);
+                  theStr.append("\\\\").append(asString);
                 }
               }
             }
@@ -384,56 +358,105 @@ public class LDAPUtility extends Object {
                 + " PARSED VALUE = " + theStr);
           }
           return valret;
-        } else
+        } else {
           return theAttr.getStringValueArray();
+        }
       }
     }
   }
 
-  static public String dblBackSlashesForDNInFilters(String theDN) {
-
-    return normalizeFilterValue(replaceMultiple(theDN, "\\", "\\\\"));
+   public static String dblBackSlashesForDNInFilters(String theDN) {
+    return escapeDN(theDN);
   }
 
   static public String normalizeFilterValue(String theFilter) {
-    String valret = theFilter;
-
-    for (int i = 0; i < stringReplaceSize; i++) {
-      valret = replaceMultiple(valret, stringReplace[i][STRING_REPLACE_FROM],
-          stringReplace[i][STRING_REPLACE_TO]);
-    }
-    return valret;
+    return escapeLDAPSearchFilter(theFilter);
   }
 
-  static protected String replaceMultiple(String theStringSrc,
-      String fromString, String toString) {
-    int fromIndex = 0;
-    int bsPos;
-    StringBuffer sb = null;
+  /**
+   * Escaping DN to prevent LDAP injection.
+   * Based on http://blogs.sun.com/shankar/entry/what_is_ldap_injection
+   * @param name the DN to be espaced.
+   * @return the escaped DN.
+   */
+  public static String escapeDN(String name) {
+    StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
+    if ((name.length() > 0) && ((name.charAt(0) == ' ') || (name.charAt(0) == '#'))) {
+      sb.append('\\'); // add the leading backslash if needed
+    }
+    for (int i = 0; i < name.length(); i++) {
+      char curChar = name.charAt(i);
+      switch (curChar) {
+        case '\\':
+          sb.append("\\\\");
+          break;
+        case ',':
+          sb.append("\\,");
+          break;
+        case '+':
+          sb.append("\\+");
+          break;
+        case '"':
+          sb.append("\\\"");
+          break;
+        case '<':
+          sb.append("\\<");
+          break;
+        case '>':
+          sb.append("\\>");
+          break;
+        case ';':
+          sb.append("\\;");
+          break;
+        default:
+          sb.append(curChar);
+      }
+    }
+    if ((name.length() > 1) && (name.charAt(name.length() - 1) == ' ')) {
+      sb.insert(sb.length() - 1, '\\'); // add the trailing backslash if needed
+    }
+    return sb.toString();
+  }
 
-    if ((theStringSrc == null) || (theStringSrc.length() <= 0)) {
-      return "";
-    }
-    bsPos = theStringSrc.indexOf(fromString, fromIndex);
-    if (bsPos != -1) {
-      sb = new StringBuffer(theStringSrc.length());
-      while (bsPos != -1) {
-        sb.append(theStringSrc.substring(fromIndex, bsPos) + toString);
-        fromIndex = bsPos + fromString.length(); // Skip the string to replace
-        bsPos = theStringSrc.indexOf(fromString, fromIndex);
+  /**
+   * Escaping search filter to prevent LDAP injection.
+   * Based on http://blogs.sun.com/shankar/entry/what_is_ldap_injection
+   * rfc 2254 actually adresses how to fix these ldap injection bugs in section 4 on page 4
+   * Character ASCII value
+   * ---------------------------
+   * * 0x2a
+   * ( 0x28
+   * ) 0x29
+   * \ 0x5c
+   * NUL 0x00
+   * @param filter the search filter to be espaced.
+   * @return the escaped search filter.
+   */
+  public static String escapeLDAPSearchFilter(String filter) {
+    StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
+    for (int i = 0; i < filter.length(); i++) {
+      char curChar = filter.charAt(i);
+      switch (curChar) {
+        case '\\':
+          sb.append("\\5c");
+          break;
+        case '*':
+          sb.append("\\2a");
+          break;
+        case '(':
+          sb.append("\\28");
+          break;
+        case ')':
+          sb.append("\\29");
+          break;
+        case '\u0000':
+          sb.append("\\00");
+          break;
+        default:
+          sb.append(curChar);
       }
-      if (fromIndex < theStringSrc.length()) {
-        sb.append(theStringSrc.substring(fromIndex, theStringSrc.length())); // Copy
-        // the
-        // end
-        // of
-        // the
-        // String
-      }
-      return sb.toString();
-    } else {
-      return theStringSrc;
     }
+    return sb.toString();
   }
 
   /**
@@ -453,9 +476,7 @@ public class LDAPUtility extends Object {
     SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
         "root.MSG_GEN_ENTER_METHOD");
     LDAPConnection ld = getConnection(lds);
-    LDAPSearchResults res = null;
-    LDAPEntry entry = null;
-    Vector entriesVector = new Vector();
+    List<LDAPEntry> entriesVector = new ArrayList<LDAPEntry>();
     int nbReaded = 0;
     LDAPSearchConstraints cons = null;
     LDAPSortKey[] keys = new LDAPSortKey[1];
@@ -468,9 +489,10 @@ public class LDAPUtility extends Object {
       SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
           "root.MSG_GEN_PARAM_VALUE", "LDAPImpl = "
           + driverSettings.getLDAPImpl());
-      if (args != null)
+      if (args != null) {
         SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
             "root.MSG_GEN_PARAM_VALUE", "args = " + args.toString());
+      }
       if (driverSettings.getLDAPImpl() != null
           && "openldap".equalsIgnoreCase(driverSettings.getLDAPImpl())) {
         // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
@@ -491,6 +513,7 @@ public class LDAPUtility extends Object {
 
       // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
       String[] baseDNs = extractBaseDNs(baseDN);
+      LDAPEntry entry = null;
       for (int j = 0; j < baseDNs.length; j++) {
         theFullFilter = filter;
         while (theFullFilter != null) {
@@ -504,8 +527,7 @@ public class LDAPUtility extends Object {
               + theFullFilter, null);
 
           try {
-            res = ld
-                .search(baseDNs[j], scope, theFullFilter, args, false, cons);
+            LDAPSearchResults res = ld.search(baseDNs[j], scope, theFullFilter, args, false, cons);
             while (res.hasMore()) {
               entry = (LDAPEntry) res.next();
               if (notTheFirst) {
@@ -560,7 +582,6 @@ public class LDAPUtility extends Object {
           } else {
             theFullFilter = null;
           }
-          res = null;
         }
       }
     } catch (LDAPReferralException re) {
@@ -586,7 +607,7 @@ public class LDAPUtility extends Object {
             + e.getLDAPErrorMessage(), e);
       }
     }
-    return (LDAPEntry[]) entriesVector.toArray(new LDAPEntry[0]);
+    return (LDAPEntry[]) entriesVector.toArray(new LDAPEntry[entriesVector.size()]);
   }
 
   static public AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN,
@@ -604,10 +625,8 @@ public class LDAPUtility extends Object {
       // order. BUT most LDAP server can't performs this type of order (like
       // Active Directory)
       // So, it may be ordered in the opposite way....
-      AbstractLDAPTimeStamp firstVal = driverSettings
-          .newLDAPTimeStamp(getFirstAttributeValue(theEntries[0], timeStampVar));
-      AbstractLDAPTimeStamp lastVal = driverSettings
-          .newLDAPTimeStamp(getFirstAttributeValue(
+      AbstractLDAPTimeStamp firstVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(theEntries[0], timeStampVar));
+      AbstractLDAPTimeStamp lastVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(
           theEntries[theEntries.length - 1], timeStampVar));
       if (firstVal.compareTo(lastVal) >= 0) {
         return firstVal;
@@ -623,24 +642,25 @@ public class LDAPUtility extends Object {
     // if no separator, return a array with only the baseDN
     if (!StringUtil.isDefined(baseDN) || baseDN.indexOf(BASEDN_SEPARATOR) == -1) {
       String[] baseDNs = new String[1];
-      if (baseDN == null)
+      if (baseDN == null) {
         baseDN = "";
+      }
       baseDNs[0] = baseDN;
       return baseDNs;
     }
 
     StringTokenizer st = new StringTokenizer(baseDN, BASEDN_SEPARATOR);
-    Vector baseDNs = new Vector();
+    List<String> baseDNs = new ArrayList<String>();
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
     }
-    return (String[]) (baseDNs.toArray(new String[0]));
+    return (String[]) (baseDNs.toArray(new String[baseDNs.size()]));
   }
 }
 
 class LDAPConnectInfos {
-  public final static int MAX_NB_ERROR_CONNECT = 20;
 
+  public final static int MAX_NB_ERROR_CONNECT = 20;
   public LDAPSettings driverSettings = null;
   public LDAPConnection connection = null;
   public int errorCpt = 0;
