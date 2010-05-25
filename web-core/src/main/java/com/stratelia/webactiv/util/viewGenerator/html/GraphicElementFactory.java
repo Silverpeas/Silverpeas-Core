@@ -38,35 +38,35 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneWA;
+import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
-import com.stratelia.webactiv.util.viewGenerator.html.board.BoardSP;
+import com.stratelia.webactiv.util.viewGenerator.html.board.BoardSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarComplete;
 import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane;
-import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneWA;
+import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneWA2;
 import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
-import com.stratelia.webactiv.util.viewGenerator.html.buttons.ButtonWA;
+import com.stratelia.webactiv.util.viewGenerator.html.buttons.ButtonSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar;
 import com.stratelia.webactiv.util.viewGenerator.html.calendar.CalendarWA1;
 import com.stratelia.webactiv.util.viewGenerator.html.formPanes.FormPane;
 import com.stratelia.webactiv.util.viewGenerator.html.formPanes.FormPaneWA;
 import com.stratelia.webactiv.util.viewGenerator.html.frame.Frame;
-import com.stratelia.webactiv.util.viewGenerator.html.frame.FrameWA;
+import com.stratelia.webactiv.util.viewGenerator.html.frame.FrameSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPaneWA;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
 import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList;
-import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListWA;
+import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
-import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneWA;
+import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneSilverpeasV5Web20;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
-import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneWA;
+import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
-import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWA;
+import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -277,24 +277,24 @@ public class GraphicElementFactory extends Object {
     StringBuilder code = new StringBuilder();
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);
-    code.append("\">\n");
+    code.append("\"/>\n");
 
     if (externalStylesheet == null) {
-      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(contextPath);
-      code.append(standardStyle).append("\">\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
+      code.append(standardStyle).append("\"/>\n");
 
       code.append("<!--[if IE]>");
-      code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"").append(
-          contextPath).append(standardStyleForIE).append("\">\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
+          contextPath).append(standardStyleForIE).append("\"/>\n");
       code.append("<![endif]-->");
 
       if (lookStyle.length() > 0) {
-        code.append("<LINK REL=\"stylesheet\" TYPE=\"text/css\" HREF=\"");
-        code.append(lookStyle).append("\">");
+        code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+        code.append(lookStyle).append("\"/>");
       }
     } else {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-          externalStylesheet).append("\">\n");
+          externalStylesheet).append("\"/>\n");
     }
 
     if (getFavoriteLookSettings() != null
@@ -316,7 +316,7 @@ public class GraphicElementFactory extends Object {
     code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
     code.append(getSettings().getString("YUIMenuCss",
         contextPath + "/util/yui/menu/assets/menu.css"));
-    code.append("\">");
+    code.append("\"/>");
     code.append("<!-- Page-specific styles -->");
     code.append("<style type=\"text/css\">");
     code.append("    div.yuimenu {");
@@ -341,8 +341,7 @@ public class GraphicElementFactory extends Object {
   public String getIcon(String iconKey) {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getIcon()",
         "root.MSG_GEN_ENTER_METHOD", "iconKey = " + iconKey);
-    String iconURL = getFavoriteLookSettings().getString(iconKey, null);
-    return iconURL;
+    return getFavoriteLookSettings().getString(iconKey, null);
   }
 
   /**
@@ -380,7 +379,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getFormButton()",
           "viewgenerator.EX_CANT_GET_BUTTON", "", e);
-      button = (Button) new ButtonWA();
+      button = new ButtonSilverpeasV5();
     } finally {
       button.init(label, action, disabled);
     }
@@ -401,7 +400,7 @@ public class GraphicElementFactory extends Object {
     } catch (Exception e) {
       SilverTrace.error("viewgenerator", "GraphicElementFactory.getFrame()",
           "viewgenerator.EX_CANT_GET_FRAME", "", e);
-      frame = (Frame) new FrameWA();
+      frame = new FrameSilverpeasV5();
     }
     return frame;
   }
@@ -419,7 +418,7 @@ public class GraphicElementFactory extends Object {
     } catch (Exception e) {
       SilverTrace.error("viewgenerator", "GraphicElementFactory.getBoard()",
           "viewgenerator.EX_CANT_GET_FRAME", "", e);
-      board = (Board) new BoardSP();
+      board = new BoardSilverpeasV5();
     }
     return board;
   }
@@ -440,7 +439,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getNavigationList()",
           "viewgenerator.EX_CANT_GET_NAVIGATIONLIST", "", e);
-      navigationList = (NavigationList) new NavigationListWA();
+      navigationList = new NavigationListSilverpeasV5();
     }
     return navigationList;
   }
@@ -477,7 +476,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getTabbedPane()",
           "viewgenerator.EX_CANT_GET_TABBED_PANE", "", e);
-      tabbedPane = new TabbedPaneWA();
+      tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
       tabbedPane.init(1);
     }
@@ -500,7 +499,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getTabbedPane()",
           "viewgenerator.EX_CANT_GET_TABBED_PANE", " nbLines = " + nbLines, e);
-      tabbedPane = new TabbedPaneWA();
+      tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
       tabbedPane.init(nbLines);
     }
@@ -529,7 +528,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
-      arrayPane = new ArrayPaneWA();
+      arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
       arrayPane.init(name, pageContext);
     }
@@ -559,7 +558,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
-      arrayPane = new ArrayPaneWA();
+      arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
       arrayPane.init(name, request, session);
     }
@@ -590,7 +589,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
-      arrayPane = new ArrayPaneWA();
+      arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
       arrayPane.init(name, url, request, session);
     }
@@ -610,7 +609,7 @@ public class GraphicElementFactory extends Object {
     } catch (Exception e) {
       SilverTrace.error("viewgenerator", "GraphicElementFactory.getWindow()",
           "viewgenerator.EX_CANT_GET_WINDOW", "", e);
-      window = new WindowWA();
+      window = new WindowWeb20V5();
     } finally {
       window.init(this);
     }
@@ -631,7 +630,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getButtonPane()",
           "viewgenerator.EX_CANT_GET_BUTTON_PANE", "", e);
-      return new ButtonPaneWA();
+      return new ButtonPaneWA2();
     }
   }
 
@@ -678,7 +677,7 @@ public class GraphicElementFactory extends Object {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getOperationPane()",
           "viewgenerator.EX_CANT_GET_OPERATION_PANE", "", e);
-      return new OperationPaneWA();
+      return new OperationPaneSilverpeasV5Web20();
     }
   }
 
