@@ -151,7 +151,7 @@ public class WAIndexSearcher {
         if (query.getMultiFieldQuery() != null) {
           booleanQuery.add(getMultiFieldQuery(query, searcher), BooleanClause.Occur.MUST);
         } else {
-          RangeQuery rangeQuery = query.getRangeQueryOnCreationDate();
+          RangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
           if (!StringUtil.isDefined(query.getQuery()) && query.isSearchBySpace() &&
               !query.isPeriodDefined()) {
             // realizes the search on space without keywords indicated by the user
@@ -165,11 +165,11 @@ public class WAIndexSearcher {
           if (rangeQuery != null) {
             booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
           }
-          RangeQuery rangeQueryOnLastUpdateDate = query.getRangeQueryOnLastUpdateDate();
+          RangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
           if (rangeQueryOnLastUpdateDate != null) {
             booleanQuery.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
           }
-          TermQuery termQueryOnAuthor = query.getTermQueryOnAuthor();
+          TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
           if (termQueryOnAuthor != null) {
             booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
           }
@@ -499,4 +499,54 @@ public class WAIndexSearcher {
 
     return searcher;
   }
+
+  protected RangeQuery getRangeQueryOnCreationDate(QueryDescription query) {
+    String beginDate = query.getRequestedCreatedAfter();
+    String endDate = query.getRequestedCreatedBefore();
+    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
+      return null;
+    }
+
+    if (!StringUtil.isDefined(beginDate)) {
+      beginDate = IndexEntry.STARTDATE_DEFAULT;
+    }
+
+    if (!StringUtil.isDefined(endDate)) {
+      endDate = IndexEntry.ENDDATE_DEFAULT;
+    }
+
+    Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
+    Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
+
+    return new RangeQuery(lowerTerm, upperTerm, true);
+  }
+
+  protected RangeQuery getRangeQueryOnLastUpdateDate(QueryDescription query) {
+    String beginDate = query.getRequestedUpdatedAfter();
+    String endDate = query.getRequestedUpdatedBefore();
+    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
+      return null;
+    }
+
+    if (!StringUtil.isDefined(beginDate)) {
+      beginDate = IndexEntry.STARTDATE_DEFAULT;
+    }
+    if (!StringUtil.isDefined(endDate)) {
+      endDate = IndexEntry.ENDDATE_DEFAULT;
+    }
+
+    Term lowerTerm = new Term(IndexManager.LASTUPDATEDATE, beginDate);
+    Term upperTerm = new Term(IndexManager.LASTUPDATEDATE, endDate);
+
+    return new RangeQuery(lowerTerm, upperTerm, true);
+  }
+
+  protected TermQuery getTermQueryOnAuthor(QueryDescription query) {
+    if (!StringUtil.isDefined(query.getRequestedAuthor())) {
+      return null;
+    }
+    Term authorTerm = new Term(IndexManager.CREATIONUSER, query.getRequestedAuthor());
+    return new TermQuery(authorTerm);
+  }
+
 }

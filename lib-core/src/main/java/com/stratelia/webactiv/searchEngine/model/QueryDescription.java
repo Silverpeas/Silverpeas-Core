@@ -34,17 +34,12 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.TermQuery;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.CharReplacer;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 
 /**
@@ -375,53 +370,5 @@ public class QueryDescription implements Serializable {
     this.requestedUpdatedAfter = requestedUpdatedAfter;
   }
 
-  public RangeQuery getRangeQueryOnCreationDate() {
-    String beginDate = getRequestedCreatedAfter();
-    String endDate = getRequestedCreatedBefore();
-    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
-      return null;
-    }
-
-    if (!StringUtil.isDefined(beginDate)) {
-      beginDate = IndexEntry.STARTDATE_DEFAULT;
-    }
-
-    if (!StringUtil.isDefined(endDate)) {
-      endDate = IndexEntry.ENDDATE_DEFAULT;
-    }
-
-    Term lowerTerm = new Term(IndexManager.CREATIONDATE, beginDate);
-    Term upperTerm = new Term(IndexManager.CREATIONDATE, endDate);
-
-    return new RangeQuery(lowerTerm, upperTerm, true);
-  }
-
-  public RangeQuery getRangeQueryOnLastUpdateDate() {
-    String beginDate = getRequestedUpdatedAfter();
-    String endDate = getRequestedUpdatedBefore();
-    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
-      return null;
-    }
-
-    if (!StringUtil.isDefined(beginDate)) {
-      beginDate = IndexEntry.STARTDATE_DEFAULT;
-    }
-    if (!StringUtil.isDefined(endDate)) {
-      endDate = IndexEntry.ENDDATE_DEFAULT;
-    }
-
-    Term lowerTerm = new Term(IndexManager.LASTUPDATEDATE, beginDate);
-    Term upperTerm = new Term(IndexManager.LASTUPDATEDATE, endDate);
-
-    return new RangeQuery(lowerTerm, upperTerm, true);
-  }
-
-  public TermQuery getTermQueryOnAuthor() {
-    if (!StringUtil.isDefined(getRequestedAuthor())) {
-      return null;
-    }
-    Term authorTerm = new Term(IndexManager.CREATIONUSER, getRequestedAuthor());
-    return new TermQuery(authorTerm);
-  }
-
+  
 }
