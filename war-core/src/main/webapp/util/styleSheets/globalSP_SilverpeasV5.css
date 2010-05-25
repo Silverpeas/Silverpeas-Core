@@ -253,6 +253,13 @@ Definition des class de style Silverpeas
 	vertical-align: top;
 }
 
+.txtsublibform {
+	font-size:8pt;
+  font-weight:bold;
+  color:#111111;
+  padding-right:0px;
+}
+
 .txtlibform_underline {
 	font-size: 8pt;
 	font-weight: bold;
