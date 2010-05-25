@@ -321,14 +321,26 @@ public class StatisticBmEJB implements SessionBean {
       i++;
     }
     OrganizationController orga = new OrganizationController();
-    UserDetail[] allUsers = users;
+    UserDetail[] allUsersByComponent = users;
     UserDetail[] controlledUsers = orga.getUserDetails(readerIds);
 
+    // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant pas partis d'un rôle
+    Collection<UserDetail> allUsers = new ArrayList<UserDetail>();
+    int compteur = 0;
+    for (int j = 0; j < allUsersByComponent.length; j++) {
+      allUsers.add(allUsersByComponent[j]);
+      compteur = j + 1;
+    }
+    for (int j = compteur; j < controlledUsers.length; j++) {
+      if (!allUsers.contains(controlledUsers[j]))
+      allUsers.add(controlledUsers[j]);
+    }
+    
     // création de la liste de tous les utilisateur ayant le droit de lecture
     Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
-    for (int k = 0; k < allUsers.length; k++) {
-      if (allUsers[k] != null) {
-        HistoryByUser historyByUser = new HistoryByUser(allUsers[k], null, 0);
+    for (UserDetail user : allUsers) {
+      if (user != null) {
+        HistoryByUser historyByUser = new HistoryByUser(user, null, 0);
         statByUser.add(historyByUser);
       }
     }
