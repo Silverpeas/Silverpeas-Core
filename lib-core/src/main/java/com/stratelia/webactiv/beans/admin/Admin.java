@@ -3603,7 +3603,7 @@ public class Admin extends Object {
     // getting all components availables
     List<String> componentIds = getAllowedComponentIds(sUserId);
     for (String componentId : componentIds) {
-      List<SpaceInstLight> spaces = TreeCache.getComponentPath(getDriverComponentId(componentId));
+      List<SpaceInstLight> spaces = TreeCache.getComponentPath(componentId);
       for (SpaceInstLight space : spaces) {
         if (!spaceIds.contains(space.getFullId())) {
           spaceIds.add(space.getFullId());
@@ -4348,8 +4348,7 @@ public class Admin extends Object {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
     for (ComponentInstLight component : components) {
-      List<SpaceInstLight> path =
-          TreeCache.getComponentPath(getDriverComponentId(component.getId()));
+      List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
       if (path != null && !path.isEmpty()) {
         SpaceInstLight root = path.get(0);
         if (!spaces.contains(root)) {
@@ -4376,8 +4375,7 @@ public class Admin extends Object {
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
 
     for (ComponentInstLight component : components) {
-      List<SpaceInstLight> path =
-          TreeCache.getComponentPath(getDriverComponentId(component.getId()));
+      List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
       for (SpaceInstLight space : path) {
         if (space.getFatherId().equals(spaceId)) {
           if (!spaces.contains(space)) {
