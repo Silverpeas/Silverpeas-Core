@@ -767,10 +767,10 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   @Override
-  public void remove(int index) throws RemoteException {
+  public void removeObject(int index) throws RemoteException {
     ClipboardBm clipboard = getClipboard();
     synchronized (clipboard) {
-      clipboard.remove(index);
+      clipboard.removeObject(index);
     }
   }
 

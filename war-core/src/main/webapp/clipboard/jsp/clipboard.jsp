@@ -219,8 +219,8 @@ function view(url)
     </td>
   </tr>
 </table>
-</FORM>
 </center>
+</form>
 <%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());

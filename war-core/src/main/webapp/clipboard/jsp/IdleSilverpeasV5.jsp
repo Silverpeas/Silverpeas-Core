@@ -164,7 +164,7 @@ Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clip
 	</PRE>
 <%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
 
-<!-- SessionId pour s�curisation pages Web -->
+<!-- SessionId pour securisation pages Web -->
 <form name="ctrl">
 	<input type="hidden" name="sessionId" value="<%=session.getId()%>">
 </form>

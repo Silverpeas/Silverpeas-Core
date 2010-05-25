@@ -79,7 +79,7 @@ function test () {
 </HEAD>
 
 <body onLoad="DoTask();"><PRE>
-Frame cachï¿½e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
+Frame cachée, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
 <%
 		Enumeration values = request.getParameterNames();
 		String sep = "";
@@ -99,7 +99,9 @@ Frame cachï¿½e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clip
 	%>
 	<a href="javascript:onClick=test()">test...</a>
 	</PRE>
-<%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
-
+<%if (clipboardSC != null) {
+  out.println (clipboardSC.getHF_HTMLForm(request));
+  }
+%>
 </body>
 </html>

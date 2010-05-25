@@ -159,7 +159,7 @@ function test () {
 </HEAD>
 
 <body onLoad="DoTask();"><PRE>
-Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
+Frame cachee, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
 <%
 		Enumeration values = request.getParameterNames();
 		String sep = "";
@@ -181,7 +181,7 @@ Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clip
 	</PRE>
 <%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
 
-<!-- SessionId pour s�curisation pages Web -->
+<!-- SessionId pour securisation pages Web -->
 <form name="ctrl">
 	<input type="hidden" name="sessionId" value="<%=session.getId()%>">
 </form>

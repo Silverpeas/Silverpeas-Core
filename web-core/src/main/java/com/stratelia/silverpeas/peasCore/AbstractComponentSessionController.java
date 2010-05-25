@@ -609,7 +609,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   @Override
   public void removeClipboardElement(int index) throws RemoteException {
-    controller.remove(index);
+    controller.removeObject(index);
   }
 
   @Override

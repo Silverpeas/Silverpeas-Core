@@ -236,7 +236,7 @@ public class ClipboardBmEJB implements SessionBean {
   /**
    * Removes the element at the specified position in the clipboard.
    */
-  public void remove(int index) throws RemoteException {
+  public void removeObject(int index) throws RemoteException {
     try {
       m_ObjectList.remove(index);
     } catch (Exception e) {

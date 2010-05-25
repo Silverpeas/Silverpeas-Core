@@ -108,7 +108,7 @@ public interface Clipboard {
    * @throws RemoteException
    * @see
    */
-  public void remove(int index) throws RemoteException;
+  public void removeObject(int index) throws RemoteException;
 
   /**
    * Method declaration
