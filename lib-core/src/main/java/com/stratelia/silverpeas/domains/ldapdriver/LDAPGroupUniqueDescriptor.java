@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
   protected String[] getMemberGroupIds(String lds, String memberId,
       boolean isGroup) throws AdminException {
-    Vector groupsVector = new Vector();
+    Vector<String> groupsVector = new Vector<String>();
     LDAPEntry[] theEntries = null;
     LDAPEntry memberEntry = null;
     int i;
@@ -102,7 +102,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
       throws AdminException {
-    Vector usersVector = new Vector();
+    Vector<String> usersVector = new Vector<String>();
     LDAPEntry userEntry = null;
     String[] stringVals = null;
     int i;
@@ -156,7 +156,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     LDAPEntry theEntry = null;
     LDAPEntry childGroupEntry = null;
     LDAPEntry parentGroupEntry = null;
-    Vector entryVector = new Vector();
+    Vector<LDAPEntry> entryVector = new Vector<LDAPEntry>();
     String[] stringVals = null;
     LDAPEntry[] theEntries = null;
     int i;

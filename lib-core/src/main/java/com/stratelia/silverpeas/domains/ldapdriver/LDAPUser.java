@@ -91,7 +91,7 @@ public class LDAPUser extends Object {
       throws AdminException {
     LDAPEntry[] theEntries = null;
     UserDetail[] usersReturned = null;
-    Vector usersVector;
+    Vector<UserDetail> usersVector;
     int i;
     String theFilter;
 
@@ -108,7 +108,7 @@ public class LDAPUser extends Object {
         + theFilter);
     SynchroReport.info("LDAPUser.getAllUsers()",
         "Recherche des utilisateurs du domaine LDAP distant...", null);
-    usersVector = new Vector();
+    usersVector = new Vector<UserDetail>();
     // theEntries = LDAPUtility.search1000Plus(lds,
     // driverSettings.getLDAPUserBaseDN(),driverSettings.getScope(),theFilter,driverSettings.getUsersLoginField());
     theEntries = LDAPUtility

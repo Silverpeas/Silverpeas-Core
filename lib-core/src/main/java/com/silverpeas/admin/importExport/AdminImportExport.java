@@ -25,7 +25,6 @@
 package com.silverpeas.admin.importExport;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -46,12 +45,10 @@ public class AdminImportExport {
    * @param listComponentId = liste des id des composants impliqués dans l'esxport en cours
    * @return l'objet ComponentsType complété, null si la liste passée en paramètre est vide
    */
-  public ComponentsType getComponents(List listComponentId) {
+  public ComponentsType getComponents(List<String> listComponentId) {
     ComponentsType componentsType = new ComponentsType();
-    List listComponentInst = new ArrayList();
-    Iterator itListComponentId = listComponentId.iterator();
-    while (itListComponentId.hasNext()) {
-      String componentId = (String) itListComponentId.next();
+    List<ComponentInst> listComponentInst = new ArrayList<ComponentInst>();
+    for (String componentId : listComponentId) {
       ComponentInst componentInst = getAdminController().getComponentInst(
           componentId);
       listComponentInst.add(componentInst);

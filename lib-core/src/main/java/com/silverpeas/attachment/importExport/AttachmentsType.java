@@ -29,25 +29,27 @@ package com.silverpeas.attachment.importExport;
 
 import java.util.List;
 
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
 /**
  * Classe utilisée pour le (un)marshalling Castor
  * @author sdevolder
  */
 public class AttachmentsType {
 
-  private List listAttachmentDetail;// AttachmentDetail
+  private List<AttachmentDetail> listAttachmentDetail;// AttachmentDetail
 
   /**
    * @return
    */
-  public List getListAttachmentDetail() {
+  public List<AttachmentDetail> getListAttachmentDetail() {
     return listAttachmentDetail;
   }
 
   /**
    * @param list
    */
-  public void setListAttachmentDetail(List list) {
+  public void setListAttachmentDetail(List<AttachmentDetail> list) {
     listAttachmentDetail = list;
   }
 

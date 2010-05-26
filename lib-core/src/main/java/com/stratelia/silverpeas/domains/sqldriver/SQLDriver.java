@@ -24,18 +24,24 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import com.silverpeas.util.cryptage.CryptMD5;
-import com.silverpeas.util.cryptage.UnixMD5Crypt;
-import com.stratelia.webactiv.organization.AdminPersistenceException;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.silvertrace.*;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.*;
-import com.stratelia.webactiv.beans.admin.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.util.cryptage.CryptMD5;
+import com.silverpeas.util.cryptage.UnixMD5Crypt;
+import com.stratelia.silverpeas.authentication.Authentication;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.DomainProperty;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.organization.AdminPersistenceException;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SQLDriver extends AbstractDomainDriver {
   protected Connection openedConnection = null;
@@ -351,12 +357,11 @@ public class SQLDriver extends AbstractDomainDriver {
       int gid;
 
       this.openConnection();
-      ArrayList allSubGroups = new ArrayList();
-      allSubGroups.add(localGroupMgr.getGroup(openedConnection,
-          idAsInt(groupId)));
+      List<Group> allSubGroups = new ArrayList<Group>();
+      allSubGroups.add(localGroupMgr.getGroup(openedConnection, idAsInt(groupId)));
 
       while (allSubGroups.size() > 0) {
-        gid = idAsInt(((Group) allSubGroups.remove(0)).getSpecificId());
+        gid = idAsInt(allSubGroups.remove(0).getSpecificId());
         // Add sub groups
         allSubGroups.addAll(localGroupMgr.getDirectSubGroups(
             openedConnection, gid));
@@ -377,7 +382,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param m_Group
    */
   public void updateGroup(Group group) throws Exception {
-    ArrayList alAddUsers = new ArrayList();
+    List<String> alAddUsers = new ArrayList<String>();
     int groupId = idAsInt(group.getSpecificId());
 
     try {
@@ -392,7 +397,7 @@ public class SQLDriver extends AbstractDomainDriver {
       localGroupMgr.updateGroup(openedConnection, group);
 
       // Update the users if necessary
-      ArrayList asOldUsersId = localGroupUserRelMgr
+      List<String> asOldUsersId = localGroupUserRelMgr
           .getDirectUserIdsOfGroup(openedConnection, groupId);
       // Compute the users list
       String[] asNewUsersId = group.getUserIds();
@@ -431,7 +436,7 @@ public class SQLDriver extends AbstractDomainDriver {
           idAsInt(groupId));
       if (valret != null) {
         // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr
+        List<String> asUsersId = localGroupUserRelMgr
             .getDirectUserIdsOfGroup(openedConnection,
             idAsInt(groupId));
         valret.setUserIds((String[]) asUsersId.toArray(new String[0]));
@@ -472,19 +477,14 @@ public class SQLDriver extends AbstractDomainDriver {
   public Group[] getGroups(String groupId) throws Exception {
     try {
       this.openConnection();
-      ArrayList ar = localGroupMgr.getDirectSubGroups(openedConnection,
-          idAsInt(groupId));
-      Iterator it = ar.iterator();
+      List<Group> ar = localGroupMgr.getDirectSubGroups(openedConnection, idAsInt(groupId));
 
-      while (it.hasNext()) {
-        Group theGroup = (Group) it.next();
-
+      for (Group theGroup : ar) {
         // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr
+        List<String> asUsersId = localGroupUserRelMgr
             .getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup
-            .setUserIds((String[]) asUsersId.toArray(new String[0]));
+        theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
 
       return (Group[]) ar.toArray(new Group[0]);
@@ -503,18 +503,14 @@ public class SQLDriver extends AbstractDomainDriver {
   public Group[] getAllGroups() throws Exception {
     try {
       this.openConnection();
-      ArrayList ar = localGroupMgr.getAllGroups(openedConnection);
-      Iterator it = ar.iterator();
+      List<Group> ar = localGroupMgr.getAllGroups(openedConnection);
 
-      while (it.hasNext()) {
-        Group theGroup = (Group) it.next();
-
+      for (Group theGroup : ar) {
         // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr
+        List<String> asUsersId = localGroupUserRelMgr
             .getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup
-            .setUserIds((String[]) asUsersId.toArray(new String[0]));
+        theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
 
       return (Group[]) ar.toArray(new Group[0]);
@@ -532,19 +528,13 @@ public class SQLDriver extends AbstractDomainDriver {
   public Group[] getAllRootGroups() throws Exception {
     try {
       this.openConnection();
-      ArrayList ar = localGroupMgr.getDirectSubGroups(openedConnection,
-          -1);
-      Iterator it = ar.iterator();
-
-      while (it.hasNext()) {
-        Group theGroup = (Group) it.next();
-
+      List<Group> ar = localGroupMgr.getDirectSubGroups(openedConnection, -1);
+      for (Group theGroup : ar) {
         // Get the selected users for this group
-        ArrayList asUsersId = localGroupUserRelMgr
+        List<String> asUsersId = localGroupUserRelMgr
             .getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
-        theGroup
-            .setUserIds((String[]) asUsersId.toArray(new String[0]));
+        theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
 
       return (Group[]) ar.toArray(new Group[0]);

@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.domains.silverpeasdriver;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.cryptage.UnixMD5Crypt;
@@ -416,8 +417,8 @@ public class SilverpeasDriver extends AbstractDomainDriver {
    * @param m_Group
    */
   public void updateGroup(Group group) throws Exception {
-    ArrayList alRemUsers = new ArrayList();
-    ArrayList alAddUsers = new ArrayList();
+    List<String> alRemUsers = new ArrayList<String>();
+    List<String> alAddUsers = new ArrayList<String>();
 
     try {
       if (group == null || group.getName().length() == 0

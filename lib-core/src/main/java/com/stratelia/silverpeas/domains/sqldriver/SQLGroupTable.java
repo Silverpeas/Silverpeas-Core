@@ -24,14 +24,19 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.*;
-
-import java.sql.*;
-import java.util.ArrayList;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * A GroupTable object manages the DomainSQL_Group table.
@@ -204,10 +209,10 @@ public class SQLGroupTable {
   /**
    * Returns the User whith the given id.
    */
-  public ArrayList getAllGroups(Connection c) throws AdminException {
+  public List<Group> getAllGroups(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<Group> theResult = new ArrayList<Group>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName();
 
@@ -232,11 +237,11 @@ public class SQLGroupTable {
   /**
    * Returns the User whith the given id.
    */
-  public ArrayList getDirectSubGroups(Connection c, int groupId)
+  public List<Group> getDirectSubGroups(Connection c, int groupId)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<Group> theResult = new ArrayList<Group>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName() + " where "
         + drvSettings.getGroupParentIdColumnName();

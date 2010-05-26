@@ -35,6 +35,9 @@ package com.stratelia.silverpeas.authentication;
  * @version
  */
 public class AuthenticationHostException extends AuthenticationException {
+  
+  private static final long serialVersionUID = 3318090264755986318L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

@@ -64,11 +64,11 @@ public class LDAPDriver extends AbstractDomainDriver {
     groupTranslator.init(driverSettings, synchroCache);
   }
 
-  public void addPropertiesToImport(List props) {
+  public void addPropertiesToImport(List<DomainProperty> props) {
     addPropertiesToImport(props, null);
   }
 
-  public void addPropertiesToImport(List props, HashMap descriptions) {
+  public void addPropertiesToImport(List<DomainProperty> props, HashMap<String, String> descriptions) {
     DomainProperty property = new DomainProperty();
     property.setName("lastName");
     property.setMapParameter(driverSettings.getUsersLastNameField());
@@ -368,12 +368,12 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
-  public UserDetail[] getUsersByQuery(Hashtable query) throws Exception {
+  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
     String extraFilter = "";
-    Iterator properties = query.keySet().iterator();
+    Iterator<String> properties = query.keySet().iterator();
     String propertyName = null;
     while (properties.hasNext()) {
-      propertyName = (String) properties.next();
+      propertyName = properties.next();
       extraFilter += "(" + propertyName + "=" + query.get(propertyName) + ")";
     }
 

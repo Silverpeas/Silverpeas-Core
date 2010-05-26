@@ -48,9 +48,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 
 public class LDAPGroupSamse extends AbstractLDAPGroup {
-  protected Vector getMemberGroupIds(String lds, String memberId,
+  protected Vector<String> getMemberGroupIds(String lds, String memberId,
       boolean isGroup) throws AdminException {
-    Vector groupsVector = new Vector();
+    Vector<String> groupsVector = new Vector<String>();
     LDAPEntry[] theEntries = null;
     LDAPEntry memberEntry = null;
     int i;
@@ -98,17 +98,16 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
 
   public String[] getUserMemberGroupIds(String lds, String userId)
       throws AdminException {
-    Vector groupsIdsSet;
-    Vector groupsCur;
-    Iterator it;
+    Vector<String> groupsCur;
+    Iterator<String> it;
     String grId;
-    HashSet groupsManaged = new HashSet();
+    HashSet<String> groupsManaged = new HashSet<String>();
 
-    groupsIdsSet = getMemberGroupIds(lds, userId, false);
+    Vector<String> groupsIdsSet = getMemberGroupIds(lds, userId, false);
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
       it = groupsIdsSet.iterator();
-      groupsCur = new Vector();
+      groupsCur = new Vector<String>();
       while (it.hasNext()) {
         grId = (String) it.next();
         if (!groupsManaged.contains(grId)) {
@@ -131,18 +130,18 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
    */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
       throws AdminException {
-    HashSet usersManaged = new HashSet();
-    HashSet groupsManaged = new HashSet();
-    Vector groupsSet = new Vector();
-    Vector groupsCur;
-    Iterator it;
+    HashSet<String> usersManaged = new HashSet<String>();
+    HashSet<String> groupsManaged = new HashSet<String>();
+    Vector<LDAPEntry> groupsSet = new Vector<LDAPEntry>();
+    Vector<LDAPEntry> groupsCur;
+    Iterator<LDAPEntry> it;
     LDAPEntry curGroup;
     String grId;
 
     groupsSet.add(groupEntry);
     while (groupsSet.size() > 0) {
       it = groupsSet.iterator();
-      groupsCur = new Vector();
+      groupsCur = new Vector<LDAPEntry>();
       while (it.hasNext()) {
         curGroup = (LDAPEntry) it.next();
         if (curGroup != null) {
@@ -167,22 +166,18 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
     return (String[]) usersManaged.toArray(new String[0]);
   }
 
-  protected Vector getTRUEUserIds(String lds, LDAPEntry groupEntry)
+  protected Vector<String> getTRUEUserIds(String lds, LDAPEntry groupEntry)
       throws AdminException {
     SilverTrace.info("admin", "LDAPGroupSamse.getTRUEUserIds()",
         "root.MSG_GEN_ENTER_METHOD", "lds = " + lds + ", group = "
         + groupEntry.getDN());
 
-    Vector usersVector = new Vector();
-    // LDAPEntry userEntry = null;
-    String[] stringVals = null;
-    int i;
-
+    Vector<String> usersVector = new Vector<String>();
     String groupsMemberField = driverSettings.getGroupsMemberField();
 
     // retrieve all memberUid
-    stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
-    for (i = 0; i < stringVals.length; i++) {
+    String[] stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
+    for (int i = 0; i < stringVals.length; i++) {
       SilverTrace.info("admin", "LDAPGroupSamse.getTRUEUserIds()",
           "root.MSG_GEN_PARAM_VALUE", "stringVals[" + i + "] = "
           + stringVals[i]);
@@ -259,10 +254,10 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
    * @throws AdminException
    * @see
    */
-  protected Vector getTRUEChildGroupsEntry(String lds, String parentId,
+  protected Vector<LDAPEntry> getTRUEChildGroupsEntry(String lds, String parentId,
       LDAPEntry theEntry) {
     LDAPEntry childGroupEntry = null;
-    Vector entryVector = new Vector();
+    Vector<LDAPEntry> entryVector = new Vector<LDAPEntry>();
     String[] stringVals = null;
     int i;
 
@@ -300,15 +295,14 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
 
   public Group[] getAllChangedGroups(String lds, String extraFilter)
       throws AdminException {
-    Vector groupsIdsSet;
-    Vector groupsCur;
-    Iterator it;
+    Vector<LDAPEntry> groupsCur;
+    Iterator<LDAPEntry> it;
     int i;
-    Hashtable groupsManaged = new Hashtable();
+    Hashtable<String, Group> groupsManaged = new Hashtable<String, Group>();
     LDAPEntry[] les = getChildGroupsEntry(lds, null, extraFilter);
     LDAPEntry theGroup;
 
-    groupsIdsSet = new Vector(les.length);
+    Vector<LDAPEntry> groupsIdsSet = new Vector<LDAPEntry>(les.length);
     for (i = 0; i < les.length; i++) {
       groupsIdsSet.add(les[i]);
       groupsManaged.put(les[i].getDN().toString(), translateGroup(lds, les[i]));
@@ -316,9 +310,9 @@ public class LDAPGroupSamse extends AbstractLDAPGroup {
     // Go recurs to all group's ancestors
     while (groupsIdsSet.size() > 0) {
       it = groupsIdsSet.iterator();
-      groupsCur = new Vector();
+      groupsCur = new Vector<LDAPEntry>();
       while (it.hasNext()) {
-        theGroup = (LDAPEntry) it.next();
+        theGroup = it.next();
         SilverTrace.info("admin", "LDAPGroupSamse.getAllChangedGroups()",
             "root.MSG_GEN_PARAM_VALUE", "GroupTraite2="
             + theGroup.getDN().toString());

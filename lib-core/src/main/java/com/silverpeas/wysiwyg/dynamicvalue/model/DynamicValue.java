@@ -32,6 +32,7 @@ import java.util.Date;
  */
 public class DynamicValue implements Serializable {
 
+  private static final long serialVersionUID = 1799321859007075096L;
   /**
    * key is used in HTML code as follows : "(%<key>%)". This key is visible only in HTML editor.
    */

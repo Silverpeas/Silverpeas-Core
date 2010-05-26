@@ -23,6 +23,10 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.novell.ldap.LDAPAttribute;
@@ -39,12 +43,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements

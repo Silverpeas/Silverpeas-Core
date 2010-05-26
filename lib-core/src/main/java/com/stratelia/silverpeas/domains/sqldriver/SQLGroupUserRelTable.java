@@ -24,13 +24,17 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.*;
-
-import java.sql.*;
-import java.util.ArrayList;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * A GroupTable object manages the DomainSQL_Group table.
@@ -45,11 +49,11 @@ public class SQLGroupUserRelTable {
   /**
    * Returns all the User ids which compose a group.
    */
-  public ArrayList getDirectUserIdsOfGroup(Connection c, int groupId)
+  public List<String> getDirectUserIdsOfGroup(Connection c, int groupId)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<String> theResult = new ArrayList<String>();
     String theQuery = "select " + drvSettings.getRelUIDColumnName() + " from "
         + drvSettings.getRelTableName() + " where "
         + drvSettings.getRelGIDColumnName() + " = ?";
@@ -77,11 +81,11 @@ public class SQLGroupUserRelTable {
   /**
    * Returns all the groups in a given userRole (not recursive).
    */
-  public ArrayList getDirectGroupIdsOfUser(Connection c, int userId)
+  public List<String> getDirectGroupIdsOfUser(Connection c, int userId)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<String> theResult = new ArrayList<String>();
     String theQuery = "select " + drvSettings.getRelGIDColumnName() + " from "
         + drvSettings.getRelTableName() + " where "
         + drvSettings.getRelUIDColumnName() + " = ?";

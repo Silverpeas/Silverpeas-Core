@@ -26,19 +26,21 @@ package com.silverpeas.admin.importExport;
 
 import java.util.List;
 
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
 /**
  * Classe utilisee pour le (un)marshalling Castor
  * @author sdevolder
  */
 public class ComponentsType {
 
-  private List listComponentInst;// liste de ComponentInst
+  private List<ComponentInst> listComponentInst;// liste de ComponentInst
 
-  public List getListComponentInst() {
+  public List<ComponentInst> getListComponentInst() {
     return listComponentInst;
   }
 
-  public void setListComponentInst(List listComponentInst) {
+  public void setListComponentInst(List<ComponentInst> listComponentInst) {
     this.listComponentInst = listComponentInst;
   }
 }

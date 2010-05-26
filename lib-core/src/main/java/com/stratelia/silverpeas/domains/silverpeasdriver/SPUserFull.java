@@ -30,6 +30,9 @@ import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class SPUserFull extends UserFull implements Serializable {
+
+  private static final long serialVersionUID = 3020314442216596669L;
+
   /** Creates new UserFull */
   public SPUserFull() {
     super();

@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class SecurityHolder {
 
   private static SecurityCache securityCache = new SecurityCache();
-  private static HashMap persistentCache = new HashMap();
+  private static HashMap<String, SecurityData> persistentCache = new HashMap<String, SecurityData>();
 
   public static void addData(String securityId, String userId, String domainId) {
     addData(securityId, userId, domainId, false);

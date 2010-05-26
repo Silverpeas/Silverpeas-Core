@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.*;
  */
 public class AlertUserException extends SilverpeasException {
 
+  private static final long serialVersionUID = 1243712558346677484L;
+
   /**
    * Constructor declaration
    * @param callingClass

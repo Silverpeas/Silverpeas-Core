@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import com.novell.ldap.LDAPEntry;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -86,8 +85,8 @@ abstract public class AbstractLDAPGroup extends Object {
   public Group[] getAllGroups(String lds, String extraFilter)
       throws AdminException {
     Group[] groupsVector = null;
-    Hashtable groupsDone = new Hashtable();
-    ArrayList groupsCurrent = new ArrayList();
+    Hashtable<String, Group> groupsDone = new Hashtable<String, Group>();
+    ArrayList<Group> groupsCurrent = new ArrayList<Group>();
     Group group = null;
     String groupId = null;
     int i = 0;
@@ -100,7 +99,7 @@ abstract public class AbstractLDAPGroup extends Object {
     // While there is something in the current list
     while (groupsCurrent.size() > 0) {
       // Remove one group from the current list
-      group = (Group) groupsCurrent.remove(groupsCurrent.size() - 1);
+      group = groupsCurrent.remove(groupsCurrent.size() - 1);
       groupId = group.getSpecificId();
       // If not already treated -> call to retreive his childs
       if (groupsDone.get(groupId) == null) {
@@ -128,12 +127,11 @@ abstract public class AbstractLDAPGroup extends Object {
   public Group[] getGroups(String lds, String parentId, String extraFilter)
       throws AdminException {
     Group[] groupsProcessed = null;
-    ArrayList groupsReturned = new ArrayList();
+    ArrayList<Group> groupsReturned = new ArrayList<Group>();
     LDAPEntry[] groupsFounded = null;
 
-    // Only for the same group splitted into several groups (ie Novell LDAP MGI
-    // COUTIER)
-    ArrayList groupMerged = new ArrayList();
+    // Only for the same group splitted into several groups (ie Novell LDAP)
+    ArrayList<LDAPEntry> groupMerged = new ArrayList<LDAPEntry>();
 
     int i;
     if (parentId == null)
@@ -170,8 +168,9 @@ abstract public class AbstractLDAPGroup extends Object {
         // Convert it into Group
         groupsProcessed[i] = translateGroups(lds, groupMerged);
         groupSplitted = false;
-      } else
+      } else {
         groupsProcessed[i] = translateGroup(lds, groupsFounded[i]);
+      }
 
       // Add this group to the returned groups
       groupsReturned.add(groupsProcessed[i]);
@@ -331,20 +330,18 @@ abstract public class AbstractLDAPGroup extends Object {
    * @return
    * @throws AdminException
    */
-  protected Group translateGroups(String lds, ArrayList groupEntries)
+  protected Group translateGroups(String lds, ArrayList<LDAPEntry> groupEntries)
       throws AdminException {
     Group groupInfos = new Group();
-    ArrayList allUserIds = new ArrayList();
+    ArrayList<String> allUserIds = new ArrayList<String>();
 
     if (groupEntries.size() == 0) {
       throw new AdminException("AbstractLDAPGroup.translateGroups",
           SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GROUP_ENTRY_ISNULL");
     }
 
-    Iterator groupsEntriesIterator = groupEntries.iterator();
     boolean first = true;
-    while (groupsEntriesIterator.hasNext()) {
-      LDAPEntry groupEntry = (LDAPEntry) groupsEntriesIterator.next();
+    for (LDAPEntry groupEntry : groupEntries) {
       if (first) {
         groupInfos.setSpecificId(LDAPUtility.getFirstAttributeValue(groupEntry,
             driverSettings.getGroupsIdField()));

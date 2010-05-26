@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -223,10 +224,10 @@ public class SQLUserTable {
   /**
    * Returns all the groups in a given userRole (not recursive).
    */
-  public ArrayList getAllUserIds(Connection c) throws AdminException {
+  public List<Integer> getAllUserIds(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<Integer> theResult = new ArrayList<Integer>();
     String theQuery = "select " + drvSettings.getUserSpecificIdColumnName()
         + " from " + drvSettings.getUserTableName();
 
@@ -251,10 +252,10 @@ public class SQLUserTable {
   /**
    * Returns all the groups in a given userRole (not recursive).
    */
-  public ArrayList getAllUsers(Connection c) throws AdminException {
+  public List<UserDetail> getAllUsers(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<UserDetail> theResult = new ArrayList<UserDetail>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getUserTableName();
 
@@ -277,11 +278,11 @@ public class SQLUserTable {
   /**
    * Returns all the groups in a given userRole (not recursive).
    */
-  public ArrayList getUsersBySpecificProperty(Connection c,
+  public List<UserDetail> getUsersBySpecificProperty(Connection c,
       String propertyName, String value) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    ArrayList theResult = new ArrayList();
+    List<UserDetail> theResult = new ArrayList<UserDetail>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getUserTableName();
     theQuery += " where " + propertyName + " = ? ";

@@ -35,6 +35,9 @@ package com.stratelia.silverpeas.authentication;
  * @version
  */
 public class AuthenticationPasswordAboutToExpireException extends AuthenticationException {
+  
+  private static final long serialVersionUID = -6944881509553671169L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

@@ -51,7 +51,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class LDAPGroupSubTree extends AbstractLDAPGroup {
   protected String[] getMemberGroupIds(String lds, String memberId,
       boolean isGroup) throws AdminException {
-    Vector groupsVector = new Vector();
+    Vector<String> groupsVector = new Vector<String>();
     LDAPEntry memberEntry = null;
     LDAPEntry groupEntry = null;
     int i;
@@ -117,7 +117,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
   protected String[] getUserIds(String lds, LDAPEntry groupEntry)
       throws AdminException {
     LDAPEntry[] theEntries = null;
-    Vector usersVector = new Vector();
+    Vector<String> usersVector = new Vector<String>();
     int i;
 
     SilverTrace.info("admin", "LDAPGroupSubTree.getUserIds()",
@@ -195,7 +195,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     LDAPEntry[] theEntries = null;
     LDAPEntry[] sortResult = null;
     LDAPEntry theFirstEntry = null;
-    Vector entryVector = new Vector();
+    Vector<LDAPEntry> entryVector = new Vector<LDAPEntry>();
     String previousDN = "";
     String searchDN = null;
     int i;
@@ -256,7 +256,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
    * @see
    */
   private LDAPEntry[] sortReversedDN(LDAPEntry[] theEntries) {
-    TreeMap theMap = new TreeMap();
+    TreeMap<String, LDAPEntry> theMap = new TreeMap<String, LDAPEntry>();
     StringBuffer forReversing;
     LDAPEntry groupEntry;
     int i;

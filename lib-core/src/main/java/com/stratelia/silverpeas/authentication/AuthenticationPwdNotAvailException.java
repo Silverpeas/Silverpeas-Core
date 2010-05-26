@@ -35,6 +35,9 @@ package com.stratelia.silverpeas.authentication;
  * @version
  */
 public class AuthenticationPwdNotAvailException extends AuthenticationException {
+  
+  private static final long serialVersionUID = 3338040913682812355L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

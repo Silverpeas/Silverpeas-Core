@@ -29,14 +29,12 @@
 package com.silverpeas.attachment.importExport;
 
 import java.io.File;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,7 +42,6 @@ import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -99,19 +96,16 @@ public class AttachmentImportExport {
     return a_detail;
   }
 
-  public List importAttachments(String pubId, String componentId,
-      List attachments, String userId) {
+  public List<AttachmentDetail> importAttachments(String pubId, String componentId,
+      List<AttachmentDetail> attachments, String userId) {
     return importAttachments(pubId, componentId, attachments, userId, false);
   }
 
-  public List importAttachments(String pubId, String componentId,
-      List attachments, String userId, boolean indexIt) {
-    List copiedAttachments = copyFiles(componentId, attachments);
-    Iterator itAttachments = copiedAttachments.iterator();
-    AttachmentDetail attDetail = null;
+  public List<AttachmentDetail> importAttachments(String pubId, String componentId,
+      List<AttachmentDetail> attachments, String userId, boolean indexIt) {
+    List<AttachmentDetail> copiedAttachments = copyFiles(componentId, attachments);
     FormTemplateImportExport xmlIE = null;
-    while (itAttachments.hasNext()) {
-      attDetail = (AttachmentDetail) itAttachments.next();
+    for (AttachmentDetail attDetail : copiedAttachments) {
       attDetail.setAuthor(userId);
       XMLModelContentType xmlContent = attDetail.getXMLModelContentType();
       if (xmlContent != null)
@@ -153,19 +147,17 @@ public class AttachmentImportExport {
     return copyFile(componentId, a_Detail, path);
   }
 
-  public List copyFiles(String componentId, List attachments) {
+  public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments) {
     return copyFiles(componentId, attachments, getPath(componentId));
   }
 
-  public List copyFiles(String componentId, List attachments, String path) {
-    List copiedAttachments = new ArrayList();
-    Iterator itAttachments = attachments.iterator();
-    AttachmentDetail attDetail = null;
-    while (itAttachments.hasNext()) {
-      attDetail = (AttachmentDetail) itAttachments.next();
+  public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments, String path) {
+    List<AttachmentDetail> copiedAttachments = new ArrayList<AttachmentDetail>();
+    for (AttachmentDetail attDetail : attachments) {
       this.copyFile(componentId, attDetail, path);
-      if (attDetail.getSize() != 0)
+      if (attDetail.getSize() != 0) {
         copiedAttachments.add(attDetail);
+      }
     }
     return copiedAttachments;
   }
@@ -281,7 +273,7 @@ public class AttachmentImportExport {
     int incrementSuffixe = 0;
     AttachmentPK atPK = new AttachmentPK(null, componentId);
     AttachmentPK foreignKey = new AttachmentPK(pubId, componentId);
-    Vector attachments = AttachmentController
+    Vector<AttachmentDetail> attachments = AttachmentController
         .searchAttachmentByCustomerPK(foreignKey);
     int i = 0;
 
@@ -300,7 +292,7 @@ public class AttachmentImportExport {
     // d'un
     // suffixe au nouveau fichier
     while (i < attachments.size()) {
-      ad_toCreate = (AttachmentDetail) attachments.get(i);
+      ad_toCreate = attachments.get(i);
       if (ad_toCreate.getLogicalName().equals(logicalName))// si les tailles
       // sont diff�rentes,
       // on
@@ -348,14 +340,14 @@ public class AttachmentImportExport {
    * @param relativeExportPath chemin relatif du fichier copi�
    * @return une liste des attachmentDetail trouv�s
    */
-  public Vector getAttachments(WAPrimaryKey pk, String exportPath,
+  public Vector<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) {
 
     // R�cup�ration des attachments
-    Vector listAttachment = AttachmentController
+    Vector<AttachmentDetail> listAttachment = AttachmentController
         .searchAttachmentByCustomerPK(pk);
-    Vector listToReturn = new Vector();
-    if ((listAttachment != null) && (listAttachment.size() == 0))// Si on
+    Vector<AttachmentDetail> listToReturn = new Vector<AttachmentDetail>();
+    if (listAttachment != null && listAttachment.size() == 0)// Si on
       // re�oit
       // une liste
       // vide, on
@@ -363,11 +355,9 @@ public class AttachmentImportExport {
       // null
       listAttachment = null;
     if (listAttachment != null) {
-      Iterator itListAttachment = listAttachment.iterator();
       // Pour chaque attachment trouv�, on copie le fichier dans le dossier
       // d'exportation
-      while (itListAttachment.hasNext()) {
-        AttachmentDetail attDetail = (AttachmentDetail) itListAttachment.next();
+      for (AttachmentDetail attDetail : listAttachment) {
         if (!attDetail.getContext().equals(AbstractForm.CONTEXT_FORM_FILE)) {
           // ce n est pas un fichier joint mais un fichier appartenant surement
           // au wysiwyg si le context

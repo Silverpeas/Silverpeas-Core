@@ -392,11 +392,11 @@ public class AuthenticationLDAP extends Authentication {
     }
 
     StringTokenizer st = new StringTokenizer(baseDN, BASEDN_SEPARATOR);
-    Vector baseDNs = new Vector();
+    Vector<String> baseDNs = new Vector<String>();
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
     }
-    return (String[]) (baseDNs.toArray(new String[0]));
+    return baseDNs.toArray(new String[0]);
   }
 
   protected void internalResetPassword(String login, String newPassword)
