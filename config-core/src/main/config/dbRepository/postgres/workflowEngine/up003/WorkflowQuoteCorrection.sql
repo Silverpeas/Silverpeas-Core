@@ -1,0 +1,11 @@
+ALTER table "sb_workflow_ProcessInstance" rename to sb_workflow_processinstance;
+ALTER table "sb_workflow_ActiveState" rename to sb_workflow_activestate;
+ALTER table "sb_workflow_HistoryStep" rename to sb_workflow_historystep;
+ALTER table "sb_workflow_Undo_Step" rename to sb_workflow_undo_step;
+ALTER table "sb_workflow_InterestedUser" rename to sb_workflow_interesteduser;
+ALTER table "sb_workflow_LockingUser" rename to sb_workflow_lockinguser;
+ALTER table "sb_workflow_WorkingUser" rename to sb_workflow_workinguser;
+ALTER table "sb_workflow_Question" rename to sb_workflow_question;
+ALTER table "sb_workflow_UserInfo" rename to sb_workflow_userInfo;
+ALTER table "sb_workflow_UserSettings" rename to sb_workflow_usersettings;
+ALTER table "sb_workflow_Error" rename to sb_workflow_error;
