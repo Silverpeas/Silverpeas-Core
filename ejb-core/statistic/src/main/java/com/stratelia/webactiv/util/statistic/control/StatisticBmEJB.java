@@ -110,59 +110,7 @@ public class StatisticBmEJB implements SessionBean {
       }
     }
   }
-
-  /**
-   * Method declaration
-   * @param fatherPK
-   * @deprecated : A SUPPRIMER APRES TESTS
-   * @return
-   * @see
-   */
-  public Collection<StatisticResultDetail> getNodesUsage(NodePK fatherPK) {
-    SilverTrace.info("statistic", "StatisticBmEJB.getNodesUsage",
-        "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      con = getConnection();
-      return HistoryNodePublicationActorDAO.getNodesUsage(con,
-          historyRootTableName, fatherPK);
-    } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getNodesUsage()",
-          SilverpeasRuntimeException.ERROR,
-          "statistic.CANNOT_GET_STATISTICS_NODE", e);
-    } finally {
-      freeConnection(con);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param userId
-   * @param nodePK
-   * @param pubPK
-   * @deprecated : utiliser addStat
-   * @see
-   */
-  public void addReading(String userId, NodePK nodePK, PublicationPK pubPK) {
-    SilverTrace.info("statistic", "StatisticBmEJB.addReading",
-        "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
-
-    try {
-      ForeignPK foreignPK = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
-      String objectType = "Publication";
-      addStat(userId, foreignPK, ACTION_ACCESS, objectType);
-
-    } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().addReading()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE",
-          e);
-    } finally {
-      freeConnection(con);
-    }
-  }
-
+  
   /**
    * Method declaration
    * @param userId

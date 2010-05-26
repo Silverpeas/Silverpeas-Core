@@ -42,19 +42,6 @@ public interface StatisticBm extends EJBObject {
   /**
    * Method declaration
    * @param userId
-   * @param node
-   * @param pub
-   * @deprecated : utiliser la fonction addStat(String userId, ForeignPK foreignPK, int action,
-   * String objectType)
-   * @throws RemoteException
-   * @see
-   */
-  public void addReading(String userId, NodePK node, PublicationPK pub)
-      throws RemoteException;
-
-  /**
-   * Method declaration
-   * @param userId
    * @param foreignPK
    * @throws RemoteException
    * @see
@@ -90,16 +77,6 @@ public interface StatisticBm extends EJBObject {
    */
   public void deleteHistoryByAction(ForeignPK foreignPK, int action,
       String objectType) throws RemoteException;
-
-  /**
-   * Method declaration
-   * @param fatherPK
-   * @deprecated : A SUPPRIMER APRES TESTS
-   * @return
-   * @throws RemoteException
-   * @see
-   */
-  public Collection<StatisticResultDetail> getNodesUsage(NodePK fatherPK) throws RemoteException;
 
   /**
    * Method declaration
