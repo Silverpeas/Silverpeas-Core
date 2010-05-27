@@ -34,5 +34,26 @@ function isCorrectForm()
 </script>
 </head>
 <body>
+<%
+	String width = "";
+	String height = "";
+	
+	if (field != null)
+	{
+		if (parameters.containsKey("width")) {
+		  width = (String) parameters.get("width");
+		}
+		
+		if (parameters.containsKey("height")) {
+		  height = (String) parameters.get("height");
+		}
+	}
+%>
 <%@ include file="includeTopField.jsp.inc" %>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.width")%> :</td><td><input type="text" name="Param_width" value="<%=width%>" size="5" maxLength="4"/></td>
+</tr>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.height")%> :</td><td><input type="text" name="Param_height" value="<%=height%>" size="5" maxLength="4"/></td>
+</tr>
 <%@ include file="includeBottomField.jsp.inc" %>
