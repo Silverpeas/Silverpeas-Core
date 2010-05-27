@@ -56,7 +56,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
       StringBuffer html = new StringBuffer();
 
       html
-          .append("<TABLE cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"98%\" bgcolor=\"000000\"><TR><TD><TABLE cellpadding=\"0\" cellspacing=\"1\" border=\"0\" width=\"100%\">");
+          .append("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"98%\" bgcolor=\"#000000\"><tr><td><table cellpadding=\"0\" cellspacing=\"1\" border=\"0\" width=\"100%\">");
 
       html.append(printDayOfWeek());
 
@@ -68,7 +68,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
         html.append(printNumberDayOfWeek(i));
         html.append(printWeek(i, message));
       }
-      html.append("</TABLE></TD></TR></TABLE>");
+      html.append("</table></td></tr></table>");
 
       return html.toString();
     } catch (Exception e) {
@@ -122,10 +122,10 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
         }
 
         html.append("&nbsp;")
-            .append("<a href=\"javascript: onClick=clickDay('").append(
+            .append("<a href=\"javascript:onClick=clickDay('").append(
             DateUtil.getInputDate(day[k].getDate(), super.language))
             .append("')\" class=\"almanachDay\" ").append(
-            "onFocus=\"this.blur()\">").append(day[k].getNumbers()).append(
+            "onfocus=\"this.blur()\">").append(day[k].getNumbers()).append(
             "</a> </td>");
       } else {
         html.append("<td class=\"intfdcolor51\">&nbsp;").append(
@@ -246,7 +246,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
               html.append(
                   "<img src=\"icons/urgent.gif\" align=\"absmiddle\" alt=\"")
                   .append(message.getString("important")).append("\" title=\"")
-                  .append(message.getString("important")).append("\"> ");
+                  .append(message.getString("important")).append("\"/> ");
             }
             html.append("<a href=\"javascript:onClick=clickEvent(").append(
                 evt[z].getId()).append(", '");

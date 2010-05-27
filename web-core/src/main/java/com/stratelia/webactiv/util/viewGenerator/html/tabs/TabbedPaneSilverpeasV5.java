@@ -72,13 +72,13 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
       result.append(printTabLine(tabs));
       result.append("</td><td><img src=\"").append(iconsPath).append(
           "/tabs/1px.gif\" width=\"").append(incr * 17).append(
-          "\" height=\"1\"></td></tr></table>");
+          "\" height=\"1\" alt=\"\"/></td></tr></table>");
       incr--;
     }
     result
         .append("<table id=\"sousTabbedPane\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\"><tr><td width=\"100%\" class=\"sousOnglets\">");
     result.append("<img src=\"").append(iconsPath).append(
-        "/tabs/1px.gif\" width=\"1\" height=\"1\"></td></tr></table>");
+        "/tabs/1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td></tr></table>");
     return result.toString();
   }
 
@@ -119,24 +119,24 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
       }
 
       if (tab.getEnabled()) {
-        result.append("<td align=center nowrap class=").append(styleGauche)
-            .append("><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\"></td>\n");
-        result.append("<td align=center nowrap class=").append(style).append(
-            "><a href=\"").append(tab.getAction()).append("\">&nbsp;").append(
-            tab.getLabel()).append("&nbsp;</td>\n");
-        result.append("<td align=center nowrap class=").append(styleDroite)
-            .append("><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\"></td>\n");
+        result.append("<td align=\"center\" nowrap=\"nowrap\" class=\"").append(styleGauche)
+            .append("\"><img src=\"").append(iconsPath).append(
+            "/tabs/1px.gif\" alt=\"\"/></td>\n");
+        result.append("<td align=\"center\" nowrap=\"nowrap\" class=\"").append(style).append(
+            "\"><a href=\"").append(tab.getAction()).append("\">&nbsp;").append(
+            tab.getLabel()).append("&nbsp;</a></td>\n");
+        result.append("<td align=\"center\" nowrap=\"nowrap\" class=\"").append(styleDroite)
+            .append("\"><img src=\"").append(iconsPath).append(
+            "/tabs/1px.gif\" alt=\"\"/></td>\n");
       } else {
-        result.append("<td align=center nowrap class=").append(styleGauche)
-            .append("><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\"></td>\n");
-        result.append("<td align=center nowrap class=").append(style).append(
-            ">").append(tab.getLabel()).append("</td>\n");
-        result.append("<td align=center nowrap class=").append(styleDroite)
-            .append("><img src=\"").append(iconsPath).append(
-            "/tabs/1px.gif\"></td>\n");
+        result.append("<td align=\"center\" nowrap=\"nowrap\" class=\"").append(styleGauche)
+            .append("\"><img src=\"").append(iconsPath).append(
+            "/tabs/1px.gif\" alt=\"\"/></td>\n");
+        result.append("<td align=\"center\" nowrap=\"nowrap\" class=\"").append(style).append(
+            "\">").append(tab.getLabel()).append("</td>\n");
+        result.append("<td align=\"center\" nowrap=\"nowrap\" class=\"").append(styleDroite)
+            .append("\"><img src=\"").append(iconsPath).append(
+            "/tabs/1px.gif\" alt=\"\"/></td>\n");
       }
     }
 
@@ -145,7 +145,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
 
     }
     result.append("<td><img src=\"").append(iconsPath).append(
-        "/tabs/1px.gif\" width=13></td></tr>\n");
+        "/tabs/1px.gif\" width=\"13\" alt=\"\"/></td></tr>\n");
     result.append("</table>\n");
     return result.toString();
   }

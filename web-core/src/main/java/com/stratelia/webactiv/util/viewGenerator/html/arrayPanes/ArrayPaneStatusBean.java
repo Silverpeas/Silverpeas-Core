@@ -22,29 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
-
-/*
- * CVS Informations
- * 
- * $Id: ArrayPaneStatusBean.java,v 1.2 2005/12/30 18:47:39 neysseri Exp $
- * 
- * $Log: ArrayPaneStatusBean.java,v $
- * Revision 1.2  2005/12/30 18:47:39  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.3  2002/01/04 14:04:23  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
 
 /**
  * Class declaration

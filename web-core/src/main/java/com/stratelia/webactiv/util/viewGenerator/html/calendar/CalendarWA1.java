@@ -49,15 +49,14 @@ public class CalendarWA1 extends AbstractCalendar {
     List nonSelectableDays = getNonSelectableDays();
     boolean nonSelectable = isEmptyDayNonSelectable();
 
-    int firstDayOfWeek = Integer.parseInt(settings
-        .getString("GML.weekFirstDay"));
+    int firstDayOfWeek = Integer.parseInt(settings.getString("GML.weekFirstDay"));
 
     if (!shortName) {
       result
-          .append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"1\" CELLPADDING=\"2\">");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"2\">");
     } else {
       result
-          .append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"0\" CELLPADDING=\"1\">");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\">");
     }
 
     Calendar calendar = Calendar.getInstance();
@@ -89,63 +88,63 @@ public class CalendarWA1 extends AbstractCalendar {
     }
 
     if (monthVisible) {
-      result.append("<TR class=\"txtnav2\"><TD COLSPAN=7>\n");
+      result.append("<tr class=\"txtnav2\"><td colspan=\"7\">\n");
       result
-          .append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><TR>");
       if (navigationBar) {
         result
             .append(
-                "<td class=\"intfdcolor3\" align=\"right\"><a href=\"javascript:onClick=gotoPreviousMonth()\" onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-2','','")
+                "<td class=\"intfdcolor3\" align=\"right\"><a href=\"javascript:onClick=gotoPreviousMonth()\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('fle-2','','")
             .append(getContext())
             .append(
                 "icons/cal_fle-gon.gif',1)\"><img name=\"fle-2\" border=\"0\" src=\"")
             .append(getContext())
             .append(
-                "icons/cal_fle-goff.gif\" width=\"8\" height=\"14\"></a></td> \n");
+                "icons/cal_fle-goff.gif\" width=\"8\" height=\"14\" alt=\"\"/></a></td> \n");
       }
       result.append(
-          "<TD class=\"intfdcolor3\" ALIGN=\"center\"><span class=txtNav4>")
+          "<td class=\"intfdcolor3\" align=\"center\"><span class=\"txtNav4\">")
           .append(settings.getString("GML.mois" + month)).append(" ").append(
-          year).append("</span></TD>");
+          year).append("</span></td>");
       if (navigationBar) {
         result
             .append(
-                "<td class=\"intfdcolor3\" align=\"left\"><a href=\"javascript:onClick=gotoNextMonth()\" onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-1','','")
+                "<td class=\"intfdcolor3\" align=\"left\"><a href=\"javascript:onClick=gotoNextMonth()\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('fle-1','','")
             .append(getContext())
             .append(
                 "icons/cal_fle-don.gif',1)\"><img name=\"fle-1\" border=\"0\" src=\"")
             .append(getContext())
             .append(
-                "icons/cal_fle-doff.gif\" width=\"8\" height=\"14\"></a></td>\n");
+                "icons/cal_fle-doff.gif\" width=\"8\" height=\"14\" alt=\"\"/></a></td>\n");
       }
-      result.append("</TR></TABLE>\n");
-      result.append("</TD></tr>");
+      result.append("</tr></table>\n");
+      result.append("</td></tr>");
     }
-    result.append("<TR class=\"intfdcolor2\">\n");
+    result.append("<tr class=\"intfdcolor2\">\n");
 
     do {
       if (shortName) {
-        result.append("<TH ").append(weekDayStyle).append(">").append(
+        result.append("<th ").append(weekDayStyle).append(">").append(
             settings.getString("GML.shortJour"
-            + calendar.get(Calendar.DAY_OF_WEEK))).append("</TH>");
+            + calendar.get(Calendar.DAY_OF_WEEK))).append("</th>");
       } else {
-        result.append("<TH ").append(weekDayStyle).append(">")
+        result.append("<th ").append(weekDayStyle).append(">")
             .append(
             settings.getString("GML.jour"
-            + calendar.get(Calendar.DAY_OF_WEEK))).append("</TH>");
+            + calendar.get(Calendar.DAY_OF_WEEK))).append("</th>");
       }
       calendar.add(Calendar.DATE, 1);
     } while (calendar.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek);
 
-    result.append("</TR>\n");
+    result.append("</tr>\n");
 
     // put blank table entries for days of week before beginning of the month
-    result.append("<TR>\n");
+    result.append("<tr>\n");
     int column = 0;
 
     for (int i = 0; i < startDay - 1; i++) {
-      result.append("<TD ").append(monthDayStyle).append(
-          " width=\"14%\">&nbsp;</TD>");
+      result.append("<td ").append(monthDayStyle).append(
+          " width=\"14%\">&nbsp;</td>");
       column++;
     }
 
@@ -209,26 +208,26 @@ public class CalendarWA1 extends AbstractCalendar {
       if (isSelectableDate) {
         if (isSelectable)
           result.append(
-              "<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\"><A ")
+              "<td width=\"14%\" class=\"intfdcolor3\" align=\"center\"><a ")
               .append(dayStyle).append(" HREF=\"javascript:selectDay('")
-              .append(d).append("')\">").append(i).append("</A></TD>\n");
+              .append(d).append("')\">").append(i).append("</a></td>\n");
         else
-          result.append("<TD width=\"14%\" ").append(monthDayStyle).append(
-              " align=\"center\">").append(i).append("</TD>\n");
+          result.append("<td width=\"14%\" ").append(monthDayStyle).append(
+              " align=\"center\">").append(i).append("</td>\n");
       } else
-        result.append("<TD width=\"14%\" ").append(monthDayStyle).append(
-            " align=\"center\">").append(i).append("</TD>\n");
+        result.append("<td width=\"14%\" ").append(monthDayStyle).append(
+            " align=\"center\">").append(i).append("</td>\n");
 
       // Check for end of week/row
       if ((++column == 7) && (numDays > i)) {
-        result.append("</TR>\n<TR>");
+        result.append("</tr>\n<tr>");
         column = 0;
       }
     }
     for (int i = column; i <= 6; i++) {
-      result.append("<TD ").append(monthDayStyle).append(">&nbsp;</TD>\n");
+      result.append("<td ").append(monthDayStyle).append(">&nbsp;</td>\n");
     }
-    result.append("</TR></TABLE>\n");
+    result.append("</tr></table>\n");
 
     SilverTrace.debug("viewGenerator", "CalendarWA1.print()", "result="
         + result);

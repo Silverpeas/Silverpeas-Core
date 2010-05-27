@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * ArrayPaneSilverpeasV4.java
- *
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import java.util.Vector;
@@ -346,7 +340,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    * @see
    */
   private String printPseudoColumn() {
-    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\"></td>");
+    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>");
   }
 
   /**
@@ -386,9 +380,9 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
     StringBuffer result = new StringBuffer();
 
-    result.append("<CENTER>\n");
+    result.append("<center>\n");
     result
-        .append("<table width=\"98%\" cellspacing=0 cellpadding=2 border=0><tr><td>\n");
+        .append("<table width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" border=\"0\"><tr><td>\n");
     result.append("<table width=\"100%\" cellspacing=\"")
         .append(m_CellsSpacing).append("\" cellpadding=\"").append(
         m_CellsPadding).append("\" border=\"").append(m_CellsBorderWidth)
@@ -397,7 +391,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append("<tr>");
       result.append("<td colspan=\"").append(columnsCount).append("\">");
       result.append("<img src=\"").append(getIconsPath()).append(
-          "/1px.gif\" width=\"1\" height=\"1\">");
+          "/1px.gif\" width=\"1\" height=\"1\" alt=\"\"/>");
       result.append("</td>");
       result.append("</tr>\n");
     }
@@ -452,18 +446,13 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result
           .append(
           "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n")
-                /*
-       * .append("<tr align=\"center\">\n").append(
-       * "<td class=\"viewGeneratorLines\"><img src=\"").append( getIconsPath()).append(
-       * "/1px.gif\" width=\"1\" height=\"1\"></td>\n").append("</tr>\n")
-       */
-      .append("<tr class=\"intfdcolor\"> \n").append("<td align=\"center\">");
+          .append("<tr class=\"intfdcolor\"> \n").append("<td align=\"center\">");
       result.append(pagination.printIndex(paginationJavaScriptCallback));
       result.append("</td>").append("</tr>\n").append("</table>");
     }
 
     result.append("</td></tr></table>\n");
-    result.append("</CENTER>\n");
+    result.append("</center>\n");
     return result.toString();
   }
 

@@ -21,38 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
-
-/*
- * CVS Informations
- * 
- * $Id: ArrayCellRadio.java,v 1.2 2008/09/17 04:40:17 neysseri Exp $
- * 
- * $Log: ArrayCellRadio.java,v $
- * Revision 1.2  2008/09/17 04:40:17  neysseri
- * no message
- *
- * Revision 1.1.1.1.34.1  2008/09/10 14:35:51  psliwa
- * New component: Workflow Designer
- *
- * Revision 1.1  2008/05/30 16:17:29  cvsuser
- * *** empty log message ***
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.3  2002/01/04 14:04:23  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
 
 /**
  * Class declaration
@@ -183,7 +154,7 @@ public class ArrayCellRadio extends ArrayCell implements SimpleGraphicElement {
       syntax += " checked";
     }
 
-    syntax += ">";
+    syntax += "/>";
 
     return syntax;
   }

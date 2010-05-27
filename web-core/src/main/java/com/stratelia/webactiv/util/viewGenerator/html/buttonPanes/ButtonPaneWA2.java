@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * ArrayPaneWA.java
  * 
@@ -59,24 +56,24 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
    */
   public String horizontalPrint() {
     StringBuffer result = new StringBuffer();
-    Vector buttons = getButtons();
+    Vector<Button> buttons = getButtons();
 
     result
-        .append("<TABLE border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><TR>");
-    result.append("<TD width=\"100\">&nbsp;</TD>");
+        .append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
+    result.append("<td width=\"100\">&nbsp;</td>");
     if (buttons.size() > 0) {
-      result.append("<TD>");
-      result.append(((Button) buttons.elementAt(0)).print());
-      result.append("</TD>");
+      result.append("<td>");
+      result.append(buttons.elementAt(0).print());
+      result.append("</td>");
     }
     for (int i = 1; i < buttons.size(); i++) {
-      result.append("<TD>&nbsp;</TD>");
-      result.append("<TD>");
-      result.append(((Button) buttons.elementAt(i)).print());
-      result.append("</TD>");
+      result.append("<td>&nbsp;</td>");
+      result.append("<td>");
+      result.append(buttons.elementAt(i).print());
+      result.append("</td>");
     }
-    result.append("<TD width=\"100\">&nbsp;</TD>");
-    result.append("</TR></TABLE>");
+    result.append("<td width=\"100\">&nbsp;</td>");
+    result.append("</tr></table>");
 
     return result.toString();
   }
@@ -88,7 +85,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
    */
   public String verticalPrint() {
     StringBuffer result = new StringBuffer();
-    Vector buttons = getButtons();
+    Vector<Button> buttons = getButtons();
     String verticalWidth = getVerticalWidth();
 
     result.append(
@@ -97,7 +94,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
     result.append("<tr>");
     result.append("<td width=\"").append(verticalWidth).append("\">");
     for (int i = 0; i < buttons.size(); i++) {
-      result.append(((Button) buttons.elementAt(i)).print());
+      result.append(buttons.elementAt(i).print());
     }
     result.append("</td>");
     result.append("</tr>");

@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
@@ -139,7 +135,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
     }
 
     if (getNoWrap()) {
-      result.append(" nowrap");
+      result.append(" nowrap=\"nowrap\"");
     }
 
     result.append(" class=\"").append(getStyleSheet()).append("\">");

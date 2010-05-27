@@ -22,15 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayPaneWithDataSource.java
- *
- * Created on 10 octobre 2000, 16:11
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import java.util.Vector;
@@ -606,12 +597,12 @@ public class ArrayPaneWithDataSource implements ArrayPane {
               "<tr align=\"center\" bgcolor=\"#999999\">\n"
               + "<td><img src=\""
               + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
               + "</tr>\n"
               + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
               + "<td><img src=\""
               + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
               + "</tr>\n"
               + "<tr align=\"center\"> \n"
               + "<td class=\"ArrayNavigation\" height=\"20\">";
@@ -651,9 +642,9 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
       result += "</td>" + "</tr>\n"
           + "<tr align=\"center\" bgcolor=\"#999999\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\"></td>\n" + "</tr>\n"
+          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
           + "<tr align=\"center\" bgcolor=\"#666666\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\"></td>\n" + "</tr>\n"
+          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
           + "</table>";
 
     }
@@ -739,12 +730,12 @@ public class ArrayPaneWithDataSource implements ArrayPane {
               "<tr align=\"center\" bgcolor=\"#999999\">\n"
               + "<td><img src=\""
               + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
               + "</tr>\n"
               + "<tr align=\"center\" bgcolor=\"#FFFFFF\">\n"
               + "<td><img src=\""
               + iconPath
-              + "1px.gif\" width=\"1\" height=\"1\"></td>\n"
+              + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n"
               + "</tr>\n"
               + "<tr align=\"center\"> \n"
               + "<td class=\"ArrayNavigation\" height=\"20\">";
@@ -784,9 +775,9 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
       result += "</td>" + "</tr>\n"
           + "<tr align=\"center\" bgcolor=\"#999999\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\"></td>\n" + "</tr>\n"
+          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
           + "<tr align=\"center\" bgcolor=\"#666666\">\n" + "<td><img src=\""
-          + iconPath + "1px.gif\" width=\"1\" height=\"1\"></td>\n" + "</tr>\n"
+          + iconPath + "1px.gif\" width=\"1\" height=\"1\" alt=\"\"/></td>\n" + "</tr>\n"
           + "</table>";
 
     }

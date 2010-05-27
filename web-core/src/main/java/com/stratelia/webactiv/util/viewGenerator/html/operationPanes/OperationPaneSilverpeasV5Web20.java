@@ -77,19 +77,18 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     StringBuffer result = new StringBuffer();
     Vector<String> stack = getStack();
 
-    // result.append(OperationPaneSilverpeasV4StringFactory.getPrintString1());
+    String alt = GraphicElementFactory.getSettings().getString("ActionsLabel", "Opérations");
 
     result.append(
         "<div align=\"right\"><span id=\"menutoggle\">"
-        + GraphicElementFactory.getSettings().getString("ActionsLabel",
-        "Opérations") + "<img src=\"").append(getIconsPath()).append(
-        "/ptr.gif\"></span></div>");
+        + alt + "<img src=\"").append(getIconsPath()).append(
+        "/ptr.gif\" alt=\"" + alt + "\"/></span></div>");
 
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");
     result.append("<div class=\"bd\">");
     result.append("<ul class=\"first-of-type\">");
     for (int i = 0; i < stack.size(); i++) {
-      result.append((String) stack.elementAt(i));
+      result.append(stack.elementAt(i));
     }
     result.append("</ul>");
     result.append("</div>");

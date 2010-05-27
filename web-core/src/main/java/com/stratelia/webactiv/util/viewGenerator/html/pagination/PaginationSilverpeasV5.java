@@ -58,7 +58,7 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
       result
           .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
       result.append("<tr valign=\"middle\" class=\"intfdcolor\">");
-      result.append("<td align=\"center\" >");
+      result.append("<td align=\"center\">");
 
       String action = "Pagination" + getActionSuffix();
       String altNextPage = getAltNextPage();
@@ -81,7 +81,7 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
 
         result.append("\"><img src=\"").append(getIconsPath()).append(
             "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-            .append(altPreviousPage).append("\"></a> ");
+            .append(altPreviousPage).append("\"/></a> ");
       } else {
         result.append("&#160;&#160;&#160;");
       }
@@ -113,7 +113,7 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
 
         result.append("\"><img src=\"").append(getIconsPath()).append(
             "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-            .append(altNextPage).append("\"></a>");
+            .append(altNextPage).append("\"/></a>");
       } else {
         result.append("&#160;&#160;&#160;");
       }

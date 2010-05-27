@@ -46,7 +46,7 @@ public class OperationPaneSilverpeasV5StringFactory extends Object {
               .append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"1\">");
           printString1.append("<tr><td><img src=\"").append(
               GraphicElementFactory.getIconsPath()).append(
-              "/tabs/1px.gif\"></td></tr>\n");
+              "/tabs/1px.gif\" alt=\"\"/></td></tr>\n");
         }
       }
     }

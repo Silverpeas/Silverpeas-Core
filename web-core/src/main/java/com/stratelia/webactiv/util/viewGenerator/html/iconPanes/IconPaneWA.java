@@ -62,19 +62,19 @@ public class IconPaneWA extends AbstractIconPane {
     Vector icons = getIcons();
     String spacing = getSpacing();
 
-    result += "<TABLE border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><TR>";
+    result += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>";
     if (icons.size() > 0) {
-      result += "<TD>";
+      result += "<td>";
       result += ((Icon) icons.elementAt(0)).print();
-      result += "</TD>";
+      result += "</td>";
     }
     for (int i = 1; i < icons.size(); i++) {
-      result += "<TD width=\"" + spacing + "\">&nbsp;</TD>";
-      result += "<TD>";
+      result += "<td width=\"" + spacing + "\">&nbsp;</td>";
+      result += "<td>";
       result += ((Icon) icons.elementAt(i)).print();
       result += "</TD>";
     }
-    result += "</TR></TABLE>";
+    result += "</tr></table>";
 
     return result;
   }
@@ -93,15 +93,15 @@ public class IconPaneWA extends AbstractIconPane {
     result += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\""
         + verticalWidth + "\">";
     if (icons.size() > 0) {
-      result += "<TR><TD>";
+      result += "<tr><td>";
       result += ((Icon) icons.elementAt(0)).print();
-      result += "</TD></TR>";
+      result += "</td></tr>";
     }
     for (int i = 1; i < icons.size(); i++) {
-      result += "<TR><TD height=\"" + spacing + "\">&nbsp;</TD></TR>";
-      result += "<TR><TD>";
+      result += "<tr><td height=\"" + spacing + "\">&nbsp;</td></tr>";
+      result += "<tr><td>";
       result += ((Icon) icons.elementAt(i)).print();
-      result += "</TD></TR>";
+      result += "</td></tr>";
     }
     result += "</table>";
 

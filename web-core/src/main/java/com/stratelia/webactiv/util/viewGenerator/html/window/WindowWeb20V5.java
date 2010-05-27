@@ -67,7 +67,7 @@ public class WindowWeb20V5 extends AbstractWindow {
         .append("<table width=\"")
         .append(width)
         .append(
-        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" name=\"topPage\" id=\"topPage\">");
+        "\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" id=\"topPage\">");
     result.append("<tr><td class=\"cellBrowseBar\" width=\"100%\">");
     result.append(getBrowseBar().print());
     result.append("</td>");
@@ -108,25 +108,25 @@ public class WindowWeb20V5 extends AbstractWindow {
         .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td class=\"basGaucheWindow\">");
     result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\">\n");
+        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basMilieuWindow\">");
     result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\">\n");
+        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basDroiteWindow\">");
     result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\">\n");
+        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td></tr></table>");
 
     result
         .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td>");
     result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\"></a></div>");
+        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td><td width=\"100%\">");
     result.append("&nbsp;");
     result.append("</td><td>");
     result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\"></a></div>");
+        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td></tr></table>");
 
     return result.toString();

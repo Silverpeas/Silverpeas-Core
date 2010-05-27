@@ -34,31 +34,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
-/*
- * CVS Informations
- * 
- * $Id: IconWA.java,v 1.2 2003/12/03 19:18:37 neysseri Exp $
- * 
- * $Log: IconWA.java,v $
- * Revision 1.2  2003/12/03 19:18:37  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.7  2002/05/29 09:32:16  groccia
- * portage netscape
- *
- * Revision 1.6.12.1  2002/05/07 15:24:06  fsauvand
- * no message
- *
- * Revision 1.6  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
 /**
  * Class declaration
  * @author
@@ -121,20 +96,24 @@ public class IconWA extends AbstractIcon {
     String altText = getAltText();
     StringBuffer str = new StringBuffer();
 
-    if (!action.equals(""))
-      str.append("<A HREF=\"").append(action).append("\">");
+    if (!action.equals("")) {
+      str.append("<a href=\"").append(action).append("\">");
+    }
 
-    str.append("<IMG SRC=\"").append(path).append(iconName).append(
+    str.append("<img src=\"").append(path).append(iconName).append(
         "\" border=\"0\"");
 
-    if (altText != null && altText.length() > 0)
-      str.append("alt=\"").append(altText).append("\" title=\"")
-          .append(altText);
+    if (altText != null && altText.length() > 0) {
+      str.append(" alt=\"").append(altText).append("\"");
+    } else {
+      str.append(" alt=\"\"");
+    }
 
-    str.append("\">");
+    str.append("/>");
 
-    if (!action.equals(""))
-      str.append("</A>");
+    if (!action.equals("")) {
+      str.append("</a>");
+    }
 
     return str.toString();
   }

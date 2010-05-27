@@ -22,14 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayLine.java
- * 
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import java.util.Vector;
@@ -265,7 +257,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
    * @see
    */
   public static String printPseudoColumn() {
-    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\"></td>");
+    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>");
   }
 
   /**

@@ -660,7 +660,7 @@ Definition des class de style Portlet
 
 .contourintfdcolor {
 	border-style: solid;
-	border-width: 1px 1 1 1;
+	border-width: 1px 1px 1px 1px;
 	border-color: #CCCCCC;
 	background-color: #ffffff;
 }
@@ -671,14 +671,14 @@ Definition des class de style Portlet
 
 .contourt3 {
 	border-style: solid;
-	border-width: 1px 1 1 1;
+	border-width: 1px 1px 1px 1px;
 	border-color: #CCCCCC;
 	background-color: #ffffff;
 }
 
 .contourbleufondblanc {
 	border-style: solid;
-	border-width: 1px 1 1 1;
+	border-width: 1px 1px 1px 1px;
 	border-color: #CCCCCC;
 	background-color: #ffffff;
 }
@@ -757,7 +757,7 @@ td.browsebar a:hover {
 
 .tableNavigationList {
 	border-style: solid;
-	border-width: 0px 1 1 1;
+	border-width: 0px 1px 1px 1px;
 	border-color: #CCCCCC;
 	background-color: #FFFFFF;
 }
@@ -772,7 +772,7 @@ td.browsebar a:hover {
 
 .tableArrayPane {
 	border-style: solid;
-	border-width: 1px 1 1 1;
+	border-width: 1px 1px 1px 1px;
 	border-color: #CCCCCC;
 	background-color: #FFFFFF;
 }
@@ -1299,6 +1299,10 @@ td.browsebar a:hover {
 }
 
 /* Objet Tabs */
+#tabbedPane img {
+	width: 5px;
+}
+
 .gaucheOngletOn {
 	background-image:
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);

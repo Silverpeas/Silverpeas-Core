@@ -103,11 +103,11 @@ public class FrameSilverpeasV5 extends AbstractFrame {
     result += "\t</tr>\n";
     result += "<tr>\n";
     result += "\t\t<td class=\"basGaucheFrame\"><img src=\"" + iconsPath
-        + "/1px.gif\" height=\"15\"></td>\n";
+        + "/1px.gif\" height=\"15\" alt=\"\"/></td>\n";
     result += "\t\t<td class=\"basMilieuFrame\"><img src=\"" + iconsPath
-        + "/1px.gif\" height=\"15\"></td>\n";
+        + "/1px.gif\" height=\"15\" alt=\"\"/></td>\n";
     result += "\t\t<td class=\"basDroiteFrame\"><img src=\"" + iconsPath
-        + "/1px.gif\" height=\"15\"></td>\n";
+        + "/1px.gif\" height=\"15\" alt=\"\"/></td>\n";
     result += "\t</tr>\n";
     result += "</table>\n";
     return result;

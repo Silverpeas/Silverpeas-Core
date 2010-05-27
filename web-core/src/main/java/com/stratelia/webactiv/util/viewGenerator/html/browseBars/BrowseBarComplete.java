@@ -184,7 +184,10 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         result.append("</a>");
       }
     } else if (StringUtil.isDefined(path)) {
-      result.append(CONNECTOR).append(path);
+      result.append(CONNECTOR);
+      result.append("<span class=\"path\">");
+      result.append(path);
+      result.append("</span>");
     }
 
     // Display extra information
