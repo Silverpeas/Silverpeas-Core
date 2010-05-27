@@ -24,7 +24,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
 <document>
   <properties>
     <author>Emmanuel Hugonnet</author>
@@ -33,6 +32,38 @@
   <head>
   </head>
   <body>
+    <section name="Release 5.1.2">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/329">Bug #329
+            </a>: Pb de certificats sur l'applet de Drag'n'Drop
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/443">Bug #443
+            </a>: Erreur dans la récupération des espaces
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/449">Bug #449
+            </a>: Erreur sur les tables de Workflow
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/454">Bug #454
+            </a>: Blocage des process de workflow
+          </li>
+        </ul>
+      </fieldset>
+    </section>
+    <section name="Release 5.1.1">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/421">Bug #421
+            </a>: Ordre des composants non respectés
+          </li>
+        </ul>
+      </fieldset>
+    </section>
     <section name="Release 5.1">
       <fieldset class="related-issues">
         <ul>
@@ -342,8 +373,8 @@ Synchronisation spécifique des utilisateurs
           </li>
         </ul>
       </fieldset>
-      </section>
-      <section name="Release 5.0.2">
+    </section>
+    <section name="Release 5.0.2">
       <fieldset class="related-issues">
         <ul>
           <li>
@@ -354,8 +385,8 @@ Synchronisation spécifique des utilisateurs
           </li>
         </ul>
       </fieldset>
-      </section>
-      <section name="Release 5.0.2">
+    </section>
+    <section name="Release 5.0.2">
       <fieldset class="related-issues">
         <ul>
           <li>
