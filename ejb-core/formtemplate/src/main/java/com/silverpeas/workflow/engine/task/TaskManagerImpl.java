@@ -52,12 +52,13 @@ import com.stratelia.webactiv.calendar.model.Attendee;
  */
 public class TaskManagerImpl extends AbstractTaskManager {
   final static Admin admin = new Admin();
-  static Hashtable notificationSenders = new Hashtable();
+  static Hashtable<String, NotificationSender> notificationSenders =
+      new Hashtable<String, NotificationSender>();
 
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
    */
-  public void assignTask(Task task) throws WorkflowException {
+  public void assignTask(Task task, User delegator) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
     ComponentInst compoInst = null;
 
@@ -74,25 +75,32 @@ public class TaskManagerImpl extends AbstractTaskManager {
     todo.setComponentId(componentId);
     todo.setName("activite : "
         + task.getState().getLabel(task.getUserRoleName(), "fr"));
+    if (delegator != null) {
+      todo.setDelegatorId(delegator.getUserId());
+    } else {
+      SilverTrace.error("workflowEngine", "TaskManagerImpl.assignTask", "root.MSG_GEN_PARAM_VALUE",
+          "Undefined delegator for new task : " + todo.getName());
+    }
 
+    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
     Vector<Attendee> attendees = new Vector<Attendee>();
     if (task.getUser() != null) {
+      // add todo to specified user
       attendees.add(new Attendee(task.getUser().getUserId()));
+      todo.setAttendees(attendees);
+      todo.setExternalId(getExternalId(task));
+      todoBBA.addEntry(todo);
     } else {
+      // add todo to each user of role
       List<User> usersInRole = task.getProcessInstance().getUsersInRole(task.getUserRoleName());
       for (User userInRole : usersInRole) {
+        attendees.clear();
         attendees.add(new Attendee(userInRole.getUserId()));
+        todo.setAttendees(attendees);
+        todo.setExternalId(getExternalId(task, userInRole.getUserId()));
+        todoBBA.addEntry(todo);
       }
     }
-    todo.setAttendees(attendees);
-
-    if (task.getUser() != null) {
-      todo.setDelegatorId(task.getUser().getUserId());
-      todo.setExternalId(getExternalId(task));
-    }
-    
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.addEntry(todo);
   }
 
   /**
@@ -121,7 +129,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         TaskImpl taskImpl =
             new TaskImpl(userInRole, role, task.getProcessInstance(), task.getState());
         todoBBA.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
-            getExternalId(taskImpl));
+            getExternalId(taskImpl, userInRole.getUserId()));
       }
     }
   }
@@ -129,15 +137,6 @@ public class TaskManagerImpl extends AbstractTaskManager {
   /**
    * Get the process instance Id referred by the todo with the given todo id
    */
-  /*
-   * public String getProcessInstanceIdFromTodoId(String todoId) throws WorkflowException {
-   * TodoBackboneAccess todoBBA = new TodoBackboneAccess(); TodoDetail todo =
-   * todoBBA.getEntry(todoId); if (todo==null) throw new
-   * WorkflowException("TaskManagerImpl.getProcessInstanceIdFromTodoId",
-   * "workflowEngine.EX_TODO_NOT_FOUND", "todo id : " + todoId); return getProcessId(
-   * todo.getExternalId() ); }
-   */
-
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
       throws WorkflowException {
     return getProcessId(externalTodoId);
@@ -146,15 +145,6 @@ public class TaskManagerImpl extends AbstractTaskManager {
   /**
    * Get the role name of task referred by the todo with the given todo id
    */
-  /*
-   * public String getRoleNameFromTodoId(String todoId) throws WorkflowException {
-   * TodoBackboneAccess todoBBA = new TodoBackboneAccess(); TodoDetail todo =
-   * todoBBA.getEntry(todoId); if (todo==null) throw new
-   * WorkflowException("TaskManagerImpl.getProcessInstanceIdFromTodoId",
-   * "workflowEngine.EX_TODO_NOT_FOUND", "todo id : " + todoId); return getRoleName(
-   * todo.getExternalId() ); }
-   */
-
   public String getRoleNameFromExternalTodoId(String externalTodoId)
       throws WorkflowException {
     return getRoleName(externalTodoId);
@@ -184,16 +174,15 @@ public class TaskManagerImpl extends AbstractTaskManager {
       notificationSenders.put(componentId, notifSender);
     }
 
-    for (String userId : userIds)
-    {
+    for (String userId : userIds) {
       try {
         String title = task.getProcessInstance().getTitle(task.getUserRoleName(),
             "");
-  
+
         DataRecord data = task.getProcessInstance().getAllDataRecord(
             task.getUserRoleName(), "");
         text = DataRecordUtil.applySubstitution(text, data, "");
-  
+
         NotificationMetaData notifMetaData = new NotificationMetaData(
             NotificationParameters.NORMAL, title, text);
         if (sender != null)
@@ -220,8 +209,12 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * Build the externalId from a task
    */
   private String getExternalId(Task task) {
+    return getExternalId(task, task.getUser().getUserId());
+  }
+
+  private String getExternalId(Task task, String userId) {
     return task.getProcessInstance().getInstanceId() + "##"
-        + task.getUser().getUserId() + "##" + task.getState().getName() + "##"
+        + userId + "##" + task.getState().getName() + "##"
         + task.getUserRoleName();
   }
 

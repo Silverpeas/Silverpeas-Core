@@ -403,7 +403,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         // Assign tasks to these working users
         tasks = taskManager.createTasks(assignedActors, instance);
         for (int i = 0; i < tasks.length; i++) {
-          taskManager.assignTask(tasks[i]);
+          taskManager.assignTask(tasks[i], user);
         }
 
         // Declare these working users in instance

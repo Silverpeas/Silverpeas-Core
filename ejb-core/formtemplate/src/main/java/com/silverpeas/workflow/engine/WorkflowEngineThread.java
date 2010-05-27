@@ -743,7 +743,7 @@ class QuestionRequest implements Request {
 
     // Assign task to this participant
     Task task = taskManager.createTask((Actor) participant, instance);
-    taskManager.assignTask(task);
+    taskManager.assignTask(task, participant.getUser());
 
     // Declare this user as a working user in instance
     instance.addWorkingUser(participant.getUser(), state, participant
@@ -1320,7 +1320,7 @@ class WorkflowTools {
     // Assign tasks to these working users
     Task[] tasks = taskManager.createTasks(actors, instance);
     for (int i = 0; i < tasks.length; i++) {
-      taskManager.assignTask(tasks[i]);
+      taskManager.assignTask(tasks[i], event.getUser());
     }
 
     // Declare these working users in instance

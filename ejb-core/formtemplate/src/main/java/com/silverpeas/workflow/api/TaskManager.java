@@ -37,7 +37,7 @@ public interface TaskManager {
   /**
    * Adds a new task in the user's todos.
    */
-  public void assignTask(Task task) throws WorkflowException;
+  public void assignTask(Task task, User delegator) throws WorkflowException;
 
   /**
    * Removes a task from the user's todos.
