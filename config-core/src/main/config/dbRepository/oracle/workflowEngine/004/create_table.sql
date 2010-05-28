@@ -29,7 +29,7 @@ CREATE TABLE SB_Workflow_HistoryStep
 	userId        varchar (50) ,
 	userRoleName  varchar (50) ,
 	action        varchar (50) ,
-	actionDate    date ,
+	actionDate    timestamp ,
 	resolvedState varchar (50) ,
 	toState       varchar (50) ,
 	actionStatus  int 
@@ -63,7 +63,7 @@ CREATE TABLE SB_Workflow_LockingUser
 	userId     varchar (50) NOT NULL ,
 	instanceId int NOT NULL ,
 	state      varchar (50) NOT NULL ,
-	lockDate   date 
+	lockDate   timestamp 
 )
 ;
 
@@ -84,8 +84,8 @@ CREATE TABLE SB_Workflow_Question
 	instanceId	int NOT NULL ,
 	questionText	varchar (500) NOT NULL ,
 	responseText	varchar (500) NULL ,
-	questionDate	date NOT NULL ,
-	responseDate	date NULL ,
+	questionDate	timestamp NOT NULL ,
+	responseDate	timestamp NULL ,
 	fromState	varchar (50) NOT NULL ,
 	targetState	varchar (50) NOT NULL ,
 	fromUserId	varchar (50) NOT NULL ,
@@ -120,7 +120,7 @@ CREATE TABLE SB_Workflow_Error
 	stackTrace	varchar (1500)	null,
 	userId		varchar (100)	null,
 	actionName	varchar (100)	null,
-	actionDate	date	null,
+	actionDate	timestamp	null,
 	userRole	varchar (100)	null,
 	stateName	varchar (100)	null
 )
