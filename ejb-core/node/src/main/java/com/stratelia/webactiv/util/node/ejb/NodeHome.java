@@ -42,9 +42,8 @@ public interface NodeHome extends EJBHome {
    * @return the new Node
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
-   * @exception javax.ejb.RemoteException
-   * @exception javax.ejb.CreateException
-   * @exception java.sql.SQLException
+   * @throws javax.ejb.CreateException
+   * @throws java.rmi.RemoteException
    * @since 1.0
    */
   public Node create(NodeDetail nd) throws RemoteException, CreateException;
@@ -54,9 +53,8 @@ public interface NodeHome extends EJBHome {
    * @param nodePK the PK of the Node to instanciate
    * @return the instanciated Node if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodePK
-   * @exception javax.ejb.RemoteException
-   * @exception javax.ejb.FinderException
-   * @exception java.sql.SQLException
+   * @throws javax.ejb.FinderException
+   * @throws java.rmi.RemoteException
    * @since 1.0
    */
   public Node findByPrimaryKey(NodePK nodePK) throws RemoteException,
@@ -67,12 +65,11 @@ public interface NodeHome extends EJBHome {
    * @param fatherPK the PK of the father from all the Nodes to instanciate
    * @return the instanciated Node's collection if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodePK
-   * @exception javax.ejb.RemoteException
-   * @exception javax.ejb.FinderException
-   * @exception java.sql.SQLException
+   * @throws javax.ejb.FinderException
+   * @throws java.rmi.RemoteException
    * @since 1.0
    */
-  public Collection<NodePK> findByFatherPrimaryKey(NodePK fatherPK)
+  public Collection<Node> findByFatherPrimaryKey(NodePK fatherPK)
       throws FinderException, RemoteException;
 
   public Node findByNameAndFatherId(NodePK nodePK, String name, int nodeFatherId)
