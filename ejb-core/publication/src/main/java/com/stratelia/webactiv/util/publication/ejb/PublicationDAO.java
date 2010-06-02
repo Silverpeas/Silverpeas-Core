@@ -96,6 +96,7 @@ public class PublicationDAO {
 
   /**
    * Invalidate last publications for a given instance
+   * @param instanceId
    */
   public static void invalidateLastPublis(String instanceId) {
     lastPublis.remove(instanceId);
@@ -564,54 +565,55 @@ public class PublicationDAO {
     invalidateLastPublis(pk.getComponentName());
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param primaryKey
-   * @return
-   * @throws SQLException
-   * @see
-   */
   public static PublicationPK selectByPrimaryKey(Connection con,
       PublicationPK primaryKey) throws SQLException {
-    PublicationDetail detail = loadRow(con, primaryKey);
-    PublicationPK primary = new PublicationPK(primaryKey.getId(), detail.getPK().getInstanceId());
 
-    primary.pubDetail = detail;
-    return primary;
+    try {
+      PublicationDetail detail = loadRow(con, primaryKey);
+      PublicationPK primary = new PublicationPK(primaryKey.getId(), detail.getPK().
+          getInstanceId());
+
+      primary.pubDetail = detail;
+      return primary;
+
+    } catch (PublicationRuntimeException e) {
+      /*
+       * NodeRuntimeException thrown by loadRow() should be replaced by
+       * returning null (not found)
+       */
+      return null;
+    }
   }
 
   public static PublicationPK selectByPublicationName(Connection con,
       PublicationPK primaryKey, String name) throws SQLException {
+
     PublicationPK primary = null;
     PublicationDetail detail = selectByName(con, primaryKey, name);
+
     if (detail != null) {
       primary = new PublicationPK(detail.getPK().getId(), primaryKey);
       primary.pubDetail = detail;
     }
+    
     return primary;
   }
 
   public static PublicationPK selectByPublicationNameAndNodeId(Connection con,
       PublicationPK primaryKey, String name, int nodeId) throws SQLException {
+
     PublicationPK primary = null;
     PublicationDetail detail = selectByNameAndNodeId(con, primaryKey, name,
         nodeId);
+
     if (detail != null) {
       primary = new PublicationPK(detail.getPK().getId(), primaryKey);
       primary.pubDetail = detail;
     }
+
     return primary;
   }
 
-  /**
-   * Method declaration
-   * @param rs
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
   private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
       PublicationPK pubPK) throws SQLException {
     // SilverTrace.debug("publication",
@@ -894,18 +896,10 @@ public class PublicationDAO {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param fatherIds
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
   public static ArrayList<PublicationDetail> selectByFatherIds(Connection con,
-      ArrayList<String> fatherIds, PublicationPK pubPK, String sorting,
-      ArrayList<String> status, boolean filterOnVisibilityPeriod) throws SQLException {
+      List<String> fatherIds, PublicationPK pubPK, String sorting,
+      List<String> status, boolean filterOnVisibilityPeriod) throws SQLException {
+
     ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
     ResultSet rs = null;
     PublicationDetail pub = null;
@@ -1021,14 +1015,6 @@ public class PublicationDAO {
     return list;
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param publicationPKs
-   * @return
-   * @throws SQLException
-   * @see
-   */
   public static Collection<PublicationDetail> selectByPublicationPKs(Connection con,
       Collection<PublicationPK> publicationPKs) {
     ArrayList<PublicationDetail> publications = new ArrayList<PublicationDetail>();
@@ -1368,26 +1354,18 @@ public class PublicationDAO {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param status
-   * @param fatherId
-   * @param fetchSize
-   * @return
-   * @throws SQLException
-   * @see
-   */
   public static Collection<PublicationDetail> selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
       Connection con, PublicationPK pubPK, String status, String fatherId,
       int fetchSize) throws SQLException {
-    Collection<PublicationDetail> lastPublis = getLastPublis(pubPK.getComponentName());
-    if (lastPublis != null) {
-      return lastPublis;
+
+    Collection<PublicationDetail> thisLastPublis = getLastPublis(pubPK.
+        getComponentName());
+    if (thisLastPublis != null) {
+      return thisLastPublis;
     } else {
       String selectStatement = QueryStringFactory.
-          getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK.getTableName());
+          getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK.
+          getTableName());
 
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
@@ -1742,15 +1720,9 @@ public class PublicationDAO {
     }
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param detail
-   * @throws SQLException
-   * @see
-   */
   public static void changeInstanceId(Connection con, PublicationPK pubPK,
       String newInstanceId) throws SQLException {
+
     SilverTrace.info("publication", "PublicationDAO.changeInstanceId()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
         + ", newInstanceId = " + newInstanceId);

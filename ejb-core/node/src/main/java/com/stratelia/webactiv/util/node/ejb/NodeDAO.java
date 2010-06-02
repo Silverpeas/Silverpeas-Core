@@ -303,9 +303,10 @@ public class NodeDAO {
 
   /**
    * Get descendant nodeDetails of a node
-   * @return A List of NodeDetail
    * @param con A connection to the database
    * @param nodePK A NodePK
+   * @return A List of NodeDetail
+   * @throws SQLException
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.6
    */
@@ -371,9 +372,10 @@ public class NodeDAO {
 
   /**
    * Get descendant nodeDetails of a node
-   * @return A List of NodeDetail
    * @param con A connection to the database
    * @param node A NodeDetail
+   * @return A List of NodeDetail
+   * @throws SQLException
    * @since 4.07
    */
   public static List<NodeDetail> getDescendantDetails(Connection con, NodeDetail node)
@@ -412,8 +414,13 @@ public class NodeDAO {
   }
 
   /**
-   * Get nodeDetails by level
+   * Get nodeDetails by level.
+   *
+   * @param con A connection to the database
+   * @param nodePK
+   * @param level
    * @return A collection of NodeDetail
+   * @throws SQLException
    * @since 1.6
    */
   public static List<NodeDetail> getHeadersByLevel(Connection con, NodePK nodePK, int level)
@@ -471,7 +478,10 @@ public class NodeDAO {
 
   /**
    * Get all nodeDetails
+   * @param con A connection to the database
+   * @param nodePK
    * @return A collection of NodeDetail
+   * @throws SQLException
    * @since 1.6
    */
   public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK) throws SQLException {
@@ -490,12 +500,17 @@ public class NodeDAO {
 
   /**
    * Get all nodeDetails
+   * @param con A connection to the database
+   * @param nodePK
+   * @param sorting
+   * @param level
    * @return A collection of NodeDetail
+   * @throws SQLException
    * @since 1.6
    */
-  public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, String sorting,
-      int level)
-      throws SQLException {
+  public static List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK,
+      String sorting, int level) throws SQLException {
+
     List<NodeDetail> headers = new ArrayList<NodeDetail>();
     StringBuffer nodeStatement = new StringBuffer();
 
@@ -629,13 +644,15 @@ public class NodeDAO {
   /**
    * Create a NodeDetail from a ResultSet
    * @param rs the ResultSet which contains data
+   * @param nodePK
    * @return the NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @exception java.sql.SQLException
+   * @throws java.sql.SQLException
    * @since 1.0
    */
   public static NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK)
       throws SQLException {
+
     /* Récupération des données depuis la BD */
     NodePK pk = new NodePK(new Integer(rs.getInt(1)).toString(), nodePK);
     String name = rs.getString(2);
@@ -666,10 +683,11 @@ public class NodeDAO {
 
   /**
    * Get the detail of another Node
-   * @param pk the PK of the Node
+   * @param con A connection to the database
+   * @param nodePK the PK of the Node
    * @return a NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @exception java.sql.SQLException
+   * @throws java.sql.SQLException
    * @since 1.0
    */
   public static NodeDetail getAnotherHeader(Connection con, NodePK nodePK)
@@ -728,9 +746,11 @@ public class NodeDAO {
 
   /**
    * Get the header of each child of the node
+   * @param con A connection to the database
+   * @param nodePK
    * @return a NodeDetail collection
+   * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @exception java.sql.SQLException
    * @since 1.0
    */
   public static Collection<NodeDetail> getChildrenDetails(Connection con, NodePK nodePK)
@@ -794,8 +814,10 @@ public class NodeDAO {
 
   /**
    * Get the children number of this node
+   * @param con A connection to the database
+   * @param nodePK
    * @return a int
-   * @exception java.sql.SQLException
+   * @throws java.sql.SQLException
    * @since 1.0
    */
   public static int getChildrenNumber(Connection con, NodePK nodePK)
@@ -833,11 +855,11 @@ public class NodeDAO {
 
   /**
    * Insert into the database the data of a node
-   * @return a NodePK which contains the new row id
+   * @param con A connection to the database
    * @param nd the NodeDetail which contains data
-   * @param creatorId the id of the user who have create this node
+   * @return a NodePK which contains the new row id
+   * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @exception java.sql.SQLException
    * @since 1.0
    */
   public static NodePK insertRow(Connection con, NodeDetail nd)
@@ -915,11 +937,12 @@ public class NodeDAO {
   }
 
   /**
-   * Delete into the database a node but not it's descendants
-   * @param path the path of the node to delete
-   * @param creatorId the id of the user who have create this node
+   * Delete into the database a node but not it's descendants.
+   *
+   * @param con a connection to the database
+   * @param nodePK the node PK to delete.
+   * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @exception java.sql.SQLException
    * @since 1.0
    */
   public static void deleteRow(Connection con, NodePK nodePK)
@@ -944,30 +967,52 @@ public class NodeDAO {
   }
 
   /**
-   * Check if a Node exists in database
-   * @return the fat pk (pk + detail)
+   * Check if a Node exists in database.
+   *
+   * @param con the current connection to the database.
    * @param pk the node PK to find
+   * @return the fat pk (pk + detail)
+   * @throws java.sql.SQLException
    * @see com.stratelia.webactiv.util.node.model.NodePK
-   * @exception java.sql.SQLException
    * @since 1.0
    */
   public static NodePK selectByPrimaryKey(Connection con, NodePK pk)
       throws SQLException {
-    NodeDetail detail = loadRow(con, pk);
-    NodePK primary = new NodePK(pk.getId(), pk);
 
-    primary.nodeDetail = detail;
-    return primary;
+    try {
+      NodeDetail detail = loadRow(con, pk);
+      NodePK primary = new NodePK(pk.getId(), pk);
+
+      primary.nodeDetail = detail;
+      return primary;
+
+    } catch (NodeRuntimeException e) {
+      /*
+       * NodeRuntimeException thrown by loadRow() should be replaced by
+       * returning null (not found)
+       */
+      return null;
+    }
   }
 
   public static NodePK selectByNameAndFatherId(Connection con, NodePK pk,
       String name, int nodeFatherId) throws SQLException {
-    NodeDetail detail = loadRow(con, pk, name, nodeFatherId);
-    NodePK primary = new NodePK(detail.getNodePK().getId(), detail.getNodePK()
-        .getInstanceId());
 
-    primary.nodeDetail = detail;
-    return primary;
+    try {
+      NodeDetail detail = loadRow(con, pk, name, nodeFatherId);
+      NodePK primary = new NodePK(detail.getNodePK().getId(), detail.getNodePK().
+          getInstanceId());
+
+      primary.nodeDetail = detail;
+      return primary;
+
+    } catch (NodeRuntimeException e) {
+      /*
+       * NodeRuntimeException thrown by loadRow() should be replaced by
+       * returning null (not found)
+       */
+      return null;
+    }
   }
 
   /**
@@ -980,6 +1025,7 @@ public class NodeDAO {
    */
   public static Collection<NodePK> selectByFatherPrimaryKey(Connection con, NodePK pk)
       throws SQLException {
+
     Collection<NodeDetail> children = getChildrenDetails(con, pk);
     List<NodePK> result = new ArrayList<NodePK>();
     NodeDetail detail = null;
@@ -1001,11 +1047,16 @@ public class NodeDAO {
 
   /**
    * Load node attributes from database
-   * @exception java.sql.SQLException
+   * @param con a connection to the database
+   * @param nodePK
+   * @param getTranslations
+   * @return the loaded node details.
+   * @throws java.sql.SQLException
    * @since 1.0
    */
   public static NodeDetail loadRow(Connection con, NodePK nodePK,
       boolean getTranslations) throws SQLException {
+
     SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
         "nodePK = " + nodePK);
     NodeDetail detail = null;
@@ -1090,11 +1141,13 @@ public class NodeDAO {
 
   /**
    * Store node attributes into database
-   * @exception java.sql.SQLException
+   * @param con a connection to the database
+   * @param nodeDetail 
+   * @throws java.sql.SQLException
    * @since 1.0
    */
-  public static void storeRow(Connection con, NodeDetail nodeDetail)
-      throws SQLException {
+  public static void storeRow(Connection con, NodeDetail nodeDetail) throws SQLException {
+    
     int rowCount = 0;
     StringBuffer updateStatement = new StringBuffer();
     updateStatement.append("update ").append(

@@ -45,6 +45,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+import javax.ejb.ObjectNotFoundException;
 
 /**
  * This is the Node EJB-tier controller. It is implemented as a entity EJB.
@@ -170,17 +171,16 @@ public class NodeEJB implements EntityBean {
   }
 
   /**
-   * Create a new Node object
+   * Create a new Node object.
+   *
    * @param nd the NodeDetail which contains data
-   * @param creatorPK the PK of the user who have create this node
    * @return the NodePK of the new Node
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
-   * @exception javax.ejb.CreateException
-   * @exception java.sql.SQLException
+   * @throws javax.ejb.CreateException
    * @since 1.0
    */
-  public NodePK ejbCreate(NodeDetail nd) {
+  public NodePK ejbCreate(NodeDetail nd) throws CreateException {
     NodePK newNodePK = null;
     Connection con = getConnection();
     try {
@@ -247,23 +247,33 @@ public class NodeEJB implements EntityBean {
   }
 
   /**
-   * Create an instance of a Node object
+   * Create an instance of a Node object.
+   *
    * @param pk the PK of the Node to instanciate
    * @return the NodePK of the instanciated Node if it exists in database
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
-   * @exception javax.ejb.FinderException
+   * @throws javax.ejb.FinderException
    * @since 1.0
    */
   public NodePK ejbFindByPrimaryKey(NodePK pk) throws FinderException {
+
     Connection con = getConnection();
+
     try {
       NodePK primary = NodeDAO.selectByPrimaryKey(con, pk);
-      return primary;
-    } catch (Exception se) {
+      if (primary != null) {
+        return primary;
+      } else {
+        SilverTrace.debug("node", "NodeEJB.ejbFindByPrimaryKey()",
+            "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId());
+        throw new ObjectNotFoundException("Cannot find node ID: " + pk);
+      }
+    } catch (SQLException e) {
+      /* SQLException is a real runtime error */
       throw new NodeRuntimeException("NodeEJB.ejbFindByPrimaryKey()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-          "NodeId = " + pk.getId(), se);
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId(), e);
     } finally {
       freeConnection(con);
     }
@@ -271,39 +281,58 @@ public class NodeEJB implements EntityBean {
 
   public NodePK ejbFindByNameAndFatherId(NodePK pk, String name,
       int nodeFatherId) throws FinderException {
+
     Connection con = getConnection();
+
     try {
       NodePK primary = NodeDAO.selectByNameAndFatherId(con, pk, name,
           nodeFatherId);
-      return primary;
-    } catch (Exception se) {
-      throw new NodeRuntimeException("NodeEJB.ejbFindByPrimaryKey()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-          "NodeId = " + pk.getId(), se);
+      if (primary != null) {
+        return primary;
+      } else {
+        SilverTrace.debug("node", "NodeEJB.ejbFindByNameAndFatherId()",
+            "root.EX_CANT_FIND_ENTITY",
+            "name = " + name
+            + ", component = " + pk.getComponentName() + ", parent ID = " + nodeFatherId);
+        throw new ObjectNotFoundException("Cannot find node named " + name + ", component " + pk.
+            getComponentName()
+            + ", parent ID " + nodeFatherId);
+      }
+    } catch (SQLException e) {
+      /* SQLException is a real runtime error */
+      throw new NodeRuntimeException("NodeEJB.ejbFindByNameAndFatherId()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_FIND_ENTITY", "name = " + name + ", component = " + pk.
+          getComponentName() + ", parent ID = "
+          + nodeFatherId, e);
     } finally {
       freeConnection(con);
     }
   }
 
   public Collection<NodePK> ejbFindByFatherPrimaryKey(NodePK fatherPk) {
+
     Connection con = getConnection();
+    Collection result;
+
     try {
-      return NodeDAO.selectByFatherPrimaryKey(con, fatherPk);
-    } catch (Exception ex) {
+      result = NodeDAO.selectByFatherPrimaryKey(con, fatherPk);
+      return result;
+    } catch (SQLException e) {
       throw new NodeRuntimeException("NodeEJB.ejbFindByFatherPrimaryKey()",
           SilverpeasRuntimeException.ERROR,
-          "node.GETTING_NODES_BY_FATHER_FAILED", "FatherId = "
-          + fatherPk.getId(), ex);
+          "node.GETTING_NODES_BY_FATHER_FAILED",
+          "FatherId = " + fatherPk.getId(), e);
     } finally {
       freeConnection(con);
     }
-
   }
 
   /**
-   * Delete this Node and all its descendants
+   * Delete this Node and all its descendants.
    * @since 1.0
    */
+  @Override
   public void ejbRemove() {
     Connection con = getConnection();
     try {
@@ -318,20 +347,24 @@ public class NodeEJB implements EntityBean {
     }
   }
 
+  @Override
   public void setEntityContext(EntityContext context) {
     this.context = context;
   }
 
+  @Override
   public void unsetEntityContext() {
     this.context = null;
   }
 
+  @Override
   public void ejbActivate() {
     this.nodePK = (NodePK) context.getPrimaryKey();
     stored = false;
     // father = null;
   }
 
+  @Override
   public void ejbPassivate() {
     this.nodePK = null;
     stored = false;
@@ -339,9 +372,11 @@ public class NodeEJB implements EntityBean {
   }
 
   /**
-   * Load node attributes from database
+   * Load node attributes from database.
+  @Override
    * @since 1.0
    */
+  @Override
   public void ejbLoad() {
     // try fat pk
     /*
@@ -383,9 +418,10 @@ public class NodeEJB implements EntityBean {
   }
 
   /**
-   * Store node attributes into database
+   * Store node attributes into database.
    * @since 1.0
    */
+  @Override
   public void ejbStore() {
     if (stored) {
       return;

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.ejb;
 
 import java.sql.Connection;
@@ -59,6 +58,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import javax.ejb.ObjectNotFoundException;
 
 /**
  * Class declaration
@@ -445,11 +445,13 @@ public class PublicationEJB implements EntityBean {
    * @param infos An InfoDetail which contains info to add to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.ModelPK
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
-   * @exception java.sql.SQLException
+   * @throws java.sql.SQLException
+   * @throws UtilException
    * @since 1.0
    */
   public void createInfoDetail(ModelPK modelPK, InfoDetail infos)
       throws SQLException, UtilException {
+
     SilverTrace.info("publication", "PublicationEJB.createInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
     Connection con = getConnection();
@@ -476,11 +478,13 @@ public class PublicationEJB implements EntityBean {
    * @param infos An InfoDetail which contains info to add to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.ModelPK
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
-   * @exception java.sql.SQLException
+   * @throws java.sql.SQLException
+   * @throws UtilException
    * @since 1.0
    */
   public void createInfoModelDetail(ModelPK modelPK, InfoDetail infos)
       throws SQLException, UtilException {
+
     SilverTrace.info("publication", "PublicationEJB.createInfoModelDetail()",
         "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
     Connection con = getConnection();
@@ -531,11 +535,13 @@ public class PublicationEJB implements EntityBean {
    * Update info associated to this publication
    * @param infos An InfoDetail which contains info to update to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
-   * @exception java.sql.SQLException
+   * @throws java.sql.SQLException
+   * @throws UtilException
    * @since 1.0
    */
   public void updateInfoDetail(InfoDetail infos) throws SQLException,
       UtilException {
+
     SilverTrace.info("publication", "PublicationEJB.updateInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD");
     InfoDetail old = getInfoDetail();
@@ -640,10 +646,10 @@ public class PublicationEJB implements EntityBean {
    * @return the PublicationPK of the new Publication
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception javax.ejb.CreateException
-   * @exception java.sql.SQLException
    * @since 1.0
    */
-  public PublicationPK ejbCreate(PublicationDetail pubDetail) {
+  public PublicationPK ejbCreate(PublicationDetail pubDetail) throws CreateException {
+
     SilverTrace.info("publication", "PublicationEJB.ejbCreate()",
         "root.MSG_GEN_ENTER_METHOD", "pubDetail = " + pubDetail.toString());
     Connection con = getConnection();
@@ -729,16 +735,17 @@ public class PublicationEJB implements EntityBean {
   }
 
   /**
-   * Create an instance of a Publication object
+   * Create an instance of a Publication object.
+   *
    * @param pk the PK of the Publication to instanciate
    * @return the PublicationPK of the instanciated Publication if it exists in database
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception javax.ejb.FinderException
-   * @exception java.sql.SQLException
    * @since 1.0
    */
-  public PublicationPK ejbFindByPrimaryKey(PublicationPK pk)
-      throws FinderException {
+  public PublicationPK ejbFindByPrimaryKey(PublicationPK pk) throws
+      FinderException {
+
     Connection con = getConnection();
 
     try {
@@ -746,33 +753,35 @@ public class PublicationEJB implements EntityBean {
       if (primary != null) {
         return primary;
       } else {
-        throw new PublicationRuntimeException(
-            "PublicationEJB.ejbFindByPrimaryKey()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-            "PubId = " + pk.getId());
+        SilverTrace.debug("publication", "PublicationEJB.ejbFindByPrimaryKey()",
+            "root.EX_CANT_FIND_ENTITY", "PubId = "
+            + pk.getId());
+        throw new ObjectNotFoundException("Cannot find publication ID: " + pk);
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      /* SQLException is a real runtime error */
       throw new PublicationRuntimeException(
           "PublicationEJB.ejbFindByPrimaryKey()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-          "PubId = " + pk.getId(), e);
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_FIND_ENTITY", "PubId = " + pk.getId(), e);
     } finally {
       freeConnection(con);
     }
   }
 
   /**
-   * Create an instance of a Publication object
+   * Create an instance of a Publication object.
+   *
    * @param pk the PK where the Publication is instanciated
    * @param name the publication's name to instanciate
    * @return the PublicationPK of the instanciated Publication if it exists in database
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @exception javax.ejb.FinderException
-   * @exception java.sql.SQLException
    * @since 1.0
    */
   public PublicationPK ejbFindByName(PublicationPK pk, String name)
       throws FinderException {
+
     Connection con = getConnection();
 
     try {
@@ -781,14 +790,16 @@ public class PublicationEJB implements EntityBean {
       if (primary != null) {
         return primary;
       } else {
-        throw new PublicationRuntimeException("PublicationEJB.ejbFindByName()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-            "name = " + name);
+        SilverTrace.debug("publication", "PublicationEJB.ejbFindByName()",
+            "root.EX_CANT_FIND_ENTITY", "name = " + name);
+        throw new ObjectNotFoundException(
+            "Cannot find publication named: " + name);
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      /* SQLException is a real runtime error */
       throw new PublicationRuntimeException("PublicationEJB.ejbFindByName()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-          "name = " + name, e);
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_FIND_ENTITY", "name = " + name, e);
     } finally {
       freeConnection(con);
     }
@@ -796,6 +807,7 @@ public class PublicationEJB implements EntityBean {
 
   public PublicationPK ejbFindByNameAndNodeId(PublicationPK pk, String name,
       int nodeId) throws FinderException {
+
     Connection con = getConnection();
 
     try {
@@ -804,16 +816,20 @@ public class PublicationEJB implements EntityBean {
       if (primary != null) {
         return primary;
       } else {
-        throw new PublicationRuntimeException(
+        SilverTrace.debug("publication",
             "PublicationEJB.ejbFindByNameAndNodeId()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-            "name = " + name + ", nodeId=" + nodeId);
+            "root.EX_CANT_FIND_ENTITY", "name="
+            + name + ", nodeId=" + nodeId);
+        throw new ObjectNotFoundException(
+            "Cannot find publication named: " + name + ", and parent node ID: " + nodeId);
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      /* SQLException is a real runtime error */
       throw new PublicationRuntimeException(
           "PublicationEJB.ejbFindByNameAndNodeId()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY",
-          "name = " + name + ", nodeId=" + nodeId, e);
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_FIND_ENTITY",
+          "name = " + name + ", parent nodeId=" + nodeId, e);
     } finally {
       freeConnection(con);
     }
@@ -823,6 +839,7 @@ public class PublicationEJB implements EntityBean {
    * Load publication attributes from database
    * @since 1.0
    */
+  @Override
   public void ejbLoad() {
     SilverTrace.info("publication", "PublicationEJB.ejbLoad()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -879,6 +896,7 @@ public class PublicationEJB implements EntityBean {
    * Store publication attributes into database
    * @since 1.0
    */
+  @Override
   public void ejbStore() {
     if (!isModified) {
       return;
@@ -922,6 +940,7 @@ public class PublicationEJB implements EntityBean {
    * Delete this Publication and all info associated
    * @since 1.0
    */
+  @Override
   public void ejbRemove() {
     SilverTrace.info("publication", "PublicationEJB.ejbRemove()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -951,35 +970,22 @@ public class PublicationEJB implements EntityBean {
     }
   }
 
-  /**
-   * Method declaration
-   * @see
-   */
+  @Override
   public void ejbActivate() {
     pk = (PublicationPK) context.getPrimaryKey();
   }
 
-  /**
-   * Method declaration
-   * @see
-   */
+  @Override
   public void ejbPassivate() {
     pk = null;
   }
 
-  /**
-   * Method declaration
-   * @param ec
-   * @see
-   */
+  @Override
   public void setEntityContext(EntityContext ec) {
     context = ec;
   }
 
-  /**
-   * Method declaration
-   * @see
-   */
+  @Override
   public void unsetEntityContext() {
     context = null;
   }
