@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+/* $Id$ */
 package com.stratelia.webactiv.util.publication.model;
 
 import java.io.Serializable;
@@ -37,11 +37,12 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = -6957633959517435029L;
 
-  // for flat pk design pattern
+  /** For flat pk design pattern. */
   public transient PublicationDetail pubDetail = null;
 
   /**
    * Constructor which set only the id
+   * @param id
    * @since 1.0
    */
   public PublicationPK(String id) {
@@ -50,6 +51,9 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
+   * @param id 
+   * @param space
+   * @param componentName
    * @since 1.0
    */
   public PublicationPK(String id, String space, String componentName) {
@@ -62,6 +66,8 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
+   * @param id
+   * @param pk
    * @since 1.0
    */
   public PublicationPK(String id, WAPrimaryKey pk) {
@@ -73,6 +79,7 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Publication";
   }
@@ -82,27 +89,45 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "SB_Publication_Publi";
   }
 
   /**
    * Check if an another object is equal to this object
-   * @param other the object to compare to this PublicationPK
+   *
+   * @param obj
+   *            the object to compare to this PublicationPK
    * @return true if other is equals to this object
+   * @see java.lang.Object#equals(java.lang.Object)
    */
-  public boolean equals(Object other) {
-    return ((other instanceof PublicationPK)
-        && (id.equals(((PublicationPK) other).getId())) && (componentName
-        .equals(((PublicationPK) other).getComponentName())));
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof PublicationPK)) {
+      return false;
+    }
+    PublicationPK other = (PublicationPK) obj;
+    if (id == null) {
+      return (other.id == null);
+    }
+    return (id.equals(other.id));
   }
 
   /**
    * Returns a hash code for the key
+   *
    * @return A hash code for this object
+   * @see java.lang.Object#hashCode()
    */
+  @Override
   public int hashCode() {
-    return this.id.hashCode() ^ this.componentName.hashCode();
-    // return toString().hashCode();
+    return id.hashCode();
   }
 }

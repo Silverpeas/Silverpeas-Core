@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+/* $Id$ */
 package com.stratelia.webactiv.util.node.model;
 
 import java.io.Serializable;
@@ -35,11 +35,13 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 public class NodePK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  // to apply the fat key pattern
+
+  /** To apply the fat key pattern. */
   transient public NodeDetail nodeDetail = null;
 
   /**
    * Constructor which set only the id
+   * @param id
    * @since 1.0
    */
   public NodePK(String id) {
@@ -48,6 +50,9 @@ public class NodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set id, space and component name
+   * @param id
+   * @param space
+   * @param componentName
    * @since 1.0
    */
   public NodePK(String id, String space, String componentName) {
@@ -60,6 +65,8 @@ public class NodePK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
+   * @param id 
+   * @param pk
    * @since 1.0
    */
   public NodePK(String id, WAPrimaryKey pk) {
@@ -71,6 +78,7 @@ public class NodePK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Node";
   }
@@ -80,29 +88,60 @@ public class NodePK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "SB_Node_Node";
   }
 
   /**
    * Check if an another object is equal to this object
+   *
+   * @param obj
+   *            the object to compare to this NodePK
    * @return true if other is equals to this object
-   * @param other the object to compare to this NodePK
-   * @since 1.0
+   * @see java.lang.Object#equals(java.lang.Object)
    */
-  public boolean equals(Object other) {
-    if (!(other instanceof NodePK))
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
       return false;
-    return (id.equals(((NodePK) other).getId()))
-        && (componentName.equals(((NodePK) other).getComponentName()));
+    }
+    if (!(obj instanceof NodePK)) {
+      return false;
+    }
+    NodePK other = (NodePK) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (componentName == null) {
+      if (other.componentName != null) {
+        return false;
+      }
+    } else if (!componentName.equals(other.componentName)) {
+      return false;
+    }
+    return true;
   }
 
   /**
    * Returns a hash code for the key
+   *
    * @return A hash code for this object
+   * @see java.lang.Object#hashCode()
    */
+  @Override
   public int hashCode() {
-    return this.id.hashCode() ^ this.componentName.hashCode();
-    // return toString().hashCode();
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((componentName == null) ? 0 : componentName.hashCode());
+    return result;
   }
 }
