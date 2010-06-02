@@ -29,7 +29,7 @@
   <bannerLeft>
     <name>Silverpeas</name>
     <src>images/bandeauTop-.jpg</src>
-    <href>http://www.silverpeas.org/</href>
+    <href>http://repository.silverpeas.org/</href>
   </bannerLeft>
   <publishDate position="right" format="yyyy-MM-dd" />
   <version position="right" />
