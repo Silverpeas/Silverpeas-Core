@@ -97,28 +97,48 @@ public class AttachmentController {
   }
 
   /**
-   * to create file attached to an object who is identified by "PK" AttachmentDetail object contains
-   * a attribute who identifie the link by a foreign key.
-   * @param attchdetail - an AttachmentDetail to create
-   * @param indexIt - indicates if attachment must be indexed or not
-   * @return AttachmentDetail just created
-   * @exception AttachmentRuntimeException when can't created the Attachment
+   * Create file attached to an object who is identified by "PK"
+   * AttachmentDetail object contains an attribute who identifie the link by a
+   * foreign key.
+   *
+   * @param attachDetail the data of an attachement to be created.
+   * @param indexIt tells if the attachment must be indexed or not.
+   * @return the AttachmentDetail just created
+   * @throws AttachmentRuntimeException if the attachment cannot be created.
    * @author Nicolas EYSSERIC
    * @version 1.0
    */
-  public static AttachmentDetail createAttachment(
-      AttachmentDetail attachDetail, boolean indexIt) {
+  public static AttachmentDetail createAttachment(AttachmentDetail attachDetail,
+      boolean indexIt) {
+    return createAttachment(attachDetail, true);
+  }
+
+  /**
+   * Create file attached to an object who is identified by "PK"
+   * AttachmentDetail object contains an attribute who identifie the link by a
+   * foreign key.
+   *
+   * @param attachDetail the data of an attachement to be created.
+   * @param indexIt tells if the attachment must be indexed or not.
+   * @param invokeCallback <code>true</code> if the callback methods of the
+   *                       components must be called, <code>false</code> for
+   *                       ignoring thoose callbacks.
+   * @return the AttachmentDetail just created
+   * @throws AttachmentRuntimeException if the attachment cannot be created.
+   */
+  public static AttachmentDetail createAttachment(AttachmentDetail attachDetail,
+      boolean indexIt, boolean invokeCallback) {
 
     try {
       AttachmentDetail attachmentDetail = getAttachmentBm().createAttachment(
           attachDetail);
 
-      if ((attachmentDetail.getAuthor() != null)
+      if (invokeCallback && (attachmentDetail.getAuthor() != null)
           && (attachmentDetail.getAuthor().length() > 0)) {
-        CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer
-            .parseInt(attachmentDetail.getAuthor()), attachmentDetail
-            .getForeignKey().getInstanceId(), attachmentDetail.getForeignKey()
-            .getId());
+        CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
+            parseInt(attachmentDetail.getAuthor()), attachmentDetail.
+            getForeignKey().getInstanceId(), attachmentDetail.getForeignKey().
+            getId());
       }
 
       if (indexIt) {
@@ -126,6 +146,7 @@ public class AttachmentController {
       }
 
       return attachmentDetail;
+
     } catch (Exception e) {
       throw new AttachmentRuntimeException(
           "AttachmentController.createAttachment()",
@@ -579,15 +600,29 @@ public class AttachmentController {
   }
 
   /**
-   * to delete one file attached.
-   * @param attachDetail : the attachmentDetail object to deleted
-   * @return void
+   * Delete a given attachment.
+   *
+   * @param attachmentDetail the attachmentDetail object to deleted.
+   * @throws AttachmentRuntimeException if the attachement cannot be deleted.
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   * @exception AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
    */
   public static void deleteAttachment(AttachmentDetail attachmentDetail) {
+    deleteAttachment(attachmentDetail, true);
+  }
+
+  /**
+   * Delete a given attachment.
+   *
+   * @param attachmentDetail the attachmentDetail object to deleted.
+   * @param invokeCallback <code>true</code> if the callback methods of the
+   *                       components must be called, <code>false</code> for
+   *                       ignoring thoose callbacks.
+   * @throws AttachmentRuntimeException if the attachement cannot be deleted.
+   */
+  public static void deleteAttachment(AttachmentDetail attachmentDetail,
+      boolean invokeCallback) {
 
     try {
       getAttachmentBm().deleteAttachment(attachmentDetail.getPK());
@@ -595,7 +630,6 @@ public class AttachmentController {
       if (!I18NHelper.isI18N) {
         deleteFileAndIndex(attachmentDetail);
       } else {
-
         // delete all translation files
         deleteTranslations(attachmentDetail);
       }
@@ -605,11 +639,17 @@ public class AttachmentController {
         RepositoryHelper.getJcrAttachmentService().deleteAttachment(
             attachmentDetail, attachmentDetail.getLanguage());
       }
-      int authorId = -1;
-      if (StringUtil.isDefined(attachmentDetail.getAuthor()))
-        authorId = Integer.parseInt(attachmentDetail.getAuthor());
-      CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
-          authorId, attachmentDetail.getPK().getInstanceId(), attachmentDetail);
+
+      if (invokeCallback) {
+        int authorId = -1;
+        if (StringUtil.isDefined(attachmentDetail.getAuthor())) {
+          authorId = Integer.parseInt(attachmentDetail.getAuthor());
+        }
+
+        CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
+            authorId, attachmentDetail.getPK().getInstanceId(), attachmentDetail);
+      }
+
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
           "AttachmentController.deleteAttachment(AttachmentDetail attachDetail)",
@@ -618,23 +658,16 @@ public class AttachmentController {
   }
 
   public static void deleteAttachment(AttachmentPK pk) {
+    deleteAttachment(pk, true);
+  }
+
+  public static void deleteAttachment(AttachmentPK pk, boolean invokeCallback) {
 
     try {
-      AttachmentDetail attachDetail = getAttachmentBm()
-          .getAttachmentByPrimaryKey(pk);
+      AttachmentDetail attachDetail = getAttachmentBm().
+          getAttachmentByPrimaryKey(pk);
+      deleteAttachment(attachDetail, invokeCallback);
 
-      getAttachmentBm().deleteAttachment(pk);
-
-      if (!I18NHelper.isI18N) {
-        deleteFileAndIndex(attachDetail);
-      } else {
-
-        // delete all translation files
-        deleteTranslations(attachDetail);
-      }
-      CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE, Integer
-          .parseInt(attachDetail.getAuthor()), attachDetail.getPK()
-          .getInstanceId(), attachDetail);
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
           "AttachmentController.deleteAttachment(AttachmentPK pk)",
