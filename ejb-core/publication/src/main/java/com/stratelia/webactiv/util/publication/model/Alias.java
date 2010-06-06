@@ -34,6 +34,7 @@ public class Alias extends NodePK {
 
   private String userId = null;
   private Date date = null;
+	private int pubOrder = 0;
 
   private String userName = null; // Not persistent
 
@@ -57,13 +58,22 @@ public class Alias extends NodePK {
     this.date = date;
   }
 
-  public boolean equals(Object other) {
-    if (other instanceof Alias) {
-      Alias otherAlias = (Alias) other;
-      return (otherAlias.getId().equals(super.id) && otherAlias.componentName
-          .equals(super.componentName));
-    }
-    return false;
+  /**
+   * Return the value of the pubOrder property.
+   *
+   * @return the value of pubOrder.
+   */
+  public int getPubOrder() {
+    return pubOrder;
+  }
+
+  /**
+   * Set the value of the pubOrder property.
+   *
+   * @param pubOrder the new value of pubOrder.
+   */
+  public void setPubOrder(int pubOrder) {
+    this.pubOrder = pubOrder;
   }
 
   public String getUserName() {
@@ -74,4 +84,16 @@ public class Alias extends NodePK {
     this.userName = userName;
   }
 
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Alias)) {
+      return false;
+    }
+    return super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

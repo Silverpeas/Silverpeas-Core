@@ -110,9 +110,10 @@ public class PublicationFatherDAO {
 
   public static void addAlias(Connection con, PublicationPK pubPK, Alias alias)
       throws SQLException {
+
     StringBuffer insertStatement = new StringBuffer(128);
-    insertStatement.append("insert into ").append(publicationFatherTableName)
-        .append(" values (?, ?, ?, ?, ?, ?)");
+    insertStatement.append("insert into ").append(publicationFatherTableName).
+        append(" values (?, ?, ?, ?, ?, ?)");
     PreparedStatement prepStmt = null;
 
     try {
@@ -120,10 +121,15 @@ public class PublicationFatherDAO {
       prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
       prepStmt.setInt(2, new Integer(alias.getId()).intValue());
       prepStmt.setString(3, alias.getInstanceId());
-      prepStmt.setInt(4, Integer.parseInt(alias.getUserId()));
+      if (alias.getUserId() != null) {
+        prepStmt.setInt(4, Integer.parseInt(alias.getUserId()));
+      } else {
+        prepStmt.setNull(4, Types.INTEGER);
+      }
       prepStmt.setString(5, Long.toString(new Date().getTime()));
-      prepStmt.setInt(6, 0);
+      prepStmt.setInt(6, alias.getPubOrder());
       prepStmt.executeUpdate();
+
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -155,9 +161,9 @@ public class PublicationFatherDAO {
 
     StringBuffer selectQuery = new StringBuffer(128);
     selectQuery.append(
-        "select nodeId, instanceId, aliasUserId, aliasDate from ").append(
-        publicationFatherTableName).append(" where pubId = ").append(
-        pubPK.getId());
+        "select nodeId, instanceId, aliasUserId, aliasDate, pubOrder from ").
+        append(publicationFatherTableName).append(" where pubId = ").append(pubPK.
+        getId());
     Statement stmt = null;
     ResultSet rs = null;
 
@@ -170,20 +176,27 @@ public class PublicationFatherDAO {
       Date date = null;
       list = new ArrayList<Alias>();
       Alias alias = null;
+
       while (rs.next()) {
         id = Integer.toString(rs.getInt(1));
         instanceId = rs.getString(2);
         int iUserId = rs.getInt(3);
         userId = Integer.toString(iUserId);
         String sDate = rs.getString(4);
-        if (StringUtil.isDefined(sDate))
+        if (StringUtil.isDefined(sDate)) {
           date = new Date(Long.parseLong(sDate));
+        }
+				int pubOrder = rs.getInt(5);
+
         alias = new Alias(id, instanceId);
         alias.setUserId(userId);
         alias.setDate(date);
+				alias.setPubOrder(pubOrder);
         list.add(alias);
       }
+
       return list;
+
     } finally {
       DBUtil.close(rs, stmt);
     }
