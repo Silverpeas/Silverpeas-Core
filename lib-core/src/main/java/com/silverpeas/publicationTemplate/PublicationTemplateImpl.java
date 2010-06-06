@@ -44,6 +44,8 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.dummy.DummyRecordSet;
+import com.silverpeas.form.dummy.DummyRecordTemplate;
 import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.form.XmlSearchForm;
@@ -90,31 +92,61 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private ArrayList<TemplateFile> templateFiles = new ArrayList<TemplateFile>();
 
   /**
-   * Returns the RecordTemplate of the publication data item.
+   * Return the RecordTemplate of the publication data item.
+   * 
+   * @param loadIfNull
+   * @return the record template, or a dummy record template if not found (never
+   *         return <code>null</code> if <code>loadIfNull</code> is
+   *         <code>true</code>), or <code>null</code> if not loaded and
+   *         <code>loadIfNull</code> is <code>false</code>.
+   * @throws PublicationTemplateException
    */
   public RecordTemplate getRecordTemplate(boolean loadIfNull)
       throws PublicationTemplateException {
-    if (template == null && loadIfNull)
-      template = loadRecordTemplate(dataFileName);
-    return template;
+
+    if ((template != null) || !loadIfNull) {
+      return template;
+    }
+
+    RecordTemplate tmpl = loadRecordTemplate(dataFileName);
+    if ((tmpl != null) && !(tmpl instanceof DummyRecordTemplate)) {
+      template = tmpl;
+    }
+
+    return tmpl;
   }
 
+  @Override
   public RecordTemplate getRecordTemplate() throws PublicationTemplateException {
     return getRecordTemplate(true);
   }
 
   /**
-   * Returns the RecordSet of all the records built from this template.
+   * Return the RecordSet of all the records built from this template.
+   *
+   * @return the record set or a dummy record set if not found (never return
+   *         <code>null</code>).
+   * @throws PublicationTemplateException
    */
+  @Override
   public RecordSet getRecordSet() throws PublicationTemplateException {
+
     try {
-      if (recordSet == null)
-        recordSet = GenericRecordSetManager.getRecordSet(this.externalId);
-      return recordSet;
+      if (recordSet != null) {
+        return recordSet;
+      }
+
+      RecordSet rs = GenericRecordSetManager.getRecordSet(this.externalId);
+      if ((rs != null) && !(rs instanceof DummyRecordSet)) {
+        recordSet = rs;
+      }
+
+      return rs;
+
     } catch (FormException e) {
       throw new PublicationTemplateException(
-          "PublicationTemplateImpl.getUpdateForm",
-          "form.EX_CANT_GET_RECORDSET", null, e);
+          "PublicationTemplateImpl.getUpdateForm", "form.EX_CANT_GET_RECORDSET",
+          null, e);
     }
   }
 
