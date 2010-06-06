@@ -35,11 +35,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
@@ -61,8 +56,14 @@ import com.stratelia.webactiv.util.JNDINames;
  * The GenericRecordSetManage all the GenericRecordSet
  */
 public class GenericRecordSetManager {
+
   /**
-   * Builds a new GenericRecordSet.
+   * Build and return a new record set.
+   *
+   * @param externalId 
+   * @param template
+   * @return 
+   * @throws FormException
    */
   static public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template) throws FormException {
@@ -74,6 +75,7 @@ public class GenericRecordSetManager {
 
   static public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template, String templateName) throws FormException {
+
     Connection con = null;
     IdentifiedRecordTemplate identifiedTemplate = new IdentifiedRecordTemplate(
         template);
@@ -90,7 +92,6 @@ public class GenericRecordSetManager {
           insertTemplateFieldRows(con, identifiedTemplate);
         }
       }
-      con.commit();
 
       if (existingOne == null) {
         GenericRecordSet newSet = new GenericRecordSet(identifiedTemplate);
@@ -99,8 +100,8 @@ public class GenericRecordSetManager {
       } else {
         return (GenericRecordSet) getRecordSet(externalId);
       }
+
     } catch (SQLException e) {
-      rollbackConnection(con);
       throw new FormException("GenericRecordSetManager",
           "form.EXP_INSERT_FAILED", e);
     } finally {
@@ -109,15 +110,21 @@ public class GenericRecordSetManager {
   }
 
   /**
-   * Returns the record set known be its external id.
-   * @throw FormException when the id is unknown.
+   * Return the record set known be its external id.
+   *
+   * @param externalId 
+   * @return 
+   * @throws FormException when the id is unknown.
    */
   static public RecordSet getRecordSet(String externalId) throws FormException {
+
     SilverTrace.debug("form", "GenericRecordSetManager.getRecordSet",
         "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId);
+
     GenericRecordSet cachedSet = getCachedRecordSet(externalId);
-    if (cachedSet != null)
+    if (cachedSet != null) {
       return cachedSet;
+    }
 
     Connection con = null;
     IdentifiedRecordTemplate template = null;
@@ -149,8 +156,10 @@ public class GenericRecordSetManager {
   }
 
   /**
-   * Removes the record set known by its external id.
-   * @throw FormException when the id is unknown.
+   * Remove the record set known by its external id.
+   *
+   * @param externalId 
+   * @throws FormException when the id is unknown.
    */
   static public void removeRecordSet(String externalId) throws FormException {
     removeCachedRecordSet(externalId);
@@ -172,9 +181,8 @@ public class GenericRecordSetManager {
         deleteTemplateFieldRows(con, template);
         deleteTemplateRow(con, template);
       }
-      con.commit();
+
     } catch (SQLException e) {
-      rollbackConnection(con);
       throw new FormException("GenericRecordSetManager",
           "form.EXP_DELETE_FAILED", e);
     } finally {
@@ -200,8 +208,12 @@ public class GenericRecordSetManager {
   static private HashMap<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
 
   /**
-   * Returns the DataRecord registered by the pair (templateId, recordId)
-   * @throw FormException when the (templateId, recordId) pair is unknown.
+   * Return the DataRecord registered by the pair (templateId, recordId).
+   *
+   * @param template the definition of the form template the record belongs to.
+   * @param recordId the ID of the form record.
+   * @return the form record or <code>null</code> if not found.
+   * @throws FormException if the (templateId, recordId) pair is unknown.
    */
   static public DataRecord getRecord(IdentifiedRecordTemplate template,
       String recordId) throws FormException {
@@ -210,20 +222,24 @@ public class GenericRecordSetManager {
 
   static public DataRecord getRecord(IdentifiedRecordTemplate template,
       String recordId, String language) throws FormException {
+
     SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
         "root.MSG_GEN_PARAM_VALUE", "recordId = " + recordId + ", language = "
         + language);
+
     Connection con = null;
     GenericDataRecord record = null;
 
     try {
       con = getConnection();
       record = selectRecordRow(con, template, recordId, language);
-      if (record == null)
-        return null;
+      
+      if (record != null) {
+        selectFieldRows(con, template, record);
+      }
 
-      selectFieldRows(con, template, record);
       return record;
+
     } catch (SQLException e) {
       throw new FormException("GenericRecordSetManager",
           "form.EXP_SELECT_FAILED", e);
@@ -250,9 +266,12 @@ public class GenericRecordSetManager {
   }
 
   /**
-   * Register the DataRecord with the pair (templateId, recordId)
-   * @throw FormException when the (templateId, recordId) pair is already known.
-   * @throw FormException when the templateId is unknown.
+   * Register the DataRecord with the pair (templateId, recordId).
+   *
+   * @param template
+   * @param insertedRecord
+   * @throws FormException if the (templateId, recordId) pair is already known
+   *                       or if the given template is unknown.
    */
   static public void insertRecord(IdentifiedRecordTemplate template,
       DataRecord insertedRecord) throws FormException {
@@ -264,12 +283,11 @@ public class GenericRecordSetManager {
       con = getConnection();
       insertRecordRow(con, template, record);
       insertFieldRows(con, template, record);
-      con.commit();
+
     } catch (ClassCastException e) {
       throw new FormException("GenericRecordSetManager",
           "form.EXP_UNKNOWN_TEMPLATE", e);
     } catch (SQLException e) {
-      rollbackConnection(con);
       throw new FormException("GenericRecordSetManager",
           "form.EXP_INSERT_FAILED", e);
     } finally {
@@ -323,8 +341,11 @@ public class GenericRecordSetManager {
   }
 
   /**
-   * Saves the DataRecord registered by the pair (templateId, recordId)
-   * @throw FormException when the (templateId, recordId) pair is unknown.
+   * Save the DataRecord registered by the pair (templateId, recordId).
+   *
+   * @param template
+   * @param updatedRecord
+   * @throws FormException when the (templateId, recordId) pair is unknown.
    */
   static public void updateRecord(IdentifiedRecordTemplate template,
       DataRecord updatedRecord) throws FormException {
@@ -335,12 +356,11 @@ public class GenericRecordSetManager {
 
       con = getConnection();
       updateFieldRows(con, template, record);
-      con.commit();
+
     } catch (ClassCastException e) {
       throw new FormException("GenericRecordSetManager",
           "form.EXP_UNKNOWN_TEMPLATE", e);
     } catch (SQLException e) {
-      rollbackConnection(con);
       throw new FormException("GenericRecordSetManager",
           "form.EXP_UPDATED_FAILED", e);
     } finally {
@@ -349,8 +369,11 @@ public class GenericRecordSetManager {
   }
 
   /**
-   * Deletes the DataRecord registered by the pair (templateId, recordId)
-   * @throw FormException when the (templateId, recordId) pair is unknown.
+   * Delete the DataRecord registered by the pair (templateId, recordId).
+   *
+   * @param template
+   * @param deletedRecord
+   * @throws FormException when the (templateId, recordId) pair is unknown.
    */
   static public void deleteRecord(IdentifiedRecordTemplate template,
       DataRecord deletedRecord) throws FormException {
@@ -362,12 +385,11 @@ public class GenericRecordSetManager {
       con = getConnection();
       deleteFieldRows(con, template, record);
       deleteRecordRows(con, template, record);
-      con.commit();
+
     } catch (ClassCastException e) {
       throw new FormException("GenericRecordSetManager",
           "form.EXP_UNKNOWN_TEMPLATE", e);
     } catch (SQLException e) {
-      rollbackConnection(con);
       throw new FormException("GenericRecordSetManager",
           "form.EXP_DELETE_FAILED", e);
     } finally {
@@ -376,11 +398,13 @@ public class GenericRecordSetManager {
   }
 
   /**
-   * get the template field declarations directly from the xml file
+   * Get the template field declarations directly from the XML file.
    */
   static private void selectTemplateFieldsFromXML(
       IdentifiedRecordTemplate template) throws FormException {
+
     GenericRecordTemplate genericRecordTemplate = null;
+
     try {
       PublicationTemplate publicationTemplateImpl = PublicationTemplateManager
           .loadPublicationTemplate(template.getTemplateName());
@@ -391,28 +415,22 @@ public class GenericRecordSetManager {
           "form.EXP_UNKNOWN_TEMPLATE", e);
     }
 
-    GenericRecordTemplate wrapped = (GenericRecordTemplate) template
-        .getWrappedTemplate();
-
-    GenericFieldTemplate fieldTemplate = null;
-    String fieldName;
-    String fieldType;
-    boolean isMandatory;
-    boolean isReadOnly;
-    boolean isHidden;
+    GenericRecordTemplate wrapped = (GenericRecordTemplate) template.
+        getWrappedTemplate();
     FieldTemplate[] fields = genericRecordTemplate.getFieldTemplates();
 
-    for (int i = 0; i < fields.length; i++) {
-      fieldName = fields[i].getFieldName();
-      fieldType = fields[i].getTypeName();
-      isMandatory = fields[i].isMandatory();
-      isReadOnly = fields[i].isReadOnly();
-      isHidden = fields[i].isHidden();
+    for (FieldTemplate field : fields) {
+      String displayName = field.getDisplayerName();
+      GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(field.
+          getFieldName(), field.getTypeName());
 
-      fieldTemplate = new GenericFieldTemplate(fieldName, fieldType);
-      fieldTemplate.setMandatory(isMandatory);
-      fieldTemplate.setReadOnly(isReadOnly);
-      fieldTemplate.setHidden(isHidden);
+      fieldTemplate.setMandatory(field.isMandatory());
+      fieldTemplate.setReadOnly(field.isReadOnly());
+      fieldTemplate.setHidden(field.isHidden());
+      fieldTemplate.setDisabled(field.isDisabled());
+      fieldTemplate.setSearchable(field.isSearchable());
+      fieldTemplate.setDisplayerName((displayName != null) ? displayName : "");
+      fieldTemplate.setLabel(field.getLabel());
 
       wrapped.addFieldTemplate(fieldTemplate);
     }
@@ -421,48 +439,17 @@ public class GenericRecordSetManager {
   /**
    * Returns a connection.
    */
-  static synchronized private Connection getConnection() throws FormException {
-    Connection con = null;
+  static private Connection getConnection() throws FormException {
+
+    SilverTrace.info("formTemplate", "GenericRecordSetManager.getConnection()",
+        "root.MSG_GEN_ENTER_METHOD");
+
     try {
-      Context ctx = new InitialContext();
-      DataSource src = (DataSource) ctx
-          .lookup(JNDINames.FORMTEMPLATE_DATASOURCE);
-      con = src.getConnection();
-      con.setAutoCommit(false);
-    } catch (NamingException e) {
-      // throw new FormException("GenericRecordSetManager",
-      // "root.EX_DATASOURCE_NOT_FOUND", e);
-
-      // the JNDI name have not been found in the current context
-      // The caller is not takes place in any context (web application nor ejb
-      // container)
-      // So lookup operation cannot find JNDI properties !
-      // This is absolutly normal according to the j2ee specification
-      // Unfortunately, only BES takes care about this spec. This exception
-      // doesn't appear with orion or BEA !
-
-      try {
-        // Get the initial Context
-        Context ctx = new InitialContext();
-        // Look up the datasource directly without JNDI access
-        DataSource dataSource = (DataSource) ctx
-            .lookup(JNDINames.DIRECT_DATASOURCE);
-        // Create a connection object
-        con = dataSource.getConnection();
-        con.setAutoCommit(false);
-      } catch (NamingException ne) {
-        throw new FormException("GenericRecordSetManager.getConnection()",
-            "Data source " + JNDINames.DIRECT_DATASOURCE + " not found", ne);
-      } catch (SQLException se) {
-        throw new FormException("GenericRecordSetManager.getConnection()",
-            "root.EX_DATASOURCE_INVALID", JNDINames.DIRECT_DATASOURCE, se);
-      }
-    } catch (SQLException e) {
-      rollbackConnection(con);
-      throw new FormException("GenericRecordSetManager",
-          "root.EX_DATASOURCE_INVALID", e);
+      return DBUtil.makeConnection(JNDINames.FORMTEMPLATE_DATASOURCE);
+    } catch (Exception e) {
+      throw new FormException("GenericRecordSetManager.getConnection()",
+          "root.EX_CONNECTION_OPEN_FAILED", e);
     }
-    return con;
   }
 
   /**
@@ -981,15 +968,6 @@ public class GenericRecordSetManager {
       } catch (SQLException e) {
         throw new FormException("GenericRecordSetManager",
             "form.EXP_CLOSE_FAILED", e);
-      }
-    }
-  }
-
-  static private void rollbackConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.rollback();
-      } catch (SQLException ignored) {
       }
     }
   }
