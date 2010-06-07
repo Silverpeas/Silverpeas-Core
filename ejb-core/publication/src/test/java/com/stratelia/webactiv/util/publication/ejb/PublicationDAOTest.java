@@ -835,10 +835,10 @@ public class PublicationDAOTest extends AbstractTestDao {
   @org.junit.Test
   public void testSelectByNameAndNodeId() throws Exception {
     Connection con = getConnection().getConnection();
-    PublicationPK pubPK = pubPK = new PublicationPK("100", "kmelia200");
+    PublicationPK pubPK = new PublicationPK("100", "kmelia200");
     String name = "Publication 1";
     int nodeId = 110;
-    PublicationDetail result = PublicationDAO.selectByNameAndNodeId(con, null, name, nodeId);
+    PublicationDetail result = PublicationDAO.selectByNameAndNodeId(con, pubPK, name, nodeId);
     assertEquals(pubPK, result.getPK());
     assertEquals("Homer Simpson", result.getAuthor());
     assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
