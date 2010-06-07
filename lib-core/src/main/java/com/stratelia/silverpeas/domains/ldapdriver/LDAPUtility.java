@@ -89,7 +89,7 @@ public class LDAPUtility {
    */
   static public LDAPConnection getConnection(String connectionId)
       throws AdminException {
-    return ((LDAPConnectInfos) connectInfos.get(connectionId)).connection;
+    return (connectInfos.get(connectionId)).connection;
   }
 
   /**
@@ -106,7 +106,7 @@ public class LDAPUtility {
     boolean reOpened = false;
 
     if (ex.getResultCode() == LDAPException.CONNECT_ERROR) {
-      if (((LDAPConnectInfos) connectInfos.get(connectionId)).incErrorCpt()) {
+      if ((connectInfos.get(connectionId)).incErrorCpt()) {
         SilverTrace.warn("admin", "LDAPUtility.recoverConnection",
             "admin.EX_ERR_LDAP_CONNECTION_LOST",
             "ConnectionId=" + connectionId, ex);
@@ -156,7 +156,7 @@ public class LDAPUtility {
   static private void InternalOpenConnection(String connectionId)
       throws AdminException {
     LDAPConnection valret = null;
-    LDAPSettings driverSettings = ((LDAPConnectInfos) connectInfos.get(connectionId)).driverSettings;
+    LDAPSettings driverSettings = (connectInfos.get(connectionId)).driverSettings;
 
     try {
       if (driverSettings.isLDAPSecured()) {
@@ -167,7 +167,7 @@ public class LDAPUtility {
       valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
       valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), driverSettings.getLDAPAccessPasswd());
       valret.setConstraints(driverSettings.getSearchConstraints(false));
-      ((LDAPConnectInfos) connectInfos.get(connectionId)).connection = valret;
+      (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
       try {
         if (valret != null) {
@@ -219,7 +219,6 @@ public class LDAPUtility {
    * @param theEntry the LDAP entry
    * @param attributeName the name of the attribute to retreive
    * @return the first value as a string
-   * @throws LDAPException
    */
   static public String getFirstAttributeValue(LDAPEntry theEntry,
       String attributeName) {
@@ -235,14 +234,14 @@ public class LDAPUtility {
 
   /**
    * Search and returns the first Entry that match the parameters baseDN, scope and filter
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection name
    * @param baseDN the base DN for the search
    * @param scope the scope (LDAPConnection.SCOPE_BASE, LDAPConnection.SCOPE_ONE or
    * LDAPConnection.SCOPE_SUB)
    * @param filter the filter for the search (if null, use '(objectClass=*)' )
+   * @param attrs hidden attributes
    * @return the first entry found
-   * @throws LDAPException
-   * @throws LDAPReferralException if a referral problem occur
+   * @throws AdminException if a problem occur
    */
   static public LDAPEntry getFirstEntryFromSearch(String lds, String baseDN,
       int scope, String filter, String[] attrs) throws AdminException {
@@ -306,7 +305,6 @@ public class LDAPUtility {
    * @param theEntry entry to read the attribute
    * @param theAttributeName name of the attribute to retreive
    * @return the attribute's values as string
-   * @throws LDAPException , AdminException
    */
   static public String[] getAttributeValues(LDAPEntry theEntry,
       String theAttributeName) {
@@ -379,7 +377,7 @@ public class LDAPUtility {
    * @return the escaped DN.
    */
   public static String escapeDN(String name) {
-    StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
+    StringBuilder sb = new StringBuilder();
     if ((name.length() > 0) && ((name.charAt(0) == ' ') || (name.charAt(0) == '#'))) {
       sb.append('\\'); // add the leading backslash if needed
     }
@@ -465,6 +463,7 @@ public class LDAPUtility {
    * @param scope
    * @param filter
    * @param varToSort
+   * @param args
    * @return
    * @throws AdminException
    * @see
@@ -484,7 +483,7 @@ public class LDAPUtility {
     LDAPException lastException = null;
 
     try {
-      LDAPSettings driverSettings = ((LDAPConnectInfos) connectInfos.get(lds)).driverSettings;
+      LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
       SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
           "root.MSG_GEN_PARAM_VALUE", "LDAPImpl = "
           + driverSettings.getLDAPImpl());
@@ -528,7 +527,7 @@ public class LDAPUtility {
           try {
             LDAPSearchResults res = ld.search(baseDNs[j], scope, theFullFilter, args, false, cons);
             while (res.hasMore()) {
-              entry = (LDAPEntry) res.next();
+              entry = res.next();
               if (notTheFirst) {
                 // res.next();
                 notTheFirst = false;
@@ -606,7 +605,7 @@ public class LDAPUtility {
             + e.getLDAPErrorMessage(), e);
       }
     }
-    return (LDAPEntry[]) entriesVector.toArray(new LDAPEntry[entriesVector.size()]);
+    return entriesVector.toArray(new LDAPEntry[entriesVector.size()]);
   }
 
   static public AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN,
@@ -614,7 +613,7 @@ public class LDAPUtility {
       throws AdminException {
     SilverTrace.info("admin", "LDAPUtility.getTimeStamp()",
         "root.MSG_GEN_ENTER_METHOD");
-    LDAPSettings driverSettings = ((LDAPConnectInfos) connectInfos.get(lds)).driverSettings;
+    LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
     LDAPEntry[] theEntries = search1000Plus(lds, baseDN, scope, "(&("
         + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")",
         timeStampVar, null);
@@ -653,7 +652,7 @@ public class LDAPUtility {
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
     }
-    return (String[]) (baseDNs.toArray(new String[baseDNs.size()]));
+    return (baseDNs.toArray(new String[baseDNs.size()]));
   }
 }
 
