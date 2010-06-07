@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>11</version>
+    <version>12-SNAPSHOT</version>
   </parent>
 
   <scm>
