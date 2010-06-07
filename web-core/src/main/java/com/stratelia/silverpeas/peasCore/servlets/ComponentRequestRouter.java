@@ -39,11 +39,10 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -51,6 +50,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public abstract class ComponentRequestRouter extends HttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
+  private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
 
   /**
    * This method has to be implemented in the component request Router class. returns the session
@@ -74,6 +74,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
   public abstract ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext);
 
+  @Override
   public void doPost(HttpServletRequest SPrequest, HttpServletResponse response) {
     // SilverHttpServletRequest SPrequest = new
     // SilverHttpServletRequest(request);
@@ -89,6 +90,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
 
   }
 
+  @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
     doPost(request, response);
@@ -113,7 +115,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     SilverTrace.debug("peasCore",
         "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
-        + new Boolean(mainSessionCtrl.isAppInMaintenance()).toString());
+        + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
     SilverTrace.debug("peasCore",
         "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = "
@@ -302,60 +304,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
   // Get the space id and the component id required by the user
   static public String[] getComponentId(HttpServletRequest request,
       MainSessionController mainSessionCtrl) {
-    String spaceId;
-    String componentId;
-    String function;
-    String pathInfo = request.getPathInfo();
-    SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
-        "root.MSG_GEN_PARAM_VALUE", "pathInfo=" + pathInfo);
-    if (pathInfo != null) {
-      spaceId = null;
-      pathInfo = pathInfo.substring(1); // remove first '/'
-      function = pathInfo.substring(pathInfo.indexOf("/") + 1, pathInfo
-          .length());
-      if (pathInfo.startsWith("jsp")) {
-        // Pour les feuilles de styles, icones, ... + Pour les composants de
-        // l'espace personnel (non instanciables)
-        componentId = null;
-      } else {
-        // Get the space and component Ids
-        // componentId extracted from the URL
-        // Old url (with WA..)
-        if (pathInfo.indexOf("WA") != -1) {
-          String sAndCId = pathInfo.substring(0, pathInfo.indexOf("/"));
-          // spaceId looks like WA17
-          spaceId = sAndCId.substring(0, sAndCId.indexOf("_"));
-          // componentId looks like kmelia123
-          componentId = sAndCId.substring(spaceId.length() + 1, sAndCId
-              .length());
-        } else
-          componentId = pathInfo.substring(0, pathInfo.indexOf("/"));
-
-        if (function.startsWith("Main") || function.startsWith("searchResult")
-            || function.equalsIgnoreCase("searchresult")
-            || function.startsWith("portlet")
-            || function.equals("GoToFilesTab")) {
-          OrganizationController organizationController = mainSessionCtrl
-              .getOrganizationController();
-          ComponentInstLight component = organizationController
-              .getComponentInstLight(componentId);
-          spaceId = component.getDomainFatherId();
-        }
-        SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
-            "root.MSG_GEN_PARAM_VALUE", "componentId=" + componentId
-            + "spaceId=" + spaceId + " pathInfo=" + pathInfo);
-      }
-    } else {
-      spaceId = "-1";
-      componentId = "-1";
-      function = "Error";
-    }
-
-    String[] context = new String[] { spaceId, componentId, function };
-    SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId + " | componentId="
-        + componentId + " | function=" + function);
-    return context;
+    return webUtil.getComponentId(request);
   }
 
   // Get xoxoxSessionController from session

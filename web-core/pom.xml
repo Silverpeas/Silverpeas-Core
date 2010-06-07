@@ -165,7 +165,7 @@
       <groupId>com.sun.jndi</groupId>
       <artifactId>providerutil</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
       <scope>provided</scope>
@@ -177,8 +177,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>commons-lang</groupId>
-    	<artifactId>commons-lang</artifactId>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
     </dependency>
   </dependencies>
   
@@ -198,7 +202,7 @@
         </includes>
         <excludes>
           <exclude>**/*.properties</exclude>
-           <exclude>**/*.xml</exclude>
+          <exclude>**/*.xml</exclude>
         </excludes>
         <filtering>false</filtering>
       </testResource>
@@ -213,6 +217,7 @@
       <plugin>
         <groupId>net.sourceforge.maven-taglib</groupId>
         <artifactId>maven-taglib-plugin</artifactId>
+        <version>2.4</version>
       </plugin>
     </plugins>
   </reporting>

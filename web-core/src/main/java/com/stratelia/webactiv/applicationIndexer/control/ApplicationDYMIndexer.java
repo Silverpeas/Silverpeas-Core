@@ -40,7 +40,8 @@ public class ApplicationDYMIndexer extends Object {
   OrganizationController oc = null;
 
   public ApplicationDYMIndexer() {
-
+    setSilverTraceLevel();
+    oc = new OrganizationController();
   }
 
   /**
@@ -70,9 +71,7 @@ public class ApplicationDYMIndexer extends Object {
    * @param componentId component identifier
    * @throws Exception whether an exception occurred
    */
-  public void index(String spaceId, String componentId) throws Exception {
-    setSilverTraceLevel();
-    oc = new OrganizationController();
+  public void index(String spaceId, String componentId) throws Exception {    
     SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.index()",
         "root.MSG_GEN_ENTER_METHOD");
     if (spaceId == null) {

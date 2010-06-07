@@ -21,20 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
  * 
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 import org.dbunit.operation.DatabaseOperation;
@@ -52,7 +49,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream("com/stratelia/webactiv/general.properties"));
     indexDirectory = props.getProperty("uploadsIndexPath");
-    super.setUp();
+    assertEquals(FileRepositoryManager.getIndexUpLoadPath(), indexDirectory + File.separatorChar );
+    super.setUp();   
   }
 
   /**
@@ -64,8 +62,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   @Test
   public final void testIndexPersonalComponent() throws IOException {
     String indexSpellcheckerpath =
-            indexDirectory + File.separatorChar + "user@0_agenda" + File.separatorChar
-            + "indexSpell";
+        indexDirectory + File.separatorChar + "user@0_agenda" + File.separatorChar
+        + "indexSpell";
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
 
     indexer.indexPersonalComponent("agenda");
@@ -82,8 +80,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   @Test
   public final void testIndexPersonalComponents() throws IOException {
     String indexSpellcheckerpath =
-            indexDirectory + File.separatorChar + "user@0_todo" + File.separatorChar
-            + "indexSpell";
+        indexDirectory + File.separatorChar + "user@0_todo" + File.separatorChar
+        + "indexSpell";
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
 
     indexer.indexPersonalComponents();
@@ -91,8 +89,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
     assertTrue(checkExistingWord(indexSpellcheckerpath, "tester"));
 
     String indexSpellcheckerpath2 =
-            indexDirectory + File.separatorChar + "user@1_todo" + File.separatorChar
-            + "indexSpell";
+        indexDirectory + File.separatorChar + "user@1_todo" + File.separatorChar
+        + "indexSpell";
     checkIndexExistence(indexSpellcheckerpath2);
     assertTrue(checkExistingWord(indexSpellcheckerpath2, "commencer"));
   }
@@ -105,8 +103,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   @Test
   public final void testIndexPdc() throws IOException {
     String indexSpellcheckerPath =
-            indexDirectory + File.separatorChar + "pdc" + File.separatorChar
-            + "indexSpell";
+        indexDirectory + File.separatorChar + "pdc" + File.separatorChar
+        + "indexSpell";
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
     indexer.indexPdc();
     checkIndexExistence(indexSpellcheckerPath);
@@ -123,18 +121,18 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   public final void testIndexAllSpaces() throws Exception {
 
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
-
+    indexer.oc.reloadAdminCache();
     indexer.indexAllSpaces();
     // check one component of first space
     String indexSpellcheckerPath =
-            indexDirectory + File.separatorChar + "kmelia1" + File.separatorChar
-            + "indexSpell";
+        indexDirectory + File.separatorChar + "kmelia1" + File.separatorChar
+        + "indexSpell";
     checkIndexExistence(indexSpellcheckerPath);
     assertTrue(checkExistingWord(indexSpellcheckerPath, "javamail"));
     // check one component of second space
     String indexSpellcheckerPath2 =
-            indexDirectory + File.separatorChar + "kmelia17" + File.separatorChar
-            + "indexSpell";
+        indexDirectory + File.separatorChar + "kmelia17" + File.separatorChar
+        + "indexSpell";
     checkIndexExistence(indexSpellcheckerPath2);
     assertTrue(checkExistingWord(indexSpellcheckerPath2, "reseau"));
   }
@@ -169,11 +167,11 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   private void checkIndexExistence(String path) {
     File dir = new File(path);
     assertNotNull(dir);
-    assertTrue(dir.exists());
+    assertTrue("Directory doesn't exist " + path, dir.exists());
     String[] filesList = dir.list();
-    assertNotNull(filesList);
-    assertEquals(filesList.length, 3);
+    assertNotNull("No files found in " + path, filesList);
+    assertEquals("There are mor or less than 3 files in " + path, filesList.length, 3);
     File segmentsGenFile = new File(path + File.separatorChar + "segments.gen");
-    assertTrue(segmentsGenFile.exists());
+    assertTrue(segmentsGenFile.getPath() + "doesn't exist", segmentsGenFile.exists());
   }
 }
