@@ -48,6 +48,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the Publication Data Access Object.
@@ -67,8 +69,7 @@ public class PublicationDAO {
   // used only for kmelia
   // keys : componentId
   // values : Collection of PublicationDetail
-  private static Hashtable<String, Collection<PublicationDetail>> lastPublis =
-      new Hashtable<String, Collection<PublicationDetail>>();
+  private static Map<String, Collection<PublicationDetail>> lastPublis = new HashMap<String, Collection<PublicationDetail>>();
   private static final String publicationTableName = "SB_Publication_Publi";
   private static final String publicationFatherTableName = "SB_Publication_PubliFather";
   private static final String nodeTableName = "SB_Node_Node";
@@ -194,7 +195,7 @@ public class PublicationDAO {
         nodeId = nodePK.getId();
       }
 
-      StringBuffer selectStatement = new StringBuffer(128);
+      StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append("select count(F.pubId) from ").append(
           pubPK.getTableName()).append("Father F, ").append(
           pubPK.getTableName()).append(" P ");
@@ -271,7 +272,7 @@ public class PublicationDAO {
     if (fatherPath.length() <= 0) {
       return 0;
     } else {
-      StringBuffer selectStatement = new StringBuffer(128);
+      StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append("select count(F.pubId) from ").append(
           pubPK.getTableName()).append("Father F, ").append(
           pubPK.getTableName()).append(" P, ").append(fatherPK.getTableName()).append(" N ");
@@ -338,7 +339,7 @@ public class PublicationDAO {
       String statusSubQuery, boolean checkVisibility) throws SQLException {
     Hashtable<String, Integer> result = new Hashtable<String, Integer>();
 
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
 
     selectStatement.append("SELECT N.nodeId, N.nodePath, COUNT(P.pubName) ");
     selectStatement.append("FROM ").append(publicationFatherTableName).append(
@@ -428,7 +429,7 @@ public class PublicationDAO {
    */
   public static void insertRow(Connection con, PublicationDetail detail)
       throws SQLException {
-    StringBuffer insertStatement = new StringBuffer(128);
+    StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(detail.getPK().getTableName());
     insertStatement.append(" (pubId, infoId, pubName, pubDescription, pubCreationDate,");
     insertStatement.append(
@@ -550,7 +551,7 @@ public class PublicationDAO {
       throws SQLException {
     PublicationFatherDAO.removeAllFather(con, pk); // Delete associations
     // between pub and nodes
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(pk.getTableName()).append(
         " where pubId = ").append(pk.getId());
     Statement stmt = null;
@@ -905,7 +906,7 @@ public class PublicationDAO {
     PublicationDetail pub = null;
 
     String fatherId = "";
-    StringBuffer whereClause = new StringBuffer(128);
+    StringBuilder whereClause = new StringBuilder(128);
 
     if (fatherIds != null) {
       Iterator<String> it = fatherIds.iterator();
@@ -922,7 +923,7 @@ public class PublicationDAO {
       }
     }
 
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement
         .append(
         "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
@@ -953,7 +954,7 @@ public class PublicationDAO {
         pubPK.getComponentName()).append("'");
 
     if (status != null && status.size() > 0) {
-      StringBuffer statusBuffer = new StringBuffer();
+      StringBuilder statusBuffer = new StringBuilder();
       Iterator<String> it = status.iterator();
 
       statusBuffer.append("(");
@@ -1045,7 +1046,7 @@ public class PublicationDAO {
    */
   public static Collection<PublicationDetail> selectByStatus(Connection con, PublicationPK pubPK,
       String status) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
     selectStatement.append(" where pubStatus like '").append(status).append(
         "' ");
@@ -1075,7 +1076,7 @@ public class PublicationDAO {
       String status) throws SQLException {
     List<PublicationDetail> list = new ArrayList<PublicationDetail>();
     if (componentIds != null && componentIds.size() > 0) {
-      StringBuffer selectStatement = new StringBuffer(128);
+      StringBuilder selectStatement = new StringBuilder(128);
       selectStatement
           .append(
           "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
@@ -1168,7 +1169,7 @@ public class PublicationDAO {
       String status) throws SQLException {
     List<PublicationPK> list = new ArrayList<PublicationPK>();
     if (componentIds != null && componentIds.size() > 0) {
-      StringBuffer selectStatement = new StringBuffer(128);
+      StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append("select  distinct(P.pubId), P.instanceId, P.pubUpdateDate ");
       selectStatement.append("from ").append(publicationTableName).append(
           " P, ").append(publicationTableName).append("Father F ");
@@ -1257,7 +1258,7 @@ public class PublicationDAO {
 
   public static Collection<PublicationDetail> selectAllPublications(Connection con,
       PublicationPK pubPK, String sorting) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(pubPK.getTableName()).append(
         " P where P.instanceId='").append(pubPK.getComponentName()).append("'");
 
@@ -1295,7 +1296,7 @@ public class PublicationDAO {
    */
   public static Collection<PublicationDetail> selectByBeginDateDescAndStatus(Connection con,
       PublicationPK pubPK, String status) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from SB_Publication_Publi where pubStatus like '");
     selectStatement.append(status).append("' ");
     selectStatement.append(" and instanceId = ? ");
@@ -1429,7 +1430,7 @@ public class PublicationDAO {
    */
   public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
       PublicationPK pubPK) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from SB_Publication_Publi where instanceId = ? ");
     selectStatement.append(" and (");
     selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
@@ -1493,7 +1494,7 @@ public class PublicationDAO {
    */
   public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
     selectStatement.append(" where pubId NOT IN (Select pubId from ").append(
         pubPK.getTableName()).append("Father) ");
@@ -1526,7 +1527,7 @@ public class PublicationDAO {
    */
   public static Collection<PublicationDetail> getNotOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(pubPK.getTableName());
     selectStatement.append(" where pubId IN (Select pubId from ").append(
         pubPK.getTableName()).append("Father) ");
@@ -1591,7 +1592,7 @@ public class PublicationDAO {
    */
   public static void deleteOrphanPublicationsByCreatorId(Connection con,
       PublicationPK pubPK, String creatorId) throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(pubPK.getTableName());
     deleteStatement.append(" where pubCreatorId=").append(creatorId);
     deleteStatement.append(" and pubId NOT IN (Select pubId from ").append(
@@ -1621,7 +1622,7 @@ public class PublicationDAO {
   public static Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
       Connection con, PublicationPK pubPK, String publisherId, String nodeId)
       throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(pubPK.getTableName()).append(" P, ").append(
         pubPK.
         getTableName()).append("Father F ");
@@ -1728,7 +1729,7 @@ public class PublicationDAO {
         + ", newInstanceId = " + newInstanceId);
     int rowCount = 0;
 
-    StringBuffer updateQuery = new StringBuffer(128);
+    StringBuilder updateQuery = new StringBuilder(128);
     updateQuery.append("update ").append(PublicationDAO.publicationTableName);
     updateQuery.append(" set instanceId = ? ");
     updateQuery.append(" where pubId = ? ");
@@ -1901,7 +1902,7 @@ public class PublicationDAO {
 
   public static Collection<PublicationDetail> selectBetweenDate(Connection con, String beginDate,
       String endDate, String instanceId) throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
+    StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(publicationTableName);
     selectStatement.append(" where instanceId = ? ");
     selectStatement.append(" and (");
