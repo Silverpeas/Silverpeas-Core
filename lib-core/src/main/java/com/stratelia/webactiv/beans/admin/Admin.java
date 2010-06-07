@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
@@ -131,7 +130,6 @@ public class Admin extends Object {
       ResourceLocator resources = new ResourceLocator(
           "com.stratelia.webactiv.beans.admin.admin", "");
       roleMapping = new ResourceLocator("com.silverpeas.admin.roleMapping", "");
-
       useProfileInheritance = resources.getBoolean("UseProfileInheritance",
           false);
 
@@ -173,21 +171,25 @@ public class Admin extends Object {
       if (m_spaceInstanciator == null) {
         m_spaceInstanciator = new SpaceInstanciateur(getAllComponents());
       }
-
       // Init tree cache
-      try {
-        SilverTrace.info(MODULE_ADMIN, "admin.startServer",
-            "root.MSG_GEN_PARAM_VALUE", "Start filling tree cache...");
-        List<SpaceInstLight> spaces = m_SpaceInstManager.getAllSpaces(m_DDManager);
-        for (SpaceInstLight space : spaces) {
-          addSpaceInTreeCache(space);
-        }
-        SilverTrace.info(MODULE_ADMIN, "admin.startServer",
-            "root.MSG_GEN_PARAM_VALUE", "Tree cache filled !");
-      } catch (Exception e) {
-        SilverTrace.error("admin", "Constructor", "ERROR_WHEN_INITIALIZING_ADMIN", e);
-      }
+      reloadCache();
+    }
+  }
 
+  public final void reloadCache() {
+    TreeCache.clearCache();
+    // Init tree cache
+    try {
+      SilverTrace.info(MODULE_ADMIN, "admin.startServer",
+          "root.MSG_GEN_PARAM_VALUE", "Start filling tree cache...");
+      List<SpaceInstLight> spaces = m_SpaceInstManager.getAllSpaces(m_DDManager);
+      for (SpaceInstLight space : spaces) {
+        addSpaceInTreeCache(space);
+      }
+      SilverTrace.info(MODULE_ADMIN, "admin.startServer",
+          "root.MSG_GEN_PARAM_VALUE", "Tree cache filled !");
+    } catch (Exception e) {
+      SilverTrace.error("admin", "Constructor", "ERROR_WHEN_INITIALIZING_ADMIN", e);
     }
   }
 
@@ -227,13 +229,7 @@ public class Admin extends Object {
         m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(space.getShortId()));
     spaceInCache.setComponents(components);
 
-    // add sorted subSpaces to space's cache
-    /*
-     * spaceInCache.setSubspaces(new HashSet<SpaceInstLight>(getSubSpacesFromList(
-     * space.getShortId(), spaces)));
-     */
     spaceInCache.setSubspaces(getSubSpaces(space.getShortId()));
-
     TreeCache.addSpace(space.getShortId(), spaceInCache);
   }
 
@@ -1180,8 +1176,8 @@ public class Admin extends Object {
       String componentName = componentInst.getName();
       String componentId = componentName + componentInst.getId();
 
-      String[] asCompoNames = { componentName };
-      String[] asCompoIds = { componentId };
+      String[] asCompoNames = {componentName};
+      String[] asCompoIds = {componentId};
       instantiateComponents(sUserId, asCompoIds, asCompoNames, spaceInstFather.getId(),
           connectionProd);
 
@@ -1305,8 +1301,8 @@ public class Admin extends Object {
 
         // Uninstantiate the components
         String componentName = componentInst.getName();
-        String[] asCompoName = { componentName };
-        String[] asCompoId = { sClientComponentId };
+        String[] asCompoName = {componentName};
+        String[] asCompoId = {sClientComponentId};
         unInstantiateComponents(sUserId, asCompoId, asCompoName,
             getClientSpaceId(sFatherClientId), connectionProd);
 
@@ -1698,10 +1694,8 @@ public class Admin extends Object {
       m_Cache.resetComponentInst();
 
       // reset treecache list in old and new spaces
-      TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager
-          .getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
-      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager
-          .getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
+      TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
+      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.moveComponentInst",
@@ -1828,8 +1822,7 @@ public class Admin extends Object {
 
     List<String> groups = getAllGroupsOfUser(userId);
 
-    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer
-        .parseInt(getDriverComponentId(componentId)),
+    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer.parseInt(getDriverComponentId(componentId)),
         Integer.parseInt(userId), groups);
   }
 
@@ -2816,8 +2809,7 @@ public class Admin extends Object {
         m_DDManager.startTransaction(false);
 
         GroupProfileInst oldSpaceProfile =
-            m_GroupProfileInstManager.getGroupProfileInst(m_DDManager, null, groupProfileInstNew
-            .getGroupId());
+            m_GroupProfileInstManager.getGroupProfileInst(m_DDManager, null, groupProfileInstNew.getGroupId());
 
         // Update the group profile in tables
         m_GroupProfileInstManager.updateGroupProfileInst(oldSpaceProfile,
@@ -3209,8 +3201,8 @@ public class Admin extends Object {
         m_compoInstanciator.unInstantiateComponentName(asComponentNames[nI]);
       } catch (Exception e) {
         SilverTrace.warn("admin", "Admin.unInstantiateComponents",
-            "admin.EX_ERR_UNINSTANTIATE_COMPONENTS", "Deleting data from component '" +
-            asComponentNames[nI] + "' failed", e);
+            "admin.EX_ERR_UNINSTANTIATE_COMPONENTS", "Deleting data from component '"
+            + asComponentNames[nI] + "' failed", e);
       }
     }
 
@@ -3772,8 +3764,8 @@ public class Admin extends Object {
 
   public List<SpaceInstLight> getSubSpaces(String spaceId)
       throws AdminException {
-    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = " +
-        spaceId);
+    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = "
+        + spaceId);
     try {
       return m_SpaceInstManager.getSubSpaces(getDriverSpaceId(spaceId));
     } catch (Exception e) {
@@ -4242,8 +4234,8 @@ public class Admin extends Object {
       List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
       List<String> result = new ArrayList<String>();
       for (ComponentInstLight component : components) {
-        if (allowedComponentIds.contains(component.getId()) &&
-            component.getName().startsWith(componentNameRoot)) {
+        if (allowedComponentIds.contains(component.getId())
+            && component.getName().startsWith(componentNameRoot)) {
           result.add(component.getId());
         }
       }
@@ -4942,8 +4934,7 @@ public class Admin extends Object {
               // All users by access level
               if (domainId == null) {
                 userIds =
-                    Arrays.asList(m_DDManager.organization.user
-                    .getUserIdsByAccessLevel(accessLevel));
+                    Arrays.asList(m_DDManager.organization.user.getUserIdsByAccessLevel(accessLevel));
               } else {
                 userIds =
                     Arrays.asList(m_UserManager.getUserIdsOfDomainAndAccessLevel(m_DDManager,
@@ -4958,8 +4949,7 @@ public class Admin extends Object {
             // Available only for "domaine mixte"
             if ("-1".equals(domainId)) {
               userIds =
-                  Arrays.asList(m_DDManager.organization.user.getUserIdsOfDomain(Integer
-                  .parseInt(dId)));
+                  Arrays.asList(m_DDManager.organization.user.getUserIdsOfDomain(Integer.parseInt(dId)));
             }
           }
         } else if (rule.toLowerCase().startsWith("dc_")) {
@@ -5432,8 +5422,7 @@ public class Admin extends Object {
       }
     }
     if ((parentId == null)
-        &&
-        ((parentSpecificIds.length > 0) || ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
+        && ((parentSpecificIds.length > 0) || ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
       // can't
       // add
       // the
@@ -5488,8 +5477,7 @@ public class Admin extends Object {
         existingGroupId = null;
         try {
           existingGroupId =
-              m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, childs[i]
-              .getSpecificId(), latestGroup.getDomainId());
+              m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, childs[i].getSpecificId(), latestGroup.getDomainId());
           existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) { // Only
             // synchronize
@@ -5528,8 +5516,8 @@ public class Admin extends Object {
 
     Collection<UserDetail> listUsersUpdate = new ArrayList<UserDetail>();
 
-    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD", "userId=" +
-        userId);
+    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD", "userId="
+        + userId);
     try {
       // Start transaction
       m_DDManager.startTransaction(false);

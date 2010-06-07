@@ -1162,4 +1162,8 @@ public class OrganizationController extends AdminReference implements java.io.Se
       return new String[0];
     }
   }
+
+  public void reloadAdminCache() {
+    m_Admin.reloadCache();
+  }
 }

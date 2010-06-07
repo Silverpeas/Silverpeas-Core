@@ -25,15 +25,20 @@
 package com.stratelia.webactiv.beans.admin.cache;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class TreeCache {
 
-  private static HashMap<String, Space> map = new HashMap<String, Space>();
+  private static ConcurrentMap<String, Space> map = new ConcurrentHashMap<String, Space>();
+
+  public static void clearCache() {
+    map.clear();
+  }
 
   public static SpaceInstLight getSpaceInstLight(String spaceId) {
     Space space = map.get(spaceId);
@@ -53,7 +58,7 @@ public class TreeCache {
       for (SpaceInstLight subspace : space.getSubspaces()) {
         removeSpace(subspace.getShortId());
       }
-      map.remove(space);
+      map.remove(spaceId);
     }
   }
 

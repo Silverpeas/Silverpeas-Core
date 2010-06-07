@@ -21,10 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverpeasinitialize;
 
-import java.util.*;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -34,6 +35,7 @@ import java.util.*;
 public class CallBackManager {
   // Actions [int parameter, string parameter, extra parameter]
   // ----------------------------------------------------------
+
   public final static int ACTION_AFTER_CREATE_USER = 0; // [userId,,]
   public final static int ACTION_BEFORE_REMOVE_USER = 1; // [userId,,]
   public final static int ACTION_AFTER_CREATE_GROUP = 2; // [groupId,,]
@@ -59,7 +61,6 @@ public class CallBackManager {
   public final static int ACTION_XMLCONTENT_UPDATE = 19;
   public final static int ACTION_XMLCONTENT_DELETE = 20;
   public final static int ACTION_LAST = 21;
-
   // HashTables
   // ----------
   protected static List<CallBack>[] subscribers = null;
@@ -67,7 +68,7 @@ public class CallBackManager {
   static {
     subscribers = new List[ACTION_LAST];
     for (int i = 0; i < ACTION_LAST; i++) {
-      subscribers[i] = Collections.synchronizedList(new LinkedList());
+      subscribers[i] = new CopyOnWriteArrayList<CallBack>();
     }
   }
 
@@ -93,14 +94,12 @@ public class CallBackManager {
     }
   }
 
-  // Call functions
-  // --------------
-  static synchronized public void invoke(int action, int iParam, String sParam,
+  static public void invoke(final int action, final int iParam, final String sParam, final
       Object extraParam) {
-    Iterator<CallBack> it = subscribers[action].iterator();
-
-    while (it.hasNext()) {
-      it.next().doInvoke(action, iParam, sParam, extraParam);
+    for (CallBack callback : subscribers[action]) {
+      synchronized (callback) {
+        callback.doInvoke(action, iParam, sParam, extraParam);
+      }
     }
   }
 
@@ -174,8 +173,8 @@ public class CallBackManager {
       default:
         sb.append("ACTION_UNKNOWN");
     }
-    sb.append(" iParam = " + Integer.toString(iParam) + " sParam = " + sParam
-        + " extraParam = ");
+    sb.append(" iParam = ").append(String.valueOf(iParam)).append(" sParam = ").append(sParam);
+    sb.append(" extraParam = ");
     if (extraParam == null) {
       sb.append("null");
     } else {
