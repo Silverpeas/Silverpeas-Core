@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.webactiv.util.statistic.control;
 
 import java.sql.Connection;
@@ -47,14 +43,12 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.statistic.ejb.HistoryNodePublicationActorDAO;
 import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
-import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -234,7 +228,7 @@ public class StatisticBmEJB implements SessionBean {
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType,
       List<String> userIds) {
-    if (userIds == null || userIds.size() == 0) {
+    if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(foreignPK, action, objectType);
     } else {
       OrganizationController orga = new OrganizationController();
@@ -294,8 +288,8 @@ public class StatisticBmEJB implements SessionBean {
     }
 
     // création d'une liste des accès par utilisateur
-    Hashtable<UserDetail, Date> byUser = new Hashtable<UserDetail, Date>();
-    Hashtable<UserDetail, Integer> nbAccessbyUser = new Hashtable<UserDetail, Integer>();
+    Map<UserDetail, Date> byUser = new HashMap<UserDetail, Date>();
+    Map<UserDetail, Integer> nbAccessbyUser = new HashMap<UserDetail, Integer>();
     for (int j = 0; j < controlledUsers.length; j++) {
       if (controlledUsers[j] != null) {
         // regarder si la date en cours est > à la date enregistrée...
@@ -399,6 +393,7 @@ public class StatisticBmEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
@@ -406,6 +401,7 @@ public class StatisticBmEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbActivate() {
   }
 
@@ -413,6 +409,7 @@ public class StatisticBmEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbPassivate() {
   }
 
@@ -421,6 +418,7 @@ public class StatisticBmEJB implements SessionBean {
    * @param sc
    * @see
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
 }
