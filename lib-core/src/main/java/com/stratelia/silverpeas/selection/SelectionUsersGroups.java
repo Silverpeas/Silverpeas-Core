@@ -39,10 +39,14 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class SelectionUsersGroups implements SelectionExtraParams {
   static OrganizationController m_oc = new OrganizationController();
+  
+  public final static int USER = 0;
+  public final static int GROUP = 1;
+  
   String m_domainId = null;
   String m_componentId = null;
-  List profileIds = null;
-  ArrayList profileNames = null;
+  List<String> profileIds = null;
+  ArrayList<String> profileNames = null;
 
   public String[] getProfileIds() {
     if (profileIds != null) {
@@ -52,16 +56,16 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     }
   }
 
-  public ArrayList getProfileNames() {
+  public ArrayList<String> getProfileNames() {
     return profileNames;
   }
 
-  public void setProfileNames(ArrayList profileNames) {
+  public void setProfileNames(ArrayList<String> profileNames) {
     this.profileNames = profileNames;
     ComponentInst componentInst = m_oc.getComponentInst(m_componentId);
     int nbProfiles = componentInst.getNumProfileInst();
     ProfileInst profileInst = null;
-    profileIds = new ArrayList();
+    profileIds = new ArrayList<String>();
     for (int p = 0; p < nbProfiles; p++) {
       profileInst = componentInst.getProfileInst(p);
       if (profileNames.contains(profileInst.getName())) {
@@ -70,20 +74,20 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     }
   }
 
-  public void setProfileIds(List profileIds) {
+  public void setProfileIds(List<String> profileIds) {
     this.profileIds = profileIds;
   }
 
   public void addProfileId(String profileId) {
     if (profileIds == null)
-      profileIds = new ArrayList();
+      profileIds = new ArrayList<String>();
 
     profileIds.add(profileId);
   }
 
-  public void addProfileIds(List profileIds) {
+  public void addProfileIds(List<String> profileIds) {
     if (this.profileIds == null)
-      this.profileIds = new ArrayList();
+      this.profileIds = new ArrayList<String>();
 
     profileIds.addAll(profileIds);
   }
@@ -111,17 +115,16 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   static public String[] getDistinctUserIds(String[] selectedUsers,
       String[] selectedGroups) {
     int g, u;
-    HashSet usersSet = new HashSet();
-    UserDetail[] groupUsers;
-
-    if ((selectedUsers != null) && (selectedUsers.length > 0)) {
+    HashSet<String> usersSet = new HashSet<String>();
+    
+    if (selectedUsers != null && selectedUsers.length > 0) {
       for (u = 0; u < selectedUsers.length; u++) {
         usersSet.add(selectedUsers[u]);
       }
     }
-    if ((selectedGroups != null) && (selectedGroups.length > 0)) {
+    if (selectedGroups != null && selectedGroups.length > 0) {
       for (g = 0; g < selectedGroups.length; g++) {
-        groupUsers = m_oc.getAllUsersOfGroup(selectedGroups[g]);
+        UserDetail[] groupUsers = m_oc.getAllUsersOfGroup(selectedGroups[g]);
         for (u = 0; u < groupUsers.length; u++) {
           usersSet.add(groupUsers[u].getId());
         }
@@ -135,7 +138,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   }
 
   static public Group[] getGroups(String[] groupIds) {
-    if ((groupIds != null) && (groupIds.length > 0)) {
+    if (groupIds != null && groupIds.length > 0) {
       Group[] valret = new Group[groupIds.length];
       for (int g = 0; g < groupIds.length; g++) {
         valret[g] = m_oc.getGroup(groupIds[g]);
@@ -147,12 +150,10 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   }
 
   static public String[] getUserIds(UserDetail[] users) {
-    String[] valret;
-
     if (users == null) {
       return new String[0];
     }
-    valret = new String[users.length];
+    String[] valret = new String[users.length];
     for (int i = 0; i < users.length; i++) {
       valret[i] = users[i].getId();
     }
@@ -160,12 +161,10 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   }
 
   static public String[] getGroupIds(Group[] groups) {
-    String[] valret;
-
     if (groups == null) {
       return new String[0];
     }
-    valret = new String[groups.length];
+    String[] valret = new String[groups.length];
     for (int i = 0; i < groups.length; i++) {
       valret[i] = groups[i].getId();
     }

@@ -73,12 +73,25 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
         session.setElementName(request.getParameter("elementName"));
         String selectionMultiple = request.getParameter("selectionMultiple");
         String instanceId = request.getParameter("instanceId");
-        if ("true".equals(selectionMultiple)) {
-          session.setSelectedUserIds(request.getParameter("selectedUsers"));
-          return session.initSelectionPeas(true, instanceId);
+
+        session.setSelectable(request.getParameter("selectable"));
+
+        if (session.isGroupSelectable()) {
+          if ("true".equals(selectionMultiple)) {
+            session.setSelectedGroupIds(request.getParameter("selectedGroups"));
+            return session.initSelectionPeas(true, instanceId);
+          } else {
+            session.setSelectedGroupId(request.getParameter("selectedGroup"));
+            return session.initSelectionPeas(false, null);
+          }
         } else {
-          session.setSelectedUserId(request.getParameter("selectedUser"));
-          return session.initSelectionPeas(false, null);
+          if ("true".equals(selectionMultiple)) {
+            session.setSelectedUserIds(request.getParameter("selectedUsers"));
+            return session.initSelectionPeas(true, instanceId);
+          } else {
+            session.setSelectedUserId(request.getParameter("selectedUser"));
+            return session.initSelectionPeas(false, null);
+          }
         }
       } else if (function.equals("close")) {
         session.getSelectionPeasSelection();
@@ -86,12 +99,22 @@ public class SelectionPeasWrapper extends ComponentRequestRouter {
         request.setAttribute("elementId", session.getElementId());
         request.setAttribute("elementName", session.getElementName());
 
-        if (session.getSelection().isMultiSelect()) {
-          request.setAttribute("users", session.getSelectedUsers());
-          return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
+        if (session.isGroupSelectable()) {
+          if (session.getSelection().isMultiSelect()) {
+            request.setAttribute("groups", session.getSelectedGroups());
+            return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
+          } else {
+            request.setAttribute("group", session.getSelectedGroup());
+            return "/selectionPeas/jsp/closeWrapper.jsp";
+          }
         } else {
-          request.setAttribute("user", session.getSelectedUser());
-          return "/selectionPeas/jsp/closeWrapper.jsp";
+          if (session.getSelection().isMultiSelect()) {
+            request.setAttribute("users", session.getSelectedUsers());
+            return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
+          } else {
+            request.setAttribute("user", session.getSelectedUser());
+            return "/selectionPeas/jsp/closeWrapper.jsp";
+          }
         }
 
       } else {

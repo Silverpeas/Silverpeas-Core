@@ -26,11 +26,13 @@ package com.stratelia.silverpeas.selectionPeas.control;
 
 import java.util.StringTokenizer;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -42,6 +44,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 public class SelectionPeasWrapperSessionController extends AbstractComponentSessionController {
 
   private String[] selectedUserIds;
+  private String[] selectedGroupIds;
+  private int selectable = SelectionUsersGroups.USER;
 
   /**
    * Standard Session Controller Constructeur
@@ -88,6 +92,20 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    */
   public UserDetail[] getSelectedUsers() {
     return selectedUsers;
+  }
+
+  /**
+   * Returns the selected group (if any).
+   */
+  public Group getSelectedGroup() {
+    return selectedGroup;
+  }
+
+  /**
+   * Returns the selected groups (if any).
+   */
+  public Group[] getSelectedGroups() {
+    return selectedGroups;
   }
 
   /**
@@ -153,7 +171,8 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     // Contraintes
     sel.setMultiSelect(multiple);
     sel.setPopupMode(false);
-    sel.setSetSelectable(false);
+    sel.setSetSelectable(isGroupSelectable());
+    sel.setElementSelectable(isUserSelectable());
     sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
     if (instanceId != null) {
@@ -164,6 +183,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
 
     // Initialisation des éléments sélectionnés
     sel.setSelectedElements(selectedUserIds);
+    sel.setSelectedSets(selectedGroupIds);
 
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
@@ -174,14 +194,65 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   public void getSelectionPeasSelection() {
     Selection sel = getSelection();
 
-    if (sel.isMultiSelect()) {
-      String[] ids = sel.getSelectedElements();
-      selectedUsers = organizationController.getUserDetails(ids);
-    } else {
-      String id = sel.getFirstSelectedElement();
-      if ((id != null) && (id.length() > 0)) {
-        selectedUser = organizationController.getUserDetail(id);
+    if (isGroupSelectable()) {
+      if (sel.isMultiSelect()) {
+        String[] ids = sel.getSelectedSets();
+        selectedGroups = organizationController.getGroups(ids);
+      } else {
+        String id = sel.getFirstSelectedSet();
+        if (StringUtil.isDefined(id)) {
+          selectedGroup = organizationController.getGroup(id);
+        }
       }
+    } else {
+      if (sel.isMultiSelect()) {
+        String[] ids = sel.getSelectedElements();
+        selectedUsers = organizationController.getUserDetails(ids);
+      } else {
+        String id = sel.getFirstSelectedElement();
+        if ((id != null) && (id.length() > 0)) {
+          selectedUser = organizationController.getUserDetail(id);
+        }
+      }
+    }
+  }
+
+  public void setSelectable(int selectable) {
+    this.selectable = selectable;
+  }
+
+  public void setSelectable(String selectable) {
+    if (StringUtil.isDefined(selectable) && StringUtil.isInteger(selectable)) {
+      setSelectable(Integer.parseInt(selectable));
+    } else {
+      setSelectable(SelectionUsersGroups.USER);
+    }
+  }
+
+  public boolean isUserSelectable() {
+    return SelectionUsersGroups.USER == selectable;
+  }
+
+  public boolean isGroupSelectable() {
+    return SelectionUsersGroups.GROUP == selectable;
+  }
+
+  public void setSelectedGroupId(String selectedId) {
+    selectedGroup = null;
+    this.selectedGroupIds = new String[] { selectedId };
+  }
+
+  public void setSelectedGroupIds(String selectedIds) {
+    selectedGroups = null;
+    if ((selectedIds != null) && (selectedIds.length() > 0)) {
+      StringTokenizer tokenizer = new StringTokenizer(selectedIds, ",");
+      this.selectedGroupIds = new String[tokenizer.countTokens()];
+      int i = 0;
+      while (tokenizer.hasMoreTokens()) {
+        this.selectedGroupIds[i++] = tokenizer.nextToken();
+      }
+    } else {
+      this.selectedGroupIds = null;
     }
   }
 
@@ -214,5 +285,15 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    * The selected users (if any).
    */
   private UserDetail[] selectedUsers = null;
+
+  /**
+   * The selected user (if any).
+   */
+  private Group selectedGroup = null;
+
+  /**
+   * The selected users (if any).
+   */
+  private Group[] selectedGroups = null;
 
 }

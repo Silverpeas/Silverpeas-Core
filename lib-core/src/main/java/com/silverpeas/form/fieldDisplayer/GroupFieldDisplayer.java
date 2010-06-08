@@ -25,6 +25,10 @@
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -33,25 +37,23 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
-import com.silverpeas.form.fieldType.UserField;
+import com.silverpeas.form.fieldType.GroupField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.fileupload.FileItem;
 
 /**
- * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
- * any updated value.
+ * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can
+ * retrieve via HTTP any updated value.
  * @see Field
  * @see FieldTemplate
  * @see Form
  * @see FieldDisplayer
  */
-public class UserFieldDisplayer extends AbstractFieldDisplayer {
+public class GroupFieldDisplayer extends AbstractFieldDisplayer {
 
   /**
    * Returns the name of the managed types.
@@ -59,7 +61,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
   public String[] getManagedTypes() {
     String[] s = new String[0];
 
-    s[0] = UserField.TYPE;
+    s[0] = GroupField.TYPE;
     return s;
   }
 
@@ -77,9 +79,9 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       PagesContext PagesContext) throws java.io.IOException {
     String language = PagesContext.getLanguage();
 
-    if (!template.getTypeName().equals(UserField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
+    if (!template.getTypeName().equals(GroupField.TYPE)) {
+      SilverTrace.info("form", "GroupFieldDisplayer.displayScripts",
+          "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
 
     }
     if (template.isMandatory() && PagesContext.useMandatory()) {
@@ -105,43 +107,43 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
    */
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
-    SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("form", "GroupFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
         ", fieldType = " + field.getTypeName());
 
     String language = PagesContext.getLanguage();
     String mandatoryImg = Util.getIcon("mandatoryField");
-    String selectUserImg = Util.getIcon("userPanel");
-    String selectUserLab = Util.getString("userPanel", language);
-    String deleteUserImg = Util.getIcon("delete");
-    String deleteUserLab = Util.getString("clearUser", language);
+    String selectGroupImg = Util.getIcon("groupPanel");
+    String selectGroupLab = Util.getString("groupPanel", language);
+    String deleteImg = Util.getIcon("delete");
+    String deleteLab = Util.getString("clearGroup", language);
 
-    String userName = "";
-    String userId = "";
+    String groupName = "";
+    String groupId = "";
     String html = "";
 
     String fieldName = template.getFieldName();
 
-    if (!field.getTypeName().equals(UserField.TYPE)) {
-      SilverTrace.info("form", "UserFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
+    if (!field.getTypeName().equals(GroupField.TYPE)) {
+      SilverTrace.info("form", "GroupFieldDisplayer.display",
+          "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
     } else {
-      userId = ((UserField) field).getUserId();
+      groupId = ((GroupField) field).getGroupId();
     }
     if (!field.isNull()) {
-      userName = field.getValue();
+      groupName = field.getValue();
     }
     html +=
         "<INPUT type=\"hidden\""
-            + " id=\"" + fieldName + UserField.PARAM_NAME_SUFFIX + "\" name=\"" + fieldName +
-            UserField.PARAM_NAME_SUFFIX + "\" value=\"" +
-            EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
+            + " id=\"" + fieldName + GroupField.PARAM_NAME_SUFFIX + "\" name=\"" + fieldName +
+            GroupField.PARAM_NAME_SUFFIX + "\" value=\"" +
+            EncodeHelper.javaStringToHtmlString(groupId) + "\" >";
 
     if (!template.isHidden()) {
       html +=
           "<INPUT type=\"text\" disabled size=\"50\" "
           + " id=\"" + fieldName + "$$name\" name=\"" + fieldName + "$$name\" value=\"" +
-          EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
+          EncodeHelper.javaStringToHtmlString(groupName) + "\" >";
     }
 
     if (!template.isHidden() && !template.isDisabled()
@@ -150,27 +152,28 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
           URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + PagesContext.getFormName()
-          + "&elementId=" + fieldName + UserField.PARAM_NAME_SUFFIX
+          + "&elementId=" + fieldName + GroupField.PARAM_NAME_SUFFIX
           + "&elementName=" + fieldName + "$$name"
-          + "&selectedUser=" + ((userId == null) ? "" : userId)
-          + "','selectUser',800,600,'');\" >";
+          + "&selectable=" + SelectionUsersGroups.GROUP
+          + "&selectedGroup=" + ((groupId == null) ? "" : groupId)
+          + "','selectGroup',800,600,'');\" >";
       html += "<img src=\""
-          + selectUserImg
+          + selectGroupImg
           + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + selectUserLab + "\" align=\"absmiddle\" title=\""
-          + selectUserLab + "\"></a>";
+          + selectGroupLab + "\" align=\"absmiddle\" title=\""
+          + selectGroupLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document." + PagesContext.getFormName() + "." + fieldName +
-          UserField.PARAM_NAME_SUFFIX + ".value='';"
+          GroupField.PARAM_NAME_SUFFIX + ".value='';"
           + "document." + PagesContext.getFormName() + "." + fieldName + "$$name" +
           ".value='';"
           + "\">";
       html += "<img src=\""
-          + deleteUserImg
+          + deleteImg
           + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + deleteUserLab + "\" align=\"absmiddle\" title=\""
-          + deleteUserLab + "\"/></a>";
+          + deleteLab + "\" align=\"absmiddle\" title=\""
+          + deleteLab + "\"/></a>";
 
       if (template.isMandatory() && PagesContext.useMandatory()) {
         html += "&nbsp;<img src=\"" + mandatoryImg
@@ -185,15 +188,15 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       FieldTemplate template,
       PagesContext pagesContext) throws FormException {
 
-    if (field.getTypeName().equals(UserField.TYPE)) {
+    if (field.getTypeName().equals(GroupField.TYPE)) {
       if (newId == null || newId.trim().equals("")) {
         field.setNull();
       } else {
-        ((UserField) field).setUserId(newId);
+        ((GroupField) field).setGroupId(newId);
       }
     } else {
-      throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-          UserField.TYPE);
+      throw new FormException("GroupFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+          GroupField.TYPE);
     }
     return new ArrayList<String>();
   }
@@ -217,7 +220,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName() + UserField.PARAM_NAME_SUFFIX;
+    String itemName = template.getFieldName() + GroupField.PARAM_NAME_SUFFIX;
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         !StringUtil.isDefined(value)) {
