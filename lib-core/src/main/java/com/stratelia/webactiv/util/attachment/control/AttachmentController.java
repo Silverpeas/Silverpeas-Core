@@ -110,7 +110,7 @@ public class AttachmentController {
    */
   public static AttachmentDetail createAttachment(AttachmentDetail attachDetail,
       boolean indexIt) {
-    return createAttachment(attachDetail, true);
+    return createAttachment(attachDetail, indexIt, true);
   }
 
   /**
@@ -1110,6 +1110,14 @@ public class AttachmentController {
     return copyAttachments(attsToCopy, foreignKeyFrom, foreignKeyTo);
   }
 
+  public static Hashtable<String, String> copyAttachment(AttachmentDetail attToCopy,
+      WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo)
+      throws AttachmentRuntimeException {
+      Vector<AttachmentDetail> attsToCopy = new Vector<AttachmentDetail>();
+      attsToCopy.add(attToCopy);
+      return copyAttachments(attsToCopy, foreignKeyFrom, foreignKeyTo);
+  }
+  
   private static Hashtable<String, String> copyAttachments(Vector<AttachmentDetail> attsToCopy,
       WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo)
       throws AttachmentRuntimeException {
