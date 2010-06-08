@@ -31,11 +31,8 @@ import java.util.List;
 import javax.ejb.EJBObject;
 
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
-import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 
 public interface StatisticBm extends EJBObject {
 

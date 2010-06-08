@@ -28,9 +28,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
@@ -47,8 +48,6 @@ import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class declaration
@@ -58,7 +57,6 @@ public class StatisticBmEJB implements SessionBean {
 
   private static final long serialVersionUID = 1L;
 
-  private final String historyRootTableName = "SB_Publication_History";
   private final String historyTableName = "SB_Statistic_History";
   private String dbName = JNDINames.STATISTIC_DATASOURCE;
 
@@ -104,7 +102,7 @@ public class StatisticBmEJB implements SessionBean {
       }
     }
   }
-  
+
   /**
    * Method declaration
    * @param userId
@@ -266,7 +264,8 @@ public class StatisticBmEJB implements SessionBean {
     UserDetail[] allUsersByComponent = users;
     UserDetail[] controlledUsers = orga.getUserDetails(readerIds);
 
-    // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant pas partis d'un rôle
+    // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant
+    // pas partis d'un rôle
     Collection<UserDetail> allUsers = new ArrayList<UserDetail>();
     int compteur = 0;
     for (int j = 0; j < allUsersByComponent.length; j++) {
@@ -275,9 +274,9 @@ public class StatisticBmEJB implements SessionBean {
     }
     for (int j = compteur; j < controlledUsers.length; j++) {
       if (!allUsers.contains(controlledUsers[j]))
-      allUsers.add(controlledUsers[j]);
+        allUsers.add(controlledUsers[j]);
     }
-    
+
     // création de la liste de tous les utilisateur ayant le droit de lecture
     Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
     for (UserDetail user : allUsers) {
