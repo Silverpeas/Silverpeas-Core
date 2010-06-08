@@ -24,6 +24,7 @@
 
 package com.silverpeas.formTemplate.ejb;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,13 +34,16 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
 
 public class FormTemplateBmEJB implements javax.ejb.SessionBean {
   public FormTemplateBmEJB() {
@@ -128,6 +132,20 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
       }
     }
     return fields;
+  }
+  
+  public String getWysiwygContent(String componentId, String objectId, String fieldName,
+	      String language) throws RemoteException{
+	  String wysiwygContent = null;
+	  try {
+		  wysiwygContent = WysiwygFCKFieldDisplayer.getContentFromFile(componentId, objectId, fieldName, language);
+	  } catch (UtilException e) {
+			throw new FormTemplateBmRuntimeException(
+		            "FormTemplateBmEJB.getWysiwigContent", SilverpeasException.ERROR,
+		            "Getting Wysiwig content for componentId = " + componentId + " and id = " + objectId
+		            + " failed !", e);
+	  }
+	  return wysiwygContent;
   }
 
   private DataRecord getRecord(String id, PublicationTemplate pub,

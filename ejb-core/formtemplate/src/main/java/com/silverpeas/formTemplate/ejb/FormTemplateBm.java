@@ -49,4 +49,7 @@ public interface FormTemplateBm extends EJBObject {
   public List getXMLFieldsForExport(String externalId, String id,
       String language) throws RemoteException;
 
+  public String getWysiwygContent(String componentId, String objectId, String fieldName,
+	      String language) throws RemoteException;
+  
 }
