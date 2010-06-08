@@ -65,12 +65,35 @@ public interface Form {
   /**
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
    * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
+   * the request. this method treats only wysiwyg fields.
+   * 
+   * @throw FormException if the field type is not a managed type.
+   * @throw FormException if the field doesn't accept the new value.
+   */
+  public List<String> updateWysiwyg(List<FileItem> items,
+      DataRecord record, PagesContext pagesContext)
+      throws FormException;
+
+  /**
+   * Updates the values of the dataRecord using the RecordTemplate to extra control information
+   * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
    * the request.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
   public List<String> update(List<FileItem> items,
       DataRecord record, PagesContext pagesContext)
+      throws FormException;
+
+  /**
+   * Updates the values of the dataRecord using the RecordTemplate to extra control information
+   * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
+   * @throw FormException if the field type is not a managed type.
+   * @throw FormException if the field doesn't accept the new value.
+   */
+  public List<String> update(List<FileItem> items,
+      DataRecord record, PagesContext pagesContext, boolean updateWysiwyg)
       throws FormException;
 
   /**

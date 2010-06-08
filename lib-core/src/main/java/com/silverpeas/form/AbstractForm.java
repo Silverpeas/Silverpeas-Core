@@ -35,6 +35,7 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -199,6 +200,17 @@ public abstract class AbstractForm implements Form {
    * @throw FormException if the field doesn't accept the new value.
    */
   public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
+     return update(items, record, pagesContext, true);
+  }
+  
+    /**
+   * Updates the values of the dataRecord using the RecordTemplate to extra control information
+   * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
+   * @throw FormException if the field type is not a managed type.
+   * @throw FormException if the field doesn't accept the new value.
+   */
+  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext, boolean updateWysiwyg) {
     List<String> attachmentIds = new ArrayList<String>();
     Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null) {
@@ -217,10 +229,12 @@ public abstract class AbstractForm implements Form {
             if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
               fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
             }
-            fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              attachmentIds.addAll(fieldDisplayer.update(items, record
-                  .getField(fieldName), fieldTemplate, pagesContext));
+            if ( (!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg ) ) {
+              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+              if (fieldDisplayer != null) {
+                attachmentIds.addAll(fieldDisplayer.update(items, record
+                    .getField(fieldName), fieldTemplate, pagesContext));
+              }
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
@@ -233,6 +247,50 @@ public abstract class AbstractForm implements Form {
     return attachmentIds;
   }
 
+  /**
+   * Updates the values of the dataRecord using the RecordTemplate to extra control information
+   * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
+   * @throw FormException if the field type is not a managed type.
+   * @throw FormException if the field doesn't accept the new value.
+   */
+  public List<String> updateWysiwyg(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
+    List<String> attachmentIds = new ArrayList<String>();
+    Iterator<FieldTemplate> itFields = null;
+    if (fieldTemplates != null) {
+      itFields = this.fieldTemplates.iterator();
+    }
+    if ((itFields != null) && (itFields.hasNext())) {
+      FieldDisplayer fieldDisplayer = null;
+      FieldTemplate fieldTemplate = null;
+      while (itFields.hasNext()) {
+        fieldTemplate = itFields.next();
+        if (fieldTemplate != null) {
+          String fieldName = fieldTemplate.getFieldName();
+          String fieldType = fieldTemplate.getTypeName();
+          String fieldDisplayerName = fieldTemplate.getDisplayerName();
+          try {
+            if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
+              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+            }
+            if ( "wysiwyg".equals(fieldDisplayerName) ) {
+              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+              if (fieldDisplayer != null) {
+                attachmentIds.addAll(fieldDisplayer.update(items, record
+                    .getField(fieldName), fieldTemplate, pagesContext));
+              }
+            }
+          } catch (FormException fe) {
+            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
+          } catch (Exception e) {
+            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
+          }
+        }
+      }
+    }
+    return attachmentIds;
+  }
+  
   @Override
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     boolean isEmpty = true;
