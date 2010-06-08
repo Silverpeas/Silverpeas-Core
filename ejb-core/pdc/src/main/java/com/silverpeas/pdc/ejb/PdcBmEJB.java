@@ -200,7 +200,21 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return axis;
   }
 
-  private List getSilverContentsByIds(List<Integer> silverContentIds) {
+  public void removeAllPositions(int silverContentId, String componentId) {
+	  List<ClassifyPosition> positions = getPositions(silverContentId, componentId);
+	  if (positions != null) {
+		  for (ClassifyPosition position : positions) {
+		    try {
+		    	getPdcBm().deletePosition(position.getPositionId(), componentId);
+		    } catch (Exception e) {
+		        throw new PdcBmRuntimeException("PdcBmEJB.getAxisHeader",
+		            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+		    }
+		  }
+	  }
+  }
+  
+  private List getSilverContentsByIds(List silverContentIds) {
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
         "root.MSG_GEN_PARAM_VALUE", "silverContentIds = " + silverContentIds);
 
