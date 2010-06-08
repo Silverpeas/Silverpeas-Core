@@ -56,13 +56,5 @@
       </method>
       <trans-attribute>Supports</trans-attribute>
     </container-transaction>
-    <container-transaction>
-      <method>
-	<ejb-name>ejb/StatisticBm</ejb-name>
-	<method-intf>Remote</method-intf>
-	<method-name>addReading</method-name>
-      </method>
-      <trans-attribute>Required</trans-attribute>
-    </container-transaction>
   </assembly-descriptor>
 </ejb-jar>
