@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
@@ -183,14 +184,15 @@ public class DynamicValueReplacement {
     // get the dynamic value corresponding to a key
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
         " key to use to get the dynamic value" + matcher.group(1));
-    DynamicValue value = DynamicValueDAO.getValidDynamicValue(conn, matcher.group(1));
+    DynamicValue value = DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher.group(1)));
 
     if (value != null) {
       SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(), "key : " +
           value.getKey() + "  value :" + value.getValue());
       // escape the first brace in the key string because it's a reserved character in regular
       // expression
-      escapementStr = matcher.group().replaceAll("\\(", "\\\\(");
+      escapementStr = matcher.group().replaceAll("\\\\", "\\\\\\\\");
+      escapementStr = escapementStr.replaceAll("\\(", "\\\\(");
       escapementStr = escapementStr.replaceAll("\\)", "\\\\)");
       SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
           " result after escaping special characters : " + escapementStr);
