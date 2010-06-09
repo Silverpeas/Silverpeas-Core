@@ -34,6 +34,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.dummy.DummyRecordSet;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordSet;
@@ -588,6 +589,17 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       RecordSet recordSet = GenericRecordSetManager
           .getRecordSet(getFormRecordSetName(formName));
 
+      /*
+       * If recordset cannot be found, form is a new Form declared after peas instanciation : add it
+       */
+      if (recordSet instanceof DummyRecordSet) {
+        Form form = getForm(formName);
+        RecordTemplate template = form.toRecordTemplate(null, null);
+        GenericRecordSetManager.createRecordSet(getFormRecordSetName(formName),
+            template);
+        recordSet = GenericRecordSetManager.getRecordSet(getFormRecordSetName(formName));
+      }
+      
       IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) recordSet
           .getRecordTemplate();
 
