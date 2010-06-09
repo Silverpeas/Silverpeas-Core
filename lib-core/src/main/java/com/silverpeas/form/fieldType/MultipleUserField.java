@@ -47,7 +47,6 @@ public class MultipleUserField implements Field {
    * The text field type name.
    */
   static public final String TYPE = "multipleUser";
-  static public final String PARAM_NAME_SUFFIX = "$$ids";
 
   /**
    * Returns the type name.

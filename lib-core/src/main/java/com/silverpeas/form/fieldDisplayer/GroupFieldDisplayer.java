@@ -135,9 +135,8 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
     }
     html +=
         "<INPUT type=\"hidden\""
-            + " id=\"" + fieldName + GroupField.PARAM_NAME_SUFFIX + "\" name=\"" + fieldName +
-            GroupField.PARAM_NAME_SUFFIX + "\" value=\"" +
-            EncodeHelper.javaStringToHtmlString(groupId) + "\" >";
+        + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
+        EncodeHelper.javaStringToHtmlString(groupId) + "\" >";
 
     if (!template.isHidden()) {
       html +=
@@ -152,7 +151,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
           URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + PagesContext.getFormName()
-          + "&elementId=" + fieldName + GroupField.PARAM_NAME_SUFFIX
+          + "&elementId=" + fieldName
           + "&elementName=" + fieldName + "$$name"
           + "&selectable=" + SelectionUsersGroups.GROUP
           + "&selectedGroup=" + ((groupId == null) ? "" : groupId)
@@ -164,8 +163,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
           + selectGroupLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + PagesContext.getFormName() + "." + fieldName +
-          GroupField.PARAM_NAME_SUFFIX + ".value='';"
+          + "document." + PagesContext.getFormName() + "." + fieldName + ".value='';"
           + "document." + PagesContext.getFormName() + "." + fieldName + "$$name" +
           ".value='';"
           + "\">";
@@ -220,7 +218,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName() + GroupField.PARAM_NAME_SUFFIX;
+    String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         !StringUtil.isDefined(value)) {

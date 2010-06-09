@@ -494,8 +494,6 @@ public class XmlSearchForm extends AbstractForm {
               String itemName = fieldTemplate.getFieldName();
               String itemValue = null;
 
-              if (fieldType.equals(UserField.TYPE))
-                itemName = itemName + UserField.PARAM_NAME_SUFFIX;
               if (Field.TYPE_FILE.equals(fieldType)) {
                 FileItem image = getParameter(items, itemName);
                 if (image != null && !image.isFormField()

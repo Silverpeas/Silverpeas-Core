@@ -46,7 +46,6 @@ public class GroupField implements Field {
    * The text field type name.
    */
   static public final String TYPE = "group";
-  static public final String PARAM_NAME_SUFFIX = "$$id";
 
   /**
    * Returns the type name.

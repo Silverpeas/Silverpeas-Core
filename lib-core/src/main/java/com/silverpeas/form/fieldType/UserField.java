@@ -42,7 +42,6 @@ public class UserField implements Field {
    * The text field type name.
    */
   static public final String TYPE = "user";
-  static public final String PARAM_NAME_SUFFIX = "$$id";
 
   /**
    * Returns the type name.

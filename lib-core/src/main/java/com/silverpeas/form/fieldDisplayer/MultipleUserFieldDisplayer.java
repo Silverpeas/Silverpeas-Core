@@ -95,7 +95,6 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
           .append(PagesContext.getFormName())
           .append("'].elements['")
           .append(fieldName)
-          .append(MultipleUserField.PARAM_NAME_SUFFIX)
           .append("'].value))) {");
 
       html.append("      errorMsg+=\"  - '")
@@ -157,7 +156,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
       userNames = field.getValue();
     }
     html.append("<INPUT type=\"hidden\" name=\"").append(fieldName)
-        .append(MultipleUserField.PARAM_NAME_SUFFIX).append("\" value=\"")
+        .append("\" value=\"")
         .append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" >");
 
     if (!template.isHidden()) {
@@ -172,7 +171,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
       html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
           .append(URLManager.getApplicationURL())
           .append("/RselectionPeasWrapper/jsp/open?formName=").append(PagesContext.getFormName())
-          .append("&elementId=").append(fieldName).append(MultipleUserField.PARAM_NAME_SUFFIX)
+          .append("&elementId=").append(fieldName)
           .append("&elementName=").append(fieldName).append("$$name")
           .append("&selectedUsers=").append(((userIds == null) ? "" : userIds))
           .append((usersOfInstanceOnly) ? "&instanceId=" + PagesContext.getComponentId() : "")
@@ -216,7 +215,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName() + MultipleUserField.PARAM_NAME_SUFFIX;
+    String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         !StringUtil.isDefined(value)) {

@@ -35,8 +35,6 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.fileupload.FileItem;
 
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
-import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -200,17 +198,18 @@ public abstract class AbstractForm implements Form {
    * @throw FormException if the field doesn't accept the new value.
    */
   public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
-     return update(items, record, pagesContext, true);
+    return update(items, record, pagesContext, true);
   }
-  
-    /**
+
+  /**
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
    * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
    * the request.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext, boolean updateWysiwyg) {
+  public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext,
+      boolean updateWysiwyg) {
     List<String> attachmentIds = new ArrayList<String>();
     Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null) {
@@ -229,7 +228,7 @@ public abstract class AbstractForm implements Form {
             if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
               fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
             }
-            if ( (!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg ) ) {
+            if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
               fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
                 attachmentIds.addAll(fieldDisplayer.update(items, record
@@ -254,7 +253,8 @@ public abstract class AbstractForm implements Form {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> updateWysiwyg(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
+  public List<String> updateWysiwyg(List<FileItem> items, DataRecord record,
+      PagesContext pagesContext) {
     List<String> attachmentIds = new ArrayList<String>();
     Iterator<FieldTemplate> itFields = null;
     if (fieldTemplates != null) {
@@ -273,7 +273,7 @@ public abstract class AbstractForm implements Form {
             if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
               fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
             }
-            if ( "wysiwyg".equals(fieldDisplayerName) ) {
+            if ("wysiwyg".equals(fieldDisplayerName)) {
               fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
                 attachmentIds.addAll(fieldDisplayer.update(items, record
@@ -290,7 +290,7 @@ public abstract class AbstractForm implements Form {
     }
     return attachmentIds;
   }
-  
+
   @Override
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     boolean isEmpty = true;
@@ -313,9 +313,6 @@ public abstract class AbstractForm implements Form {
             fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
               String itemName = fieldTemplate.getFieldName();
-              if (fieldType.equals(UserField.TYPE)) {
-                itemName = itemName + UserField.PARAM_NAME_SUFFIX;
-              }
               FileItem item = getParameter(items, itemName);
               if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
                 isEmpty = false;

@@ -132,10 +132,8 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       userName = field.getValue();
     }
     html +=
-        "<INPUT type=\"hidden\""
-            + " id=\"" + fieldName + UserField.PARAM_NAME_SUFFIX + "\" name=\"" + fieldName +
-            UserField.PARAM_NAME_SUFFIX + "\" value=\"" +
-            EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
+        "<INPUT type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
+        EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
 
     if (!template.isHidden()) {
       html +=
@@ -150,7 +148,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
           URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + PagesContext.getFormName()
-          + "&elementId=" + fieldName + UserField.PARAM_NAME_SUFFIX
+          + "&elementId=" + fieldName
           + "&elementName=" + fieldName + "$$name"
           + "&selectedUser=" + ((userId == null) ? "" : userId)
           + "','selectUser',800,600,'');\" >";
@@ -161,8 +159,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
           + selectUserLab + "\"></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "document." + PagesContext.getFormName() + "." + fieldName +
-          UserField.PARAM_NAME_SUFFIX + ".value='';"
+          + "document." + PagesContext.getFormName() + "." + fieldName + ".value='';"
           + "document." + PagesContext.getFormName() + "." + fieldName + "$$name" +
           ".value='';"
           + "\">";
@@ -217,7 +214,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
   @Override
   public List<String> update(List<FileItem> items, Field field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName() + UserField.PARAM_NAME_SUFFIX;
+    String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
         !StringUtil.isDefined(value)) {
