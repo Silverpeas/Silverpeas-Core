@@ -57,6 +57,8 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import com.stratelia.webactiv.util.JNDINames;
@@ -108,7 +110,9 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
       ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
 
       rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
+      ic.rebind(JNDINames.DATABASE_DATASOURCE, ref);
       rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
+      ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
     } catch (NamingException nex) {
       nex.printStackTrace();
     } catch (IOException nex) {
@@ -207,6 +211,7 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
   }
 
   @Override
+  @Before
   protected void onSetUp() throws Exception {
     super.onSetUp();
     System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,

@@ -43,14 +43,17 @@ public class PathTestUtil {
   public static final char SEPARATOR = File.separatorChar;
   private final static Properties TESTS_PROPS = new Properties();
   public static String BUILD_PATH = "";
+  public static String TARGET_DIR = "";
   static {
     try {
-      TESTS_PROPS.load(PathTestUtil.class.getClassLoader().
-          getResourceAsStream("maven.properties"));
-      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/',
-          SEPARATOR);
+      TESTS_PROPS.load(PathTestUtil.class.getClassLoader().getResourceAsStream(
+          "maven.properties"));
+      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/', SEPARATOR);
+      TARGET_DIR =
+          System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar;
     } catch (IOException ex) {
-      Logger.getLogger(PathTestUtil.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(PathTestUtil.class.getName())
+          .log(Level.SEVERE, null, ex);
     }
   }
 }

@@ -139,7 +139,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
 
   @Override
   protected DatabaseOperation getTearDownOperation() throws Exception {
-    return DatabaseOperation.DELETE;
+    return DatabaseOperation.DELETE_ALL;
   }
 
   @Override
