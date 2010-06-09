@@ -1,0 +1,1 @@
+la liste est = $list; separator=", "$

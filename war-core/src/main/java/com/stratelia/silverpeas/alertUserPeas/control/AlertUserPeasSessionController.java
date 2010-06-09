@@ -164,19 +164,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   }
 
   private void setNotificationContent(String message, String language) {
-    StringBuffer content = new StringBuffer(getNotificationMetaData()
-        .getContent(language));
-    SilverTrace.info("alertUserPeas",
-        "AlertUserPeasSessionController.setNotificationContent()",
-        "root.MSG_GEN_PARAM_VALUE", "language = " + language + ", content = "
-        + content.toString());
-    content.append("\n\n").append(getString("AuthorMessage")).append(" : \n\"")
-        .append(message).append("\"");
-    getNotificationMetaData().setContent(content.toString(), language);
-    SilverTrace.info("alertUserPeas",
-        "AlertUserPeasSessionController.setNotificationContent()",
-        "root.MSG_GEN_EXIT_METHOD", "content = "
-        + getNotificationMetaData().getContent(language));
+    getNotificationMetaData().addExtraMessage(message, getString("AuthorMessage"), language);
   }
 
   public void sendNotification() {
@@ -184,7 +172,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
       SilverTrace.info("alertUserPeas",
           "AlertUserPeasSessionController.sendNotification()",
           "root.MSG_GEN_PARAM_VALUE", "content_en = "
-          + getNotificationMetaData().getContent("en"));
+              + getNotificationMetaData().getContent("en"));
       m_NotificationSender.notifyUser(getNotificationMetaData());
     } catch (NotificationManagerException e) {
       SilverTrace.warn("alertUserPeas",

@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +43,12 @@ import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -55,6 +62,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 
@@ -657,7 +665,21 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         jobDomainSC.returnIntoGroup(null);
         request.setAttribute("DisplayOperations", new Boolean(jobDomainSC
             .getUserDetail().isAccessAdmin()));
+        
+        ResourceLocator rs = new ResourceLocator(
+            "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
+        Properties configuration = new Properties();
+        configuration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
+        SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
 
+        //création de la liste des domaines
+        String[][] allDomains = jobDomainSC.getAllDomains();
+        String[] domainsByList = new String[allDomains.length];
+        for (int n = 1; n < allDomains.length; n++) {
+          domainsByList[n] = allDomains[n][1];
+        }
+        request.setAttribute("Content", template.applyFileTemplate("register_" + jobDomainSC.getLanguage()));
+        
         destination = "welcome.jsp";
       } else if (function.equals("Pagination")) {
         processSelection(request, jobDomainSC);

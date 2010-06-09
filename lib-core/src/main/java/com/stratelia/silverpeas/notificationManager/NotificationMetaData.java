@@ -29,17 +29,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class NotificationMetaData implements java.io.Serializable {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+
   private int messageType;
   private Date date;
   private String sender;
@@ -51,9 +52,13 @@ public class NotificationMetaData implements java.io.Serializable {
   private Connection connection; // usefull to send notification from ejb part
   private String componentId;
   private boolean isAnswerAllowed = false;
-
+  private String fileName;
   private Hashtable<String, String> titles = new Hashtable<String, String>();
-  private Hashtable<String, String> contents = new Hashtable<String, String>();
+  private Hashtable<String, String> contents = new Hashtable<String, String>(); // <"fr",
+  // "bonjour">,
+  // <"en", "hello">
+
+  private Map<String, SilverpeasTemplate> templates;
 
   /**
    * Default Constructor
@@ -71,8 +76,16 @@ public class NotificationMetaData implements java.io.Serializable {
   public NotificationMetaData(int messageType, String title, String content) {
     reset();
     this.messageType = messageType;
+    this.templates = new HashMap<String, SilverpeasTemplate>();
+    addLanguage(I18NHelper.defaultLanguage, title, content);
+  }
 
-    addLanguage("fr", title, content);
+  public NotificationMetaData(int messageType, String title, 
+      Map<String, SilverpeasTemplate> templates, String fileName) {
+    this(messageType, title, "");
+    reset();
+    this.templates = templates;
+    this.fileName = fileName;    
   }
 
   /**
@@ -90,6 +103,8 @@ public class NotificationMetaData implements java.io.Serializable {
     connection = null;
     componentId = "";
     isAnswerAllowed = false;
+    fileName = null;
+    this.templates = new HashMap<String, SilverpeasTemplate>();
   }
 
   public void addLanguage(String language, String title, String content) {
@@ -138,8 +153,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param title the title to be set
    */
   public void setTitle(String title) {
-    // this.title = title;
-    titles.put("fr", title);
+    titles.put(I18NHelper.defaultLanguage, title);
   }
 
   public void setTitle(String title, String language) {
@@ -152,11 +166,20 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public String getTitle() {
     // return title;
-    return (String) titles.get("fr");
+    return getTitle(I18NHelper.defaultLanguage);
   }
 
   public String getTitle(String language) {
-    return (String) titles.get(language);
+    String result = "";
+    if(templates != null && ! templates.isEmpty()) {
+      SilverpeasTemplate template = templates.get(language);
+      if(template != null) {
+        result = template.applyStringTemplate(titles.get(language));
+      }
+    } else {
+     result = titles.get(language);
+    }    
+    return result;
   }
 
   /**
@@ -165,7 +188,7 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public void setContent(String content) {
     // this.content = content;
-    contents.put("fr", content);
+    contents.put(I18NHelper.defaultLanguage, content);
   }
 
   public void setContent(String content, String language) {
@@ -181,14 +204,22 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public String getContent() {
     // return content;
-    return (String) getContent("fr");
+    return getContent(I18NHelper.defaultLanguage);
   }
 
   public String getContent(String language) {
     SilverTrace.info("notificationManager",
         "NotificationMetaData.getContent()", "root.MSG_GEN_ENTER_METHOD",
         "language = " + language);
-    String result = (String) contents.get(language);
+    String result = "";
+    if(templates != null && ! templates.isEmpty()) {
+      SilverpeasTemplate template = templates.get(language);
+      if(template != null) {
+        result = template.applyFileTemplate(fileName + '_' + language);
+      }
+    } else {
+     result = (String) contents.get(language);
+    }
     SilverTrace.info("notificationManager",
         "NotificationMetaData.getContent()", "root.MSG_GEN_EXIT_METHOD",
         "result = " + result);
@@ -366,5 +397,17 @@ public class NotificationMetaData implements java.io.Serializable {
 
   public void setComponentId(String componentId) {
     this.componentId = componentId;
+  }
+
+  public void addExtraMessage(String message, String label, String language) {
+    if (templates != null && ! templates.isEmpty()) {
+      templates.get(language).setAttribute("senderMessage", message);
+    } else {
+      StringBuffer content = new StringBuffer(getContent(language));
+      if (content != null) {
+        content.append("\n\n").append(label).append(" : \n\"").append(message).append("\"");
+        setContent(content.toString(), language);
+      }
+    }
   }
 }

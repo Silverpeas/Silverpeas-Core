@@ -24,43 +24,53 @@
 
 --%>
 
-<%@ include file="check.jsp" %>
+<%@ include file="check.jsp"%>
 <%
-Boolean displayOperations = (Boolean) request.getAttribute("DisplayOperations");
+  Boolean displayOperations = (Boolean) request.getAttribute("DisplayOperations");
+  String content = (String) request.getAttribute("Content");
 
-Board board = gef.getBoard(); 
+  Board board = gef.getBoard();
 %>
 
-<HTML>
+
+
+
+<%@page import="org.antlr.stringtemplate.*"%>
+
+<%@page
+	import="org.antlr.stringtemplate.language.AngleBracketTemplateLexer"%>
+<%@page import="com.silverpeas.util.template.SilverpeasTemplate"%>
+<%@page import="com.silverpeas.util.template.SilverpeasTemplateFactory"%><HTML>
 <HEAD>
 <%
-	out.println(gef.getLookStyleSheet());
+  out.println(gef.getLookStyleSheet());
 %>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5"
+	bgcolor="#FFFFFF">
 <%
+  if (displayOperations.booleanValue()) {
+    operationPane.addOperation(resource.getIcon("JDP.domainAdd"), resource
+        .getString("JDP.domainAdd"), "displayDomainCreate");
+    operationPane.addOperation(resource.getIcon("JDP.domainSqlAdd"), resource
+        .getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
+  }
 
-if (displayOperations.booleanValue())
-{
-	operationPane.addOperation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
-	operationPane.addOperation(resource.getIcon("JDP.domainSqlAdd"), resource.getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
-}
-
-out.println(window.printBefore());
-out.println(frame.printBefore());
+  out.println(window.printBefore());
+  out.println(frame.printBefore());
 %>
 <center>
 <%
-out.println(board.printBefore());
-%>
-<div align="center" class="txtNav"><%=resource.getString("JDP.welcome") %></div>
-<%
-out.println(board.printAfter());
+  out.println(board.printBefore());
+
+  out.println(content);
+
+  out.println(board.printAfter());
 %>
 </center>
-<% 
-out.println(frame.printAfter());
-out.println(window.printAfter());
+<%
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
 </BODY>
 </HTML>
