@@ -575,9 +575,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         Float float2 = new Float(o2.getRawScore());
 
         if (float1 != null && float2 != null) {
-          return float1.compareTo(float2);
+          int result = float1.compareTo(float2);
+          if (result != 0) {
+            return result;
+          } else {
+            // Add comparaison on title in order to fix an order (problem with same raw score value)
+            String string1 = o1.getName(getLanguage());
+            String string2 = o2.getName(getLanguage());
+            if (string1 != null && string2 != null) {
+              return string1.compareToIgnoreCase(string2);
+            } else {
+              return -1;
+            }
+          }
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -591,7 +603,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         if (string1 != null && string2 != null) {
           return string1.compareToIgnoreCase(string2);
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -603,9 +615,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String string2 = o2.getCreatorName();
 
         if (string1 != null && string2 != null) {
-          return string1.compareToIgnoreCase(string2);
+          int result = string1.compareToIgnoreCase(string2);
+          if (result != 0) {
+            return result;
+          } else {
+            // Add comparaison on title in order to fix an order (problem with same author value)
+            string1 = o1.getName(getLanguage());
+            string2 = o2.getName(getLanguage());
+            if (string1 != null && string2 != null) {
+              return string1.compareToIgnoreCase(string2);
+            } else {
+              return -1;
+            }
+          }
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -617,9 +641,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String string2 = o2.getCreationDate();
 
         if (string1 != null && string2 != null) {
-          return string1.compareTo(string2);
+          int result = string1.compareTo(string2);
+          if (result != 0) {
+            return result;
+          } else {
+            // Add comparaison on title in order to fix an order (problem with same creation date value)
+            string1 = o1.getName(getLanguage());
+            string2 = o2.getName(getLanguage());
+            if (string1 != null && string2 != null) {
+              return string1.compareToIgnoreCase(string2);
+            } else {
+              return -1;
+            }
+          }
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -631,9 +667,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String string2 = o2.getDate();
 
         if (string1 != null && string2 != null) {
-          return string1.compareTo(string2);
+          int result = string1.compareTo(string2);
+          if (result != 0) {
+            return result;
+          } else {
+            // Add comparaison on title in order to fix an order (problem with same update date value)
+            string1 = o1.getName(getLanguage());
+            string2 = o2.getName(getLanguage());
+            if (string1 != null && string2 != null) {
+              return string1.compareToIgnoreCase(string2);
+            } else {
+              return -1;
+            }
+          }
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -645,9 +693,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String string2 = o2.getLocation();
 
         if (string1 != null && string2 != null) {
-          return string1.compareToIgnoreCase(string2);
+          int result = string1.compareToIgnoreCase(string2);
+          if (result != 0) {
+            return result;
+          } else {
+            // Add comparaison on title in order to fix an order (problem with same empl value)
+            string1 = o1.getName(getLanguage());
+            string2 = o2.getName(getLanguage());
+            if (string1 != null && string2 != null) {
+              return string1.compareToIgnoreCase(string2);
+            } else {
+              return -1;
+            }
+          }
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -659,9 +719,21 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         Integer pop2 = Integer.valueOf(o2.getHits());
 
         if (pop1 != null && pop2 != null) {
-          return pop1.compareTo(pop2);
+          int result = pop1.compareTo(pop2);
+          if (result != 0) {
+            return result;
+          } else {
+            // Add comparaison on title in order to fix an order (problem with same popularity value)
+            String string1 = o1.getName(getLanguage());
+            String string2 = o2.getName(getLanguage());
+            if (string1 != null && string2 != null) {
+              return string1.compareToIgnoreCase(string2);
+            } else {
+              return -1;
+            }
+          }
         } else {
-          return 0;
+          return -1;
         }
       }
     };
@@ -742,10 +814,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private boolean isPopularityCompliant(GlobalSilverResult gsr) {
     if (gsr != null &&
         (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith("kmelia") ||
-            gsr.getInstanceId().startsWith("kmax") || gsr
-            .getInstanceId().startsWith("toolbox"))) &&
+        gsr.getInstanceId().startsWith("kmax") || gsr
+        .getInstanceId().startsWith("toolbox"))) &&
         ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.getURL()
-            .indexOf("Publication") != -1))) {
+        .indexOf("Publication") != -1))) {
       return true;
     }
     return false;
