@@ -22,12 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.util.List;
 
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -41,16 +37,13 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
 
   private String currentView = "P";
   private Axis currentAxis = null;
   private PdcBm pdcBm = null;
-
-  private String componentId = null;
-  private String currentComponentLabel = null;
-  private String currentSpaceLabel = null;
 
   // PDC field manager.
   private PdcFieldTemplateManager pdcFieldTemplateManager = new PdcFieldTemplateManager();
@@ -63,26 +56,26 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
   public void init(String componentId) {
     pdcFieldTemplateManager.reset();
     if (componentId != null) {
-      if (this.componentId == null) {
-        this.componentId = componentId;
+      if (this.getComponentId() == null) {
+        this.context.setCurrentComponentId(componentId);
       } else {
-        if (!this.componentId.equals(componentId)) {
+        if (!this.getComponentId().equals(componentId)) {
           currentView = "P";
           currentAxis = null;
-          this.componentId = componentId;
+          this.context.setCurrentComponentId(componentId);
         }
       }
       OrganizationController orga = getOrganizationController();
       ComponentInst componentInst = orga.getComponentInst(componentId);
-      currentComponentLabel = componentInst.getLabel();
-      String currentSpaceId = componentInst.getDomainFatherId();
-      SpaceInst spaceInst = orga.getSpaceInstById(currentSpaceId);
-      currentSpaceLabel = spaceInst.getName();
+      this.context.setCurrentComponentLabel(componentInst.getLabel());
+      this.context.setCurrentSpaceId(componentInst.getDomainFatherId());
+      SpaceInst spaceInst = orga.getSpaceInstById(getSpaceId());
+      this.context.setCurrentSpaceName(spaceInst.getName());
     }
   }
 
   public void init() {
-    componentId = null;
+    this.context.setCurrentComponentId(null);
     currentView = "P";
     currentAxis = null;
   }
@@ -92,14 +85,6 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
       pdcBm = (PdcBm) new PdcBmImpl();
     }
     return pdcBm;
-  }
-
-  public String getComponentLabel() {
-    return this.currentComponentLabel;
-  }
-
-  public String getSpaceLabel() {
-    return this.currentSpaceLabel;
   }
 
   public void setCurrentView(String view) throws PdcException {
@@ -152,7 +137,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
     if (pdcFieldTemplateManager.isEnabled()) {
       return pdcFieldTemplateManager.getUsedAxisList();
     } else {
-      return getPdcBm().getUsedAxisByInstanceId(componentId);
+      return getPdcBm().getUsedAxisByInstanceId(getComponentId());
     }
   }
 
@@ -162,7 +147,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
       pdcFieldTemplateManager.addUsedAxis(usedAxis);
       return 0;
     } else {
-      usedAxis.setInstanceId(componentId);
+      usedAxis.setInstanceId(getComponentId());
       return getPdcBm().addUsedAxis(usedAxis);
     }
   }
@@ -172,7 +157,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
       pdcFieldTemplateManager.updateUsedAxis(usedAxis);
       return 0;
     } else {
-      usedAxis.setInstanceId(componentId);
+      usedAxis.setInstanceId(getComponentId());
       usedAxis.setAxisId(new Integer(getCurrentAxis().getAxisHeader().getPK().getId()).intValue());
       return getPdcBm().updateUsedAxis(usedAxis);
     }

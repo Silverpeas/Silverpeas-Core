@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.clipboardPeas.control;
 
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -61,8 +62,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * Attributes from the caller component (paste operation)
    */
   private String m_CallerRooterName;
-  private String m_CallerComponentId;
-  private String m_CallerSpaceId;
   private String m_CallerJSPPage;
   private String m_CallerTargetFrame;
 
@@ -75,6 +74,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
   /**
    * The ClipboardSessionController is built empty and will be later initialized.
+   * @param mainSessionCtrl 
+   * @param context
    */
   public ClipboardSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
@@ -85,8 +86,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Method getCounter
+   * Method getCounter
    * @return
    * @see
    */
@@ -95,9 +95,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Method incCounter
-   * @return
+   * Method incCounter
+   * @param inc
    * @see
    */
   public void incCounter(int inc) {
@@ -105,9 +104,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Method doIdle
-   * @return
+   * Method doIdle
+   * @param nbinc
    * @see
    */
   public void doIdle(int nbinc) {
@@ -115,8 +113,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Method getJavaScriptTask
+   * Method getJavaScriptTask
+   * @param request
    * @return
    * @see
    */
@@ -150,12 +148,11 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         String TargetFrame = request.getParameter("TargetFrame");
         String JSPPage = request.getParameter("JSPPage");
 
-        str.append("document.refreshform.action = '../.."
-            + URLManager.getURL(null, Space, Component) + JSPPage + "';");
-        str.append("document.refreshform.Space.value = '" + Space + "';");
-        str.append("document.refreshform.Component.value = '" + Component
-            + "';");
-        str.append("document.refreshform.target = '" + TargetFrame + "';");
+        str.append("document.refreshform.action = '../..").
+            append(URLManager.getURL(null, Space, Component)).append(JSPPage).append("';");
+        str.append("document.refreshform.Space.value = '").append(Space).append("';");
+        str.append("document.refreshform.Component.value = '").append(Component).append("';");
+        str.append("document.refreshform.target = '").append(TargetFrame).append("';");
         str.append("document.refreshform.submit();");
       } else if (message.equals("IDLE")) {
         com.stratelia.silverpeas.notificationserver.channel.server.SilverMessage serverMessage =
@@ -171,10 +168,9 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
             str.append(EncodeHelper.javaStringToJsString(serverMessage
                 .getContent()));
             str.append("');");
-            str
-                .append("self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID="
-                    +
-                    serverMessage.getID() + "';");
+            str.append("self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID=").
+                append(serverMessage.getID())
+                .append("';");
           } else if (serverMessage.getWhat().equals("JAVASCRIPT")) {
             str.append(EncodeHelper.javaStringToJsString(serverMessage
                 .getContent()));
@@ -197,17 +193,15 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
                   "ClipboardSessionController.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", " MessageID = "
                   + popupMessage.getID());
-              str.append("msgPopup = SP_openWindow('../.."
-                  + URLManager.getURL(URLManager.CMP_POPUP)
-                  + "ReadMessage.jsp?MessageID=" + popupMessage.getID()
-                  + "','popupmsg" + new Long(new Date().getTime()).toString()
-                  + "',500,260,'scrollbars=yes');");
+              str.append("msgPopup = SP_openWindow('../..").
+                  append(URLManager.getURL(URLManager.CMP_POPUP)).
+                  append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
+                  append("','popupmsg").
+                  append(new Long(new Date().getTime()).toString()).append("',500,260,'scrollbars=yes');");
             } else if (popupMessage.getWhat().equals("JAVASCRIPT")) {
               str.append(EncodeHelper.javaStringToJsString(popupMessage
                   .getContent()));
-            }
-            // CBO : ADD
-            else if (popupMessage.getWhat().equals("COMMUNICATION")) {
+            } else if (popupMessage.getWhat().equals("COMMUNICATION")) {
               SilverTrace.info("clipboardPeas",
                   "ClipboardSessionController.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE",
@@ -218,14 +212,12 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
                   "root.MSG_GEN_PARAM_VALUE", " userId = "
                   + popupMessage.getSenderId());
               request.setAttribute("MessageID", popupMessage.getID());
-              str.append("OpenDiscussion('../.."
-                  + URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER)
-                  + "OpenDiscussion?userId=" + popupMessage.getSenderId()
-                  + "&MessageID=" + popupMessage.getID() + "','popupDiscussion"
-                  + popupMessage.getSenderId()
-                  + "',650,400,'menubar=no,scrollbars=no,statusbar=no');");
+              str.append("OpenDiscussion('../..").
+                  append(URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER)).
+                  append("OpenDiscussion?userId=").append(popupMessage.getSenderId()).
+                  append("&MessageID=").append(popupMessage.getID()).append("','popupDiscussion").
+                  append(popupMessage.getSenderId()).append("',650,400,'menubar=no,scrollbars=no,statusbar=no');");
             }
-            // CBO : FIN ADD
           }
         }
       } else if (message.equals("DELMSG")) {
@@ -247,14 +239,13 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Method getJavaScriptTask
+   * Method getJavaScriptTask
    * @return
    * @see
    */
   public String getHF_HTMLForm(HttpServletRequest request) {
     String message = request.getParameter("message");
-    StringBuffer str = new StringBuffer("");
+    StringBuilder str = new StringBuilder("");
 
     if (message != null) {
       if (message.equals("ALERT")) {
@@ -291,15 +282,16 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   /**
    *Return the list of object (IndexEntry format) in clipboard.
    * @return the list of object (IndexEntry format) in clipboard.
+   * @throws java.rmi.RemoteException
    */
   public synchronized Collection getIndexEntryObjects() throws java.rmi.RemoteException {
     SilverTrace.info("clipboardPeas",
         "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_ENTER_METHOD");
-    ArrayList result = new ArrayList();
-    Iterator qi = getClipboardObjects().iterator();
+    List<IndexEntry> result = new ArrayList<IndexEntry>();
+    Iterator<Transferable> qi = (Iterator<Transferable>) getClipboardObjects().iterator();
     while (qi.hasNext()) {
-      Transferable clipObject = (Transferable) qi.next();
+      Transferable clipObject =  qi.next();
 
       if ((clipObject != null)
           && (clipObject.isDataFlavorSupported(ClipboardSelection.IndexFlavor))) {
@@ -314,7 +306,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
               "ClipboardSessionController.getIndexEntryObjects()",
               "root.EX_CLIPBOARD_PASTE_FAILED", "", e);
         }
-        // result.add (clipObject);
       }
     }
     SilverTrace.info("clipboardPeas",
@@ -326,13 +317,16 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   /**
    * Return the list of object in clipboard.
    * @return the list of object in clipboard.
+   * @throws java.rmi.RemoteException
+   * @throws javax.naming.NamingException
+   * @throws java.sql.SQLException
    */
   public synchronized Collection getObjects() throws java.rmi.RemoteException,
       javax.naming.NamingException, java.sql.SQLException {
-    ArrayList result = new ArrayList();
-    Iterator qi = getClipboardObjects().iterator();
+    List<ClipboardSelection> result = new ArrayList<ClipboardSelection>();
+    Iterator<ClipboardSelection> qi = (Iterator<ClipboardSelection>) getClipboardObjects().iterator();
     while (qi.hasNext()) {
-      ClipboardSelection clipObject = (ClipboardSelection) qi.next();
+      ClipboardSelection clipObject = qi.next();
       result.add(clipObject);
     }
     return result;
@@ -349,116 +343,93 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
   /**
    * Returns the label of the given domain/space
+   * @param spaceId
    * @return the label of the given domain/space
    */
   public String getSpaceLabel(String spaceId) {
     SpaceInst spaceInst = getOrganizationController().getSpaceInstById(spaceId);
-
     if (spaceInst != null) {
       return spaceInst.getName();
-    } else {
+    } 
       return spaceId;
-    }
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Returns the label of the given component
+   * Returns the label of the given component
+   * @param componentId 
+   * @return
    */
   public String getComponentLabel(String componentId) {
-    ComponentInst componentInst = getOrganizationController().getComponentInst(
-        componentId);
-
+    ComponentInst componentInst = getOrganizationController().getComponentInst(componentId);
     if (componentInst != null) {
       if (componentInst.getLabel().length() > 0) {
         return componentInst.getLabel();
-      } else {
-        return componentInst.getName();
       }
-    } else {
-      SilverTrace.error("clipboardPeas",
-          "ClipboardSessionController.getComponentLabel()",
-          "clipboardPeas.EX_CANT_GET_COMPO_LABEL");
-
-      return componentId;
+      return componentInst.getName();
     }
+    SilverTrace.error("clipboardPeas", "ClipboardSessionController.getComponentLabel()",
+          "clipboardPeas.EX_CANT_GET_COMPO_LABEL");
+    return componentId;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * @param rooterName
    */
-  public void setComponentRooterName(String RooterName) {
-    m_CallerRooterName = RooterName;
+  public void setComponentRooterName(String rooterName) {
+    m_CallerRooterName = rooterName;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   *
    */
-  public void setSpaceId(String SpaceId) {
-    m_CallerSpaceId = SpaceId;
+  public void setSpaceId(String spaceId) {
+    this.context.setCurrentSpaceId(spaceId);
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   *
    */
-  public void setComponentId(String ComponentId) {
-    m_CallerComponentId = ComponentId;
+  public void setComponentId(String componentId) {
+    this.context.setCurrentComponentId(componentId);
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   *
+   * @param JSPPage 
    */
   public void setJSPPage(String JSPPage) {
     m_CallerJSPPage = JSPPage;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   *
+   * @param TargetFrame
    */
   public void setTargetFrame(String TargetFrame) {
     m_CallerTargetFrame = TargetFrame;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   *
+   * @return
    */
   public String getComponentRooterName() {
     return m_CallerRooterName;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
-  public String getSpaceId() {
-    return m_CallerSpaceId;
-  }
+
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
-  public String getComponentId() {
-    return m_CallerComponentId;
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   *
+   * @return
    */
   public String getJSPPage() {
     return m_CallerJSPPage;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * 
+   * @return
    */
   public String getTargetFrame() {
     return m_CallerTargetFrame;

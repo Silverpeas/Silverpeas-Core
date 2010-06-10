@@ -21,13 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import java.net.URLEncoder;
-import java.util.List;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
@@ -37,15 +34,19 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Base class for all component session controller.
  */
 public class AbstractComponentSessionController implements ComponentSessionController {
+
   private MainSessionController controller = null;
-  private ComponentContext context = null;
+  protected ComponentContext context = null;
   private String rootName = null;
   private ResourceLocator message = null;
   private ResourceLocator icon = null;
@@ -121,6 +122,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     this.settingsFile = settingsFileName;
   }
 
+  @Override
   public ResourceLocator getMultilang() {
     SilverTrace.info("peasCore",
         "AbstractComponentSessionController.getMultilang()",
@@ -134,6 +136,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return message;
   }
 
+  @Override
   public ResourceLocator getIcon() {
     if (icon != null
         && !icon.getLanguage().equals(controller.getFavoriteLanguage())) {
@@ -143,6 +146,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return icon;
   }
 
+  @Override
   public ResourceLocator getSettings() {
     if (settings == null && settingsFile != null) {
       settings = new ResourceLocator(settingsFile, "fr");
@@ -152,10 +156,10 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   /**
    * Method declaration
-   * @param resourceFileName
+   * @param multilangFileName 
    * @see
    */
-  public void setMultilangFileName(String multilangFileName) {
+  public final void setMultilangFileName(String multilangFileName) {
     messageFile = multilangFileName;
     if (messageFile != null) {
       try {
@@ -186,7 +190,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @param resourceFileName
    * @see
    */
-  public void setIconFileName(String iconFileName) {
+  public final void setIconFileName(String iconFileName) {
     iconFile = iconFileName;
     if (iconFile != null) {
       try {
@@ -217,7 +221,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @param resourceFileName
    * @see
    */
-  public void setResourceFileName(String resourceFileName) {
+  public final void setResourceFileName(String resourceFileName) {
     SilverTrace.info("peasCore",
         "AbstractComponentSessionController.setResourceFileName()",
         "root.MSG_GEN_PARAM_VALUE", "File=" + resourceFileName);
@@ -286,7 +290,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public OrganizationController getOrganizationController() {
-    return getMainSessionController().getOrganizationController();
+    return controller.getOrganizationController();
   }
 
   /**
@@ -294,11 +298,11 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public String getLanguage() {
-    return getMainSessionController().getFavoriteLanguage();
+    return controller.getFavoriteLanguage();
   }
 
   public String getFavoriteSpace() {
-    return getMainSessionController().getFavoriteSpace();
+    return controller.getFavoriteSpace();
   }
 
   /**
@@ -306,21 +310,21 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   public void setLanguageToMainSessionController(String newLanguage) {
     // change the language into the mainSessionController
-    getMainSessionController().setFavoriteLanguage(newLanguage);
+    controller.setFavoriteLanguage(newLanguage);
   }
 
   /**
    * The utilization of this method is allowed only for PersonalizationSessionController
    */
   public void setFavoriteSpaceToMainSessionController(String newSpace) {
-    getMainSessionController().setFavoriteSpace(newSpace);
+    controller.setFavoriteSpace(newSpace);
   }
 
   /**
    * Return the user language
    */
   public String getLook() {
-    return getMainSessionController().getFavoriteLook();
+    return controller.getFavoriteLook();
   }
 
   /**
@@ -328,7 +332,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public UserDetail getUserDetail() {
-    return getMainSessionController().getCurrentUserDetail();
+    return controller.getCurrentUserDetail();
   }
 
   public UserDetail getUserDetail(String userId) {
@@ -366,21 +370,21 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   /**
    * Return the component label (as known by the user)
    */
-  public String getComponentLabel() {
+  public final String getComponentLabel() {
     return context.getCurrentComponentLabel();
   }
 
   /**
    * Return the component id
    */
-  public String getComponentId() {
+  public final String getComponentId() {
     return context.getCurrentComponentId();
   }
 
   /**
    * return the component Url : For Old Components' use ONLY ! (use it in the jsp:forward lines)
    */
-  public String getComponentUrl() {
+  public final String getComponentUrl() {
     return URLManager.getURL(rootName, getSpaceId(), getComponentId());
   }
 
@@ -388,7 +392,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * return the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears
    * in the URL's root (the 'R' prefix is added later when needed))
    */
-  public String getComponentRootName() {
+  public final String getComponentRootName() {
     return rootName;
   }
 
@@ -397,7 +401,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * the URL's root (the 'R' prefix is added later when needed)) this function is called by the
    * class of non-instanciable components the inherits from this class
    */
-  protected void setComponentRootName(String newRootName) {
+  protected final void setComponentRootName(String newRootName) {
     rootName = newRootName;
   }
 
@@ -406,7 +410,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public List getComponentParameters() {
-    return getMainSessionController().getComponentParameters(getComponentId());
+    return controller.getComponentParameters(getComponentId());
   }
 
   /**
@@ -414,7 +418,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public String getComponentParameterValue(String parameterName) {
-    return getMainSessionController().getComponentParameterValue(
+    return controller.getComponentParameterValue(
         getComponentId(), parameterName);
   }
 
@@ -423,7 +427,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public String[] getUserAvailComponentIds() {
-    return getMainSessionController().getUserAvailComponentIds();
+    return controller.getUserAvailComponentIds();
   }
 
   /**
@@ -431,15 +435,15 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public String[] getUserAvailSpaceIds() {
-    return getMainSessionController().getUserAvailSpaceIds();
+    return controller.getUserAvailSpaceIds();
   }
 
   public String[] getUserManageableSpaceIds() {
-    return getMainSessionController().getUserManageableSpaceIds();
+    return controller.getUserManageableSpaceIds();
   }
 
   public List getUserManageableGroupIds() {
-    return getMainSessionController().getUserManageableGroupIds();
+    return controller.getUserManageableGroupIds();
   }
 
   public boolean isGroupManager() {
@@ -476,64 +480,64 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   @Override
   public synchronized PersonalizationBm getPersonalization() {
-    return getMainSessionController().getPersonalization();
+    return controller.getPersonalization();
   }
 
   public void initPersonalization() {
-    getMainSessionController().initPersonalization();
+    controller.initPersonalization();
   }
 
   public String getUserAccessLevel() {
-    return getMainSessionController().getUserAccessLevel();
+    return controller.getUserAccessLevel();
   }
 
   public void setGenericPanel(String panelKey, GenericPanel panel) {
-    getMainSessionController().setGenericPanel(panelKey, panel);
+    controller.setGenericPanel(panelKey, panel);
   }
 
   public GenericPanel getGenericPanel(String panelKey) {
-    return getMainSessionController().getGenericPanel(panelKey);
+    return controller.getGenericPanel(panelKey);
   }
 
   public Selection getSelection() {
-    return getMainSessionController().getSelection();
+    return controller.getSelection();
   }
 
   public AlertUser getAlertUser() {
-    return getMainSessionController().getAlertUser();
+    return controller.getAlertUser();
   }
 
   // Maintenance Mode
   @Override
   public boolean isAppInMaintenance() {
-    return getMainSessionController().isAppInMaintenance();
+    return controller.isAppInMaintenance();
   }
 
   @Override
   public void setAppModeMaintenance(boolean mode) {
-    getMainSessionController().setAppModeMaintenance(mode);
+    controller.setAppModeMaintenance(mode);
   }
 
   @Override
   public boolean isSpaceInMaintenance(String spaceId) {
-    return getMainSessionController().isSpaceInMaintenance(spaceId);
+    return controller.isSpaceInMaintenance(spaceId);
   }
 
   @Override
   public void setSpaceModeMaintenance(String spaceId, boolean mode) {
-    getMainSessionController().setSpaceModeMaintenance(spaceId, mode);
+    controller.setSpaceModeMaintenance(spaceId, mode);
   }
 
   public String getServerNameAndPort() {
-    return getMainSessionController().getServerNameAndPort();
+    return controller.getServerNameAndPort();
   }
 
   public List getLastResults() {
-    return getMainSessionController().getLastResults();
+    return controller.getLastResults();
   }
 
   public void setLastResults(List results) {
-    getMainSessionController().setLastResults(results);
+    controller.setLastResults(results);
   }
 
   public void close() {
@@ -544,17 +548,22 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   public String getRSSUrl() {
-    return "/rss"
-        + getComponentRootName()
-        + "/"
-        + getComponentId()
-        + "?userId="
-        + getUserId()
-        + "&login="
-        + URLEncoder.encode(getUserDetail().getLogin())
-        + "&password="
-        + URLEncoder.encode(controller.getOrganizationController().getUserFull(
-        getUserId()).getPassword());
+    StringBuilder builder = new StringBuilder();
+    builder.append("/rss").append(getComponentRootName()).append('/').append(getComponentId());
+    builder.append("?userId=").append(getUserId()).append("&login=");
+    builder.append(getUrlEncodedParameter(getUserDetail().getLogin()));
+    builder.append("&password=");
+    builder.append(getUrlEncodedParameter(controller.getOrganizationController().getUserFull(
+        getUserId()).getPassword()));
+    return builder.toString();
+  }
+
+  protected String getUrlEncodedParameter(String param) {
+    try {
+      return URLEncoder.encode(param, "UTF-8");
+    } catch (UnsupportedEncodingException ex) {
+      return param;
+    }
   }
 
   @Override

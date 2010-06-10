@@ -33,7 +33,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
  * @version
  */
 public class FormTemplateSessionController extends AbstractComponentSessionController {
-  private String componentId;
   private String objectId;
   private String objectType;
   private String xmlFormName;
@@ -46,13 +45,8 @@ public class FormTemplateSessionController extends AbstractComponentSessionContr
     super(mainSessionCtrl, context, "com.silverpeas.form.multilang.formBundle", null, null);
   }
 
-  @Override
-  public String getComponentId() {
-    return componentId;
-  }
-
   public void setComponentId(String componentId) {
-    this.componentId = componentId;
+    this.context.setCurrentComponentId(componentId);
   }
 
   public String getObjectId() {

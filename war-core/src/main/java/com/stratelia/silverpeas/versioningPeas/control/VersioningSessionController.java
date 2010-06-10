@@ -126,10 +126,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   private Document document = null;
   private HashMap<String, Reader> noReaderMap = new HashMap<String, Reader>();
 
-  private String spaceId = null;
-  private String componentId = null;
-  private String spaceLabel = null;
-  private String componentLabel = null;
   private String nodeId = null;
   private boolean topicRightsEnabled = false;
   private String xmlForm = null;
@@ -177,10 +173,10 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public void setAttributesContext(String spaceId, String componentId,
       String spaceLabel, String componentLabel) {
-    this.spaceId = spaceId;
-    this.componentId = componentId;
-    this.spaceLabel = spaceLabel;
-    this.componentLabel = componentLabel;
+    this.context.setCurrentSpaceId(spaceId);
+    this.context.setCurrentComponentId(componentId);
+    this.context.setCurrentSpaceName(spaceLabel);
+    this.context.setCurrentComponentLabel(componentLabel);
   }
 
   public void setAttributesContext(String nodeId, boolean topicRightsEnabled) {
@@ -190,41 +186,32 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to set attributes for UserPanel
-   * @return void
-   * @exception
+   * @param spaceId 
+   * @param componentLabel
+   * @param componentId
+   * @param spaceLabel
+   * @param topicRightsEnabled
+   * @param nodeId
    * @author Michael Nikolaenko
    * @version 1.0
    */
   public void setAttributesContext(String spaceId, String componentId,
       String spaceLabel, String componentLabel, String nodeId,
       boolean topicRightsEnabled) {
-    this.spaceId = spaceId;
-    this.componentId = componentId;
-    this.spaceLabel = spaceLabel;
-    this.componentLabel = componentLabel;
+    this.context.setCurrentSpaceId(spaceId);
+    this.context.setCurrentComponentId(componentId);
+    this.context.setCurrentSpaceName(spaceLabel);
+    this.context.setCurrentComponentLabel(componentLabel);
     this.nodeId = nodeId;
     this.topicRightsEnabled = topicRightsEnabled;
   }
 
-  public String getSpaceId() {
-    return spaceId;
-  }
 
-  public String getComponentId() {
-    return componentId;
-  }
 
   public void setComponentId(String compomentId) {
-    this.componentId = compomentId;
+    this.context.setCurrentComponentId(compomentId);
   }
 
-  public String getSpaceLabel() {
-    return spaceLabel;
-  }
-
-  public String getComponentLabel() {
-    return componentLabel;
-  }
 
   public void setProfile(String profile) {
     currentProfile = profile;
@@ -576,8 +563,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * Constructor
-   * @return
-   * @exception
+   * @param mainSessionCtrl 
    * @author Michael Nikolaenko
    * @version 1.0
    */
@@ -591,30 +577,27 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * to get attributes for userpanel
    * @return UserDetail
-   * @exception
    * @author Michael Nikolaenko
    * @version 1.0
    */
   public List<String> getAttributeContext() {
     List<String> al = new ArrayList<String>();
-    al.add(spaceId);
-    al.add(componentId);
-    al.add(spaceLabel);
-    al.add(componentLabel);
-
+    al.add(getSpaceId());
+    al.add(getComponentId());
+    al.add(getSpaceLabel());
+    al.add(getComponentLabel());
     return al;
   }
 
   /**
    * to get all readers
    * @return HashMap
-   * @exception
    * @author Michael Nikolaenko
    * @version 1.0
    */
   public Map<String, Reader> getUsersReader() {
     OrganizationController orgCntr = getOrganizationController();
-    ComponentInst componentInst = orgCntr.getComponentInst(componentId);
+    ComponentInst componentInst = orgCntr.getComponentInst(getComponentId());
     Map<String, Reader> mapRead = new HashMap<String, Reader>();
     ProfileInst profileInst = null;
     // Get profile instance for "user" profile
@@ -1123,18 +1106,18 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param document the document for which access is checked.
    * @param userId the unique id of the user
    * @return true if the user has access - false otherwise.
+   * @throws RemoteException 
    */
   public boolean hasAccess(Document document, String userId)
       throws RemoteException {
-    if (!useRights())
+    if (!useRights()) {
       return true;
+    }
     return isReader(document, userId);
   }
 
   private boolean useRights() {
-    if (componentId != null && !componentId.startsWith("kmelia"))
-      return false;
-    return true;
+    return getComponentId() == null || getComponentId().startsWith("kmelia");
   }
 
   /**

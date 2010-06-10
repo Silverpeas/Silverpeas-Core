@@ -48,10 +48,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
   private List<String> currentSilverObjectIds = null;
-  private String currentComponentId = null;
-  private String currentComponentLabel = null;
-  private String currentComponentName = null;
-  private String currentSpaceLabel = null;
   private PdcBm pdcBm = null;
   private boolean sendSubscriptions = true;
 
@@ -89,8 +85,9 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public void addCurrentSilverObjectId(String silverObjectId) {
-    if (currentSilverObjectIds == null)
+    if (currentSilverObjectIds == null) {
       currentSilverObjectIds = new ArrayList<String>();
+    }
     currentSilverObjectIds.add(silverObjectId);
   }
 
@@ -99,8 +96,9 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public void clearCurrentSilverObjectIds() {
-    if (currentSilverObjectIds != null)
+    if (currentSilverObjectIds != null) {
       currentSilverObjectIds.clear();
+    }
   }
 
   public void setCurrentComponentId(String componentId) {
@@ -108,26 +106,19 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     ComponentInst componentInst = orga.getComponentInst(componentId);
     String currentSpaceId = componentInst.getDomainFatherId();
     SpaceInst spaceInst = orga.getSpaceInstById(currentSpaceId);
-    currentComponentId = componentId;
-    currentComponentLabel = componentInst.getLabel();
-    currentComponentName = componentInst.getName();
-    currentSpaceLabel = spaceInst.getName();
+    this.context.setCurrentComponentId(componentId);
+    this.context.setCurrentComponentLabel(componentInst.getLabel());
+    this.context.setCurrentComponentName(componentInst.getName());
+    this.context.setCurrentSpaceName(spaceInst.getName());
   }
 
-  public String getComponentLabel() {
-    return this.currentComponentLabel;
-  }
-
-  public String getSpaceLabel() {
-    return this.currentSpaceLabel;
-  }
 
   public String getCurrentComponentId() {
-    return currentComponentId;
+    return this.getComponentId();
   }
 
   public String getCurrentComponentName() {
-    return currentComponentName;
+    return this.getComponentName();
   }
 
   public List<UsedAxis> getUsedAxisToClassify() throws PdcException {
@@ -150,7 +141,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
       } else if (getCurrentSilverObjectIds() != null) {
         String silverObjectId = null;
         for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
-          silverObjectId = (String) getCurrentSilverObjectIds().get(i);
+          silverObjectId = getCurrentSilverObjectIds().get(i);
           getPdcBm().addPosition(Integer.parseInt(silverObjectId), position,
               getCurrentComponentId(), isSendSubscriptions());
         }
