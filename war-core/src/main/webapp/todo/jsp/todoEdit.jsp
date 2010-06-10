@@ -198,7 +198,7 @@ function deleteConfirm(name)
 
 function editStartDay()
 {
-                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem=4";
+                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem=3";
                 largeur = "180";
                 hauteur = "200";
                 SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
@@ -206,7 +206,7 @@ function editStartDay()
 
 function editEndDay()
 {
-                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem=5";
+                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem=4";
                 largeur = "180";
                 hauteur = "200";
                 SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
