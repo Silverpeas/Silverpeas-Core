@@ -4531,6 +4531,8 @@ public class Admin extends Object {
             List<String> groupIds = profile.getAllGroups();
             for (String groupId : groupIds) {
               List<String> subGroupIds = m_GroupManager.getAllSubGroupIdsRecursively(groupId);
+              // add current group
+              subGroupIds.add(groupId);
               if (subGroupIds != null && subGroupIds.size() > 0) {
                 UserDetail[] users = m_UserManager.getAllUsersOfGroups(subGroupIds);
                 for (int u = 0; u < users.length; u++) {
@@ -6396,6 +6398,7 @@ public class Admin extends Object {
           List<String> groupIds = profile.getAllGroups();
           List<String> allGroupIds = new ArrayList<String>();
           for (String groupId : groupIds) {
+            allGroupIds.add(groupId);
             allGroupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
           }
           userIds.addAll(m_UserManager.getAllUserIdsOfGroups(allGroupIds));
@@ -6447,6 +6450,7 @@ public class Admin extends Object {
     List<String> groupIds = profile.getAllGroups();
     List<String> allGroupIds = new ArrayList<String>();
     for (String groupId : groupIds) {
+      allGroupIds.add(groupId);
       allGroupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
     }
     userIds.addAll(m_UserManager.getAllUserIdsOfGroups(allGroupIds));
