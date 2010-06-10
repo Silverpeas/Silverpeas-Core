@@ -129,7 +129,7 @@
           autServer0.SQLAccessLogin=postgres
           autServer0.SQLAccessPasswd=postgres
           autServer0.SQLDriverClass=org.postgresql.Driver
-          autServer0.SQLUserTableName=DomainSP_User
+          autServer0.SQLUserTableName=st_user
           autServer0.SQLUserLoginColumnName=login
         </pre>
       </fieldset>

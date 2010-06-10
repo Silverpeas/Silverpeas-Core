@@ -48,12 +48,12 @@
             clientAuth="false" sslProtocol="TLS"
             keystoreFile="C:/Java/keystore.jks"
             keystorePass="changeit"
-            truststoreFile="C:/Java/keystore.jk"/>]]></pre></fieldset>
+            truststoreFile="C:/Java/keystore.jks"/>]]></pre></fieldset>
     </section>
     <section name="Installing the CAS Server">
       <p>
         Download the latest CAS Server package from the <a href="http://www.jasig.org/cas">CAS Website</a>.
-        Extract the WAR file from the archive in <code>cas-server-3.3\modules</code> and copy into in <code>$CATALINA_HOME/webapps</code>.
+        Extract the WAR file from the archive in <code>cas-server-3.4.2\modules</code> and copy into in <code>$CATALINA_HOME/webapps</code>.
         Rename the WAR into <code>cas.war</code>.
       </p>
     </section>
