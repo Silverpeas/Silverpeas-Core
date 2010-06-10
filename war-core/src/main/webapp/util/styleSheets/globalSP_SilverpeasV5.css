@@ -2065,6 +2065,19 @@ td.browsebar a:hover {
 	color: #999999;
 }
 
+#blog .titreTicketDraft {
+	width: 550px;
+	font-size: 16px;
+	font-weight: bold;
+	color: red;
+}
+
+#blog .infoTicketDraft {
+	font-size: 12px;
+	font-weight: bold;
+	color: red;
+}
+
 #blog #titreArchive {
 	font-size: 16px;
 	font-weight: bolder;
