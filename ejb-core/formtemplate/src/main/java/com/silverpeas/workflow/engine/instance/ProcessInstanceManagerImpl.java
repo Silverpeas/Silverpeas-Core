@@ -52,7 +52,6 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -134,16 +133,16 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   public ProcessInstance[] getProcessInstances(String peasId, User user,
       String role) throws WorkflowException {
-    return getProcessInstances(peasId, user, role, null);
+    return getProcessInstances(peasId, user, role, null, null);
   }
 
   public ProcessInstance[] getProcessInstances(String peasId, User user,
-      String role, String[] userRoles) throws WorkflowException {
+      String role, String[] userRoles, String[] userGroupIds) throws WorkflowException {
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     StringBuffer selectQuery = new StringBuffer();
-    Vector instances = new Vector();
+    Vector<ProcessInstanceImpl> instances = new Vector<ProcessInstanceImpl>();
 
     try {
       // Need first to make a SQL query to find all concerned instances ids
@@ -166,14 +165,13 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         selectQuery.append("intUser.userId = ? ");
         if ((userRoles != null) && (userRoles.length > 0)) {
           selectQuery.append(" or intUser.usersRole in (");
-          boolean first = true;
-          for (String userRole : userRoles) {
-            if (!first) {
-              selectQuery.append(", ");
-            }
-            selectQuery.append("'").append(userRole).append("'");
-            first = false;
-          }
+          selectQuery.append(getSQLClauseIn(userRoles));
+          selectQuery.append(")");
+        }
+        selectQuery.append(" or intUser.groupId is null");
+        if (userGroupIds != null && userGroupIds.length > 0) {
+          selectQuery.append(" or intUser.groupId in (");
+          selectQuery.append(getSQLClauseIn(userGroupIds));
           selectQuery.append(")");
         }
         selectQuery.append(") and intUser.role = ? ");
@@ -184,17 +182,15 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         selectQuery.append("wkUser.userId = ? ");
         if ((userRoles != null) && (userRoles.length > 0)) {
           selectQuery.append(" or wkUser.usersRole in (");
-          boolean first = true;
-          for (String userRole : userRoles) {
-            if (!first) {
-              selectQuery.append(", ");
-            }
-            selectQuery.append("'").append(userRole).append("'");
-            first = false;
-          }
+          selectQuery.append(getSQLClauseIn(userRoles));
           selectQuery.append(")");
         }
-
+        selectQuery.append(" or wkUser.groupId is null");
+        if (userGroupIds != null && userGroupIds.length > 0) {
+          selectQuery.append(" or wkUser.groupId in (");
+          selectQuery.append(getSQLClauseIn(userGroupIds));
+          selectQuery.append(")");
+        }
         selectQuery.append(") and wkUser.role = ? ");
         selectQuery.append(")");
         selectQuery.append("order by I.instanceId desc");
@@ -226,7 +222,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
               .prepareStatement("select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc");
 
       for (int i = 0; i < instances.size(); i++) {
-        instance = (ProcessInstanceImpl) instances.get(i);
+        instance = instances.get(i);
 
         prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
 
@@ -249,7 +245,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       }
 
       // getActiveStates
-      Vector states = null;
+      Vector<ActiveState> states = null;
       prepStmt =
           con
               .prepareStatement("select * from SB_Workflow_ActiveState where instanceId = ? order by id asc");
@@ -261,7 +257,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
         rs = prepStmt.executeQuery();
         ActiveState state = null;
-        states = new Vector();
+        states = new Vector<ActiveState>();
         while (rs.next()) {
           state = new ActiveState();
           state.setId(String.valueOf(rs.getInt(1)));
@@ -294,6 +290,20 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       }
     }
   }
+  
+  private String getSQLClauseIn(String[] items)
+  {
+    StringBuffer result = new StringBuffer();
+    boolean first = true;
+    for (String item : items) {
+      if (!first) {
+        result.append(", ");
+      }
+      result.append("'").append(item).append("'");
+      first = false;
+    }
+    return result.toString();
+  }
 
   /**
    * Get the list of process instances for a given peas Id, that have the given state activated and
@@ -310,7 +320,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     String selectQuery = "";
     OQLQuery query = null;
     QueryResults results;
-    Vector instances = new Vector();
+    Vector<ProcessInstance> instances = new Vector<ProcessInstance>();
 
     try {
       // Constructs the query

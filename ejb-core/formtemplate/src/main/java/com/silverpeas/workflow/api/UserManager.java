@@ -55,6 +55,8 @@ public interface UserManager {
    */
   public User[] getUsersInRole(String roleName, String processModelId)
       throws WorkflowException;
+  
+  public User[] getUsersInGroup(String groupId);
 
   /**
    * returns all the known info for an user; Each returned value can be used as a parameter to the

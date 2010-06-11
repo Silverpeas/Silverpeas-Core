@@ -46,7 +46,7 @@ public interface QualifiedUsers {
    * Iterate through the UserInRole objects
    * @return an iterator
    */
-  public Iterator iterateUserInRole();
+  public Iterator<UserInRole> iterateUserInRole();
 
   /**
    * Create a new UserInRole
@@ -88,7 +88,7 @@ public interface QualifiedUsers {
    * Iterate through the RelatedUser objects
    * @return an iterator
    */
-  public Iterator iterateRelatedUser();
+  public Iterator<RelatedUser> iterateRelatedUser();
 
   /**
    * Create a new RelatedUser
@@ -108,9 +108,47 @@ public interface QualifiedUsers {
    * @throws WorkflowException when something goes wrong
    */
   void removeRelatedUser(RelatedUser reference) throws WorkflowException;
+  
+  /**
+   * Get the related groups
+   * @return the related groups as an array
+   */
+  public RelatedGroup[] getRelatedGroups();
 
   /**
-   * Get the role to which the related users will be affected by default
+   * Get the related group equivalent to the one specified
+   * @param relatedGroup the reference to look for
+   * @return the related groups as referenced or <code>null</code>
+   */
+  public RelatedGroup getRelatedGroup(RelatedGroup relatedGroup);
+
+  /**
+   * Iterate through the RelatedGroup objects
+   * @return an iterator
+   */
+  public Iterator<RelatedGroup> iterateRelatedGroup();
+
+  /**
+   * Create a new RelatedGroup
+   * @return an object implementing RelatedGroup
+   */
+  public RelatedGroup createRelatedGroup();
+
+  /**
+   * Add a RelatedGroup to the collection
+   * @param group to be added
+   */
+  void addRelatedGroup(RelatedGroup group);
+
+  /**
+   * Remove a RelatedGroup from the collection
+   * @param reference the reference of the RelatedGroup to be removed
+   * @throws WorkflowException when something goes wrong
+   */
+  void removeRelatedGroup(RelatedGroup reference) throws WorkflowException;
+
+  /**
+   * Get the role to which the related groups will be affected by default
    * @return the role name
    */
   public String getRole();

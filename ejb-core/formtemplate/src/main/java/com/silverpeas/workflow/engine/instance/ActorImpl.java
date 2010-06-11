@@ -25,14 +25,16 @@
 package com.silverpeas.workflow.engine.instance;
 
 import com.silverpeas.workflow.api.instance.Actor;
-import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.user.User;
 
 /**
- * A Actor object represents a person that can act on a state
+ * A Actor object represents a person or a list of persons (through role or group) that can act on a
+ * state
  */
 public class ActorImpl implements Actor {
   final private User user;
+  final private String groupId;
   final private String userRoleName;
   final private State state;
 
@@ -46,6 +48,14 @@ public class ActorImpl implements Actor {
     this.user = user;
     this.userRoleName = userRoleName;
     this.state = state;
+    this.groupId = null;
+  }
+  
+  public ActorImpl(User user, String userRoleName, State state, String groupId) {
+    this.user = user;
+    this.userRoleName = userRoleName;
+    this.state = state;
+    this.groupId = groupId;
   }
 
   /**
@@ -69,5 +79,9 @@ public class ActorImpl implements Actor {
    */
   public State getState() {
     return state;
+  }
+
+  public String getGroupId() {
+    return groupId;
   }
 }

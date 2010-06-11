@@ -216,6 +216,14 @@ public interface ProcessInstance {
    * @throws WorkflowException
    */
   public List<User> getUsersInRole(String role) throws WorkflowException;
+  
+  /**
+   * Gets concrete users affected to given group at runtime
+   * @param groupId the id of the group
+   * @return users in given group
+   * @throws WorkflowException
+   */
+  public List<User> getUsersInGroup(String groupId) throws WorkflowException;
 
   /**
    * Computes tuples role/user (stored in an Actor object) from a QualifiedUsers object

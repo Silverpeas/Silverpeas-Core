@@ -24,6 +24,8 @@
 
 package com.silverpeas.workflow.engine.user;
 
+import java.util.List;
+
 import com.silverpeas.workflow.api.user.User;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -49,13 +51,15 @@ public final class UserImpl implements User {
    */
   static private Admin admin = null;
 
+  private List<String> groupIds = null;
+
   /**
    * UserImpl is built from a UserDetail and admin .
    */
   public UserImpl(UserDetail userDetail, Admin admin) {
     this.userDetail = userDetail;
-    if (this.admin == null)
-      this.admin = admin;
+    if (UserImpl.admin == null)
+      UserImpl.admin = admin;
   }
 
   /**
@@ -109,5 +113,14 @@ public final class UserImpl implements User {
    */
   public boolean equals(Object user) {
     return this.getUserId().equals(((UserImpl) user).getUserId());
+  }
+
+  @Override
+  public List<String> getGroupIds() {
+    return groupIds;
+  }
+  
+  public void setGroupIds(List<String> groupIds) {
+    this.groupIds = groupIds;
   }
 }

@@ -1325,8 +1325,7 @@ class WorkflowTools {
 
     // Declare these working users in instance
     for (int i = 0; i < actors.length; i++) {
-      instance.addWorkingUser(actors[i].getUser(), state, actors[i]
-          .getUserRoleName());
+      instance.addWorkingUser(actors[i], state);
     }
 
     // Get the interested users
@@ -1335,8 +1334,7 @@ class WorkflowTools {
 
     // Declare these interested users in instance
     for (int i = 0; i < actors.length; i++) {
-      instance.addInterestedUser(actors[i].getUser(), state, actors[i]
-          .getUserRoleName());
+      instance.addInterestedUser(actors[i], state);
     }
   }
 

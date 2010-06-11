@@ -54,7 +54,7 @@ public interface ProcessInstanceManager {
    * @return an array of ProcessInstance objects
    */
   public ProcessInstance[] getProcessInstances(String peasId, User user,
-      String role, String[] userRoles) throws WorkflowException;
+      String role, String[] userRoles, String[] groupIds) throws WorkflowException;
 
   /**
    * Get the list of process instances for a given peas Id, that have the given state activated

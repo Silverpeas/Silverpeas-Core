@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.Actor;
 import com.silverpeas.workflow.api.model.State;
@@ -77,6 +78,11 @@ public class WorkingUser extends AbstractReferrableObject {
    * @field-name role
    */
   private String role = null;
+
+  /**
+   * @field-name groupId
+   */
+  private String groupId = null;
 
   /**
    * Default Constructor
@@ -129,9 +135,9 @@ public class WorkingUser extends AbstractReferrableObject {
    * @return state role
    */
   public List<String> getRoles() {
-    return Arrays.asList( role.split(":") );
+    return Arrays.asList(role.split(":"));
   }
-  
+
   /**
    * Set state role for which user is affected
    * @param state state role
@@ -170,6 +176,14 @@ public class WorkingUser extends AbstractReferrableObject {
    */
   public void setUsersRole(String usersRole) {
     this.usersRole = usersRole;
+  }
+
+  public String getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
   }
 
   /**
@@ -221,12 +235,21 @@ public class WorkingUser extends AbstractReferrableObject {
       actors.add(new ActorImpl(user, role, state));
     }
 
-    // then add users by role
-    if (this.usersRole != null) {
+    // then add users by group or role
+    if (StringUtil.isDefined(getGroupId())) {
       User[] users =
-          WorkflowHub.getUserManager().getUsersInRole(usersRole, processInstance.getModelId());
-      for (User anUser : users) {
-        actors.add(new ActorImpl(anUser, role, state));
+        WorkflowHub.getUserManager().getUsersInGroup(getGroupId());
+        for (User anUser : users) {
+          actors.add(new ActorImpl(anUser, role, state));
+        }
+    } else {
+      // then add users by role
+      if (this.usersRole != null) {
+        User[] users =
+            WorkflowHub.getUserManager().getUsersInRole(usersRole, processInstance.getModelId());
+        for (User anUser : users) {
+          actors.add(new ActorImpl(anUser, role, state));
+        }
       }
     }
 

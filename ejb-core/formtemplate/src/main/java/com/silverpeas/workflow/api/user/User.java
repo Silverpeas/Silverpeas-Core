@@ -24,6 +24,8 @@
 
 package com.silverpeas.workflow.api.user;
 
+import java.util.List;
+
 /**
  * @version $Revision: 1.1.1.1 $ $Date: 2002/08/06 14:47:54 $
  **/
@@ -44,4 +46,6 @@ public interface User {
    * Returns the named info
    */
   public String getInfo(String infoName);
+  
+  public List<String> getGroupIds();
 }

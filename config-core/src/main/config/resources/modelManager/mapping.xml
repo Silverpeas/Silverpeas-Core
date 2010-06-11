@@ -459,6 +459,11 @@
                create-method="createRelatedUser">
             <bind-xml name="relatedUser" node="element"/>
         </field>
+		<field name="relatedGroupList" type="com.silverpeas.workflow.api.model.RelatedGroup" 
+               collection="vector" get-method="iterateRelatedGroup" set-method="addRelatedGroup"
+               create-method="createRelatedGroup">
+            <bind-xml name="relatedGroup" node="element"/>
+        </field>
         <field name="userInRoleList" type="com.silverpeas.workflow.api.model.UserInRole" 
                collection="vector" get-method="iterateUserInRole" set-method="addUserInRole"
                create-method="createUserInRole">
@@ -475,6 +480,15 @@
         </field>
         <field name="relation" type="string">
             <bind-xml name="relation" node="attribute"/>
+        </field>
+        <field name="role" type="string">
+            <bind-xml name="role" node="attribute"/>
+        </field>
+    </class>
+
+	<class name="com.silverpeas.workflow.engine.model.RelatedGroupImpl">
+        <field name="folderItem" type="com.silverpeas.workflow.api.model.Item">
+            <bind-xml name="folderItem" node="attribute" reference="true"/>
         </field>
         <field name="role" type="string">
             <bind-xml name="role" node="attribute"/>

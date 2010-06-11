@@ -45,7 +45,7 @@ abstract public class AbstractTaskManager implements TaskManager {
    */
   public Task createTask(Actor actor, ProcessInstance processInstance)
       throws WorkflowException {
-    return new TaskImpl(actor.getUser(), actor.getUserRoleName(),
+    return new TaskImpl(actor.getUser(), actor.getUserRoleName(), actor.getGroupId(),
         processInstance, actor.getState());
   }
 

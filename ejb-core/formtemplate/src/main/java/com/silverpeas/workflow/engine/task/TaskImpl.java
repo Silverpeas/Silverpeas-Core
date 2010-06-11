@@ -50,6 +50,14 @@ public class TaskImpl extends AbstractTaskImpl {
     this.state = state;
     this.backSteps = null;
   }
+  
+  public TaskImpl(User user, String roleName, String groupId, ProcessInstance processInstance,
+      State state) throws WorkflowException {
+    super(user, roleName, groupId, processInstance.getProcessModel());
+    this.processInstance = processInstance;
+    this.state = state;
+    this.backSteps = null;
+  }
 
   public void setProcessInstance(ProcessInstance processInstance) {
     this.processInstance = processInstance;

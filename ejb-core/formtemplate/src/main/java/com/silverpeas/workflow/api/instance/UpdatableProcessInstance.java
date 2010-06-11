@@ -101,6 +101,8 @@ public interface UpdatableProcessInstance extends ProcessInstance {
   public void addWorkingUser(User user, State state, String role)
       throws WorkflowException;
 
+  public void addWorkingUser(Actor actor, State state) throws WorkflowException;
+
   /**
    * @param user
    */
@@ -122,6 +124,8 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    */
   public void addInterestedUser(User user, State state, String role)
       throws WorkflowException;
+  
+  public void addInterestedUser(Actor actor, State state) throws WorkflowException;
 
   /**
    * Remove an user from the interested user list

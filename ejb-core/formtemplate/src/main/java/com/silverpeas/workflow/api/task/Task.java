@@ -53,6 +53,8 @@ public interface Task {
    * Returns the name of the role which gived the responsability of this task to the user.
    */
   public String getUserRoleName();
+  
+  public String getGroupId();
 
   /**
    * Returns the process model (peas). The id of this workflow internal information must be stored

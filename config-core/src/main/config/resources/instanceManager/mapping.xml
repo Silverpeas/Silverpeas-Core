@@ -101,6 +101,10 @@
       <sql name="role" />
       <bind-xml name="role" />
     </field>
+    <field name="groupId" type="string">
+      <sql name="groupid" />
+      <bind-xml name="groupId" />
+    </field>
   </class>
   <class name="com.silverpeas.workflow.engine.instance.QuestionImpl" depends="com.silverpeas.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">
 	<cache-type type="none"/>
@@ -284,6 +288,10 @@
     <field name="role" type="string">
       <sql name="role" />
       <bind-xml name="role" />
+    </field>
+	<field name="groupId" type="string">
+      <sql name="groupid" />
+      <bind-xml name="groupId" />
     </field>
   </class>
   <class name="com.silverpeas.workflow.engine.user.UserSettingsImpl" key-generator="MAX" identity="settingsId">

@@ -52,6 +52,11 @@ public class InterestedUser extends AbstractReferrableObject {
    * @field-name usersRole
    */
   private String usersRole = null;
+  
+  /**
+   * @field-name groupId
+   */
+  private String groupId = null;
 
   /**
    * @field-name processInstance
@@ -154,6 +159,14 @@ public class InterestedUser extends AbstractReferrableObject {
    */
   public void setUsersRole(String usersRole) {
     this.usersRole = usersRole;
+  }
+
+  public String getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
   }
 
   /**

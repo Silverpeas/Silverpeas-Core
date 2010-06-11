@@ -45,6 +45,7 @@ import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -60,6 +61,7 @@ import com.silverpeas.workflow.api.model.Input;
 import com.silverpeas.workflow.api.model.Presentation;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
+import com.silverpeas.workflow.api.model.RelatedGroup;
 import com.silverpeas.workflow.api.model.RelatedUser;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.UserInRole;
@@ -379,7 +381,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public void addWorkingUser(User user, State state, String role)
       throws WorkflowException {
-    this.addWorkingUser(user, state.getName(), role);
+    this.addWorkingUser(user, state.getName(), role, null);
+  }
+
+  public void addWorkingUser(Actor actor, State state) throws WorkflowException {
+    addWorkingUser(actor.getUser(), state.getName(), actor.getUserRoleName(), actor.getGroupId());
   }
 
   /**
@@ -388,15 +394,17 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param state name of state for which the user can make an action
    * @param role role name under which the user can make an action
    */
-  private void addWorkingUser(User user, String state, String role)
+  private void addWorkingUser(User user, String state, String role, String groupId)
       throws WorkflowException {
     WorkingUser wkUser = new WorkingUser();
 
     /*
-     * 2 use cases : - define working user by user Id - define working user by a role
+     * 3 use cases, define working user : - by userId - by a role - by a groupId
      */
     if (user != null) {
       wkUser.setUserId(user.getUserId());
+    } else if (StringUtil.isDefined(groupId)) {
+      wkUser.setGroupId(groupId);
     } else {
       wkUser.setUsersRole(role);
     }
@@ -471,7 +479,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public void addInterestedUser(User user, State state, String role)
       throws WorkflowException {
-    this.addInterestedUser(user, state.getName(), role);
+    this.addInterestedUser(user, state.getName(), role, null);
+  }
+
+  public void addInterestedUser(Actor actor, State state) throws WorkflowException {
+    this.addInterestedUser(actor.getUser(), state.getName(), actor.getUserRoleName(), actor.getGroupId());
   }
 
   /**
@@ -480,15 +492,17 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param state the name of state for which the user is interested
    * @param role role name under which the user is interested
    */
-  private void addInterestedUser(User user, String state, String role)
+  private void addInterestedUser(User user, String state, String role, String groupId)
       throws WorkflowException {
 
     InterestedUser intUser = new InterestedUser();
     /*
-     * 2 use cases : - define interested user by user Id - define interested user by a role
+     * 3 use cases, define working user : - by userId - by a role - by a groupId
      */
     if (user != null) {
       intUser.setUserId(user.getUserId());
+    } else if (StringUtil.isDefined(groupId)) {
+      intUser.setGroupId(groupId);
     } else {
       intUser.setUsersRole(role);
     }
@@ -964,7 +978,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * Get step saved by given user id.
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   public HistoryStep getSavedStep(String userId) throws WorkflowException {
     Date actionDate = null;
@@ -975,16 +989,15 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       step = (HistoryStep) historySteps.get(i);
 
       // if step matches the searched action, tests if the step is most recent
-      if ( (step.getActionStatus()==3) && (step.getUser().getUserId().equals(userId)) ) {
+      if ((step.getActionStatus() == 3) && (step.getUser().getUserId().equals(userId))) {
         savedStep = step;
         break;
       }
     }
 
-    return savedStep;    
+    return savedStep;
   }
 
-  
   /**
    * Get the most recent step where an action has been performed on the given state. If no action
    * has been performed on this state, return the step that activate this state.
@@ -1227,20 +1240,27 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public String[] getAssignedStates(User user, String roleName)
       throws WorkflowException {
-    Vector stateNames = new Vector();
+    Vector<String> stateNames = new Vector<String>();
     String userId = user.getUserId();
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
-      boolean userMatch = (wkUser.getUserId() != null) && (wkUser.getUserId().equals(userId));
+      boolean userMatch = wkUser.getUserId() != null && wkUser.getUserId().equals(userId);
       boolean usersRoleMatch =
-          (wkUser.getUsersRole() != null) && (wkUser.getUsersRole().equals(roleName));
-      boolean wkUserMatch = userMatch || usersRoleMatch;
-      if ( wkUserMatch && wkUser.getRoles().contains(roleName) )
+          wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
+      boolean userGroupsMatch = !StringUtil.isDefined(wkUser.getGroupId());
+      if (!userGroupsMatch) {
+        // check if one of userGroups matches with working group
+        if (user.getGroupIds() != null) {
+          userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
+        }
+      }
+      boolean wkUserMatch = userMatch || usersRoleMatch || userGroupsMatch;
+      if (wkUserMatch && wkUser.getRoles().contains(roleName))
         stateNames.add(wkUser.getState());
     }
 
-    return (String[]) stateNames.toArray(new String[0]);
+    return stateNames.toArray(new String[0]);
   }
 
   /**
@@ -1307,12 +1327,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param user the current locking user
    */
   public void unLock(State state, User user) throws WorkflowException {
-   if(state == null) {
-     this.unLock("", user);
-   }
-   else {
-     this.unLock(state.getName(), user);
-   }
+    if (state == null) {
+      this.unLock("", user);
+    } else {
+      this.unLock(state.getName(), user);
+    }
   }
 
   /**
@@ -1457,12 +1476,17 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public void setTimeoutStatusCastor(int timeoutStatus) {
     this.timeoutStatus = (timeoutStatus == 1);
   }
-  
-  public List<User> getUsersInRole(String role) throws WorkflowException
-  {
+
+  public List<User> getUsersInRole(String role) throws WorkflowException {
     UserManager userManager = WorkflowHub.getUserManager();
     User[] usersInRole = userManager.getUsersInRole(role, modelId);
     return Arrays.asList(usersInRole);
+  }
+
+  public List<User> getUsersInGroup(String groupId) throws WorkflowException {
+    UserManager userManager = WorkflowHub.getUserManager();
+    User[] usersInGroup = userManager.getUsersInGroup(groupId);
+    return Arrays.asList(usersInGroup);
   }
 
   /**
@@ -1477,6 +1501,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     UserManager userManager = WorkflowHub.getUserManager();
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
+    RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
     String resolvedState;
     String relation;
     String role;
@@ -1521,6 +1546,25 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
         if (user != null)
           actors.add(new ActorImpl(user, role, state));
+      }
+    }
+
+    // Finally, process related groups
+    for (RelatedGroup relatedGroup : relatedGroups) {
+      if (relatedGroup.getFolderItem() != null) {
+        String fieldName = relatedGroup.getFolderItem().getName();
+        Field field = getField(fieldName);
+        String groupId = field.getStringValue();
+        if (StringUtil.isDefined(groupId)) {
+          // Get the role to which affect the group
+          // if no role defined in related group
+          // then get the one defined in qualifiedUser
+          role = relatedGroup.getRole();
+          if (role == null) {
+            role = qualifiedUsers.getRole();
+          }
+          actors.add(new ActorImpl(null, role, state, groupId));
+        }
       }
     }
 
@@ -1625,7 +1669,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
           String role = st.nextToken();
           User user = WorkflowHub.getUserManager().getUser(userId);
 
-          this.addWorkingUser(user, state, role);
+          this.addWorkingUser(user, state, role, null);
         }
 
         else if (action.equals("addInterestedUser")) {
@@ -1657,7 +1701,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
           String role = st.nextToken();
           User user = WorkflowHub.getUserManager().getUser(userId);
 
-          this.addInterestedUser(user, state, role);
+          this.addInterestedUser(user, state, role, null);
         }
 
         else

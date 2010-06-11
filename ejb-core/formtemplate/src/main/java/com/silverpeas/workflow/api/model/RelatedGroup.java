@@ -22,32 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.workflow.api.instance;
-
-import com.silverpeas.workflow.api.model.State;
-import com.silverpeas.workflow.api.user.User;
+package com.silverpeas.workflow.api.model;
 
 /**
- * A Actor object represents a 3-tuple user/roleName/state
+ * Interface describing a representation of the &lt;relatedGroup&gt; element of a Process Model.
  */
-public interface Actor {
-  /**
-   * Returns the actor as a User object
-   */
-  public User getUser();
+public interface RelatedGroup {
 
   /**
-   * get the name of the role under which the user was/may be an actor
-   * @return the role's name
+   * Get the referred item
    */
-  public String getUserRoleName();
+  public Item getFolderItem();
 
   /**
-   * get the name of the state for which the user was/may be an actor
-   * @return the state's name
+   * Set the referred item
    */
-  public State getState();
-  
-  public String getGroupId();
+  public void setFolderItem(Item item);
 
+  /**
+   * Get the role to which the related user will be affected
+   * @return the role name
+   */
+  public String getRole();
+
+  /**
+   * New method: Set the role the related user will be affected to
+   */
+  public void setRole(String strRole);
 }

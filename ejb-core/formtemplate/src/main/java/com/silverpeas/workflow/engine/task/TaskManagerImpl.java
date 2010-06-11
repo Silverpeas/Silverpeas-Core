@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
@@ -91,13 +92,19 @@ public class TaskManagerImpl extends AbstractTaskManager {
       todo.setExternalId(getExternalId(task));
       todoBBA.addEntry(todo);
     } else {
-      // add todo to each user of role
-      List<User> usersInRole = task.getProcessInstance().getUsersInRole(task.getUserRoleName());
-      for (User userInRole : usersInRole) {
+      List<User> users = null;
+      if (StringUtil.isDefined(task.getGroupId())) {
+        // get users according to group
+        users = task.getProcessInstance().getUsersInGroup(task.getGroupId());
+      } else {
+        // get users according to role
+        users = task.getProcessInstance().getUsersInRole(task.getUserRoleName());
+      }
+      for (User user : users) {
         attendees.clear();
-        attendees.add(new Attendee(userInRole.getUserId()));
+        attendees.add(new Attendee(user.getUserId()));
         todo.setAttendees(attendees);
-        todo.setExternalId(getExternalId(task, userInRole.getUserId()));
+        todo.setExternalId(getExternalId(task, user.getUserId()));
         todoBBA.addEntry(todo);
       }
     }
@@ -159,6 +166,11 @@ public class TaskManagerImpl extends AbstractTaskManager {
     List<String> userIds = new ArrayList<String>();
     if (user != null) {
       userIds.add(user.getUserId());
+    } else if (StringUtil.isDefined(task.getGroupId())) {
+      List<User> usersInGroup = task.getProcessInstance().getUsersInGroup(task.getGroupId());
+      for (User userInGroup : usersInGroup) {
+        userIds.add(userInGroup.getUserId());
+      }
     } else {
       String role = task.getUserRoleName();
       List<User> usersInRole = task.getProcessInstance().getUsersInRole(role);

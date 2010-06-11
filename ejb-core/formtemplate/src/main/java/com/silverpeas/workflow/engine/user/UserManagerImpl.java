@@ -24,6 +24,7 @@
 
 package com.silverpeas.workflow.engine.user;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.exolab.castor.jdo.Database;
@@ -58,7 +59,7 @@ public class UserManagerImpl implements UserManager {
    */
   static private Admin admin = null;
 
-  static private Hashtable userSettings = null;
+  static private Hashtable<String, UserSettings> userSettings = null;
 
   /**
    * The constructor builds and set the shared OrganisationController.
@@ -72,7 +73,7 @@ public class UserManagerImpl implements UserManager {
         admin = new Admin();
       }
       if (userSettings == null) {
-        userSettings = new Hashtable();
+        userSettings = new Hashtable<String, UserSettings>();
       }
 
     }
@@ -84,7 +85,12 @@ public class UserManagerImpl implements UserManager {
    * @throw WorkflowException if the userId is unknown.
    */
   public User getUser(String userId) throws WorkflowException {
-    return new UserImpl(getUserDetail(userId), admin);
+    UserImpl user = new UserImpl(getUserDetail(userId), admin);
+    String[] groupIds = organizationController.getAllGroupIdsOfUser(userId);
+    if (groupIds != null) {
+      user.setGroupIds(Arrays.asList(groupIds));
+    }
+    return user;
   }
 
   /**
@@ -140,6 +146,14 @@ public class UserManagerImpl implements UserManager {
     return getUsers(userDetails);
   }
 
+  public User[] getUsersInGroup(String groupId) {
+    UserDetail[] userDetails = organizationController.getAllUsersOfGroup(groupId);
+
+    if (userDetails == null)
+      userDetails = new UserDetail[0];
+    return getUsers(userDetails);
+  }
+
   /**
    * returns all the known info for an user; Each returned value can be used as a parameter to the
    * User method getInfo().
@@ -163,9 +177,13 @@ public class UserManagerImpl implements UserManager {
    * Make a User[] from a UserDetail[].
    */
   private User[] getUsers(UserDetail[] userDetails) {
-    User[] users = new User[userDetails.length];
+    UserImpl[] users = new UserImpl[userDetails.length];
     for (int i = 0; i < userDetails.length; i++) {
       users[i] = new UserImpl(userDetails[i], admin);
+      String[] groupIds = organizationController.getAllGroupIdsOfUser(userDetails[i].getId());
+      if (groupIds != null) {
+        users[i].setGroupIds(Arrays.asList(groupIds));
+      }
     }
     return users;
   }
@@ -208,7 +226,7 @@ public class UserManagerImpl implements UserManager {
     QueryResults results;
     UserSettings settings = null;
 
-    settings = (UserSettings) userSettings.get(userId + "_" + peasId);
+    settings = userSettings.get(userId + "_" + peasId);
     if (settings == null) {
       try {
         // Constructs the query

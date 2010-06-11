@@ -52,6 +52,14 @@ public abstract class AbstractTaskImpl implements Task {
     this.processModel = processModel;
   }
 
+  public AbstractTaskImpl(User user, String roleName, String groupId, ProcessModel processModel)
+      throws WorkflowException {
+    this.user = user;
+    this.roleName = roleName;
+    this.groupId = groupId;
+    this.processModel = processModel;
+  }
+
   /**
    * Returns the user.
    */
@@ -64,6 +72,10 @@ public abstract class AbstractTaskImpl implements Task {
    */
   public String getUserRoleName() {
     return roleName;
+  }
+  
+  public String getGroupId() {
+    return groupId;
   }
 
   /**
@@ -86,7 +98,7 @@ public abstract class AbstractTaskImpl implements Task {
   public TaskSavedEvent buildTaskSavedEvent(String actionName, DataRecord data) {
     return (TaskSavedEvent) new TaskSavedEventImpl(this, actionName, data);
   }
-  
+
   /**
    * Builds a QuestionEvent from this Task.
    */
@@ -105,6 +117,7 @@ public abstract class AbstractTaskImpl implements Task {
    * Internal fields
    */
   private User user = null;
+  private String groupId = null;
   private String roleName = null;
   private ProcessModel processModel = null;
 }
