@@ -34,8 +34,10 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
@@ -283,15 +285,34 @@ public class GraphicElementFactory extends Object {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
       code.append(standardStyle).append("\"/>\n");
 
-      code.append("<!--[if IE]>");
+      code.append("<!--[if IE]>\n");
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
           contextPath).append(standardStyleForIE).append("\"/>\n");
-      code.append("<![endif]-->");
+      code.append("<![endif]-->\n");
 
       if (lookStyle.length() > 0) {
         code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-        code.append(lookStyle).append("\"/>");
+        code.append(lookStyle).append("\"/>\n");
       }
+
+      // append CSS style sheet dedicated to current component
+      if (StringUtil.isDefined(componentId) && mainSessionController != null) {
+        ComponentInstLight component =
+            mainSessionController.getOrganizationController().getComponentInstLight(componentId);
+        if (component != null) {
+          String componentName = component.getName();
+          code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath)
+              .append("/").append(componentName).append("/jsp/styleSheets/").append(componentName)
+              .append(".css").append("\"/>\n");
+
+          String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
+          if (StringUtil.isDefined(specificStyle)) {
+            code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+            code.append(specificStyle).append("\"/>\n");
+          }
+        }
+      }
+
     } else {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
           externalStylesheet).append("\"/>\n");
