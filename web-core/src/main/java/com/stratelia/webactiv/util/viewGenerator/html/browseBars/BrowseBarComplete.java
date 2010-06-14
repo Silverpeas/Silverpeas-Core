@@ -212,7 +212,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         "/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId=\"+spaceId;");
     script.append("}");
     script.append("function removeBreadCrumbElements() {");
-    script.append("$('#").append(getComponentId()).append("').nextAll().remove();");
+    script.append("$('#breadCrumb #").append(getComponentId()).append("').nextAll().remove();");
     script.append("}");
     script.append("function addBreadCrumbElement(link, label) {");
     script.append("$('#breadCrumb').append('").append(CONNECTOR).append(
