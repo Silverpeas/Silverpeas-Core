@@ -34,6 +34,7 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * The AbstractTaskManager implements all the silverpeas internal TaskManager methods. This Class
@@ -68,7 +69,13 @@ abstract public class AbstractTaskManager implements TaskManager {
   public Task[] getTasks(User user, String roleName,
       ProcessInstance processInstance) throws WorkflowException {
     ProcessModel model = processInstance.getProcessModel();
+    
+    // Getting assigned states
     String[] stateNames = processInstance.getAssignedStates(user, roleName);
+    SilverTrace.debug("workflowEngine",
+        "AbstractTaskManager.getTasks",
+        "root.MSG_GEN_PARAM_VALUE", "assigned states (role="+roleName+", user="+user+") : " + stateNames);
+
     Task[] tasks = new Task[stateNames.length];
     State state = null;
 
