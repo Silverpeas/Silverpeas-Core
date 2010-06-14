@@ -43,9 +43,13 @@ import org.exolab.castor.jdo.QueryResults;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -852,7 +856,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public void setField(String fieldName, Field copiedField)
       throws WorkflowException {
     Field updatedField = getField(fieldName);
-
+    
     try {
       if (updatedField.getTypeName().equals(copiedField.getTypeName())) {
         updatedField.setObjectValue(copiedField.getObjectValue());
@@ -947,8 +951,53 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public void saveActionRecord(HistoryStep step, DataRecord actionData)
       throws WorkflowException {
+    
+    // special case : wysiwyg, check if data has been put into file and not kept in value field
+    try {
+      checkWysiwygData(step, actionData);
+    } catch (FormException e) {
+      throw new WorkflowException("ProcessInstanceImpl",
+          "workflowEngine.EXP_FORM_CREATE_FAILED", e);
+    }
+    
     updateFolder(actionData);
     step.setActionRecord(actionData);
+  }
+
+  /**
+   * Parse fields values and check ones that have wysiwyg displayer.
+   * In case of new process instance, txt files may not have been created yet.
+   * if yes, value must start with "xmlWysiwygField_"
+   * 
+   * @param step
+   * @param actionData
+   * 
+   * @throws WorkflowException
+   * @throws FormException
+   */
+  private void checkWysiwygData(HistoryStep step, DataRecord actionData) throws WorkflowException,
+      FormException {
+    String actionName = step.getAction();
+    Form form = getProcessModel().getActionForm(actionName);
+    RecordTemplate template = form.toRecordTemplate(step.getUserRoleName(), "");
+    String[] fieldNames = actionData.getFieldNames();
+    
+    for (int i = 0; i < fieldNames.length; i++) {
+      // fieldIndex = i;
+      String fieldName = (String) fieldNames[i];
+      Field updatedField = actionData.getField(fieldName);
+      FieldTemplate tmpl = template.getFieldTemplate(fieldNames[i]);
+      
+      if ("wysiwyg".equals(tmpl.getDisplayerName())) {
+        if (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+          WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
+          PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
+          context.setObjectId(getInstanceId());
+          displayer.update(updatedField.getStringValue(), updatedField, tmpl,
+              context);
+        }
+      }
+    }
   }
 
   /**
