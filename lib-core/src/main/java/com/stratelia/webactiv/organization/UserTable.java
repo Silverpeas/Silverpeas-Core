@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
 
 /**
  * A UserTable object manages the ST_User table.
@@ -337,8 +338,7 @@ public class UserTable extends Table {
    */
   public UserRow[] getDirectUsersOfSpaceUserRole(int spaceUserRoleId)
       throws AdminPersistenceException {
-    return (UserRow[]) getRows(SELECT_USERS_IN_SPACEUSERROLE, spaceUserRoleId)
-        .toArray(new UserRow[0]);
+    return getRows(SELECT_USERS_IN_SPACEUSERROLE, spaceUserRoleId).toArray(new UserRow[0]);
   }
 
   static final private String SELECT_USERS_IN_SPACEUSERROLE = "select "
@@ -350,8 +350,7 @@ public class UserTable extends Table {
    */
   public String[] getDirectUserIdsOfSpaceUserRole(int spaceUserRoleId)
       throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_USER_IDS_IN_SPACEUSERROLE, spaceUserRoleId)
-        .toArray(new String[0]);
+    return getIds(SELECT_USER_IDS_IN_SPACEUSERROLE, spaceUserRoleId).toArray(new String[0]);
   }
 
   static final private String SELECT_USER_IDS_IN_SPACEUSERROLE =
@@ -363,8 +362,7 @@ public class UserTable extends Table {
    */
   public UserRow[] getDirectUsersOfGroupUserRole(int groupUserRoleId)
       throws AdminPersistenceException {
-    return (UserRow[]) getRows(SELECT_USERS_IN_GROUPUSERROLE, groupUserRoleId)
-        .toArray(new UserRow[0]);
+    return getRows(SELECT_USERS_IN_GROUPUSERROLE, groupUserRoleId).toArray(new UserRow[0]);
   }
 
   static final private String SELECT_USERS_IN_GROUPUSERROLE = "select "
@@ -376,8 +374,7 @@ public class UserTable extends Table {
    */
   public String[] getDirectUserIdsOfGroupUserRole(int groupUserRoleId)
       throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_USER_IDS_IN_GROUPUSERROLE, groupUserRoleId)
-        .toArray(new String[0]);
+    return  getIds(SELECT_USER_IDS_IN_GROUPUSERROLE, groupUserRoleId).toArray(new String[0]);
   }
 
   static final private String SELECT_USER_IDS_IN_GROUPUSERROLE =
@@ -388,17 +385,16 @@ public class UserTable extends Table {
       throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
-    Vector<Integer> ids = new Vector<Integer>();
-    Vector<String> params = new Vector<String>();
+    List<Integer> ids = new ArrayList<Integer>();
+    List<String> params = new ArrayList<String>();
 
     // WARNING !!! Ids must all be set before Params !!!!
-
+    boolean manualFiltering = userIds != null && !userIds.isEmpty() && userIds.size() > 100;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERSID);
-    if (userIds != null && userIds.size() > 0) {
+    if (userIds != null && !userIds.isEmpty() && userIds.size() <= 100) {
       theQuery.append(" WHERE (ST_User.id IN (" + list2String(userIds) + ") ");
       concatAndOr = true;
     }
-
     concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id",
         concatAndOr, andOr);
     if (userModel.domainId >= 0) {
@@ -436,58 +432,18 @@ public class UserTable extends Table {
     for (int i = 0; i < ids.size(); i++) {
       idsArray[i] = ids.get(i).intValue();
     }
-
-    return getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray(
-        new String[0]);
+    List<String> result = getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    if(manualFiltering) {
+      result.retainAll(userIds);
+    }
+    return result.toArray(new String[result.size()]);
   }
 
-  /*
-   * public String[] searchUsersIds(int groupId, int componentId, int[] aRoleId, UserRow userModel)
-   * throws AdminPersistenceException { boolean concatAndOr = false; String andOr = ") AND (";
-   * StringBuffer theQuery = null; Vector<Integer> ids = new Vector<Integer>(); Vector<String>
-   * params = new Vector<String>(); // WARNING !!! Ids must all be set before Params !!!! if
-   * (groupId >= 0) { theQuery = new StringBuffer(SELECT_SEARCH_USERSID_IN_GROUP); ids.add(new
-   * Integer(groupId)); theQuery.append(
-   * " WHERE ((ST_User.id = userId) AND (ST_UserSet_User_Rel.userSetType = 'G') AND (ST_UserSet_User_Rel.userSetId = ?)"
-   * ); concatAndOr = true; } else if ((aRoleId != null) && (aRoleId.length > 0)) { theQuery = new
-   * StringBuffer(SELECT_SEARCH_USERSID_IN_ROLE); theQuery.append(
-   * " WHERE ((ST_User.id = ST_UserSet_User_Rel.userId) AND (ST_UserSet_User_Rel.userSetType = 'R') AND "
-   * ); if (aRoleId.length > 1) { theQuery.append("("); } for (int i = 0; i < aRoleId.length; i++) {
-   * ids.add(new Integer(aRoleId[i])); if (i > 0) { theQuery.append(" OR "); }
-   * theQuery.append("(ST_UserSet_User_Rel.userSetId = ?)"); } if (aRoleId.length > 1) {
-   * theQuery.append(")"); } concatAndOr = true; } else if (componentId >= 0) { theQuery = new
-   * StringBuffer(SELECT_SEARCH_USERSID_IN_COMPONENT); ids.add(new Integer(componentId)); theQuery
-   * .append(
-   * " WHERE ((ST_User.id = ST_UserSet_User_Rel.userId) AND (ST_UserSet_User_Rel.userSetType = 'I') AND (ST_UserSet_User_Rel.userSetId = ?)"
-   * ); concatAndOr = true; } else { theQuery = new StringBuffer(SELECT_SEARCH_USERSID); }
-   * concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id", concatAndOr, andOr); if
-   * (userModel.domainId >= 0) { // users are not bound to "domaine mixte" concatAndOr =
-   * addIdToQuery(ids, theQuery, userModel.domainId, "ST_User.domainId", concatAndOr, andOr); }
-   * concatAndOr = addParamToQuery(params, theQuery, userModel.specificId, "ST_User.specificId",
-   * concatAndOr, andOr); concatAndOr = addParamToQuery(params, theQuery, userModel.login,
-   * "ST_User.login", concatAndOr, andOr); concatAndOr = addParamToQuery(params, theQuery,
-   * userModel.firstName, "ST_User.firstName", concatAndOr, andOr); concatAndOr =
-   * addParamToQuery(params, theQuery, userModel.lastName, "ST_User.lastName", concatAndOr, andOr);
-   * concatAndOr = addParamToQuery(params, theQuery, userModel.eMail, "ST_User.email", concatAndOr,
-   * andOr); concatAndOr = addParamToQuery(params, theQuery, userModel.accessLevel,
-   * "ST_User.accessLevel", concatAndOr, andOr); concatAndOr = addParamToQuery(params, theQuery,
-   * userModel.loginQuestion, "ST_User.loginQuestion", concatAndOr, andOr); concatAndOr =
-   * addParamToQuery(params, theQuery, userModel.loginAnswer, "ST_User.loginAnswer", concatAndOr,
-   * andOr); if (concatAndOr) { theQuery.append(") AND (accessLevel <> 'R')"); } else {
-   * theQuery.append(" WHERE (accessLevel <> 'R')"); }
-   * theQuery.append(" order by UPPER(ST_User.lastName)"); int[] idsArray = new int[ids.size()]; for
-   * (int i = 0; i < ids.size(); i++) { idsArray[i] = ids.get(i).intValue(); } return
-   * getIds(theQuery.toString(), idsArray, params.toArray(new String[0])).toArray( new String[0]); }
-   */
 
   static final private String SELECT_SEARCH_USERSID =
       "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User";
 
-  /*
-   * static final private String SELECT_SEARCH_USERSID_IN_GROUP = "select ST_User.id " +
-   * "from ST_User,ST_Group_User_Rel";
-   */
   static final private String SELECT_SEARCH_USERSID_IN_GROUP =
       "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User,ST_UserSet_User_Rel";
@@ -502,14 +458,18 @@ public class UserTable extends Table {
 
   /**
    * Returns all the Users satiffying the model
+   * @param userModel 
+   * @param isAnd 
+   * @return
+   * @throws AdminPersistenceException
    */
   public UserRow[] searchUsers(UserRow userModel, boolean isAnd)
       throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERS);
-    Vector<Integer> ids = new Vector<Integer>();
-    Vector<String> params = new Vector<String>();
+    List<Integer> ids = new ArrayList<Integer>();
+    List<String> params = new ArrayList<String>();
 
     if (isAnd) {
       andOr = ") AND (";
@@ -565,8 +525,7 @@ public class UserTable extends Table {
     String[] values = new String[] { sampleUser.login, sampleUser.firstName,
         sampleUser.lastName, sampleUser.eMail };
 
-    return (UserRow[]) getMatchingRows(USER_COLUMNS, columns, values).toArray(
-        new UserRow[0]);
+    return getMatchingRows(USER_COLUMNS, columns, values).toArray(new UserRow[0]);
   }
 
   /**
@@ -652,8 +611,9 @@ public class UserTable extends Table {
         null);
 
     UserRow user = getUser(id);
-    if (user == null)
+    if (user == null) {
       return;
+    }
 
     SynchroReport.info("UserTable.removeUser()", "Suppression de " + user.login
         + " des groupes dans la base", null);

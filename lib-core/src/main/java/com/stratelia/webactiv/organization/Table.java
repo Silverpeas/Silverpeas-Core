@@ -31,12 +31,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Collection;
 
 /**
  * A Table object manages a table in a database.
@@ -897,7 +897,7 @@ public abstract class Table {
   private Schema schema = null;
   private String tableName = null;
 
-  protected boolean addParamToQuery(Vector<String> theVect, StringBuffer theQuery,
+  protected boolean addParamToQuery(Collection<String> theVect, StringBuffer theQuery,
       String value, String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
 
@@ -914,7 +914,7 @@ public abstract class Table {
     return valret;
   }
 
-  protected boolean addIdToQuery(Vector<Integer> theVect, StringBuffer theQuery,
+  protected boolean addIdToQuery(Collection<Integer> theVect, StringBuffer theQuery,
       int value, String column, boolean concatAndOr, String andOr) {
     boolean valret = concatAndOr;
 
