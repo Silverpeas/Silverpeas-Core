@@ -3846,9 +3846,9 @@ public class Admin extends Object {
     }
 
     Iterator<ComponentInstLight> it2 = componentsLight.iterator();
-    while (it.hasNext()) {
+    while (it2.hasNext()) {
       ComponentInstLight child = it2.next();
-      String fatherId = child.getDomainFatherId();
+      String fatherId = SPACE_KEY_PREFIX + child.getDomainFatherId();
       SpaceAndChildren father = spaceTrees.get(fatherId);
       if (father != null) {
         father.addComponent(child);
