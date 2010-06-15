@@ -67,6 +67,8 @@ public class Util {
 
   public static String getJavascriptIncludes() {
     String includes = "";
+
+    // includes home made scripts
     includes += "<script type=\"text/javascript\" src=\"" + path
         + "/util/javaScript/dateUtils.js" + "\"></script>\n";
     includes += "<script type=\"text/javascript\" src=\"" + path
@@ -79,7 +81,25 @@ public class Util {
         + URLManager.getURL(URLManager.CMP_AGENDA)
         + "calendar.jsp?idElem='+idField,'Calendrier',180,200,'');";
     includes += "}";
-    includes += "</script>";
+    includes += "</script>\n";
+
+    // includes external scripts once because
+    // including several times the same script (once per field) can provide
+    // dysfunction on this fields
+    String m_context =
+        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    includes += "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
+        "/util/yui/fonts/fonts-min.css\" />\n";
+    includes += "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
+        "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />\n";
+    includes += "<script type=\"text/javascript\" src=\"" + m_context +
+        "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
+    includes += "<script type=\"text/javascript\" src=\"" + m_context +
+        "/util/yui/animation/animation-min.js\"></script>\n";
+    includes += "<script type=\"text/javascript\" src=\"" + m_context +
+        "/util/yui/datasource/datasource-min.js\"></script>\n";
+    includes += "<script type=\"text/javascript\" src=\"" + m_context +
+        "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
     return includes;
 
   }

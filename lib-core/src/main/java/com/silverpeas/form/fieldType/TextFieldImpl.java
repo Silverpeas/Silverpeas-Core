@@ -38,7 +38,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 
 /**
@@ -127,23 +126,8 @@ public class TextFieldImpl extends TextField {
 
   public static void printSuggestionsIncludes(PagesContext pageContext,
       String fieldName, PrintWriter out) {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
     int zindex = (pageContext.getLastFieldIndex() - new Integer(pageContext
         .getCurrentFieldIndex()).intValue()) * 9000;
-    out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\""
-        + m_context + "/util/yui/fonts/fonts-min.css\" />");
-    out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\""
-        + m_context
-        + "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />");
-    out.println("<script type=\"text/javascript\" src=\"" + m_context
-        + "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
-    out.println("<script type=\"text/javascript\" src=\"" + m_context
-        + "/util/yui/animation/animation-min.js\"></script>\n");
-    out.println("<script type=\"text/javascript\" src=\"" + m_context +
-        "/util/yui/datasource/datasource-min.js\"></script>\n");
-    out.println("<script type=\"text/javascript\" src=\"" + m_context
-        + "/util/yui/autocomplete/autocomplete-min.js\"></script>\n");
     out.println("<style type=\"text/css\">\n");
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out.println("		width:15em;\n");

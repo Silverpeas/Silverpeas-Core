@@ -25,8 +25,10 @@
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.novell.ldap.LDAPConnection;
@@ -40,9 +42,6 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.LdapField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A LDAPFieldDisplayer is an object which can display a listbox in HTML the content of a listbox to
@@ -221,29 +220,9 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (listRes != null && listRes.size() > 0) {
-      String m_context =
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
       int zindex =
           (PagesContext.getLastFieldIndex() - new Integer(PagesContext.getCurrentFieldIndex())
           .intValue()) * 9000;
-      html +=
-          "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-          "/util/yui/fonts/fonts-min.css\" />\n";
-      html +=
-          "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-          "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/animation/animation-min.js\"></script>\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/datasource/datasource-min.js\"></script>\n";
-      html +=
-          "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
       html += "<style type=\"text/css\">\n";
       html += "	#listAutocomplete" + fieldName + " {\n";
       html += "		width:15em;\n";
@@ -276,23 +255,19 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
         html +=
             "<img src=\"" +
                 mandatoryImg +
-                "\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:16em;top:5px\"/>\n";
+                "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n";
       }
 
       html += "<script type=\"text/javascript\">\n";
       html += "listArray" + fieldName + " = [\n";
 
       Iterator<String> itRes = listRes.iterator();
-      String val;
       while (itRes.hasNext()) {
-        val = itRes.next();
-
-        html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
+        html += "\"" + EncodeHelper.javaStringToJsString(itRes.next()) + "\"";
+        if (itRes.hasNext()) {
+          html += ",\n";
+        }
       }
-
-      // supprime dernière virgule inutile
-      html = html.substring(0, html.length() - 1);
-
       html += "];\n";
       html += "</script>\n";
 
@@ -327,33 +302,33 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
       if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
         // saisie libre, par défaut 1
 
-        html += "<SELECT name=\"" + fieldName + "\"";
+        html += "<select name=\"" + fieldName + "\"";
 
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled";
+          html += " disabled=\"disabled\"";
         }
         html += " >\n";
-        html += "</SELECT>\n";
+        html += "</select>\n";
 
         if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly()) &&
             (!template.isHidden())) {
           html +=
               "&nbsp;<img src=\"" + mandatoryImg +
-              "\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n";
+              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n";
         }
       } else {
         html += "<input type=\"text\" name=\"" + fieldName + "\"";
 
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled";
+          html += " disabled=\"disabled\"";
         }
-        html += " >\n";
+        html += " />\n";
 
         if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly()) &&
             (!template.isHidden())) {
           html +=
               "&nbsp;<img src=\"" + mandatoryImg +
-              "\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n";
+              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n";
         }
       }
     }
