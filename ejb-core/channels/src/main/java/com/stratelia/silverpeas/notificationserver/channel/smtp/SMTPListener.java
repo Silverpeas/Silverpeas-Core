@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
@@ -46,14 +45,17 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Map;
 
 public class SMTPListener extends AbstractListener {
+  
   private String m_Host;
   private String m_User;
   private String m_Pwd;
@@ -65,6 +67,7 @@ public class SMTPListener extends AbstractListener {
   public SMTPListener() {
   }
 
+  @Override
   public void ejbCreate() {
     ResourceLocator mailerSettings = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings",
@@ -84,6 +87,7 @@ public class SMTPListener extends AbstractListener {
 
   /**
    * listener of NotificationServer JMS message
+   * @param msg the message recieved
    */
   @Override
   public void onMessage(javax.jms.Message msg) {
@@ -110,19 +114,14 @@ public class SMTPListener extends AbstractListener {
     // process the target param string, containing the FROM and the SUBJECT
     // email fields.
     try {
-      Hashtable keyValue = p_Message.getTargetParam();
-
-      tmpFromString = (String) keyValue.get("FROM"); // retrieves the FROM key
-      // value.
-      tmpSubjectString = (String) keyValue.get("SUBJECT"); // retrieves the
-      // SUBJECT key value.
-      tmpUrlString = (String) keyValue.get("URL"); // retrieves the URL key
-      // value.
-      tmpLanguageString = (String) keyValue.get("LANGUAGE"); // retrieves the
-      // LANGUAGE key
-      // value.
-      tmpAttachmentIdString = (String) keyValue.get("ATTACHMENTID");
-      tmpSourceString = (String) keyValue.get("SOURCE");
+      @SuppressWarnings("unchecked")
+      Map<String, String> keyValue = (Map<String, String>) p_Message.getTargetParam();
+      tmpFromString = keyValue.get("FROM"); 
+      tmpSubjectString = keyValue.get("SUBJECT"); 
+      tmpUrlString = keyValue.get("URL"); 
+      tmpLanguageString = keyValue.get("LANGUAGE"); 
+      tmpAttachmentIdString = keyValue.get("ATTACHMENTID");
+      tmpSourceString = keyValue.get("SOURCE");
 
       if (tmpSourceString != null && tmpSourceString.length() > 0) {
         tmpSubjectString = tmpSourceString + " : " + tmpSubjectString;
@@ -134,15 +133,13 @@ public class SMTPListener extends AbstractListener {
       throw new NotificationServerException("SMTPListner.send()",
           SilverpeasException.ERROR, "smtp.EX_MISSING_PARAMETER", e);
     }
-
-    // if no LANGUAGE field was entered, then take "fr"
-    if (tmpLanguageString == null)
-      tmpLanguageString = "fr";
+    if (tmpLanguageString == null) {
+      tmpLanguageString = I18NHelper.defaultLanguage;
+    }
 
     ResourceLocator messages = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.smtp.multilang.smtpBundle",
         tmpLanguageString);
-    // if no FROM field was entered, then add an error. If not, send the email.
     if (tmpFromString == null) {
       throw new NotificationServerException("SMTPListner.send()",
           SilverpeasException.ERROR, "smtp.EX_MISSING_FROM");
@@ -183,13 +180,11 @@ public class SMTPListener extends AbstractListener {
 
     Properties properties = System.getProperties();
     properties.put("mail.smtp.host", m_Host);
-    properties.put("mail.smtp.auth", new Boolean(m_SmtpAuthentication)
-        .toString());
+    properties.put("mail.smtp.auth", String.valueOf(m_SmtpAuthentication));
     javax.mail.Session session = javax.mail.Session.getInstance(properties, null);
     session.setDebug(m_SmtpDebug); // print on the console all SMTP messages.
     try {
-      InternetAddress fromAddress = new InternetAddress(pFrom); // use InternetAddress
-      // structure.
+      InternetAddress fromAddress = new InternetAddress(pFrom); 
       InternetAddress[] toAddress = null;
       // parsing destination address for compliance with RFC822
       try {
@@ -201,22 +196,20 @@ public class SMTPListener extends AbstractListener {
       MimeMessage email = new MimeMessage(session);
       email.setFrom(fromAddress);
       email.setRecipients(javax.mail.Message.RecipientType.TO, toAddress);
+      email.setHeader("Precedence", "list");
+      email.setHeader("List-ID", pFrom);
       email.setSubject(pSubject == null ? "" : pSubject, "ISO-8859-1");
       if (pMessage.toLowerCase().indexOf("<html>") != -1 || htmlFormat) {
-        // create and fill the first message
+
         MimeBodyPart mbp1 = new MimeBodyPart();
         mbp1.setDataHandler(new DataHandler(new ByteArrayDataSource(pMessage,
             "text/html; charset=\"iso-8859-1\"")));
-
-        // create the Multipart and its parts to it
         Multipart mp = new MimeMultipart();
         mp.addBodyPart(mbp1);
-
-        // add the Multipart to the message
         email.setContent(mp);
-      } else
+      } else {
         email.setText(pMessage == null ? "" : pMessage, "ISO-8859-1");
-      // set the Date: header
+      }
       email.setSentDate(new Date());
 
       // create a Transport connection (TCP)
@@ -230,8 +223,9 @@ public class SMTPListener extends AbstractListener {
             "root.MSG_GEN_PARAM_VALUE", "m_Host = " + m_Host + " m_Port="
             + m_Port + " m_User=" + m_User);
         transport.connect(m_Host, m_Port, m_User, m_Pwd);
-      } else
+      } else {
         transport.connect();
+      }
 
       transport.sendMessage(email, toAddress);
     } catch (Exception e) {
@@ -259,13 +253,10 @@ public class SMTPListener extends AbstractListener {
       try {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         int ch;
-
-        while ((ch = is.read()) != -1)
-          // XXX - must be made more efficient by
-          // doing buffered reads, rather than one byte reads
+        while ((ch = is.read()) != -1) {
           os.write(ch);
+        }
         data = os.toByteArray();
-
       } catch (IOException ioex) {
       }
     }
@@ -282,7 +273,7 @@ public class SMTPListener extends AbstractListener {
         // Assumption that the string contains only ASCII
         // characters! Otherwise just pass a charset into this
         // constructor and use it in getBytes()
-        this.data = data.getBytes("iso-8859-1");
+        this.data = data.getBytes("ISO-8859-1");
       } catch (UnsupportedEncodingException uex) {
       }
       this.type = type;
@@ -293,8 +284,9 @@ public class SMTPListener extends AbstractListener {
      */
     @Override
     public InputStream getInputStream() throws IOException {
-      if (data == null)
+      if (data == null) {
         throw new IOException("no data");
+      }
       return new ByteArrayInputStream(data);
     }
 
