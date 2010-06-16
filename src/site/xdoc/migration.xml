@@ -82,7 +82,7 @@
         </ul>
         <p>Now, you need to install the Oracle JDBC driver in your local repository with the following command :</p>
         <source><![CDATA[
-mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -DgeneratePom=true -Dfile=/path/to/jar]]></source>
+mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dpackaging=jar -Dversion=11.2.0.1.0 -DgeneratePom=true -Dfile=/path/to/jar]]></source>
         </subsection>
       <subsection name="Configuring Silverpeas">
         <p>Now, you have to edit your configuration file : <i>%SILVERPEAS_HOME%\setup\settings\CustomerSettings.xml</i>
