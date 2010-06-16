@@ -106,7 +106,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       // load search.xml
       template.getSearchTemplate();
 
-      Iterator it = getRecordTemplate(SCOPE_DATA).getFieldList().iterator();
+      Iterator<FieldTemplate> it = getRecordTemplate(SCOPE_DATA).getFieldList().iterator();
       GenericFieldTemplate field = null;
       while (it.hasNext()) {
         field = (GenericFieldTemplate) it.next();
@@ -210,7 +210,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
 
     updateInProgress = true;
-    saveTemplateFields();
+    saveTemplateFields(true);
   }
 
   public void removeField(String fieldName) throws TemplateDesignerException {
@@ -219,7 +219,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     getRecordTemplate(SCOPE_DATA).getFieldList().remove(field);
 
     updateInProgress = true;
-    saveTemplateFields();
+    saveTemplateFields(true);
   }
 
   public void moveField(String fieldName, int direction)
@@ -298,10 +298,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   public void saveTemplate() throws TemplateDesignerException {
     saveTemplateHeader();
-    saveTemplateFields();
+    saveTemplateFields(true);
   }
 
-  private void saveTemplateFields() throws TemplateDesignerException {
+  private void saveTemplateFields(boolean resetCache) throws TemplateDesignerException {
     try {
       List<FieldTemplate> fields = getRecordTemplate(SCOPE_DATA).getFieldList();
 
@@ -337,6 +337,11 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       // Save others xml files (data.xml, view.xml, update.xml
       ((PublicationTemplateImpl) template).saveRecordTemplates();
 
+      if (resetCache) {
+        // reset caches partially
+        PublicationTemplateManager.removePublicationTemplateFromCaches(template.getFileName());
+      }
+
       updateInProgress = false;
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
@@ -350,6 +355,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     try {
       // Save main xml File
       PublicationTemplateManager.savePublicationTemplate(template);
+
+      // reset caches partially
+      PublicationTemplateManager.removePublicationTemplateFromCaches(template.getFileName());
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
           "TemplateDesignerSessionController.saveTemplate",

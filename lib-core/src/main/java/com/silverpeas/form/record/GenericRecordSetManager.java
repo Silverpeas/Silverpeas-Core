@@ -59,10 +59,9 @@ public class GenericRecordSetManager {
 
   /**
    * Build and return a new record set.
-   *
-   * @param externalId 
+   * @param externalId
    * @param template
-   * @return 
+   * @return
    * @throws FormException
    */
   static public GenericRecordSet createRecordSet(String externalId,
@@ -111,9 +110,8 @@ public class GenericRecordSetManager {
 
   /**
    * Return the record set known be its external id.
-   *
-   * @param externalId 
-   * @return 
+   * @param externalId
+   * @return
    * @throws FormException when the id is unknown.
    */
   static public RecordSet getRecordSet(String externalId) throws FormException {
@@ -157,8 +155,7 @@ public class GenericRecordSetManager {
 
   /**
    * Remove the record set known by its external id.
-   *
-   * @param externalId 
+   * @param externalId
    * @throws FormException when the id is unknown.
    */
   static public void removeRecordSet(String externalId) throws FormException {
@@ -205,11 +202,32 @@ public class GenericRecordSetManager {
     cache.remove(externalId);
   }
 
+  static public void removeTemplateFromCache(String templateName) {
+    SilverTrace.debug("form", "GenericRecordSetManager.removeTemplateFromCache",
+        "root.MSG_GEN_ENTER_METHOD", "templateName = " + templateName);
+
+    // getting cached recordsets managed by given template
+    List<String> ids = new ArrayList<String>();
+    for (String id : cache.keySet()) {
+      GenericRecordSet rs = cache.get(id);
+      IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) rs.getRecordTemplate();
+      if (template != null && templateName.equalsIgnoreCase(template.getTemplateName())) {
+        ids.add(id);
+      }
+    }
+    SilverTrace.debug("form", "GenericRecordSetManager.removeTemplateFromCache",
+        "root.MSG_GEN_PARAM_VALUE", "externalIds to remove = " + ids.toString());
+
+    // removing recordsets from cache
+    for (String id : ids) {
+      removeCachedRecordSet(id);
+    }
+  }
+
   static private HashMap<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
 
   /**
    * Return the DataRecord registered by the pair (templateId, recordId).
-   *
    * @param template the definition of the form template the record belongs to.
    * @param recordId the ID of the form record.
    * @return the form record or <code>null</code> if not found.
@@ -233,7 +251,7 @@ public class GenericRecordSetManager {
     try {
       con = getConnection();
       record = selectRecordRow(con, template, recordId, language);
-      
+
       if (record != null) {
         selectFieldRows(con, template, record);
       }
@@ -267,11 +285,10 @@ public class GenericRecordSetManager {
 
   /**
    * Register the DataRecord with the pair (templateId, recordId).
-   *
    * @param template
    * @param insertedRecord
-   * @throws FormException if the (templateId, recordId) pair is already known
-   *                       or if the given template is unknown.
+   * @throws FormException if the (templateId, recordId) pair is already known or if the given
+   * template is unknown.
    */
   static public void insertRecord(IdentifiedRecordTemplate template,
       DataRecord insertedRecord) throws FormException {
@@ -342,7 +359,6 @@ public class GenericRecordSetManager {
 
   /**
    * Save the DataRecord registered by the pair (templateId, recordId).
-   *
    * @param template
    * @param updatedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.
@@ -370,7 +386,6 @@ public class GenericRecordSetManager {
 
   /**
    * Delete the DataRecord registered by the pair (templateId, recordId).
-   *
    * @param template
    * @param deletedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.

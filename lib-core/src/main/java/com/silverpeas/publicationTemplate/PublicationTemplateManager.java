@@ -346,4 +346,23 @@ public class PublicationTemplateManager {
 
     return searchableTemplates;
   }
+
+  public static void removePublicationTemplateFromCaches(String fileName) {
+    SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
+        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+    List<String> externalIdsToRemove = new ArrayList<String>();
+    Collection<PublicationTemplate> templates = pubTemplate.values();
+    for (PublicationTemplate template : templates) {
+      if (template.getFileName().equals(fileName)) {
+        externalIdsToRemove.add(template.getExternalId());
+      }
+    }
+    for (String externalId : externalIdsToRemove) {
+      pubTemplate.remove(externalId);
+    }
+
+    templates.remove(fileName);
+
+    GenericRecordSetManager.removeTemplateFromCache(fileName);
+  }
 }
