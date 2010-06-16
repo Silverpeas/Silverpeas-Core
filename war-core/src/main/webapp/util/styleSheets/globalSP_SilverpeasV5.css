@@ -2235,3 +2235,15 @@ td.browsebar a:hover {
 #searchGroupValues ul li.selected a:hover {
 	text-decoration: line-through;
 }
+
+.attachments {
+	width: 150px;
+}
+
+.attachments .header {
+	text-align: center;
+}
+
+.attachments .dragNdrop {
+	text-align: right;
+}

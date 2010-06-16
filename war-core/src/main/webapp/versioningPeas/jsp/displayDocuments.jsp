@@ -314,8 +314,8 @@ void displayActions(Document document, DocumentVersion version, String profile, 
     if (iterator.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
         Board		board	= gef.getBoard();
         out.println(board.printBefore());
-        out.println("<TABLE width=\"150\">");
-	  	out.println("<TR><TD align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"/></td></TR>");
+        out.println("<table class=\"attachments\">");
+	  	out.println("<tr><td class=\"header\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\" class=\"picto\"/></td></tr>");
 	  	out.println("<tr><td>");
         out.println("<ul id=\"attachmentList\">");
         while (iterator.hasNext())
@@ -439,13 +439,13 @@ void displayActions(Document document, DocumentVersion version, String profile, 
              }
           }
         	  out.println("</ul>");
-	     	  out.println("</TD></TR>");
+	     	  out.println("</td></tr>");
 	     	  if (contextualMenuEnabled && dragAndDropEnable) { %>
               <tr>
                 <td align="right">
                   <table width="100%">
                     <tr>
-                      <td colspan="3" align="right"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
+                      <td colspan="3" class="dragNdrop"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
                     </tr>
                     <tr>
                       <td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
@@ -457,7 +457,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
               </tr>
 	 		  <% } %>
 	 		  <% if (contextualMenuEnabled && !dragAndDropEnable) { %>
-	 				<tr><td align="right"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add") %>...</a></td></tr>
+	 				<tr><td class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add") %>...</a></td></tr>
 	 		  <% }
 	          out.println("</TABLE>");
 	          out.println(board.printAfter());

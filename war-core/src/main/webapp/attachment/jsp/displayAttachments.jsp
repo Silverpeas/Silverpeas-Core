@@ -173,13 +173,13 @@
         int nbAttachmentPerLine = 3;
 
         if (attachmentPosition != null && "right".equals(attachmentPosition)) {
-          out.println("<TABLE width=\"150\">");
+          out.println("<TABLE class=\"attachments\">");
           out.println(
-              "<TR><TD align=\"center\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"/></td></TR>");
+              "<TR><TD class=\"header\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></TR>");
         } else {
           out.println("<TABLE border=\"0\">");
           out.println(
-              "<TR><TD align=\"center\" colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"></td></TR>");
+              "<TR><TD align=\"center\" colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"/></td></TR>");
         }
 
         AttachmentDetail attachmentDetail = null;
@@ -329,13 +329,13 @@
       out.println("</td></tr>");
 %>
 <% if (contextualMenuEnabled && dragAndDropEnable) {%>
-<tr><td align="right">
+<tr><td class="dragNdrop">
     <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanationShort_<%=language%>.html','0','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
   </td>
   <% }%>
   <% if (contextualMenuEnabled && !dragAndDropEnable) {%>
-<tr><td align="right"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add")%>...</a></td></tr>
+<tr><td class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add")%>...</a></td></tr>
     <% }%>
     <%
             out.println("</TABLE>");
