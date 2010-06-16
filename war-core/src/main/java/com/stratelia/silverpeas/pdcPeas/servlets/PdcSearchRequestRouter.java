@@ -571,7 +571,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
             "root.MSG_GEN_PARAM_VALUE", "avant search");
         // the query string contains something
-        if (searchParameters.isDefined()) {
+        if (searchParameters.isDefined() ||
+            (StringUtil.isDefined(searchParameters.getSpaceId()) && !pdcUsedDuringSearch)) {
           // We have to search objects from classical search and merge it eventually with result
           // from PDC
           MatchingIndexEntry[] ie = pdcSC.search(); // launch the classical research
@@ -919,7 +920,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
             "root.MSG_GEN_PARAM_VALUE", "avant search");
         // the query string contains something
-        if (searchParameters.isDefined()) {
+        if (searchParameters.isDefined() ||
+            (StringUtil.isDefined(searchParameters.getSpaceId()) && !pdcUsedDuringSearch)) {
           // We have to search objects from classical search and merge it eventually with result
           // from PDC
           MatchingIndexEntry[] ie = pdcSC.search(); // launch the classical research

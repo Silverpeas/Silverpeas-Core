@@ -322,7 +322,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       getSearchEngineBm().setSpellingWords(null);
       spellingwords = null;
       if (getQueryParameters() != null
-          && (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null)) {
+          &&
+          (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null || StringUtil
+              .isDefined(getQueryParameters().getSpaceId()))) {
         query = getQueryParameters().getQueryDescription(
             getUserId(), "*");
 
@@ -645,7 +647,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (result != 0) {
             return result;
           } else {
-            // Add comparaison on title in order to fix an order (problem with same creation date value)
+            // Add comparaison on title in order to fix an order (problem with same creation date
+            // value)
             string1 = o1.getName(getLanguage());
             string2 = o2.getName(getLanguage());
             if (string1 != null && string2 != null) {
@@ -671,7 +674,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (result != 0) {
             return result;
           } else {
-            // Add comparaison on title in order to fix an order (problem with same update date value)
+            // Add comparaison on title in order to fix an order (problem with same update date
+            // value)
             string1 = o1.getName(getLanguage());
             string2 = o2.getName(getLanguage());
             if (string1 != null && string2 != null) {
@@ -723,7 +727,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (result != 0) {
             return result;
           } else {
-            // Add comparaison on title in order to fix an order (problem with same popularity value)
+            // Add comparaison on title in order to fix an order (problem with same popularity
+            // value)
             String string1 = o1.getName(getLanguage());
             String string2 = o2.getName(getLanguage());
             if (string1 != null && string2 != null) {
