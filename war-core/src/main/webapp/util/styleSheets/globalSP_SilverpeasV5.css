@@ -251,6 +251,7 @@ Definition des class de style Silverpeas
 	color: #111111;
 	padding-right: 50px;
 	vertical-align: top;
+	text-align: left;
 }
 
 .txtsublibform {
@@ -775,6 +776,11 @@ td.browsebar a:hover {
 	border-width: 1px 1px 1px 1px;
 	border-color: #CCCCCC;
 	background-color: #FFFFFF;
+}
+
+.arrayPane {
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .operationStyle {
@@ -1402,6 +1408,12 @@ td.browsebar a:hover {
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
 	background-repeat: no-repeat;
 	background-position: right top;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.tableBoard td {
+	text-align: left;
 }
 
 /* Objet ArrayPane */
@@ -1413,12 +1425,17 @@ td.browsebar a:hover {
 	font-weight: bold;
 	color: #FFFFFF;
 	height: 20px;
+	text-align: left;
 }
 
 .ArrayColumn a {
 	color: #FFFFFF;
 	background-image: none;
 	background-color: transparent;
+}
+
+.ArrayCell {
+	text-align: left;
 }
 
 .ArrayNavigation {

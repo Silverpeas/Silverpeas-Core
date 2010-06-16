@@ -380,9 +380,8 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
     StringBuffer result = new StringBuffer();
 
-    result.append("<center>\n");
     result
-        .append("<table width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" border=\"0\"><tr><td>\n");
+        .append("<table width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" border=\"0\" class=\"arrayPane\"><tr><td>\n");
     result.append("<table width=\"100%\" cellspacing=\"")
         .append(m_CellsSpacing).append("\" cellpadding=\"").append(
         m_CellsPadding).append("\" border=\"").append(m_CellsBorderWidth)
@@ -452,7 +451,6 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
 
     result.append("</td></tr></table>\n");
-    result.append("</center>\n");
     return result.toString();
   }
 
