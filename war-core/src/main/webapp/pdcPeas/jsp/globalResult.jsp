@@ -84,7 +84,7 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 	out.println(pagination.printCounter());
 	out.println(resource.getString("pdcPeas.ManyResultPages"));
 	if (query != null && query.length() > 0)
-		out.println(" "+resource.getString("pdcPeas.ForYourQuery")+query);
+		out.println(" <span id=\"globalResultForYourQuery\">" + resource.getString("pdcPeas.ForYourQuery") + query + "</div>");
 	out.println("</td>");
 	out.println("</tr>");
 	//out.println("<tr><td>&nbsp;</td></tr>");
@@ -646,7 +646,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");
 			}
 			if (sCreatorName != null && sCreatorName.length()>0)
-				out.println(" - "+Encode.javaStringToHtmlString(sCreatorName));
+				out.println(" - "+EncodeHelper.javaStringToHtmlString(sCreatorName));
 			if (sCreationDate != null && sCreationDate.length()>0)
 				out.print(" ("+sCreationDate + ")");
 							
@@ -658,7 +658,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 			}
 			
 			if (sLocation != null && sLocation.length()>0)
-				out.println("<BR>"+Encode.javaStringToHtmlString(sLocation));
+				out.println("<BR>"+EncodeHelper.javaStringToHtmlString(sLocation));
 			out.println("<td>");
 				
 			out.println("</tr></table>");
