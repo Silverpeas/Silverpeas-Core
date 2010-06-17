@@ -674,9 +674,9 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
         // création de la liste des domaines
         String[][] allDomains = jobDomainSC.getAllDomains();
-        String[] domainsByList = new String[allDomains.length];
+        String[] domainsByList = new String[allDomains.length-1];
         for (int n = 1; n < allDomains.length; n++) {
-          domainsByList[n] = allDomains[n][1];
+          domainsByList[n-1] = allDomains[n][1];
         }
         template.setAttribute("listDomains", domainsByList);
         request.setAttribute("Content", template.applyFileTemplate("register_" +
