@@ -196,6 +196,27 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         stringBuilder.append("</select>");
         out.println(stringBuilder.toString());
       }
+      
+      // Gallery file : HTML select building
+      List<ComponentInstLight> galleries = WysiwygController.getGalleries();
+      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
+        
+      if (!galleries.isEmpty()) {
+            ResourceLocator resources = new ResourceLocator(
+                "com.silverpeas.form.multilang.formBundle", contentLanguage);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<select id=\"galleryFile_" + fieldName +
+                "\" name=\"componentId\" onchange=\"openGalleryFileManager" + fieldNameFunction +
+                "();this.selectedIndex=0\">");
+            stringBuilder.append("<option value=\"\">").append(
+                resources.getString("SelectPicture")).append("</option>");
+            for (ComponentInstLight component : galleries) {
+              stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
+                  component.getLabel(contentLanguage)).append("</option>");
+            }
+            stringBuilder.append("</select>");
+            out.println(stringBuilder.toString());
+      }
 
       out.println("<TR>");
 
@@ -229,7 +250,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println("oFCKeditor.ReplaceTextarea();");
 
       // field name used to generate a javascript function name
-      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
 
@@ -277,6 +297,36 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
           .println("oEditor.InsertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\"> '+label+'</a> ');");
       out.println("}");
 
+      // Gallery files exists; javascript functions
+      if (!galleries.isEmpty()) {
+        out.println("var galleryFileWindow=window;");
+          out.println("function openGalleryFileManager" + fieldNameFunction + "(){");
+          out.println("index = document.getElementById(\"galleryFile_" + fieldName +
+              "\").selectedIndex;");
+          out.println("var componentId = document.getElementById(\"galleryFile_" + fieldName +
+              "\").options[index].value;");
+          out.println("if (index != 0){  ");
+          out.println("url = \"" +
+                  URLManager.getApplicationURL() +
+                  "/gallery/jsp/wysiwygBrowser.jsp?ComponentId=\"+componentId+\"&Language=" + contentLanguage 
+                  + "&FieldName=" + fieldNameFunction 
+                  + "\";");
+          out.println("windowName = \"GalleryFileWindow\";");
+          out.println("width = \"750\";");
+          out.println("height = \"580\";");
+          out.println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
+          out.println("if (!galleryFileWindow.closed && galleryFileWindow.name==windowName)");
+          out.println("galleryFileWindow.close();");
+          out.println("galleryFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
+          out.println("}}");
+
+          out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
+          out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
+          out.println("oEditor.Focus();");
+          out.println("oEditor.InsertHtml('<img src=\"'+url+'\" border=\"0\"/>');");
+          out.println("}");
+      }
+      
       out.println("</script>");
 
       if (template.isMandatory() && pageContext.useMandatory()) {
