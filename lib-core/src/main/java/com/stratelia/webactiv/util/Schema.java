@@ -45,6 +45,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public abstract class Schema {
   private boolean isLocalConnection = true;
   private boolean haveToTestConnections = true;
+  private boolean managed = false;
   private int connectionLot = 0;
   private Map statementsMap = new HashMap();
   private Connection connection = null;
@@ -77,7 +78,12 @@ public abstract class Schema {
       Context ctx = new InitialContext();
       DataSource src = (DataSource) ctx.lookup(getJNDIName());
       connection = src.getConnection();
-      connection.setAutoCommit(false);
+      if (!connection.getAutoCommit()) {
+        managed = true;
+      } else {
+        managed = false;
+        connection.setAutoCommit(false);
+      }
       isLocalConnection = true;
       SilverTrace.info("util", "Schema.createConnection()",
           "root.MSG_GEN_PARAM_VALUE", "Connection Created !");
@@ -100,6 +106,7 @@ public abstract class Schema {
             .lookup(JNDINames.DIRECT_DATASOURCE);
         // Create a connection object
         this.connection = dataSource.getConnection();
+        this.managed = false;
       } catch (NamingException ne) {
         throw new UtilException("Schema.createConnection",
             SilverpeasException.ERROR, "root.EX_DATASOURCE_NOT_FOUND",
@@ -117,21 +124,25 @@ public abstract class Schema {
 
   public synchronized void commit() throws UtilException {
     SilverTrace.info("util", "Schema.commit()", "root.MSG_GEN_ENTER_METHOD");
-    try {
-      connection.commit();
-    } catch (SQLException e) {
-      throw new UtilException("Schema.commit", SilverpeasException.ERROR,
-          "root.EX_ERR_COMMIT", e);
+    if (!isManaged()) {
+      try {
+        connection.commit();
+      } catch (SQLException e) {
+        throw new UtilException("Schema.commit", SilverpeasException.ERROR,
+            "root.EX_ERR_COMMIT", e);
+      }
     }
   }
 
   public synchronized void rollback() throws UtilException {
     SilverTrace.info("util", "Schema.rollback()", "root.MSG_GEN_ENTER_METHOD");
-    try {
-      connection.rollback();
-    } catch (SQLException e) {
-      throw new UtilException("Schema.rollback", SilverpeasException.ERROR,
-          "root.EX_ERR_ROLLBACK", e);
+    if (!isManaged()) {
+      try {
+        connection.rollback();
+      } catch (SQLException e) {
+        throw new UtilException("Schema.rollback", SilverpeasException.ERROR,
+            "root.EX_ERR_ROLLBACK", e);
+      }
     }
   }
 
@@ -156,7 +167,7 @@ public abstract class Schema {
   }
 
   /**
-   * Returns true if the connection can be used.
+   * @return <code>true</code> if the connection can be used.
    */
   public boolean isOk() {
     Statement st = null;
@@ -179,6 +190,15 @@ public abstract class Schema {
           "Connection Test Problem !!!", e);
       return false;
     }
+  }
+
+  /**
+   * Return the value of the managed property.
+   *
+   * @return the value of managed.
+   */
+  public boolean isManaged() {
+    return managed;
   }
 
   /**
