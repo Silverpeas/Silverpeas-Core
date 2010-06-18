@@ -310,6 +310,13 @@ public class GraphicElementFactory extends Object {
             code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
             code.append(specificStyle).append("\"/>\n");
           }
+
+          String specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
+          if (StringUtil.isDefined(specificJS)) {
+            code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/util/javaScript/jquery/jquery-1.3.2.min.js\"></script>\n");
+            code.append("<script type=\"text/javascript\" src=\"");
+            code.append(specificJS).append("\"></script>\n");
+          }
         }
       }
 
