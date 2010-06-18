@@ -124,8 +124,12 @@ public class RoleDAO {
   public static List<UserRoleRow> getRoles(Connection con, int objectId,
       String objectType, int instanceId, List<String> groupIds, int userId) throws SQLException {
     List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-    roles.addAll(getRoles(con, objectId, objectType, instanceId, groupIds));
-    roles.addAll(getRoles(con, objectId, objectType, instanceId, userId));
+    if (groupIds != null && groupIds.size() > 0) {
+      roles.addAll(getRoles(con, objectId, objectType, instanceId, groupIds));
+    }
+    if (userId != -1) {
+      roles.addAll(getRoles(con, objectId, objectType, instanceId, userId));
+    }
     return roles;
   }
 
