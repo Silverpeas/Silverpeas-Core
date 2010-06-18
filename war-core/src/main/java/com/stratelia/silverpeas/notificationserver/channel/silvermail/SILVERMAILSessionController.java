@@ -159,8 +159,15 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     if (StringUtil.isDefined(componentId)) {
       OrganizationController orga = new OrganizationController();
       ComponentInst instance = orga.getComponentInst(componentId);
+      
+      // Sometimes, source could not be found
       SpaceInst space = orga.getSpaceInstById(instance.getDomainFatherId());
-      source = space.getName() + " - " + instance.getLabel();
+      if (space != null) {
+        source = space.getName() + " - " + instance.getLabel();
+      }
+      else {
+        source = m_Multilang.getString("UnknownSource");
+      }
     }
 
     return source;
