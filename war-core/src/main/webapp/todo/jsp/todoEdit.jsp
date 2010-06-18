@@ -62,7 +62,7 @@
   ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(todo.getLanguage());
   ResourceLocator settings = todo.getSettings();
 
-  action = (String) request.getParameter("Action");  //Add || Update || EditDiffusionList (demande � choisir des personnes � affecter) 
+  action = request.getParameter("Action");  //Add || Update || EditDiffusionList (demande � choisir des personnes � affecter) 
                                                                                                         // || DiffusionListOK (vient de choisir des personnes dans le UserPanel)
                                                                                                         // ReallyAdd || ReallyUpdate
                                                                                                         
@@ -196,17 +196,9 @@ function deleteConfirm(name)
     }
 }
 
-function editStartDay()
+function editDay(idField)
 {
-                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem=3";
-                largeur = "180";
-                hauteur = "200";
-                SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
-}
-
-function editEndDay()
-{
-                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem=4";
+                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?idElem="+idField;
                 largeur = "180";
                 hauteur = "200";
                 SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
@@ -245,7 +237,7 @@ function test(){
 
   /* todo == null : premier acces a la page */
   if (todoHeader == null) {
-    String toDoId = (String) request.getParameter("ToDoId");
+    String toDoId = request.getParameter("ToDoId");
     
     if (toDoId != null)
       if (toDoId.length() == 0)
@@ -276,18 +268,18 @@ function test(){
         {
             
             //sauvegarde des valeurs saisies
-            String name = (String) request.getParameter("Name");
-            String description = (String) request.getParameter("Description");
-            String priority = (String) request.getParameter("Priority");
-            String classification = (String) request.getParameter("Classification");
-            String startDate = (String) request.getParameter("StartDate");
-            String startHour = (String) request.getParameter("StartHour");
-            String startMinute = (String) request.getParameter("StartMinute");
-            String endDate = (String) request.getParameter("EndDate");
-            String endHour = (String) request.getParameter("EndHour");
-            String endMinute = (String) request.getParameter("EndMinute");
-            String withoutHour = (String) request.getParameter("WithoutHour");
-            String percent = (String) request.getParameter("PercentCompleted");
+            String name = request.getParameter("Name");
+            String description = request.getParameter("Description");
+            String priority = request.getParameter("Priority");
+            String classification = request.getParameter("Classification");
+            String startDate = request.getParameter("StartDate");
+            String startHour = request.getParameter("StartHour");
+            String startMinute = request.getParameter("StartMinute");
+            String endDate = request.getParameter("EndDate");
+            String endHour = request.getParameter("EndHour");
+            String endMinute = request.getParameter("EndMinute");
+            String withoutHour = request.getParameter("WithoutHour");
+            String percent = request.getParameter("PercentCompleted");
         
             todoHeader.setName(name);
             todoHeader.setDescription(description);
@@ -335,22 +327,22 @@ function test(){
   
   /* ReallyAdd || ReallyUpdate */ 
   if ((action.equals("ReallyAdd")) || (action.equals("ReallyUpdate"))) {
-    String name = (String) request.getParameter("Name");
-    String description = (String) request.getParameter("Description");
-    String priority = (String) request.getParameter("Priority");
-    String classification = (String) request.getParameter("Classification");
-    String startDate = (String) request.getParameter("StartDate");
+    String name = request.getParameter("Name");
+    String description = request.getParameter("Description");
+    String priority = request.getParameter("Priority");
+    String classification = request.getParameter("Classification");
+    String startDate = request.getParameter("StartDate");
     if (startDate == null) 
         startDate = "";
-    String startHour = (String) request.getParameter("StartHour");
-    String startMinute = (String) request.getParameter("StartMinute");
-    String endDate = (String) request.getParameter("EndDate");
+    String startHour = request.getParameter("StartHour");
+    String startMinute = request.getParameter("StartMinute");
+    String endDate = request.getParameter("EndDate");
     if (endDate == null) 
         endDate = "";
-    String endHour = (String) request.getParameter("EndHour");
-    String endMinute = (String) request.getParameter("EndMinute");
-    String withoutHour = (String) request.getParameter("WithoutHour");
-    String percent = (String) request.getParameter("PercentCompleted");
+    String endHour = request.getParameter("EndHour");
+    String endMinute = request.getParameter("EndMinute");
+    String withoutHour = request.getParameter("WithoutHour");
+    String percent = request.getParameter("PercentCompleted");
     
 
     try {
@@ -436,7 +428,7 @@ function test(){
     
 %>
 
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.todoEditForm.Name.focus();">
+<BODY onLoad="document.todoEditForm.Name.focus();">
 <FORM NAME="todoEditForm" ACTION="todoEdit.jsp" METHOD=POST >
 
 <%
@@ -568,7 +560,7 @@ function test(){
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left><span class="txtlibform"><%=todo.getString("dateDebutToDo")%> :</span>&nbsp;
                                         </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
-                                        <input type="text" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+                                        <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 if (todoHeader != null) 
@@ -576,7 +568,7 @@ function test(){
                                                                 out.println("VALUE=\""+resources.getInputDate(todoHeader.getStartDate())+"\"");%>>
 
                                         <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-                                                &nbsp;<a href="javascript:onClick=editStartDay()"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=todo.getString("affichierCalendrier")%>" title="<%=todo.getString("affichierCalendrier")%>"></a>
+                                                &nbsp;<a href="javascript:onClick=editDay('StartDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=todo.getString("affichierCalendrier")%>" title="<%=todo.getString("affichierCalendrier")%>"></a>
                                                 &nbsp;
                                                 <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
                                         <%}%>
@@ -588,7 +580,7 @@ function test(){
                                                 </span>
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
-                                                <input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+                                                <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 if (todoHeader != null) {
@@ -601,7 +593,7 @@ function test(){
                                                 }
                                                 %>>
                                                 <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-                                                        &nbsp;<a href="javascript:onClick=editEndDay()"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=todo.getString("affichierCalendrier")%>" title="<%=todo.getString("affichierCalendrier")%>"></a>
+                                                        &nbsp;<a href="javascript:onClick=editDay('EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=todo.getString("affichierCalendrier")%>" title="<%=todo.getString("affichierCalendrier")%>"></a>
                                                         &nbsp;
                                                         <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></p>
                                                 <%}%>
