@@ -569,7 +569,22 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   private void sortGlobalSilverResult(int sortValue, String sortOrder,
       List<GlobalSilverResult> results) {
-    // Comparateurs
+
+    // Title comparator
+    final Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
+
+      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
+        String string1 = o1.getName(getLanguage());
+        String string2 = o2.getName(getLanguage());
+
+        if (string1 != null && string2 != null) {
+          return string1.compareToIgnoreCase(string2);
+        } else {
+          return -1;
+        }
+      }
+    };
+
     Comparator<GlobalSilverResult> cPertAsc = new Comparator<GlobalSilverResult>() {
 
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
@@ -578,32 +593,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         if (float1 != null && float2 != null) {
           int result = float1.compareTo(float2);
-          if (result != 0) {
-            return result;
-          } else {
-            // Add comparaison on title in order to fix an order (problem with same raw score value)
-            String string1 = o1.getName(getLanguage());
-            String string2 = o2.getName(getLanguage());
-            if (string1 != null && string2 != null) {
-              return string1.compareToIgnoreCase(string2);
-            } else {
-              return -1;
-            }
-          }
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getName(getLanguage());
-        String string2 = o2.getName(getLanguage());
-
-        if (string1 != null && string2 != null) {
-          return string1.compareToIgnoreCase(string2);
+          // Add comparison on title if we have the same pertinence
+          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         } else {
           return -1;
         }
@@ -618,18 +609,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         if (string1 != null && string2 != null) {
           int result = string1.compareToIgnoreCase(string2);
-          if (result != 0) {
-            return result;
-          } else {
-            // Add comparaison on title in order to fix an order (problem with same author value)
-            string1 = o1.getName(getLanguage());
-            string2 = o2.getName(getLanguage());
-            if (string1 != null && string2 != null) {
-              return string1.compareToIgnoreCase(string2);
-            } else {
-              return -1;
-            }
-          }
+          // Add comparison on title if we have the same author
+          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         } else {
           return -1;
         }
@@ -644,19 +625,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         if (string1 != null && string2 != null) {
           int result = string1.compareTo(string2);
-          if (result != 0) {
-            return result;
-          } else {
-            // Add comparaison on title in order to fix an order (problem with same creation date
-            // value)
-            string1 = o1.getName(getLanguage());
-            string2 = o2.getName(getLanguage());
-            if (string1 != null && string2 != null) {
-              return string1.compareToIgnoreCase(string2);
-            } else {
-              return -1;
-            }
-          }
+          // Add comparison on title if we have the same creation date
+          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         } else {
           return -1;
         }
@@ -671,19 +641,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         if (string1 != null && string2 != null) {
           int result = string1.compareTo(string2);
-          if (result != 0) {
-            return result;
-          } else {
-            // Add comparaison on title in order to fix an order (problem with same update date
-            // value)
-            string1 = o1.getName(getLanguage());
-            string2 = o2.getName(getLanguage());
-            if (string1 != null && string2 != null) {
-              return string1.compareToIgnoreCase(string2);
-            } else {
-              return -1;
-            }
-          }
+          // Add comparison on title if we have the same update date
+          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         } else {
           return -1;
         }
@@ -698,18 +657,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         if (string1 != null && string2 != null) {
           int result = string1.compareToIgnoreCase(string2);
-          if (result != 0) {
-            return result;
-          } else {
-            // Add comparaison on title in order to fix an order (problem with same empl value)
-            string1 = o1.getName(getLanguage());
-            string2 = o2.getName(getLanguage());
-            if (string1 != null && string2 != null) {
-              return string1.compareToIgnoreCase(string2);
-            } else {
-              return -1;
-            }
-          }
+          // Add comparison on title if we have the same emplacement
+          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         } else {
           return -1;
         }
@@ -724,19 +673,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         if (pop1 != null && pop2 != null) {
           int result = pop1.compareTo(pop2);
-          if (result != 0) {
-            return result;
-          } else {
-            // Add comparaison on title in order to fix an order (problem with same popularity
-            // value)
-            String string1 = o1.getName(getLanguage());
-            String string2 = o2.getName(getLanguage());
-            if (string1 != null && string2 != null) {
-              return string1.compareToIgnoreCase(string2);
-            } else {
-              return -1;
-            }
-          }
+          // Add comparison on title if we have the same popularity
+          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
         } else {
           return -1;
         }
