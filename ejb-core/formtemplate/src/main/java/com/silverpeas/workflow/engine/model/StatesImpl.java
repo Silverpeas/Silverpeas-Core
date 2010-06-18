@@ -73,7 +73,7 @@ public class StatesImpl implements Serializable, States {
 
     for (int s = 0; !find && s < stateList.size(); s++) {
       state = (State) stateList.get(s);
-      if (state != null && name.equals(state.getName()))
+      if (state != null && state.getName().equals(name))
         find = true;
     }
     if (find)
