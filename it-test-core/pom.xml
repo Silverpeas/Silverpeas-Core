@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.silverpeas</groupId>
+    <artifactId>core</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+	
+  <groupId>com.silverpeas.core</groupId>
+  <artifactId>it-test-core</artifactId>
+  <packaging>jar</packaging>
+  <name>Integration Test Core</name>
+	
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+     <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springmodules</groupId>
+      <artifactId>spring-modules-jcr</artifactId>
+    </dependency>   
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <filters>
+      <filter>src/main/filters/filters.properties</filter>
+    </filters>
+  </build>
+</project>
