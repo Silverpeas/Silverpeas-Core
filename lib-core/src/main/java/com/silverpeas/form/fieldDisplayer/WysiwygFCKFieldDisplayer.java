@@ -25,6 +25,7 @@
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -398,9 +399,14 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
             WysiwygFCKFieldDisplayer.getFile(indexEntry.getComponent(), indexEntry.getObjectId(),
             fieldName,
             language);
-        Source source = new Source(file);
+        try {
+        Source source = new Source(new FileInputStream(file));
         if (source != null) {
           fieldValueIndex = source.getTextExtractor().toString();
+        }
+        }catch(IOException ioex){
+          SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
+              "File not found " + file + " " + ioex.getMessage(), ioex);
         }
         indexEntry.addTextContent(fieldValueIndex, language);
       } else {
